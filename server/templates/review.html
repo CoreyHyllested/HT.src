@@ -1,0 +1,55 @@
+{% extends "ht_header.html" %}
+{% block content %}
+<script src="static/js/slot_expand.js"></script>
+
+
+<div id="write-review-wrap">
+	<div id="write-review">
+		<h2>Write review ({{daysleft}} days left)</h2>
+
+		<div class="search-result">
+			<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}" style="height:83px; width:150px; display:block; margin:0 auto;" alt="review-hero"/>
+			<div class="result-info">
+				<h3>{{hero.name}}</h3>
+				<p>{{hero.headline}}</p>
+				<p>
+				{% if bp.reviews == 0 %}
+					No reviews
+				{% else %}
+					{{ '%0.1f' | format(hero.rating|float)}} out of 5 stars ({{hero.reviews}} reviews)
+					<!--p><script>star_reviews({{ '%0.0f' | format(hero.rating|float)}}, {{hero.reviews}}, '{{hero.heroid}}');</script></p-->
+				{% endif %}
+				<p class="result-location">{{hero.location}}</p>
+			</div>
+			<div class="price-box">
+					<!-- actual meeting cost -->
+					<h3>${{hero.baserate}}</h3>
+					<p>Meeting Cost</p>
+			</div>
+		</div>
+
+		<form action=review method=post>
+			{{form.hidden_tag()}}
+
+			<div class="rating-text">Based on your experience, how would you rate this person?</div>
+			<span class="rating">
+				{% for subfield in form.input_rating %}
+					{{ subfield(class="rating-input") }}
+					{{ subfield.label(class="rating-star") }}
+				{% endfor %}
+			</span>
+
+			{{form.input_review(autofocus="autofocus")}}
+			<div id="review-buttons">
+				<div id="edit-cancel-wrap">
+					<a href="/profile"><div class="whiteButton editCancel">Back to profile</div></a>
+				</div>
+				<div id="edit-save-wrap">
+					<input type="submit" id="edit-save" value="Post review"/>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}

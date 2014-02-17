@@ -1,0 +1,115 @@
+{% extends "ht_header.html" %}
+
+
+<script type="text/javascript">
+   function isNumberKey(evt) {
+     var charCode = (evt.which) ? evt.which : event.keyCode;
+     if (charCode > 31 && (charCode < 48 || charCode > 57))
+       return false;
+     return true;
+   }
+</script>
+
+{% block content %}
+
+<script type="text/javascript">
+   function validateForm() {
+		// Fetch form elements
+		var name = document.forms["SignupNow"]["input_signup_name"];
+		var email_address = document.forms["SignupNow"]["input_signup_email"];
+		var password = document.forms["SignupNow"]["input_signup_password"];
+		var confirm = document.forms["SignupNow"]["input_signup_confirm"];
+
+		// Check for empty fields; if found, highlight them
+		var form_fields = [name, email_address, password, confirm];
+		for (var i = 0; i < form_fields.length; i++) {
+			var current_element = form_fields[i];
+			var current_value = form_fields[i].value;
+			if (current_value.match(/^\s*$/)) {
+				$(current_element).focus();
+				return false;
+			}
+		}
+
+		// Validate email address
+		var at_position = email_address.value.indexOf("@");
+		var dot_position = email_address.value.lastIndexOf(".");
+		if (at_position < 1 || dot_position < at_position + 2 || dot_position + 2 >= email_address.length) {
+  			openAlertWindow(email_address.value + ' is not a valid e-mail address.');
+  			$('#input_signup_email').css('border', '1px red solid');
+  			return false;
+  		}
+
+  		// Checks if the password is correct
+  		if (password.value !== confirm.value) {
+  			openAlertWindow("Your password and confirmation password don't match.")
+  			return false;
+  		}
+
+  		// Checks if the ToS checkbox is checked
+  		if (document.getElementById('accept_tos').checked) {return true;} else {
+  			openAlertWindow("You must agree to our Terms of Service in order to create an account.")
+  			return false;
+  		}
+  	}
+
+</script>
+
+
+<div id="signup-wrap">
+	
+	<div id="signup-email">
+		<h2>Sign up with email</h2>
+		<form id="SignupNow" onsubmit="return validateForm();" action="/signup" method="POST">
+			{{form.hidden_tag()}}
+			<label id="label-signup-name" for="input_signup_name">Name</label>
+			{{form.input_signup_name}}
+
+			<label id="label-signup-email" for="input_signup_email">Email</label>
+			{{form.input_signup_email}}
+
+			<label id="label-signup-password" for="input_signup_password">Password</label>
+			{{form.input_signup_password}}
+
+			<label id="label-signup-confirm" for="input_signup_confirm">Confirm password</label>
+			{{form.input_signup_confirm}}
+
+			<div id="signup-agree">
+				{{form.accept_tos(class="checkbox")}}
+				<label for="accept_tos" class="checkbox-label">&nbsp;I agree to HeroTime's <a href="terms">Terms of Service</a></label>
+			</div>
+
+			<div id="signup-join-wrap">
+				<input type="submit" class="blueButton signupJoin" value="Join now" />
+			</div>
+
+			<div id="signup-already-wrap">
+				<a href="/login" class="whiteButton signupAlready">Already a member?</a>
+			</div>
+		</form>	
+	</div>
+
+	<div id="signup-social">
+		<h2>Connect using...</h2>
+		
+		<div id="linkedin-wrap">
+			<a href="/signup/linkedin"><div id="signup-linkedin">LinkedIn</div></a>
+			<br>
+			By clicking the button above, you agree to HeroTime's <a href="terms">Terms of Service</a>.
+		</div>
+		<!-- No Facebook and Twitter in first release
+		<div id="facebook-wrap">
+			<a href="#"><div id="signup-facebook">Sign up with Facebook</div></a>
+		</div>
+
+		<div id="twitter-wrap">
+			<a href="#"><div id="signup-twitter">Sign up with Twitter</div></a>
+		</div>
+		-->
+	</div>
+</div>
+
+
+<!-- Bottom bar -->
+
+{% endblock %}

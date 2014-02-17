@@ -1,0 +1,77 @@
+{% extends "ht_header.html" %}
+{% block content %}
+
+
+<div id="settings-wrap">
+	<div id="settings-panel">
+
+		<!-- Edit basic information -->
+		<form action=settings method=POST>
+		<div id="set-left-column">
+			<h2>
+				<img src="static/img/email.svg">
+				Change Email
+			</h2>
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			<label id="set-label-email" for="set_input_email">Current email</label>
+			{{form.set_input_email()}}
+
+			{% if errmsg != none %}
+				<script>
+					openAlertWindow('{{errmsg}}')
+				</script>
+			{% endif %}
+
+			<h2 id="set-password">
+				<img src="static/img/key.svg">
+				Change Password
+			</h2>
+			<label id="set-label-curpass" for="set_input_curpass">Current password</label>
+			{{form.set_input_curpass(autocomplete="off")}}
+
+			<label id="set-label-newpass" for="set_input_newpass">New password</label>
+			{{form.set_input_newpass}}
+
+			<label id="set-label-verpass" for="set_input_verpass">Verify password</label>
+			{{form.set_input_verpass}}
+
+
+		</div>
+
+		<div id="set-right-column">
+			<h2>
+				<img src="static/img/atm.svg">
+				Payout Information
+			</h2>
+			<div id="set-payout-info">
+			We use Stripe's services to pay you for the time you sell. <a href="https://stripe.com" target="_blank">Stripe</a> is a company that provides a secure way for individuals and businesses to accept payments over the Internet.
+			<br><br>
+			<a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here</a> for the list of supported countries. (If yours isn't there, please don't despair - we're already looking into Bitcoin payouts.)
+			</div>
+
+			<label id="set-label-stripeid" for="oauth_stripe">Your Stripe ID</label>
+			{{form.oauth_stripe(readonly=readonly)}}
+
+			<div id="set-stripe-wrap">
+				<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
+			</div>
+
+			<!-- LS: I commented out this just in case we need it later.
+			<div id="set-stripe-register-wrap">
+				<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=register&stripe_user[email]={{form.set_input_email.data}}&stripe_user[business_name]={{bp.name|urlencode}}" class="whiteButton" id="set-stripe-register">Register</a>
+			</div>
+			-->
+
+			<div id="set-save-wrap">
+				<input class="blueButton" id="set-save" type=submit value="Save changes" />
+			</div>
+		</div>
+		</form>
+
+		<div style="clear:both"></div>
+	</div>
+</div>
+
+<!-- Bottom bar -->
+
+{% endblock %}

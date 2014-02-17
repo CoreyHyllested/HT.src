@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<title>HeroTime {{title}}</title>
+	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
+	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
+	<link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans">
+	{% if cssfiles %}
+	{% for file in cssfiles %}
+	<link type="text/css" rel="stylesheet" href={{file}}>
+	{% endfor %}
+	{% endif %}
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+	{% if jsfiles %}
+	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
+	{% endif %}
+
+	<script>
+	function searchBar() {
+		var x=document.forms["srchForm"]["search"].value;
+		if (x==null || x=="") { return false; }
+		return true;
+	}
+	
+	function openAlertWindow(text) {
+		$('.alertOverlay').css('display', 'block');
+		$('.alertWindowWrap').css('display', 'block');
+		$('.alertWindow').css('display', 'block');			
+		$('.alertMessage').html(text);
+		return false;
+	}
+
+	function closeAlertWindow() {
+		$('.alertMessage').html('');
+		$('.alertWindow').css('display', 'none');		
+		$('.alertWindowWrap').css('display', 'none');
+		$('.alertOverlay').css('display', 'none');
+		return false;
+	}
+
+	</script>
+</head>
+
+
+
+<body>
+	<div class="alertOverlay"></div>
+	<div class="alertWindowWrap">
+		<div class="alertWindow">
+			<div class="alertMessage"></div>
+			<div class="alertButtonWrap">
+				<div class="alertButton">
+					<div class="blueButton" onclick="closeAlertWindow()">OK</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="top-bar">
+		<div id="top-wrapper">
+		{% if bp %}<a href="/dashboard">{% else %}<a href="/">{% endif %}
+			<div id="top-logo">
+				<div id="clock-hand-1"></div>
+				<div id="clock-hand-2"></div>
+			</div></a>		
+
+			<div id="top-search">
+				  <div id="top-search-input">
+					  <form name=srchForm action=search method=POST onsubmit="return searchBar()">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						<input type="text" name="search" placeholder="Who do you want to meet?" />
+					  </form>
+				  </div>
+			</div>
+		{% if bp %}
+			<nav>
+				<ul>
+					<li>{{bp.name}}
+						<ul>
+							<li><a href="/dashboard">Dashboard</a></li>
+							<li><a href="/profile">Profile</a></li>
+							<li><a href="/settings">Settings</a></li>
+							<li><a href="/logout">Log Out</a></li>
+						</ul>
+					</li>
+			</nav>
+		{% else %}
+			<div id="top-menu">
+				<ul>
+					<li><a href="/signup">Sign up</a></li>
+					<li><a href="/login">Log in</a></li>
+				</ul>
+			</div>
+		{% endif %}
+		</div>
+		<div id="top-flash">
+			<span id="fmsg"></span>
+		</div>
+	</div>
+
+	{% block content %}
+	{% endblock %}
+	
+	<div id="bottom-bar">
+		<div id="bottom-wrapper">
+			<div id="bottom-logo"></div>
+			<div id="footer-menu">
+				<ul>
+					<li><a href="#">Help</a> |</li>
+					<li><a href="#">Blog</a> |</li>
+					<li><a href="#">Team</a> |</li>
+					<li><a href="#">Press</a> |</li>
+					<li><a href="#">Terms &amp; Privacy</a> |</li>
+					<li><a href="#">DMCA</a> |</li>
+					<li><a href="#">Contact us</a></li>
+				</ul>
+				<ul>
+					<li><a href="http://www.linkedin.com/company/herotime">LinkedIn</a> |</li>
+					<li><a href="https://www.facebook.com/pages/HeroTime/545914632110849">Facebook</a> |</li>
+					<li><a href="https://plus.google.com/u/0/117608740634064140119">Google+</a> |</li>
+					<li><a href="https://twitter.com/HeroTimeCo">Twitter</a> |</li>
+					<li><a href="http://www.youtube.com/channel/UCIgliSHZYHZNAdJqpjeUTVw/feed?view_as=public">YouTube</a></li>
+				</ul>
+				<div id="footer-copyright">
+				Copyright © 2013-<script>document.write(new Date().getFullYear())</script> HeroTime Inc. All rights reserved.
+				</div>
+			</div>
+			<div id="footer-mobile">
+				<object data="static/img/appstore.svg" type="image/svg+xml"></object>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<style type="text/css">
+		.pac-container{background-color:#fff;border:1px solid #ccc;overflow:hidden}
+		.pac-container:after{padding-top:3px;text-align:right;display:block;font-size:0}
+		.pac-item{cursor:pointer;padding:0 4px;text-overflow:ellipsis;white-space:nowrap}
+		.pac-item:hover{background-color:#f0f0ff}
+		.pac-selected{background-color:#d5ddf3}
+		.pac-placeholder{color:gray}
+	</style>
+
+	<!--script>
+		var sherlock_firstbyte = Number(new Date());
+		var googleMapsUrl = '//maps.googleapis.com/maps/api/js?language=en&sensor=false&v=3&libraries=places&client=gme-airbnbinc&channel=monorail-prod';
+		var userAttributeCookies = {        
+				flags_name: 'flags',
+				roles_name: 'roles',
+				flags: {
+						"can_see_community":2,
+						"new_fb_auto_login":8,
+						"og_publish":16,
+						"has_wishlisted":32,
+						"update_cached":64,"revert_to_admin":128,
+						"facebook_connected":256,
+						"meow":512,
+						"has_search":1024,
+						"search_help_dropdown":2048,"has_dates":4096,"show_fb_prompt":8192,
+						"lightweight_wishlist":16384,"can_send_profile_messages":32768,
+						"just_logged_in":65536,"has_been_host":131072,"should_drop_pellet":262144,
+						"custom_faq_links":524288,"is_active_host":1048576,"should_drop_pellet_for_corgi":2097152,
+						"nyan":4194304,"fb_clickthrough_banner":8388608,"fb_clickthrough_banner_sticky":16777216,
+						"fb_clickthrough_modal_sticky":33554432,"fb_clickthrough_modal_activity":67108864,"can_see_meetups":134217728,
+						"should_drop_sift_pellet":268435456,"can_see_groups":536870912},
+				roles: {
+						"is_admin":1,
+						"is_aircrew":8,
+						"is_content_manager":1048576,
+						"is_stats_admin":16777216}
+				};
+	</script-->
+
+	<title>HeroTime.  Meet Your Hero.  Sell Your Time.</title>
+	<meta name="description" content="Meet your Hero.  Sell your time.">
+	<meta name="viewport" content="width=1000,maximum-scale=1.0">
+	<meta charset="utf-8">
+
+	<link rel="image_src" href="http://static.com/logos/png">
+	<link id="favicon" rel="shortcut icon" href="https:///static/logo.ico">
+
+	<link href="./static/css/ht_style.css" media="screen" rel="stylesheet" type="text/css">
+	<link href="./static/css/o2-package-cd0e341a2332c1d4ddef0c8ded504b57.css" media="screen" rel="stylesheet" type="text/css">
+	<link href="./static/css/p1_v2-d47f1e0b2bb852ed31398a574e532185.css" media="screen" rel="stylesheet" type="text/css">
+
+	<script type="text/javascript" charset="UTF-8" src="./static/js/{common,util,controls,places_impl}.js"></script>
+	<script type="text/javascript" charset="UTF-8" src="./static/js/{stats}.js"></script>
+	<script type="text/javascript" src="./static/js/libs-9d246231449d8df9f67069a4a1225d83.js"></script
+</head>
+
+
+<body class=" home_view v2">
+	<noscript>&lt;iframe src="//www.googletagmanager.com/ns.html?id=GTM-46MK" height="0" width="0" style="display:none;visibility:hidden"&gt;&lt;/iframe&gt;</noscript>
+
+	<div id="header" class="navbar navbar-top">
+		<div class="navbar-inner">
+			<div class="container container-full-width">
+				<a href="./herotime.html" class="brand HeroTime">HeroTime</a>
+				<ul class="nav">
+					<li id="header-search">
+					<form action="http://herotime.co/s" id="search-form">
+						<div id="search-bar">
+							<i class="icon icon-search"></i>
+							<input type="text" placeholder="Who do you want to meet?" autocomplete="off" name="location" id="header-location">
+						</div>
+					
+						<div id="header-search-settings">
+							<label class="checkin">Check in <input type="text" id="header-search-checkin" name="checkin" class="checkin ui-datepicker-target" placeholder="mm/dd/yyyy"></label>
+							
+							<label>Room type</label>
+							<label class="checkbox" for="room_type_0"><input type="checkbox" id="room_type_0" name="room_types[]" value="Entire home/apt"> Entire home/apt</label>
+							<label class="checkbox" for="room_type_1"><input type="checkbox" id="room_type_1" name="room_types[]" value="Private room"> Private room</label>
+							<label class="checkbox" for="room_type_2"><input type="checkbox" id="room_type_2" name="room_types[]" value="Shared room"> Shared room</label>
+							<button type="submit" class="btn blue"><i class="icon icon-search"></i> Find a Hero</button>
+						</div>
+					</form>
+					</li>
+
+					<li class="dropdown item_explore">
+						<a class="dropdown-toggle" href="javascript:void(0)"> Browse <b class="caret"></b></a>
+						<ul class="dropdown-menu dropdown-bordered">
+							<li><a href="http://herotime.co/popular"><i class="icon icon-product-wishlist pink"></i> Popular</a></li>
+							<li><a href="http://herotime.co/meetups"><i class="icon icon-group"></i> Meetups</a></li>
+							<li><a href="http://herotime.co/Genres"><i class="icon icon-product-neighborhoods blue"></i> Genres </a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<ul class="nav pull-right help-menu" style="margin-left:0;">
+					<li class="dropdown" data-dropdown-sticky="true">
+						<a id="help_dropdown" class="dropdown-toggle help-toggle" href="javascript:void(0)"> Help <b class="caret"></b></a>
+						<div class="dropdown-menu help-dropdown dropdown-bordered">
+							<div class="nav-header">
+							<a href="http://herotime.com/help?ref=help-dropdown" class="help-center-link">Visit the Help Center »</a>
+						</div>
+						<ul class="unstyled">
+							<li class="help-search nav-custom blue">
+								<form action="http://herotime.co/help/search">
+									<input name="q" class="help-search-query" placeholder="Search the help center">
+									<button type="submit" class="btn only-icon"><i class="icon icon-search"></i></button>
+									<input type="hidden" name="ref" value="help-dropdown">
+								</form>
+							</li>
+							<li class="loading"></li>
+							<li class="hidden">
+								<a href="http://herotime.co/safety?ref=help-dropdown" class="">Visit the Trust &amp; Safety Center</a>
+							</li>
+							<li class="all_faqs hidden">
+								<a href="http://herotime.co/help/topic/meeting?ref=help-dropdown">See all FAQs</a>
+							</li>
+							<li id="faqadmin" style="display: none;">
+								<input type="hidden" name="faq_link[page]" value="wishlists-home">
+							</li>
+						</ul>
+					</div>
+					</li>
+						<li class="list-your-space">
+						<a id="list-your-space" class="yellow btn" href="https://herotime.co/rooms/new">Become a Hero</a>
+					</li>
+				</ul>
+
+				<ul class="nav pull-right logged-out">
+					<li id="sign_up"><a data-signup-modal="" href="https://herotime.co/signup_login?redirect_params[action]=home&redirect_params[controller]=wishlists">Sign Up</a></li>
+					<li id="login"><a data-login-modal="" href="https://herotime.co/login?redirect_params[action]=home&redirect_params[controller]=wishlists">Log In</a></li>
+				</ul>
+
+				<ul class="nav pull-right logged-in">
+					<li class="dropdown user-item">
+						<a class="dropdown-toggle" href="javascript:void(0)">
+							<div class="mini-media-box user-profile-image"></div>
+							<span class="value_name">User</span> <b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu dropdown-bordered">
+							<li><a href="https://herotime.co/home/dashboard">Dashboard</a></li>
+							<li>
+								<a href="https://herotime.co/rooms">
+								<span class="singular" style="display: none;">Your Listing</span>
+								<span class="plural">Your Listings</span>
+								</a>
+							</li>
+							<li><a href="https://herotime.co/trips/upcoming">Your Trips</a></li>
+							<li><a href="https://herotime.co/wishlists/my" id="wishlists">Wish Lists</a></li>
+							<li><a href="https://herotime.co/users/edit">Edit Profile</a></li>
+							<li><a href="https://herotime.co/account">Account</a></li>
+							<li class="community"><a href="https://herotime.co/communities?cref=e3ae48">Community</a></li>
+							<li id="tour-link" style="display:none;"><a id="tour-button">Take a tour of this page</a></li>
+							<li><a href="https://herotime.co/logout" id="header-logout">Log Out</a></li>
+						</ul>
+					</li>
+					<li class="divider-vertical"></li>
+					<li id="inbox-item">
+						<a href="https://herotime.co/inbox"><i class="icon icon-mail hide-text">Inbox</i><i class="alert-count position-super fade">0</i></a>
+					</li>
+					<li class="divider-vertical"></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="./static/js//header_cookie-d4a275a1c58700319583e3f49d855fbf.js" type="text/javascript"></script>
+	<script>new HeaderPreload();</script>
+
+	<div class="span12 flash-container"></div>
+
+    
+
+
+	<div id="hero" style="display:block;" data-native-currency="USD" class="search_intro">
+
+
+		<!-- SLIDESHOW images -->
+		<ul class="unstyled" id="slideshow">
+			<li class="active" data-slide-type="search_intro" data-bg-opacity="0.5" style="display: block;">
+				<img alt="Everest Skydive" src="./static/img/skydive.jpg" data-image-url="https///everest.jpg" height="700" width="1600">
+				<div class="caption" style="display: block;">
+					<p><strong><a href="https://herotime.co/hero/djcore/">D.J. Core</a></strong>
+					<br><a href="https://herotime.co/hero/djcore/">Skydiving Over Everest</a> -
+					<span class="price" data-price="300.0"><a href="https://herotime.co/heros/djcore">$300</a></span></p>
+				</div>
+			</li>
+
+			<li data-slide-type="search_intro" data-bg-opacity="1" class="" style="display: block;">
+				<img alt="Historic Stone Home in Lecce" data-image-url="https://342074-dc04b3c84d0eb0c75a215776b20a2a40.jpg" height="700" width="1600" src="./static/img/342074-dc04b3c84d0eb0c75a215776b20a2a40.jpg">
+				<div class="caption" style="display: block;">
+					<button class="wish_list_button not_saved heart btn gray large" data-hosting_id="342074" title="Save this listing to review later." data-img="https://a2.muscache.com/pictures/3898743/large.jpg" data-name="Historic Stone Home in Lecce" data-address="Lecce, Italy">
+					<i class="icon icon-product-wishlist pink"></i>
+					</button>
+					<a href="https://herotime.co/hero/342074"><img alt="342074-3454afcf6092f2d040ed3bf3e9df6d86" height="40" src="./static/img/342074-3454afcf6092f2d040ed3bf3e9df6d86.jpg" width="40"></a>
+					<p><strong><a href="https://herotime.co/rooms/342074">Historic Stone Home in Lecce</a></strong>
+					<br><a href="https://herotime.co/rooms/342074">Lecce, Italy</a> -
+					<span class="price" data-price="45.3721"><a href="https://herotime.co/rooms/342074">$45</a></span></p>
+				</div>
+			</li>
+		</ul>
+
+
+
+
+		<div class="search-area">
+			<div id="blob-bg" style="opacity: 1; display: block;"></div>
+			<div class="container">
+				<h1>Meet your Hero.</h1>
+				<h2>Find Heros around the world.</h2>
+
+				<form action="http://herotime.co/s" id="search_form" class="custom show-search-options position-left">
+					<div class="input-wrapper">
+						<input type="text" class="location" autocomplete="off" id="location" name="location" placeholder="Who do you want to meet?">
+						<p id="enter_location_error_message" class="bad" style="display:none;">
+						Please set location
+						</p>
+					</div>
+
+					<div id="checkinWrapper" class="input-wrapper">
+						<input type="text" id="checkin" class="checkin search-option ui-datepicker-target" name="checkin" placeholder="When?">
+						<span class="search-area-icon"></span>
+					</div>
+
+					<button type="submit" class="large pink btn icon-and-text position-left" id="submit_location">
+						<i class="icon icon-search"></i> Search
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<div id="controls">
+			<div class="arrows">
+				<i class="arrow left" style="display: block;"></i>
+				<i class="arrow right" style="display: block;"></i>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="container">
+		<div class="row space3">
+			<div class="span12 neighborhood-intro">
+				<h3>The Hero Guidebook</h3>
+				<p>Looking for someone to help inspire you?  We've created a guide to finding the superhero for you.</p>
+			</div>
+		</div>
+
+		<div class="row space2">
+			<div class="span12">
+				<ul class="city-tiles unstyled">
+
+					<li class="city-tile">
+						<div class="sprite-homev2-tiles sprite-homev2-tiles-austin"></div>
+						<a href="https://herotime.co/heroes/lazar">
+						<h4>Lazar</h4>
+						<span>Entrepreneur</span>
+						</a>
+					</li>
+
+					<li class="city-tile">
+						<div class="sprite-homev2-tiles sprite-homev2-tiles-berlin"></div>
+						<a href="https://herotime.co/heroes/lazar">
+						<h4>Ryan</h4>
+						<span>Guitar Hero</span>
+						</a>
+					</li>
+					
+					<li class="city-tile">
+						<div class="sprite-homev2-tiles sprite-homev2-tiles-buenos-aires"></div>
+						<a href="https://herotime.co/heroes/lazar">
+						<h4>Luis</h4>
+						<span>Security Consultant</span>
+						</a>     
+						<span class="label label-pink">New</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+
+		<div id="more_info">
+			<div class="row">
+				<div class="span4">
+					<div class="panel-subtle-dark">
+						<h5><a href="http://herotime.co/wishlists">Meeting Heros</a></h5>
+						<p>From celebrities to consultants to electricians: meet heros of all sorts of superpowers.</p>
+						<p><a href="http://herotime.co/heros">See popular Heros »</a></p>
+					</div>
+				</div>
+				<div class="span4">
+					<div class="panel-subtle-dark">
+						<h5><a href="http://herotime.co/join">Become a Hero</a></h5>
+						<p>Selling your spare time could help pay bills or launch your consultancy.</p><br>
+						<p><a href="http://herotime.co/join">Learn more about becoming a Hero»</a></p>
+					</div>
+				</div>
+				<div class="span4">
+					<div class="panel-subtle-dark">
+						<h5><a href="http://herotime.co/trust">Trust and Safety</a></h5>
+						<p>From Verified ID to our worldwide customer support team, we've got your back.</p>
+						<p><a href="http://herotime.co/trust">Learn about trust at HeroTime »</a></p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+	<div class="container">
+		<div id="footer" class="row">
+			<div class="span3">
+				<h5>Location Settings</h5>
+				<div class="language-curr-picker clearfix">
+					<div class="lang-selector btn-group btn-dropdown">
+						<button class="btn gray dropdown-toggle">
+							<i class="icon icon-globe"></i>
+							<span class="value language">English </span>
+							<i class="icon icon-caret-down"></i>
+						</button>
+						<ul class="dropdown-menu nav language-dropdown bottom-up">
+							<li class="nav-header">Choose language</li>
+							<li class="picker-item" data-locale="de"><a href="https://herotime.co/#">Deutsch</a></li>
+							<li class="picker-item" data-locale="en"><a href="https://herotime.co/#">English</a></li>
+							<li class="picker-item" data-locale="es"><a href="https://herotime.co/#">Español</a></li>
+							<li class="picker-item" data-locale="it"><a href="https://herotime.co/#">Italiano</a></li>
+							<li class="picker-item" data-locale="nl"><a href="https://herotime.co/#">Nederlands</a></li>
+							<li class="picker-item" data-locale="pt"><a href="https://herotime.co/#">Português</a></li>
+						</ul>
+					</div>
+
+					      
+
+					<div class="curr-selector btn-group btn-dropdown">
+						<button class="btn gray dropdown-toggle">
+							<i class="icon icon-currency-usd currency-symbol"></i>
+							<span class="value currency"> USD </span> <i class="icon icon-caret-down"></i>
+						</button>
+						
+						<ul class="dropdown-menu nav currency-dropdown bottom-up">
+							<li class="nav-header">Choose currency</li>
+
+
+							<li class="picker-item" data-currency="CAD">
+								<a href="https://herotime.co/#">
+								<i class="icon icon-currency-cad currency-symbol"></i> CAD</a>
+							</li>
+
+
+							<li class="picker-item" data-currency="EUR">
+								<a href="https://herotime.co/#">
+								<i class="icon icon-currency-eur currency-symbol"></i> EUR</a>
+							</li>
+
+							<li class="picker-item" data-currency="USD">
+								<a href="https://herotime.co/#">
+								<i class="icon icon-currency-usd currency-symbol"></i> USD</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="span3">
+				<h5>Discover</h5>
+				<ul class="unstyled js-footer-links">
+					<li><a href="https://herotime.co/safety">Safety</a></li>
+					<li><a href="https://herotime.co/wishlists/ht_picks">HeroTime Picks</a></li>
+					<li><a href="https://herotime.co/info/how_it_works">How it works</a></li>
+					<li><a href="https://herotime.co/info/why_timeshare">Why Join</a></li>
+					<li><a href="https://herotime.co/info/social">Social Connections</a></li>
+				</ul>
+			</div>
+
+			<div class="span3">
+				<h5>Company</h5>
+				<ul class="unstyled js-footer-links">
+				<li><a href="http://herotime.co/about">About</a></li>
+				<li><a href="http://herotime.co/blog">Blog</a></li>
+				<li><a href="http://herotime.co/help">Help</a></li>
+				<li><a href="http://herotime.co/terms">Terms &amp; Privacy</a></li>
+				</ul>
+			</div>
+			<div class="span3">
+				<h5>Join us on</h5>
+				<ul class="unstyled js-external-links">
+				<li><a href="https://twitter.com/CoreyHyllested" target="_blank">Twitter</a></li>
+				</ul>
+				<div id="copyright">© HeroTime, Inc.</div>
+			</div>
+		</div>
+	</div>
+
+		<div style="position: absolute; top: -10000px; height: 0px; width: 0px;">
+      			<div></div>
+		</div>
+	</div>
+						<script src="./static/js/core-16c4e610888f230ccc16d3225b37279b.js" type="text/javascript"></script>
+						<script src="./static/js/homepage-17ab81b7b9d3788b6ba166a7ab454e7a.js" type="text/javascript"></script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

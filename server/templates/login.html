@@ -1,0 +1,74 @@
+{% extends "ht_header.html" %}
+{% block content %}
+
+<script type="text/javascript">
+	function validateForm() {
+		// Fetch form elements
+		var email = document.forms["LoginWithEmail"]["input_login_email"];
+		var password = document.forms["LoginWithEmail"]["input_login_password"];
+
+		// Check for empty fields; if found, highlight them
+		var form_fields = [email, password];
+		for (var i = 0; i < form_fields.length; i++) {
+			var current_element = form_fields[i];
+			var current_value = form_fields[i].value;
+			if (current_value.match(/^\s*$/)) {
+				$(current_element).focus();
+				return false;
+			}
+		}		
+   }
+
+</script>
+
+<div id="login-wrap">
+	
+	<div id="login-email">
+		<h2>Log in with email</h2>
+		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
+			{{form.hidden_tag()}}
+			<label id="label-login-email" for="input_login_email">Email</label>
+			{{form.input_login_email}}
+
+			<label id="label-login-password" for="input_login_password">Password</label>
+			{{form.input_login_password}}
+
+			<div id="checkbox-keeplogged">
+				<input type="checkbox" id="keeplogged" name="keeplogged" value="keeplogged" class="checkbox">
+				<label for="keeplogged" class="checkbox-label">&nbsp;Keep me logged in</label>
+			</div>
+
+			{% if errmsg != none %}
+				<script>
+					openAlertWindow('{{errmsg}}')
+				</script>
+			{% endif %}
+
+			<div id="login-login-wrap">
+				<input type="submit" value="Log in" class="blueButton signupJoin" />
+			</div>
+		</form>	
+
+		<div id="login-notyet-wrap"><a href="/signup" class="whiteButton loginNotYet">Not yet a member?</a></div>
+		<div id="login-recovery-wrap"><a href="/recovery" class="whiteButton loginRecovery">Forgot your password?</a></div>
+
+	</div>
+
+	<div id="signup-social">
+		<h2>Connect using...</h2>
+		
+		<div id="linkedin-wrap">
+			<a href="/login/linkedin"><div id="signup-linkedin">LinkedIn</div></a>
+			<br>
+			By clicking the button above, you agree to HeroTime's <a href="terms">Terms of Service</a>.
+		</div>
+
+		<!-- No FB, Twitter in current release
+		<div id="facebook-wrap"><a href="#"><div id="signup-facebook">Log in with Facebook</div></a></div>
+		<div id="twitter-wrap"><a href="#"><div id="signup-twitter">Log in with Twitter</div></a></div>
+		-->
+	</div>
+
+</div>
+
+{% endblock %}

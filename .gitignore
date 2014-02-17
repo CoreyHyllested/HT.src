@@ -1,5 +1,6 @@
-venv
-*.py[cod]
+*.pyc
+*.pyd
+*.pyo
 *.sw[oprstuv]
 
 #for heroku

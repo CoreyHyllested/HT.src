@@ -1,0 +1,143 @@
+{% extends "ht_header.html" %}
+{% block content %}
+
+<script src="static/js/format.js"></script>
+
+<div id="edit-panel">
+	<form method=POST action=/edit id='editform' enctype=multipart/form-data>
+	{{form.hidden_tag()}}
+
+	<!-- Change photo -->
+	<div id="change-photo">
+		<h2>Profile Picture</h2>
+		<img id='profile_img' src={{photoURL}} style="height:151; width:269px; display:block; margin:0 auto;" />
+		<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
+		<br />
+
+		<span class="photo-button-wrap">
+			{{form.edit_photo(id="change-photo-button")}}
+			<span class="whiteButton photoButton">Choose a photo...</span>
+		</span>
+		<div style="clear:both;"></div>
+	</div>
+
+	<!-- Edit basic information -->
+	<div id="edit-basic">
+		<h2>Basic Information</h2>
+			<label id="label-name" for="edit_name">Name</label>
+			{{form.edit_name}}
+
+			<label id="label-headline" for="edit_headline">Profile Headline</label>
+			{{form.edit_headline}}
+
+			<label id="label-rate" for="edit_rate">Default Rate</label>
+			<label id="label-dollar">$</label>
+			{{form.edit_rate(onkeypress="return isNumberKey(event)")}}
+
+			<!--input type="text" name="edit-rate" onkeypress="return isNumberKey(event)" id="edit-rate" maxlength="9"/-->
+			<label id="label-perhour">/ hour</label>			
+
+			<label id="label-industry" for="edit_industry">Industry</label>
+			{{form.edit_industry}}
+
+			<label id="label-location" for="edit_location">Location</label>
+			{{form.edit_location}}
+
+			<label id="label-url" for="edit_url">Website</label>
+			{{form.edit_url}}		
+	</div>
+	
+	<div style="clear:both"></div>
+
+	<div id="edit-about">
+		<h2>About me</h2>
+		{{form.edit_bio}}
+	</div>
+	<div id="edit-buttons">
+		<div id="edit-cancel-wrap">
+			<a href="/profile" class="whiteButton editCancel">Back to profile</a>
+		</div>
+		<div id="edit-save-wrap">
+			<input type="submit" id="edit-save" value="Save changes">
+		</div>
+	</div>
+	</form>
+
+</div>
+
+<!-- Bottom bar -->
+<script>
+$(function () {
+	$("#edit-save-wrap").click(function () {
+
+		var fd = new FormData($('#editform')[0]);
+		fd.append('csrf_token', $('#csrf_token').val())
+		fd.append('edit_name',     $('#edit_name').val())
+		fd.append('edit_rate',     $('#edit_rate').val())
+		fd.append('edit_headline', $('#edit_headline').val())
+		fd.append('edit_location', $('#edit_location').val())
+		fd.append('edit_industry', $('#edit_industry').val())
+		fd.append('edit_bio',      $('#edit_bio').val())
+		fd.append('edit_url',      $('#edit_url').val())
+		fd.append('edit_photo',    $('#edit_photo').val())
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('post', "/edit", true);
+		xhr.send(fd)
+
+		//catch response.  make any modificaitons.
+		xhr.onreadystatechange = function(e) {
+			if (4 == this.readyState) {
+				if (this.status == 200) {
+					console.log(['xhr post complete', e]);
+					//rc = JSON.parse(xhr.responseText);
+					console.log(xhr.responseText);
+					openAlertWindow("Success.")
+				} else {
+					console.log(['xhr post complete', e]);
+					openAlertWindow("Failure " + e)
+				}
+			}
+		};
+
+		return false;
+	});
+
+	
+
+	$('#change-photo-button').change(function(e) {
+		var fd = new FormData($('#editform')[0]);
+		fd.append('csrf_token', $('#csrf_token').val())
+
+		var xhr = new XMLHttpRequest();
+
+//		xhr.addEventListener('progress', function(e) {
+//			var done = e.position || e.loaded, total = e.totalSize || e.total;
+//			console.log('xhr progress: ' + (Math.floor(done/total*1000)/10) + '%');
+//		}, false);
+
+		if ( xhr.upload ) {
+			xhr.upload.onprogress = function(e) {
+				var done = e.position || e.loaded, total = e.totalSize || e.total;
+				console.log('xhr.upload progress: ' + done + ' / ' + total + ' = ' + (Math.floor(done/total*1000)/10) + '%');
+			};
+		}
+
+		xhr.onreadystatechange = function(e) {
+		if (4 == this.readyState) {
+				console.log(['xhr upload complete', e]);
+				rc = JSON.parse(xhr.responseText);
+				console.log(xhr.responseText);
+				reloadProfImg(rc['tmp']);
+			}
+		};
+		xhr.open('post', "/upload", true);
+		xhr.send(fd);
+		return false;
+	});
+
+	function reloadProfImg(url) { $("#profile_img").attr("src", url); }
+});
+</script>
+
+{% endblock %}

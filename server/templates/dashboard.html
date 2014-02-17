@@ -1,0 +1,320 @@
+{% extends "ht_header.html" %}
+{% block content %}
+
+<script src="static/js/maps.js"></script>
+<script src="static/js/format.js"></script>
+<script src="static/js/slot_expand.js"></script>
+<script src="static/js/calendar.js"></script>
+<script src="static/js/calendar1.js"></script>
+<script src="static/js/tab_switch.js"></script>
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
+
+<script>
+	  jQuery(function($) {
+		  $( "#datepicker2" ).datepicker({
+  			  inline: true
+  		  });
+	  });
+		jQuery(function($) {
+		  $('#datepicker2').change(function() {
+	        var c = {{ts_appt|length}};
+		    for (var i = 1; i < c + 1; i++){
+              if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
+                document.getElementById(i).style.display = 'none';
+                document.getElementById("slot-expand-"+i).style.display = 'none';
+              }
+              else {
+          	    document.getElementById(i).style.display = 'block';
+              }
+		    };
+		    document.getElementById("header").innerHTML = document.getElementById("datepicker2").value;
+		  });
+		});
+</script>
+
+<div id="overview-wrap">
+	<div id="overview">
+		<img src="{{profile_img}}" alt="Go to profile">
+		<div id="to-profile-wrap">
+			<a href="/profile" id="to-profile">Go to profile</a>
+		</div>
+
+		<div id="info-box">
+			<table border="0">
+				<tr><td class="col1">Appointments:</td>			<td>$695</td></tr>
+				<tr><td class="col1">Earnings this month:</td>	<td>$850</td></tr>
+				<tr><td class="col1">Earnings last month:</td>	<td>$3,570</td></tr>
+				<tr><td class="col1">Reviews:</td>				<td>{% if bp.reviews > 0 %} {{bp.reviews}} {% else %}No reviews{% endif %}</td></tr>
+				<tr><td class="col1">Average Rating:</td>		<td>{% if bp.rating != -1 %} {{'%0.1f' | format(bp.rating|float) }} {% else %}N/A{% endif %}</td></tr>
+			</table>
+		</div>
+		<div id="notifications">
+			<p>
+				<a href="javascript:tab_switch_dash('tab-dapps', 'content-box-dapps');">{{ts_appt|length}} Appointments</a><br/>
+				<a href="javascript:tab_switch_dash('tab-dprop', 'content-box-dprop');">{{ts_prop|length}} Proposals</a>
+			</p>
+		</div>
+	</div>
+</div>
+
+
+<div id="content-box-dapps" class="content-box">
+	<ul id="tabs">
+		<li id="tab-dapps" class="active"><p><img src="static/img/calendar-active.svg" alt="Appointments" />Appointments</p></li>
+		<a href="javascript:tab_switch_dash('tab-dprop', 'content-box-dprop');"><li id="tab-dprop" class="inactive"><p><img src="static/img/proposals-inactive.svg" alt="Proposals" />Proposals</p></li></a>
+	</ul>
+	<div id="content-top"></div>
+	<div id="appointments">
+	<h2 id="header"></h2>
+		
+    <!-- Datepicker -->
+    <div id="datepicker2" class="calendar-dash"></div>
+
+		<form name='p' action=/profile method=POST>
+			<input type="hidden" id="h" name="hero">
+		</form>
+
+		<form name='c' action=/cancel method=POST>
+			<input type="hidden" id="a" name="appt">
+		</form>
+
+		{% for appt in ts_appt|sort(attribute='ts_begin') %}
+		<a href="#">
+		    <div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{appt.location}}', {{loop.index}})">
+				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appt.imgURL}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+				<div class="slot-info">
+					<p><span class="big-text">{{appt.name}}</span><br/>
+						<span id="day-{{loop.index}}">{{appt.ts_begin.strftime('%H:%M %p')}}</span></p>
+				</div>
+				<div class="slot-bought"></div>
+			</div>
+		</a>
+
+		<div id="slot-expand-{{loop.index}}" class="slot-expand">
+		    <div id="map-canvas-cal-{{loop.index}}" class="map-canvas-cal"></div>
+			<div class="slot-details-left">
+				<span class="big-text">Time</span>
+				<p>{{appt.ts_begin.strftime('%A, %b %d, %Y')}}<br>{{appt.ts_begin.strftime('%H:%M %p')}}
+					<script>
+						d1 = new Date("{{appt.ts_finish.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						d2 = new Date("{{appt.ts_begin.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						diff = d1 - d2; 
+						if (diff == 1.0) {
+							document.write(' (1 hour)');
+					   } else {
+							document.write(' (' + (diff/3600000) + ' hours)'); 
+					   }
+				   </script>
+				</p><br />
+
+				<span class="big-text">Location</span><p>{{appt.location}}</p><br />
+			</div>
+
+			<div class="slot-details-right">
+				<span class="big-text" onclick="document.getElementById('h').value='{{appt.heroid}}'; document.p.submit();"><a href="#">{{appt.name}}</a></span>
+				<p>{{appt.headline}}</p>
+				<script>star_reviews({{appt.rating}}, {{appt.reviews}}, '{{appt.heroid}}');</script>
+				<br />
+				<p>{{appt.description}}</p>
+			</div>
+
+			<div class="buttons">
+				<div class="request-wrap">
+					<a href="#" onclick="javascript:document.getElementById('a').value='{{appt.id}}'; document.c.submit();">
+						<div class="cancel-button">
+							<p><img src="static/img/reject-red.svg" />Cancel appointment</p>
+						</div>
+					</a>
+				</div>
+				<div class="cancel-note">
+					<p>If you want to cancel, you must do so at least 48 hours in advance.</p>
+					<p>You will not pay for or get paid for a cancelled appointment.</p>
+				</div>
+			</div>
+
+			<div style="clear: both"></div>
+		</div>
+		{% endfor %}
+
+	</div>
+	<div id="calendar">
+    <div id="today_button" class="button-light-full">Today</div>
+  </div>
+	<div style="clear: both"></div>
+</div>
+
+
+
+
+
+<!--PENDING PROPOSALS -->
+<div id="content-box-dprop" class="content-box">
+	<ul id="tabs">
+		<a href="javascript:tab_switch_dash('tab-dapps', 'content-box-dapps');">
+			<li id="tab-dapps" class="inactive"><p><img src="static/img/calendar-inactive.svg" alt="Appointments" />Appointments</p></li>
+		</a>
+		<li id="tab-dprop" class="active"><p><img src="static/img/proposals-active.svg" alt="Proposals" />Proposals</p></li>
+	</ul>
+
+	<div id="content-top"></div>
+	<div id="proposals">
+
+		{% for prop in ts_prop|sort(attribute='ts_begin') %}
+		<a href="#">
+			<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.location}}', '{{loop.index}}p')">
+				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.imgURL}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+				<div class="slot-info">
+					{% if bp.heroid == prop.profile_id %}
+					<p><span class="big-text">{{prop.name}}</span><br/>wants to buy your time for ${{prop.cost}}</p>
+					{% else %}
+					<p><span class="big-text">You</span><br/>want to buy {{prop.name}}'s time for ${{prop.cost}}</p>
+					{% endif %}
+				</div>
+				<div class="slot-pending"></div>
+			</div>
+		</a>
+
+		<div id="slot-expand-{{loop.index}}p" class="slot-expand">
+			<div id="map-canvas-cal-{{loop.index}}p" class="map-canvas-cal"></div>
+			<div class="slot-details-left">
+				<span class="big-text">Time</span>
+				<p>{{prop.ts_begin.strftime('%A, %b %d, %Y')}}<br>{{prop.ts_begin.strftime('%H:%M %p')}}
+					<script>
+						d1 = new Date("{{prop.ts_finish.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						d2 = new Date("{{prop.ts_begin.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						diff = d1 - d2; 
+						if (diff == 1.0) {
+							document.write(' (1 hour)');
+					   } else {
+							document.write(' (' + (diff/3600000) + ' hours)'); 
+					   }
+				   </script>
+				</p><br>
+
+				<span class="big-text">Location</span><p>{{prop.location}}</p><br>
+				<span class="big-text">Price   </span><p>${{prop.cost}}</p>
+			</div>
+			<div class="slot-details-right">
+				<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.name}}</a></span>
+				<p>{{prop.headline}}</p>
+				<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.heroid}}');</script>
+				<br />
+				<p>{{prop.description}} </p>
+			</div>
+
+			<div class="clear"></div>
+
+			<div class="buttons">
+				<div class="reject-wrap">
+					<a href="/proposals/{{prop.challenge}}/reject"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a>
+				</div>		
+
+				<div class="negotiate-wrap">
+					<a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a>
+				</div>
+				
+				<div class="accept-wrap" id="{{prop.challenge}}">
+					<a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a>
+				</div>
+			</div>
+
+			<div class="clear"></div>
+		</div>
+		{% endfor %}
+	<!--end all slots-->
+	</div>
+
+	<div class="clear"></div>
+</div>
+
+<script>
+  //var jq = $.noConflict();
+	$("#today_button").click(function() {
+		var today = moment().format("dddd, MMM D, YYYY");
+		$("#datepicker2").datepicker('setDate', today);
+		document.getElementById("header").innerHTML = today;
+	    var c = {{ts_appt|length}};
+		for (var i = 1; i < c + 1; i++){
+          if (document.getElementById("day-"+i).innerHTML != today){
+            document.getElementById(i).style.display = 'none';
+            document.getElementById("slot-expand-"+i).style.display = 'none';
+          }
+          else {
+          	document.getElementById(i).style.display = 'block';
+          }
+		};
+	});
+	//ensure enter doesn't submit form
+    $("form[name=newts]").bind("keypress", function (e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+</script>
+<script>
+  google.maps.event.addDomListener(window, 'load', initialize);
+	document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
+	window.onload = function() {
+      var today = new Date();
+      today.setDate(today.getDate()-1);
+	  var c = {{timeslots|length}};
+	  for (var i = 1; i < c + 1; i++){
+	  	var date = new Date(document.getElementById("day-"+i).innerHTML);
+	  	var diff = today - date;
+        if (today - date > 0){
+          document.getElementById(i).style.display = 'none';
+          document.getElementById("slot-expand-"+i).style.display = 'none';
+        }
+      };
+	}
+</script>
+
+<!-- Bottom bar -->
+
+
+<script>
+$(function () {
+    $('.accept-wrap').click(function () {
+		var id = this.id
+		var csrf = "{{ csrf_token() }}"
+
+        console.log(['this is get started', id]);
+
+        var fd = new FormData();
+		//matches ProposalActionForm
+        fd.append('proposal_id', id);
+        fd.append('proposal_stat', 'accept');
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/proposals", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf)
+        xhr.send(fd)
+
+        //catch response.  make any modificaitons.
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    //rc = JSON.parse(xhr.responseText);
+                    console.log(xhr.responseText);
+
+                } else if (this.status == 500) {
+                    console.log(['xhr post complete, err=500 ', e]);
+                    alert('failure ' + e);
+                } else if (this.status == 501) {
+                    console.log(['xhr post complete, err=501 ', e]);
+                    alert('failure ' + e);
+                } else {
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    alert('failure ' + e);
+                }
+            }
+        };
+
+        return false;
+    });
+
+});
+</script>
+
+{% endblock %}

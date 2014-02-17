@@ -1,0 +1,445 @@
+{% extends "ht_header.html" %}
+
+{% block content %}
+<script src="https://checkout.stripe.com/v2/checkout.js"></script>
+<script src="static/js/date.js"></script>
+<script src="static/js/maps.js"></script>
+<script src="static/js/format.js"></script>
+<script src="static/js/slot_expand.js"></script>
+<script src="static/js/view_more.js"></script>
+<script src="static/js/calendar.js"></script>
+<script src="static/js/calendar1.js"></script>
+<script src="static/js/tab_switch.js"></script>
+<script src="static/js/add_times.js"></script>
+<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
+<script>
+	  jQuery(function($) {
+		  $( "#datepicker" ).datepicker({
+  			  inline: true
+  		  });
+	  });
+	  jQuery(function($) {
+		  $( "#datepicker1" ).datepicker({
+  			  inline: true
+  		  });
+	  });
+	  jQuery(function($) {
+		  $( "#datepicker2" ).datepicker({
+  			  inline: true
+  		  });
+	  });
+	  jQuery(function($) {
+      $('#datepicker').change(function() {
+				var d1 = document.getElementById("datepicker");
+				var d2 = document.getElementById("datepicker1");
+				var timeDiff = new Date(d2.value).getTime() - new Date(d1.value).getTime();
+				if (timeDiff < 0 || (d2.value == "")) {
+					document.getElementById("datepicker1").value = document.getElementById("datepicker").value;
+				}
+				update_time_diff({{bp.baserate}});
+      });
+	  });
+
+	jQuery(function($) {
+	  $('#datepicker2').change(function() {
+	    document.getElementById("header").innerHTML = document.getElementById("datepicker2").value;
+	    var c = {{timeslots|length}};
+		for (var i = 1; i < c + 1; i++){
+          if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
+            document.getElementById(i).style.display = 'none';
+            document.getElementById("slot-expand-"+i).style.display = 'none';
+          }
+          else {
+          	document.getElementById(i).style.display = 'block';
+          }
+		};
+	  });
+	});
+
+	  jQuery(function($) {
+      $('#datepicker1').change(function() {
+				var d1 = new Date(document.getElementById("datepicker").value);
+				var d2 = new Date(document.getElementById("datepicker1").value);
+				var timeDiff = d2.getTime() - d1.getTime();
+				if (timeDiff < 0) {
+                  document.getElementById("datepicker").value = document.getElementById("datepicker1").value;
+				}
+                  update_time_diff({{bp.baserate}});
+			});
+	  });
+</script>
+
+<div id="profile_pic">
+	<img src="{{profile_img}}" style="height:534px; width:950px; display:block margin:0 auto;"/>
+	<div id="profile_pic_box">
+		<h1>{{hp.name}}</h1>
+		<p>{{hp.headline| default('No headline')}}</p>
+		<h3 id="profile_price"></h3><span> / hour</span>
+		<div id="profile_pic_button_wrap">
+			{% if hp is sameas bp %}
+				<a href="edit" class="blueButton">Edit profile...
+			{% else %}
+				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="blueButton">Book time...
+			{% endif %}
+				</a>
+			</div>
+	</div>
+</div>
+
+<div id="info_box">
+	<div id="about_me">
+		<h2>About me</h2>
+		<p id="about_text">{{hp.bio}}</p>
+		<div id="button" onlick="javascript:view_more"></div>
+	</div>
+
+	<div id="at_glance">
+		<h2>At a glance</h2>
+		<ul>
+			<li id="li_industry">{{hp.industry}}</li>
+			<li id="li_location">{{hp.location}}</li>
+			{% if hp.reviews == 0 %}
+			<li id="li_rating">No reviews</li>
+			{% else %}
+			<li id="li_rating">{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"> ({{hp.reviews}} reviews)</a></li>
+			{% endif %}
+			<li id="li_url"><a href="{{hp.url}}" target="_blank">{{hp.url}}</a></li>
+			<li id="li_rate"></li>
+		</ul>
+	</div>
+
+	<div class="clear"></div>
+</div>
+
+<div id="content-box-cal" class="content-box">
+	<ul id="tabs">
+		<li id="tab-cal" class="active"><p><img src="static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
+		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{hp.reviews}} Reviews" />{{hp.reviews}} Reviews</p></li></a>
+	</ul>
+
+	<div id="content-top"></div>
+	<div id="appointments">
+		<h2 id="header"></h2>
+
+    <!-- Datepicker -->
+    <div id="datepicker2" class="calendar-dash"></div>
+	<span class="payment-errors"><!--FIXME CAH rename, put in better spot--></span>
+
+	<form name=charge action=/charge method=POST>
+	{# show timeslots; sort timeslots by its startime #}
+	{% for ts in timeslots|sort(attribute='ts_begin') %}
+		<a href="#">
+		<div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{ts.location}}', {{loop.index}})">
+			<img src="{{profile_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+			<div class="slot-info">
+				<p>
+					<span class="big-text">{{ts.ts_begin.strftime('%H:%M %p')}}</span>
+					<br/>{{ts.location}}
+				</p>
+			</div>
+			{% if ts.status == 0 %}
+			<div class="slot-bought"></div>
+			{% elif ts.status == 4 %}
+			<div class="slot-sold"></div>
+			{% else %}
+			<div class="slot-pending"></div>
+			{% endif %}
+		</div>
+		</a>
+
+		<div id="slot-expand-{{loop.index}}" class="slot-expand">
+			<div id="map-canvas-cal-{{loop.index}}" class="map-canvas-cal"></div>
+			<div class="slot-details-left">
+				<h3>Time</h3>
+				<p><span id="day-{{loop.index}}">{{ts.ts_begin.strftime('%A, %b %d, %Y')}}</span><br>
+				   {{ts.ts_begin.strftime('%H:%M %p')}}
+					<script>
+					  d1 = new Date.parse("{{ts.ts_finish.strftime('%Y-%m-%dT%H:%M:%S')}}");
+					  d2 = new Date.parse("{{ts.ts_begin.strftime('%Y-%m-%dT%H:%M:%S')}}");
+					  diff = d1 - d2; 
+					  if (diff == 1.0) {
+					    document.write(' (1 hour)');
+				      } else {
+						document.write(' (' + (diff/3600000) + ' hours)'); 
+				      }
+				    </script>
+				</p>
+				   
+				<br />
+				<h3>Location</h3>
+				<p>{{ts.location}}</p>
+				<p class="explanation">
+					The map above shows zip code only. You will be able to see the exact location once you book this slot.</p>
+				<br />
+			</div>
+			<div class="slot-details-right">
+				<h3>Description</h3>
+				<p>
+				{{ts.description}}
+				</p>
+			</div>
+
+			{% if ts.status == 0 %}
+			<div class="buttons">
+				<div class="request-wrap">
+					<a href="#" class="whiteButton requestButton">
+						<img src="static/img/negotiate.svg" />Request changes
+					</a>
+				</div>
+				
+				<a href="#">
+				<div class="book-wrap">
+					<div class="blueButton bookButton" cost={{ts.cost}} ts={{ts.id}} desc="{{ts.description}}">
+						<p><img src="static/img/clock.svg" />Book the time slot for ${{ts.cost}}</p>
+					</div>
+				</div>
+				</a>
+			</div>
+			{% elif ts.status == 1 %}
+				{% if ts.creator_id == bp.heroid %}
+				{# Proposed by this user #}
+				<div class="book-wrap">
+					Has been sent to {{ hp.name }} 
+				</div>
+				{% endif %}
+			{% endif %}
+
+			<div style="clear: both"></div>
+		</div>
+		{% endfor %}
+		</form>
+		
+
+		<div id="make_proposal_wrap">
+			<h3>{% if hp is sameas bp %} Add a new timeslot to your calendar{% else %}Don't see a time slot that suits you?{% endif %}</h3>
+			<div id="make_proposal_button_wrap">
+				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="whiteButton makeProposalButton">
+				{% if hp is sameas bp %} Make new time slot{% else %}Make proposal{% endif %}
+				</a>
+			</div>
+
+		</div>
+	</div>
+	<div id="calendar">
+		<div id="today_button" class="button-light-full">Today</div>
+	</div>
+
+	<div style="clear: both"></div>
+</div>
+
+<div id="content-box-revs" class="content-box">
+	<ul id="tabs">
+		<a href="javascript:tab_switch('tab-cal', 'content-box-cal');"><li id="tab-cal" class="inactive"><p><img src="static/img/calendar-inactive.svg" alt="Calendar" />Calendar</p></li></a>
+		<li id="tab-revs" class="active"><p><img src="static/img/reviews-active.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} Reviews</p></li>
+	</ul>
+	<div id="content-top"></div>
+	<div id="reviews">
+		{% if hp.reviews == 0 %}
+		<h2>No reviews available</h2>
+		{% else %}
+		<h2>Average rating:  {{ '%0.1f' | format(hp.rating|float)}} out of 5 stars</h2>
+		{% endif %}
+
+		{% for review in revs %}
+		<div class="review_wrap">
+			<div class="profile_preview">
+				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review[7]}}" class="profile_preview_pic"/> </a>
+				<span class="profile_preview_price">${{review[10]}}<span class="disabled"> / hour</span></span>				
+				<div class="profile_preview_info">
+					<p><a href="#">{{review[4]}}</a></p>
+					<p>{{review[6]}}</p>
+					<p>{{'%0.1f' | format(review[9]|float)}} out of 5<a href="#"> ({{review[8]}} reviews)</a></p>
+					<p><span class="disabled">{{review[5]}}</span></p>
+				</div>
+			</div>
+
+			<div class="review">
+				<p>Transaction with {{review[4]}} occurred in {{review.ts.strftime('%B %Y')}}</p>
+				<p><script>star_rating({{review[1]}});</script></p>
+				<p>{{review.text}}</p>
+			</div>
+		</div>
+		{% endfor %}
+
+		<!--div class="show_more">Show more reviews (29 remaining)</div-->
+		<div class="clear"></div>
+	</div>
+	<div style="clear: both"></div>
+</div>
+
+
+<div class="clear"></div>
+</div>
+
+<div id="content-box-prop" class="content-box">
+	<ul id="tabs">
+		<li id="tab-prop" class="active"><p><img src="static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
+		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} reviews</p></li></a>
+	</ul>
+	<div id="content-top"></div>
+	<div id="newslot">
+		<h2>{% if hp is sameas bp %}List new time slot{% else %}Make proposal{% endif %}</h2>
+		
+		<form name="newts" action=/profile method=POST>
+			{{ntsform.hidden_tag()}}
+			{{ntsform.hero()}}
+
+			<label id="newslot-label-start">Starting time</label>
+			{{ntsform.newslot_starttime()}}
+			{{ntsform.datepicker(class="newslot-startdate", readonly="readonly")}}
+
+			<label id="newslot-label-end">Ending time</label>
+			{{ntsform.newslot_endtime}}
+			{{ntsform.datepicker1(class="newslot-enddate", placehoder="Today", readonly="readonly")}}
+
+			<label id="newslot-label-duration">Total duration</label>
+			<span id="newslot-duration"> </span>
+			
+			<label id="newslot-label-price">Listed price</label>
+			<label id="newslot-label-dollar">$</label>
+			{{ntsform.newslot_price(onkeypress="return isNumberKey(event)", maxlength="9")}}
+			<label id="newslot-label-rate">This person's default rate is ${{hp.baserate}} / hour</label>
+
+			
+			<label id="newslot-label-location">Location</label>
+			{{ntsform.newslot_location(placeholder=" ")}}
+			
+	        <div id="map-canvas"></div>
+
+			{% if hp is sameas bp %}
+			<label id="newslot-label-description">Time slot description</label>
+			{% else %}
+			<label id="newslot-label-description">Message to {{hp.name}}</label>
+			{% endif %}
+			{{ntsform.newslot_description}}
+
+
+			<div id="newslot-notif1">
+			{% if hp is sameas bp %}
+				By listing a time slot in your calendar, you make it available to potential customers.
+			{% else %}
+				<p>By making a direct offer to a person, you get an opportunity to book an appointment outside of time slots already listed for sale.</p> <br />
+				<p>You can also use direct offers to customize listed time slots: merge two or more slots together, change location, negotiate price, etc.</p>
+			{% endif %}
+			</div>
+
+			<div id="newslot-notif2">
+				<p>The exact address of the proposed meeting place is required.</p> <br />
+				<p>If your search doesn’t return the proper location, please make sure you pinpoint it manually by dragging the marker.</p>
+			</div>
+
+			<div id="newslot-notif3">
+			{% if hp is sameas bp %}
+				Provide your potential customers with additional information about this particular time slot.
+			{% else %}
+				Want to tell this person something about your offer? This is your chance to do so.
+			{% endif %}
+			</div>
+
+			<div id="proposal-buttons">
+				<div id="proposal_send_wrap">
+					{% if hp is sameas bp %}
+					<input type="submit" class="blueButton newSlotList" value="List time slot"/>
+					{% else %}
+					<input type="submit" class="blueButton newSlotList" value="Send proposal"/>
+					{% endif %}
+				</div>
+				<div id="to_calendar_wrap">
+					<a href="javascript:tab_switch('tab-cal', 'content-box-cal', 'true');" class="whiteButton toCalendar">Back to listed slots</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+	//var jq = $.noConflict();
+	$("#today_button").click(function() {
+		var today = moment().format("dddd, MMM D, YYYY");
+		$("#datepicker2").datepicker('setDate', today);
+		document.getElementById("header").innerHTML = today;
+		//moment().format("dddd, MMM D, YYYY");
+	    var c = {{timeslots|length}};
+		for (var i = 1; i < c + 1; i++){
+          if (document.getElementById("day-"+i).innerHTML != today){
+            document.getElementById(i).style.display = 'none';
+            document.getElementById("slot-expand-"+i).style.display = 'none';
+          }
+          else {
+          	document.getElementById(i).style.display = 'block';
+          }
+		};
+	});
+    //ensure enter doesn't submit form
+    $("form[name=newts]").bind("keypress", function (e) {
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
+</script>
+
+<script>
+    google.maps.event.addDomListener(window, 'load', initialize);
+	document.getElementById("profile_price").innerHTML = "$" + format({{hp.baserate}});
+	document.getElementById("li_rate").innerHTML = "$" + format({{hp.baserate}}) + " / hour";
+	$('#newslot_starttime').change(function() {
+		update_time_diff({{hp.baserate}});
+	});
+	$('#newslot_endtime').change(function() {
+		update_time_diff({{hp.baserate}});
+	});
+	document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
+    document.getElementById("datepicker").placeholder = moment().format("dddd, MMM D, YYYY");
+	document.getElementById("datepicker1").placeholder = moment().format("dddd, MMM D, YYYY");
+	document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.baserate}}) + " / hour"
+	window.onload = function() {
+      var today = new Date();
+      today.setDate(today.getDate()-1);
+	  var c = {{timeslots|length}};
+	  for (var i = 1; i < c + 1; i++){
+	  	var date = new Date(document.getElementById("day-"+i).innerHTML);
+	  	var diff = today - date;
+        if (today - date > 0){
+          document.getElementById(i).style.display = 'none';
+          document.getElementById("slot-expand-"+i).style.display = 'none';
+        }
+      };
+	}
+</script>
+
+<!-- Bottom bar -->
+
+<script>
+$(document).ready(function() {
+	$('div.blueButton').click(function() {
+		$ts   = $(this).attr("ts");
+		$cost = $(this).attr("cost")*100; 
+		$desc = $(this).attr("desc"); 
+		$name = '{{bp.name}}';
+        $currency   = 'usd';
+		$panelLabel = 'Checkout';
+
+		var token = function(res){
+        	var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+        	var $frmts = $('<input type=hidden name=ts />').val($ts);
+			$('form[name="charge"]').append($input).append($frmts).submit();
+		};
+
+		StripeCheckout.open({
+			key:		 '{{ key }}',
+			amount:		 $cost,
+			address:     true,
+			description: $desc,
+			name:		 $name, 
+			currency:	 'usd',
+			panelLabel:	 'Checkout',
+			token:		 token
+		});
+		return false;
+	});
+});
+</script>
+
+{% endblock %}

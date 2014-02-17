@@ -1,0 +1,69 @@
+{% extends "ht_header.html" %}
+{% block content %}
+
+<script src="static/js/format.js"></script>
+
+<!-- Content area -->
+<div id="search-wrapper">
+
+<!-- SEARCH OPTIONS -->
+	<div id="search-options">
+		<h2>Refine search</h2>
+		<form name='q' action=/search method=POST>
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			<label id="keywords-label" for="keywords_field">Keywords</label>
+			{{form.keywords_field}}
+
+			<label id="location-label" for="location_field">Location</label>
+			{{form.location_field}}
+			
+			<label id="industry-label" for="industry_field">Industry</label>
+			{{form.industry_field}}
+
+			<label id="rate-label" for="rate_from_field">Hourly rate (U.S. dollars)</label>
+			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Minimum")}}
+
+			<label id="to-label">to</label>
+			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Maximum")}}
+		</form>
+		<a href="#"><div class="blueButton searchButton"><p><img src="static/img/search.svg" alt="Search" /> &nbsp; Search</p></div></a> <!-- Cleanup: <p> is unnecessary -->
+	</div>
+
+
+
+<!-- SEARCH RESULTS -->
+	<div id="search-panel">
+		<h2>Search results</h2>
+		{{rc_heroes}} results found <!--for search terms -->
+
+		<form name='p' action=/profile method=POST>
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			<input type="hidden" id="h" name="hero">
+		</form>
+
+		{% for hero in heroes %}
+		<div class="search-result">
+			<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}" onclick="document.getElementById('h').value='{{hero.heroid}}'; document.p.submit();" style="height:83px; width:150px; display:block; margin:0 auto;" alt="search-result"/></a>
+			<div class="result-info">
+				<a href="#" onclick="document.getElementById('h').value='{{hero.heroid}}'; document.p.submit();">{{hero.name}}</a>
+				<p>{{hero.headline}}</p>
+				{% if hero.reviews %}<p><span>{{'%0.1f' | format(hero.rating|float)}} out of 5 stars</span> <a href="/profile?hero={{hero.heroid}}">({{hero.reviews}} reviews)</a><p>{% else %}<p><span>No reviews</span><p>{% endif %}
+				<p class="result-location">{{hero.location}}</p>
+			</div>
+			<div class="price-box">
+					<h3>${{hero.baserate}}</h3>
+					<p>per hour</p>
+					<!--negotiable-->
+			</div>
+		</div>
+		{% endfor %}
+
+
+		<br /><br />
+		<!--a href="#"><div class="button-light-full">
+			Show more results (19 remaining)
+		</div></a-->
+	</div>
+</div>
+
+{% endblock %}
