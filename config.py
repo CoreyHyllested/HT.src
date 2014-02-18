@@ -20,7 +20,7 @@ HT_IMAGES_EXT=set(['png', 'jpg', 'jpeg', 'bmp'])
 # RedisToGo.com :: herotime/'coming in Nov 2013'/corey@herotime.co
 #REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 REDIS_URL='redis://ht-redis.h6fyv6.0001.use1.cache.amazonaws.com:6379/'
-REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
+#REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
 MAIL_SERVER = 'smtp.googlemail.com'
 MAIL_PORT = 465
