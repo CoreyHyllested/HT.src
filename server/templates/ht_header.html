@@ -8,14 +8,14 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
-	<link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans">
+	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 	{% if cssfiles %}
 	{% for file in cssfiles %}
 	<link type="text/css" rel="stylesheet" href={{file}}>
 	{% endfor %}
 	{% endif %}
 	
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 	{% if jsfiles %}
 	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
