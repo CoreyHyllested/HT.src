@@ -97,6 +97,10 @@ def login():
 		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
+	#if already logged in redirect to dashboard
+	if (session['uid']):
+		return redirect('/dashboard')
+
 	bp = False
 	errmsg = None
 
@@ -160,6 +164,7 @@ def li_authorized(resp):
 	email = linkedin.get('people/~/email-address')
 
 
+
 	# format collected info... prep for init.
 	jsondata  = jsonify(me.data)
 	linked_id = me.data.get('id')
@@ -178,17 +183,22 @@ def li_authorized(resp):
 	trace (industry)
 
 	# account may exist (email).  -- creat controller: oauth_login(?)
-	if (not signup):
-		possible_acct = models.Account.query.filter_by(email=email.data).all()
-		# also look for linkedin-account/id number (doesn't exist today).
-		if (len(possible_acct) == 1):
-			# suggest they create a password if that's not done.
-			trace('User exists' +  str(possible_acct[0]))
-			session['uid'] = possible_acct[0].userid
-			return redirect('/dashboard')
-		else:
-			trace('No account found')
-			return redirect('/signup')
+
+	# deleted if statement because it threw a dbfailure when signing up with an existing account
+	#if (not signup):
+
+	possible_acct = models.Account.query.filter_by(email=email.data).all()
+	# also look for linkedin-account/id number (doesn't exist today).
+	if (len(possible_acct) == 1):
+		# suggest they create a password if that's not done.
+		trace('User exists' +  str(possible_acct[0]))
+		session['uid'] = possible_acct[0].userid
+		return redirect('/dashboard')
+	
+	# deleted this part in order to successfully signup a user if he does Linkedin oauth from login
+	#else:
+	#	trace('No account found')
+	#	return redirect('/signup')
 
  	# try creating new account.  We don't know password.
 	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
@@ -198,9 +208,10 @@ def li_authorized(resp):
 		initProfile(headline, industry, location)
 		trace("called  init profile")
 		# flash('create a password')
-		resp = redirect('/dashboard')
 		#Send a welcome email
-		controllers.send_email(email)
+		import controllers
+		controllers.send_email(email.data)
+		resp = redirect('/dashboard')
 	else:
 		# something failed.  
 		trace('create account failed, using' + str(email.data))
@@ -212,6 +223,11 @@ def li_authorized(resp):
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
 def signup():
+
+	#if already logged in redirect to dashboard
+	if (session['uid']):
+		return redirect('/dashboard')
+
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
