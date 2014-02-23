@@ -900,6 +900,7 @@ def settings():
 			if (rc == False):
 				trace("restate errno" + str(errno))
 				errmsg = str(errno)
+				errmsg = error_sanitize(errmsg)
 				form.set_input_curpass.data = ''
 				form.set_input_newpass.data = ''
 				form.set_input_verpass.data = ''
@@ -938,6 +939,12 @@ def settings():
 
 	return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 
+
+def error_sanitize(message):
+	if (message[0:16] == "(IntegrityError)"):
+		message = "Email already in use."
+	
+	return message
 
 
 @ht_server.route('/settings/verify', methods=['GET', 'POST'])

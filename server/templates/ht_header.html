@@ -33,7 +33,7 @@
 		$('.alertWindowWrap').css('display', 'block');
 		$('.alertWindow').css('display', 'block');			
 		if (text.length > 140) {
-			text = text.substr(0, 140)
+			text = text.substr(0, 136) + '...'
 		}
 		$('.alertMessage').html(text);
 		return false;
