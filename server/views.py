@@ -98,7 +98,7 @@ def login():
 		If successful, sets session cookies and redirects to dash
 	"""
 	#if already logged in redirect to dashboard
-	if (session['uid']):
+	if ('uid' in session):
 		return redirect('/dashboard')
 
 	bp = False
@@ -110,7 +110,7 @@ def login():
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
-		ba = ht_authenticate_user(form.input_login_email.data, form.input_login_password.data)
+		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
 			bp = ht_get_profile(ba)
 			ht_bind_session(bp)
@@ -225,7 +225,7 @@ def li_authorized(resp):
 def signup():
 
 	#if already logged in redirect to dashboard
-	if (session['uid']):
+	if ('uid' in session):
 		return redirect('/dashboard')
 
 	bp = False
@@ -236,7 +236,7 @@ def signup():
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		trace("Validated form -- make Acct")
-		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data, form.input_signup_password.data)
+		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 		if (bh):
 			ht_bind_session(bp)
 			resp = redirect('/dashboard')
