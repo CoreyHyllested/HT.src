@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="https://127.0.0.1:5000/" />
+<title>profile</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">profile</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/profile</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>link=Edit profile...</td>
+	<td>Edit profile...</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit profile...</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=edit_rate</td>
+	<td>666</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=edit_industry</td>
+	<td>label=Food</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=edit_location</td>
+	<td>Bezerkeley, CA</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=edit_url</td>
+	<td>http://herotime.co/t_user</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=edit_bio</td>
+	<td>About me<br />i'm a test</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=edit-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=div.blueButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to profile</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td></td>
+	<td>$666 / hour</td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td></td>
+	<td>i'm a test</td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td></td>
+	<td>Food</td>
+</tr>
+<tr>
+	<td>assertTextPresent</td>
+	<td></td>
+	<td>Bezerkeley, CA</td>
+</tr>
+<tr>
+	<td>assertText</td>
+	<td>link=exact:http://herotime.co/t_user</td>
+	<td>exact:http://herotime.co/t_user</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Edit profile...</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Back to profile</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=top-logo</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
