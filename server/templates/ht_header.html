@@ -32,6 +32,9 @@
 		$('.alertOverlay').css('display', 'block');
 		$('.alertWindowWrap').css('display', 'block');
 		$('.alertWindow').css('display', 'block');			
+		if (text.length > 140) {
+			text = text.substr(0, 140)
+		}
 		$('.alertMessage').html(text);
 		return false;
 	}
