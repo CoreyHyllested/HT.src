@@ -11,7 +11,7 @@
 <script src="static/js/calendar1.js"></script>
 <script src="static/js/tab_switch.js"></script>
 <script src="static/js/add_times.js"></script>
-<script src="http://momentjs.com/downloads/moment.min.js"></script>
+<script src="static/js/moment.min.js"></script>
 <script src="https://checkout.stripe.com/v2/checkout.js"></script>
 
 <script>
@@ -38,7 +38,7 @@
 				if (timeDiff < 0 || (d2.value == "")) {
 					document.getElementById("datepicker1").value = document.getElementById("datepicker").value;
 				}
-				update_time_diff({{bp.baserate}});
+				update_time_diff({{hp.baserate}});
       });
 	  });
 
@@ -66,7 +66,7 @@
 				if (timeDiff < 0) {
                   document.getElementById("datepicker").value = document.getElementById("datepicker1").value;
 				}
-                  update_time_diff({{bp.baserate}});
+                  update_time_diff({{hp.baserate}});
 			});
 	  });
 </script>

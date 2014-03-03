@@ -99,6 +99,10 @@ def login():
 		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
+	#if already logged in redirect to dashboard
+	if ('uid' in session):
+		return redirect('/dashboard')
+
 	bp = False
 	errmsg = None
 
@@ -108,7 +112,7 @@ def login():
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
-		ba = ht_authenticate_user(form.input_login_email.data, form.input_login_password.data)
+		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
 			bp = ht_get_profile(ba)
 			ht_bind_session(bp)
@@ -162,6 +166,7 @@ def li_authorized(resp):
 	email = linkedin.get('people/~/email-address')
 
 
+
 	# format collected info... prep for init.
 	jsondata  = jsonify(me.data)
 	linked_id = me.data.get('id')
@@ -180,17 +185,21 @@ def li_authorized(resp):
 	trace (industry)
 
 	# account may exist (email).  -- creat controller: oauth_login(?)
-	if (not signup):
-		possible_acct = Account.query.filter_by(email=email.data).all()
-		# also look for linkedin-account/id number (doesn't exist today).
-		if (len(possible_acct) == 1):
-			# suggest they create a password if that's not done.
-			trace('User exists' +  str(possible_acct[0]))
-			session['uid'] = possible_acct[0].userid
-			return redirect('/dashboard')
-		else:
-			trace('No account found')
-			return redirect('/signup')
+	# deleted if statement because it threw a dbfailure when signing up with an existing account
+	#if (not signup):
+
+	possible_acct = Account.query.filter_by(email=email.data).all()
+	# also look for linkedin-account/id number (doesn't exist today).
+	if (len(possible_acct) == 1):
+		# suggest they create a password if that's not done.
+		trace('User exists' +  str(possible_acct[0]))
+		session['uid'] = possible_acct[0].userid
+		return redirect('/dashboard')
+	
+	# deleted this part in order to successfully signup a user if he does Linkedin oauth from login
+	#else:
+	#	trace('No account found')
+	#	return redirect('/signup')
 
  	# try creating new account.  We don't know password.
 	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
@@ -200,9 +209,10 @@ def li_authorized(resp):
 		initProfile(headline, industry, location)
 		trace("called  init profile")
 		# flash('create a password')
-		resp = redirect('/dashboard')
 		#Send a welcome email
-		controllers.send_email(email)
+		import controllers
+		controllers.send_email(email.data)
+		resp = redirect('/dashboard')
 	else:
 		# something failed.  
 		trace('create account failed, using' + str(email.data))
@@ -214,6 +224,11 @@ def li_authorized(resp):
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
 def signup():
+
+	#if already logged in redirect to dashboard
+	if ('uid' in session):
+		return redirect('/dashboard')
+
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
@@ -222,7 +237,7 @@ def signup():
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		trace("Validated form -- make Acct")
-		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data, form.input_signup_password.data)
+		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 		if (bh):
 			ht_bind_session(bp)
 			resp = redirect('/dashboard')
@@ -886,6 +901,7 @@ def settings():
 			if (rc == False):
 				trace("restate errno" + str(errno))
 				errmsg = str(errno)
+				errmsg = error_sanitize(errmsg)
 				form.set_input_curpass.data = ''
 				form.set_input_newpass.data = ''
 				form.set_input_verpass.data = ''
@@ -924,6 +940,12 @@ def settings():
 
 	return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 
+
+def error_sanitize(message):
+	if (message[0:16] == "(IntegrityError)"):
+		message = "Email already in use."
+	
+	return message
 
 
 @ht_server.route('/settings/verify', methods=['GET', 'POST'])
