@@ -11,20 +11,19 @@
 # consent has been obtained from HeroTime, Inc.
 #################################################################################
 
-import os, json, pickle
+import os, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
-import requests
 
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
-from models import Account, Profile
-from redis  import Redis
-from server import ht_server, models, db, linkedin
+from server.infrastructure.srvc_database import db_session
+from server.infrastructure.models import *
+from server import ht_server, linkedin
 from server import emailer
 from server.ht_utils import *
 from string import Template
@@ -43,14 +42,14 @@ def ht_get_profile(ba):
 	"""return profile from account"""
 	if (ba == None): return None
 
-	profiles = models.Profile.query.filter_by(account=ba.userid).all()
+	profiles = Profile.query.filter_by(account=ba.userid).all()
 	if (len(profiles) == 1): return profiles[0]
 	return None
 
 
 
 def ht_browsingprofile():
-	#return models.Profile.query.filter_by(account=session['uid']).all()[0]
+	#return Profile.query.filter_by(account=session['uid']).all()[0]
 	return None
 
 def send_email(toEmail, uid=None, verify=False, challenge_hash=None, passChange=None, emailChange=None, newEmail=None, recovery=None):
@@ -118,7 +117,7 @@ def ht_authenticate_user(user_email, password):
 	""" Returns authenticated account """
 
 	trace("user_email = " + str(user_email) + ", password = " + str(password))
-	accounts = models.Account.query.filter_by(email=(user_email)).all()
+	accounts = Account.query.filter_by(email=(user_email)).all()
 	if ((len(accounts) == 1) and check_password_hash(accounts[0].pwhash, password)):
 		return accounts[0]
 
@@ -135,7 +134,7 @@ def recovery(email):
 
 	errmsg = None
 
-	accounts = models.Account.query.filter_by(email=email).all()
+	accounts = Account.query.filter_by(email=email).all()
 
 	if (len(accounts) != 1):
 		errmsg = "Invalid email."
@@ -145,12 +144,12 @@ def recovery(email):
 		errmsg = "Password recovery email has been successfully sent."
 
 		try:
-			db.session.add(ba)
-			db.session.commit()
+			db_session.add(ba)
+			db_session.commit()
 
 		except Exception as e:
 			trace(str(e))
-			db.session.rollback()
+			db_session.rollback()
 			return None
 
 		send_email(email, challenge_hash = challenge_hash, recovery=True)
@@ -164,12 +163,12 @@ def create_account(name, email, passwd):
 	try:
 		hero = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
 		prof = Profile(name, hero.userid)
-		db.session.add(hero)
-		db.session.add(prof)
-		db.session.commit()
+		db_session.add(hero)
+		db_session.add(prof)
+		db_session.commit()
 	except Exception as e:
 		trace(str(e))
-		db.session.rollback()
+		db_session.rollback()
 		return None, False
 
 	log_uevent(hero.userid, 'successfully created myself')
@@ -187,7 +186,7 @@ def create_account(name, email, passwd):
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
 	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
-	ba = models.Account.query.filter_by(userid=uid).all()[0]
+	ba = Account.query.filter_by(userid=uid).all()[0]
 
 	if (not check_password_hash(ba.pwhash, current_pw)):
 		return False, "Password didn't match one on file"
@@ -201,10 +200,10 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 		ba.email = new_mail
 
 	try:
-		db.session.add(ba)
-		db.session.commit()
+		db_session.add(ba)
+		db_session.commit()
 	except Exception as e:
-		db.session.rollback()
+		db_session.rollback()
 		return False, e
 	return True, True
 

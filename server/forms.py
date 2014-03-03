@@ -3,7 +3,8 @@ from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenFiel
 from wtforms import IntegerField, validators
 from wtforms.validators import Required
 from flask.ext.wtf import Form
-from models import Industry, Review
+from server.infrastructure.models import Industry, Review
+
 
 
 

@@ -16,15 +16,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
-from flask.ext.sqlalchemy	import SQLAlchemy
 from flask.ext.compress		import Compress
 from flask.ext.mail			import Mail
 from flask_wtf.csrf			import CsrfProtect
 from flask_redis			import Redis   
-from server.infrastructure	import RedisSessionInterface
-from sqlalchemy     import create_engine
-from sqlalchemy.orm import sessionmaker
-
+from server.infrastructure.srvc_sessions	import RedisSessionInterface
 
 
 log_frmtr = logging.Formatter('%(asctime)s %(levelname)s %(message)s')	#[in %(pathname)s:%(lineno)d]'))
@@ -41,18 +37,21 @@ ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.Fil
 application = ht_server
 
 
-
 # use redis to perform user-session manangement
 redis_cache = Redis(ht_server)
 ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 
-db = SQLAlchemy(ht_server)		#using postgres, to fix, see config
-db.create_all()
 
-engine = create_engine(ht_server.config['SQLALCHEMY_DATABASE_URI'])
-SM = sessionmaker(bind=engine)
-sq = SM()
+# configure postgresql -- dropped flask-sqlalchemy, more manual now.
+#db.init_app(ht_server)
+#db = SQLAlchemy(ht_server)
+#db.create_all()
+#engine = create_engine(ht_server.config['SQLALCHEMY_DATABASE_URI'])
+#SM = sessionmaker(bind=engine)
+#sq = SM()
 
+
+# don't think we're using emailer
 emailer = Mail(ht_server)
 Compress(ht_server)
 CsrfProtect(ht_server)
@@ -77,6 +76,4 @@ linkedin = ht_oauth.remote_app(
 )
 
 # must do this (approx.) last.
-from server import views, controllers, models
-
-#print sq.query(models.Review).join(models.Profile, models.Review.author == models.Profile.id).all()
+from server import views, controllers 

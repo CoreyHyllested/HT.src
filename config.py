@@ -2,9 +2,9 @@ import os
 
 CSRF_ENABLED = True
 SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
-SQLALCHEMY_DATABASE_URI = 'postgresql://ezjlivdbtrqwgx:lM5sTTQ8mMRM7CPM0JrSb50vDJ@ec2-54-235-70-146.compute-1.amazonaws.com:5432/d673en78hg143l'
-#SQLALCHEMY_DATABASE_URI = 'postgresql://aysevvyxmqbmhd:Vpt-i6asNIpgkv96PZQ2pLWOqv@ec2-54-225-101-18.compute-1.amazonaws.com:5432/d87o5r1so43ija'
 
+#SQLALCHEMY_DATABASE_URI = 'postgresql://ezjlivdbtrqwgx:lM5sTTQ8mMRM7CPM0JrSb50vDJ@ec2-54-235-70-146.compute-1.amazonaws.com:5432/d673en78hg143l'
+#SQLALCHEMY_DATABASE_URI = 'postgresql://aysevvyxmqbmhd:Vpt-i6asNIpgkv96PZQ2pLWOqv@ec2-54-225-101-18.compute-1.amazonaws.com:5432/d87o5r1so43ija'
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///ht.db'
 DATABASE_QUERY_TIMEOUT = 1.0 
 
@@ -36,13 +36,3 @@ S3_DIRECTORY = '/htfileupload/'
 
 LINKEDIN_KEY="ri7ghzey680z"
 LINKEDIN_SEC="LcHMnsf9vVqUg8rE"
-
-OPENID_PROVIDERS = [
-	{ 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
-	{ 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
-	{ 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
-	{ 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
-	{ 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
-
-
-
