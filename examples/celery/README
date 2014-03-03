@@ -1,0 +1,14 @@
+# Start celery, consumes from the dflt Q
+# celery -A event_manager worker -Q dflt
+
+
+# in another window
+# python
+from datetime import datetime, timedelta
+from server.infrastructure.tasks import *
+rc = getDBCorey.apply_async(args=[4])
+rc.ready()
+rc.get(timeout=30)
+
+# rc = add.apply_async(args=[4,5], eta=(datetime.utcnow() + timedelta(seconds=30)))
+
