@@ -110,15 +110,9 @@ def ht_send_email(toEmail, msg):
 	s.sendmail('noreply@herotime.co', toEmail, msg.as_string())
 	s.quit()
 
-
-
 @mngr.task
-def add(x, y):
-	return x+y 
-
-@mngr.task
-def xsum(numbers):
-	return sum(numbers)
+def capture_creditcard():
+	return None  #not defined
 
 
 @mngr.task
