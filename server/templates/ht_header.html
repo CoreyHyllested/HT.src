@@ -37,7 +37,7 @@
 		return true;
 	}
 
-	/* Modal windows */
+	// Modal windows: Open
 	function openAlertWindow(text) {
 		$('.alertOverlay').css('display', 'block');
 		$('.alertWindowWrap').css('display', 'block');
@@ -46,6 +46,7 @@
 		return false;
 	}
 
+	// Modal windows: Close
 	function closeAlertWindow() {
 		$('.alertMessage').html('');
 		$('.alertWindow').css('display', 'none');		
@@ -54,7 +55,7 @@
 		return false;
 	}
 
-	/* Checkout window */
+	// Checkout window: Open
 	function openCheckoutWindow() {
 		$('.alertOverlay').css('display', 'block');
 		$('.checkoutWindowWrap').css('display', 'block');
@@ -62,12 +63,26 @@
 		return false;
 	}
 
+	// Checkout window: Close
 	function closeCheckoutWindow() {
 		$('.alertOverlay').css('display', 'none');
 		$('.checkoutWindowWrap').css('display', 'none');
 		$('.checkoutWindow').css('display', 'none');
 		return false;
 	}
+
+	// Checkout window: Auto-insert a '/' after second number
+	$(document).ready(function() {
+		$('#expiration').bind('keyup', function(pressed_key) {
+			var code = (pressed_key.keyCode ? pressed_key.keyCode : pressed_key.which);
+			var strokes = $('#expiration').val().length;
+			if (strokes === 2 && code !== 8) {
+				var thisVal = $(this).val();
+				thisVal += '/';
+				$(this).val(thisVal);
+			}
+		});
+	});
 
 	</script>
 </head>
@@ -94,10 +109,15 @@
 		<div class="checkoutWindow">
 			<h2>Billing Information</h2>
 			<form>
+
 				<input type="text" name="name" placeholder="Name on card">
+				
 				<input type="text" name="street" placeholder="Street address">
+				
 				<input type="text" name="zip" placeholder="ZIP code">
+				
 				<input type="text" name="city" placeholder="City">
+				
 				<select name="country">
 					<option value="AF">Afghanistan</option>
 					<option value="AL">Albania</option>
@@ -330,16 +350,21 @@
 					<option value="ZM">Zambia</option>
 					<option value="ZW">Zimbabwe</option>
 				</select>
-				<input type="text" name="card_number" placeholder="Card number">
-				<input type="text" name="expiration" placeholder="MM/YY">
-				<input type="text" name="cvc" placeholder="CVC">
+				
+				<input type="text" name="card_number" placeholder="Card number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
+				
+				<input type="text" id="expiration" name="expiration" placeholder="MM/YY" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="5">
+				
+				<input type="text" name="cvc" placeholder="CVC" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4" >
+				
 				<a class="checkoutPoweredByStripe" href="https://stripe.com/" target="_blank"></a>
+			
 			</form>
 				
-				<div class="toStepTwoButtonWrap">
-					<div class="toStepTwoButton">
-						<div class="blueButton paymentNextButton" onclick="closeCheckoutWindow()">Next</div>
-					</div>
+				<div class="makePaymentButtonWrap">
+					
+						<div class="blueButton makePaymentButton">Make Payment</div>
+					
 				</div>
 			</form>
 		</div>
