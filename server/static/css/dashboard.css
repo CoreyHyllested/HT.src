@@ -1774,7 +1774,7 @@ nav ul ul a:hover {
 }
 
 #newslot {
-	height: 1280px;
+	height: 1480px;
 	margin: 20px 20px 20px 0;
 	padding-top: 20px;
 	position: relative;
@@ -1914,7 +1914,7 @@ nav ul ul a:hover {
 	font-size: 1.55em;
 	font-weight: 400;
 	position: absolute;
-	top: 310px;	
+	top: 310px;     
 }
 
 #newslot-duration {
@@ -1980,6 +1980,31 @@ nav ul ul a:hover {
 	width: 550px;
 	height: 178px;
 }
+
+#newslot_label_cc_name {
+	top: 1210px;
+	width: 550px;
+	height: 30px;
+}
+
+#newslot_label_cc_number {
+	top: 1270px;
+	width: 550px;
+	height: 30px;
+}
+
+#newslot_label_cc_expdate {
+	top: 1330px;
+	width: 550px;
+	height: 30px;
+}
+
+#newslot_label_cc_cvv {
+	top: 1390px;
+	width: 550px;
+	height: 30px;
+}
+
 
 #newslot-notif1 {
 	background-color: #f5f5f5;
@@ -2487,7 +2512,7 @@ select:focus {
 }
 
 #proposal-buttons {
-	top: 1250px;
+	top: 1450px;
 	height: 35px;
 	left: 0;
 	position: absolute;
