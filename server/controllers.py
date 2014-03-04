@@ -25,7 +25,7 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
 from server.ht_utils import *
-from server import ht_server
+from server import ht_server, linkedin
 from string import Template
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
