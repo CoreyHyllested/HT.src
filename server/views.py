@@ -209,10 +209,9 @@ def li_authorized(resp):
 		ht_bind_session(bp)
 		initProfile(headline, industry, location)
 		trace("called  init profile")
-		# flash('create a password')
+
 		#Send a welcome email
-		import controllers
-		controllers.send_email(email.data)
+		send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
 		# something failed.  
@@ -305,14 +304,13 @@ def signup_verify(challengeHash):
 			return redirect('/login')
 
 	try:
-		import controllers
 		hero_account = accounts[0]
 		hero_account.set_sec_question("")
 		#Email verified
+
 		hero_account.set_status(Account.USER_ACTIVE)
 		db_session.commit()
-		#Send a welcome email
-		controllers.send_email(email)
+		send_welcome_email(email)
 	except Exception as e:
 		trace(str(e))
 		db_session.rollback()
@@ -857,7 +855,6 @@ def settings():
 	""" Provides users the ability to modify their settings.
 		- detect HT Session info.  Provide modified info.
 	"""
-	import controllers
 	uid = session['uid']
 	bp   = Profile.query.filter_by(account=uid).all()[0]
 	ba   = Account.query.filter_by(userid=uid).all()[0]
@@ -888,8 +885,8 @@ def settings():
 			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
 			update_acct = True
 			update_pass = form.set_input_newpass.data
-			controllers.send_email(ba.email, passChange = True)
-			errmsg = "Your password has been successfully updated."
+			send_passwd_change_email(ba.email)
+			errmsg = "Password successfully updated."
 
 		if (ba.email != form.set_input_email.data):
 			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
@@ -924,8 +921,8 @@ def settings():
 
 		#change email; send email to both.
 		if (update_mail):
-			controllers.send_email(ba.email, emailChange=True, newEmail=form.set_input_email.data)
-			errmsg = "Your email has been successfully updated."
+			send_email_change_email(ba.email, form.set_input_email.data)
+			errmsg = "Your email has been updated."
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
@@ -1164,6 +1161,8 @@ def recovery():
 
 linkedin.pre_request = change_linkedin_query
 
+
+
 @ht_server.route('/newpassword/<challengeHash>', methods=['GET', 'POST'])
 def newpassword(challengeHash):
 
@@ -1184,7 +1183,6 @@ def newpassword(challengeHash):
 			return redirect('/login')
 
 	if form.validate_on_submit():
-		import controllers
 		hero_account = accounts[0]
 		hero_account.set_sec_question("")
 		hero_account.pwhash = generate_password_hash(form.rec_input_newpass.data)
@@ -1196,12 +1194,10 @@ def newpassword(challengeHash):
 			db_session.commit()
 			trace("Commited.")
 			# Password change email
-			controllers.send_email(email, passChange=True)
-
+			send_passwd_change_email(email)
 		except Exception as e:
 			trace(str(e))
 			db_session.rollback()
-
 		return redirect('/login')
 
 	elif request.method == 'POST':
