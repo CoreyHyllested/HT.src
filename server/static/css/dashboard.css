@@ -3281,13 +3281,13 @@ select:focus {
 	z-index: 10;
 }
 
-.toStepTwoButtonWrap {
+.makePaymentButtonWrap {
 	display: block;
 	height: 35px;
-	margin: 60px 0 2px;
-	right: 2px;
+	margin: 30px 0 5px;
+	left: 118px;
 	position: relative;
-	width: 260px;
+	width: 140px;
 }
 
 .toStepTwoButton {
@@ -3295,6 +3295,6 @@ select:focus {
 	position: absolute;
 }
 
-.paymentNextButton {
-	width: 50px;
+.makePaymentButton {
+	width: 140px;
 }
