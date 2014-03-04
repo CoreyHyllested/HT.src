@@ -24,9 +24,8 @@ from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
-from server import ht_server, linkedin
-from server import emailer
 from server.ht_utils import *
+from server import ht_server
 from string import Template
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
@@ -141,6 +140,7 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 		db_session.rollback()
 		return False, e
 	return True, True
+
 
 
 def modifyProfile():
