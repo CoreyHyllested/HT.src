@@ -1014,6 +1014,7 @@ nav ul ul a:hover {
 
 #edit-basic label {
 	display: block;
+	position: absolute;
 }
 
 #edit-basic input[type="text"] {
@@ -1025,6 +1026,7 @@ nav ul ul a:hover {
 	line-height: 0.9em;
 	outline: none;
 	padding-left: 5px;
+	position: absolute;
 }
 
 #edit-basic input[type="text"]:focus {
@@ -1036,127 +1038,8 @@ nav ul ul a:hover {
 	line-height: 0.9em;
 	outline: none;
 	padding-left: 5px;
-}
-
-#label-name {
 	position: absolute;
-	top: 75px;
 }
-
-#edit-basic input#edit_name {
-	position: absolute;
-	top: 100px;
-	width: 550px;
-}
-
-#edit-basic label#label-headline {
-	position: absolute;
-	top: 155px;
-}
-
-#edit-basic input#edit-headline {
-	position: absolute;
-	top: 180px;
-	width: 550px;
-}
-
-#edit-basic label#label-rate {
-	position: absolute;
-	top: 235px;
-}
-
-#edit-basic label#label-dollar {
-	color: gray;
-	font-size: 1em;
-	left: 35px;
-	position: absolute;
-	top: 268px;
-	z-index: 1;
-}
-
-#edit-basic input#edit-rate {
-	padding-left: 15px;
-	position: absolute;
-	top: 260px;
-	width: 110px;
-}
-
-#edit-basic input#edit_rate {
-	padding-left: 15px;
-	position: absolute;
-	top: 260px;
-	width: 110px;
-}
-
-#edit-basic label#label-perhour {
-	font-size: 1em;
-	left: 168px;
-	position: absolute;
-	top: 265px;
-}
-
-#edit-basic label#label-industry {
-	left: 250px;
-	position: absolute;
-	top: 235px;
-}
-
-#edit-basic select#edit_industry {
-	color: gray;
-	font-size: 0.9em;
-	left: 250px;
-	line-height: 1.5em;
-	padding:.3em;
-	position: absolute;
-	top: 260px;
-	width: 338px;
-}
-
-#edit-basic select#edit-industry {
-	color: gray;
-	font-size: 0.9em;
-	left: 250px;
-	line-height: 1.5em;
-	padding:.3em;
-	position: absolute;
-	top: 260px;
-	width: 338px;
-}
-
-#edit-basic label#label-location {
-	position: absolute;
-	top: 315px;
-}
-
-#edit-basic input#edit-location {
-	position: absolute;
-	top: 340px;
-	width: 550px;
-}
-
-#edit-basic input#edit_location {
-	position: absolute;
-	top: 340px;
-	width: 550px;
-}
-
-#edit-basic label#label-url {
-	position: absolute;
-	top: 395px;
-}
-
-#edit-basic input#edit-url {
-	position: absolute;
-	top: 420px;
-	width: 550px;
-}
-
-#edit-basic input#edit_url {
-	position: absolute;
-	top: 420px;
-	width: 550px;
-}
-
 
 #edit-basic select {
     -moz-appearance: none;
@@ -1164,16 +1047,14 @@ nav ul ul a:hover {
 	background: url('../img/dropdown.svg') no-repeat right white;
 	border: 1px #cccccc solid;
 	border-radius: 0;
+	font-size: 0.9em;
 	height: 34px;
-	left: 191px;
-	line-height: 1em;
+	line-height: 1.5em;
 	outline: none;
+	padding: .3em;
 	padding-left: 5px;
-	position: relative;
-    text-indent: 0.01px;
+	position: absolute;
     text-overflow: '';
-	bottom: 71px;
-	width: 374px;
 }
 
 #edit-basic select:focus {
@@ -1182,13 +1063,84 @@ nav ul ul a:hover {
 	border: 1px #0087cf solid;
 }
 
+#label-name {
+	top: 75px;
+}
+
+#edit_name {
+	top: 100px;
+	width: 550px;
+}
+
+#label-headline {
+	top: 155px;
+}
+
+#edit_headline {
+	top: 180px;
+	width: 550px;
+}
+
+#label-rate {
+	top: 235px;
+}
+
+#label-dollar {
+	color: gray;
+	font-size: 1em;
+	left: 35px;
+	top: 268px;
+	z-index: 1;
+}
+
+#edit-basic input[name="edit_rate"] {
+	padding-left: 15px;
+	top: 260px;
+	width: 110px;
+}
+
+#label-perhour {
+	font-size: 1em;
+	left: 168px;
+	top: 265px;
+}
+
+#label-industry {
+	left: 250px;
+	top: 235px;
+}
+
+#edit_industry {
+	left: 250px;
+	top: 260px;
+	width: 338px;
+}
+
+#label-location {
+	top: 315px;
+}
+
+#edit_location {
+	top: 340px;
+	width: 550px;
+}
+
+#label-url {
+	top: 395px;
+}
+
+#edit_url {
+	top: 420px;
+	width: 550px;
+}
+
 #edit-about {
 	margin: 45px 30px;	
 	position: absolute;
 	top: 460px;
 }
 
-#edit-about textarea#edit_bio {
+#edit_bio {
   -moz-appearance: none;	
 	-webkit-appearance: none;
 	border: 1px #cccccc solid;
@@ -1205,15 +1157,10 @@ nav ul ul a:hover {
 	vertical-align: top;
 }
 
-#edit-about textarea#edit_bio:focus {
+#edit_bio:focus {
     -moz-appearance: none;
 	-webkit-appearance: none;
 	border: 1px #0087cf solid;
-}
-
-#edit_bio {
-	height: 178px;
-	width: 550px;
 }
 
 #change-photo {
