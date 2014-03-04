@@ -123,106 +123,23 @@
 	<div id="appointments">
 		<h2 id="header"></h2>
 
-    <!-- Datepicker -->
-    <div id="datepicker2" class="calendar-dash"></div>
-	<span class="payment-errors"><!--FIXME CAH rename, put in better spot--></span>
-
-	<form name=charge action=/charge method=POST>
-	{# show timeslots; sort timeslots by its startime #}
-	{% for ts in timeslots|sort(attribute='ts_begin') %}
-		<a href="#">
-		<div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{ts.location}}', {{loop.index}})">
-			<img src="{{profile_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
-			<div class="slot-info">
-				<p>
-					<span class="big-text">{{ts.ts_begin.strftime('%H:%M %p')}}</span>
-					<br/>{{ts.location}}
-				</p>
-			</div>
-			{% if ts.status == 0 %}
-			<div class="slot-bought"></div>
-			{% elif ts.status == 4 %}
-			<div class="slot-sold"></div>
-			{% else %}
-			<div class="slot-pending"></div>
-			{% endif %}
-		</div>
-		</a>
-
-		<div id="slot-expand-{{loop.index}}" class="slot-expand">
-			<div id="map-canvas-cal-{{loop.index}}" class="map-canvas-cal"></div>
-			<div class="slot-details-left">
-				<h3>Time</h3>
-				<p><span id="day-{{loop.index}}">{{ts.ts_begin.strftime('%A, %b %d, %Y')}}</span><br>
-				   {{ts.ts_begin.strftime('%H:%M %p')}}
-					<script>
-					  d1 = new Date.parse("{{ts.ts_finish.strftime('%Y-%m-%dT%H:%M:%S')}}");
-					  d2 = new Date.parse("{{ts.ts_begin.strftime('%Y-%m-%dT%H:%M:%S')}}");
-					  diff = d1 - d2; 
-					  if (diff == 1.0) {
-					    document.write(' (1 hour)');
-				      } else {
-						document.write(' (' + (diff/3600000) + ' hours)'); 
-				      }
-				    </script>
-				</p>
-				   
-				<br />
-				<h3>Location</h3>
-				<p>{{ts.location}}</p>
-				<p class="explanation">
-					The map above shows zip code only. You will be able to see the exact location once you book this slot.</p>
-				<br />
-			</div>
-			<div class="slot-details-right">
-				<h3>Description</h3>
-				<p>
-				{{ts.description}}
-				</p>
-			</div>
-
-			{% if ts.status == 0 %}
-			<div class="buttons">
-				<div class="request-wrap">
-					<a href="#" class="whiteButton requestButton">
-						<img src="static/img/negotiate.svg" />Request changes
-					</a>
-				</div>
-				
-				<a href="#">
-				<div class="book-wrap">
-					<div class="blueButton bookButton" cost={{ts.cost}} ts={{ts.id}} desc="{{ts.description}}">
-						<p><img src="static/img/clock.svg" />Book the time slot for ${{ts.cost}}</p>
-					</div>
-				</div>
-				</a>
-			</div>
-			{% elif ts.status == 1 %}
-				{% if ts.creator_id == bp.heroid %}
-				{# Proposed by this user #}
-				<div class="book-wrap">
-					Has been sent to {{ hp.name }} 
-				</div>
-				{% endif %}
-			{% endif %}
-
-			<div style="clear: both"></div>
-		</div>
-		{% endfor %}
-		</form>
-		
+   		<!-- Datepicker -->
+		<div id="datepicker2" class="calendar-dash"><!--LAZAR, this is the calendar --></div>
 
 		<div id="make_proposal_wrap">
-			<h3>{% if hp is sameas bp %} Add a new timeslot to your calendar{% else %}Don't see a time slot that suits you?{% endif %}</h3>
+			<h3>{% if hp is sameas bp %}Your calendar will go here {% else %}Book their time!{% endif %}</h3>
+			{% if hp is sameas bp %}
+			{% else %}
 			<div id="make_proposal_button_wrap">
 				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="whiteButton makeProposalButton">
-				{% if hp is sameas bp %} Make new time slot{% else %}Make proposal{% endif %}
+				Propose a meeting...
 				</a>
 			</div>
-
+			{% endif %}
 		</div>
 	</div>
 	<div id="calendar">
+		<!--Calendar, Today button-->
 		<div id="today_button" class="button-light-full">Today</div>
 	</div>
 
@@ -280,6 +197,7 @@
 	</ul>
 	<div id="content-top"></div>
 	<div id="newslot">
+		<form name=charge action=/charge method=POST></form>
 		<h2>{% if hp is sameas bp %}List new time slot{% else %}Make proposal{% endif %}</h2>
 		
 		<form name="newts" action=/profile method=POST>
