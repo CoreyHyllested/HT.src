@@ -69,7 +69,7 @@ def ht_authenticate_user(user_email, password):
 
 
 
-def recovery(email):
+def ht_password_recovery(email):
 	""" Password recovery
 		returns a string provided to the user on success and failure.
 	"""

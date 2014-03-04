@@ -12,6 +12,7 @@ from httplib2 import Http
 from server import ht_server
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
+from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
 from sqlalchemy     import or_
@@ -44,7 +45,7 @@ def homepage():
 	if 'uid' in session:
 		return redirect('/dashboard')
 
-	return redirect('http://signup.herotime.co/')
+	return redirect('https://herotime.co/login')
 
 
 
@@ -1150,16 +1151,16 @@ def servicefailure(pg):
 def serviceFailure(pg, error):
 	return render_template('500.html'), 500
 
+
 @ht_server.route("/recovery", methods=['GET', 'POST'])
 def recovery():
 	#mycssfiles = ["static/css/dashboard_lights.css", "static/css/this_is_pretty_cool.css"]
 	form = RecoverPasswordForm(request.form)
-	errmsg = None
+	usrmsg = None
 	if request.method == 'POST':
-		import controllers
 		trace(form.rec_input_email.data)
-		errmsg = controllers.recovery(form.rec_input_email.data)
-	return render_template('recovery.html', form=form, cssfiles=None, errmsg=errmsg)
+		usrmsg = ht_password_recovery(form.rec_input_email.data)
+	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
 linkedin.pre_request = change_linkedin_query
 
