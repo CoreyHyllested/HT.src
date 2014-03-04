@@ -196,9 +196,12 @@
 		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} reviews</p></li></a>
 	</ul>
 	<div id="content-top"></div>
+	{% if hp is sameas bp %} 
+	<h2> DANGER WILL ROBINSON! </h2>
+	{% else %}
 	<div id="newslot">
 		<form name=charge action=/charge method=POST></form>
-		<h2>{% if hp is sameas bp %}List new time slot{% else %}Make proposal{% endif %}</h2>
+		<h2> Make proposal </h2>
 		
 		<form name="newts" action=/profile method=POST>
 			{{ntsform.hidden_tag()}}
@@ -226,21 +229,12 @@
 			
 	        <div id="map-canvas"></div>
 
-			{% if hp is sameas bp %}
-			<label id="newslot-label-description">Time slot description</label>
-			{% else %}
 			<label id="newslot-label-description">Message to {{hp.name}}</label>
-			{% endif %}
 			{{ntsform.newslot_description}}
 
-
 			<div id="newslot-notif1">
-			{% if hp is sameas bp %}
-				By listing a time slot in your calendar, you make it available to potential customers.
-			{% else %}
 				<p>By making a direct offer to a person, you get an opportunity to book an appointment outside of time slots already listed for sale.</p> <br />
 				<p>You can also use direct offers to customize listed time slots: merge two or more slots together, change location, negotiate price, etc.</p>
-			{% endif %}
 			</div>
 
 			<div id="newslot-notif2">
@@ -249,20 +243,12 @@
 			</div>
 
 			<div id="newslot-notif3">
-			{% if hp is sameas bp %}
-				Provide your potential customers with additional information about this particular time slot.
-			{% else %}
 				Want to tell this person something about your offer? This is your chance to do so.
-			{% endif %}
 			</div>
 
 			<div id="proposal-buttons">
 				<div id="proposal_send_wrap">
-					{% if hp is sameas bp %}
-					<input type="submit" class="blueButton newSlotList" value="List time slot"/>
-					{% else %}
 					<input type="submit" class="blueButton newSlotList" value="Send proposal"/>
-					{% endif %}
 				</div>
 				<div id="to_calendar_wrap">
 					<a href="javascript:tab_switch('tab-cal', 'content-box-cal', 'true');" class="whiteButton toCalendar">Back to listed slots</a>
@@ -270,6 +256,9 @@
 			</div>
 		</form>
 	</div>
+	{% endif %}
+
+
 </div>
 
 <script>
