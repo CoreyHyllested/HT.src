@@ -23,6 +23,7 @@ from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
+from server.infrastructure.tasks  import *
 from server import ht_server, linkedin
 from server import emailer
 from server.ht_utils import *
@@ -52,65 +53,6 @@ def ht_browsingprofile():
 	#return Profile.query.filter_by(account=session['uid']).all()[0]
 	return None
 
-def send_email(toEmail, uid=None, verify=False, challenge_hash=None, passChange=None, emailChange=None, newEmail=None, recovery=None):
-
-	fromEmail = "noreply@herotime.co"
-    
-	msg = MIMEMultipart('alternative')
-	msg['Subject'] = "Nikola"
-	msg['From'] = fromEmail
-	msg['To'] = toEmail
-	msg['fromname'] = "HeroTime"
-
-    # Message body
-    # text is plain-text email
-    # html is the html version
-
-	if verify:
-		html = "Thank you for creating a HeroTime account. Click <a href=\"http://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid=" + str(uid) +"\">here</a> to verify your email."
-		text = "Thank you for creating a HeroTime account. Go to http://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid="+str(uid) + " to verify your email."
-	elif recovery:
-		html = "Click <a href=\"http:127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + "\">here</a> to recover your HeroTime password."
-		text = "Go to http://127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + " to recover your HeroTime password."
-	elif passChange:
-		html = "Your HeroTime password has been changed."
-		text = html
-	elif emailChange:
-		html = "Your HeroTime email has been changed to " + newEmail + " If you did not make this change please let us know."
-		text = html
-	else:
-		text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
-		html = """\n
-		<html>
-			<head></head>
-			<body>
-				Welcome to HeroTime!<br>
-				<br>
-				Now go buy and sell time. Enjoy.
-			</body>
-		</html>
-		"""
-
-	# SendGrid login
-	username = 'radnovic'
-	password = "HeroTime"
-
-	part1 = MIMEText(text, 'plain')
-	part2 = MIMEText(html, 'html')
-
-	msg.attach(part1)
-	msg.attach(part2)
-
-	# Open a connection to the SendGrid mail server
-	s = smtplib.SMTP('smtp.sendgrid.net', 587)
-
-	s.login(username, password)
-
-	# sendmail function takes 3 arguments: sender's address, recipient's address
-	# and message to send - here it is sent as one string.
-	s.sendmail(fromEmail, toEmail, msg.as_string())
-
-	s.quit()
 
 
 def ht_authenticate_user(user_email, password):
@@ -126,35 +68,35 @@ def ht_authenticate_user(user_email, password):
 	return None
 
 
+
 def recovery(email):
-	""" Password recovery process """
+	""" Password recovery
+		returns a string provided to the user on success and failure.
+	"""
+
 	trace("Entering password recovery")
 
 	challenge_hash = uuid.uuid4()
-
-	errmsg = None
-
 	accounts = Account.query.filter_by(email=email).all()
 
 	if (len(accounts) != 1):
-		errmsg = "Invalid email."
-	else:
-		ba = accounts[0]
-		ba.set_sec_question(str(challenge_hash))
-		errmsg = "Password recovery email has been successfully sent."
+		return "Not a valid email."
 
-		try:
-			db_session.add(ba)
-			db_session.commit()
+	ba = accounts[0]
+	ba.set_sec_question(str(challenge_hash))
+	usrmsg = "Password recovery email has been sent."
 
-		except Exception as e:
-			trace(str(e))
-			db_session.rollback()
-			return None
+	try:
+		db_session.add(ba)
+		db_session.commit()
+	except Exception as e:
+		trace(str(e))
+		db_session.rollback()
+		return (str(e))
 
-		send_email(email, challenge_hash = challenge_hash, recovery=True)
+	send_recovery_email(email, challenge_hash)
+	return usrmsg
 
-	return errmsg
 
 
 def create_account(name, email, passwd):
@@ -171,17 +113,10 @@ def create_account(name, email, passwd):
 		db_session.rollback()
 		return None, False
 
-	log_uevent(hero.userid, 'successfully created myself')
-	mesg = Message("Welcome to HeroTime", sender="<HeroTime Accounts> accounts@herotime.co", recipients=[hero.email])
-	mesg.html = "Click <a href=\"http://herotime.co/signup/verify/" + str(challenge_hash) + "?email="+str(hero.email)+"&uid=" + str(hero.userid) +"\">here</a> to get started."
-	trace(mesg.html)
-	#msg.text = "Click here to get started: \"http://127.0.0.1:5000/verify/" + str(challengeHash) + "?uid=" + str(userid) + "\""
-	#emailer.send(msg)
-
-	if (passwd != 'linkedin_oauth'):
-		send_email(email, uid=hero.userid, verify=True, challenge_hash=challenge_hash)
-
+	log_uevent(hero.userid, 'successfully created user')
+	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
+
 
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):

@@ -26,51 +26,82 @@ def send_verification_email(toEmail, uid, challenge_hash):
 	url  = 'https://herotime.co/signup/verify/' + str(challenge_hash) + "?email="+str(toEmail)+"&uid=" + str(uid)
 	msg_text = "Thank you for creating a HeroTime account. Click <a href=\"" + str(url) + "\">here</a> to verify your email."
 	msg_html = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
-	ht_send_email(toEmail, text=msg_text, html=msg_html)
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Password Verification"
+	msg['From'] = "noreply@herotime.co"
+	msg['To'] = toEmail
+	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html' ))
+	ht_send_email(toEmail, msg) 
+
 
 @mngr.task
 def send_recovery_email(toEmail, challenge_hash):
 	url = 'https://herotime.co/newpassword/' + str(challenge_hash) + "?email=" + str(toEmail)
 	msg_text = "Go to " + url + " to recover your HeroTime password."
 	msg_html = "Click <a href=\"" + url + "\">here</a> to recover your HeroTime password."
-	ht_send_email(toEmail, text=msg_text, html=msg_html)
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Password Recovery"
+	msg['From'] = "noreply@herotime.co"
+	msg['To'] = toEmail
+	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html' ))
+	ht_send_email(toEmail, msg)
+
 
 @mngr.task
-def send_welcome_email(toEmail, uid=None, text=None, html=None, challenge_hash=None, passChange=None, emailChange=None, newEmail=None, recovery=None):
+def send_welcome_email(toEmail):
 	msg_text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
 	msg_html = """\n<html><head></head><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
-	ht_send_email(toEmail, text=msg_text, html=msg_html)
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Welcome to HeroTime"
+	msg['From'] = "noreply@herotime.co"
+	msg['To'] = toEmail
+	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html' ))
+	ht_send_email(toEmail, msg)
+
 
 @mngr.task
 def send_email_change_email(toEmail, newEmail):
 	msg_html = "Your HeroTime email has been changed to " + newEmail + ". If you did not make this change please let us know."
-	ht_send_email(toEmail, text=msg_html, html=msg_html)
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "Password changed."
+	msg['Subject'] = "Email address changed"
+	msg['From'] = "noreply@herotime.co"
+	msg['To'] = toEmail
+	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html'))
+	ht_send_email(toEmail, msg)
+
 
 @mngr.task
 def send_passwd_change_email(toEmail):
 	msg_html = "Your HeroTime password has been updated."
-	ht_send_email(toEmail, text=msg_html, html=msg_html)
 
-@mngr.task
-def ht_send_email(toEmail, text, html):
 	msg = MIMEMultipart('alternative')
-	msg['Subject'] = "Nikola"
+	msg['Subject'] = "Password changed"
 	msg['From'] = "noreply@herotime.co"
 	msg['To'] = toEmail
 	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_html, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html' ))
+	ht_send_email(toEmail, msg)
 
-    # Message body
-	# text is plain-text email
-    # html is the html version
 
-
-	# SendGrid login
-	#TODO, move into config file.
+@mngr.task
+def ht_send_email(toEmail, msg):
+	# SendGrid login; TODO, move into config file.
 	username = 'radnovic'
 	password = "HeroTime"
-
-	msg.attach(MIMEText(text, 'plain'))
-	msg.attach(MIMEText(html, 'html' ))
 
 	# Open a connection to the SendGrid mail server
 	# sendmail function takes 3 arguments: sender's address, recipient's address
@@ -79,6 +110,7 @@ def ht_send_email(toEmail, text, html):
 	s.login(username, password)
 	s.sendmail('noreply@herotime.co', toEmail, msg.as_string())
 	s.quit()
+
 
 
 @mngr.task
