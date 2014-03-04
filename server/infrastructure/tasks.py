@@ -73,12 +73,11 @@ def send_email_change_email(toEmail, newEmail):
 	msg_html = "Your HeroTime email has been changed to " + newEmail + ". If you did not make this change please let us know."
 
 	msg = MIMEMultipart('alternative')
-	msg['Subject'] = "Password changed."
 	msg['Subject'] = "Email address changed"
 	msg['From'] = "noreply@herotime.co"
 	msg['To'] = toEmail
 	msg['fromname'] = "HeroTime"
-	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html'))
 	ht_send_email(toEmail, msg)
 
