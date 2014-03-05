@@ -80,7 +80,7 @@
 			{% if hp is sameas bp %}
 				<a href="edit" class="blueButton">Edit profile...
 			{% else %}
-				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="blueButton">Book time...
+				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="blueButton">Propose a meeting...
 			{% endif %}
 				</a>
 			</div>
@@ -122,11 +122,8 @@
 	<div id="appointments">
 		<h2 id="header"></h2>
 
-   		<!-- Datepicker -->
-		<div id="datepicker2" class="calendar-dash"><!--LAZAR, this is the calendar --></div>
-
 		<div id="make_proposal_wrap">
-			<h3>{% if hp is sameas bp %}Your calendar will go here {% else %}Book their time!{% endif %}</h3>
+			<h3>{% if hp is sameas bp %}Your calendar will go here {% else %}Meet this Hero.{% endif %}</h3>
 			{% if hp is sameas bp %}
 			{% else %}
 			<div id="make_proposal_button_wrap">
@@ -137,11 +134,6 @@
 			{% endif %}
 		</div>
 	</div>
-	<div id="calendar">
-		<!--Calendar, Today button-->
-		<div id="today_button" class="button-light-full">Today</div>
-	</div>
-
 	<div style="clear: both"></div>
 </div>
 
@@ -234,18 +226,17 @@
 			{{ntsform.newslot_description}}
 
 
-			<label id="newslot_label_cc_name">Credit Card Name</label>
+			<label id="newslot_label_cc_name">Credit Card Name:</label>
 			{{ntsform.newslot_ccname}}
 
-			<label id="newslot_label_cc_number">Credit Card Number</label>
+			<label id="newslot_label_cc_number">Credit Card Number:</label>
 			{{ntsform.newslot_ccnbr}}
 
-			<label id="newslot_label_cc_expdate">Credit Card Expiration</label>
+			<label id="newslot_label_cc_expdate">Credit Card Expiration:</label>
 			{{ntsform.newslot_ccexp}}
 
-			<label id="newslot_label_cc_cvv">CC CVV</label>
+			<label id="newslot_label_cc_cvv">Credit Card CCV:</label>
 			{{ntsform.newslot_cccvv}}
-
 
 
 			<div id="newslot-notif1">
