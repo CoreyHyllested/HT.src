@@ -72,6 +72,7 @@
 
 		<form name='p' action=/profile method=POST>
 			<input type="hidden" id="h" name="hero">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 		</form>
 
 		<form name='c' action=/cancel method=POST>
