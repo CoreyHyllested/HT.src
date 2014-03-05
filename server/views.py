@@ -335,17 +335,19 @@ def profile():
 
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
-	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]		# Hero Profile
+	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]	# Hero Profile
 	pi  = OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
-#	print "BP = ", bp.name, bp.heroid, bp.account
-#	print "HP = ", hp.name, hp.heroid, hp.account
-#	print pi, len(pi)
+
 
 	if (pi):
 		pi = pi[0].stripe
-		print pi
 	else:
-		pi = "" 
+		pi = "No Stripe Info for User." 
+
+	print "BP = ", bp.name, bp.heroid, bp.account
+	print "HP = ", hp.name, hp.heroid, hp.account
+	print "PaymentInfo = ", pi
+
 
 	nts = NTSForm(request.form)
 	if nts.validate_on_submit():
@@ -356,7 +358,13 @@ def profile():
 		ts_end = str(nts.newslot_endtime.data)
 		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
 		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
-		bywhom = int(bp.heroid != hp.heroid) 
+		bywhom = int(bp.heroid != hp.heroid)
+		ccname = str(nts.newslot_ccname.data)
+		ccnbr = str(nts.newslot_ccnbr.data)
+		ccexp = str(nts.newslot_ccexp.data)
+		cccvv = str(nts.newslot_cccvv.data)
+		print (ccname, ccnbr, ccexp, cccvv)
+		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
 		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
 		try:
 			db_session.add(timslt)
@@ -373,15 +381,23 @@ def profile():
 
 	elif request.method == 'POST':
 		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
+		ccname = nts.newslot_ccname.data
+		ccnbr = nts.newslot_ccnbr.data
+		ccexp = nts.newslot_ccexp.data
+		cccvv = nts.newslot_cccvv.data
+		print (ccname, ccnbr, ccexp, cccvv)
+		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
 	else:
 		pass
 
 	nts.hero.data = hp.heroid
 
 
-	tmeslts = db_session.query(Timeslot.id, Timeslot.status, Timeslot.location, Timeslot.description, Timeslot.cost, Timeslot.ts_begin, Timeslot.ts_finish, Timeslot.creator_id) \
-				.join(Profile, Timeslot.profile_id == Profile.heroid) \
-				.filter(Timeslot.profile_id == hp.heroid, Timeslot.status == TS_PROP_BY_HERO).all()
+	tmeslts = [] 
+#	db_session.query(Timeslot.id, Timeslot.status, Timeslot.location, Timeslot.description, Timeslot.cost, Timeslot.ts_begin, Timeslot.ts_finish, Timeslot.creator_id) \
+#				.join(Profile, Timeslot.profile_id == Profile.heroid) \
+#				.filter(Timeslot.profile_id == hp.heroid, Timeslot.status == TS_PROP_BY_HERO).all()
+
 	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
 				.join(Profile, Review.author == Profile.heroid) \
 				.filter(Review.heroid == hp.heroid).all()
