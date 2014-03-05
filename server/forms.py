@@ -1,4 +1,4 @@
-from wtforms import TextField, TextAreaField, PasswordField
+from wtforms import TextField, TextAreaField, PasswordField, DecimalField
 from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField
 from wtforms import IntegerField, validators
 from wtforms.validators import Required
@@ -84,10 +84,11 @@ class NTSForm(Form):
 	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
 
 	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
-	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional(), validators.NumberRange(min=0, max=9999999999999999)])
-	newslot_ccexp		= TextField('ccexp',		[validators.Optional(), validators.NumberRange(min=314, max=9999)])
-	newslot_cccvv		= TextField('cccvv',		[validators.Optional(), validators.NumberRange(min=0, max=999)])
+	newslot_ccnbr		= IntegerField('ccnbr',		[validators.Optional(), validators.NumberRange(min=0, max=9999999999999999)])
+	newslot_ccexp		= IntegerField('ccexp',		[validators.Optional(), validators.NumberRange(min=314, max=9999)])
+	newslot_cccvv		= IntegerField('cccvv',		[validators.Optional(), validators.NumberRange(min=0, max=999)])
 
+#
 
 class SearchForm(Form):
 	keywords_field = TextField('keywords-field')
