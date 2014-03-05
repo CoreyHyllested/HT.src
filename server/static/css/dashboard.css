@@ -1774,7 +1774,7 @@ nav ul ul a:hover {
 }
 
 #newslot {
-	height: 1480px;
+	height: 1560px;
 	margin: 20px 20px 20px 0;
 	padding-top: 20px;
 	position: relative;
@@ -1987,22 +1987,42 @@ nav ul ul a:hover {
 	height: 30px;
 }
 
+#newslot_ccname {
+	top: 1235px;
+	width: 550px;
+}
+
 #newslot_label_cc_number {
-	top: 1270px;
+	top: 1280px;
 	width: 550px;
 	height: 30px;
+}
+
+#newslot_ccnbr {
+	top: 1315px;
+	width: 550px;
 }
 
 #newslot_label_cc_expdate {
-	top: 1330px;
+	top: 1360px;
 	width: 550px;
 	height: 30px;
 }
 
+#newslot_ccexp {
+	top: 1395px;
+	width: 550px;
+}
+
 #newslot_label_cc_cvv {
-	top: 1390px;
+	top: 1440px;
 	width: 550px;
 	height: 30px;
+}
+
+#newslot_cccvv {
+	top: 1475px;
+	width: 550px;
 }
 
 
@@ -2512,7 +2532,7 @@ select:focus {
 }
 
 #proposal-buttons {
-	top: 1450px;
+	top: 1520px;
 	height: 35px;
 	left: 0;
 	position: absolute;

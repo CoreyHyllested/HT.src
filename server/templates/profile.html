@@ -1,7 +1,6 @@
 {% extends "ht_header.html" %}
 
 {% block content %}
-<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 <script src="static/js/date.js"></script>
 <script src="static/js/maps.js"></script>
 <script src="static/js/format.js"></script>
@@ -196,9 +195,11 @@
 		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} reviews</p></li></a>
 	</ul>
 	<div id="content-top"></div>
+
 	{% if hp is sameas bp %} 
 	<h2> DANGER WILL ROBINSON! </h2>
 	{% else %}
+
 	<div id="newslot">
 		<form name=charge action=/charge method=POST></form>
 		<h2> Make proposal </h2>
@@ -231,6 +232,21 @@
 
 			<label id="newslot-label-description">Message to {{hp.name}}</label>
 			{{ntsform.newslot_description}}
+
+
+			<label id="newslot_label_cc_name">Credit Card Name</label>
+			{{ntsform.newslot_ccname}}
+
+			<label id="newslot_label_cc_number">Credit Card Number</label>
+			{{ntsform.newslot_ccnbr}}
+
+			<label id="newslot_label_cc_expdate">Credit Card Expiration</label>
+			{{ntsform.newslot_ccexp}}
+
+			<label id="newslot_label_cc_cvv">CC CVV</label>
+			{{ntsform.newslot_cccvv}}
+
+
 
 			<div id="newslot-notif1">
 				<p>By making a direct offer to a person, you get an opportunity to book an appointment outside of time slots already listed for sale.</p> <br />
