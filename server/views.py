@@ -9,19 +9,22 @@ from flask import render_template, make_response, session, request, flash, redir
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 from httplib2 import Http
-from models import Account, Timeslot, Industry, Review, OauthStripe, Appointment
+from server import ht_server
+from server.infrastructure.srvc_database import db_session
+from server.infrastructure.models import * 
+from server.infrastructure.tasks  import * 
+from server.ht_utils import *
 from pprint import pprint
 from sqlalchemy     import or_
 from sqlalchemy.orm import Session
-from server          import ht_server, models
-from server          import db, sq
-from server.ht_utils import *
 from StringIO import StringIO
 from urllib import urlencode
 from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash #rm -- should be in controllers only
 
 
+# replaced sq.query => db_session.query
+# replace db.session => db_session
 
 stripe_keys = {}
 stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
@@ -42,7 +45,7 @@ def homepage():
 	if 'uid' in session:
 		return redirect('/dashboard')
 
-	return redirect('http://signup.herotime.co/')
+	return redirect('https://herotime.co/login')
 
 
 
@@ -54,8 +57,8 @@ def search():
 
 	if 'uid' in session:
 		uid = session['uid']
-		bp  = models.Profile.query.filter_by(account=uid).all()[0]
-	
+		bp  = Profile.query.filter_by(account=uid).all()[0]
+
 	keywords = request.args.get('search')
 	print "keywords = ", keywords
 	form = SearchForm(request.form)
@@ -63,18 +66,18 @@ def search():
 	if request.method == 'POST':
 		print "is a post" 
 		keywords = request.form.get('search')
-		#results = sq.query(models.Profile).filter_by(location=form.location).all()
-		#results = sq.query(models.Profile).filter(models.Profile.bio.like(keywords)).all()
-	#results = sq.query(models.Profile).all()
-	results = sq.query(models.Profile)
+		#results = db_session.query(Profile).filter_by(location=form.location).all()
+		#results = db_session.query(Profile).filter(Profile.bio.like(keywords)).all()
+	#results = db_session.query(Profile).all()
+	results = db_session.query(Profile)
 	print len(results.all())
 
 	if (keywords is not None):
 		print "keywords = ", keywords
-		rc_name = results.filter(models.Profile.name.like("%"+keywords+"%"))#.all()
-		rc_hdln = results.filter(models.Profile.headline.like("%"+keywords+"%"))#.all()
-		rc_desc = results.filter(models.Profile.bio.like("%"+keywords+"%")) #.all()
-		rc_inds = results.filter(models.Profile.industry.like("%"+keywords+"%")) #.all()
+		rc_name = results.filter(Profile.name.like("%"+keywords+"%"))#.all()
+		rc_hdln = results.filter(Profile.headline.like("%"+keywords+"%"))#.all()
+		rc_desc = results.filter(Profile.bio.like("%"+keywords+"%")) #.all()
+		rc_inds = results.filter(Profile.industry.like("%"+keywords+"%")) #.all()
 		#rc_keys = (rc_names + rc_headline + rc_descript)
 		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
 		#print len(rc_keys)
@@ -106,7 +109,7 @@ def login():
 
 	if 'uid' in session:
 		uid = session['uid']
-		bp  = models.Profile.query.filter_by(account=uid).all()[0]
+		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
@@ -135,17 +138,17 @@ def login_linkedin():
 
 def initProfile(head, ind, loc):
 	uid = session['uid']
-	bp  = models.Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
+	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
 	trace ("got profile")
 	try:
 		bp.headline = head
 		bp.industry = ind
 		bp.location = loc 
-		db.session.add(bp)
-		db.session.commit()
+		db_session.add(bp)
+		db_session.commit()
 	except Exception as e:
 		trace(str(e))
-		db.session.rollback()
+		db_session.rollback()
 
 
 @ht_server.route('/login/linkedin/authorized')
@@ -183,18 +186,17 @@ def li_authorized(resp):
 	trace (industry)
 
 	# account may exist (email).  -- creat controller: oauth_login(?)
-
 	# deleted if statement because it threw a dbfailure when signing up with an existing account
 	#if (not signup):
 
-	possible_acct = models.Account.query.filter_by(email=email.data).all()
+	possible_acct = Account.query.filter_by(email=email.data).all()
 	# also look for linkedin-account/id number (doesn't exist today).
 	if (len(possible_acct) == 1):
 		# suggest they create a password if that's not done.
 		trace('User exists' +  str(possible_acct[0]))
 		session['uid'] = possible_acct[0].userid
 		return redirect('/dashboard')
-	
+
 	# deleted this part in order to successfully signup a user if he does Linkedin oauth from login
 	#else:
 	#	trace('No account found')
@@ -207,10 +209,9 @@ def li_authorized(resp):
 		ht_bind_session(bp)
 		initProfile(headline, industry, location)
 		trace("called  init profile")
-		# flash('create a password')
+
 		#Send a welcome email
-		import controllers
-		controllers.send_email(email.data)
+		send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
 		# something failed.  
@@ -218,7 +219,6 @@ def li_authorized(resp):
 		resp = redirect('/dbFailure')
 	return resp
 	#return jsonify(me.data)
-
 
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
@@ -232,14 +232,14 @@ def signup():
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
-		bp  = models.Profile.query.filter_by(account=uid).all()[0]
+		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		trace("Validated form -- make Acct")
 		
 		#check if email already exists in db
-		account = models.Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
+		account = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
 		if (len(account) == 1):
 			trace("email already exists in DB")
 			errmsg = "Account with the same email already exists."
@@ -257,7 +257,6 @@ def signup():
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=errmsg))
 
 
-
 @ht_server.route('/signup/linkedin', methods=['GET'])
 @dbg_enterexit
 def signup_linkedin():
@@ -271,7 +270,7 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-	
+
 def change_linkedin_query(uri, headers, body):
 	auth = headers.pop('Authorization')
 	headers['x-li-format'] = 'json'
@@ -303,7 +302,7 @@ def signup_verify(challengeHash):
 	email  = query['email'][0]
 	uid  = query['uid'][0]
 
-	accounts = models.Account.query.filter_by(sec_question=(challengeHash)).all()
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 
 	if (len(accounts) != 1 or accounts[0].email != email or accounts[0].userid != uid):
 			trace('Hash and/or email didn\'t match.')
@@ -311,20 +310,19 @@ def signup_verify(challengeHash):
 			return redirect('/login')
 
 	try:
-		import controllers
 		hero_account = accounts[0]
 		hero_account.set_sec_question("")
 		#Email verified
+
 		hero_account.set_status(Account.USER_ACTIVE)
-		db.session.commit()
-		#Send a welcome email
-		controllers.send_email(email)
+		db_session.commit()
+		send_welcome_email(email)
 	except Exception as e:
 		trace(str(e))
-		db.session.rollback()
+		db_session.rollback()
 
 	# bind session cookie to this 1) Account  and/or 2) this profile 
-	bp = models.Profile.query.filter_by(account=hero_account.userid).all()[0]
+	bp = Profile.query.filter_by(account=hero_account.userid).all()[0]
 	ht_bind_session(bp)
 	return make_response(redirect('/dashboard'))
 
@@ -342,18 +340,20 @@ def profile():
 	"""
 
 	uid = session['uid']
-	bp  = models.Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
-	hp  = models.Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]		# Hero Profile
-	pi  = models.OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
-#	print "BP = ", bp.name, bp.heroid, bp.account
-#	print "HP = ", hp.name, hp.heroid, hp.account
-#	print pi, len(pi)
+	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
+	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]	# Hero Profile
+	pi  = OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
+
 
 	if (pi):
 		pi = pi[0].stripe
-		print pi
 	else:
-		pi = "" 
+		pi = "No Stripe Info for User." 
+
+	print "BP = ", bp.name, bp.heroid, bp.account
+	print "HP = ", hp.name, hp.heroid, hp.account
+	print "PaymentInfo = ", pi
+
 
 	nts = NTSForm(request.form)
 	if nts.validate_on_submit():
@@ -364,11 +364,17 @@ def profile():
 		ts_end = str(nts.newslot_endtime.data)
 		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
 		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
-		bywhom = int(bp.heroid != hp.heroid) 
+		bywhom = int(bp.heroid != hp.heroid)
+		ccname = str(nts.newslot_ccname.data)
+		ccnbr = str(nts.newslot_ccnbr.data)
+		ccexp = str(nts.newslot_ccexp.data)
+		cccvv = str(nts.newslot_cccvv.data)
+		print (ccname, ccnbr, ccexp, cccvv)
+		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
 		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
 		try:
-			db.session.add(timslt)
-			db.session.commit()
+			db_session.add(timslt)
+			db_session.commit()
 			#flash('HT has submitted your proposal')
 			#email(hp, bp)
 			#add event to users' event queue
@@ -376,23 +382,31 @@ def profile():
 
 		except Exception as e:
 			print e
-			db.session.rollback()
+			db_session.rollback()
 			return serviceFailure("profile", e)
 
 	elif request.method == 'POST':
 		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
+		ccname = nts.newslot_ccname.data
+		ccnbr = nts.newslot_ccnbr.data
+		ccexp = nts.newslot_ccexp.data
+		cccvv = nts.newslot_cccvv.data
+		print (ccname, ccnbr, ccexp, cccvv)
+		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
 	else:
 		pass
 
 	nts.hero.data = hp.heroid
 
 
-	tmeslts = sq.query(models.Timeslot.id, models.Timeslot.status, models.Timeslot.location, models.Timeslot.description, models.Timeslot.cost, models.Timeslot.ts_begin, models.Timeslot.ts_finish, models.Timeslot.creator_id) \
-				.join(models.Profile, models.Timeslot.profile_id == models.Profile.heroid) \
-				.filter(models.Timeslot.profile_id == hp.heroid, models.Timeslot.status == models.TS_PROP_BY_HERO).all()
-	reviews = sq.query(models.Review.heroid, models.Review.rating, models.Review.text, models.Review.ts, models.Profile.name, models.Profile.location, models.Profile.headline, models.Profile.imgURL, models.Profile.reviews, models.Profile.rating, models.Profile.baserate)\
-				.join(models.Profile, models.Review.author == models.Profile.heroid) \
-				.filter(models.Review.heroid == hp.heroid).all()
+	tmeslts = [] 
+#	db_session.query(Timeslot.id, Timeslot.status, Timeslot.location, Timeslot.description, Timeslot.cost, Timeslot.ts_begin, Timeslot.ts_finish, Timeslot.creator_id) \
+#				.join(Profile, Timeslot.profile_id == Profile.heroid) \
+#				.filter(Timeslot.profile_id == hp.heroid, Timeslot.status == TS_PROP_BY_HERO).all()
+
+	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
+				.join(Profile, Review.author == Profile.heroid) \
+				.filter(Review.heroid == hp.heroid).all()
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.imgURL)
 	return make_response(render_template('profile.html', title='- ' + hp.name, hp=hp, bp=bp, revs=reviews, timeslots=tmeslts, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
@@ -406,10 +420,10 @@ def profile():
 @req_authentication
 def cancelAppt():
 	""" Cancels a logged in user's appointment. """
-	
+
 	uid = session['uid']
-	bp  = models.Profile.query.filter_by(account=uid).all()[0]
-	ts  = models.Appointment.query.filter_by(id=request.form.get('appt',None)).all()
+	bp  = Profile.query.filter_by(account=uid).all()[0]
+	ts  = Appointment.query.filter_by(id=request.form.get('appt',None)).all()
 	print "ts_len" , len(ts)
 	if len(ts) == 1:
 		print ts
@@ -418,14 +432,14 @@ def cancelAppt():
 	print 'ts = ', ts
 
 	try:
-		db.session.delete(ts)
-		db.session.commit()
+		db_session.delete(ts)
+		db_session.commit()
 
 		#send emails notifying users.
 		print "success, deleted ts"
 	except Exception as e:
 		print e
-		db.session.rollback()
+		db_session.rollback()
 		return serviceFailure("profile", e)
 
 	return make_response(redirect('/dashboard'))
@@ -445,7 +459,7 @@ def dashboard():
 	"""
 
 	uid = session['uid']
-	bp = models.Profile.query.filter_by(account=uid).all()[0]
+	bp = Profile.query.filter_by(account=uid).all()[0]
 	print 'profile.account = ', uid
 
 	# Reservations?
@@ -462,48 +476,48 @@ def dashboard():
 	# get proposals 
 
 	# get appointments
-	timeslot_by_me = sq.query(models.Timeslot.id, \
-						  models.Timeslot.status, \
-						  models.Timeslot.location, \
-						  models.Timeslot.description, \
-						  models.Timeslot.cost, \
-						  models.Timeslot.ts_begin, \
-						  models.Timeslot.ts_finish, \
-						  models.Timeslot.profile_id, \
-						  models.Timeslot.creator_id, \
-						  models.Timeslot.challenge, \
-						  models.Profile.heroid, \
-						  models.Profile.name, \
-						  models.Profile.imgURL, \
-						  models.Profile.rating, \
-						  models.Profile.reviews, \
-						  models.Profile.headline) \
-						  .join(models.Profile, models.Timeslot.profile_id == models.Profile.heroid) \
-						  .filter(models.Timeslot.creator_id == bp.heroid).all()
+	timeslot_by_me = db_session.query(Timeslot.id, \
+						  Timeslot.status, \
+						  Timeslot.location, \
+						  Timeslot.description, \
+						  Timeslot.cost, \
+						  Timeslot.ts_begin, \
+						  Timeslot.ts_finish, \
+						  Timeslot.profile_id, \
+						  Timeslot.creator_id, \
+						  Timeslot.challenge, \
+						  Profile.heroid, \
+						  Profile.name, \
+						  Profile.imgURL, \
+						  Profile.rating, \
+						  Profile.reviews, \
+						  Profile.headline) \
+						  .join(Profile, Timeslot.profile_id == Profile.heroid) \
+						  .filter(Timeslot.creator_id == bp.heroid).all()
 
-	timeslot_to_me = sq.query(models.Timeslot.id, \
-						  models.Timeslot.status, \
-						  models.Timeslot.location, \
-						  models.Timeslot.description, \
-						  models.Timeslot.cost, \
-						  models.Timeslot.ts_begin, \
-						  models.Timeslot.ts_finish, \
-						  models.Timeslot.profile_id, \
-						  models.Timeslot.creator_id, \
-						  models.Timeslot.challenge, \
-						  models.Profile.heroid, \
-						  models.Profile.name, \
-						  models.Profile.imgURL, \
-						  models.Profile.rating, \
-						  models.Profile.reviews, \
-						  models.Profile.headline) \
-						  .join(models.Profile, models.Timeslot.creator_id == models.Profile.heroid) \
-						  .filter(models.Timeslot.profile_id == bp.heroid).all()
+	timeslot_to_me = db_session.query(Timeslot.id, \
+						  Timeslot.status, \
+						  Timeslot.location, \
+						  Timeslot.description, \
+						  Timeslot.cost, \
+						  Timeslot.ts_begin, \
+						  Timeslot.ts_finish, \
+						  Timeslot.profile_id, \
+						  Timeslot.creator_id, \
+						  Timeslot.challenge, \
+						  Profile.heroid, \
+						  Profile.name, \
+						  Profile.imgURL, \
+						  Profile.rating, \
+						  Profile.reviews, \
+						  Profile.headline) \
+						  .join(Profile, Timeslot.creator_id == Profile.heroid) \
+						  .filter(Timeslot.profile_id == bp.heroid).all()
 
 	print "number of timeslots = ", len(timeslot_to_me)
 
-#	prop_to_me = timeslot_to_me.filter(models.Timeslot.profile_id == bp.heroid).all()
-#	prop_by_me = timeslot_to_me.filter(models.Timeslot.creator_id == bp.heroid).all()
+#	prop_to_me = timeslot_to_me.filter(Timeslot.profile_id == bp.heroid).all()
+#	prop_by_me = timeslot_to_me.filter(Timeslot.creator_id == bp.heroid).all()
 #	print "prop_to_me = ", len(prop_to_me)
 #	print "prop_by_me = ", len(prop_by_me)
 #	prop = prop_to_me  + prop_by_me
@@ -514,47 +528,47 @@ def dashboard():
 	for p in better_prop:
 		print p
 
-	appt_by_me = sq.query(models.Appointment.id, \
-							models.Appointment.status, \
-							models.Appointment.buyer_prof, \
-							models.Appointment.sellr_prof, \
-							models.Appointment.location, \
-							models.Appointment.description, \
-							models.Appointment.ts_begin, \
-							models.Appointment.ts_finish, \
-							models.Appointment.ts_finish, \
-							models.Appointment.cost, \
-							models.Profile.heroid, \
-							models.Profile.name, \
-							models.Profile.imgURL, \
-							models.Profile.reviews, \
-							models.Profile.rating, \
-							models.Profile.headline) \
-							.join(models.Profile, models.Profile.heroid == models.Appointment.buyer_prof)\
-							.filter(models.Appointment.sellr_prof == bp.heroid).all()
+	appt_by_me = db_session.query(Appointment.id, \
+							Appointment.status, \
+							Appointment.buyer_prof, \
+							Appointment.sellr_prof, \
+							Appointment.location, \
+							Appointment.description, \
+							Appointment.ts_begin, \
+							Appointment.ts_finish, \
+							Appointment.ts_finish, \
+							Appointment.cost, \
+							Profile.heroid, \
+							Profile.name, \
+							Profile.imgURL, \
+							Profile.reviews, \
+							Profile.rating, \
+							Profile.headline) \
+							.join(Profile, Profile.heroid == Appointment.buyer_prof)\
+							.filter(Appointment.sellr_prof == bp.heroid).all()
 
-	appt_of_me = sq.query(models.Appointment.id, \
-							models.Appointment.status, \
-							models.Appointment.buyer_prof, \
-							models.Appointment.sellr_prof, \
-							models.Appointment.location, \
-							models.Appointment.description, \
-							models.Appointment.ts_begin, \
-							models.Appointment.ts_finish, \
-							models.Appointment.ts_finish, \
-							models.Appointment.cost, \
-							models.Profile.heroid, \
-							models.Profile.name, \
-							models.Profile.imgURL, \
-							models.Profile.reviews, \
-							models.Profile.rating, \
-							models.Profile.headline) \
-							.join(models.Profile, models.Profile.heroid == models.Appointment.sellr_prof)\
-							.filter(models.Appointment.buyer_prof == bp.heroid).all()
+	appt_of_me = db_session.query(Appointment.id, \
+							Appointment.status, \
+							Appointment.buyer_prof, \
+							Appointment.sellr_prof, \
+							Appointment.location, \
+							Appointment.description, \
+							Appointment.ts_begin, \
+							Appointment.ts_finish, \
+							Appointment.ts_finish, \
+							Appointment.cost, \
+							Profile.heroid, \
+							Profile.name, \
+							Profile.imgURL, \
+							Profile.reviews, \
+							Profile.rating, \
+							Profile.headline) \
+							.join(Profile, Profile.heroid == Appointment.sellr_prof)\
+							.filter(Appointment.buyer_prof == bp.heroid).all()
 
 
 
-#							.filter(or_(models.Appointment.buyer_prof == bp.heroid, models.Appointment.sellr_prof == bp.heroid)).all()
+#							.filter(or_(Appointment.buyer_prof == bp.heroid, Appointment.sellr_prof == bp.heroid)).all()
 	appt_timeslots = appt_of_me + appt_by_me
 	print "number of appt_timeslots = ", appt_timeslots
 
@@ -569,7 +583,7 @@ def dashboard():
 @dbg_enterexit
 @req_authentication
 def deal_with_proposals():
-	
+
 	log_uevent(session['uid'], " modifying proposal status")
 	resp = make_response(redirect('/dashboard'))
 
@@ -587,7 +601,7 @@ def deal_with_proposals():
 
 		rollback_on_error = True
 		trace ('search for proposal '  +  form.proposal_id.data) 
-		proposal = models.Timeslot.query.filter_by(challenge=form.proposal_id.data).all()
+		proposal = Timeslot.query.filter_by(challenge=form.proposal_id.data).all()
 		if (len(proposal) != 1):
 			#raise error
 			trace ('natch, len = ' + str(len(proposal))) 
@@ -600,7 +614,7 @@ def deal_with_proposals():
 		appointment.apptid     = the_proposal.challenge
 		appointment.buyer_prof = the_proposal.creator_id
 		appointment.sellr_prof = the_proposal.profile_id
-		appointment.status		= models.APPT_HAVE_AGREEMENT
+		appointment.status		= APPT_HAVE_AGREEMENT
 		appointment.location	= the_proposal.location
 		appointment.ts_begin	= the_proposal.ts_begin
 		appointment.ts_finish 	= the_proposal.ts_finish
@@ -613,16 +627,16 @@ def deal_with_proposals():
 		print appointment
 		trace (appointment) 
 
-		db.session.add(appointment)
-		db.session.delete(the_proposal)
-		db.session.commit()
+		db_session.add(appointment)
+		db_session.delete(the_proposal)
+		db_session.commit()
 
 
 	except Exception as e:
 		print e
 		trace ('hrm, some major error')
 		if rollback_on_error:
-			db.session.rollback()
+			db_session.rollback()
 		#CAH, this is a problem, how do we signal a problem occurred?
 		#flash there was a problem, retry
 		trace (e)
@@ -647,7 +661,7 @@ def upload():
 		if (len(image_data) > 0):
 			tmp_filename = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 			open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], tmp_filename), 'w').write(image_data)
-			
+
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
@@ -666,7 +680,7 @@ def editprofile():
 	""" Provides Hero space to update their information.  """
 
 	uid = session['uid']
-	bp  = models.Profile.query.filter_by(account=uid).all()[0]
+	bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = ProfileForm(request.form)
 	if form.validate_on_submit():
@@ -687,7 +701,7 @@ def editprofile():
 			if (len(image_data) > 0):
 				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 				trace (destination_filename + ", sz = " + str(len(image_data)))
-				
+
 				#print source_extension
 				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
@@ -701,13 +715,13 @@ def editprofile():
 				if (bp.url[:7] != "http://"):
 					bp.url = "http://" + bp.url;
 
-			db.session.commit()
+			db_session.commit()
 			log_uevent(uid, "update profile")
 
 			return jsonify(rc="Success")
 		except Exception as e:
 			print e
-			db.session.rollback()
+			db_session.rollback()
 			#CAH, this is a problem, how do we signal a problem occurred?
 			#flash there was a problem, retry
 			return jsonify(error=e)
@@ -730,7 +744,7 @@ def editprofile():
 	form.edit_bio.data      = bp.bio
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
 	resp = make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
-	
+
 	return resp
 
 
@@ -745,15 +759,15 @@ def charge():
 	print "get card", card
 	tsid = request.form['ts']
 	print "get ts", tsid
-	ts  = models.Timeslot.query.filter_by(id=tsid).all()[0]
+	ts  = Timeslot.query.filter_by(id=tsid).all()[0]
 	ts_owner = ts.profile_id
 
-	bp  = models.Profile.query.filter_by(account=uid).all()[0]
-	ba  = models.Account.query.filter_by(userid =uid).all()[0]
-	hp  = models.Profile.query.filter_by(heroid=ts.profile_id).all()[0]
-	ha  = models.Account.query.filter_by(userid=hp.account).all()[0]
+	bp  = Profile.query.filter_by(account=uid).all()[0]
+	ba  = Account.query.filter_by(userid =uid).all()[0]
+	hp  = Profile.query.filter_by(heroid=ts.profile_id).all()[0]
+	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
-	pi  = models.OauthStripe.query.filter_by(account=ha.userid).all()
+	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
 #	print "BA = ", ba
 #	print "HA = ", ha
 #	print pi
@@ -767,7 +781,7 @@ def charge():
 
 	customer = stripe.Customer.create (email=ba.email, card=request.form['stripeToken'], api_key=charge_api_key)
 	#pprint(customer)
-	
+
 
 
 	# get buyer; becomes seller's customer.  
@@ -792,7 +806,7 @@ def charge():
 	#appointment.apptid     = ts.challenge
 	appointment.buyer_prof = bp.heroid
 	appointment.sellr_prof = hp.heroid
-	appointment.status		= models.APPT_HAVE_AGREEMENT
+	appointment.status		= APPT_HAVE_AGREEMENT
 	appointment.location	= ts.location
 	appointment.ts_begin	= ts.ts_begin
 	appointment.ts_finish 	= ts.ts_finish
@@ -813,11 +827,11 @@ def charge():
 	print charge['id']
 
 	try:
-		db.session.add(appointment)
-		db.session.delete(ts)
-		db.session.commit()
+		db_session.add(appointment)
+		db_session.delete(ts)
+		db_session.commit()
 	except Exception as e:
-		db.session.rollback()
+		db_session.rollback()
 		print e
 		return redirect('/dbFailure')
 
@@ -830,8 +844,8 @@ def charge():
 def create_proposal():
 	uid = session['uid']
 	log_uevent(session['uid'], " proposing meeting")
-	bp = models.Profile.query.filter_by(account=uid).all()[0]		# browsing profile
-	hp  = models.Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]		# Hero Profile
+	bp = Profile.query.filter_by(account=uid).all()[0]		# browsing profile
+	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]		# Hero Profile
 	#trace(request.files)
 
 	nts = NTSForm(request.form)
@@ -863,12 +877,11 @@ def settings():
 	""" Provides users the ability to modify their settings.
 		- detect HT Session info.  Provide modified info.
 	"""
-	import controllers
 	uid = session['uid']
-	bp   = models.Profile.query.filter_by(account=uid).all()[0]
-	ba   = models.Account.query.filter_by(userid=uid).all()[0]
+	bp   = Profile.query.filter_by(account=uid).all()[0]
+	ba   = Account.query.filter_by(userid=uid).all()[0]
 	card = 'Null'
-#	card = models.OauthStripe.query.filter_by(account=uid).all()
+#	card = OauthStripe.query.filter_by(account=uid).all()
 #	if (len(card) == 0):
 #		print "No stripe account"
 #		card = "Payments not setup"
@@ -894,8 +907,8 @@ def settings():
 			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
 			update_acct = True
 			update_pass = form.set_input_newpass.data
-			controllers.send_email(ba.email, passChange = True)
-			errmsg = "Your password has been successfully updated."
+			send_passwd_change_email(ba.email)
+			errmsg = "Password successfully updated."
 
 		if (ba.email != form.set_input_email.data):
 			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
@@ -920,18 +933,18 @@ def settings():
 		if (update_prof):
 			try:
 				print "update prof"
-				db.session.add(bp)
-				db.session.commit()
+				db_session.add(bp)
+				db_session.commit()
 				trace("commited plus email is : " + update_mail)
 			except Exception as e:
-				db.session.rollback()
+				db_session.rollback()
 				return redirect('/dbFailure')
 
 
 		#change email; send email to both.
 		if (update_mail):
-			controllers.send_email(ba.email, emailChange=True, newEmail=form.set_input_email.data)
-			errmsg = "Your email has been successfully updated."
+			send_email_change_email(ba.email, form.set_input_email.data)
+			errmsg = "Your email has been updated."
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
@@ -951,7 +964,7 @@ def settings():
 def error_sanitize(message):
 	if (message[0:16] == "(IntegrityError)"):
 		message = "Email already in use."
-	
+
 	return message
 
 
@@ -960,8 +973,8 @@ def error_sanitize(message):
 @req_authentication
 def settings_verify_stripe():
 	uid = session['uid']
-	bp   = models.Profile.query.filter_by(account=uid).all()[0]
-	acct = models.Account.query.filter_by(userid=uid).all()[0]
+	bp   = Profile.query.filter_by(account=uid).all()[0]
+	acct = Account.query.filter_by(userid=uid).all()[0]
 
 	print "verify -- in oauth_callback, get auth code/token"
 	error = request.args.get('error', "None")
@@ -980,7 +993,7 @@ def settings_verify_stripe():
 	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
 	#	invalid_request, 	Missing response_type parameter.
 	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
-	
+
 
 	if (authr == "None" and error != "None"):
 		print "verify - auth Failed", edesc
@@ -993,7 +1006,7 @@ def settings_verify_stripe():
 	postdata['client_secret'] = stripe_keys['secret']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
-	
+
 	print "verify -- post Token to stripe"
 	resp, content = stripeHTTP.request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
 	rc = json.loads(content)
@@ -1015,7 +1028,7 @@ def settings_verify_stripe():
 		print "getToken Failed", edesc
 		return "auth failed %s" % edesc, 500
 
-	stripeAccount = models.OauthStripe.query.filter_by(account=uid).all()
+	stripeAccount = OauthStripe.query.filter_by(account=uid).all()
 	if len(stripeAccount) == 1:
 		stripeAccount = stripeAccount[0]
 		if (stripeAccount.stripe != rc['stripe_user_id']):
@@ -1037,12 +1050,12 @@ def settings_verify_stripe():
 
 	try:
 		print "try creating oauth_row"
-		db.session.add(stripeAccount)
-		db.session.commit()
+		db_session.add(stripeAccount)
+		db_session.commit()
 		return make_response(redirect('/settings'))
 	except Exception as e:
 		print "had an exception with oauth_row" + str(e)
-		db.session.rollback()
+		db_session.rollback()
 
 	return "good - but must've failed on create", 200
 
@@ -1054,7 +1067,7 @@ def tos():
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
-		bp  = models.Profile.query.filter_by(account=uid).all()[0]
+		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	return make_response(render_template('tos.html', title = '- Terms and Conditions', bp=bp))
 
@@ -1065,19 +1078,19 @@ def tos():
 @req_authentication
 def review():
 	uid = session['uid']
-	bp = models.Profile.query.filter_by(account=uid).all()[0]		# browsing profile
-	rp = models.Profile.query.filter_by(heroid=bp.heroid).all()[0]	# reviewed profile
+	bp = Profile.query.filter_by(account=uid).all()[0]		# browsing profile
+	rp = Profile.query.filter_by(heroid=bp.heroid).all()[0]	# reviewed profile
 
 	review_form = ReviewForm(request.form)
 	if review_form.validate_on_submit():
 		try:
 			# add review to database
 			new_review = Review(reviewed_heroid=rp.heroid, author_profile=bp.heroid, rating=5-int(review_form.input_rating.data), text=review_form.input_review.data)
-			db.session.add(new_review)
+			db_session.add(new_review)
 			log_uevent(uid, "posting " + str(new_review))
-			
+
 			# update the reviewed profile's ratings, in the future, delay this
-			reviews = models.Review.query.filter_by(heroid=rp.heroid).all()
+			reviews = Review.query.filter_by(heroid=rp.heroid).all()
 			sum_ratings = new_review.rating
 			for old_review in reviews:
 				sum_ratings += old_review.rating
@@ -1086,21 +1099,21 @@ def review():
 			rp.reviews = len(reviews) + 1
 			rp.rating  = float(sum_ratings) / (len(reviews) + 1)
 			log_uevent(rp.heroid, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
-			db.session.add(rp)
-			db.session.commit()
+			db_session.add(rp)
+			db_session.commit()
 
 			# flash review will be posted at end of daysleft
 			# email alt user to know review was captured
 			return make_response(redirect('/dashboard'))
 		except Exception as e:
 			print "had an exception with Review" + str(e)
-			db.session.rollback()
+			db_session.rollback()
 	elif request.method == 'POST':
 		log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
 		pass
 	else:
 		pass
-		
+
 	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=30, form=review_form))
 
 
@@ -1123,10 +1136,10 @@ def hero_profile(heroName):
 
 	#split profile into a parsing Headers and a 'go get shit' part.
 	# this can call into the 'go get shit'
-	hero = models.Profile.query.filter_by(vanity=heroName).all()
+	hero = Profile.query.filter_by(vanity=heroName).all()
 	if len(hero) == 1: 
 		hp = hero[0]
-		
+
 	return pageNotFound('unknown', 404);
 
 
@@ -1157,18 +1170,20 @@ def servicefailure(pg):
 def serviceFailure(pg, error):
 	return render_template('500.html'), 500
 
+
 @ht_server.route("/recovery", methods=['GET', 'POST'])
 def recovery():
 	#mycssfiles = ["static/css/dashboard_lights.css", "static/css/this_is_pretty_cool.css"]
 	form = RecoverPasswordForm(request.form)
-	errmsg = None
+	usrmsg = None
 	if request.method == 'POST':
-		import controllers
 		trace(form.rec_input_email.data)
-		errmsg = controllers.recovery(form.rec_input_email.data)
-	return render_template('recovery.html', form=form, cssfiles=None, errmsg=errmsg)
+		usrmsg = ht_password_recovery(form.rec_input_email.data)
+	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
 linkedin.pre_request = change_linkedin_query
+
+
 
 @ht_server.route('/newpassword/<challengeHash>', methods=['GET', 'POST'])
 def newpassword(challengeHash):
@@ -1182,7 +1197,7 @@ def newpassword(challengeHash):
 	if (query):
 		email  = query['email'][0]
 
-	accounts = models.Account.query.filter_by(sec_question=(str(challengeHash))).all()
+	accounts = Account.query.filter_by(sec_question=(str(challengeHash))).all()
 
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
@@ -1190,7 +1205,6 @@ def newpassword(challengeHash):
 			return redirect('/login')
 
 	if form.validate_on_submit():
-		import controllers
 		hero_account = accounts[0]
 		hero_account.set_sec_question("")
 		hero_account.pwhash = generate_password_hash(form.rec_input_newpass.data)
@@ -1198,16 +1212,14 @@ def newpassword(challengeHash):
 		trace("hash " + hero_account.pwhash)
 
 		try:
-			db.session.add(hero_account)
-			db.session.commit()
+			db_session.add(hero_account)
+			db_session.commit()
 			trace("Commited.")
 			# Password change email
-			controllers.send_email(email, passChange=True)
-
+			send_passwd_change_email(email)
 		except Exception as e:
 			trace(str(e))
-			db.session.rollback()
-
+			db_session.rollback()
 		return redirect('/login')
 
 	elif request.method == 'POST':
