@@ -228,6 +228,7 @@ def signup():
 	if ('uid' in session):
 		return redirect('/dashboard')
 
+	errmsg = None
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
@@ -236,17 +237,24 @@ def signup():
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		trace("Validated form -- make Acct")
-		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
-		if (bh):
-			ht_bind_session(bp)
-			resp = redirect('/dashboard')
+		
+		#check if email already exists in db
+		account = models.Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
+		if (len(account) == 1):
+			trace("email already exists in DB")
+			errmsg = "Account with the same email already exists."
 		else:
-			resp = redirect('/dbFailure')
-		return resp
+			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			if (bh):
+				ht_bind_session(bp)
+				resp = redirect('/dashboard')
+			else:
+				resp = redirect('/dbFailure')
+			return resp
 	elif request.method == 'POST':
 		trace("/signup form isn't valid" + str(form.errors))
 
-	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form))
+	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=errmsg))
 
 
 

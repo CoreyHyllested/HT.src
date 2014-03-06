@@ -89,6 +89,12 @@
 		</form>	
 	</div>
 
+	{% if errmsg != none %}
+		<script>
+			openAlertWindow('{{errmsg}}')
+		</script>
+	{% endif %}
+
 	<div id="signup-social">
 		<h2>Connect using...</h2>
 		

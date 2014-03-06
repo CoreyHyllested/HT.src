@@ -68,11 +68,11 @@ def send_email(toEmail, uid=None, verify=False, challenge_hash=None, passChange=
     # html is the html version
 
 	if verify:
-		html = "Thank you for creating a HeroTime account. Click <a href=\"http://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid=" + str(uid) +"\">here</a> to verify your email."
-		text = "Thank you for creating a HeroTime account. Go to http://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid="+str(uid) + " to verify your email."
+		html = "Thank you for creating a HeroTime account. Click <a href=\"https://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid=" + str(uid) +"\">here</a> to verify your email."
+		text = "Thank you for creating a HeroTime account. Go to https://127.0.0.1:5000/signup/verify/" + str(challenge_hash) + "?email="+str(toEmail)+"&uid="+str(uid) + " to verify your email."
 	elif recovery:
-		html = "Click <a href=\"http:127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + "\">here</a> to recover your HeroTime password."
-		text = "Go to http://127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + " to recover your HeroTime password."
+		html = "Click <a href=\"https:127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + "\">here</a> to recover your HeroTime password."
+		text = "Go to https://127.0.0.1:5000/newpassword/" + str(challenge_hash) + "?email=" + str(toEmail) + " to recover your HeroTime password."
 	elif passChange:
 		html = "Your HeroTime password has been changed."
 		text = html
@@ -172,10 +172,10 @@ def create_account(name, email, passwd):
 		db.session.rollback()
 		return None, False
 
-	log_uevent(hero.userid, 'successfully created myself')
-	mesg = Message("Welcome to HeroTime", sender="<HeroTime Accounts> accounts@herotime.co", recipients=[hero.email])
-	mesg.html = "Click <a href=\"http://herotime.co/signup/verify/" + str(challenge_hash) + "?email="+str(hero.email)+"&uid=" + str(hero.userid) +"\">here</a> to get started."
-	trace(mesg.html)
+	#og_uevent(hero.userid, 'successfully created myself')
+	#mesg = Message("Welcome to HeroTime", sender="<HeroTime Accounts> accounts@herotime.co", recipients=[hero.email])
+	#mesg.html = "Click <a href=\"http://herotime.co/signup/verify/" + str(challenge_hash) + "?email="+str(hero.email)+"&uid=" + str(hero.userid) +"\">here</a> to get started."
+	#trace(mesg.html)
 	#msg.text = "Click here to get started: \"http://127.0.0.1:5000/verify/" + str(challengeHash) + "?uid=" + str(userid) + "\""
 	#emailer.send(msg)
 
