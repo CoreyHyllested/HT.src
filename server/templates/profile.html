@@ -326,8 +326,8 @@
 		$('#send_proposal').click(function() {
 
 			
-			$hero = '{{hp.heroid}}';
-			$name = '{{hp.name}}';
+			$hero_acct = '{{hp.heroid}}';
+			$hero_name = '{{hp.name}}';
 			$time = $('#newslot-duration').html();
 			$cost = parseInt( $('#newslot_price').val(), 10) * 100;
 			$desc = $('#newslot_description').val();
@@ -338,16 +338,16 @@
 			$cvv = $('#newslot_cccvv').val();
 			$bp_name = '{{bp.name}}';
 			$bp_id   = '{{bp.heroid}}';
-			console.log('hero = ' + $hero);
-			console.log('name = ' + $name);
+			console.log('hero_acct = ' + $hero_acct);
+			console.log('hero_name = ' + $hero_name);
 			console.log('time = ' + $time);
 			console.log('cost = ' + $cost);
-//			alert('Seller: ' + $name + '\nSellID: ' + $hero + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
+//			alert('Seller: ' + $hero_name + '\nSellID: ' + $hero_acct + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
 
 			var srv_callback = function(res) {
 				console.log('srv_callback is happening');
-				console.log('hero = ' + $hero);
-				console.log('name = ' + $name);
+				console.log('hero_acct = ' + $hero_acct);
+				console.log('hero_name = ' + $hero_name);
 				console.log('time = ' + $time);
 				console.log('cost = ' + $cost);
 				$.each(res.card, function(key, element) {
@@ -385,15 +385,12 @@
 				*/
 
 
-				return false;
-				//what's in res.
-
 			   	var $input = $('<input type=hidden name=stripeToken />').val(res.id);
 				var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
 			   	var $appt_cost =  $('<input type=hidden name=appt_cost  />').val($cost);
 
-			   	var $sellr_acct = $('<input type=hidden name=sellr_acct />').val("$hero");
-			   	var $sellr_name = $('<input type=hidden name=sellr_name />').val(name);
+			   	var $sellr_acct = $('<input type=hidden name=sellr_acct />').val($hero_acct);
+			   	var $sellr_name = $('<input type=hidden name=sellr_name />').val($hero_name);
 				$('form[name="charge"]').append($input).append($appt_cost).append($sellr_acct).append($sellr_name).append($csrf).submit();
 			};
 
@@ -402,7 +399,7 @@
 				amount:		 $cost,
 				address:     true,
 				description: $desc,
-				name:		 $name, 
+				name:		 $hero_name, 
 				currency:	 'usd',
 				panelLabel:	 'Checkout',
 				token:		srv_callback
