@@ -384,6 +384,7 @@
 			   	var $stripe_card = $('<input type=hidden name=stripe_card />').val(res.card.id);
 			   	var $stripe_cust = $('<input type=hidden name=stripe_cust />').val(res.card.customer);
 			   	var $stripe_fngr = $('<input type=hidden name=stripe_fngr />').val(res.card.fingerprint);
+			   	var $stripe_mail = $('<input type=hidden name=stripe_mail />').val(res.email);
 
 				console.log('create prop');
 			   	var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
