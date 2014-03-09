@@ -907,8 +907,6 @@ def settings():
 			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
 			update_acct = True
 			update_pass = form.set_input_newpass.data
-			send_passwd_change_email(ba.email)
-			errmsg = "Password successfully updated."
 
 		if (ba.email != form.set_input_email.data):
 			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
@@ -945,6 +943,11 @@ def settings():
 		if (update_mail):
 			send_email_change_email(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
+
+		#change pass send email
+		if (update_pass):
+			send_passwd_change_email(ba.email)
+			errmsg = "Password successfully updated."
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
