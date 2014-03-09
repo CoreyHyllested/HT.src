@@ -12,6 +12,7 @@ from httplib2 import Http
 from server import ht_server
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
+from server.infrastructure.errors import * 
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
@@ -74,10 +75,10 @@ def search():
 
 	if (keywords is not None):
 		print "keywords = ", keywords
-		rc_name = results.filter(Profile.name.like("%"+keywords+"%"))#.all()
-		rc_hdln = results.filter(Profile.headline.like("%"+keywords+"%"))#.all()
-		rc_desc = results.filter(Profile.bio.like("%"+keywords+"%")) #.all()
-		rc_inds = results.filter(Profile.industry.like("%"+keywords+"%")) #.all()
+		rc_name = results.filter(Profile.name.ilike("%"+keywords+"%"))#.all()
+		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))#.all()
+		rc_desc = results.filter(Profile.bio.ilike("%"+keywords+"%")) #.all()
+		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%")) #.all()
 		#rc_keys = (rc_names + rc_headline + rc_descript)
 		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
 		#print len(rc_keys)
@@ -365,8 +366,11 @@ def profile():
 		cccvv = str(nts.newslot_cccvv.data)
 		print (ccname, ccnbr, ccexp, cccvv)
 		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
-		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
 		try:
+			timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
+			test_creditcard(timslt, ccname, ccnbr, ccexp, cccvv)
+
+			# test CC# first to see if it can be charged.
 			db_session.add(timslt)
 			db_session.commit()
 			#flash('HT has submitted your proposal')
@@ -378,7 +382,8 @@ def profile():
 			print e
 			db_session.rollback()
 			return serviceFailure("profile", e)
-
+		except InvalidCreditCard as e:
+			print e
 	elif request.method == 'POST':
 		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
 		ccname = nts.newslot_ccname.data
@@ -751,10 +756,13 @@ def charge():
 	print "UID", uid
 	card = request.form['stripeToken']
 	print "get card", card
-	tsid = request.form['ts']
-	print "get ts", tsid
-	ts  = Timeslot.query.filter_by(id=tsid).all()[0]
-	ts_owner = ts.profile_id
+	print 'sellr_acct', request.values.get('sellr_acct')
+	print 'sellr_name', request.values.get('sellr_name')
+	print 'appt_cost', request.values.get('appt_cost')
+	print 'appt_cost', request.values.get('appt_cost')
+	for k,v in request.form:
+		print 'formdata ', k, v
+
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
@@ -762,6 +770,8 @@ def charge():
 	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
 	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
+
+	return redirect('/dashboard')
 #	print "BA = ", ba
 #	print "HA = ", ha
 #	print pi
