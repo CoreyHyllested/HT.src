@@ -193,8 +193,8 @@ class Profile(Base):
 class Timeslot(Base):
 	__tablename__ = "timeslot"
 	id         = Column(Integer, primary_key = True)
-	profile_id = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-	creator_id = Column(String(40), ForeignKey('profile.heroid'), nullable=True,  index=True)			# if creator_id != profile_id; proposal = True
+	profile_id = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# SELLER
+	creator_id = Column(String(40), ForeignKey('profile.heroid'), nullable=True,  index=True)			# BUYER (always a proposal) 
 	status     = Column(Integer, default=0)		#0 = free, #1 = bid on?  #2 = purchased, #4 = completed.   -1 = Removed/unlisted, #4 = canceled?
 
 

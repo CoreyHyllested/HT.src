@@ -84,9 +84,9 @@ class NTSForm(Form):
 	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
 
 	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
-	newslot_ccnbr		= IntegerField('ccnbr',		[validators.Optional(), validators.NumberRange(min=0, max=9999999999999999)])
-	newslot_ccexp		= IntegerField('ccexp',		[validators.Optional(), validators.NumberRange(min=314, max=9999)])
-	newslot_cccvv		= IntegerField('cccvv',		[validators.Optional(), validators.NumberRange(min=0, max=999)])
+	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional()])
+	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
+	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
 
 #
 
