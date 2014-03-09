@@ -754,26 +754,32 @@ def charge():
 	print "get variables"
 	uid = session['uid']
 	print "UID", uid
-	card = request.form['stripeToken']
-	print "get card", card
-	print 'sellr_acct', request.values.get('sellr_acct')
-	print 'sellr_name', request.values.get('sellr_name')
-	print 'appt_cost', request.values.get('appt_cost')
-	print 'sellr_name', request.form['sellr_name']
+	print "stripe_tokn", request.values.get('stripe_tokn')
+	print "stripe_card", request.values.get('stripe_card')
+	print "stripe_cust", request.values.get('stripe_cust')
+	print "stripe_fngr", request.values.get('stripe_fngr')
+
+	print 'prop_hero', request.values.get('prop_hero')
+	print 'prop_time', request.values.get('prop_time')
+	print 'prop_cost', request.values.get('prop_cost')
+	print 'prop_area', request.values.get('prop_area')
+	print 'prop_desc', request.values.get('prop_desc')
 
 
+	hero_id = request.values.get('prop_hero')
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
-#	hp  = Profile.query.filter_by(heroid=ts.profile_id).all()[0]
-#	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
-#	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
+	hp  = Profile.query.filter_by(heroid=hero_id).all()[0]
+	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
-	return redirect('/dashboard')
-#	print "BA = ", ba
-#	print "HA = ", ha
+	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
+
+	print "BA = ", ba
+	print "HA = ", ha
 #	print pi
 
+	return redirect('/dashboard')
 
 	charge_api_key = stripe_keys['secret']
 	print "charge_key", charge_api_key 

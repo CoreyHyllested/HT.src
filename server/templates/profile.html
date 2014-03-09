@@ -333,28 +333,20 @@
 			$desc = $('#newslot_description').val();
 			$area = $('#newslot_location').val();
 
-			$nbr = $('#newslot_ccnbr').val();
-			$exp = $('#newslot_ccexp').val();
-			$cvv = $('#newslot_cccvv').val();
 			$bp_name = '{{bp.name}}';
 			$bp_id   = '{{bp.heroid}}';
-			console.log('hero_acct = ' + $hero_acct);
-			console.log('hero_name = ' + $hero_name);
-			console.log('time = ' + $time);
-			console.log('cost = ' + $cost);
+			console.log('hero_acct = ' + $hero_acct + ' ;' + $hero_name);
 //			alert('Seller: ' + $hero_name + '\nSellID: ' + $hero_acct + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
 
 			var srv_callback = function(res) {
 				console.log('srv_callback is happening');
-				console.log('hero_acct = ' + $hero_acct);
-				console.log('hero_name = ' + $hero_name);
 				console.log('time = ' + $time);
 				console.log('cost = ' + $cost);
+
+				/*
 				$.each(res.card, function(key, element) {
 					    console.log('res.' + key + ' = ' + element);
 				});
-
-				/*
 				res.id = tok_3dAR0tkCHTAETp 
 				res.livemode = false 
 				res.created = 1394322237 
@@ -385,13 +377,29 @@
 				*/
 
 
-			   	var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+				console.log('create csrf');
 				var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
-			   	var $appt_cost =  $('<input type=hidden name=appt_cost  />').val($cost);
+				console.log('create stripe');
+			   	var $stripe_tokn = $('<input type=hidden name=stripe_tokn />').val(res.id);
+			   	var $stripe_card = $('<input type=hidden name=stripe_card />').val(res.card.id);
+			   	var $stripe_cust = $('<input type=hidden name=stripe_cust />').val(res.card.customer);
+			   	var $stripe_fngr = $('<input type=hidden name=stripe_fngr />').val(res.card.fingerprint);
 
-			   	var $sellr_acct = $('<input type=hidden name=sellr_acct />').val($hero_acct);
-			   	var $sellr_name = $('<input type=hidden name=sellr_name />').val($hero_name);
-				$('form[name="charge"]').append($input).append($appt_cost).append($sellr_acct).append($sellr_name).append($csrf).submit();
+				console.log('create prop');
+			   	var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
+			   	var $prop_time =  $('<input type=hidden name=prop_time />').val($);
+			   	var $prop_cost =  $('<input type=hidden name=prop_cost />').val($cost);
+			   	var $prop_area =  $('<input type=hidden name=prop_area />').val($area);
+			   	var $prop_desc =  $('<input type=hidden name=prop_desc />').val($desc);
+
+				
+				console.log('append CSRF');
+				$('form[name="charge"]').append($csrf);
+				console.log('append stripe');
+				$('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr);
+				console.log('append props');
+				$('form[name="charge"]').append($prop_hero).append($prop_time).append($prop_cost).append($prop_area).append($prop_desc);
+				$('form[name="charge"]').submit();
 			};
 
 			StripeCheckout.open({
