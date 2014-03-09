@@ -2772,7 +2772,7 @@ select:focus {
 #settings-wrap {
 	height: 100%;	
 	margin: auto;
-	min-height: 670px;	
+	min-height: 750px;	
 	position: relative;
 	width: 100%;
 }
@@ -2780,11 +2780,10 @@ select:focus {
 #settings-panel {
 	border: 1px #cccccc solid;
 	background-color: white;
-	height: 505px;
+	height: 584px;
 	margin: 30px auto;
 	position: relative;
 	width: 950px;
-	margin-bottom: 175px;
 }
 
 #settings-panel input[type="text"], input[type="password"] {
@@ -2833,7 +2832,7 @@ select:focus {
 
 #set-left-column {
 	border-right: 1px #cccccc solid;
-	height: 445px;
+	height: 520px;
 	margin-left: 30px;
 	margin-top: 30px;
 	float: left;
@@ -2856,42 +2855,53 @@ select:focus {
 	width: 392px;
 }
 
+#set-label-email-pass {
+	position: absolute;
+	top: 125px;
+}
+
+#set_input_email_pass {
+	position: absolute;
+	top: 150px;
+	width: 392px;
+}
+
 #set-password {
 	position: absolute;
-	top: 155px;
+	top: 225px;
 }
 
 #set-label-curpass {
 	position: absolute;
-	top: 200px;
+	top: 270px;
 	width: 400px;
 }
 
 #set_input_curpass {
 	position: absolute;
-	top: 225px;
+	top: 295px;
 	width: 390px;
 }
 
 #set-label-newpass {
 	position: absolute;
-	top: 280px;
+	top: 350px;
 }
 
 #set_input_newpass {
 	position: absolute;
-	top: 305px;
+	top: 375px;
 	width: 390px;
 }
 
 #set-label-verpass {
 	position: absolute;
-	top: 360px;
+	top: 430px;
 }
 
 #set_input_verpass {
 	position: absolute;
-	top: 385px;
+	top: 455px;
 	width: 390px;
 }
 
