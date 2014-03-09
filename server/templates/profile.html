@@ -254,11 +254,11 @@
 			</div>
 
 			<div id="proposal-buttons">
-				<div id="proposal_send_wrap">
-					<input type="submit" class="blueButton newSlotList" value="Send proposal"/>
-				</div>
 				<div id="to_calendar_wrap">
 					<a href="javascript:tab_switch('tab-cal', 'content-box-cal', 'true');" class="whiteButton toCalendar">Back to profile</a>
+				</div>
+				<div id="proposal_send_wrap">
+					<input id='send_proposal' type="submit" class="blueButton newSlotList" value="Send proposal"/>
 				</div>
 			</div>
 		</form>
@@ -292,9 +292,7 @@
             return false;
         }
     });
-</script>
 
-<script>
     google.maps.event.addDomListener(window, 'load', initialize);
 	document.getElementById("profile_price").innerHTML = "$" + format({{hp.baserate}});
 	document.getElementById("li_rate").innerHTML = "$" + format({{hp.baserate}}) + " / hour";
@@ -319,41 +317,99 @@
           document.getElementById(i).style.display = 'none';
           document.getElementById("slot-expand-"+i).style.display = 'none';
         }
-      };
-	}
+      }
+	};
 </script>
 
-<!-- Bottom bar -->
-
 <script>
-$(document).ready(function() {
-	$('div.blueButton').click(function() {
-		$ts   = $(this).attr("ts");
-		$cost = $(this).attr("cost")*100; 
-		$desc = $(this).attr("desc"); 
-		$name = '{{bp.name}}';
-        $currency   = 'usd';
-		$panelLabel = 'Checkout';
+	$(document).ready(function() {
+		$('#send_proposal').click(function() {
 
-		var token = function(res){
-        	var $input = $('<input type=hidden name=stripeToken />').val(res.id);
-        	var $frmts = $('<input type=hidden name=ts />').val($ts);
-			$('form[name="charge"]').append($input).append($frmts).submit();
-		};
+			
+			$hero = '{{hp.heroid}}';
+			$name = '{{hp.name}}';
+			$time = $('#newslot-duration').html();
+			$cost = parseInt( $('#newslot_price').val(), 10) * 100;
+			$desc = $('#newslot_description').val();
+			$area = $('#newslot_location').val();
 
-		StripeCheckout.open({
-			key:		 '{{ key }}',
-			amount:		 $cost,
-			address:     true,
-			description: $desc,
-			name:		 $name, 
-			currency:	 'usd',
-			panelLabel:	 'Checkout',
-			token:		 token
+			$nbr = $('#newslot_ccnbr').val();
+			$exp = $('#newslot_ccexp').val();
+			$cvv = $('#newslot_cccvv').val();
+			$bp_name = '{{bp.name}}';
+			$bp_id   = '{{bp.heroid}}';
+			console.log('hero = ' + $hero);
+			console.log('name = ' + $name);
+			console.log('time = ' + $time);
+			console.log('cost = ' + $cost);
+//			alert('Seller: ' + $name + '\nSellID: ' + $hero + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
+
+			var srv_callback = function(res) {
+				console.log('srv_callback is happening');
+				console.log('hero = ' + $hero);
+				console.log('name = ' + $name);
+				console.log('time = ' + $time);
+				console.log('cost = ' + $cost);
+				$.each(res.card, function(key, element) {
+					    console.log('res.' + key + ' = ' + element);
+				});
+
+				/*
+				res.id = tok_3dAR0tkCHTAETp 
+				res.livemode = false 
+				res.created = 1394322237 
+				res.used = false 
+				res.object = token 
+				res.type = card 
+				res.card = [object Object] 
+				res.email = corey.hyllested@gmail.com 
+				
+				[[res.card] == 
+					res.card.id = card_3dAUcwyJebTMrO 
+					res.card.id.object = card 
+					res.last4 = 4242 
+					res.type = Visa 
+					res.exp_month = 8 
+					res.exp_year = 2015 
+					res.fingerprint = cOBLtIWQiyFZUGvf 
+					res.customer = null 
+					res.country = US 
+					res.name = Corey Hyllested 
+					res.address_line1 = Apartment T-331 
+					res.address_line2 = null 
+					res.address_city = Boulder 
+					res.address_state = CO 
+					res.address_zip = 80305 
+					res.address_country = United States 
+				]
+				*/
+
+
+				return false;
+				//what's in res.
+
+			   	var $input = $('<input type=hidden name=stripeToken />').val(res.id);
+				var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
+			   	var $appt_cost =  $('<input type=hidden name=appt_cost  />').val($cost);
+
+			   	var $sellr_acct = $('<input type=hidden name=sellr_acct />').val("$hero");
+			   	var $sellr_name = $('<input type=hidden name=sellr_name />').val(name);
+				$('form[name="charge"]').append($input).append($appt_cost).append($sellr_acct).append($sellr_name).append($csrf).submit();
+			};
+
+			StripeCheckout.open({
+				key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
+				amount:		 $cost,
+				address:     true,
+				description: $desc,
+				name:		 $name, 
+				currency:	 'usd',
+				panelLabel:	 'Checkout',
+				token:		srv_callback
+			});
+			return false;
 		});
-		return false;
 	});
-});
 </script>
 
 {% endblock %}
