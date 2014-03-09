@@ -337,63 +337,63 @@ def profile():
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
 	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]	# Hero Profile
-	pi  = OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
+	#pi  = OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
 
 
-	if (pi):
-		pi = pi[0].stripe
-	else:
-		pi = "No Stripe Info for User." 
+	#if (pi):
+	#	pi = pi[0].stripe
+	#else:
+	#	pi = "No Stripe Info for User." 
 
 	print "BP = ", bp.name, bp.heroid, bp.account
 	print "HP = ", hp.name, hp.heroid, hp.account
-	print "PaymentInfo = ", pi
+#	print "PaymentInfo = ", pi
 
 
 	nts = NTSForm(request.form)
-	if nts.validate_on_submit():
-		log_uevent(uid, "creating proposal for " + str(hp.heroid))
+#	if nts.validate_on_submit():
+#		log_uevent(uid, "creating proposal for " + str(hp.heroid))
+#
+#		cost   = int(nts.newslot_price.data.replace(',', ''))
+#		ts_srt = str(nts.newslot_starttime.data)
+#		ts_end = str(nts.newslot_endtime.data)
+#		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
+#		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
+#		bywhom = int(bp.heroid != hp.heroid)
+#		ccname = str(nts.newslot_ccname.data)
+#		ccnbr = str(nts.newslot_ccnbr.data)
+#		ccexp = str(nts.newslot_ccexp.data)
+#		cccvv = str(nts.newslot_cccvv.data)
+#		print (ccname, ccnbr, ccexp, cccvv)
+#		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
+#		try:
+#			timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
+#			test_creditcard(timslt, ccname, ccnbr, ccexp, cccvv)
+#
+#			# test CC# first to see if it can be charged.
+#			db_session.add(timslt)
+#			db_session.commit()
+#			#flash('HT has submitted your proposal')
+#			#email(hp, bp)
+#			#add event to users' event queue
+#			return redirect('/dashboard')
 
-		cost   = int(nts.newslot_price.data.replace(',', ''))
-		ts_srt = str(nts.newslot_starttime.data)
-		ts_end = str(nts.newslot_endtime.data)
-		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
-		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
-		bywhom = int(bp.heroid != hp.heroid)
-		ccname = str(nts.newslot_ccname.data)
-		ccnbr = str(nts.newslot_ccnbr.data)
-		ccexp = str(nts.newslot_ccexp.data)
-		cccvv = str(nts.newslot_cccvv.data)
-		print (ccname, ccnbr, ccexp, cccvv)
-		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
-		try:
-			timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
-			test_creditcard(timslt, ccname, ccnbr, ccexp, cccvv)
-
-			# test CC# first to see if it can be charged.
-			db_session.add(timslt)
-			db_session.commit()
-			#flash('HT has submitted your proposal')
-			#email(hp, bp)
-			#add event to users' event queue
-			return redirect('/dashboard')
-
-		except Exception as e:
-			print e
-			db_session.rollback()
-			return serviceFailure("profile", e)
-		except InvalidCreditCard as e:
-			print e
-	elif request.method == 'POST':
-		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
-		ccname = nts.newslot_ccname.data
-		ccnbr = nts.newslot_ccnbr.data
-		ccexp = nts.newslot_ccexp.data
-		cccvv = nts.newslot_cccvv.data
-		print (ccname, ccnbr, ccexp, cccvv)
-		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
-	else:
-		pass
+#		except Exception as e:
+#			print e
+#			db_session.rollback()
+#			return serviceFailure("profile", e)
+#		except InvalidCreditCard as e:
+#			print e
+#	elif request.method == 'POST':
+#		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
+#		ccname = nts.newslot_ccname.data
+#		ccnbr = nts.newslot_ccnbr.data
+#		ccexp = nts.newslot_ccexp.data
+#		cccvv = nts.newslot_cccvv.data
+#		print (ccname, ccnbr, ccexp, cccvv)
+#		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
+#	else:
+#		pass
 
 	nts.hero.data = hp.heroid
 
@@ -759,17 +759,15 @@ def charge():
 	print 'sellr_acct', request.values.get('sellr_acct')
 	print 'sellr_name', request.values.get('sellr_name')
 	print 'appt_cost', request.values.get('appt_cost')
-	print 'appt_cost', request.values.get('appt_cost')
-	for k,v in request.form:
-		print 'formdata ', k, v
+	print 'sellr_name', request.form['sellr_name']
 
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
-	hp  = Profile.query.filter_by(heroid=ts.profile_id).all()[0]
-	ha  = Account.query.filter_by(userid=hp.account).all()[0]
+#	hp  = Profile.query.filter_by(heroid=ts.profile_id).all()[0]
+#	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
-	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
+#	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
 
 	return redirect('/dashboard')
 #	print "BA = ", ba
