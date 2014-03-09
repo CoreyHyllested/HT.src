@@ -24,50 +24,50 @@
   			  inline: true
   		  });
 	  });
-	  jQuery(function($) {
-		  $( "#datepicker2" ).datepicker({
-  			  inline: true
-  		  });
-	  });
+//	  jQuery(function($) {
+//		  $( "#datepicker2" ).datepicker({
+//  			  inline: true
+//  		  });
+//	  });
 	  jQuery(function($) {
       $('#datepicker').change(function() {
-				var d1 = document.getElementById("datepicker");
-				var d2 = document.getElementById("datepicker1");
-				var timeDiff = new Date(d2.value).getTime() - new Date(d1.value).getTime();
-				if (timeDiff < 0 || (d2.value == "")) {
+				var d1 = new Date(document.getElementById("datepicker").value);
+				var d2 = new Date(document.getElementById("datepicker1").value);
+				var timeDiff = d2.getTime() - d1.getTime();
+				if (timeDiff < 0 || document.getElementById("datepicker1").value == "") {
 					document.getElementById("datepicker1").value = document.getElementById("datepicker").value;
 				}
 				update_time_diff({{hp.baserate}});
       });
 	  });
 
-	jQuery(function($) {
-	  $('#datepicker2').change(function() {
-	    document.getElementById("header").innerHTML = document.getElementById("datepicker2").value;
-	    var c = {{timeslots|length}};
-		for (var i = 1; i < c + 1; i++){
-          if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
-            document.getElementById(i).style.display = 'none';
-            document.getElementById("slot-expand-"+i).style.display = 'none';
-          }
-          else {
-          	document.getElementById(i).style.display = 'block';
-          }
-		};
-	  });
-	});
-
 	  jQuery(function($) {
       $('#datepicker1').change(function() {
 				var d1 = new Date(document.getElementById("datepicker").value);
 				var d2 = new Date(document.getElementById("datepicker1").value);
 				var timeDiff = d2.getTime() - d1.getTime();
-				if (timeDiff < 0) {
+				if (timeDiff < 0 || document.getElementById("datepicker").value == "") {
                   document.getElementById("datepicker").value = document.getElementById("datepicker1").value;
 				}
                   update_time_diff({{hp.baserate}});
 			});
 	  });
+
+//	jQuery(function($) {
+//	  $('#datepicker2').change(function() {
+//	    document.getElementById("header").innerHTML = document.getElementById("datepicker2").value;
+//	    var c = {{timeslots|length}};
+//		for (var i = 1; i < c + 1; i++){
+//          if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
+//            document.getElementById(i).style.display = 'none';
+//            document.getElementById("slot-expand-"+i).style.display = 'none';
+//          }
+//          else {
+//         	document.getElementById(i).style.display = 'block';
+//          }
+//		};
+//	  });
+//	});
 </script>
 
 <div id="profile_pic">
@@ -120,10 +120,10 @@
 
 	<div id="content-top"></div>
 	<div id="appointments">
-		<h2 id="header"></h2>
+		<!--h2 id="header"></h2-->
 
    		<!-- Datepicker -->
-		<div id="datepicker2" class="calendar-dash"><!--LAZAR, this is the calendar --></div>
+		<!--div id="datepicker2" class="calendar-dash"><!--LAZAR, this is the calendar --><!--/div-->
 
 		<div id="make_proposal_wrap">
 			<h3>{% if hp is sameas bp %}Your calendar will go here {% else %}Book their time!{% endif %}</h3>
@@ -139,7 +139,7 @@
 	</div>
 	<div id="calendar">
 		<!--Calendar, Today button-->
-		<div id="today_button" class="button-light-full">Today</div>
+		<!--div id="today_button" class="button-light-full">Today</div-->
 	</div>
 
 	<div style="clear: both"></div>
@@ -278,23 +278,23 @@
 </div>
 
 <script>
-	//var jq = $.noConflict();
-	$("#today_button").click(function() {
-		var today = moment().format("dddd, MMM D, YYYY");
-		$("#datepicker2").datepicker('setDate', today);
-		document.getElementById("header").innerHTML = today;
-		//moment().format("dddd, MMM D, YYYY");
-	    var c = {{timeslots|length}};
-		for (var i = 1; i < c + 1; i++){
-          if (document.getElementById("day-"+i).innerHTML != today){
-            document.getElementById(i).style.display = 'none';
-            document.getElementById("slot-expand-"+i).style.display = 'none';
-          }
-          else {
-          	document.getElementById(i).style.display = 'block';
-          }
-		};
-	});
+	var jq = $.noConflict();
+	//$("#today_button").click(function() {
+	//	var today = moment().format("dddd, MMM D, YYYY");
+	//	$("#datepicker2").datepicker('setDate', today);
+	//	document.getElementById("header").innerHTML = today;
+	//	//moment().format("dddd, MMM D, YYYY");
+	//    var c = {{timeslots|length}};
+	//	for (var i = 1; i < c + 1; i++){
+    //      if (document.getElementById("day-"+i).innerHTML != today){
+    //        document.getElementById(i).style.display = 'none';
+    //        document.getElementById("slot-expand-"+i).style.display = 'none';
+    //      }
+    //      else {
+    //      	document.getElementById(i).style.display = 'block';
+    //     }
+	//	};
+	//});
     //ensure enter doesn't submit form
     $("form[name=newts]").bind("keypress", function (e) {
         if (e.keyCode == 13) {
@@ -313,9 +313,9 @@
 	$('#newslot_endtime').change(function() {
 		update_time_diff({{hp.baserate}});
 	});
-	document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
-    document.getElementById("datepicker").placeholder = moment().format("dddd, MMM D, YYYY");
-	document.getElementById("datepicker1").placeholder = moment().format("dddd, MMM D, YYYY");
+	//document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
+    document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
+	document.getElementById("datepicker1").value = moment().format("dddd, MMM D, YYYY");
 	document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.baserate}}) + " / hour"
 	window.onload = function() {
       var today = new Date();
