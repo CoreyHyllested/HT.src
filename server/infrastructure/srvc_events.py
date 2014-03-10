@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from celery import Celery
 from kombu  import Exchange, Queue
-from server.infrastructure.srvc_database import init_db
 
 
 
@@ -11,8 +10,7 @@ class HTRouter(object):
 		return {'exchange': 'exec', 'exchange_type':'direct', 'routing_key':'dflt'}
 
 mngr = Celery('event_manager')
-#print 'set init_db = init_db'
-#mngr.init_db = init_db
+
 
 # HeroTime defined config. options
 TTL_1000 = { 'x-message-ttl': '1000' }
