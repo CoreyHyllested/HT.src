@@ -766,9 +766,13 @@ def charge():
 	print 'prop_f_date', request.values.get('prop_f_date')
 	print 'prop_f_time', request.values.get('prop_f_hour')
 
+	prop_stripe_tokn = request.values.get('stripe_tokn')
+	prop_stripe_card = request.values.get('stripe_card')
+	prop_stripe_cust = request.values.get('stripe_cust')
+
 	prop_hero = request.values.get('prop_hero')
 	prop_cost = request.values.get('prop_cost')
-	prop_area = request.values.get('prop_area')
+	prop_place = request.values.get('prop_area')
 	prop_desc = request.values.get('prop_desc')
 
 	prop_date = request.values.get('prop_date')
@@ -784,10 +788,12 @@ def charge():
 #ts = Thursday, Mar 27, 2014 ; 09:00 AM profile:837
 #tf = Friday, Mar 28, 2014 ; 10:00 AM 
 	print 'starting time = ', str(prop_s_date), str(prop_s_hour)
-	print 'updated_start = ', dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
-
 	print 'finishng time = ', str(prop_f_date), str(prop_f_hour)
-	print 'updated_finsh = ', dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+	print 'updated_start = ', dt_start
+	print 'updated_finsh = ', dt_finsh
+
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
@@ -812,19 +818,10 @@ def charge():
 
 
 
-#	proposal = Timeslot(str(hp.heroid), dt_begin, dt_finish, prop_cost, str(prop_desc), str(prop_area), creator=str(bp.heroid), status=1):w
-	return redirect('/dashboard')
-#####		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
+	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, 	dt_finsh, 	int(prop_cost), str(prop_place), str(prop_desc), prop_stripe_cust, prop_stripe_card)
+	print proposal
 
-	#Proposal
-	# 0) Proposal_UUID
-	# 1) Seller/ Hero
-	# 2) Buyer
-	# 3) meeting start time (datetime, timezone)
-	# 4) meeting length of time
-	# 5) can run over?
-	# 6) cost
-	# 7) Location
+	return redirect('/dashboard')
 	# 8) description
 	# 9) init create time
 	#10) updated time
