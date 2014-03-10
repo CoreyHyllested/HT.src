@@ -784,9 +784,6 @@ def charge():
 	prop_f_date = request.values.get('prop_f_date')
 	prop_f_hour = request.values.get('prop_f_hour')
 
-#hero_acct = df33a512-4cb7-430a-abf6-0cf1a799d817 ;Frank Underwood profile:836
-#ts = Thursday, Mar 27, 2014 ; 09:00 AM profile:837
-#tf = Friday, Mar 28, 2014 ; 10:00 AM 
 	print 'starting time = ', str(prop_s_date), str(prop_s_hour)
 	print 'finishng time = ', str(prop_f_date), str(prop_f_hour)
 	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
@@ -821,27 +818,19 @@ def charge():
 	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, 	dt_finsh, 	int(prop_cost), str(prop_place), str(prop_desc), prop_stripe_cust, prop_stripe_card)
 	print proposal
 
+	try:
+		db_session.add(proposal)
+		db_session.commit()
+	except Exception as e:
+		db_session.rollback()
+		print e
+		return redirect('/dbFailure')
 	return redirect('/dashboard')
-	# 8) description
-	# 9) init create time
-	#10) updated time
-	#11) negotiation_count (iterations)
-	#12) negotiator_to_respond.
-	#13) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
-	# 14) Buyer's Stripe Cust hash
-	# 15) Buyer's Stripe Card hash
-
 
 # if it becomes APPT
 # -- Hero's Stripe Cust hash (to get paid)
 # -- Buyer's Stripe transaction hash? -- not until appt?
 
-###
-
-
-	# create customer. 
-	# create card
-	# create proposal; pointing to card; saving cost
 	# enqueue task to charge the card 24hrs before appt.
 	
 
