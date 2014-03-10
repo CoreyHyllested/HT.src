@@ -14,13 +14,33 @@ TS_PROP_COMPLTD = 4
 TS_HERO_REMOVED = -1
 TS_APP_CANCELED = -2
 
-APPT_DISPUTED		= -2
-APPT_CANCELED		= -1 
+#APPT_DISPUTED		= -2
+#APPT_CANCELED		= -1 
 APPT_HAVE_AGREEMENT	=  0
 APPT_CARD_CAPTURED	=  1   #money is captured, heros will get paid
 APPT_SEND_REVIEWS	=  2   #24 hours after meeting, send reviews
 APPT_POST_REVIEWS	=  3   #30 days after meeting, post reviews
 
+    #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
+
+APPT_PROPOSED = 0
+APPT_RESPONSE = 1
+APPT_ACCEPTED = 2
+APPT_CAPTURED = 4
+APPT_OCCURRED = 8
+APPT_REVIEWED = 16
+
+#APPT_REVIEWED = 32
+#APPT_REVIEWED = 64
+#APPT_REVIEWED = 128
+#APPT_REVIEWED = 256
+APPT_REVIEWED = 512
+
+APPT_REJECTED = 1024
+APPT_CANCELED = 2048
+APPT_DISPUTED = 4096
+
+APPT_FLAGS_NONE	= 0
 
 ################################################################################
 #### EXAMPLE: Reading from PostgreSQL. #########################################
@@ -189,12 +209,95 @@ class Profile(Base):
 		return '<profile, %r, %r, %r, %r>' % (self.heroid, self.name, self.baserate, self.headline[:20])
 		
 
+	# x) UUID
+    # x) Seller/ Hero
+    # x) Buyer
+    # x) meeting start time (datetime, timezone)
+    # x) meeting length of time
+    # x) can run over?
+    # x) cost
+    # x) Location
+    # x) description
+    # x) init create time
+    # x) updated time
+    # x) negotiation_count (iterations)
+    # x) negotiator_to_respond.
+
+    #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
+    # 14) Buyer's Stripe Cust hash
+    # 15) Buyer's Stripe Card hash
+
+
+class Proposal(Base):
+	__tablename__ = "proposal"
+	id			= Column(Integer, primary_key = True)
+	prop_uuid	= Column(String(40), nullable = False)													# NonSequential ID
+	prop_hero	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE SELLER. The Hero
+	prop_buyer	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE BUYER; requested hero.
+	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
+	prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
+	prop_count	= Column(Integer, nullable=False, default=0)
+	prop_cost	= Column(Integer, nullable=False, default=0)
+	prop_from	= Column(String(40), ForeignKey('profile.heroid'), nullable=False)						# LastProfile to Touch proposal. 
+	prop_ts		= Column(DateTime(),   nullable = False)
+	prop_tf		= Column(DateTime(),   nullable = False)
+	prop_place	= Column(String(1000), nullable = False)
+	prop_desc	= Column(String(3000), nullable = True)
+	prop_created = Column(DateTime(), nullable = False)
+	stripe_cust	= Column(String(40), nullable = True)
+	stripe_card	= Column(String(40), nullable = True)
+	stripe_tokn	= Column(String(40), nullable = True)
+   # 14) Buyer's Stripe Cust hash
+    # 15) Buyer's Stripe Card hash
+
+
+
+	def __init__(self, prof_hero, prof_buyer, datetime_s, datetime_f, cost, location, description, cust=None, card=None, state=None, flags=None): 
+		self.prop_uuid = str(uuid.uuid4())
+		self.prop_hero	= str(prof_hero)
+		self.prop_buyer	= str(prof_buyer)
+		self.prop_state	= state
+		self.prop_flags = flags
+		self.prop_count = 1
+		self.prop_cost	= int(cost)
+		self.prop_from = str(prof_buyer)
+
+		self.prop_ts	= datetime_s
+		self.prop_tf	= datetime_f
+		self.prop_place	= location 
+		self.prop_desc	= description
+
+		self.prop_created = datetime.datetime.utcnow()
+		self.prop_updated = datetime.datetime.utcnow()
+
+		self.stripe_cust = cust
+		self.stripe_card = card
+
+
+	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
+		self.prop_from = prof_updated
+		self.prop_updated	= datetime.datetime.utcnow()
+		self.prop_count		= self.prop_count + 1
+
+		if (updated_s is not None): self.prop_ts = updated_s
+		if (updated_f is not None): self.prop_tf = updated_f
+		if (updated_cost is not None):	self.prop_cost	= int(updated_cost)
+		if (updated_desc is not None):	self.prop_desc	= updated_desc
+		if (updated_place is not None):	self.prop_place	= updated_place
+		if (updated_state is not None):	self.prop_state = updated_state
+		if (updated_flags is not None):	self.prop_flags = updated_flags
+
+
+	def __repr__(self):
+		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_buyer, self.prop_state)
+
+
 
 class Timeslot(Base):
 	__tablename__ = "timeslot"
 	id         = Column(Integer, primary_key = True)
 	profile_id = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# SELLER
-	creator_id = Column(String(40), ForeignKey('profile.heroid'), nullable=True,  index=True)			# BUYER (always a proposal) 
+	creator_id = Column(String(40), ForeignKey('profile.heroid'), nullable=True,  index=True)			# BUYER (always a prop) 
 	status     = Column(Integer, default=0)		#0 = free, #1 = bid on?  #2 = purchased, #4 = completed.   -1 = Removed/unlisted, #4 = canceled?
 
 
@@ -237,7 +340,7 @@ class Appointment(Base):
 	id			= Column(Integer, primary_key = True)
 	apptid		= Column(String(40), unique = True, primary_key = True, index=True)   #use challenge 
 	buyer_prof	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-	sellr_prof	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# if creator_id != profile_id; proposal = True
+	sellr_prof	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# if creator_id != profile_id; prop = True
 	status		= Column(Integer, default=0)		#0 = free, #1 = bid on?  #2 = purchased, #4 = completed.   -1 = Removed/unlisted, #4 = canceled?
 
 	location	= Column(String(1000), nullable = False)
