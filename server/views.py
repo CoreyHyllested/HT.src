@@ -326,88 +326,38 @@ def signup_verify(challengeHash):
 
 @ht_server.route('/profile', methods=['GET', 'POST'])
 @dbg_enterexit
-@req_authentication
 def profile():
 	""" Provides users ability to modify their information.
 		- Pre-fill all fields with prior information.
 		- Ensure all necessary fields are still populated when submit is hit.
-		- update database
 	"""
 
-	uid = session['uid']
-	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
-	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]	# Hero Profile
-	#pi  = OauthStripe.query.filter_by(account=hp.account).all()								# Payment info?
+	hp = request.values.get('hero')
+	if (hp is None):
+		print "No hero profile requested, Error"
+		return redirect('https://herotime.co/')	
 
-
-	#if (pi):
-	#	pi = pi[0].stripe
-	#else:
-	#	pi = "No Stripe Info for User." 
-
-	print "BP = ", bp.name, bp.heroid, bp.account
+	# Replace 'hp' with the actual Hero's Profile.
+	hp  = Profile.query.filter_by(heroid=hp).all()[0]
 	print "HP = ", hp.name, hp.heroid, hp.account
-#	print "PaymentInfo = ", pi
+
+	bp = session.get('uid')
+	if (bp is not None):
+		# replace 'uid' with actual browsing profile object
+		bp  = Profile.query.filter_by(account=uid).all()[0]
+		print "BP = ", bp.name, bp.heroid, bp.account
 
 
 	nts = NTSForm(request.form)
-#	if nts.validate_on_submit():
-#		log_uevent(uid, "creating proposal for " + str(hp.heroid))
-#
-#		cost   = int(nts.newslot_price.data.replace(',', ''))
-#		ts_srt = str(nts.newslot_starttime.data)
-#		ts_end = str(nts.newslot_endtime.data)
-#		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
-#		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
-#		bywhom = int(bp.heroid != hp.heroid)
-#		ccname = str(nts.newslot_ccname.data)
-#		ccnbr = str(nts.newslot_ccnbr.data)
-#		ccexp = str(nts.newslot_ccexp.data)
-#		cccvv = str(nts.newslot_cccvv.data)
-#		print (ccname, ccnbr, ccexp, cccvv)
-#		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
-#		try:
-#			timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
-#			test_creditcard(timslt, ccname, ccnbr, ccexp, cccvv)
-#
-#			# test CC# first to see if it can be charged.
-#			db_session.add(timslt)
-#			db_session.commit()
-#			#flash('HT has submitted your proposal')
-#			#email(hp, bp)
-#			#add event to users' event queue
-#			return redirect('/dashboard')
-
-#		except Exception as e:
-#			print e
-#			db_session.rollback()
-#			return serviceFailure("profile", e)
-#		except InvalidCreditCard as e:
-#			print e
-#	elif request.method == 'POST':
-#		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
-#		ccname = nts.newslot_ccname.data
-#		ccnbr = nts.newslot_ccnbr.data
-#		ccexp = nts.newslot_ccexp.data
-#		cccvv = nts.newslot_cccvv.data
-#		print (ccname, ccnbr, ccexp, cccvv)
-#		print (type(ccname), type(ccnbr), type(ccexp), type(cccvv))
-#	else:
-#		pass
-
 	nts.hero.data = hp.heroid
 
-
 	tmeslts = [] 
-#	db_session.query(Timeslot.id, Timeslot.status, Timeslot.location, Timeslot.description, Timeslot.cost, Timeslot.ts_begin, Timeslot.ts_finish, Timeslot.creator_id) \
-#				.join(Profile, Timeslot.profile_id == Profile.heroid) \
-#				.filter(Timeslot.profile_id == hp.heroid, Timeslot.status == TS_PROP_BY_HERO).all()
-
 	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
 				.join(Profile, Review.author == Profile.heroid) \
 				.filter(Review.heroid == hp.heroid).all()
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.imgURL)
+	# it looks like key is the stripe key used to pay this hero (should someone want to buy their time.  This should be removed and grabbed later.
 	return make_response(render_template('profile.html', title='- ' + hp.name, hp=hp, bp=bp, revs=reviews, timeslots=tmeslts, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
 
 
@@ -751,9 +701,7 @@ def editprofile():
 @dbg_enterexit
 @req_authentication
 def charge():
-	print "get variables"
 	uid = session['uid']
-	print "UID", uid
 	print "stripe_tokn", request.values.get('stripe_tokn')
 	print "stripe_card", request.values.get('stripe_card')
 	print "stripe_cust", request.values.get('stripe_cust')
@@ -857,12 +805,6 @@ def charge():
 		#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
 	)
 	#capture too?
-
-
-
-	# Create Proposal VVVV
-
-
 
 	appointment = Appointment()
 	#appointment.apptid     = ts.challenge
