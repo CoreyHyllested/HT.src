@@ -26,8 +26,8 @@ from sqlalchemy.ext.declarative import declarative_base
 #    db_session.remove()
 
 print 'import::db -- create engine'
-#engine = create_engine(ht_server.config['SQLALCHEMY_DATABASE_URI'])
 engine = create_engine('postgresql://ezjlivdbtrqwgx:lM5sTTQ8mMRM7CPM0JrSb50vDJ@ec2-54-235-70-146.compute-1.amazonaws.com:5432/d673en78hg143l')
+#engine = create_engine('postgresql://gpzybqqrjuxmlj:mcPRcmKmY6d_UVf1IcCJlpsZ0x@ec2-54-204-41-178.compute-1.amazonaws.com:5432/d598bitsjhfi5u')
 
 print 'import::db -- create sessionmaker'
 db_session = scoped_session(sessionmaker(bind=engine))
@@ -38,12 +38,14 @@ Base.query = db_session.query_property()
 
 
 # must come after Base
-from server.infrastructure import models
+from server.infrastructure.models import *
 
 def init_db():
-	print 'got called' 
+	print 'init_db -- import all models' 
 	print 'import::db -- create_all()'
 	Base.metadata.create_all(bind=engine)
+	db_session.commit()
+	print 'returned'
 
 
 # configure postgresql
