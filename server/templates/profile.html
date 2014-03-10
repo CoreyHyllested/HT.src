@@ -314,9 +314,15 @@
 		update_time_diff({{hp.baserate}});
 	});
 	//document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
-    document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
-	document.getElementById("datepicker1").value = moment().format("dddd, MMM D, YYYY");
-	document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.baserate}}) + " / hour"
+    if (document.getElementById("datepicker") != null) {
+    	document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
+    }
+    if (document.getElementById("datepicker1") != null) {
+		document.getElementById("datepicker1").value = moment().format("dddd, MMM D, YYYY");
+	}
+	if (document.getElementById("newslot-label-rate") != null) {
+		document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.baserate}}) + " / hour"
+	}
 	window.onload = function() {
       var today = new Date();
       today.setDate(today.getDate()-1);
