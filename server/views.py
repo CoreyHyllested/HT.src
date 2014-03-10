@@ -761,38 +761,100 @@ def charge():
 
 	print 'prop_hero', request.values.get('prop_hero')
 	print 'prop_time', request.values.get('prop_time')
-	print 'prop_cost', request.values.get('prop_cost')
-	print 'prop_area', request.values.get('prop_area')
-	print 'prop_desc', request.values.get('prop_desc')
+	print 'prop_s_date', request.values.get('prop_s_date')
+	print 'prop_s_hour', request.values.get('prop_s_hour')
+	print 'prop_f_date', request.values.get('prop_f_date')
+	print 'prop_f_time', request.values.get('prop_f_hour')
 
+	prop_hero = request.values.get('prop_hero')
+	prop_cost = request.values.get('prop_cost')
+	prop_area = request.values.get('prop_area')
+	prop_desc = request.values.get('prop_desc')
 
-	hero_id = request.values.get('prop_hero')
+	prop_date = request.values.get('prop_date')
+	prop_hour = request.values.get('prop_hour')
+	prop_time = request.values.get('prop_time')
+
+	prop_s_date = request.values.get('prop_s_date')
+	prop_s_hour = request.values.get('prop_s_hour')
+	prop_f_date = request.values.get('prop_f_date')
+	prop_f_hour = request.values.get('prop_f_hour')
+
+#hero_acct = df33a512-4cb7-430a-abf6-0cf1a799d817 ;Frank Underwood profile:836
+#ts = Thursday, Mar 27, 2014 ; 09:00 AM profile:837
+#tf = Friday, Mar 28, 2014 ; 10:00 AM 
+	print 'starting time = ', str(prop_s_date), str(prop_s_hour)
+	print 'updated_start = ', dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+
+	print 'finishng time = ', str(prop_f_date), str(prop_f_hour)
+	print 'updated_finsh = ', dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
 
-	hp  = Profile.query.filter_by(heroid=hero_id).all()[0]
+	hp  = Profile.query.filter_by(heroid=prop_hero).all()[0]
 	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
 	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
 
 	print "BA = ", ba
 	print "HA = ", ha
-#	print pi
 
+
+# Not sure what any of this is anymore.  
+#	charge_api_key = stripe_keys['secret']
+#	print "charge_key", charge_api_key 
+#	if (pi):
+#		charge_api_key = pi[0].token
+#	print "charge_key", charge_api_key 
+
+###
+
+
+
+#	proposal = Timeslot(str(hp.heroid), dt_begin, dt_finish, prop_cost, str(prop_desc), str(prop_area), creator=str(bp.heroid), status=1):w
 	return redirect('/dashboard')
+#####		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
 
-	charge_api_key = stripe_keys['secret']
-	print "charge_key", charge_api_key 
-	if (pi):
-		charge_api_key = pi[0].token
-	print "charge_key", charge_api_key 
+	#Proposal
+	# 0) Proposal_UUID
+	# 1) Seller/ Hero
+	# 2) Buyer
+	# 3) meeting start time (datetime, timezone)
+	# 4) meeting length of time
+	# 5) can run over?
+	# 6) cost
+	# 7) Location
+	# 8) description
+	# 9) init create time
+	#10) updated time
+	#11) negotiation_count (iterations)
+	#12) negotiator_to_respond.
+	#13) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
+	# 14) Buyer's Stripe Cust hash
+	# 15) Buyer's Stripe Card hash
+
+
+# if it becomes APPT
+# -- Hero's Stripe Cust hash (to get paid)
+# -- Buyer's Stripe transaction hash? -- not until appt?
+
+###
+
+
+	# create customer. 
+	# create card
+	# create proposal; pointing to card; saving cost
+	# enqueue task to charge the card 24hrs before appt.
+	
+
 
 	customer = stripe.Customer.create (email=ba.email, card=request.form['stripeToken'], api_key=charge_api_key)
 	#pprint(customer)
 	
 
 
-	# get buyer; becomes seller's customer.  
+	# get buyer; becomes Hero's (seller) customer id.
 	# get seller's API/ACCESS_TOKEN -- Its like they charge them.  But we need to take API_FEE.
 		# perhaps Not Required? -- We could send email stating they can accept and we can write check.  But signup and get paid directly.
 	# if seller has pub_key, use it.
@@ -809,6 +871,12 @@ def charge():
 		#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
 	)
 	#capture too?
+
+
+
+	# Create Proposal VVVV
+
+
 
 	appointment = Appointment()
 	#appointment.apptid     = ts.challenge

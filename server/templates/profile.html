@@ -225,20 +225,6 @@
 			<label id="newslot-label-description">Message to {{hp.name}}</label>
 			{{ntsform.newslot_description}}
 
-
-			<label id="newslot_label_cc_name">Credit Card Name:</label>
-			{{ntsform.newslot_ccname}}
-
-			<label id="newslot_label_cc_number">Credit Card Number:</label>
-			{{ntsform.newslot_ccnbr}}
-
-			<label id="newslot_label_cc_expdate">Credit Card Expiration:</label>
-			{{ntsform.newslot_ccexp}}
-
-			<label id="newslot_label_cc_cvv">Credit Card CCV:</label>
-			{{ntsform.newslot_cccvv}}
-
-
 			<div id="newslot-notif1">
 				<p>By making a direct offer to a person, you get an opportunity to book an appointment outside of time slots already listed for sale.</p> <br />
 				<p>You can also use direct offers to customize listed time slots: merge two or more slots together, change location, negotiate price, etc.</p>
@@ -328,14 +314,23 @@
 			
 			$hero_acct = '{{hp.heroid}}';
 			$hero_name = '{{hp.name}}';
+			$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
 			$time = $('#newslot-duration').html();
-			$cost = parseInt( $('#newslot_price').val(), 10) * 100;
 			$desc = $('#newslot_description').val();
 			$area = $('#newslot_location').val();
+			$ts_d = $('#datepicker').val();
+			$ts_h = $('#newslot_starttime').val();
+
+			$tf_d = $('#datepicker1').val();
+			$tf_h = $('#newslot_endtime').val();
 
 			$bp_name = '{{bp.name}}';
 			$bp_id   = '{{bp.heroid}}';
 			console.log('hero_acct = ' + $hero_acct + ' ;' + $hero_name);
+			console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
+			console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
+//			console.log('hero_cost = ' + $hero_cost + " asInt(" + $hc_1 + "); *100 =" + $hc_2 );
+			console.log('@ cost = ' + $cost);
 //			alert('Seller: ' + $hero_name + '\nSellID: ' + $hero_acct + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
 
 			var srv_callback = function(res) {
@@ -377,29 +372,39 @@
 				*/
 
 
-				console.log('create csrf');
 				var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
-				console.log('create stripe');
+
 			   	var $stripe_tokn = $('<input type=hidden name=stripe_tokn />').val(res.id);
 			   	var $stripe_card = $('<input type=hidden name=stripe_card />').val(res.card.id);
+			   	var $stripe_name = $('<input type=hidden name=stripe_name />').val(res.card.name);
+			   	var $stripe_city = $('<input type=hidden name=stripe_city />').val(res.card.address_city);
+			   	var $stripe_stat = $('<input type=hidden name=stripe_stat />').val(res.card.address_state);
 			   	var $stripe_cust = $('<input type=hidden name=stripe_cust />').val(res.card.customer);
 			   	var $stripe_fngr = $('<input type=hidden name=stripe_fngr />').val(res.card.fingerprint);
 			   	var $stripe_mail = $('<input type=hidden name=stripe_mail />').val(res.email);
 
-				console.log('create prop');
 			   	var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
-			   	var $prop_time =  $('<input type=hidden name=prop_time />').val($);
 			   	var $prop_cost =  $('<input type=hidden name=prop_cost />').val($cost);
+			   	var $prop_time =  $('<input type=hidden name=prop_time />').val($time);
 			   	var $prop_area =  $('<input type=hidden name=prop_area />').val($area);
 			   	var $prop_desc =  $('<input type=hidden name=prop_desc />').val($desc);
 
+			   	var $prop_date =  $('<input type=hidden name=prop_date />').val($ts_d);
+			   	var $prop_hour =  $('<input type=hidden name=prop_hour />').val($ts_h);
+
+
+			   	var $prop_s_date =  $('<input type=hidden name=prop_s_date />').val($ts_d);
+			   	var $prop_s_hour =  $('<input type=hidden name=prop_s_hour />').val($ts_h);
+			   	var $prop_f_date =  $('<input type=hidden name=prop_f_date />').val($tf_d);
+			   	var $prop_f_hour =  $('<input type=hidden name=prop_f_hour />').val($tf_h);
 				
-				console.log('append CSRF');
 				$('form[name="charge"]').append($csrf);
 				console.log('append stripe');
-				$('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr);
-				console.log('append props');
-				$('form[name="charge"]').append($prop_hero).append($prop_time).append($prop_cost).append($prop_area).append($prop_desc);
+				$('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr).append($stripe_mail);
+				$('form[name="charge"]').append($prop_hero).append($prop_cost).append($prop_area).append($prop_desc).append($prop_time);
+				$('form[name="charge"]').append($prop_s_date).append($prop_s_hour);
+				$('form[name="charge"]').append($prop_f_date).append($prop_f_hour);
+				$('form[name="charge"]').append($prop_date).append($prop_hour);
 				$('form[name="charge"]').submit();
 			};
 
