@@ -914,7 +914,12 @@ def settings():
 			update_mail = form.set_input_email.data
 
 		if (update_acct):
-			(rc, errno) = modifyAccount(uid, form.set_input_curpass.data, new_pass=update_pass, new_mail=update_mail)
+			if (update_pass):
+				pwd = form.set_input_curpass.data
+			else:
+				pwd = form.set_input_email_pass.data
+			trace("password is: " + pwd)
+			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
 			trace("modify acct = " + str(rc) + ", errno = " + str(errno))
 			if (rc == False):
 				trace("restate errno" + str(errno))
