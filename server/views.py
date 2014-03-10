@@ -344,7 +344,7 @@ def profile():
 	bp = session.get('uid')
 	if (bp is not None):
 		# replace 'uid' with actual browsing profile object
-		bp  = Profile.query.filter_by(account=uid).all()[0]
+		bp  = Profile.query.filter_by(account=bp).all()[0]
 		print "BP = ", bp.name, bp.heroid, bp.account
 
 
@@ -420,62 +420,26 @@ def dashboard():
 
 	#hero = getDossierBySession()
 	#hero = getDossierByID()
-	title = "- " + bp.name
 
-	# get proposals 
+	# get proposals ; add prop_updated; use PROP_FROM?
+	proposal_out = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_buyer,	\
+								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
+								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
+								Proposal.prop_desc, Proposal.prop_place, 							\
+						  		Profile.heroid, Profile.name, Profile.imgURL, Profile.rating,		\
+								Profile.reviews, Profile.headline)									\
+							.join(Profile, Proposal.prop_hero == Profile.heroid)					\
+							.filter(Proposal.prop_buyer == bp.heroid).all()
 
-	# get appointments
-	timeslot_by_me = db_session.query(Timeslot.id, \
-						  Timeslot.status, \
-						  Timeslot.location, \
-						  Timeslot.description, \
-						  Timeslot.cost, \
-						  Timeslot.ts_begin, \
-						  Timeslot.ts_finish, \
-						  Timeslot.profile_id, \
-						  Timeslot.creator_id, \
-						  Timeslot.challenge, \
-						  Profile.heroid, \
-						  Profile.name, \
-						  Profile.imgURL, \
-						  Profile.rating, \
-						  Profile.reviews, \
-						  Profile.headline) \
-						  .join(Profile, Timeslot.profile_id == Profile.heroid) \
-						  .filter(Timeslot.creator_id == bp.heroid).all()
-
-	timeslot_to_me = db_session.query(Timeslot.id, \
-						  Timeslot.status, \
-						  Timeslot.location, \
-						  Timeslot.description, \
-						  Timeslot.cost, \
-						  Timeslot.ts_begin, \
-						  Timeslot.ts_finish, \
-						  Timeslot.profile_id, \
-						  Timeslot.creator_id, \
-						  Timeslot.challenge, \
-						  Profile.heroid, \
-						  Profile.name, \
-						  Profile.imgURL, \
-						  Profile.rating, \
-						  Profile.reviews, \
-						  Profile.headline) \
-						  .join(Profile, Timeslot.creator_id == Profile.heroid) \
-						  .filter(Timeslot.profile_id == bp.heroid).all()
-
-	print "number of timeslots = ", len(timeslot_to_me)
-
-#	prop_to_me = timeslot_to_me.filter(Timeslot.profile_id == bp.heroid).all()
-#	prop_by_me = timeslot_to_me.filter(Timeslot.creator_id == bp.heroid).all()
-#	print "prop_to_me = ", len(prop_to_me)
-#	print "prop_by_me = ", len(prop_by_me)
-#	prop = prop_to_me  + prop_by_me
-	better_prop = timeslot_to_me + timeslot_by_me
-	print "number of total props", len(better_prop)
-
-
-	for p in better_prop:
-		print p
+	proposal_in = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_buyer,		\
+								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
+								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
+								Proposal.prop_desc, Proposal.prop_place, 							\
+						  		Profile.heroid, Profile.name, Profile.imgURL, Profile.rating,		\
+								Profile.reviews, Profile.headline)									\
+							.join(Profile, Proposal.prop_buyer == Profile.heroid)					\
+							.filter(Proposal.prop_hero == bp.heroid).all()
+	proposals = proposal_in +  proposal_out
 
 	appt_by_me = db_session.query(Appointment.id, \
 							Appointment.status, \
@@ -522,8 +486,8 @@ def dashboard():
 	print "number of appt_timeslots = ", appt_timeslots
 
 
-	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
-	resp = make_response(render_template('dashboard.html', title=title, bp=bp, profile_img=profile_img, ts_prop=better_prop, ts_appt=appt_timeslots))
+	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
+	resp = make_response(render_template('dashboard.html', title="- " + bp.name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots))
 	return resp
 
 
@@ -769,6 +733,8 @@ def charge():
 	try:
 		db_session.add(proposal)
 		db_session.commit()
+		rc = send_welcome_email.apply_async(args=['corey@herotime.co'], eta=(dt.utcnow() + timedelta(minutes=30)))
+		print rc
 	except Exception as e:
 		db_session.rollback()
 		print e
