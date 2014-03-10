@@ -492,71 +492,6 @@ def dashboard():
 
 
 
-@ht_server.route('/proposals', methods=['POST'])
-@dbg_enterexit
-@req_authentication
-def deal_with_proposals():
-	
-	log_uevent(session['uid'], " modifying proposal status")
-	resp = make_response(redirect('/dashboard'))
-
-	rollback_on_error = False 
-	form = ProposalActionForm(request.form)
-	try:
-		if not form.validate_on_submit():
-			log_uevent(session['uid'], "form isnt' valid" + str(form.errors))
-			#raise exeception of invalie form 
-			return jsonify(invalid='True'), 501
-
-		trace(form.proposal_id.data)
-		trace(form.proposal_stat.data)
-
-
-		rollback_on_error = True
-		trace ('search for proposal '  +  form.proposal_id.data) 
-		proposal = Timeslot.query.filter_by(challenge=form.proposal_id.data).all()
-		if (len(proposal) != 1):
-			#raise error
-			trace ('natch, len = ' + str(len(proposal))) 
-			return jsonify(error='CAH, couldn\'t find proposal'), 501
-
-		trace ('found proposal') 
-		the_proposal = proposal[0]
-
-		appointment = Appointment()
-		appointment.apptid     = the_proposal.challenge
-		appointment.buyer_prof = the_proposal.creator_id
-		appointment.sellr_prof = the_proposal.profile_id
-		appointment.status		= APPT_HAVE_AGREEMENT
-		appointment.location	= the_proposal.location
-		appointment.ts_begin	= the_proposal.ts_begin
-		appointment.ts_finish 	= the_proposal.ts_finish
-		appointment.cust		= "CAH_fake_data"
-		appointment.cost		= the_proposal.cost
-		appointment.paid		= False
-		appointment.description = the_proposal.description
-		appointment.created		= the_proposal.created
-		appointment.updated		= dt.now()
-		print appointment
-		trace (appointment) 
-
-		db_session.add(appointment)
-		db_session.delete(the_proposal)
-		db_session.commit()
-
-
-	except Exception as e:
-		print e
-		trace ('hrm, some major error')
-		if rollback_on_error:
-			db_session.rollback()
-		#CAH, this is a problem, how do we signal a problem occurred?
-		#flash there was a problem, retry
-		trace (e)
-		return jsonify(error=e), 500
-
-	return jsonify(tmp="success"), 200
-
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -773,7 +708,6 @@ def charge():
 	#capture too?
 
 	appointment = Appointment()
-	#appointment.apptid     = ts.challenge
 	appointment.buyer_prof = bp.heroid
 	appointment.sellr_prof = hp.heroid
 	appointment.status		= APPT_HAVE_AGREEMENT
@@ -808,6 +742,72 @@ def charge():
 	return render_template('charge.html', amount=ts.cost, charge=charge)
 
 
+@ht_server.route('/proposal/create', methods=['POST'])
+@req_authentication
+def ht_api_proposal_create():
+	return charge()
+
+
+
+@ht_server.route('/proposal/accept', methods=['POST'])
+@req_authentication
+def ht_api_proposal_accept():
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+	if not form.validate_on_submit():
+		rc = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], rc) 
+		return jsonify(usrmsg=str(rc)), 503
+
+	prop = Proposal.query.filter_by(prop_uuid=form.proposal_id.data).all()
+	if len(prop) == 0: return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 504
+
+	try:
+		# create appt; delete prop
+		the_proposal = prop[0]
+
+		appointment = Appointment()
+		appointment.apptid     = the_proposal.prop_uuid
+		appointment.sellr_prof = the_proposal.prop_hero
+		appointment.buyer_prof = the_proposal.prop_buyer
+		appointment.status		= APPT_HAVE_AGREEMENT
+		appointment.location	= the_proposal.prop_place
+		appointment.ts_begin	= the_proposal.prop_ts
+		appointment.ts_finish 	= the_proposal.prop_tf
+		appointment.cust		= "CAH_fake_data"
+		appointment.cost		= the_proposal.prop_cost
+		appointment.description = the_proposal.prop_desc
+		appointment.paid		= False
+		appointment.created		= the_proposal.prop_created
+		appointment.updated		= dt.now()
+		print appointment
+		db_session.add(appointment)
+		db_session.delete(the_proposal)
+		db_session.commit()
+
+	except Exception as e:
+		print e
+		db_session.rollback()
+	print "whoa, we made it out"
+	return jsonify(usrmsg="success"), 200
+
+
+
+@ht_server.route('/proposal/reject', methods=['POST'])
+@req_authentication
+def ht_api_proposal_reject():
+	return redirect('/notImplemented')
+
+
+@ht_server.route('/proposal/negotiate', methods=['POST'])
+@req_authentication
+def ht_api_proposal_negotiate():
+	return redirect('/notImplemented')
+
+
+	
 
 @ht_server.route('/proposal', methods=['POST'])
 @req_authentication
