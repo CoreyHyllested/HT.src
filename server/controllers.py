@@ -36,7 +36,7 @@ def ht_bind_session(bp):
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
 	session['uid'] = bp.account
 	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + ']')
-	
+
 
 def ht_get_profile(ba):
 	"""return profile from account"""
@@ -47,11 +47,9 @@ def ht_get_profile(ba):
 	return None
 
 
-
 def ht_browsingprofile():
 	#return Profile.query.filter_by(account=session['uid']).all()[0]
 	return None
-
 
 
 def ht_authenticate_user(user_email, password):
@@ -65,7 +63,6 @@ def ht_authenticate_user(user_email, password):
 	if (len(accounts) > 1):
 		trace("WTF.  Account len = " + len(accounts) + ". Cannot happen " + str(user_email))
 	return None
-
 
 
 def ht_password_recovery(email):
@@ -97,7 +94,6 @@ def ht_password_recovery(email):
 	return usrmsg
 
 
-
 def create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
@@ -115,7 +111,6 @@ def create_account(name, email, passwd):
 	log_uevent(hero.userid, 'successfully created user')
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
-
 
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
@@ -142,7 +137,5 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	return True, True
 
 
-
 def modifyProfile():
 	pass
-

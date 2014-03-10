@@ -12,10 +12,14 @@ $(function add_start_times() {
 			var opt30 = new Option(i + ":30 PM", i+":30 PM");
 		}
 		var nts_list=document.getElementById("newslot_starttime");
-		nts_list.appendChild(opt00);
-		nts_list.appendChild(opt30);
+		if (nts_list != null) {
+			nts_list.appendChild(opt00);
+			nts_list.appendChild(opt30);
+		}
 	}
-	document.getElementById("newslot_starttime").value = "09:00 AM"
+	if (document.getElementById("newslot_starttime") != null) {
+		document.getElementById("newslot_starttime").value = "09:00 AM";
+	}
 });
 
 $(function add_end_times() {
@@ -32,10 +36,14 @@ $(function add_end_times() {
 			var opt30 = new Option(i + ":30 PM", i+":30 PM");
 		}
 		var nts_list=document.getElementById("newslot_endtime");
-		nts_list.appendChild(opt00);
-		nts_list.appendChild(opt30);
+		if (nts_list != null) {
+			nts_list.appendChild(opt00);
+			nts_list.appendChild(opt30);
+		}
 	}
-	document.getElementById("newslot_endtime").value = "10:00 AM"
+	if (document.getElementById("newslot_endtime") != null) {
+		document.getElementById("newslot_endtime").value = "10:00 AM";
+	}
 });
 
 function update_time_diff(price) { 

@@ -35,8 +35,12 @@
 <div id="overview-wrap">
 	<div id="overview">
 		<img src="{{profile_img}}" alt="Go to profile">
-		<div id="to-profile-wrap">
-			<a href="/profile" id="to-profile">Go to profile</a>
+		<div id="to-profile-wrap" >
+			<form name='p' action=/profile method=POST>
+				<input type="hidden" id="h" name="hero">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			</form>
+			<a href="#" id="to-profile">Go to profile</a>
 		</div>
 
 		<div id="info-box">
@@ -69,11 +73,6 @@
 		
     <!-- Datepicker -->
     <div id="datepicker2" class="calendar-dash"></div>
-
-		<form name='p' action=/profile method=POST>
-			<input type="hidden" id="h" name="hero">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		</form>
 
 		<form name='c' action=/cancel method=POST>
 			<input type="hidden" id="a" name="appt">
@@ -240,16 +239,19 @@
           }
 		};
 	});
-	//ensure enter doesn't submit form
-    $("form[name=newts]").bind("keypress", function (e) {
-        if (e.keyCode == 13) {
-            return false;
-        }
-    });
 
-	$("#to-profile-wrap").click(function() {
-		document.getElementById('h').value='{{bp.heroid}}'; 
-		document.p.submit();
+	$(function() {
+		//ensure enter doesn't submit form
+	    $("form[name=newts]").bind("keypress", function (e) {
+	        if (e.keyCode == 13) {
+	            return false;
+	        }
+	    });
+
+		$("#to-profile-wrap").click(function() {
+			document.getElementById('h').value = '{{bp.heroid}}';
+			document.p.submit();
+		});
 	});
 </script>
 
@@ -270,8 +272,6 @@
       };
 	}
 </script>
-
-<!-- Bottom bar -->
 
 
 <script>

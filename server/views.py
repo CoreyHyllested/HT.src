@@ -24,9 +24,6 @@ from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash #rm -- should be in controllers only
 
 
-# replaced sq.query => db_session.query
-# replace db.session => db_session
-
 stripe_keys = {}
 stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
 stripe_keys['secret'] = 'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
@@ -59,7 +56,7 @@ def search():
 	if 'uid' in session:
 		uid = session['uid']
 		bp  = Profile.query.filter_by(account=uid).all()[0]
-	
+
 	keywords = request.args.get('search')
 	print "keywords = ", keywords
 	form = SearchForm(request.form)
@@ -197,7 +194,7 @@ def li_authorized(resp):
 		trace('User exists' +  str(possible_acct[0]))
 		session['uid'] = possible_acct[0].userid
 		return redirect('/dashboard')
-	
+
 	# deleted this part in order to successfully signup a user if he does Linkedin oauth from login
 	#else:
 	#	trace('No account found')
@@ -222,7 +219,6 @@ def li_authorized(resp):
 	#return jsonify(me.data)
 
 
-
 @ht_server.route('/signup', methods=['GET', 'POST'])
 def signup():
 
@@ -230,6 +226,7 @@ def signup():
 	if ('uid' in session):
 		return redirect('/dashboard')
 
+	errmsg = None
 	bp = False
 	if 'uid' in session:
 		uid = session['uid']
@@ -238,18 +235,24 @@ def signup():
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		trace("Validated form -- make Acct")
-		(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
-		if (bh):
-			ht_bind_session(bp)
-			resp = redirect('/dashboard')
+		
+		#check if email already exists in db
+		account = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
+		if (len(account) == 1):
+			trace("email already exists in DB")
+			errmsg = "Account with the same email already exists."
 		else:
-			resp = redirect('/dbFailure')
-		return resp
+			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			if (bh):
+				ht_bind_session(bp)
+				resp = redirect('/dashboard')
+			else:
+				resp = redirect('/dbFailure')
+			return resp
 	elif request.method == 'POST':
 		trace("/signup form isn't valid" + str(form.errors))
 
-	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form))
-
+	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=errmsg))
 
 
 @ht_server.route('/signup/linkedin', methods=['GET'])
@@ -265,7 +268,7 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-	
+
 def change_linkedin_query(uri, headers, body):
 	auth = headers.pop('Authorization')
 	headers['x-li-format'] = 'json'
@@ -332,10 +335,14 @@ def profile():
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
+	print "'hero' = ", request.values.get('hero')
+	print "'hero' = ", request.form.get('hero')
+	
+
 	hp = request.values.get('hero')
 	if (hp is None):
 		print "No hero profile requested, Error"
-		return redirect('https://herotime.co/')	
+		return redirect('https://127.0.0.1:5000/dashboard')	
 
 	# Replace 'hp' with the actual Hero's Profile.
 	hp  = Profile.query.filter_by(heroid=hp).all()[0]
@@ -369,7 +376,7 @@ def profile():
 @req_authentication
 def cancelAppt():
 	""" Cancels a logged in user's appointment. """
-	
+
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ts  = Appointment.query.filter_by(id=request.form.get('appt',None)).all()
@@ -492,8 +499,6 @@ def dashboard():
 
 
 
-
-
 @ht_server.route('/upload', methods=['POST'])
 @dbg_enterexit
 @req_authentication
@@ -509,7 +514,7 @@ def upload():
 		if (len(image_data) > 0):
 			tmp_filename = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 			open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], tmp_filename), 'w').write(image_data)
-			
+
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
@@ -549,7 +554,7 @@ def editprofile():
 			if (len(image_data) > 0):
 				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 				trace (destination_filename + ", sz = " + str(len(image_data)))
-				
+
 				#print source_extension
 				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
@@ -592,7 +597,7 @@ def editprofile():
 	form.edit_bio.data      = bp.bio
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
 	resp = make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
-	
+
 	return resp
 
 
@@ -686,7 +691,7 @@ def charge():
 
 	customer = stripe.Customer.create (email=ba.email, card=request.form['stripeToken'], api_key=charge_api_key)
 	#pprint(customer)
-	
+
 
 
 	# get buyer; becomes Hero's (seller) customer id.
@@ -877,8 +882,6 @@ def settings():
 			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
 			update_acct = True
 			update_pass = form.set_input_newpass.data
-			send_passwd_change_email(ba.email)
-			errmsg = "Password successfully updated."
 
 		if (ba.email != form.set_input_email.data):
 			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
@@ -886,7 +889,12 @@ def settings():
 			update_mail = form.set_input_email.data
 
 		if (update_acct):
-			(rc, errno) = modifyAccount(uid, form.set_input_curpass.data, new_pass=update_pass, new_mail=update_mail)
+			if (update_pass):
+				pwd = form.set_input_curpass.data
+			else:
+				pwd = form.set_input_email_pass.data
+			trace("password is: " + pwd)
+			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
 			trace("modify acct = " + str(rc) + ", errno = " + str(errno))
 			if (rc == False):
 				trace("restate errno" + str(errno))
@@ -916,6 +924,11 @@ def settings():
 			send_email_change_email(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
 
+		#change pass send email
+		if (update_pass):
+			send_passwd_change_email(ba.email)
+			errmsg = "Password successfully updated."
+
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
 		pass
@@ -934,7 +947,7 @@ def settings():
 def error_sanitize(message):
 	if (message[0:16] == "(IntegrityError)"):
 		message = "Email already in use."
-	
+
 	return message
 
 
@@ -963,7 +976,7 @@ def settings_verify_stripe():
 	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
 	#	invalid_request, 	Missing response_type parameter.
 	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
-	
+
 
 	if (authr == "None" and error != "None"):
 		print "verify - auth Failed", edesc
@@ -976,7 +989,7 @@ def settings_verify_stripe():
 	postdata['client_secret'] = stripe_keys['secret']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
-	
+
 	print "verify -- post Token to stripe"
 	resp, content = stripeHTTP.request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
 	rc = json.loads(content)
@@ -1058,7 +1071,7 @@ def review():
 			new_review = Review(reviewed_heroid=rp.heroid, author_profile=bp.heroid, rating=5-int(review_form.input_rating.data), text=review_form.input_review.data)
 			db_session.add(new_review)
 			log_uevent(uid, "posting " + str(new_review))
-			
+
 			# update the reviewed profile's ratings, in the future, delay this
 			reviews = Review.query.filter_by(heroid=rp.heroid).all()
 			sum_ratings = new_review.rating
@@ -1083,7 +1096,7 @@ def review():
 		pass
 	else:
 		pass
-		
+
 	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=30, form=review_form))
 
 
@@ -1109,7 +1122,7 @@ def hero_profile(heroName):
 	hero = Profile.query.filter_by(vanity=heroName).all()
 	if len(hero) == 1: 
 		hp = hero[0]
-		
+
 	return pageNotFound('unknown', 404);
 
 

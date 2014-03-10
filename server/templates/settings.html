@@ -15,6 +15,10 @@
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<label id="set-label-email" for="set_input_email">Current email</label>
 			{{form.set_input_email()}}
+			<label id="set-label-email-pass" for="set_input_email_pass">Current password</label>
+			{{form.set_input_email_pass}}
+
+
 
 			{% if errmsg != none %}
 				<script>
