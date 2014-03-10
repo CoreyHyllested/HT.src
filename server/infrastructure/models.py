@@ -244,9 +244,11 @@ class Proposal(Base):
 	prop_place	= Column(String(1000), nullable = False)
 	prop_desc	= Column(String(3000), nullable = True)
 	prop_created = Column(DateTime(), nullable = False)
+	#prop_updated = Column(DateTime(), nullable = False)
 	stripe_cust	= Column(String(40), nullable = True)
 	stripe_card	= Column(String(40), nullable = True)
 	stripe_tokn	= Column(String(40), nullable = True)
+	prop_updated = Column(DateTime(), nullable = False)
    # 14) Buyer's Stripe Cust hash
     # 15) Buyer's Stripe Card hash
 
