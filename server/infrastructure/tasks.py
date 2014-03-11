@@ -95,6 +95,18 @@ def send_passwd_change_email(toEmail):
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(toEmail, msg)
 
+@mngr.task
+def send_prop_rejected_email(email_addr, proposal):
+	msg_html = "Your HeroTime Proposal, %s, was rejected." % (proposal)
+
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = "HeroTime Proposal Rejected"
+	msg['From'] = "noreply@herotime.co"
+	msg['To'] = email_addr   #can be email name?
+	msg['fromname'] = "HeroTime"
+	msg.attach(MIMEText(msg_html, 'plain'))
+	ht_send_email(email_addr, msg)
+
 
 @mngr.task
 def ht_send_email(toEmail, msg):

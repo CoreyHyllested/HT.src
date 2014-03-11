@@ -803,7 +803,33 @@ def ht_api_proposal_accept():
 @ht_server.route('/proposal/reject', methods=['POST'])
 @req_authentication
 def ht_api_proposal_reject():
-	return redirect('/notImplemented')
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+	if not form.validate_on_submit():
+		rc = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], rc) 
+		return jsonify(usrmsg=str(rc)), 504
+	
+	prop = Proposal.query.filter_by(prop_uuid=form.proposal_id.data).all()
+	if len(prop) == 0: return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
+
+	# if user that is rejecting is user who made last proposal; fail.
+	# maybe there is a reason.
+	try:
+		the_proposal = prop[0]
+		db_session.delete(the_proposal)
+		db_session.commit()
+		rc = send_prop_rejected_email.apply_async(args=['corey@herotime.co', '333'], eta=(dt.utcnow() + timedelta(seconds=180)))
+		print rc
+	except Exception as e:
+		print e
+		db_session.rollback()
+	print "Whoa, we deleted that bitch"
+	return jsonify(usrmsg="Success"), 200
+
+
 
 
 @ht_server.route('/proposal/negotiate', methods=['POST'])
