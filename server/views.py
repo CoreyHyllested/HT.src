@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 from StringIO import StringIO
 from urllib import urlencode
 from werkzeug          import secure_filename
-from werkzeug.security import generate_password_hash, check_password_hash #rm -- should be in controllers only
+from werkzeug.security import generate_password_hash #rm -- should be in controllers only
 
 
 stripe_keys = {}
@@ -149,6 +149,7 @@ def initProfile(head, ind, loc):
 		db_session.rollback()
 
 
+
 @ht_server.route('/login/linkedin/authorized')
 @linkedin.authorized_handler
 def li_authorized(resp):
@@ -217,6 +218,7 @@ def li_authorized(resp):
 		resp = redirect('/dbFailure')
 	return resp
 	#return jsonify(me.data)
+
 
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
@@ -339,6 +341,7 @@ def profile():
 	print "'hero' = ", request.form.get('hero')
 	
 
+	# TODO: disable csrf for this 
 	hp = request.values.get('hero')
 	if (hp is None):
 		print "No hero profile requested, Error"
@@ -527,18 +530,19 @@ def upload():
 
 
 @ht_server.route('/edit', methods=['GET', 'POST'])
-@dbg_enterexit
+#@dbg_enterexit
 @req_authentication
 def editprofile():
 	""" Provides Hero space to update their information.  """
 
+	print 'enter edit'
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = ProfileForm(request.form)
 	if form.validate_on_submit():
 		try:
-			trace("PROFILE IS VALID")
+			trace("form is valid")
 			bp.baserate = form.edit_rate.data
 			bp.headline = form.edit_headline.data 
 			bp.location = form.edit_location.data 
@@ -568,18 +572,21 @@ def editprofile():
 				if (bp.url[:7] != "http://"):
 					bp.url = "http://" + bp.url;
 
+			db_session.add(bp)
 			db_session.commit()
 			log_uevent(uid, "update profile")
 
-			return jsonify(rc="Success")
+			return jsonify(rc="Success"), 200
 		except Exception as e:
 			print e
 			db_session.rollback()
 			#CAH, this is a problem, how do we signal a problem occurred?
 			#flash there was a problem, retry
-			return jsonify(error=e)
+			return jsonify(usrmsg=e), 500
 	elif request.method == 'POST':
 		log_uevent(uid, "editform isnt' valid" + str(form.errors))
+		print 'shoulding this fire?'
+		return jsonify(usrmsg='Invalid Request: ' + str(form.errors)), 500
 
 	x = 0
 	for x in range(len(Industry.industries)):
@@ -601,52 +608,39 @@ def editprofile():
 	return resp
 
 
-@ht_server.route('/charge', methods=['POST'])
-@dbg_enterexit
-@req_authentication
-def charge():
-	uid = session['uid']
-	print "stripe_tokn", request.values.get('stripe_tokn')
-	print "stripe_card", request.values.get('stripe_card')
-	print "stripe_cust", request.values.get('stripe_cust')
-	print "stripe_fngr", request.values.get('stripe_fngr')
 
-	print 'prop_hero', request.values.get('prop_hero')
-	print 'prop_time', request.values.get('prop_time')
-	print 'prop_s_date', request.values.get('prop_s_date')
-	print 'prop_s_hour', request.values.get('prop_s_hour')
-	print 'prop_f_date', request.values.get('prop_f_date')
-	print 'prop_f_time', request.values.get('prop_f_hour')
+
+@ht_server.route('/proposal/create', methods=['POST'])
+@req_authentication
+def ht_api_proposal_create():
+	uid = session['uid']
 
 	prop_stripe_tokn = request.values.get('stripe_tokn')
 	prop_stripe_card = request.values.get('stripe_card')
 	prop_stripe_cust = request.values.get('stripe_cust')
+	prop_stripe_fngr = request.values.get('stripe_fngr')
 
 	prop_hero = request.values.get('prop_hero')
 	prop_cost = request.values.get('prop_cost')
-	prop_place = request.values.get('prop_area')
 	prop_desc = request.values.get('prop_desc')
+	prop_place = request.values.get('prop_area')
 
-	prop_date = request.values.get('prop_date')
-	prop_hour = request.values.get('prop_hour')
-	prop_time = request.values.get('prop_time')
+#	prop_date = request.values.get('prop_date')
+#	prop_hour = request.values.get('prop_hour')
+#	prop_time = request.values.get('prop_time')
 
 	prop_s_date = request.values.get('prop_s_date')
 	prop_s_hour = request.values.get('prop_s_hour')
 	prop_f_date = request.values.get('prop_f_date')
 	prop_f_hour = request.values.get('prop_f_hour')
 
-	print 'starting time = ', str(prop_s_date), str(prop_s_hour)
-	print 'finishng time = ', str(prop_f_date), str(prop_f_hour)
 	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
 	print 'updated_start = ', dt_start
 	print 'updated_finsh = ', dt_finsh
 
-
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
-
 	hp  = Profile.query.filter_by(heroid=prop_hero).all()[0]
 	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
@@ -654,30 +648,19 @@ def charge():
 
 	print "BA = ", ba
 	print "HA = ", ha
+	#TODO need to sanatize all of this --- hit a place in Poland / Germany that fucked everything up.
 
-
-# Not sure what any of this is anymore.  
-#	charge_api_key = stripe_keys['secret']
-#	print "charge_key", charge_api_key 
-#	if (pi):
-#		charge_api_key = pi[0].token
-#	print "charge_key", charge_api_key 
-
-###
-
-
-
-	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, 	dt_finsh, 	int(prop_cost), str(prop_place), str(prop_desc), prop_stripe_cust, prop_stripe_card)
+	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, dt_finsh, int(prop_cost), str(prop_place), str(prop_desc), prop_stripe_cust, prop_stripe_card)
 	print proposal
 
 	try:
 		db_session.add(proposal)
 		db_session.commit()
-		rc = send_welcome_email.apply_async(args=['corey@herotime.co'], eta=(dt.utcnow() + timedelta(minutes=30)))
-		print rc
+		ht_proposal_update(proposal.prop_uuid, proposal.prop_from)
+		
 	except Exception as e:
+		msg = ht_sanatize_errors(e)
 		db_session.rollback()
-		print e
 		return redirect('/dbFailure')
 	return redirect('/dashboard')
 
@@ -686,9 +669,6 @@ def charge():
 # -- Buyer's Stripe transaction hash? -- not until appt?
 
 	# enqueue task to charge the card 24hrs before appt.
-	
-
-
 	customer = stripe.Customer.create (email=ba.email, card=request.form['stripeToken'], api_key=charge_api_key)
 	#pprint(customer)
 
@@ -747,10 +727,10 @@ def charge():
 	return render_template('charge.html', amount=ts.cost, charge=charge)
 
 
-@ht_server.route('/proposal/create', methods=['POST'])
-@req_authentication
-def ht_api_proposal_create():
-	return charge()
+
+def ht_sanatize_errors(err):
+	print 'caught error:' + str(err)
+
 
 
 
@@ -759,20 +739,32 @@ def ht_api_proposal_create():
 def ht_api_proposal_accept():
 	form = ProposalActionForm(request.form)
 	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+
 	log_uevent(session['uid'], pstr)
+#	ba = ht_get_account()
+#	bp = ht_browsingprofile()
+#	print 'ba = ', ba
+#	print 'bp = ', bp
+#	if form.proposal_id.data != session(uid) :: fail
 
 	if not form.validate_on_submit():
 		rc = "invalid form: " + str(form.errors)
 		log_uevent(session['uid'], rc) 
 		return jsonify(usrmsg=str(rc)), 503
 
+
 	prop = Proposal.query.filter_by(prop_uuid=form.proposal_id.data).all()
 	if len(prop) == 0: return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 504
 
+
+	the_proposal = prop[0]
+	if (the_proposal.prop_from == session.get('uid')):
+		# A proposal cannot be accepted by the last person modify to the proposal..  
+		return jsonify(usrmsg="Bizarro.  It appears you accepted your own proposal.  Shouldn't be possible."), 505
+		
+
 	try:
 		# create appt; delete prop
-		the_proposal = prop[0]
-
 		appointment = Appointment()
 		appointment.apptid     = the_proposal.prop_uuid
 		appointment.sellr_prof = the_proposal.prop_hero
@@ -788,14 +780,16 @@ def ht_api_proposal_accept():
 		appointment.created		= the_proposal.prop_created
 		appointment.updated		= dt.now()
 		print appointment
+
 		db_session.add(appointment)
 		db_session.delete(the_proposal)
 		db_session.commit()
 
+		# enqueue task to charge cc
+		rc = ht_appointment_finalize.apply_async(args=[appointment.apptid])
 	except Exception as e:
 		print e
 		db_session.rollback()
-	print "whoa, we made it out"
 	return jsonify(usrmsg="success"), 200
 
 
