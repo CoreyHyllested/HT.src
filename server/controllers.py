@@ -48,7 +48,15 @@ def ht_get_profile(ba):
 
 
 def ht_browsingprofile():
-	#return Profile.query.filter_by(account=session['uid']).all()[0]
+	bp = Profile.query.filter_by(account=session.get('uid', 0)).all()
+	if (len(bp) == 1): return bp[0]
+	return None
+
+
+def ht_get_account(user_id=None):
+	if (user_id == None): user_id = session.get('uid', 0)
+	accounts = Account.query.filter_by(userid=user_id).all()
+	if (len(accounts) == 1): return accounts[0]
 	return None
 
 
