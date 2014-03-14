@@ -10,7 +10,9 @@
 	<!-- Change photo -->
 	<div id="change-photo">
 		<h2>Profile Picture</h2>
-		<img id='profile_img' src={{photoURL}} style="height:151; width:269px; display:block; margin:0 auto;" />
+		<div id="img-placeholder" style="height:151px; width:269px; display:block; margin:0 auto; position:relative;">
+			<img id='profile_img' src={{photoURL}} style= "height:151px; width:269px; margin:0 auto;" />
+		</div>
 		<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
 		<br />
 
@@ -105,6 +107,7 @@ $(function () {
 	
 
 	$('#change-photo-button').change(function(e) {
+		reloadProfImg("../static/img/loader.gif", true);
 		var fd = new FormData($('#editform')[0]);
 		fd.append('csrf_token', $('#csrf_token').val())
 
@@ -135,7 +138,14 @@ $(function () {
 		return false;
 	});
 
-	function reloadProfImg(url) { $("#profile_img").attr("src", url); }
+	function reloadProfImg(url, loader) {
+		$("#profile_img").attr("src", url);
+		if (loader) {
+			$("#profile_img").height(80).width(80);
+			$("#profile_img").css('margin-left',90+'px');
+			$("#profile_img").css('margin-top',20+'px');
+		}
+	}
 });
 </script>
 
