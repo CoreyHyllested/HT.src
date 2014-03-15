@@ -31,14 +31,12 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 def email_buyer_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
-	print "ebpu 1: Proposal to buyer (" + str(prop.prop_uuid) + ") last touched by", str(prop.prop_from)
-
 	url = 'https://127.0.0.1:5000/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
 	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
-	msg_subject = "Proposal sent to " + hero_name
+	msg_subject = "Proposal to meet " + hero_name
 	if (prop.prop_count > 1): msg_subject = msg_subject + "(updated)"
 
 	msg = MIMEMultipart('alternative')
@@ -61,7 +59,7 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	
-	msg_subject = "Proposal to meet from " + buyer_name  
+	msg_subject = "Proposal to meet " + buyer_name  
 	if (prop.prop_count > 1): msg_subject = msg_subject + " (updated)"
 
 	msg = MIMEMultipart('alternative')
