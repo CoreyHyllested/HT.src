@@ -6,7 +6,7 @@ from email.header			import Header
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models		 import Appointment, Proposal, Account, Profile
-from server.infrastructure.errors		 import NoProposalFound
+from server.infrastructure.errors		 import *
 from pprint import pprint as pp
 import json, smtplib
 
@@ -16,9 +16,7 @@ def ht_proposal_update(p_uuid, p_from):
 	# send email to seller.  (proposal has been sent)
 
 	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
-	if (len(proposals) != 1):
-		print len(proposals)
-		raise NoProposalFound(p_uuid, p_from)
+	if (len(proposals) != 1): raise NoProposalFound(p_uuid, p_from)
 	prop = proposals[0]
 
 	(ha, hp) = get_account_and_profile(prop.prop_hero)
@@ -177,6 +175,27 @@ def send_passwd_change_email(toEmail):
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(toEmail, msg)
 
+
+
+@mngr.task
+def send_proposal_reject_emails(hero_email_addr, hero_name, buyer_email_addr, buyer_name, prop):
+	hero_msg_html = "Hey, hero you can put away your cape and cowl for now..  You rejected proposal %s from USER." % (prop)
+	hero_msg = MIMEMultipart('alternative')
+	hero_msg['Subject']	= '%s'  % Header('HeroTime rejection notice.', 'utf-8')
+	hero_msg['To']	 = "\"%s\" <%s>" % (Header(hero_name, 'utf-8'), hero_email_addr)
+	hero_msg['From'] = "\"%s\" <%s>" % (Header(u'HeroTime', 'utf-8'), 'noreply@herotime.co')
+	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
+	ht_send_email(hero_email_addr, hero_msg)
+
+	buyer_msg_html = "Hey, keep your money.  Your hero is in another castle.  Your hero rejected your proposal %s." % (prop)
+	buyer_msg = MIMEMultipart('alternative')
+	buyer_msg['Subject']	= '%s'  % Header('HeroTime rejection notice.', 'utf-8')
+	buyer_msg['To']			= "\"%s\" <%s>" % (Header(buyer_name, 'utf-8'), buyer_email_addr)
+	buyer_msg['From']		= "\"%s\" <%s>" % (Header(u'HeroTime', 'utf-8'), 'noreply@herotime.co')
+	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
+	ht_send_email(buyer_email_addr, buyer_msg)
+
+
 @mngr.task
 def send_appt_emails(hero_email_addr, buyer_email_addr, appt):
 	print 'sending appt emails@ ' + appt.ts_begin.strftime('%A, %b %d, %Y -- %H:%M %p')
@@ -250,6 +269,41 @@ def ht_appointment_finalize(appt_id):
 #	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
 #	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
 	return None
+
+
+@mngr.task
+def ht_proposal_reject(p_uuid, rejector):
+	print 'received proposal uuid: ', p_uuid 
+
+	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
+	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
+	the_proposal = proposals[0]
+
+	# get data to send emails
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(the_proposal.prop_buyer)
+#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.name.encode('utf8', 'ignore')
+#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.name.encode('utf8', 'ignore')
+
+	# bit of over-engineering; 
+	if (rejector != ha.userid and rejector != ba.userid):	#only Hero / Buyer can reject proposal
+		raise PermissionDenied('reject prop', rejector, 'You do not have permission to reject this proposal')
+
+	try: # delete proposal 
+		db_session.delete(the_proposal)
+		db_session.commit()
+	except Exception as e:
+		# cleanup DB immediately
+		db_session.rollback()
+		print 'DB error:', e
+		raise DB_Error(e, 'Shit that\'s embarrassing')
+
+	print 'send rejection emails to profiles: ', the_proposal.prop_hero, the_proposal.prop_buyer
+	send_proposal_reject_emails(ha.email, hp.name.encode('utf8', 'ignore'), ba.email, bp.name.encode('utf8', 'ignore'), the_proposal)
+
+
+
+
 
 @mngr.task
 def capture_creditcard():

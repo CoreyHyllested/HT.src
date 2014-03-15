@@ -28,6 +28,7 @@ stripe_keys = {}
 stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
 stripe_keys['secret'] = 'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
 #stripe.api_key = stripe_keys['secret']
+#ht_appointment_finalize.apply_async(args=[appointment.apptid])
             
 
 
@@ -786,7 +787,7 @@ def ht_api_proposal_accept():
 		db_session.commit()
 
 		# enqueue task to charge cc
-		rc = ht_appointment_finalize.apply_async(args=[appointment.apptid])
+		ht_appointment_finalize(appointment.apptid)
 	except Exception as e:
 		print e
 		db_session.rollback()
@@ -806,22 +807,21 @@ def ht_api_proposal_reject():
 		log_uevent(session['uid'], rc) 
 		return jsonify(usrmsg=str(rc)), 504
 	
-	prop = Proposal.query.filter_by(prop_uuid=form.proposal_id.data).all()
-	if len(prop) == 0: return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
 
-	# if user that is rejecting is user who made last proposal; fail.
-	# maybe there is a reason.
 	try:
-		the_proposal = prop[0]
-		db_session.delete(the_proposal)
-		db_session.commit()
-		rc = send_prop_rejected_email.apply_async(args=['corey@herotime.co', '333'], eta=(dt.utcnow() + timedelta(seconds=180)))
-		print rc
+		ht_proposal_reject(form.proposal_id.data, session['uid'])
+	except NoProposalFound as npf:
+		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
+	except PermissionDenied as pd: 
+		print pd
+		return jsonify(usrmsg=pd.msg), 501
+	except DB_Error as dbe:
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except Exception as e:
 		print e
 		db_session.rollback()
-	print "Whoa, we deleted that bitch"
-	return jsonify(usrmsg="Success"), 200
+		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
+	return jsonify(usrmsg="Proposal Deleted"), 200
 
 
 
