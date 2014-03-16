@@ -91,12 +91,13 @@ $(function () {
 			if (4 == this.readyState) {
 				if (this.status == 200) {
 					console.log(['xhr post complete', e]);
-					//rc = JSON.parse(xhr.responseText);
 					console.log(xhr.responseText);
-					openAlertWindow("Success.")
+					rc = JSON.parse(xhr.responseText);
+					openAlertWindow("Success: " + rc['usrmsg'])
 				} else {
 					console.log(['xhr post complete', e]);
-					openAlertWindow("Failure " + e)
+					rc = JSON.parse(xhr.responseText);
+					openAlertWindow("Failure: " + rc['usrmsg'])
 				}
 			}
 		};

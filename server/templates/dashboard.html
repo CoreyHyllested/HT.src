@@ -207,8 +207,8 @@
 			<div class="buttons">
 				{% if bp.heroid == prop.prop_from %}
 				{% else %}
-				<div class="reject-wrap"><a href="/proposals/{{prop.challenge}}/reject"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>		
-				<div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div>
+				<div class="reject-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>
+				<!--div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div-->
 				<div class="accept-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a> </div>
 				{% endif  %}
 			</div>
@@ -216,7 +216,7 @@
 			<div class="clear"></div>
 		</div>
 		{% endfor %}
-	<!--end all slots-->
+		<!--end proposals-->
 	</div>
 
 	<div class="clear"></div>
@@ -276,6 +276,50 @@
 
 <script>
 $(function () {
+   $('.reject-wrap').click(function () {
+        var id = this.id;
+        var ch = $(this).attr("ch");
+        var csrf = "{{ csrf_token() }}";
+
+        console.log(['this is get started', id]);
+        console.log('this is get started ' +  ch);
+
+        var fd = new FormData();
+        //matches ProposalActionForm
+        fd.append('proposal_id', id);
+        fd.append('proposal_stat', 'reject');
+        fd.append('proposal_challenge', ch);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/proposal/reject", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf)
+        xhr.send(fd)
+
+        //catch response.  make any modificaitons.
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    console.log(xhr.responseText);
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Success!\n' + msg['usrmsg']);
+                } else if (this.status == 500) {
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 501) {
+                    console.log(['xhr post complete, err=501 ', e]);
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else {
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                }
+            }
+        };
+
+        return false;
+    });
+
     $('.accept-wrap').click(function () {
 		var id = this.id;
 		var ch = $(this).attr("ch");
@@ -304,7 +348,7 @@ $(function () {
                     console.log(xhr.responseText);
                     msg = JSON.parse(xhr.responseText);
                     openAlertWindow('Success!\n' + msg['usrmsg']);
-					document.reload();
+					//document.reload();
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500 ', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);

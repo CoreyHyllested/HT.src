@@ -230,6 +230,7 @@ class Profile(Base):
 
 class Proposal(Base):
 	__tablename__ = "proposal"
+	####userid  = Column(String(40), primary_key=True,            unique=True)
 	id			= Column(Integer, primary_key = True)
 	prop_uuid	= Column(String(40), nullable = False)													# NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE SELLER. The Hero
