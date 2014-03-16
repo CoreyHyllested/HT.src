@@ -1037,7 +1037,6 @@ nav ul ul a:hover {
 	height: 30px;
 	line-height: 0.9em;
 	outline: none;
-	padding-left: 5px;
 	position: absolute;
 }
 
@@ -1052,7 +1051,6 @@ nav ul ul a:hover {
 	line-height: 1.5em;
 	outline: none;
 	padding: .3em;
-	padding-left: 5px;
 	position: absolute;
     text-overflow: '';
 }
