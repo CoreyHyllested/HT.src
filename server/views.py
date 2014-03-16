@@ -166,8 +166,6 @@ def li_authorized(resp):
 	me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	email = linkedin.get('people/~/email-address')
 
-
-
 	# format collected info... prep for init.
 	jsondata  = jsonify(me.data)
 	linked_id = me.data.get('id')
@@ -197,20 +195,14 @@ def li_authorized(resp):
 		session['uid'] = possible_acct[0].userid
 		return redirect('/dashboard')
 
-	# deleted this part in order to successfully signup a user if he does Linkedin oauth from login
-	#else:
-	#	trace('No account found')
-	#	return redirect('/signup')
-
  	# try creating new account.  We don't know password.
 	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		trace("created account, uid = " + str(bp.account))
 		ht_bind_session(bp)
-		initProfile(headline, industry, location)
-		trace("called  init profile")
+		initProfile(headline, industry, location, summary=summary)
+		# import_profile(LINKEDIN, jsonify(me.data)) 
 
-		#Send a welcome email
 		send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
@@ -218,7 +210,6 @@ def li_authorized(resp):
 		trace('create account failed, using' + str(email.data))
 		resp = redirect('/dbFailure')
 	return resp
-	#return jsonify(me.data)
 
 
 
@@ -338,6 +329,7 @@ def profile():
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
+	nts = NTSForm(request.form, csrf_enabled=False)
 	print "'hero' = ", request.values.get('hero')
 	print "'hero' = ", request.form.get('hero')
 	
@@ -359,7 +351,6 @@ def profile():
 		print "BP = ", bp.name, bp.heroid, bp.account
 
 
-	nts = NTSForm(request.form)
 	nts.hero.data = hp.heroid
 
 	tmeslts = [] 
@@ -626,10 +617,6 @@ def ht_api_proposal_create():
 	prop_desc = request.values.get('prop_desc')
 	prop_place = request.values.get('prop_area')
 
-#	prop_date = request.values.get('prop_date')
-#	prop_hour = request.values.get('prop_hour')
-#	prop_time = request.values.get('prop_time')
-
 	prop_s_date = request.values.get('prop_s_date')
 	prop_s_hour = request.values.get('prop_s_hour')
 	prop_f_date = request.values.get('prop_f_date')
@@ -734,6 +721,7 @@ def ht_sanatize_errors(err):
 
 
 
+#return jsonify(cost=nts.newslot_price.data, ts_srt1 = str(nts.newslot_starttime.data), ts_end1 = ts_end, begin1=begin, finish1 = finish, bywhom = int(bp.heroid != hp.heroid))
 
 @ht_server.route('/proposal/accept', methods=['POST'])
 @req_authentication
@@ -834,33 +822,6 @@ def ht_api_proposal_negotiate():
 
 	
 
-@ht_server.route('/proposal', methods=['POST'])
-@req_authentication
-def create_proposal():
-	uid = session['uid']
-	log_uevent(session['uid'], " proposing meeting")
-	bp = Profile.query.filter_by(account=uid).all()[0]		# browsing profile
-	hp  = Profile.query.filter_by(heroid=(request.form.get('hero', bp.heroid))).all()[0]		# Hero Profile
-	#trace(request.files)
-
-	nts = NTSForm(request.form)
-	if nts.validate_on_submit():
-		log_uevent(uid, "creating proposal for " + str(hp.heroid))
-
-		cost   = int(nts.newslot_price.data.replace(',', ''))
-		ts_srt = str(nts.newslot_starttime.data)
-		ts_end = str(nts.newslot_endtime.data)
-		begin  = dt.strptime(nts.datepicker.data  + " " + ts_srt, '%A, %b %d, %Y %H:%M %p')
-		finish = dt.strptime(nts.datepicker1.data + " " + ts_end, '%A, %b %d, %Y %H:%M %p')
-		bywhom = int(bp.heroid != hp.heroid) 
-		timslt = Timeslot(str(hp.heroid), begin, finish, cost, str(nts.newslot_description.data), str(nts.newslot_location.data), creator=str(bp.heroid), status=bywhom)
-	else:
-		log_uevent(uid, "POST form isn't valid" + str(nts.errors))
-		trace(nts.newslot_price.data)
-		trace(nts.newslot_starttime.data)
-		trace(nts.newslot_endtime.data)
-
-	return jsonify(cost=nts.newslot_price.data, ts_srt1 = str(nts.newslot_starttime.data), ts_end1 = ts_end, begin1=begin, finish1 = finish, bywhom = int(bp.heroid != hp.heroid))
 
 
 

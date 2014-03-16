@@ -233,22 +233,6 @@
 
 <script>
 	var jq = $.noConflict();
-	//$("#today_button").click(function() {
-	//	var today = moment().format("dddd, MMM D, YYYY");
-	//	$("#datepicker2").datepicker('setDate', today);
-	//	document.getElementById("header").innerHTML = today;
-	//	//moment().format("dddd, MMM D, YYYY");
-	//    var c = {{timeslots|length}};
-	//	for (var i = 1; i < c + 1; i++){
-    //      if (document.getElementById("day-"+i).innerHTML != today){
-    //        document.getElementById(i).style.display = 'none';
-    //        document.getElementById("slot-expand-"+i).style.display = 'none';
-    //      }
-    //      else {
-    //      	document.getElementById(i).style.display = 'block';
-    //     }
-	//	};
-	//});
     //ensure enter doesn't submit form
     $("form[name=newts]").bind("keypress", function (e) {
         if (e.keyCode == 13) {
@@ -265,7 +249,6 @@
 	$('#newslot_endtime').change(function() {
 		update_time_diff({{hp.baserate}});
 	});
-	//document.getElementById("header").innerHTML = moment().format("dddd, MMM D, YYYY");
     if (document.getElementById("datepicker") != null) {
     	document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
     }
@@ -293,8 +276,6 @@
 <script>
 	$(document).ready(function() {
 		$('#send_proposal').click(function() {
-
-			
 			$hero_acct = '{{hp.heroid}}';
 			$hero_name = '{{hp.name}}';
 			$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
@@ -368,13 +349,8 @@
 
 			   	var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
 			   	var $prop_cost =  $('<input type=hidden name=prop_cost />').val($cost);
-			   	var $prop_time =  $('<input type=hidden name=prop_time />').val($time);
 			   	var $prop_area =  $('<input type=hidden name=prop_area />').val($area);
 			   	var $prop_desc =  $('<input type=hidden name=prop_desc />').val($desc);
-
-			   	var $prop_date =  $('<input type=hidden name=prop_date />').val($ts_d);
-			   	var $prop_hour =  $('<input type=hidden name=prop_hour />').val($ts_h);
-
 
 			   	var $prop_s_date =  $('<input type=hidden name=prop_s_date />').val($ts_d);
 			   	var $prop_s_hour =  $('<input type=hidden name=prop_s_hour />').val($ts_h);
@@ -384,10 +360,9 @@
 				$('form[name="charge"]').append($csrf);
 				console.log('append stripe');
 				$('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr).append($stripe_mail);
-				$('form[name="charge"]').append($prop_hero).append($prop_cost).append($prop_area).append($prop_desc).append($prop_time);
+				$('form[name="charge"]').append($prop_hero).append($prop_cost).append($prop_area).append($prop_desc);
 				$('form[name="charge"]').append($prop_s_date).append($prop_s_hour);
 				$('form[name="charge"]').append($prop_f_date).append($prop_f_hour);
-				$('form[name="charge"]').append($prop_date).append($prop_hour);
 				$('form[name="charge"]').submit();
 			};
 
@@ -395,7 +370,7 @@
 				key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
 				amount:		 $cost,
 				address:     true,
-				description: $desc,
+				description: $desc.substring(0,50);
 				name:		 $hero_name, 
 				currency:	 'usd',
 				panelLabel:	 'Checkout',
