@@ -9,7 +9,7 @@ from flask import render_template, make_response, session, request, flash, redir
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 from httplib2 import Http
-from server import ht_server
+from server import ht_server, ht_csrf
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.infrastructure.errors import * 
@@ -321,6 +321,7 @@ def signup_verify(challengeHash):
 
 
 
+@ht_csrf.exempt
 @ht_server.route('/profile', methods=['GET', 'POST'])
 @dbg_enterexit
 def profile():
@@ -329,9 +330,8 @@ def profile():
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
-	nts = NTSForm(request.form, csrf_enabled=False)
+	nts = NTSForm(request.form)
 	print "'hero' = ", request.values.get('hero')
-	print "'hero' = ", request.form.get('hero')
 	
 
 	# TODO: disable csrf for this 
@@ -366,28 +366,33 @@ def profile():
 
 
 
-@ht_server.route('/cancel', methods=['POST'])
+@ht_server.route('/appointment/cancel', methods=['POST'])
 @dbg_enterexit
 @req_authentication
-def cancelAppt():
+def ht_api_appt_cancel():
 	""" Cancels a logged in user's appointment. """
 
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]
-	ts  = Appointment.query.filter_by(id=request.form.get('appt',None)).all()
-	print "ts_len" , len(ts)
-	if len(ts) == 1:
-		print ts
-		ts = ts[0]
 	print 'bp = ', bp
-	print 'ts = ', ts
+
+	appointments = Appointment.query.filter_by(apptid=request.form.get('appt', None)).all()
+	print "appointments found = " , len(appointments)
+	if (len(appointments) != 1): return jsonify(usrmsg='Weird, no appointment found') 
+	
+	the_appointment = appointments[0]
+	print the_appointment
 
 	try:
-		db_session.delete(ts)
+		the_appointment = appointments[0]
+		the_appointment.status = APPT_CANCELED
+
+		db_session.add(the_appointment)
 		db_session.commit()
+		print the_appointment
 
 		#send emails notifying users.
-		print "success, deleted ts"
+		print "success, canceled appt"
 	except Exception as e:
 		print e
 		db_session.rollback()
@@ -605,12 +610,13 @@ def editprofile():
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
+	print 'hit ht_api_prop_create'
 	uid = session['uid']
 
 	prop_stripe_tokn = request.values.get('stripe_tokn')
 	prop_stripe_card = request.values.get('stripe_card')
 	prop_stripe_cust = request.values.get('stripe_cust')
-	prop_stripe_fngr = request.values.get('stripe_fngr')
+	prop_stripe_fngr = request.values.get('stripe_fngr')	#card_fingerprint
 
 	prop_hero = request.values.get('prop_hero')
 	prop_cost = request.values.get('prop_cost')
@@ -626,19 +632,31 @@ def ht_api_proposal_create():
 	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
 	print 'updated_start = ', dt_start
 	print 'updated_finsh = ', dt_finsh
+	print 'token = ', prop_stripe_tokn 
+	print 'ccard = ', prop_stripe_card 
+	print 'scust = ', prop_stripe_cust 
+
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
 	hp  = Profile.query.filter_by(heroid=prop_hero).all()[0]
 	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
-	pi  = OauthStripe.query.filter_by(account=ha.userid).all()
+	uid = session.get('uid')
+	pi  = get_stripe_customer(uid=uid, cc_token=prop_stripe_tokn, cc_card=prop_stripe_card)
+	print pi
+	#maker sure pertinent info is with proposal
 
-	print "BA = ", ba
-	print "HA = ", ha
-	#TODO need to sanatize all of this --- hit a place in Poland / Germany that fucked everything up.
+#	print "HA = ", ha
+#	print "BA = ", ba
+	#TODO need to sanatize all of this 
 
-	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, dt_finsh, int(prop_cost), str(prop_place), str(prop_desc), prop_stripe_cust, prop_stripe_card)
+	print 'creating proposal obj' 
+	print 3, prop_stripe_tokn
+	print 4, pi
+	print 40, prop_stripe_cust
+	print 5, prop_stripe_card
+	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), prop_stripe_tokn, pi, prop_stripe_card)
 	print proposal
 
 	try:
@@ -649,6 +667,7 @@ def ht_api_proposal_create():
 	except Exception as e:
 		msg = ht_sanatize_errors(e)
 		db_session.rollback()
+		print msg
 		return redirect('/dbFailure')
 	return redirect('/dashboard')
 
@@ -657,62 +676,7 @@ def ht_api_proposal_create():
 # -- Buyer's Stripe transaction hash? -- not until appt?
 
 	# enqueue task to charge the card 24hrs before appt.
-	customer = stripe.Customer.create (email=ba.email, card=request.form['stripeToken'], api_key=charge_api_key)
 	#pprint(customer)
-
-
-
-	# get buyer; becomes Hero's (seller) customer id.
-	# get seller's API/ACCESS_TOKEN -- Its like they charge them.  But we need to take API_FEE.
-		# perhaps Not Required? -- We could send email stating they can accept and we can write check.  But signup and get paid directly.
-	# if seller has pub_key, use it.
-
-#	print 'charge - create customer', card
-
-	charge = stripe.Charge.create (
-		customer=customer.id,
-		amount=(ts.cost * 100),
-		currency='usd',
-		description='Flask Charge',
-		application_fee=int((ts.cost * 7.1)-30),
-		api_key=charge_api_key
-		#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
-	)
-	#capture too?
-
-	appointment = Appointment()
-	appointment.buyer_prof = bp.heroid
-	appointment.sellr_prof = hp.heroid
-	appointment.status		= APPT_HAVE_AGREEMENT
-	appointment.location	= ts.location
-	appointment.ts_begin	= ts.ts_begin
-	appointment.ts_finish 	= ts.ts_finish
-	appointment.cost		= ts.cost
-	appointment.paid		= False
-	appointment.cust		= customer.id		#stripe.cust.id
-
-	appointment.description = ts.description
-	#appointment.transaction	= charge.id 
-	appointment.created		= ts.created
-	appointment.updated		= ts.updated
-
-	pprint(charge)
-	print charge['customer']
-	print charge['balance_transaction']
-	print charge['failure_code']
-	print charge['failure_message']
-	print charge['id']
-
-	try:
-		db_session.add(appointment)
-		db_session.delete(ts)
-		db_session.commit()
-	except Exception as e:
-		db_session.rollback()
-		print e
-		return redirect('/dbFailure')
-
-	return render_template('charge.html', amount=ts.cost, charge=charge)
 
 
 
@@ -750,19 +714,36 @@ def ht_api_proposal_accept():
 	if (the_proposal.prop_from == session.get('uid')):
 		# A proposal cannot be accepted by the last person modify to the proposal..  
 		return jsonify(usrmsg="Bizarro.  It appears you accepted your own proposal.  Shouldn't be possible."), 505
+
+	if (the_proposal.stripe_cust == None or the_proposal.stripe_card == None or the_proposal.stripe_tokn == None): 
+		try:
+			db_session.delete(the_proposal)
+			db_session.commit()
+		except Exception as e:
+			print e
+			db_session.rollback()
+		return jsonify(usrmsg='Just deleted, no cc info') 
 		
 
 	try:
 		# create appt; delete prop
+		# make sure state/status in good condition?
 		appointment = Appointment()
 		appointment.apptid     = the_proposal.prop_uuid
 		appointment.sellr_prof = the_proposal.prop_hero
 		appointment.buyer_prof = the_proposal.prop_buyer
-		appointment.status		= APPT_HAVE_AGREEMENT
+
+		#prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
+		#prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
+		#prop_count	= Column(Integer, nullable=False, default=0)							# keep for data mining (negotiation count)
+		#prop_from	= Column(String(40), ForeignKey('profile.heroid'), nullable=False)		# keep for data mining (who touched proposal last)
+		#if (the_proposal.stripe_cust == None or the_proposal.stripe_card == None or the_proposal.stripe_tokn == None): 
+
+		appointment.status		= APPT_ACCEPTED
 		appointment.location	= the_proposal.prop_place
 		appointment.ts_begin	= the_proposal.prop_ts
 		appointment.ts_finish 	= the_proposal.prop_tf
-		appointment.cust		= "CAH_fake_data"
+		appointment.cust		= the_proposal.stripe_cust
 		appointment.cost		= the_proposal.prop_cost
 		appointment.description = the_proposal.prop_desc
 		appointment.paid		= False
@@ -775,11 +756,17 @@ def ht_api_proposal_accept():
 		db_session.commit()
 
 		# enqueue task to charge cc
-		ht_appointment_finalize(appointment.apptid)
+		print 'calling ht_appointment finalize: apptid=', appointment.apptid,  ', cust=', the_proposal.stripe_cust, ', card=', the_proposal.stripe_card, ', token=', the_proposal.stripe_tokn
+		ht_appointment_finalize(appointment.apptid,  the_proposal.stripe_cust, the_proposal.stripe_card, the_proposal.stripe_tokn)
 	except Exception as e:
 		print e
 		db_session.rollback()
+	# get buyer; becomes Hero's (seller) customer id.
+	# get seller's API/ACCESS_TOKEN -- Its like they charge them.  But we need to take API_FEE.
+		# perhaps Not Required? -- We could send email stating they can accept and we can write check.  But signup and get paid directly.
+	# if seller has pub_key, use it.
 	return jsonify(usrmsg="success"), 200
+
 
 
 
@@ -817,6 +804,7 @@ def ht_api_proposal_reject():
 @ht_server.route('/proposal/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_proposal_negotiate():
+	#APPT_RESPONSE = 1
 	return redirect('/notImplemented')
 
 
