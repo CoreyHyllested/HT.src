@@ -366,6 +366,7 @@ def profile():
 
 
 
+@ht_csrf.exempt
 @ht_server.route('/appointment/cancel', methods=['POST'])
 @dbg_enterexit
 @req_authentication
@@ -376,6 +377,7 @@ def ht_api_appt_cancel():
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	print 'bp = ', bp
 
+	print 'apptid = ', request.values.get('appt', 'Nothing found here, sir')
 	appointments = Appointment.query.filter_by(apptid=request.form.get('appt', None)).all()
 	print "appointments found = " , len(appointments)
 	if (len(appointments) != 1): return jsonify(usrmsg='Weird, no appointment found') 
@@ -449,6 +451,7 @@ def dashboard():
 	proposals = proposal_in +  proposal_out
 
 	appt_by_me = db_session.query(Appointment.id, \
+							Appointment.apptid,	\
 							Appointment.status, \
 							Appointment.buyer_prof, \
 							Appointment.sellr_prof, \
@@ -465,9 +468,12 @@ def dashboard():
 							Profile.rating, \
 							Profile.headline) \
 							.join(Profile, Profile.heroid == Appointment.buyer_prof)\
-							.filter(Appointment.sellr_prof == bp.heroid).all()
+							.filter(Appointment.sellr_prof == bp.heroid) \
+							.filter(Appointment.status == APPT_ACCEPTED).all()
+							
 
 	appt_of_me = db_session.query(Appointment.id, \
+							Appointment.apptid,	\
 							Appointment.status, \
 							Appointment.buyer_prof, \
 							Appointment.sellr_prof, \
@@ -484,7 +490,8 @@ def dashboard():
 							Profile.rating, \
 							Profile.headline) \
 							.join(Profile, Profile.heroid == Appointment.sellr_prof)\
-							.filter(Appointment.buyer_prof == bp.heroid).all()
+							.filter(Appointment.buyer_prof == bp.heroid)\
+							.filter(Appointment.status == APPT_ACCEPTED).all()
 
 
 

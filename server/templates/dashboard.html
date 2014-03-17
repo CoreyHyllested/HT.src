@@ -74,7 +74,7 @@
     <!-- Datepicker -->
     <div id="datepicker2" class="calendar-dash"></div>
 
-		<form name='c' action=/cancel method=POST>
+		<form name='c' action=/appointment/cancel method=POST>
 			<input type="hidden" id="a" name="appt">
 		</form>
 
@@ -120,7 +120,7 @@
 
 			<div class="buttons">
 				<div class="request-wrap">
-					<a href="#" onclick="javascript:document.getElementById('a').value='{{appt.id}}'; document.c.submit();">
+					<a href="#" onclick="javascript:document.getElementById('a').value='{{appt.apptid}}'; document.c.submit();">
 						<div class="cancel-button">
 							<p><img src="static/img/reject-red.svg" />Cancel appointment</p>
 						</div>
