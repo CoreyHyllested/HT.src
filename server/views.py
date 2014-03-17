@@ -772,6 +772,7 @@ def ht_api_proposal_accept():
 	# get seller's API/ACCESS_TOKEN -- Its like they charge them.  But we need to take API_FEE.
 		# perhaps Not Required? -- We could send email stating they can accept and we can write check.  But signup and get paid directly.
 	# if seller has pub_key, use it.
+	print 'returning success'
 	return jsonify(usrmsg="success"), 200
 
 
