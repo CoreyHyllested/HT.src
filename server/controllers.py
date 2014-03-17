@@ -108,6 +108,7 @@ def create_account(name, email, passwd):
 	try:
 		hero = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
 		prof = Profile(name, hero.userid)
+
 		db_session.add(hero)
 		db_session.add(prof)
 		db_session.commit()
@@ -119,6 +120,11 @@ def create_account(name, email, passwd):
 	log_uevent(hero.userid, 'successfully created user')
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
+
+
+def import_profile(data_provider, json_profile):
+	print "importing data from " + str(data_provider)
+
 
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
