@@ -324,7 +324,7 @@ def getTS(jsonObj):
 	return str(dt.now())
 
 @mngr.task
-def enable_reviews(appt):
+def enable_reviews(the_appointment):
 	#is this submitted after stripe?  
 	hp = the_appointment.sellr_prof
 	bp = the_appointment.buyer_prof
@@ -334,14 +334,16 @@ def enable_reviews(appt):
 	review_hp = Review(hp, bp, None, None)
 	review_bp = Review(bp, hp, None, None)
 	
-	appt.reviewOfBuyer = review_bp.id
-	appt.reviewOfSellr = review_hp.id
+	the_appointment.status = APPT_CAPTURED
+	the_appointment.reviewOfBuyer = review_bp.id
+	the_appointment.reviewOfSellr = review_hp.id
 
 	try:
-		db_session.add(appt)
+		db_session.add(the_appointment)
 		db_session.add(review_hp)
 		db_session.add(review_bp)
 		db_session.commit()
+		# TODO create two events to send in 1 hr after meeting completion to do review
 	except Exception as e:
 		db_session.rollback()
 		print e	
@@ -370,8 +372,6 @@ def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buye
 #	print str(appointment.ts_finish)
 	print str(the_appointment.cust)
 
-
-
 	try:
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token, 	#		customer.id is the second one passed in
@@ -391,7 +391,6 @@ def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buye
 	print 'That\'s all folks, it should have worked?'
 
 
-	the_appointment.status = APPT_CAPTURED
 	pp(charge)
 	print 'Post Charge'
 	print charge['customer']
