@@ -90,6 +90,8 @@ class Account(Base):
 	# optional phone number?
 	# add stripe ID
 	# add stripe token?
+#	oauth_stripe = Column(Integer,  
+#	oauth_stripe = Column(String(40), ForeignKey('oauth.id'), nullable=False, index=True)
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -153,12 +155,23 @@ class OauthStripe(Base):
 	__tablename__ = "oauth_stripe"
 	id      = Column(Integer, primary_key = True)
 	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-	stripe  = Column(String(40), nullable=False, index=True)
-	token   = Column(String(40), nullable=False)
+	stripe  = Column(String(40), nullable=False, index=True)	
+	token   = Column(String(40), nullable=False)	# customer ID
 	pubkey  = Column(String(40), nullable=False)
+	#semail   = Column(String(120), nullable=False)	#it may change.
+	
+	#id = Column(String(25), primary_key = True)	
+	#stripe_cust = Column(String(25), primary_key = True)	
+	#stripe_tokn = Column(String(25), primary_key = True)	
+	#charges = Column(String(25), primary_key = True)	
+	#cancels = Column(String(25), primary_key = True)	
 
-	def __init__ (self, account):
-		self.account = account
+	def __init__ (self, account, token, pubkey, stripe):
+		self.account = account		#account.userid
+		self.token   = token		# cust token
+		self.stripe = stripe		# creditcard token -- used to find/charge (?) customer? 
+		self.pubkey = pubkey		# dflt cc_card
+
 
 	def __repr__ (self):
 		return '<oauth_stripe, %r %r %r>' % (self.account, self.stripe, self.token)
@@ -230,7 +243,7 @@ class Profile(Base):
 
 class Proposal(Base):
 	__tablename__ = "proposal"
-	####userid  = Column(String(40), primary_key=True,            unique=True)
+	####CAH TODO: id  = Column(String(40), primary_key=True,            unique=True)
 	id			= Column(Integer, primary_key = True)
 	prop_uuid	= Column(String(40), nullable = False)													# NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE SELLER. The Hero
@@ -245,17 +258,15 @@ class Proposal(Base):
 	prop_place	= Column(String(1000), nullable = False)
 	prop_desc	= Column(String(3000), nullable = True)
 	prop_created = Column(DateTime(), nullable = False)
-	#prop_updated = Column(DateTime(), nullable = False)
+	#TODO prop_updated = Column(DateTime(), nullable = False)
 	stripe_cust	= Column(String(40), nullable = True)
 	stripe_card	= Column(String(40), nullable = True)
 	stripe_tokn	= Column(String(40), nullable = True)
 	prop_updated = Column(DateTime(), nullable = False)
-   # 14) Buyer's Stripe Cust hash
-    # 15) Buyer's Stripe Card hash
 
 
 
-	def __init__(self, prof_hero, prof_buyer, datetime_s, datetime_f, cost, location, description, cust=None, card=None, state=None, flags=None): 
+	def __init__(self, prof_hero, prof_buyer, datetime_s, datetime_f, cost, location, description, tokn=None, cust=None, card=None, state=None, flags=None): 
 		self.prop_uuid = str(uuid.uuid4())
 		self.prop_hero	= str(prof_hero)
 		self.prop_buyer	= str(prof_buyer)
@@ -273,6 +284,7 @@ class Proposal(Base):
 		self.prop_created = datetime.datetime.utcnow()
 		self.prop_updated = datetime.datetime.utcnow()
 
+		self.stripe_tokn = tokn
 		self.stripe_cust = cust
 		self.stripe_card = card
 
@@ -359,6 +371,7 @@ class Appointment(Base):
 	updated		= Column(DateTime(), nullable = False, default = datetime.datetime.now())
 	agreement	= Column(DateTime(), nullable = False, default = datetime.datetime.now())
 
+	#TODO --make review ID the hash.
 	reviewOfBuyer	= Column(Integer, ForeignKey('review.id'), nullable = True)
 	reviewOfSellr	= Column(Integer, ForeignKey('review.id'), nullable = True)
 
@@ -491,6 +504,7 @@ class Review(Base):
 	ts      = Column(DateTime(), nullable = False) 				# CAH: date of appointment? -- why would we care when the review is posted?
 	text    = Column(String(5000))
 	twin    = Column(Integer, unique = True, nullable = True) 	#twin or sibling review
+	#TODO viewable = Column(Boolean(), .
 
 	#appointment_id=Column(Integer, ForeignKey('appointment.key'))
 	#review_status=Column(Boolean, default=0)
