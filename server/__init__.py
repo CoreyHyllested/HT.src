@@ -54,7 +54,7 @@ ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 # don't think we're using emailer
 emailer = Mail(ht_server)
 Compress(ht_server)
-CsrfProtect(ht_server)
+ht_csrf  = CsrfProtect(ht_server)
 ht_oauth = OAuth(ht_server)
 
 
