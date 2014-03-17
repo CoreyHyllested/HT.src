@@ -108,7 +108,7 @@ $(function () {
 	
 
 	$('#change-photo-button').change(function(e) {
-		reloadProfImg("../static/img/loader.gif", true);
+		reloadProfImg("../static/img/loader.gif", true, false);
 		var fd = new FormData($('#editform')[0]);
 		fd.append('csrf_token', $('#csrf_token').val())
 
@@ -131,7 +131,7 @@ $(function () {
 				console.log(['xhr upload complete', e]);
 				rc = JSON.parse(xhr.responseText);
 				console.log(xhr.responseText);
-				reloadProfImg(rc['tmp']);
+				reloadProfImg(rc['tmp'], false, true);
 			}
 		};
 		xhr.open('post', "/upload", true);
@@ -139,12 +139,17 @@ $(function () {
 		return false;
 	});
 
-	function reloadProfImg(url, loader) {
+	function reloadProfImg(url, loader, uploaded) {
 		$("#profile_img").attr("src", url);
 		if (loader) {
 			$("#profile_img").height(80).width(80);
 			$("#profile_img").css('margin-left',90+'px');
 			$("#profile_img").css('margin-top',20+'px');
+		}
+		if (uploaded) {
+			$("#profile_img").height(151).width(269);
+			$("#profile_img").css('margin-left',0);
+			$("#profile_img").css('margin-top',0);
 		}
 	}
 });
