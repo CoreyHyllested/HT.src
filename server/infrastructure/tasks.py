@@ -5,10 +5,11 @@ from email.mime.text		import MIMEText
 from email.header			import Header
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models		 import Appointment, Proposal, Account, Profile
+from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from pprint import pprint as pp
 import json, smtplib
+import stripe
 
 
 def ht_proposal_update(p_uuid, p_from):
@@ -251,21 +252,32 @@ def ht_send_email(toEmail, msg):
 
 
 @mngr.task
-def ht_appointment_finalize(appt_id):
-	print 'received appt: ', appt_id
+def ht_appointment_finalize(appt_id,  stripe_cust, stripe_card, stripe_tokn):
+	print 'ht_appointment_finailze() appt: ', appt_id, ", cust: ", stripe_cust, ", card: ", stripe_card, ", token: ", stripe_tokn 
 	appointment = Appointment.query.filter_by(apptid=appt_id).all()[0]		# browsing profile
 	print appointment
 	print 'send final appt notice to profiles: ', appointment.buyer_prof, appointment.sellr_prof 
-	(buyer_a, buyer_p) = get_account_and_profile(appointment.buyer_prof)
-	(sellr_a, sellr_p) = get_account_and_profile(appointment.sellr_prof)
-	print 'send final appt notice to buyer: ', buyer_a.email
-	print 'send final appt notice to buyer: ', sellr_a.email
+	(ba, bp) = get_account_and_profile(appointment.buyer_prof)
+	(ha, hp) = get_account_and_profile(appointment.sellr_prof)
+	print 'send final appt notice to buyer: ', ba.email
+	print 'send final appt notice to sellr: ', ha.email
 
 	chargeTime = appointment.ts_begin  - timedelta(days=1)
 	remindTime = appointment.ts_begin  - timedelta(days=2)
 	print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 	print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-	send_appt_emails(sellr_a.email, buyer_a.email, appointment)
+	send_appt_emails(ha.email, ba.email, appointment)
+	
+	(ha, hp) = get_account_and_profile(appointment.sellr_prof)
+	(ba, bp) = get_account_and_profile(appointment.buyer_prof)
+	# add timestamp to ensure it hasn't been tampered with; also send cost; 
+	print 'calling ht_capturecard -- delayed'
+	rc = ht_capture_creditcard(appointment.apptid, ba.email, bp.name.encode('utf8', 'ignore'), stripe_card, stripe_cust) #, eta=chargeTime):
+	print 'back from ht_capturecard -- delayed, ', rc
+
+
+
+	print 'returning from ht_appt_finalize'
 #	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
 #	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
 	return None
@@ -278,6 +290,7 @@ def ht_proposal_reject(p_uuid, rejector):
 	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
 	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
 	the_proposal = proposals[0]
+	the_propsoal.status = APPT_REJECTED
 
 	# get data to send emails
 	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
@@ -306,24 +319,33 @@ def ht_proposal_reject(p_uuid, rejector):
 
 
 @mngr.task
-def capture_creditcard():
-	return None  #not defined
-
-
-@mngr.task
 def getTS(jsonObj):
 	pp(jsonObj)
 	return str(dt.now())
 
 @mngr.task
-def chargeStripe(jsonObj):
-	print 'inside chargeStripe()'
-	return None
-
-@mngr.task
-def enable_reviews(jsonObj):
+def enable_reviews(appt):
 	#is this submitted after stripe?  
+	hp = the_appointment.sellr_prof
+	bp = the_appointment.buyer_prof
+
 	print 'enable_reviews()'
+
+	review_hp = Review(hp, bp, None, None)
+	review_bp = Review(bp, hp, None, None)
+	
+	appt.reviewOfBuyer = review_bp.id
+	appt.reviewOfSellr = review_hp.id
+
+	try:
+		db_session.add(appt)
+		db_session.add(review_hp)
+		db_session.add(review_bp)
+		db_session.commit()
+	except Exception as e:
+		db_session.rollback()
+		print e	
+	
 	return None
 
 @mngr.task
@@ -331,6 +353,119 @@ def disable_reviews(jsonObj):
 	#30 days after enable, shut it down!
 	print 'disable_reviews()'
 	return None
+
+
+@mngr.task
+def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token):
+	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
+	print 'ht_capture_creditecard called: buyer_cust_token = ', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
+	the_appointment = Appointment.query.filter_by(apptid=appt_id).all()[0]		# browsing profile
+	print the_appointment
+
+	if (the_appointment.status == APPT_CANCELED):
+		print 'state is cancled'
+
+#	print str(the_appointment.updated)
+#	print str(appointment.ts_begin)
+#	print str(appointment.ts_finish)
+	print str(the_appointment.cust)
+
+
+
+	try:
+		charge = stripe.Charge.create (
+			customer=buyer_cust_token, 	#		customer.id is the second one passed in
+			#stripe_cust = OauthStripe(uid, stripe_cust_token, cc_token, stripe_card_dflt)
+			amount=(the_appointment.cost * 100),
+			currency='usd',
+			description=the_appointment.description,
+			#application_fee=int((the_appointment.cost * 7.1)-30),
+			api_key="sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
+					#if this key is an api_key -- i.e. someone's customer key -- e.g. the heros' customer key
+			#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
+		)
+
+	except Exception as e:
+		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
+		print e
+	print 'That\'s all folks, it should have worked?'
+
+
+	the_appointment.status = APPT_CAPTURED
+	pp(charge)
+	print 'Post Charge'
+	print charge['customer']
+
+#	Transaction 
+	#transaction.timestamp = dt.utcnow()
+	#transaction.timestamp = charge['id']  #charge ID
+	#transaction.timestamp = charge['amount']  # same amount?
+	#transaction.timestamp = charge['captured']  #True, right?
+	#transaction.timestamp = charge['paid']  # == true, right?
+	#transaction.timestamp = charge['livemode']  # == true, right?
+	#transaction.timestamp = charge['balance_transaction']
+	#transaction.timestamp = charge['card']['id']
+	#transaction.timestamp = charge['card']['customer']
+	#transaction.timestamp = charge['card']['fingerprint']
+
+
+	#print charge['balance_transaction']
+	print charge['failure_code']
+	#print charge['failure_message']
+
+	#queue two events to create review.  Need to create two addresses.
+	print 'calling enable_reviews'
+	enable_reviews(the_appointment)
+	print 'returning out of charge'
+	
+
+
+
+def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
+	stripe.api_key = "sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
+	stripe_cust = None
+	#check db for stripe.
+
+	print 'check db oauth stripe account'
+
+	stripe_custs = OauthStripe.query.filter_by(account=uid).all()
+	if (len(stripe_custs) == 1):
+		print 'get stripe customer from DB' 
+
+		# we could update the card with cc_card right here.
+		#stripe api to get jsob obj from stripe; 
+
+		print 'return get_stripe_cust (', stripe_custs[0].token, ')'
+		return stripe_custs[0].token
+
+
+	print 'create customer from stripe API' 
+	try:
+		print 'create Customer w/ cc = ' + str(cc_token)
+		stripe_cust_json  = stripe.Customer.create(card=cc_token, description=str(uid))
+		stripe_cust_token = stripe_cust_json['id']
+		stripe_card_dflt  = stripe_cust_json['default_card']
+		print stripe_cust_json
+
+		stripe_cust = OauthStripe(uid, stripe_cust_token, cc_token, stripe_card_dflt)
+		print stripe_cust
+		db_session.add(stripe_cust)
+		db_session.commit()
+		print 'and ... saved to db'
+	except UnboundLocalError as ule:
+		print str(e)
+		# raise ThisWasAlreadySubmitted (check back with RC. 
+		# will need to grab asynch_submit RC -- stuff it in the appointment.
+	except Exception as e:
+		#problems with customer create
+		print str(e)
+		db_session.rollback()
+
+	print 'return get_stripe_cust (', stripe_cust_token, ')'
+	return stripe_cust_token
+	#should have both credit card token, customer token, 
+
+
 	
 
 if __name__ != "__main__":
