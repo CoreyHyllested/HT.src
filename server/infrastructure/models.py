@@ -526,6 +526,12 @@ class Review(Base):
 	def __repr__ (self):
 		return '<review %r, %r, %r, %r>' % (self.author, self.heroid, self.rating, self.text[:20])
 
+	@staticmethod
+	def retreive_by_id(find_id):
+		reviews = Review.query.filter_by(id=find_id).all()
+		return reviews
+
+
 
 
 #session table

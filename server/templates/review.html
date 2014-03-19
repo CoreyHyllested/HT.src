@@ -17,7 +17,6 @@
 					No reviews
 				{% else %}
 					{{ '%0.1f' | format(hero.rating|float)}} out of 5 stars ({{hero.reviews}} reviews)
-					<!--p><script>star_reviews({{ '%0.0f' | format(hero.rating|float)}}, {{hero.reviews}}, '{{hero.heroid}}');</script></p-->
 				{% endif %}
 				<p class="result-location">{{hero.location}}</p>
 			</div>
@@ -28,7 +27,7 @@
 			</div>
 		</div>
 
-		<form action=review method=post>
+		<form name='post_review' action=/postreview method=POST>
 			{{form.hidden_tag()}}
 
 			<div class="rating-text">Based on your experience, how would you rate this person?</div>

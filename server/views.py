@@ -1044,10 +1044,8 @@ def get_review_page(review_id):
 		print review_id, ' = id of Review'
 		the_review = Review.query.filter_by(id=int(review_id)).all()[0]
 		print the_review.author
-		print the_review.heroid
 		print uid
 		print dt.utcnow()
-		print the_review.ts
 
 		bp = Profile.query.filter_by(account=uid).all()[0]		# authoring profile
 		rp = Profile.query.filter_by(heroid=the_review.heroid).all()[0]		# reviewed  profile
@@ -1064,6 +1062,8 @@ def get_review_page(review_id):
 		#	were you the buyer or seller.  the_appointment.buyer_proe; the_appointment.sellr_prof
 
 		review_form = ReviewForm(request.form)
+		review_form.review_id.data = str(review_id)
+		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=str(days_since_created.days), form=review_form))
 	except Exception as e:
 		print e
 		return redirect('/failure')
@@ -1071,29 +1071,36 @@ def get_review_page(review_id):
 		print 'trying to access, review, author or reviewer account and fialed'
 		return redirect('/dbFailure')
 		
-	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=days_since_created.days, form=review_form))
 
 
 
-@ht_server.route("/review", methods=['GET', 'POST'])
-@dbg_enterexit
+
+@ht_server.route("/postreview", methods=['POST'])
 @req_authentication
 def review():
 	uid = session['uid']
 	bp = Profile.query.filter_by(account=uid).all()[0]		# browsing profile
-	rp = Profile.query.filter_by(heroid=bp.heroid).all()[0]	# reviewed profile
+	print 'enter postreview'
 
 	review_form = ReviewForm(request.form)
+	print 'got form'
+	print review_form.review_id.data
+
 	if review_form.validate_on_submit():
 		try:
 			# add review to database
-			new_review = Review(reviewed_heroid=rp.heroid, author_profile=bp.heroid, rating=5-int(review_form.input_rating.data), text=review_form.input_review.data)
-			db_session.add(new_review)
-			log_uevent(uid, "posting " + str(new_review))
+			the_review = Review.retreive_by_id(int(review_form.review_id.data))[0]
+			the_review.rating=5-int(review_form.input_rating.data)
+			the_review.text=review_form.input_review.data
+			the_review.posted = True
+			rp = Profile.query.filter_by(heroid=the_review.heroid).all()[0]	# reviewed profile
+
+			db_session.add(the_review)
+			log_uevent(uid, "posting " + str(the_review))
 
 			# update the reviewed profile's ratings, in the future, delay this
 			reviews = Review.query.filter_by(heroid=rp.heroid).all()
-			sum_ratings = new_review.rating
+			sum_ratings = the_review.rating
 			for old_review in reviews:
 				sum_ratings += old_review.rating
 
@@ -1110,13 +1117,8 @@ def review():
 		except Exception as e:
 			print "had an exception with Review" + str(e)
 			db_session.rollback()
-	elif request.method == 'POST':
-		log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
-		pass
-	else:
-		pass
-
-	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=30, form=review_form))
+	log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
+	return jsonify(usrmsg='Data invalid')
 
 
 @ht_server.route("/email/<heroName>", methods=['GET'])
