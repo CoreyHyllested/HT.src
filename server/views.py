@@ -354,10 +354,12 @@ def profile():
 	nts.hero.data = hp.heroid
 
 	tmeslts = [] 
-	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
+	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Review.posted, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
 				.join(Profile, Review.author == Profile.heroid) \
+				.filter(Review.posted == True)	\
 				.filter(Review.heroid == hp.heroid).all()
 
+	print 'reviews = ', len(reviews)
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.imgURL)
 	# it looks like key is the stripe key used to pay this hero (should someone want to buy their time.  This should be removed and grabbed later.
 	return make_response(render_template('profile.html', title='- ' + hp.name, hp=hp, bp=bp, revs=reviews, timeslots=tmeslts, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
@@ -1030,6 +1032,46 @@ def tos():
 		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	return make_response(render_template('tos.html', title = '- Terms and Conditions', bp=bp))
+
+
+
+@ht_server.route("/post_review/forappt/<review_id>", methods=['GET', 'POST'])
+@req_authentication
+def get_review_page(review_id):
+	uid = session['uid']
+
+	try:
+		print review_id, ' = id of Review'
+		the_review = Review.query.filter_by(id=int(review_id)).all()[0]
+		print the_review.author
+		print the_review.heroid
+		print uid
+		print dt.utcnow()
+		print the_review.ts
+
+		bp = Profile.query.filter_by(account=uid).all()[0]		# authoring profile
+		rp = Profile.query.filter_by(heroid=the_review.heroid).all()[0]		# reviewed  profile
+
+		if (the_review.author != bp.heroid):
+			return "no fucking way"
+		if (the_review.heroid == uid):
+			return 'no fucking way, pt 2'
+
+		print 'we\'re the indended audience'
+
+		days_since_created = timedelta(days=30) + the_review.ts - dt.utcnow() 
+		#show the cost of the meeting, time, description, location
+		#	were you the buyer or seller.  the_appointment.buyer_proe; the_appointment.sellr_prof
+
+		review_form = ReviewForm(request.form)
+	except Exception as e:
+		print e
+		return redirect('/failure')
+	except IndexError as ie:
+		print 'trying to access, review, author or reviewer account and fialed'
+		return redirect('/dbFailure')
+		
+	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=days_since_created.days, form=review_form))
 
 
 

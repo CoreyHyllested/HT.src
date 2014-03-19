@@ -95,7 +95,7 @@
 <div id="content-box-cal" class="content-box">
 	<ul id="tabs">
 		<li id="tab-cal" class="active"><p><img src="static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
-		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{hp.reviews}} Reviews" />{{hp.reviews}} Reviews</p></li></a>
+		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="static/img/reviews-inactive.svg" alt="{{revs|length}} Reviews" />{{hp.reviews}} Reviews</p></li></a>
 	</ul>
 
 	<div id="content-top"></div>
@@ -117,7 +117,7 @@
 <div id="content-box-revs" class="content-box">
 	<ul id="tabs">
 		<a href="javascript:tab_switch('tab-cal', 'content-box-cal');"><li id="tab-cal" class="inactive"><p><img src="static/img/calendar-inactive.svg" alt="Calendar" />Calendar</p></li></a>
-		<li id="tab-revs" class="active"><p><img src="static/img/reviews-active.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} Reviews</p></li>
+		<li id="tab-revs" class="active"><p><img src="static/img/reviews-active.svg" alt="{{hp.reviews}} reviews" />{{ revs|length }} Reviews</p></li>
 	</ul>
 	<div id="content-top"></div>
 	<div id="reviews">
@@ -130,18 +130,18 @@
 		{% for review in revs %}
 		<div class="review_wrap">
 			<div class="profile_preview">
-				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review[7]}}" class="profile_preview_pic"/> </a>
-				<span class="profile_preview_price">${{review[10]}}<span class="disabled"> / hour</span></span>				
+				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.imgURL}}" class="profile_preview_pic"/> </a>
+				<span class="profile_preview_price">${{review.baserate}}<span class="disabled"> / hour</span></span>				
 				<div class="profile_preview_info">
-					<p><a href="#">{{review[4]}}</a></p>
-					<p>{{review[6]}}</p>
-					<p>{{'%0.1f' | format(review[9]|float)}} out of 5<a href="#"> ({{review[8]}} reviews)</a></p>
-					<p><span class="disabled">{{review[5]}}</span></p>
+					<p><a href="#">{{review.name}}</a></p>
+					<p>{{review.headline}}</p>
+					<p>{{'%0.1f' | format(review[10]|float)}} out of 5<a href="#"> ({{review.reviews}} reviews)</a></p>
+					<p><span class="disabled">{{review.location}}</span></p>
 				</div>
 			</div>
 
 			<div class="review">
-				<p>Transaction with {{review[4]}} occurred in {{review.ts.strftime('%B %Y')}}</p>
+				<p>Transaction with {{review.name}} occurred in {{review.ts.strftime('%B %Y')}}</p>
 				<p><script>star_rating({{review[1]}});</script></p>
 				<p>{{review.text}}</p>
 			</div>
