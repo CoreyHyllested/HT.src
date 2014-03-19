@@ -498,17 +498,23 @@ class Review(Base):
 	enumRating = [(str(k), v) for k, v in enumerate(ratePoints)]
 
 	id      = Column(Integer, primary_key = True, unique = True)
-	heroid  = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
+	heroid  = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)	#reviewd
+	
+#	prof_reviewed = 
+#	acct_reviewed = 
+#	prof_authored = 
+#	acct_authored = 
 	author  = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
 	rating  = Column(Integer)
 	ts      = Column(DateTime(), nullable = False) 				# CAH: date of appointment? -- why would we care when the review is posted?
 	text    = Column(String(5000))
 	twin    = Column(Integer, unique = True, nullable = True) 	#twin or sibling review
-	#TODO viewable = Column(Boolean(), .
+	posted  = Column(Boolean,  				nullable=True, default=False, index=True)  #TODO CAH rename (status?  -- become status?)
 
-	#appointment_id=Column(Integer, ForeignKey('appointment.key'))
 	#review_status=Column(Boolean, default=0)
+	#appointment_id=Column(Integer, ForeignKey('appointment.key'))	#TODO CAH adde
 	#review_flagged?
+
 
 	def __init__ (self, reviewed_heroid, author_profile, rating, text):  #add rating
 		self.heroid= reviewed_heroid
