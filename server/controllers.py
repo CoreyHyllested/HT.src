@@ -16,6 +16,7 @@ import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
 
+
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -27,6 +28,7 @@ from server.infrastructure.tasks  import *
 from server.ht_utils import *
 from server import ht_server, linkedin
 from string import Template
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
@@ -102,22 +104,38 @@ def ht_password_recovery(email):
 	return usrmsg
 
 
-def create_account(name, email, passwd):
+def create_account(name, email, passwd, oauthID=None):
 	challenge_hash = uuid.uuid4()
 
 	try:
-		hero = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		prof = Profile(name, hero.userid)
-
+		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		prof  = Profile(name, hero.userid)
 		db_session.add(hero)
 		db_session.add(prof)
+
+		if (oauthID != None):
+			print 'hero & prof created', hero.userid, oauthID #session.get('linkedin_token')
+	
+			oauth = Oauth(str(hero.userid), email, oauthID, 'blah') #session.get('linkedin_token'))
+			print 'have oauth obj.  now insert into db'
+			#destint problem here.
+			db_session.commit()
+			db_session.add(oauth)
+
 		db_session.commit()
-	except Exception as e:
-		trace(str(e))
+	except IntegrityError as ie:
+		print e
 		db_session.rollback()
 		return None, False
 
-	log_uevent(hero.userid, 'successfully created user')
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return None, False
+
+	print 'create_account: successful', hero.userid, 
+	print hero
+	print prof
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
 

@@ -5,21 +5,9 @@ from sqlalchemy.orm import relationship, backref
 import datetime, uuid
 
 
-TS_PROP_BY_HERO = 0
-TS_PROP_BY_USER = 1
-TS_USER_ACCEPTD = 2
-TS_PROP_PURCHSD = 2
-TS_PROP_COMPLTD = 4
-
-TS_HERO_REMOVED = -1
-TS_APP_CANCELED = -2
 
 #APPT_DISPUTED		= -2
 #APPT_CANCELED		= -1 
-APPT_HAVE_AGREEMENT	=  0
-APPT_CARD_CAPTURED	=  1   #money is captured, heros will get paid
-APPT_SEND_REVIEWS	=  2   #24 hours after meeting, send reviews
-APPT_POST_REVIEWS	=  3   #30 days after meeting, post reviews
 
     #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
 
@@ -60,7 +48,8 @@ APPT_FLAGS_NONE	= 0
 #### EXAMPLE: ALTER TABLE from PostgreSQL. #####################################
 ################################################################################
 # BEGIN; 
-# ALTER TABLE timeslot 	   ADD   COLUMN challenge   varchar(40); 
+# LOCK appointments;
+# ALTER TABLE appointments ADD   COLUMN challenge   varchar(40); 
 # ALTER TABLE appointments ALTER COLUMN transaction drop not null; 
 # END; 
 ################################################################################
@@ -72,6 +61,7 @@ APPT_FLAGS_NONE	= 0
 class Account(Base):
 	"""Account maintains identity information each individual."""
 	__tablename__ = "account"
+
 	USER_UNVERIFIED = 0
 	USER_ACTIVE		= 1
 	USER_INACTIVE	= -1
@@ -139,15 +129,23 @@ class Account(Base):
 
 
 
-#class Oauth(Base):
-#	__tablename__ = "oauth_accounts"
-#	id      = Column(Integer, primary_key = True)
-#	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-#	oa_name = Column(String(40),									nullable=False)
-#	oa_user = Column(String(40),									nullable=False)
-#	token   = Column(String(120),									nullable=False)
+class Oauth(Base):
+	__tablename__ = "oauth_accounts"
+	id      = Column(Integer, primary_key = True)
+	account = Column(String(40), ForeignKey('account.userid'), nullable=False)
+	oa_name = Column(String(40),									nullable=True)	#may not have this, use email? 
+	oa_user = Column(String(40),									nullable=True)	#user id returned back
+	token   = Column(String(200),									nullable=True)
 
+	def __init__ (self, account, oa_name, oa_user, token=None):
+		self.account = account		# account.userid
+		self.oa_name = oa_name		# third_party username
+		self.oa_user = oa_user		# third_party user_ID 
+		self.token	 = token		# token for accessing accounts
 
+	def __repr__ (self):
+		return '<oauth, %r %r %r>' % (self.account, self.oa_name, self.oa_user)
+		
 
 class OauthStripe(Base):
 	""" Account for maintaining stripe info """ 
@@ -219,7 +217,11 @@ class Profile(Base):
 		self.account = acct
 
 	def __repr__ (self):
-		return '<profile, %r, %r, %r, %r>' % (self.heroid, self.name, self.baserate, self.headline[:20])
+		tmp_headline = self.headline
+		if (tmp_headline is not None):
+			tmp_headline = tmp_headline[:20]
+			
+		return '<profile, %r, %r, %r, %r>' % (self.heroid, self.name, self.baserate, tmp_headline)
 		
 
 	# x) UUID
@@ -329,7 +331,7 @@ class Timeslot(Base):
 	#booking = relationship("Booking", backref="timeslot", order_by="booking.id", lazy=False, uselist=False)
 	#digital = Column(Boolean, default=0)#0 means the timeslot is not digital appointment
 
-	def __init__(self, listing_profile, begin, finish, cost, desc, location, creator=None, status=TS_PROP_BY_HERO):
+	def __init__(self, listing_profile, begin, finish, cost, desc, location, creator=None, status=APPT_PROPOSED):
 		self.profile_id  = listing_profile
 		self.creator_id  = creator
 		self.ts_begin    = begin

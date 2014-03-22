@@ -18,6 +18,7 @@ from server.ht_utils import *
 from pprint import pprint
 from sqlalchemy     import or_
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
 from urllib import urlencode
 from werkzeug          import secure_filename
@@ -128,9 +129,9 @@ def login():
 
 
 @ht_server.route('/login/linkedin', methods=['GET'])
-@dbg_enterexit
 def login_linkedin():
 	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	print 'login_linkedin()' 
 	session['oauth_signup'] = False
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
@@ -138,14 +139,19 @@ def login_linkedin():
 def initProfile(head, ind, loc, summary=None):
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
-	trace ("got profile")
 	try:
+		print ("update profile")
 		bp.headline = head
 		bp.industry = ind
 		bp.location = loc 
+		bp.description = summary
 		db_session.add(bp)
 		db_session.commit()
+	except IntegrityError as ie:
+		print ie
+		db_session.rollback()
 	except Exception as e:
+		print e
 		trace(str(e))
 		db_session.rollback()
 
@@ -154,19 +160,23 @@ def initProfile(head, ind, loc, summary=None):
 @ht_server.route('/login/linkedin/authorized')
 @linkedin.authorized_handler
 def li_authorized(resp):
+	print 'li_authorized'
+
 	if resp is None:
 		# Needs a better error page 
+		print 'resp is none'
 		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 
 	#assume signup
 	#get Oauth Info.
 	signup = bool(session.pop('oauth_signup'))
-	trace('signup? = ' + str(signup))
+	print('li_auth - signup', str(signup))
 	session['linkedin_token'] = (resp['access_token'], '')
 	me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	email = linkedin.get('people/~/email-address')
 
 	# format collected info... prep for init.
+	print('li_auth - collect data ')
 	jsondata  = jsonify(me.data)
 	linked_id = me.data.get('id')
 	user_name = me.data.get('formattedName')
@@ -175,39 +185,44 @@ def li_authorized(resp):
 	summary   = me.data.get('summary')
 	industry  = me.data.get('industry')
 	location  = me.data.get('location')
-	trace (str(location))
-	trace (str(linked_id))
-	trace (email.data)
-	trace (user_name)
-	trace (headline)
-	trace (summary)
-	trace (industry)
+	print (str(location))
+	print (str(linked_id))
+	print (email.data)
+	print (user_name)
+	print (headline)
+	print (summary)
+	print (industry)
 
 	# account may exist (email).  -- creat controller: oauth_login(?)
 	# deleted if statement because it threw a dbfailure when signing up with an existing account
 	#if (not signup):
 
+	print('li_auth - find account')
 	possible_acct = Account.query.filter_by(email=email.data).all()
 	# also look for linkedin-account/id number (doesn't exist today).
 	if (len(possible_acct) == 1):
 		# suggest they create a password if that's not done.
-		trace('User exists' +  str(possible_acct[0]))
+		print('User exists' +  str(possible_acct[0]))
 		session['uid'] = possible_acct[0].userid
 		return redirect('/dashboard')
 
  	# try creating new account.  We don't know password.
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	print ("attempting create_account(" , user_name , ")")
+	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth', oauthID=linked_id)
 	if (bp):
-		trace("created account, uid = " + str(bp.account))
+		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
+		print ("ht_bind_session = ", bp)
 		initProfile(headline, industry, location, summary=summary)
 		# import_profile(LINKEDIN, jsonify(me.data)) 
 
-		send_welcome_email(email.data)
+		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
 		# something failed.  
-		trace('create account failed, using' + str(email.data))
+		print bh if (bh is not None) else 'None'
+		print bp if (bp is not None) else 'None'
+		print ('create account failed, using', str(email.data))
 		resp = redirect('/dbFailure')
 	return resp
 
@@ -250,9 +265,9 @@ def signup():
 
 
 @ht_server.route('/signup/linkedin', methods=['GET'])
-@dbg_enterexit
 def signup_linkedin():
 	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	print 'signup_linkedin'
 	session['oauth_signup'] = True
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
