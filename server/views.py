@@ -135,7 +135,7 @@ def login_linkedin():
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
 
-def initProfile(head, ind, loc):
+def initProfile(head, ind, loc, summary=None):
 	uid = session['uid']
 	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
 	trace ("got profile")
