@@ -36,6 +36,26 @@ class NoProposalFound(Exception):
 
 
 
+class NoReviewFound(Exception):
+	def __init__(self, rid, msg):
+		self.ruid = rid 
+		self.msg  = msg
+		
+	def __str__(self):
+		return "Review (%s, %s) not found" % (self.ruid, self.msg)
+
+class ReviewError(Exception):
+	def __init__(self, op, exp, seen, msg):
+		self.op = op
+		self.exp = exp
+		self.seen = seen
+		self.msg = msg
+
+	def __str__(self):
+		return "Review error during %s.  Exp[%s/%s]" % (self.op, self.exp, self.seen)
+
+
+
 class InvalidCreditCard(Exception):
 	def __init__(self, value):
 		self.value = value
