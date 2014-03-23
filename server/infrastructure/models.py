@@ -213,8 +213,15 @@ class Profile(Base):
 		tmp_headline = self.headline
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
-			
 		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
+
+	@staticmethod
+	def get_by_id(profile_id):
+		profiles = Profile.query.filter_by(prof_id=profile_id).all()
+		if len(profiles) != 1: raise NoProfileFound(profile_id, 'Sorry, profile not found')
+		return profiles[0]
+
+
 		
 
 class Proposal(Base):
