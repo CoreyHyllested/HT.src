@@ -35,6 +35,13 @@ class NoProposalFound(Exception):
 		return "Proposal (%s, %s) not found" % (self.prop_uuid, self.prop_from)
 
 
+class NoProfileFound(Exception):
+	def __init__(self, pid, msg):
+		self.puid = pid 
+		self.msg  = msg
+		
+	def __str__(self):
+		return "Profile %s not found, %s" % (self.puid, self.msg)
 
 class NoReviewFound(Exception):
 	def __init__(self, rid, msg):
@@ -43,6 +50,7 @@ class NoReviewFound(Exception):
 		
 	def __str__(self):
 		return "Review (%s, %s) not found" % (self.ruid, self.msg)
+
 
 class ReviewError(Exception):
 	def __init__(self, op, exp, seen, msg):
