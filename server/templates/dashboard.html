@@ -75,7 +75,7 @@
 		{% for appt in ts_appt|sort(attribute='ts_begin') %}
 		<a href="#">
 		    <div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{appt.location}}', {{loop.index}})">
-				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appt.imgURL}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appt.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 				<div class="slot-info">
 					<p><span class="big-text">{{appt.name}}</span><br/>
 						<span id="day-{{loop.index}}">{{appt.ts_begin.strftime('%H:%M %p')}}</span></p>
@@ -156,12 +156,12 @@
 		{% for prop in ts_prop|sort(attribute='prop_ts') %}
 		<a href="#">
 			<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
-				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.imgURL}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 				<div class="slot-info">
 					{% if bp.prof_id == prop.prop_hero %}
 					<p><span class="big-text">{{prop.name}}</span><br/>wants to buy your time for ${{prop.prop_cost}}</p>
 					{% else %}
-					<p><span class="big-text">You</span><br/>want to buy {{prop.name}}'s time for ${{prop.prop_cost}}</p>
+					<p><span class="big-text">You</span><br/>want to buy {{prop.prof_name}}'s time for ${{prop.prop_cost}}</p>
 					{% endif %}
 				</div>
 				<div class="slot-pending"></div>
@@ -189,7 +189,7 @@
 				<span class="big-text">Price   </span><p>${{prop.prop_cost}}</p>
 			</div>
 			<div class="slot-details-right">
-				<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.name}}</a></span>
+				<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
 				<p>{{prop.headline}}</p>
 				<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.heroid}}');</script>
 				<br />
@@ -242,9 +242,41 @@
 	        }
 	    });
 
-		$("#to-profile-wrap").click(function() {
-			document.getElementById('h').value = '{{bp.prof_id}}';
-			document.p.submit();
+	//	/$("#to-profile-wrap").click(function() {
+	//		document.getElementById('h').value = '{{bp.prof_id}}';
+	//		document.p.submit();
+	//	});
+
+
+
+		$("#to-profile-wrap").click(function () {
+			console.log('profile-wrap');
+			var fd = new FormData();
+			fd.append('hero', '{{bp.prof_id}}7');
+			console.log('profile-wrap', '{{bp.prof_id}}');
+	
+			var xhr = new XMLHttpRequest();
+			xhr.open('post', "/profile", true);
+			xhr.send(fd);
+
+			console.log('sent');
+			xhr.onreadystatechange = function(e) {
+				if (4 == this.readyState) {
+					if (this.status == 200) {
+						console.log(['xhr post complete ', e]);
+						//rc = JSON.parse(xhr.responseText);
+				//		console.log(xhr.responseText);
+				//				msg = JSON.parse(xhr.responseText);
+						document.write(xhr.responseText);
+						//document.reload();
+					} else if (this.status == 500) {
+						msg = JSON.parse(xhr.responseText);
+						console.log(xhr.responseText);
+						openAlertWindow('Uh oh!\n' + msg['usrmsg']);
+					}
+				}
+			}
+        	return false;
 		});
 	});
 </script>
