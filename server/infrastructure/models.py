@@ -1,4 +1,5 @@
 from server.infrastructure.srvc_database import Base
+from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
@@ -288,7 +289,6 @@ class Proposal(Base):
 
 class Appointment(Base):
 	__tablename__ = "appointment"
-	id			= Column(Integer, primary_key = True)
 	apptid		= Column(String(40), unique = True, primary_key = True, index=True)   #use challenge 
 	buyer_prof	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	sellr_prof	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# if creator_id != profile_id; prop = True
@@ -438,8 +438,16 @@ class Review(Base):
 	@staticmethod
 	def retreive_by_id(find_id):
 		reviews = Review.query.filter_by(review_id=find_id).all()
+		if len(reviews) != 1: raise NoReviewFound(find_id, 'Sorry, review not found')
 		return reviews
 
+
+	def validate (session_prof_id):
+		if (self.prof_authored != session_prof_id):
+			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
+			return "no fucking way -- review author matches current profile_id"
+
+		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
 
