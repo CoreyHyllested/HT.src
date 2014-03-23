@@ -519,15 +519,19 @@ def render_dashboard(usrmsg=None):
 def upload():
 	log_uevent(session['uid'], " uploading file")
 	#trace(request.files)
+	print 'enter'
 
 	for mydict in request.files:
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		trace("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
+		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			tmp_filename = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], tmp_filename), 'w').write(image_data)
+			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], tmp_filename), 'w')
+			f.write(image_data)
+			f.close()
 
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
@@ -535,6 +539,7 @@ def upload():
 		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + tmp_filename)
 		sml.set_contents_from_file(StringIO(image_data))
 
+	#print 'returning back tmp_filename'
 	return jsonify(tmp="/uploads/" + str(tmp_filename))
 
 
@@ -1168,7 +1173,8 @@ def hero_profile(heroName):
 
 @ht_server.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
+	print 'enter here'
+	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
