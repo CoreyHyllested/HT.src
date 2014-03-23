@@ -21,11 +21,11 @@ def ht_proposal_update(p_uuid, p_from):
 	prop = proposals[0]
 
 	(ha, hp) = get_account_and_profile(prop.prop_hero)
-	(ba, bp) = get_account_and_profile(prop.prop_buyer)
+	(ba, bp) = get_account_and_profile(prop.prop_user)
 
 	# pretty annoying.  we need to encode unicode here to utf8; decoding will fail.
-	email_hero_proposal_updated(prop,  ha.email, hp.name.encode('utf8', 'ignore') , bp.name.encode('utf8', 'ignore'), bp.prof_id)
-	email_buyer_proposal_updated(prop, ba.email, bp.name.encode('utf8', 'ignore') , hp.name.encode('utf8', 'ignore'), hp.prof_id)
+	email_hero_proposal_updated(prop,  ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	email_buyer_proposal_updated(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 
 
 
@@ -272,7 +272,7 @@ def ht_appointment_finalize(appt_id,  stripe_cust, stripe_card, stripe_tokn):
 	(ba, bp) = get_account_and_profile(appointment.buyer_prof)
 	# add timestamp to ensure it hasn't been tampered with; also send cost; 
 	print 'calling ht_capturecard -- delayed'
-	rc = ht_capture_creditcard(appointment.apptid, ba.email, bp.name.encode('utf8', 'ignore'), stripe_card, stripe_cust) #, eta=chargeTime):
+	rc = ht_capture_creditcard(appointment.apptid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, stripe_cust) #, eta=chargeTime):
 	print 'back from ht_capturecard -- delayed, ', rc
 
 
@@ -294,9 +294,9 @@ def ht_proposal_reject(p_uuid, rejector):
 
 	# get data to send emails
 	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(the_proposal.prop_buyer)
-#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.name.encode('utf8', 'ignore')
-#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.name.encode('utf8', 'ignore')
+	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.prof_name.encode('utf8', 'ignore')
+#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.prof_name.encode('utf8', 'ignore')
 
 	# bit of over-engineering; 
 	if (rejector != ha.userid and rejector != ba.userid):	#only Hero / Buyer can reject proposal
@@ -311,8 +311,8 @@ def ht_proposal_reject(p_uuid, rejector):
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
 
-	print 'send rejection emails to profiles: ', the_proposal.prop_hero, the_proposal.prop_buyer
-	send_proposal_reject_emails(ha.email, hp.name.encode('utf8', 'ignore'), ba.email, bp.name.encode('utf8', 'ignore'), the_proposal)
+	print 'send rejection emails to profiles: ', the_proposal.prop_hero, the_proposal.prop_user
+	send_proposal_reject_emails(ha.email, hp.prof_name.encode('utf8', 'ignore'), ba.email, bp.prof_name.encode('utf8', 'ignore'), the_proposal)
 
 
 

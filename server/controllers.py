@@ -115,7 +115,7 @@ def create_account(name, email, passwd):
 		db_session.commit()
 
 	except IntegrityError as ie:
-		print e
+		print ie
 		db_session.rollback()
 		return None, False
 	except Exception as e:
