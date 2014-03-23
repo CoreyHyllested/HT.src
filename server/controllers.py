@@ -104,7 +104,7 @@ def ht_password_recovery(email):
 	return usrmsg
 
 
-def create_account(name, email, passwd, oauthID=None):
+def create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
 	try:
@@ -112,28 +112,18 @@ def create_account(name, email, passwd, oauthID=None):
 		prof  = Profile(name, hero.userid)
 		db_session.add(hero)
 		db_session.add(prof)
-
-		if (oauthID != None):
-			print 'hero & prof created', hero.userid, oauthID #session.get('linkedin_token')
-	
-			oauth = Oauth(str(hero.userid), email, oauthID, 'blah') #session.get('linkedin_token'))
-			print 'have oauth obj.  now insert into db'
-			#destint problem here.
-			db_session.commit()
-			db_session.add(oauth)
-
 		db_session.commit()
+
 	except IntegrityError as ie:
 		print e
 		db_session.rollback()
 		return None, False
-
 	except Exception as e:
 		print e
 		db_session.rollback()
 		return None, False
 
-	print 'create_account: successful', hero.userid, 
+	print 'create_account: successful', hero.userid 
 	print hero
 	print prof
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
@@ -141,9 +131,36 @@ def create_account(name, email, passwd, oauthID=None):
 
 
 
+def import_profile(bp, oauth_provider, oauth_data):
+	try:
+		linked_id = oauth_data.get('id')
+		summary   = oauth_data.get('summary')
+		#recommend = oauth_data.get('recommendationsReceived')
+		headline  = oauth_data.get('headline')
+		industry  = oauth_data.get('industry')
+		location  = oauth_data.get('location')
 
-def import_profile(data_provider, json_profile):
-	print "importing data from " + str(data_provider)
+		print ("update profile")
+		if (summary  is not None): bp.prof_bio = summary
+		if (headline is not None): bp.headline = headline
+		if (industry is not None): bp.industry = industry #linked_in_sanatize(INDUSTRY, industry)
+		if (location['name'] is not None): bp.location = location['name'] #linked_in_sanatize(LOCATION, loc[name])
+
+		print 'hero & prof created', bp.account, oauth_provider 
+		oauth = Oauth(str(bp.account), oauth_provider, linked_id, token=session.get('linkedin_token'))
+
+		db_session.add(bp)
+		db_session.add(oauth)
+		print ("committ update bp")
+		db_session.commit()
+	except IntegrityError as ie:
+		print 'ah fuck, it failed', ie
+		db_session.rollback()
+	except Exception as e:
+		print 'ah fuck, it failed other place', e
+		db_session.rollback()
+
+
 
 
 

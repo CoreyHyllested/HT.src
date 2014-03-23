@@ -89,7 +89,7 @@ def render_search():
 
 @ht_server.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
-def login():
+def render_login():
 	""" Logs user into HT system
 		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
@@ -130,30 +130,6 @@ def login_linkedin():
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
 
-def initProfile(bp, head, ind, loc, summary=None, linkedDict= None):
-	try:
-		print ("update profile")
-		print ("head - ", head)
-		print ("ind  - ", ind)
-		print ("loc  - ", loc)
-		print ("desc - ", summary)
-
-		bp.headline = head
-		bp.industry = ind
-		bp.location = loc['name'] 
-		bp.prof_bio = summary
-
-		print ("adding update bp")
-		db_session.add(bp)
-		print ("committ update bp")
-		db_session.commit()
-	except IntegrityError as ie:
-		print 'ah fuck, it failed', ie
-		db_session.rollback()
-	except Exception as e:
-		print 'ah fuck, it failed other place', e
-		db_session.rollback()
-
 
 
 @ht_server.route('/authorized/linkedin')
@@ -177,27 +153,8 @@ def li_authorized(resp):
 	email = linkedin.get('people/~/email-address')
 
 	# format collected info... prep for init.
-	print 'email.type', str(type(email))
-	print 'me.data type', str(type(me.data))
-	print 'me.data dir', str(dir(me.data))
 	print('li_auth - collect data ')
-
-	jsondata  = jsonify(me.data)
-	linked_id = me.data.get('id')
 	user_name = me.data.get('formattedName')
-	me.data['OauthService'] = OAUTH_LINKED
-	recommend = me.data.get('recommendationsReceived')
-	headline  = me.data.get('headline')
-	summary   = me.data.get('summary')
-	industry  = me.data.get('industry')
-	location  = me.data.get('location')
-	print (str(location))
-	print (str(linked_id))
-	print (email.data)
-	print (user_name)
-	print (headline)
-	print (summary)
-	print (industry)
 
 
 	print('li_auth - find account')
@@ -205,20 +162,18 @@ def li_authorized(resp):
 	possible_accts = Account.query.filter_by(email=email.data).all()
 	if (len(possible_accts) == 1):
 		# suggest they create a password if that's not done.
-		print('User exists' +  str(possible_accts[0]))
 		session['uid'] = possible_accts[0].userid
 		print 'calling render_dashboard'
 		return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth', oauthID=linked_id)
+	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
 		print ("ht_bind_session = ", bp)
-		initProfile(bp, headline, industry, location, summary=summary, linkedDict=me.data)
-		# import_profile(LINKEDIN, jsonify(me.data)) 
+		import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
 
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
@@ -671,11 +626,9 @@ def ht_api_proposal_create():
 
 	uid = session.get('uid')
 	pi  = get_stripe_customer(uid=uid, cc_token=prop_stripe_tokn, cc_card=prop_stripe_card)
-	print pi
-	#maker sure pertinent info is with proposal
-
 #	print "HA = ", ha
 #	print "BA = ", ba
+	print pi
 	#TODO need to sanatize all of this 
 
 	print 'creating proposal obj' 
@@ -691,16 +644,17 @@ def ht_api_proposal_create():
 		db_session.commit()
 		ht_proposal_update(proposal.prop_uuid, proposal.prop_from)
 		
+	except IntegrityError as ie:
+		msg = ht_sanatize_errors(ie)
+		db_session.rollback()
+		return jsonify(usrmsg=msg), 500
 	except Exception as e:
 		msg = ht_sanatize_errors(e)
 		db_session.rollback()
 		print msg
+		return jsonify(usrmsg=msg), 500
 		return redirect('/dbFailure')
 	return redirect('/dashboard')
-
-# if it becomes APPT
-# -- Hero's Stripe Cust hash (to get paid)
-# -- Buyer's Stripe transaction hash? -- not until appt?
 
 	# enqueue task to charge the card 24hrs before appt.
 	#pprint(customer)

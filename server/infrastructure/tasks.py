@@ -434,8 +434,8 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 		# we could update the card with cc_card right here.
 		#stripe api to get jsob obj from stripe; 
 
-		print 'return get_stripe_cust (', stripe_custs[0].token, ')'
-		return stripe_custs[0].token
+		print 'return get_stripe_cust (', stripe_custs[0].opt_token, ')'
+		return stripe_custs[0].opt_token
 
 
 	print 'create customer from stripe API' 

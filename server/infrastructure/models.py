@@ -194,6 +194,7 @@ class Profile(Base):
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
+
 	industry	= Column(String(50))
 	headline	= Column(String(50))
 	location	= Column(String(50), nullable=False, default="Berkeley, CA")
@@ -218,7 +219,7 @@ class Profile(Base):
 
 class Proposal(Base):
 	__tablename__ = "proposal"
-	prop_uuid	= Column(String(40), primary_key=True)													# NonSequential ID
+	prop_uuid	= Column(String(40), primary_key=True, default = str(uuid.uuid4()))						 # NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	prop_user	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
 	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED,			index=True)
@@ -231,12 +232,12 @@ class Proposal(Base):
 	prop_tz		= Column(String(20))
 	prop_desc	= Column(String(3000))
 	prop_place	= Column(String(1000),	nullable = False)
-	prop_created = Column(DateTime(),	nullable = False)
-	prop_updated = Column(DateTime(),	nullable = False)
-	appt_secured = Column(DateTime(),	nullable = False)
-	appt_charged = Column(DateTime(),	nullable = False)
+	prop_created = Column(DateTime(),	nullable = False, default = dt.utcnow())
+	prop_updated = Column(DateTime(),	nullable = False, default = dt.utcnow())
+	appt_secured = Column(DateTime(), nullable = True)
+	appt_charged = Column(DateTime(), nullable = True)
 
-	challengeID	= Column(String(40),	nullable = False)
+	challengeID	= Column(String(40),	nullable = False, default=str(uuid.uuid4()))
 	charge_user_acct = Column(String(40))
 	charge_user_card = Column(String(40))
 	charge_user_tokn = Column(String(40))
@@ -246,21 +247,17 @@ class Proposal(Base):
 	review_user = Column(String(40), ForeignKey('review.review_id'))
 
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, tokn=None, cust=None, card=None, state=None, flags=None): 
-		self.prop_uuid = str(uuid.uuid4())
 		self.prop_hero	= str(hero)
-		self.prop_user	= str(user)
+		self.prop_user	= str(buyer)
 		self.prop_state	= state
 		self.prop_flags = flags
 		self.prop_cost	= int(cost)
-		self.prop_from = str(prof_buyer)
+		self.prop_from = str(buyer)
 
 		self.prop_ts	= datetime_s
 		self.prop_tf	= datetime_f
 		self.prop_place	= location 
 		self.prop_desc	= description
-
-		self.prop_created = dt.utcnow()
-		self.prop_updated = dt.utcnow()
 
 		self.stripe_tokn = tokn
 		self.stripe_cust = cust
@@ -282,7 +279,7 @@ class Proposal(Base):
 
 
 	def __repr__(self):
-		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_buyer, self.prop_state)
+		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
 
 
