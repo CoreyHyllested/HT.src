@@ -89,7 +89,7 @@ def render_search():
 
 @ht_server.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
-def render_login():
+def render_login(usrmsg=None):
 	""" Logs user into HT system
 		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
@@ -99,7 +99,6 @@ def render_login():
 		return redirect('/dashboard')
 
 	bp = False
-	errmsg = None
 
 	if 'uid' in session:
 		uid = session['uid']
@@ -115,10 +114,10 @@ def render_login():
 
 		#flash up there was a failure to login name/pass combo not found
 		trace ("POST /login failed, flash name/pass combo failed")
-		errmsg = "Incorrect username or password."
+		usrmsg = "Incorrect username or password."
 	elif request.method == 'POST':
 		trace("POST /login form isn't valid" + str(form.errors))
-	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=errmsg))
+	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
 
@@ -254,36 +253,34 @@ def signup_verify(challengeHash):
 	# 1) challengeHash
 	# 2) an email address
 	trace("Challenge hash is: " + challengeHash)
-	trace(type(challengeHash))
+	#trace(type(challengeHash))
 
-	#Page url
+	#Page url, extract email 
 	url = urlparse.urlparse(request.url)
-	#Extract query which has email and uid
 	query = urlparse.parse_qs(url.query)
 
 	email  = query['email'][0]
-	uid  = query['uid'][0]
-
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 
-	if (len(accounts) != 1 or accounts[0].email != email or accounts[0].userid != uid):
+	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
-			#flash('Hash and/or email didn\'t match.')
-			return redirect('/login')
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return render_login(usrmsg=msg)
 
 	try:
+		# update user's account.
 		hero_account = accounts[0]
 		hero_account.set_sec_question("")
-		#Email verified
-
 		hero_account.set_status(Account.USER_ACTIVE)
+		
 		db_session.commit()
 		send_welcome_email(email)
 	except Exception as e:
 		trace(str(e))
 		db_session.rollback()
+		# db failed?... let them in anyways.
 
-	# bind session cookie to this 1) Account  and/or 2) this profile 
+	# bind session cookie to this 1) Account and/or 2) this profile 
 	bp = Profile.query.filter_by(account=hero_account.userid).all()[0]
 	ht_bind_session(bp)
 	return make_response(redirect('/dashboard'))
