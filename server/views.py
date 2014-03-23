@@ -45,7 +45,7 @@ def homepage():
 	if 'uid' in session:
 		return redirect('/dashboard')
 
-	return redirect('https://herotime.co/login')
+	return redirect('https://127.0.0.1:5000/login')
 
 
 
@@ -54,7 +54,7 @@ def homepage():
 @dbg_enterexit
 def render_search():
 	""" Provides ability to everyone to search for Heros.  """
-	bp = ""
+	bp = None
 
 	if 'uid' in session:
 		# get browsing profile; allows us to draw ht_header all pretty
@@ -85,6 +85,52 @@ def render_search():
 
 
 
+@ht_csrf.exempt
+@ht_server.route('/profile', methods=['GET', 'POST'])
+def render_profile(usrmsg=None):
+	""" Provides users ability to modify their information.
+		- Pre-fill all fields with prior information.
+		- Ensure all necessary fields are still populated when submit is hit.
+	"""
+
+	hp = request.values.get('hero')
+	if (hp is None):
+		print "No hero profile requested, Error"
+		return redirect('https://127.0.0.1:5000/dashboard')	
+
+	try:
+		# Replace 'hp' with the actual Hero's Profile.
+		hp = Profile.get_by_id(hp)
+		print "HP = ", hp.prof_name, hp.prof_id, hp.account
+	except NoProfileFound as nf:
+		print nf
+		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
+	except Exception as e:
+		print e
+		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
+
+	bp = session.get('uid')
+	if (bp is not None):
+		# replace 'uid' with actual browsing profile object
+		bp  = Profile.query.filter_by(account=bp).all()[0]
+		print "BP = ", bp.prof_name, bp.prof_id, bp.account
+
+
+	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	nts = NTSForm(request.form)
+	nts.hero.data = hp.prof_id
+
+	reviews = db_session.query(Review.prof_reviewed, Review.appt_value, Review.appt_score, \
+								Review.generalcomments, Review.rev_updated, Review.rev_status, \
+								Profile.prof_name, Profile.location, Profile.headline, Profile.prof_img, Profile.reviews, Profile.rating, Profile.prof_rate)\
+				.join(Profile, Review.prof_authored == Profile.prof_id) \
+				.filter(Review.prof_reviewed == hp.prof_id).all()
+				#.filter(bool(Review.rev_status & REV_POSTED) == True).
+
+	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+
+
 
 
 @ht_server.route('/login', methods=['GET', 'POST'])
@@ -94,15 +140,12 @@ def render_login(usrmsg=None):
 		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
-	#if already logged in redirect to dashboard
+	bp = None
+
 	if ('uid' in session):
+		# if logged in; take 'em home
 		return redirect('/dashboard')
 
-	bp = False
-
-	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
@@ -112,11 +155,12 @@ def render_login(usrmsg=None):
 			ht_bind_session(bp)
 			return redirect('/dashboard')
 
-		#flash up there was a failure to login name/pass combo not found
 		trace ("POST /login failed, flash name/pass combo failed")
 		usrmsg = "Incorrect username or password."
 	elif request.method == 'POST':
 		trace("POST /login form isn't valid" + str(form.errors))
+		usrmsg = "Incorrect username or password."
+
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
@@ -187,34 +231,33 @@ def li_authorized(resp):
 
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
-def render_signup_page():
+def render_signup_page(usrmsg = None):
+	bp = False
 
-	#if already logged in redirect to dashboard
 	if ('uid' in session):
+		# if logged in, take 'em home
 		return redirect('/dashboard')
 
-	errmsg = None
-	bp = False
 
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
 		#check if account (via email) already exists in db
 		accounts = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
-		if (len(account) == 1):
+		if (len(accounts) == 1):
 			trace("email already exists in DB")
-			errmsg = "An account with that email address already exists."
+			usrmsg = "An account with that email address exists. Login instead?"
 		else:
 			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
 			else:
-				errmsg = 'Something went wrong.  Please try again'
+				usrmsg = 'Something went wrong.  Please try again'
 	elif request.method == 'POST':
-		errmsg = 'Form isn\'t filled out properly, ', str(form.errors)
+		usrmsg = 'Form isn\'t filled out properly, ', str(form.errors)
 		trace("/signup form isn't valid" + str(form.errors))
 
-	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=errmsg))
+	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))
 
 
 
@@ -287,51 +330,6 @@ def signup_verify(challengeHash):
 
 
 
-
-@ht_csrf.exempt
-@ht_server.route('/profile', methods=['GET', 'POST'])
-def render_profile():
-	""" Provides users ability to modify their information.
-		- Pre-fill all fields with prior information.
-		- Ensure all necessary fields are still populated when submit is hit.
-	"""
-
-	hp = request.values.get('hero')
-	if (hp is None):
-		print "No hero profile requested, Error"
-		return redirect('https://127.0.0.1:5000/dashboard')	
-
-	try:
-		# Replace 'hp' with the actual Hero's Profile.
-		hp = Profile.get_by_id(hp)
-		print "HP = ", hp.prof_name, hp.prof_id, hp.account
-	except NoProfileFound as nf:
-		print nf
-		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
-	except Exception as e:
-		print e
-		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
-
-	bp = session.get('uid')
-	if (bp is not None):
-		# replace 'uid' with actual browsing profile object
-		bp  = Profile.query.filter_by(account=bp).all()[0]
-		print "BP = ", bp.prof_name, bp.prof_id, bp.account
-
-
-	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-
-	reviews = db_session.query(Review.prof_reviewed, Review.appt_value, Review.appt_score, \
-								Review.generalcomments, Review.rev_updated, Review.rev_status, \
-								Profile.prof_name, Profile.location, Profile.headline, Profile.prof_img, Profile.reviews, Profile.rating, Profile.prof_rate)\
-				.join(Profile, Review.prof_authored == Profile.prof_id) \
-				.filter(Review.prof_reviewed == hp.prof_id).all()
-				#.filter(bool(Review.rev_status & REV_POSTED) == True).
-
-	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
 
 
 
