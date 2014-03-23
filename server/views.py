@@ -596,7 +596,7 @@ def render_edit():
 			db_session.commit()
 			log_uevent(uid, "update profile")
 
-			return jsonify(rc="Success"), 200
+			return jsonify(usrmsg="profile updated"), 200
 
 		except AttributeError as ae:
 			print 'hrm. must have changed an object somehwere'
@@ -629,9 +629,7 @@ def render_edit():
 	form.edit_url.data      = bp.prof_url #replace.httpX://www.
 	form.edit_bio.data      = bp.prof_bio
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	resp = make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
-
-	return resp
+	return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
 
 
 
