@@ -30,10 +30,10 @@ OAUTH_FACEBK = 4
 OAUTH_TWITTR = 5
 
 
-REV_CREATED = 0
-REV_SENT 	= 1
-REV_POSTED	= 2
-REV_FLAGGED = 3
+REV_CREATED = 1
+REV_SENT 	= 2
+REV_POSTED	= 4 
+REV_FLAGGED = 8
 
 
 
@@ -183,7 +183,7 @@ class Profile(Base):
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
 	prof_name	= Column(String(120),							nullable=False)
 	prof_vanity	= Column(String(100))
-	prof_skills	= relationship('skills', backref='profile', cascade='all,delete', uselist=True) 
+	#prof_skills	= relationship('skills', backref='profile', cascade='all,delete') 
 
 	rating   = Column(Float(),   nullable=False, default=-1)
 	reviews  = Column(Integer(), nullable=False, default=0)
@@ -193,11 +193,11 @@ class Profile(Base):
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
-	industry   = Column(String(50))
-	headline   = Column(String(50))
-	location   = Column(String(50), nullable=False, default="Berkeley, CA")
+	industry	= Column(String(50))
+	headline	= Column(String(50))
+	location	= Column(String(50), nullable=False, default="Berkeley, CA")
 
-	updated = Column(DateTime(timezone=True), nullable=False, default = dt.utcnow())
+	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
 	created = Column(DateTime(), nullable=False, default = dt.utcnow())
 
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
@@ -212,7 +212,7 @@ class Profile(Base):
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
 			
-		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.baserate, tmp_headline)
+		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
 		
 
 class Proposal(Base):
@@ -440,4 +440,6 @@ class Review(Base):
 		reviews = Review.query.filter_by(review_id=find_id).all()
 		return reviews
 
+	def if_posted(self, flag):
+		return (self.rev_status & (0x1 << flag))
 

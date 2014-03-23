@@ -51,43 +51,36 @@ def homepage():
 
 @ht_server.route('/search',  methods=['GET', 'POST'])
 @dbg_enterexit
-def search():
+def render_search():
 	""" Provides ability to everyone to search for Heros.  """
-	bp       = ""
+	bp = ""
 
 	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
+		# get browsing profile; allows us to draw ht_header all pretty
+		bp  = Profile.query.filter_by(account=session['uid']).all()[0]
 
-	keywords = request.args.get('search')
-	print "keywords = ", keywords
+	# get all the search 'keywords'
+	keywords = request.values.get('search')
 	form = SearchForm(request.form)
+	print "keywords = ", keywords
 
-	if request.method == 'POST':
-		print "is a post" 
-		keywords = request.form.get('search')
-		#results = db_session.query(Profile).filter_by(location=form.location).all()
-		#results = db_session.query(Profile).filter(Profile.bio.like(keywords)).all()
-	#results = db_session.query(Profile).all()
 	results = db_session.query(Profile)
-	print len(results.all())
+	print 'there are', len(results.all()), 'profiles'
 
 	if (keywords is not None):
 		print "keywords = ", keywords
-		rc_name = results.filter(Profile.name.ilike("%"+keywords+"%"))#.all()
+		rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))#.all()
 		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))#.all()
 		rc_desc = results.filter(Profile.bio.ilike("%"+keywords+"%")) #.all()
 		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%")) #.all()
-		#rc_keys = (rc_names + rc_headline + rc_descript)
 		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
-		#print len(rc_keys)
+
+		# filter by location, use IP as a tell
 		rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
 	else:
 		rc_keys = results.all()
 
-
-	resp = make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
-	return resp
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
 
 
 
@@ -339,7 +332,7 @@ def signup_verify(challengeHash):
 @ht_csrf.exempt
 @ht_server.route('/profile', methods=['GET', 'POST'])
 @dbg_enterexit
-def profile():
+def render_profile():
 	""" Provides users ability to modify their information.
 		- Pre-fill all fields with prior information.
 		- Ensure all necessary fields are still populated when submit is hit.
@@ -348,36 +341,34 @@ def profile():
 	nts = NTSForm(request.form)
 	print "'hero' = ", request.values.get('hero')
 	
-
-	# TODO: disable csrf for this 
 	hp = request.values.get('hero')
 	if (hp is None):
 		print "No hero profile requested, Error"
 		return redirect('https://127.0.0.1:5000/dashboard')	
 
 	# Replace 'hp' with the actual Hero's Profile.
-	hp  = Profile.query.filter_by(heroid=hp).all()[0]
-	print "HP = ", hp.name, hp.heroid, hp.account
+	hp  = Profile.query.filter_by(prof_id=hp).all()[0]
+	print "HP = ", hp.prof_name, hp.prof_id, hp.account
 
 	bp = session.get('uid')
 	if (bp is not None):
 		# replace 'uid' with actual browsing profile object
 		bp  = Profile.query.filter_by(account=bp).all()[0]
-		print "BP = ", bp.name, bp.heroid, bp.account
+		print "BP = ", bp.prof_name, bp.prof_id, bp.account
 
 
-	nts.hero.data = hp.heroid
+	nts.hero.data = hp.prof_id
 
-	tmeslts = [] 
-	reviews = db_session.query(Review.heroid, Review.rating, Review.text, Review.ts, Review.posted, Profile.name, Profile.location, Profile.headline, Profile.imgURL, Profile.reviews, Profile.rating, Profile.baserate)\
-				.join(Profile, Review.author == Profile.heroid) \
-				.filter(Review.posted == True)	\
-				.filter(Review.heroid == hp.heroid).all()
+	reviews = db_session.query(Review.prof_reviewed, Review.appt_value, Review.appt_score, \
+								Review.generalcomments, Review.rev_updated, Review.rev_status, \
+								Profile.prof_name, Profile.location, Profile.headline, Profile.prof_img, Profile.reviews, Profile.rating, Profile.prof_rate)\
+				.join(Profile, Review.prof_authored == Profile.prof_id) \
+				.filter(Review.prof_reviewed == hp.prof_id).all()
+				#.filter(bool(Review.rev_status & REV_POSTED) == True).
 
-	print 'reviews = ', len(reviews)
-	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.imgURL)
-	# it looks like key is the stripe key used to pay this hero (should someone want to buy their time.  This should be removed and grabbed later.
-	return make_response(render_template('profile.html', title='- ' + hp.name, hp=hp, bp=bp, revs=reviews, timeslots=tmeslts, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+	print 'create img uri'
+	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
 
 
 
@@ -428,8 +419,8 @@ def ht_api_appt_cancel():
 @dbg_enterexit
 @req_authentication
 def dashboard():
-	""" Provides Hero their home.
-		- Show calendar with all upcoming ht_serverointments
+	""" Provides Hero their personalized homepage.
+		- Show calendar with all upcoming appointments
 		- Show any statistics.
 	"""
 
@@ -448,25 +439,29 @@ def dashboard():
 	#hero = getDossierByID()
 
 	# get proposals ; add prop_updated; use PROP_FROM?
-	proposal_out = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_buyer,	\
+	#SQL Alchemy improve perf.
+	print 'db_session prop_out'
+	proposal_out = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_user,	\
 								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
 								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
 								Proposal.prop_desc, Proposal.prop_place, 							\
-						  		Profile.heroid, Profile.name, Profile.imgURL, Profile.rating,		\
+						  		Profile.prof_id, Profile.prof_name, Profile.prof_img, Profile.rating,		\
 								Profile.reviews, Profile.headline)									\
-							.join(Profile, Proposal.prop_hero == Profile.heroid)					\
-							.filter(Proposal.prop_buyer == bp.heroid).all()
+							.join(Profile, Proposal.prop_hero == Profile.prof_id)					\
+							.filter(Proposal.prop_user == bp.prof_id).all()
 
-	proposal_in = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_buyer,		\
+	print 'db_session prop_in'
+	proposal_in = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_user,		\
 								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
 								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
 								Proposal.prop_desc, Proposal.prop_place, 							\
-						  		Profile.heroid, Profile.name, Profile.imgURL, Profile.rating,		\
+						  		Profile.prof_id, Profile.prof_name, Profile.prof_img, Profile.rating,		\
 								Profile.reviews, Profile.headline)									\
-							.join(Profile, Proposal.prop_buyer == Profile.heroid)					\
-							.filter(Proposal.prop_hero == bp.heroid).all()
+							.join(Profile, Proposal.prop_user == Profile.prof_id)					\
+							.filter(Proposal.prop_hero == bp.prof_id).all()
 	proposals = proposal_in +  proposal_out
 
+	print 'db_session appt_by_me'
 	appt_by_me = db_session.query(Appointment.id, \
 							Appointment.apptid,	\
 							Appointment.status, \
@@ -478,17 +473,18 @@ def dashboard():
 							Appointment.ts_finish, \
 							Appointment.ts_finish, \
 							Appointment.cost, \
-							Profile.heroid, \
-							Profile.name, \
-							Profile.imgURL, \
+							Profile.prof_id, \
+							Profile.prof_name, \
+							Profile.prof_img, \
 							Profile.reviews, \
 							Profile.rating, \
 							Profile.headline) \
-							.join(Profile, Profile.heroid == Appointment.buyer_prof)\
-							.filter(Appointment.sellr_prof == bp.heroid) \
+							.join(Profile, Profile.prof_id == Appointment.buyer_prof)\
+							.filter(Appointment.sellr_prof == bp.prof_id) \
 							.filter(Appointment.status == APPT_ACCEPTED).all()
 							
 
+	print 'db_session appt_of_me'
 	appt_of_me = db_session.query(Appointment.id, \
 							Appointment.apptid,	\
 							Appointment.status, \
@@ -500,26 +496,23 @@ def dashboard():
 							Appointment.ts_finish, \
 							Appointment.ts_finish, \
 							Appointment.cost, \
-							Profile.heroid, \
-							Profile.name, \
-							Profile.imgURL, \
+							Profile.prof_id, \
+							Profile.prof_name, \
+							Profile.prof_img, \
 							Profile.reviews, \
 							Profile.rating, \
 							Profile.headline) \
-							.join(Profile, Profile.heroid == Appointment.sellr_prof)\
-							.filter(Appointment.buyer_prof == bp.heroid)\
+							.join(Profile, Profile.prof_id == Appointment.sellr_prof)\
+							.filter(Appointment.buyer_prof == bp.prof_id)\
 							.filter(Appointment.status == APPT_ACCEPTED).all()
 
-
-
-#							.filter(or_(Appointment.buyer_prof == bp.heroid, Appointment.sellr_prof == bp.heroid)).all()
+#							.filter(or_(Appointment.buyer_prof == bp.prof_id, Appointment.sellr_prof == bp.prof_id)).all()
 	appt_timeslots = appt_of_me + appt_by_me
 	print "number of appt_timeslots = ", appt_timeslots
 
-
-	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
-	resp = make_response(render_template('dashboard.html', title="- " + bp.name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots))
-	return resp
+	print 'combine and render'
+	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots))
 
 
 
@@ -553,7 +546,7 @@ def upload():
 @ht_server.route('/edit', methods=['GET', 'POST'])
 #@dbg_enterexit
 @req_authentication
-def editprofile():
+def render_edit():
 	""" Provides Hero space to update their information.  """
 
 	print 'enter edit'
@@ -563,16 +556,17 @@ def editprofile():
 	form = ProfileForm(request.form)
 	if form.validate_on_submit():
 		try:
-			trace("form is valid")
-			bp.baserate = form.edit_rate.data
+			print ("form is valid")
+			bp.prof_rate = form.edit_rate.data
 			bp.headline = form.edit_headline.data 
 			bp.location = form.edit_location.data 
 			bp.industry = Industry.industries[int(form.edit_industry.data)] 
-			bp.updated  = dt.now()
-			bp.name = form.edit_name.data
-			bp.bio  = form.edit_bio.data
-			bp.url  = form.edit_url.data
+			bp.prof_name = form.edit_name.data
+			bp.prof_bio  = form.edit_bio.data
+			bp.prof_url  = form.edit_url.data
 
+			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+			# bp.updated  = dt.utcnow()
 
 			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
 			image_data = request.files[form.edit_photo.name].read()
@@ -581,29 +575,38 @@ def editprofile():
 				trace (destination_filename + ", sz = " + str(len(image_data)))
 
 				#print source_extension
+				print 's3'
 				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
 				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
 				sml.set_contents_from_file(StringIO(image_data))
 				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
-				bp.imgURL = destination_filename
+				bp.prof_img = destination_filename
 
 			# ensure 'http(s)://' exists
-			if (bp.url[:8] != "https://"):
-				if (bp.url[:7] != "http://"):
-					bp.url = "http://" + bp.url;
+			if (bp.prof_url[:8] != "https://"):
+				if (bp.prof_url[:7] != "http://"):
+					bp.prof_url = "http://" + bp.prof_url;
 
+			print 'add'
 			db_session.add(bp)
+			print 'commit'
 			db_session.commit()
 			log_uevent(uid, "update profile")
 
 			return jsonify(rc="Success"), 200
+
+		except AttributeError as ae:
+			print 'hrm. must have changed an object somehwere'
+			print ae
+			db_session.rollback()
+			return jsonify(usrmsg='We messed something up, sorry'), 500
+
 		except Exception as e:
 			print e
 			db_session.rollback()
-			#CAH, this is a problem, how do we signal a problem occurred?
-			#flash there was a problem, retry
 			return jsonify(usrmsg=e), 500
+
 	elif request.method == 'POST':
 		log_uevent(uid, "editform isnt' valid" + str(form.errors))
 		print 'shoulding this fire?'
@@ -616,14 +619,14 @@ def editprofile():
 			break
 
 	form = ProfileForm(request.form)
-	form.edit_name.data     = bp.name
-	form.edit_rate.data     = bp.baserate
+	form.edit_name.data     = bp.prof_name
+	form.edit_rate.data     = bp.prof_rate
 	form.edit_headline.data = bp.headline
 	form.edit_location.data = bp.location
 	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.url #replace.httpX://www.
-	form.edit_bio.data      = bp.bio
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.imgURL)
+	form.edit_url.data      = bp.prof_url #replace.httpX://www.
+	form.edit_bio.data      = bp.prof_bio
+	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	resp = make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
 
 	return resp
@@ -663,7 +666,7 @@ def ht_api_proposal_create():
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
-	hp  = Profile.query.filter_by(heroid=prop_hero).all()[0]
+	hp  = Profile.query.filter_by(prof_id=prop_hero).all()[0]
 	ha  = Account.query.filter_by(userid=hp.account).all()[0]
 
 	uid = session.get('uid')
@@ -680,7 +683,7 @@ def ht_api_proposal_create():
 	print 4, pi
 	print 40, prop_stripe_cust
 	print 5, prop_stripe_card
-	proposal = Proposal(str(hp.heroid), str(bp.heroid), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), prop_stripe_tokn, pi, prop_stripe_card)
+	proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), prop_stripe_tokn, pi, prop_stripe_card)
 	print proposal
 
 	try:
@@ -709,7 +712,7 @@ def ht_sanatize_errors(err):
 
 
 
-#return jsonify(cost=nts.newslot_price.data, ts_srt1 = str(nts.newslot_starttime.data), ts_end1 = ts_end, begin1=begin, finish1 = finish, bywhom = int(bp.heroid != hp.heroid))
+#return jsonify(cost=nts.newslot_price.data, ts_srt1 = str(nts.newslot_starttime.data), ts_end1 = ts_end, begin1=begin, finish1 = finish, bywhom = int(bp.prof_id != hp.prof_id))
 
 @ht_server.route('/proposal/accept', methods=['POST'])
 @req_authentication
@@ -755,12 +758,12 @@ def ht_api_proposal_accept():
 		appointment = Appointment()
 		appointment.apptid     = the_proposal.prop_uuid
 		appointment.sellr_prof = the_proposal.prop_hero
-		appointment.buyer_prof = the_proposal.prop_buyer
+		appointment.buyer_prof = the_proposal.prop_user
 
 		#prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
 		#prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
 		#prop_count	= Column(Integer, nullable=False, default=0)							# keep for data mining (negotiation count)
-		#prop_from	= Column(String(40), ForeignKey('profile.heroid'), nullable=False)		# keep for data mining (who touched proposal last)
+		#prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)		# keep for data mining (who touched proposal last)
 		#if (the_proposal.stripe_cust == None or the_proposal.stripe_card == None or the_proposal.stripe_tokn == None): 
 
 		appointment.status		= APPT_ACCEPTED
@@ -850,7 +853,7 @@ def settings():
 	bp   = Profile.query.filter_by(account=uid).all()[0]
 	ba   = Account.query.filter_by(userid=uid).all()[0]
 	card = 'Null'
-#	card = OauthStripe.query.filter_by(account=uid).all()
+#	card = Oauth.query.filter_by(account=uid).all()
 #	if (len(card) == 0):
 #		print "No stripe account"
 #		card = "Payments not setup"
@@ -1005,7 +1008,7 @@ def settings_verify_stripe():
 		print "getToken Failed", edesc
 		return "auth failed %s" % edesc, 500
 
-	stripeAccount = OauthStripe.query.filter_by(account=uid).all()
+	stripeAccount = Oauth.query.filter_by(account=uid).all()
 	if len(stripeAccount) == 1:
 		stripeAccount = stripeAccount[0]
 		if (stripeAccount.stripe != rc['stripe_user_id']):
@@ -1020,10 +1023,7 @@ def settings_verify_stripe():
 			stripeAccount.pubkey  = pkey
 			print 'changing stripe pubkey'
 	else:
-		stripeAccount = OauthStripe(uid)
-		stripeAccount.stripe = rc['stripe_user_id']			# stripe ID.
-		stripeAccount.token  = rc['access_token']			# stripe ID.
-		stripeAccount.pubkey = rc['stripe_publishable_key']
+		stripeAccount = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
 
 	try:
 		print "try creating oauth_row"
@@ -1063,9 +1063,9 @@ def get_review_page(review_id):
 		print dt.utcnow()
 
 		bp = Profile.query.filter_by(account=uid).all()[0]		# authoring profile
-		rp = Profile.query.filter_by(heroid=the_review.heroid).all()[0]		# reviewed  profile
+		rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]		# reviewed  profile
 
-		if (the_review.author != bp.heroid):
+		if (the_review.author != bp.prof_id):
 			return "no fucking way"
 		if (the_review.heroid == uid):
 			return 'no fucking way, pt 2'
@@ -1108,7 +1108,7 @@ def review():
 			the_review.rating=5-int(review_form.input_rating.data)
 			the_review.text=review_form.input_review.data
 			the_review.posted = True
-			rp = Profile.query.filter_by(heroid=the_review.heroid).all()[0]	# reviewed profile
+			rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]	# reviewed profile
 
 			db_session.add(the_review)
 			log_uevent(uid, "posting " + str(the_review))

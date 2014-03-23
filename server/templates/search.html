@@ -37,29 +37,28 @@
 		{{rc_heroes}} results found <!--for search terms -->
 
 		<form name='p' action=/profile method=POST>
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 			<input type="hidden" id="h" name="hero">
 		</form>
 
 		{% for hero in heroes %}
 		<div class="search-result">
-			<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}" onclick="document.getElementById('h').value='{{hero.heroid}}'; document.p.submit();" style="height:83px; width:150px; display:block; margin:0 auto;" alt="search-result"/></a>
+			<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();" style="height:83px; width:150px; display:block; margin:0 auto;" alt="search-result"/></a>
 			<div class="result-info">
-				<a href="#" onclick="document.getElementById('h').value='{{hero.heroid}}'; document.p.submit();">{{hero.name}}</a>
+				<a href="#" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();">{{hero.prof_name}}</a>
 				<p>{{hero.headline}}</p>
-				{% if hero.reviews %}<p><span>{{'%0.1f' | format(hero.rating|float)}} out of 5 stars</span> <a href="/profile?hero={{hero.heroid}}">({{hero.reviews}} reviews)</a><p>{% else %}<p><span>No reviews</span><p>{% endif %}
+				{% if hero.reviews %}<p><span>{{'%0.1f' | format(hero.rating|float)}} out of 5 stars</span> <a href="/profile?hero={{hero.prof_id}}">({{hero.reviews}} reviews)</a><p>{% else %}<p><span>No reviews</span><p>{% endif %}
 				<p class="result-location">{{hero.location}}</p>
 			</div>
 			<div class="price-box">
-					<h3>${{hero.baserate}}</h3>
+					<h3>${{hero.prof_rate}}</h3>
 					<p>per hour</p>
-					<!--negotiable-->
 			</div>
 		</div>
 		{% endfor %}
-
-		<br /><br />
+		<br/>
+		<br/>
 	</div>
+
 </div>
 
 {% endblock %}

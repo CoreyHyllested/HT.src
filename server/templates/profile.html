@@ -24,36 +24,36 @@
   			  inline: true
   		  });
 	  });
-	  jQuery(function($) {
-      $('#datepicker').change(function() {
+
+		jQuery(function($) {
+			$('#datepicker').change(function() {
 				var d1 = new Date(document.getElementById("datepicker").value);
 				var d2 = new Date(document.getElementById("datepicker1").value);
 				var timeDiff = d2.getTime() - d1.getTime();
 				if (timeDiff < 0 || document.getElementById("datepicker1").value == "") {
 					document.getElementById("datepicker1").value = document.getElementById("datepicker").value;
 				}
-				update_time_diff({{hp.baserate}});
-      });
-	  });
+				update_time_diff({{hp.prof_rate}});
+			});
+		});
 
-	  jQuery(function($) {
-      $('#datepicker1').change(function() {
+		jQuery(function($) {
+			$('#datepicker1').change(function() {
 				var d1 = new Date(document.getElementById("datepicker").value);
 				var d2 = new Date(document.getElementById("datepicker1").value);
 				var timeDiff = d2.getTime() - d1.getTime();
 				if (timeDiff < 0 || document.getElementById("datepicker").value == "") {
                   document.getElementById("datepicker").value = document.getElementById("datepicker1").value;
 				}
-                  update_time_diff({{hp.baserate}});
+                  update_time_diff({{hp.prof_rate}});
 			});
-	  });
-
+		});
 </script>
 
 <div id="profile_pic">
 	<img src="{{profile_img}}" style="height:534px; width:950px; display:block margin:0 auto;"/>
 	<div id="profile_pic_box">
-		<h1>{{hp.name}}</h1>
+		<h1>{{hp.prof_name}}</h1>
 		<p>{{hp.headline| default('No headline')}}</p>
 		<h3 id="profile_price"></h3><span> / hour</span>
 		<div id="profile_pic_button_wrap">
@@ -70,7 +70,7 @@
 <div id="info_box">
 	<div id="about_me">
 		<h2>About me</h2>
-		<p id="about_text">{{hp.bio}}</p>
+		<p id="about_text">{{hp.prof_bio}}</p>
 		<div id="button" onlick="javascript:view_more"></div>
 	</div>
 
@@ -84,7 +84,7 @@
 			{% else %}
 			<li id="li_rating">{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"> ({{hp.reviews}} reviews)</a></li>
 			{% endif %}
-			<li id="li_url"><a href="{{hp.url}}" target="_blank">{{hp.url}}</a></li>
+			<li id="li_url"><a href="{{hp.prof_url}}" target="_blank">{{hp.prof_url}}</a></li>
 			<li id="li_rate"></li>
 		</ul>
 	</div>
@@ -130,10 +130,10 @@
 		{% for review in revs %}
 		<div class="review_wrap">
 			<div class="profile_preview">
-				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.imgURL}}" class="profile_preview_pic"/> </a>
-				<span class="profile_preview_price">${{review.baserate}}<span class="disabled"> / hour</span></span>				
+				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.prof_img}}" class="profile_preview_pic"/> </a>
+				<span class="profile_preview_price">${{review.baserate}} COST -notbaserate-? <span class="disabled"> / hour</span></span>				
 				<div class="profile_preview_info">
-					<p><a href="#">{{review.name}}</a></p>
+					<p><a href="#">{{review.prof_name}}</a></p>
 					<p>{{review.headline}}</p>
 					<p>{{'%0.1f' | format(review[10]|float)}} out of 5<a href="#"> ({{review.reviews}} reviews)</a></p>
 					<p><span class="disabled">{{review.location}}</span></p>
@@ -141,7 +141,7 @@
 			</div>
 
 			<div class="review">
-				<p>Transaction with {{review.name}} occurred in {{review.ts.strftime('%B %Y')}}</p>
+				<p>Transaction with {{review.prof_name}} occurred in {{review.ts.strftime('%B %Y')}}</p>
 				<p><script>star_rating({{review[1]}});</script></p>
 				<p>{{review.text}}</p>
 			</div>
@@ -191,7 +191,7 @@
 			<label id="newslot-label-price">Listed price</label>
 			<label id="newslot-label-dollar">$</label>
 			{{ntsform.newslot_price(onkeypress="return isNumberKey(event)", maxlength="9")}}
-			<label id="newslot-label-rate">This person's default rate is ${{hp.baserate}} / hour</label>
+			<label id="newslot-label-rate">This person's default rate is ${{hp.prof_rate}} / hour</label>
 
 			
 			<label id="newslot-label-location">Location</label>
@@ -199,7 +199,7 @@
 			
 	        <div id="map-canvas"></div>
 
-			<label id="newslot-label-description">Message to {{hp.name}}</label>
+			<label id="newslot-label-description">Message to {{hp.prof_name}}</label>
 			{{ntsform.newslot_description}}
 
 			<div id="newslot-notif1">
@@ -241,13 +241,13 @@
     });
 
     google.maps.event.addDomListener(window, 'load', initialize);
-	document.getElementById("profile_price").innerHTML = "$" + format({{hp.baserate}});
-	document.getElementById("li_rate").innerHTML = "$" + format({{hp.baserate}}) + " / hour";
+	document.getElementById("profile_price").innerHTML = "$" + format({{hp.prof_rate}});
+	document.getElementById("li_rate").innerHTML = "$" + format({{hp.prof_rate}}) + " / hour";
 	$('#newslot_starttime').change(function() {
-		update_time_diff({{hp.baserate}});
+		update_time_diff({{hp.prof_rate}});
 	});
 	$('#newslot_endtime').change(function() {
-		update_time_diff({{hp.baserate}});
+		update_time_diff({{hp.prof_rate}});
 	});
     if (document.getElementById("datepicker") != null) {
     	document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
@@ -256,28 +256,19 @@
 		document.getElementById("datepicker1").value = moment().format("dddd, MMM D, YYYY");
 	}
 	if (document.getElementById("newslot-label-rate") != null) {
-		document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.baserate}}) + " / hour"
+		document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.prof_rate}}) + " / hour"
 	}
 	window.onload = function() {
       var today = new Date();
       today.setDate(today.getDate()-1);
-	  var c = {{timeslots|length}};
-	  for (var i = 1; i < c + 1; i++){
-	  	var date = new Date(document.getElementById("day-"+i).innerHTML);
-	  	var diff = today - date;
-        if (today - date > 0){
-          document.getElementById(i).style.display = 'none';
-          document.getElementById("slot-expand-"+i).style.display = 'none';
-        }
-      }
 	};
 </script>
 
 <script>
 	$(document).ready(function() {
 		$('#send_proposal').click(function() {
-			$hero_acct = '{{hp.heroid}}';
-			$hero_name = '{{hp.name}}';
+			$hero_acct = '{{hp.prof_id}}';
+			$hero_name = '{{hp.prof_name}}';
 			$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
 			$time = $('#newslot-duration').html();
 			$desc = $('#newslot_description').val();
@@ -288,8 +279,8 @@
 			$tf_d = $('#datepicker1').val();
 			$tf_h = $('#newslot_endtime').val();
 
-			$bp_name = '{{bp.name}}';
-			$bp_id   = '{{bp.heroid}}';
+			$bp_name = '{{bp.prof_name}}';
+			$bp_id   = '{{bp.prof_id}}';
 			console.log('hero_acct = ' + $hero_acct + ' ;' + $hero_name);
 			console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
 			console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);

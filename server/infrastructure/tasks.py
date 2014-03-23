@@ -24,8 +24,8 @@ def ht_proposal_update(p_uuid, p_from):
 	(ba, bp) = get_account_and_profile(prop.prop_buyer)
 
 	# pretty annoying.  we need to encode unicode here to utf8; decoding will fail.
-	email_hero_proposal_updated(prop,  ha.email, hp.name.encode('utf8', 'ignore') , bp.name.encode('utf8', 'ignore'), bp.heroid)
-	email_buyer_proposal_updated(prop, ba.email, bp.name.encode('utf8', 'ignore') , hp.name.encode('utf8', 'ignore'), hp.heroid)
+	email_hero_proposal_updated(prop,  ha.email, hp.name.encode('utf8', 'ignore') , bp.name.encode('utf8', 'ignore'), bp.prof_id)
+	email_buyer_proposal_updated(prop, ba.email, bp.name.encode('utf8', 'ignore') , hp.name.encode('utf8', 'ignore'), hp.prof_id)
 
 
 
@@ -82,8 +82,8 @@ def send_recovery_email(toEmail, challenge_hash):
 
 def get_account_and_profile(hero_id):
 	try:
-		p = Profile.query.filter_by(heroid = hero_id).all()[0]		# browsing profile
-		a = Account.query.filter_by(userid = p.account).all()[0]
+		p = Profile.query.filter_by(prof_id = hero_id).all()[0]		# browsing profile
+		a = Account.query.filter_by(userid  = p.account).all()[0]
 	except Exception as e:
 		print "Oh shit, caught error at get_account_and_profile" + e
 		raise e
@@ -375,7 +375,7 @@ def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buye
 	try:
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token, 	#		customer.id is the second one passed in
-			#stripe_cust = OauthStripe(uid, stripe_cust_token, cc_token, stripe_card_dflt)
+			#stripe_cust = Oauth(uid, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
 			amount=(the_appointment.cost * 100),
 			currency='usd',
 			description=the_appointment.description,
@@ -427,7 +427,7 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 
 	print 'check db oauth stripe account'
 
-	stripe_custs = OauthStripe.query.filter_by(account=uid).all()
+	stripe_custs = Oauth.query.filter_by(account=uid).all()
 	if (len(stripe_custs) == 1):
 		print 'get stripe customer from DB' 
 
@@ -441,12 +441,12 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	print 'create customer from stripe API' 
 	try:
 		print 'create Customer w/ cc = ' + str(cc_token)
-		stripe_cust_json  = stripe.Customer.create(card=cc_token, description=str(uid))
-		stripe_cust_token = stripe_cust_json['id']
-		stripe_card_dflt  = stripe_cust_json['default_card']
+		stripe_cust_json	= stripe.Customer.create(card=cc_token, description=str(uid))
+		stripe_cust_userid	= stripe_cust_json['id']
+		stripe_card_dflt	= stripe_cust_json['default_card']
 		print stripe_cust_json
 
-		stripe_cust = OauthStripe(uid, stripe_cust_token, cc_token, stripe_card_dflt)
+		stripe_cust = Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
 		print stripe_cust
 		db_session.add(stripe_cust)
 		db_session.commit()
@@ -460,8 +460,8 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 		print str(e)
 		db_session.rollback()
 
-	print 'return get_stripe_cust (', stripe_cust_token, ')'
-	return stripe_cust_token
+	print 'return get_stripe_cust (', stripe_cust_userid, ')'
+	return stripe_cust_userid
 	#should have both credit card token, customer token, 
 
 

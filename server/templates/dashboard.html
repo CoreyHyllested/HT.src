@@ -164,7 +164,7 @@
 			<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
 				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.imgURL}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 				<div class="slot-info">
-					{% if bp.heroid == prop.prop_hero %}
+					{% if bp.prof_id == prop.prop_hero %}
 					<p><span class="big-text">{{prop.name}}</span><br/>wants to buy your time for ${{prop.prop_cost}}</p>
 					{% else %}
 					<p><span class="big-text">You</span><br/>want to buy {{prop.name}}'s time for ${{prop.prop_cost}}</p>
@@ -205,7 +205,7 @@
 			<div class="clear"></div>
 
 			<div class="buttons">
-				{% if bp.heroid == prop.prop_from %}
+				{% if bp.prof_id == prop.prop_from %}
 				{% else %}
 				<div class="reject-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>
 				<!--div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div-->
@@ -249,7 +249,7 @@
 	    });
 
 		$("#to-profile-wrap").click(function() {
-			document.getElementById('h').value = '{{bp.heroid}}';
+			document.getElementById('h').value = '{{bp.prof_id}}';
 			document.p.submit();
 		});
 	});
