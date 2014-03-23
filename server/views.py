@@ -130,50 +130,62 @@ def login_linkedin():
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
 
-def initProfile(head, ind, loc, summary=None):
-	uid = session['uid']
-	bp  = Profile.query.filter_by(account=uid).all()[0]										# Browsing Profile
+def initProfile(bp, head, ind, loc, summary=None, linkedDict= None):
 	try:
 		print ("update profile")
+		print ("head - ", head)
+		print ("ind  - ", ind)
+		print ("loc  - ", loc)
+		print ("desc - ", summary)
+
 		bp.headline = head
 		bp.industry = ind
-		bp.location = loc 
-		bp.description = summary
+		bp.location = loc['name'] 
+		bp.prof_bio = summary
+
+		print ("adding update bp")
 		db_session.add(bp)
+		print ("committ update bp")
 		db_session.commit()
 	except IntegrityError as ie:
-		print ie
+		print 'ah fuck, it failed', ie
 		db_session.rollback()
 	except Exception as e:
-		print e
-		trace(str(e))
+		print 'ah fuck, it failed other place', e
 		db_session.rollback()
 
 
 
-@ht_server.route('/login/linkedin/authorized')
+@ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
 def li_authorized(resp):
-	print 'li_authorized'
+	print 'authorized/linkedin (li_authorized)'
 
 	if resp is None:
 		# Needs a better error page 
 		print 'resp is none'
 		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 
-	#assume signup
 	#get Oauth Info.
 	signup = bool(session.pop('oauth_signup'))
 	print('li_auth - signup', str(signup))
+	print('li_auth - login ', str(not signup))
+
 	session['linkedin_token'] = (resp['access_token'], '')
+
 	me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	email = linkedin.get('people/~/email-address')
 
 	# format collected info... prep for init.
+	print 'email.type', str(type(email))
+	print 'me.data type', str(type(me.data))
+	print 'me.data dir', str(dir(me.data))
 	print('li_auth - collect data ')
+
 	jsondata  = jsonify(me.data)
 	linked_id = me.data.get('id')
 	user_name = me.data.get('formattedName')
+	me.data['OauthService'] = OAUTH_LINKED
 	recommend = me.data.get('recommendationsReceived')
 	headline  = me.data.get('headline')
 	summary   = me.data.get('summary')
@@ -187,27 +199,25 @@ def li_authorized(resp):
 	print (summary)
 	print (industry)
 
-	# account may exist (email).  -- creat controller: oauth_login(?)
-	# deleted if statement because it threw a dbfailure when signing up with an existing account
-	#if (not signup):
 
 	print('li_auth - find account')
-	possible_acct = Account.query.filter_by(email=email.data).all()
 	# also look for linkedin-account/id number (doesn't exist today).
-	if (len(possible_acct) == 1):
+	possible_accts = Account.query.filter_by(email=email.data).all()
+	if (len(possible_accts) == 1):
 		# suggest they create a password if that's not done.
-		print('User exists' +  str(possible_acct[0]))
-		session['uid'] = possible_acct[0].userid
-		return redirect('/dashboard')
+		print('User exists' +  str(possible_accts[0]))
+		session['uid'] = possible_accts[0].userid
+		print 'calling render_dashboard'
+		return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
 
- 	# try creating new account.  We don't know password.
+ 	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
 	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth', oauthID=linked_id)
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
 		print ("ht_bind_session = ", bp)
-		initProfile(headline, industry, location, summary=summary)
+		initProfile(bp, headline, industry, location, summary=summary, linkedDict=me.data)
 		# import_profile(LINKEDIN, jsonify(me.data)) 
 
 		#send_welcome_email(email.data)
@@ -223,7 +233,7 @@ def li_authorized(resp):
 
 
 @ht_server.route('/signup', methods=['GET', 'POST'])
-def signup():
+def render_signup_page():
 
 	#if already logged in redirect to dashboard
 	if ('uid' in session):
@@ -231,36 +241,32 @@ def signup():
 
 	errmsg = None
 	bp = False
-	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
 
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
-		trace("Validated form -- make Acct")
-		
-		#check if email already exists in db
-		account = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
+		#check if account (via email) already exists in db
+		accounts = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
 		if (len(account) == 1):
 			trace("email already exists in DB")
-			errmsg = "Account with the same email already exists."
+			errmsg = "An account with that email address already exists."
 		else:
 			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
-				resp = redirect('/dashboard')
+				return redirect('/dashboard')
 			else:
-				resp = redirect('/dbFailure')
-			return resp
+				errmsg = 'Something went wrong.  Please try again'
 	elif request.method == 'POST':
+		errmsg = 'Form isn\'t filled out properly, ', str(form.errors)
 		trace("/signup form isn't valid" + str(form.errors))
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=errmsg))
 
 
+
 @ht_server.route('/signup/linkedin', methods=['GET'])
 def signup_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	# redirects to LinkedIn, which gets token and comes back to 'li_authorized'
 	print 'signup_linkedin'
 	session['oauth_signup'] = True
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
@@ -332,23 +338,21 @@ def signup_verify(challengeHash):
 
 @ht_csrf.exempt
 @ht_server.route('/profile', methods=['GET', 'POST'])
-@dbg_enterexit
 def render_profile():
 	""" Provides users ability to modify their information.
 		- Pre-fill all fields with prior information.
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
-	nts = NTSForm(request.form)
-	print "'hero' = ", request.values.get('hero')
-	
+	print 'enter render_profile'
 	hp = request.values.get('hero')
+	print 'enter render_profile', hp
 	if (hp is None):
 		print "No hero profile requested, Error"
 		return redirect('https://127.0.0.1:5000/dashboard')	
 
 	# Replace 'hp' with the actual Hero's Profile.
-	hp  = Profile.query.filter_by(prof_id=hp).all()[0]
+	hp = Profile.query.filter_by(prof_id=hp).all()[0]
 	print "HP = ", hp.prof_name, hp.prof_id, hp.account
 
 	bp = session.get('uid')
@@ -358,6 +362,8 @@ def render_profile():
 		print "BP = ", bp.prof_name, bp.prof_id, bp.account
 
 
+	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
 	reviews = db_session.query(Review.prof_reviewed, Review.appt_value, Review.appt_score, \
@@ -367,7 +373,6 @@ def render_profile():
 				.filter(Review.prof_reviewed == hp.prof_id).all()
 				#.filter(bool(Review.rev_status & REV_POSTED) == True).
 
-	print 'create img uri'
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
 
@@ -419,7 +424,7 @@ def ht_api_appt_cancel():
 @ht_server.route('/dashboard', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def dashboard():
+def render_dashboard(usrmsg=None):
 	""" Provides Hero their personalized homepage.
 		- Show calendar with all upcoming appointments
 		- Show any statistics.
@@ -463,11 +468,8 @@ def dashboard():
 	proposals = proposal_in +  proposal_out
 
 	print 'db_session appt_by_me'
-	appt_by_me = db_session.query(Appointment.id, \
-							Appointment.apptid,	\
-							Appointment.status, \
-							Appointment.buyer_prof, \
-							Appointment.sellr_prof, \
+	appt_by_me = db_session.query(Appointment.apptid, Appointment.status, \
+							Appointment.buyer_prof, Appointment.sellr_prof, \
 							Appointment.location, \
 							Appointment.description, \
 							Appointment.ts_begin, \
@@ -486,9 +488,7 @@ def dashboard():
 							
 
 	print 'db_session appt_of_me'
-	appt_of_me = db_session.query(Appointment.id, \
-							Appointment.apptid,	\
-							Appointment.status, \
+	appt_of_me = db_session.query(Appointment.apptid, Appointment.status, \
 							Appointment.buyer_prof, \
 							Appointment.sellr_prof, \
 							Appointment.location, \
@@ -506,14 +506,12 @@ def dashboard():
 							.join(Profile, Profile.prof_id == Appointment.sellr_prof)\
 							.filter(Appointment.buyer_prof == bp.prof_id)\
 							.filter(Appointment.status == APPT_ACCEPTED).all()
-
 #							.filter(or_(Appointment.buyer_prof == bp.prof_id, Appointment.sellr_prof == bp.prof_id)).all()
 	appt_timeslots = appt_of_me + appt_by_me
 	print "number of appt_timeslots = ", appt_timeslots
 
-	print 'combine and render'
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots, errmsg=usrmsg))
 
 
 
@@ -1051,35 +1049,42 @@ def tos():
 
 
 
-@ht_server.route("/post_review/forappt/<review_id>", methods=['GET', 'POST'])
+@ht_server.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def get_review_page(review_id):
+def render_review_page(review_id):
 	uid = session['uid']
 
 	try:
 		print review_id, ' = id of Review'
-		the_review = Review.query.filter_by(id=int(review_id)).all()[0]
+		print appt_id, ' = id of Appt'
+		the_review = Review.retreive_by_id(review_id)
+
+		the_review.validate(bp.prof_id)
+		print 'we\'re the intended audience'
+
 		print the_review.author
 		print uid
 		print dt.utcnow()
 
-		bp = Profile.query.filter_by(account=uid).all()[0]		# authoring profile
-		rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]		# reviewed  profile
+		bp = Profile.query.filter_by(account=uid).all()[0]					# authoring profile
+		rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]	# reviewed  profile
 
-		if (the_review.author != bp.prof_id):
-			return "no fucking way"
-		if (the_review.heroid == uid):
-			return 'no fucking way, pt 2'
-
-		print 'we\'re the indended audience'
 
 		days_since_created = timedelta(days=30) + the_review.ts - dt.utcnow() 
-		#show the cost of the meeting, time, description, location
-		#	were you the buyer or seller.  the_appointment.buyer_proe; the_appointment.sellr_prof
+		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
+		#show the -cost, -time, -description, -location
+		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
 		review_form = ReviewForm(request.form)
 		review_form.review_id.data = str(review_id)
 		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=str(days_since_created.days), form=review_form))
+
+	except NoReviewFound as rnf:
+		print rnf 
+		return jsonify(usrmsg=rnf.msg)
+	except ReviewError as re:
+		print re
+		return jsonify(usrmsg=re.msg)
 	except Exception as e:
 		print e
 		return redirect('/failure')

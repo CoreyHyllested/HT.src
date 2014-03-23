@@ -35,13 +35,7 @@
 <div id="overview-wrap">
 	<div id="overview">
 		<img src="{{profile_img}}" alt="Go to profile">
-		<div id="to-profile-wrap" >
-			<form name='p' action=/profile method=POST>
-				<input type="hidden" id="h" name="hero">
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-			</form>
-			<a href="#" id="to-profile">Go to profile</a>
-		</div>
+		<div id="to-profile-wrap" ><a href="#" id="to-profile">Go to profile</a></div>
 
 		<div id="info-box">
 			<table border="0">
