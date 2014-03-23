@@ -344,9 +344,7 @@ def render_profile():
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
-	print 'enter render_profile'
 	hp = request.values.get('hero')
-	print 'enter render_profile', hp
 	if (hp is None):
 		print "No hero profile requested, Error"
 		return redirect('https://127.0.0.1:5000/dashboard')	

@@ -83,7 +83,6 @@
 			}
 		});
 	});
-
 	</script>
 </head>
 
@@ -387,7 +386,7 @@
 					<li>{{bp.prof_name}}
 						<ul>
 							<li><a href="/dashboard">Dashboard</a></li>
-							<li><a href="/profile">Profile</a></li>
+							<li><a href="#" onclick="document.getElementById('h').value='{{bp.prof_id}}'; document.p.submit();">Profile</a></li>
 							<li><a href="/settings">Settings</a></li>
 							<li><a href="/logout">Log Out</a></li>
 						</ul>
