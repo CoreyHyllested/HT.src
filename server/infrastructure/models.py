@@ -222,27 +222,27 @@ class Proposal(Base):
 	prop_uuid	= Column(String(40), primary_key=True, default = str(uuid.uuid4()))						 # NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	prop_user	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
-	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED,			index=True)
-	prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
-	prop_count	= Column(Integer, nullable=False, default=0)
-	prop_cost	= Column(Integer, nullable=False, default=0)
+	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED,			index=True)			# Pure State (as in Machine)
+	prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Attributes: Quiet?, Digital?, Run-Over Enabled?
+	prop_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
+	prop_cost	= Column(Integer, nullable=False, default=0)											# Cost.
 	prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# LastProfile to Touch proposal. 
 	prop_ts		= Column(DateTime(timezone=True),   nullable = False)
 	prop_tf		= Column(DateTime(timezone=True),   nullable = False)
 	prop_tz		= Column(String(20))
 	prop_desc	= Column(String(3000))
-	prop_place	= Column(String(1000),	nullable = False)
+	prop_place	= Column(String(1000),	nullable = False)	
 	prop_created = Column(DateTime(),	nullable = False, default = dt.utcnow())
 	prop_updated = Column(DateTime(),	nullable = False, default = dt.utcnow())
 	appt_secured = Column(DateTime(), nullable = True)
 	appt_charged = Column(DateTime(), nullable = True)
 
 	challengeID	= Column(String(40),	nullable = False, default=str(uuid.uuid4()))
-	charge_user_acct = Column(String(40))
-	charge_user_card = Column(String(40))
-	charge_user_tokn = Column(String(40))
-	charge_user_trsx = Column(String(40))	#stripe transaction 
-	dep_hero_account = Column(String(40))	#stripe transaction 
+	charge_user_acct = Column(String(40), nullable = True)
+	charge_user_card = Column(String(40), nullable = True)
+	charge_user_tokn = Column(String(40), nullable = True)
+	charge_user_trsx = Column(String(40), nullable = True)	#stripe transaction 
+	dep_hero_account = Column(String(40), nullable = True)	#stripe transaction 
 	review_hero	= Column(String(40), ForeignKey('review.review_id'))
 	review_user = Column(String(40), ForeignKey('review.review_id'))
 
@@ -266,7 +266,7 @@ class Proposal(Base):
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
 		self.prop_from = prof_updated
-		self.prop_updated	= datetime.datetime.utcnow()
+		self.prop_updated	= dt.utcnow()
 		self.prop_count		= self.prop_count + 1
 
 		if (updated_s is not None): self.prop_ts = updated_s
@@ -317,7 +317,7 @@ class Appointment(Base):
 		pass
 
 	def __repr__ (self):
-		return '<appt2, b:%r, s:%r, C:%r>' % (self.buyer_prof, self.sellr_prof, self.cost)
+		return '<appt, b:%r, s:%r, C:%r>' % (self.buyer_prof, self.sellr_prof, self.cost)
 
 
 
