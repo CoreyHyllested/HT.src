@@ -36,10 +36,6 @@
 		<h2>Search results</h2>
 		{{rc_heroes}} results found <!--for search terms -->
 
-		<form name='p' action=/profile method=POST>
-			<input type="hidden" id="h" name="hero">
-		</form>
-
 		{% for hero in heroes %}
 		<div class="search-result">
 			<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();" style="height:83px; width:150px; display:block; margin:0 auto;" alt="search-result"/></a>

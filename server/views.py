@@ -49,6 +49,7 @@ def homepage():
 
 
 
+@ht_csrf.exempt
 @ht_server.route('/search',  methods=['GET', 'POST'])
 @dbg_enterexit
 def render_search():
@@ -69,10 +70,10 @@ def render_search():
 
 	if (keywords is not None):
 		print "keywords = ", keywords
-		rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))#.all()
-		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))#.all()
-		rc_desc = results.filter(Profile.bio.ilike("%"+keywords+"%")) #.all()
-		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%")) #.all()
+		rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+		rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
+		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
 		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
 
 		# filter by location, use IP as a tell

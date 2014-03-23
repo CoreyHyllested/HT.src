@@ -90,6 +90,8 @@
 
 
 <body>
+	<form name='p' action=/profile method=POST><input type="hidden" id="h" name="hero"></form>
+
 	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
 	<div class="alertOverlay" onclick="closeAlertWindow(); closeCheckoutWindow();"></div>
 	
@@ -111,11 +113,8 @@
 			<form>
 
 				<input type="text" name="name" placeholder="Name on card">
-				
 				<input type="text" name="street" placeholder="Street address">
-				
 				<input type="text" name="zip" placeholder="ZIP code">
-				
 				<input type="text" name="city" placeholder="City">
 				
 				<select name="country">
@@ -352,19 +351,13 @@
 				</select>
 				
 				<input type="text" name="card_number" placeholder="Card number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
-				
 				<input type="text" id="expiration" name="expiration" placeholder="MM/YY" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="5">
-				
 				<input type="text" name="cvc" placeholder="CVC" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4" >
-				
 				<a class="checkoutPoweredByStripe" href="https://stripe.com/" target="_blank"></a>
-			
 			</form>
 				
 				<div class="makePaymentButtonWrap">
-					
 						<div class="blueButton makePaymentButton">Make Payment</div>
-					
 				</div>
 			</form>
 		</div>
@@ -384,7 +377,6 @@
 			<div id="top-search">
 				  <div id="top-search-input">
 					  <form name=srchForm action=search method=POST onsubmit="return searchBar()">
-						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 						<input type="text" name="search" placeholder="Who do you want to meet?" />
 					  </form>
 				  </div>
@@ -392,7 +384,7 @@
 		{% if bp %}
 			<nav>
 				<ul>
-					<li>{{bp.name}}
+					<li>{{bp.prof_name}}
 						<ul>
 							<li><a href="/dashboard">Dashboard</a></li>
 							<li><a href="/profile">Profile</a></li>
@@ -409,9 +401,6 @@
 				</ul>
 			</div>
 		{% endif %}
-		</div>
-		<div id="top-flash">
-			<span id="fmsg"></span>
 		</div>
 	</div>
 
@@ -447,5 +436,13 @@
 			</div>
 		</div>
 	</div>
+	<script>
+	$(function () {
+		function rp(id) {
+			document.getElementById('h').value=id;
+			document.p.submit();
+		}
+	});
+	</script>
 </body>
 </html>
