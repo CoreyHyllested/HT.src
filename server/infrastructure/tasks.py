@@ -53,9 +53,9 @@ def ht_proposal_create(values, uid):
 
 #	print 'updated_start = ', dt_start
 #	print 'updated_finsh = ', dt_finsh
-#	print 'token = ', stripe_tokn 
+	print 'token = ', stripe_tokn 
 #	print 'scard = ', stripe_card 
-#	print 'scust = ', stripe_cust 
+	print 'scust = ', stripe_cust 
 
 #	(ba, bp) = get_account_and_profile(prop.prop_user)
 #	(ha, hp) = get_account_and_profile(prop.prop_hero)
@@ -72,7 +72,7 @@ def ht_proposal_create(values, uid):
 		print "PI = ", pi
 
 		print 'creating proposal obj' 
-		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), stripe_tokn, pi, stripe_card)
+		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
 	except NoProfileFound as npf:
@@ -91,6 +91,7 @@ def ht_proposal_create(values, uid):
 	email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
 	email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 	return proposal, 'Successfully created proposal'
+
 
 
 
@@ -311,34 +312,29 @@ def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buye
 def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	stripe.api_key = "sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
 	stripe_cust = None
-	#check db for stripe.
 
-	print 'check db oauth stripe account'
-
-	stripe_custs = Oauth.query.filter_by(account=uid).all()
-	if (len(stripe_custs) == 1):
-		print 'get stripe customer from DB' 
-
-		# we could update the card with cc_card right here.
-		#stripe api to get jsob obj from stripe; 
-
-		print 'return get_stripe_cust (', stripe_custs[0].opt_token, ')'
-		return stripe_custs[0].opt_token
-
+	try:
+		print 'check db oauth stripe account'
+		stripe_cust = Oauth.get_stripe_by_uid(uid)
+		print 'returned friome oauth check'
+		return stripe_cust.oa_userid
+	except NoOauthFound as nof:
+		print 'customer did not exist, create one'
+		
 
 	print 'create customer from stripe API' 
 	try:
 		print 'create Customer w/ cc = ' + str(cc_token)
-		stripe_cust_json	= stripe.Customer.create(card=cc_token, description=str(uid))
-		stripe_cust_userid	= stripe_cust_json['id']
-		stripe_card_dflt	= stripe_cust_json['default_card']
-		print stripe_cust_json
+		stripe_cust_resp	= stripe.Customer.create(card=cc_token, description=str(uid))
+		stripe_cust_userid	= stripe_cust_resp['id']
+		stripe_card_dflt	= stripe_cust_resp['default_card']
+		print stripe_cust_resp
 
 		stripe_cust = Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
 		print stripe_cust
 		db_session.add(stripe_cust)
 		db_session.commit()
-		print 'and ... saved to db'
+		print 'and ... saved HT/stripe cust to db'
 	except UnboundLocalError as ule:
 		print str(e)
 		# raise ThisWasAlreadySubmitted (check back with RC. 
@@ -350,8 +346,6 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 
 	print 'return get_stripe_cust (', stripe_cust_userid, ')'
 	return stripe_cust_userid
-	#should have both credit card token, customer token, 
-
 
 	
 

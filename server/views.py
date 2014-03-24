@@ -100,6 +100,7 @@ def render_profile(usrmsg=None):
 
 	try:
 		# Replace 'hp' with the actual Hero's Profile.
+		print "hero profile requested,", hp
 		hp = Profile.get_by_prof_id(hp)
 		print "HP = ", hp.prof_name, hp.prof_id, hp.account
 	except NoProfileFound as nf:

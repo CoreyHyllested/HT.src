@@ -357,11 +357,12 @@
 				$('form[name="charge"]').submit();
 			};
 
+			/*$desc.substring(0,50)*/
 			StripeCheckout.open({
 				key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
 				amount:		 $cost,
 				address:     true,
-				description: $desc.substring(0,50),
+				description: 'You will not be charged until one day before the meeting', 
 				name:		 $hero_name, 
 				currency:	 'usd',
 				panelLabel:	 'Checkout',
