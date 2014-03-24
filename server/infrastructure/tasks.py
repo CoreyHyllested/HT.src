@@ -10,6 +10,29 @@ import json, smtplib
 import stripe
 
 
+
+
+
+def ht_proposal_create(request, values, uid):
+	print 'testing request direct, should work '
+	prop_hero = request.values.get('prop_hero')
+	prop_cost = request.values.get('prop_cost')
+	prop_desc = request.values.get('prop_desc')
+	prop_place = request.values.get('prop_area')
+	print 'hero = ', prop_hero 
+
+
+	print 'testing values direct, hopefully works'
+	prop_hero = values.get('prop_hero')
+	prop_cost = values.get('prop_cost')
+	prop_desc = values.get('prop_desc')
+	prop_place = values.get('prop_area')
+	print 'hero = ', prop_hero 
+
+	return None
+
+
+
 def ht_proposal_update(p_uuid, p_from):
 	# send email to buyer.   (prop_from sent you a proposal).
 	# send email to seller.  (proposal has been sent)
@@ -99,7 +122,7 @@ def ht_proposal_reject(p_uuid, rejector):
 	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
 	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
 	the_proposal = proposals[0]
-	the_propsoal.status = APPT_REJECTED
+	the_proposal.status = APPT_REJECTED
 
 	# get data to send emails
 	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
