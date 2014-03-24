@@ -158,11 +158,10 @@
 			<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
 				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 				<div class="slot-info">
-					{% if bp.prof_id == prop.prop_hero %}
-					<p><span class="big-text">{{prop.name}}</span><br/>wants to buy your time for ${{prop.prop_cost}}</p>
-					{% else %}
-					<p><span class="big-text">You</span><br/>want to buy {{prop.prof_name}}'s time for ${{prop.prop_cost}}</p>
-					{% endif %}
+					<p>
+						<span class="big-text">{{prop.prof_name}}</span><br/>
+						{% if bp.prof_id == prop.prop_hero %}wants to buy your time for{% else %}is considering your offer of{% endif %} ${{prop.prop_cost}}
+					</p>
 				</div>
 				<div class="slot-pending"></div>
 			</div>
