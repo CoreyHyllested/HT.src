@@ -154,62 +154,62 @@
 	<div id="proposals">
 
 		{% for prop in ts_prop|sort(attribute='prop_ts') %}
-		<a href="#">
-			<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
-				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
-				<div class="slot-info">
-					<p>
-						<span class="big-text">{{prop.prof_name}}</span><br/>
-						{% if bp.prof_id == prop.prop_hero %}wants to buy your time for{% else %}is considering your offer of{% endif %} ${{prop.prop_cost}}
-					</p>
+		<div id="prop-{{loop.index}}">
+			<a href="#">
+				<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
+					<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+					<div class="slot-info">
+						<p>
+							<span class="big-text">{{prop.prof_name}}</span><br/>
+							{% if bp.prof_id == prop.prop_hero %}wants to buy your time for{% else %}is considering your offer of{% endif %} ${{prop.prop_cost}}
+						</p>
+					</div>
+					<div class="slot-pending"></div>
 				</div>
-				<div class="slot-pending"></div>
+			</a>
+
+			<div id="slot-expand-{{loop.index}}p" class="slot-expand">
+				<div id="map-canvas-cal-{{loop.index}}p" class="map-canvas-cal"></div>
+				<div class="slot-details-left">
+					<span class="big-text">Time</span>
+					<p>{{prop.prop_ts.strftime('%A, %b %d, %Y')}}<br>{{prop.prop_ts.strftime('%H:%M %p')}}
+						<script>
+							d1 = new Date("{{prop.prop_tf.strftime('%Y-%m-%dT%H:%M:%S')}}");
+							d2 = new Date("{{prop.prop_ts.strftime('%Y-%m-%dT%H:%M:%S')}}");
+							diff = d1 - d2; 
+							if (diff == 1.0) {
+								document.write(' (1 hour)');
+						   } else {
+								document.write(' (' + (diff/3600000) + ' hours)'); 
+						   }
+					   </script>
+					</p>
+					<br>
+					<span class="big-text">Location</span><p>{{prop.prop_place}}</p><br>
+					<span class="big-text">Price   </span><p>${{prop.prop_cost}}</p>
+				</div>
+
+				<div class="slot-details-right">
+					<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
+					<p>{{prop.headline}}</p>
+					<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.heroid}}');</script>
+					<br />
+					<p>{{prop.description}} </p>
+				</div>
+
+				<div class="clear"></div>
+				<div class="buttons">
+					{% if bp.prof_id == prop.prop_from %}
+					{% else %}
+					<div class="reject-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}" idx="{{loop.index}}" ><a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>
+					<!--div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div-->
+					<div class="accept-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a> </div>
+					{% endif  %}
+				</div>
+				<div class="clear"></div>
 			</div>
-		</a>
-
-		<div id="slot-expand-{{loop.index}}p" class="slot-expand">
-			<div id="map-canvas-cal-{{loop.index}}p" class="map-canvas-cal"></div>
-			<div class="slot-details-left">
-				<span class="big-text">Time</span>
-				<p>{{prop.prop_ts.strftime('%A, %b %d, %Y')}}<br>{{prop.prop_ts.strftime('%H:%M %p')}}
-					<script>
-						d1 = new Date("{{prop.prop_tf.strftime('%Y-%m-%dT%H:%M:%S')}}");
-						d2 = new Date("{{prop.prop_ts.strftime('%Y-%m-%dT%H:%M:%S')}}");
-						diff = d1 - d2; 
-						if (diff == 1.0) {
-							document.write(' (1 hour)');
-					   } else {
-							document.write(' (' + (diff/3600000) + ' hours)'); 
-					   }
-				   </script>
-				</p><br>
-
-				<span class="big-text">Location</span><p>{{prop.prop_place}}</p><br>
-				<span class="big-text">Price   </span><p>${{prop.prop_cost}}</p>
-			</div>
-			<div class="slot-details-right">
-				<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
-				<p>{{prop.headline}}</p>
-				<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.heroid}}');</script>
-				<br />
-				<p>{{prop.description}} </p>
-			</div>
-
-			<div class="clear"></div>
-
-			<div class="buttons">
-				{% if bp.prof_id == prop.prop_from %}
-				{% else %}
-				<div class="reject-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>
-				<!--div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div-->
-				<div class="accept-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a> </div>
-				{% endif  %}
-			</div>
-
-			<div class="clear"></div>
 		</div>
 		{% endfor %}
-		<!--end proposals-->
 	</div>
 
 	<div class="clear"></div>
@@ -304,10 +304,12 @@ $(function () {
    $('.reject-wrap').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
+        var idx = $(this).attr("idx");
         var csrf = "{{ csrf_token() }}";
+		var sid = "#prop-" + idx;
 
-        console.log(['this is get started', id]);
-        console.log('this is get started ' +  ch);
+        //console.log(['this is get started', id]);
+        //console.log('this is get started ' +  ch);
 
         var fd = new FormData();
         //matches ProposalActionForm
@@ -317,8 +319,8 @@ $(function () {
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/proposal/reject", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf)
-        xhr.send(fd)
+        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.send(fd);
 
         //catch response.  make any modificaitons.
         xhr.onreadystatechange = function(e) {
@@ -326,8 +328,9 @@ $(function () {
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
-                    msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Success!\n' + msg['usrmsg']);
+					msg = JSON.parse(xhr.responseText);
+					openAlertWindow('Success.\n' + msg['usrmsg']);
+					$(sid).remove();
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500 ', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);

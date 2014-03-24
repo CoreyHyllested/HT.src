@@ -102,10 +102,17 @@ class Account(Base):
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
+#	@staticmethod
+#	def get_by_prof_id(profile_id):
+#		accounts = Account.query.filter_by(profiles.prof_id=profile_id).all()
+#		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
+#		return accounts[0]
+
 	@staticmethod
-	def get_by_accountid(find_accountid):
-		accounts = Account.query.filter_by(userid=find_accountid).all()
-		return accounts
+	def get_by_uid(uid):
+		accounts = Account.query.filter_by(userid=uid).all()
+		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
+		return accounts[0]
 
 	def set_email(self, e):
 		self.email = e
@@ -216,9 +223,19 @@ class Profile(Base):
 		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
 
 	@staticmethod
-	def get_by_id(profile_id):
+	def get_by_prof_id(profile_id):
 		profiles = Profile.query.filter_by(prof_id=profile_id).all()
-		if len(profiles) != 1: raise NoProfileFound(profile_id, 'Sorry, profile not found')
+		print "len = ", len(profiles), profile_id
+		if len(profiles) != 1: 
+			raise NoProfileFound(profile_id, 'Sorry, profile not found')
+		return profiles[0]
+
+	@staticmethod
+	def get_by_uid(uid):
+		profiles = Profile.query.filter_by(account=uid).all()
+		print "len = ", len(profiles), uid
+		if len(profiles) != 1: 
+			raise NoProfileFound(uid, 'Sorry, profile not found')
 		return profiles[0]
 
 

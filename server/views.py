@@ -379,7 +379,7 @@ def ht_api_appt_cancel():
 @ht_server.route('/dashboard', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def render_dashboard(usrmsg=None):
+def render_dashboard(usrmsg=None, focus=None):
 	""" Provides Hero their personalized homepage.
 		- Show calendar with all upcoming appointments
 		- Show any statistics.
@@ -594,7 +594,7 @@ def render_edit():
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'hit ht_api_prop_create'
+	print 'ht_api_prop_create - enter'
 	uid = session['uid']
 
 	prop_stripe_tokn = request.values.get('stripe_tokn')
@@ -614,12 +614,12 @@ def ht_api_proposal_create():
 
 	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+
 	print 'updated_start = ', dt_start
 	print 'updated_finsh = ', dt_finsh
 	print 'token = ', prop_stripe_tokn 
 	print 'ccard = ', prop_stripe_card 
 	print 'scust = ', prop_stripe_cust 
-
 
 	bp  = Profile.query.filter_by(account=uid).all()[0]
 	ba  = Account.query.filter_by(userid =uid).all()[0]
@@ -630,18 +630,16 @@ def ht_api_proposal_create():
 	pi  = get_stripe_customer(uid=uid, cc_token=prop_stripe_tokn, cc_card=prop_stripe_card)
 #	print "HA = ", ha
 #	print "BA = ", ba
-	print pi
+	print "PI = ", pi
 	#TODO need to sanatize all of this 
 
 	print 'creating proposal obj' 
-	print 3, prop_stripe_tokn
-	print 4, pi
-	print 40, prop_stripe_cust
-	print 5, prop_stripe_card
 	proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), prop_stripe_tokn, pi, prop_stripe_card)
 	print proposal
 
 	try:
+		print 'calling create' 
+		ht_proposal_create(request, request.values, uid)
 		db_session.add(proposal)
 		db_session.commit()
 		ht_proposal_update(proposal.prop_uuid, proposal.prop_from)
