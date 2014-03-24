@@ -163,10 +163,11 @@ class Oauth(Base):
 	opt_token	= Column(String(200))
 	opt_email	= Column(String(120))
 										#linkedin	#Stripe		#Google
-	opt_data1	= Column(String(200))	#?			CC Hash		
+	opt_data1	= Column(String(200))	#?			CC token
 	opt_data2	= Column(String(200))	#?			Dflt CC		
 	opt_data3	= Column(String(200))	#?			chrge key	
 
+	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
 	def __init__ (self, account, provider, userid, token=None, data1=None, data2=None, data3=None):
 		self.account = account		# account.userid
 		self.oa_service	= provider
@@ -180,6 +181,12 @@ class Oauth(Base):
 	def __repr__ (self):
 		return '<oauth, %r %r %r>' % (self.account, self.oa_service, self.oa_userid)
 		
+	@staticmethod
+	def get_stripe_by_uid(uid):
+		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		return stripe_custs[0]
+
 
 
 class Profile(Base):
@@ -262,30 +269,30 @@ class Proposal(Base):
 	appt_charged = Column(DateTime(), nullable = True)
 
 	challengeID	= Column(String(40),	nullable = False, default=str(uuid.uuid4()))
-	charge_user_acct = Column(String(40), nullable = True)
-	charge_user_card = Column(String(40), nullable = True)
-	charge_user_tokn = Column(String(40), nullable = True)
-	charge_user_trsx = Column(String(40), nullable = True)	#stripe transaction 
-	dep_hero_account = Column(String(40), nullable = True)	#stripe transaction 
+	charge_customer_id	= Column(String(40), nullable = True)	# stripe customer id
+	charge_credit_card	= Column(String(40), nullable = True)	# stripe credit card
+	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
+	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
+	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
 	review_hero	= Column(String(40), ForeignKey('review.review_id'))
 	review_user = Column(String(40), ForeignKey('review.review_id'))
 
-	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, tokn=None, cust=None, card=None, state=None, flags=None): 
+	#Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (prop_cost), location=prop_place, description=prop_desc, token=stripe_tokn, cust=pi, card=stripe_card)
+	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
 		self.prop_hero	= str(hero)
 		self.prop_user	= str(buyer)
-		self.prop_state	= state
-		self.prop_flags = flags
 		self.prop_cost	= int(cost)
-		self.prop_from = str(buyer)
+		self.prop_from	= str(buyer)
+		if (flags is not None): self.prop_flags = flags
 
 		self.prop_ts	= datetime_s
 		self.prop_tf	= datetime_f
 		self.prop_place	= location 
 		self.prop_desc	= description
 
-		self.stripe_tokn = tokn
-		self.stripe_cust = cust
-		self.stripe_card = card
+		self.charge_customer_id = customer
+		self.charge_credit_card = card
+		self.charge_user_token = token
 
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 

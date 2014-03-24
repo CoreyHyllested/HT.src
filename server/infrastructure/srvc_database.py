@@ -26,7 +26,7 @@ from sqlalchemy.ext.declarative import declarative_base
 #    db_session.remove()
 
 print 'import::db -- create engine'
-engine = create_engine('postgresql://wvqtppohnrryzx:2BJAtMLHVVYjP9C5ueBdV4J33a@ec2-50-19-219-235.compute-1.amazonaws.com:5432/d21dfk3trnunjm')
+engine = create_engine('postgresql://brjwzdmhzipgwg:nYIJrHWrnkRruzOdzzCdFqKdXp@ec2-54-204-43-200.compute-1.amazonaws.com:5432/d23r20cnqg2c72')
 
 print 'import::db -- create sessionmaker'
 db_session = scoped_session(sessionmaker(bind=engine))
