@@ -26,6 +26,15 @@ class PermissionDenied(Exception):
 
 
 
+class NoOauthFound(Exception):
+	def __init__(self, uid, otype):
+		self.uid = uid 
+		self.ot  = otype
+		
+	def __str__(self):
+		return "Oauth (%s, %s) not found" % (self.uid, self.ot)
+
+
 class NoProposalFound(Exception):
 	def __init__(self, p_uuid, p_from):
 		self.prop_uuid = p_uuid
