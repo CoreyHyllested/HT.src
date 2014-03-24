@@ -5,31 +5,92 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks_emails	 import *
 from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
+from sqlalchemy.exc import IntegrityError
 from pprint import pprint as pp
 import json, smtplib
 import stripe
 
 
 
+def ht_sanitize_errors(err):
+	msg = 'caught error:' + str(err)
+	return msg
 
 
-def ht_proposal_create(request, values, uid):
-	print 'testing request direct, should work '
-	prop_hero = request.values.get('prop_hero')
-	prop_cost = request.values.get('prop_cost')
-	prop_desc = request.values.get('prop_desc')
-	prop_place = request.values.get('prop_area')
-	print 'hero = ', prop_hero 
 
 
-	print 'testing values direct, hopefully works'
+
+def ht_proposal_create(values, uid):
+	"""Method for creating a proposal
+		returns	on success: Propsoal, msg
+		returns	on failure: None, msg
+	"""
+
+	stripe_tokn = values.get('stripe_tokn')
+	stripe_card = values.get('stripe_card')
+	stripe_cust = values.get('stripe_cust')
+	stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
+
 	prop_hero = values.get('prop_hero')
 	prop_cost = values.get('prop_cost')
 	prop_desc = values.get('prop_desc')
 	prop_place = values.get('prop_area')
-	print 'hero = ', prop_hero 
 
-	return None
+	prop_s_date = values.get('prop_s_date')
+	prop_s_hour = values.get('prop_s_hour')
+	prop_f_date = values.get('prop_f_date')
+	prop_f_hour = values.get('prop_f_hour')
+
+	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+
+	#TODO need to sanatize/_validate_ all of fields
+	#	Stripe fields should be validated.
+	#	v1 - end time is reasonable (after start time)
+	#	v2 - hero exists.
+	#	v3 - place doesn't matter as much..
+	#	v4 - cost..
+
+#	print 'updated_start = ', dt_start
+#	print 'updated_finsh = ', dt_finsh
+#	print 'token = ', stripe_tokn 
+#	print 'scard = ', stripe_card 
+#	print 'scust = ', stripe_cust 
+
+#	(ba, bp) = get_account_and_profile(prop.prop_user)
+#	(ha, hp) = get_account_and_profile(prop.prop_hero)
+
+	try:
+		# raises (No<Resrc>Found errors)
+		hp	= Profile.get_by_prof_id(prop_hero)
+		bp	= Profile.get_by_uid(uid)
+		ba  = Account.get_by_uid(uid)
+		ha  = Account.get_by_uid(hp.account)
+		pi  = get_stripe_customer(uid=uid, cc_token=stripe_tokn, cc_card=stripe_card)
+	#	print "HA = ", ha
+	#	print "BA = ", ba
+		print "PI = ", pi
+
+		print 'creating proposal obj' 
+		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), stripe_tokn, pi, stripe_card)
+		db_session.add(proposal)
+		db_session.commit()		 # raises IntegrityError
+	except NoProfileFound as npf:
+		msg = ht_sanitize_errors(npf)
+		return None, msg
+	except IntegrityError as ie:
+		msg = ht_sanitize_errors(ie)
+		db_session.rollback()
+		return None, msg
+	except Exception as e:
+		msg = ht_sanitize_errors(e)
+		db_session.rollback()
+		print msg
+		return None, msg
+
+	email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+	return proposal, 'Successfully created proposal'
 
 
 
@@ -45,9 +106,40 @@ def ht_proposal_update(p_uuid, p_from):
 	(ba, bp) = get_account_and_profile(prop.prop_user)
 
 	# pretty annoying.  we need to encode unicode here to utf8; decoding will fail.
-	email_hero_proposal_updated(prop,  ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	email_buyer_proposal_updated(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+	email_hero_proposal_updated(prop, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	email_user_proposal_updated(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 
+
+def ht_proposal_reject(p_uuid, rejector):
+	print 'received proposal uuid: ', p_uuid 
+
+	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
+	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
+	the_proposal = proposals[0]
+	the_proposal.status = APPT_REJECTED
+
+	# get data to send emails
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.prof_name.encode('utf8', 'ignore')
+#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.prof_name.encode('utf8', 'ignore')
+
+	# bit of over-engineering; 
+	if (rejector != ha.userid and rejector != ba.userid):	#only Hero / Buyer can reject proposal
+		raise PermissionDenied('reject prop', rejector, 'You do not have permission to reject this proposal')
+
+	try: # delete proposal 
+		#TODO save these somewhere.
+		db_session.delete(the_proposal)
+		db_session.commit()
+	except Exception as e:
+		# cleanup DB immediately
+		db_session.rollback()
+		print 'DB error:', e
+		raise DB_Error(e, 'Shit that\'s embarrassing')
+
+	print 'send rejection emails: ', the_proposal.prop_hero, the_proposal.prop_user
+	send_proposal_reject_emails(ha.email, hp.prof_name.encode('utf8', 'ignore'), ba.email, bp.prof_name.encode('utf8', 'ignore'), the_proposal)
 
 
 @mngr.task
@@ -61,9 +153,9 @@ def send_recovery_email(toEmail, challenge_hash):
 
 
 
-def get_account_and_profile(hero_id):
+def get_account_and_profile(profile_id):
 	try:
-		p = Profile.query.filter_by(prof_id = hero_id).all()[0]		# browsing profile
+		p = Profile.query.filter_by(prof_id = profile_id).all()[0]		# browsing profile
 		a = Account.query.filter_by(userid  = p.account).all()[0]
 	except Exception as e:
 		print "Oh shit, caught error at get_account_and_profile" + e
@@ -115,36 +207,7 @@ def ht_appointment_finalize(appt_id,  stripe_cust, stripe_card, stripe_tokn):
 	return None
 
 
-@mngr.task
-def ht_proposal_reject(p_uuid, rejector):
-	print 'received proposal uuid: ', p_uuid 
 
-	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
-	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
-	the_proposal = proposals[0]
-	the_proposal.status = APPT_REJECTED
-
-	# get data to send emails
-	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
-#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.prof_name.encode('utf8', 'ignore')
-#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.prof_name.encode('utf8', 'ignore')
-
-	# bit of over-engineering; 
-	if (rejector != ha.userid and rejector != ba.userid):	#only Hero / Buyer can reject proposal
-		raise PermissionDenied('reject prop', rejector, 'You do not have permission to reject this proposal')
-
-	try: # delete proposal 
-		db_session.delete(the_proposal)
-		db_session.commit()
-	except Exception as e:
-		# cleanup DB immediately
-		db_session.rollback()
-		print 'DB error:', e
-		raise DB_Error(e, 'Shit that\'s embarrassing')
-
-	print 'send rejection emails to profiles: ', the_proposal.prop_hero, the_proposal.prop_user
-	send_proposal_reject_emails(ha.email, hp.prof_name.encode('utf8', 'ignore'), ba.email, bp.prof_name.encode('utf8', 'ignore'), the_proposal)
 
 
 

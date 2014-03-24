@@ -12,7 +12,7 @@ import json, smtplib
 import stripe
 
 
-def email_buyer_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
+def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
 	url = 'https://127.0.0.1:5000/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
 	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"

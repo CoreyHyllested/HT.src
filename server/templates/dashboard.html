@@ -190,9 +190,9 @@
 				</div>
 
 				<div class="slot-details-right">
-					<span class="big-text" onclick="document.getElementById('h').value='{{prop.heroid}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
+					<span class="big-text" onclick="document.getElementById('h').value='{{prop.prop_hero}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
 					<p>{{prop.headline}}</p>
-					<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.heroid}}');</script>
+					<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.prop_hero}}');</script>
 					<br />
 					<p>{{prop.description}} </p>
 				</div>
@@ -240,13 +240,6 @@
 	            return false;
 	        }
 	    });
-
-	//	/$("#to-profile-wrap").click(function() {
-	//		document.getElementById('h').value = '{{bp.prof_id}}';
-	//		document.p.submit();
-	//	});
-
-
 
 		$("#to-profile-wrap").click(function () {
 			console.log('profile-wrap');
