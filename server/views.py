@@ -335,8 +335,6 @@ def signup_verify(challengeHash):
 
 
 
-
-@ht_csrf.exempt
 @ht_server.route('/appointment/cancel', methods=['POST'])
 @dbg_enterexit
 @req_authentication
@@ -344,33 +342,34 @@ def ht_api_appt_cancel():
 	""" Cancels a logged in user's appointment. """
 
 	uid = session['uid']
-	bp  = Profile.query.filter_by(account=uid).all()[0]
-	print 'bp = ', bp
-
 	print 'apptid = ', request.values.get('appt', 'Nothing found here, sir')
-	appointments = Appointment.query.filter_by(apptid=request.form.get('appt', None)).all()
-	print "appointments found = " , len(appointments)
-	if (len(appointments) != 1): return jsonify(usrmsg='Weird, no appointment found') 
-	
-	the_appointment = appointments[0]
-	print the_appointment
 
 	try:
-		the_appointment = appointments[0]
-		the_appointment.status = APPT_CANCELED
-
-		db_session.add(the_appointment)
+		the_proposal = Proposal.get_by_id(request.values.get('appt_id'))
+		the_proposal.set_state(APPT_STATE_CANCELED)
+		db_session.add(the_proposal)
 		db_session.commit()
-		print the_appointment
+		print the_proposal
 
 		#send emails notifying users.
 		print "success, canceled appt"
+	except DB_Error as dbe:
+		print dbe
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except StateTransitionError as ste:
+		print ste
+		db_session.rollback()
+		return jsonify(usrmsg=ste.sanitized_msg()), 500
+	except NoResourceFound as nre:
+		print nre
+		return jsonify(usrmsg=nre), 400
 	except Exception as e:
 		print e
 		db_session.rollback()
-		return serviceFailure("profile", e)
+		return jsonify(usrmsg='Bizarre, something failed'), 500
 
-	return make_response(redirect('/dashboard'))
+	return jsonify(usrmsg="succesfully canceled proposal"), 200
 
 
 
@@ -412,8 +411,8 @@ def render_dashboard(usrmsg=None, focus=None):
 	
 	print 'calling map on all appts_and_props'
 	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
-	props = filter(lambda p: bool(test_flag(p.Proposal.prop_state, PROP_FLAG_ACCEPTED)) == False, appts_and_props)
-	appts = filter(lambda a: 	  test_flag(a.Proposal.prop_state, PROP_FLAG_ACCEPTED),			  appts_and_props)
+	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
+	appts = filter(lambda a:  (a.Proposal.prop_state == APPT_STATE_ACCEPTED), 													 appts_and_props)
 	print "proposals =", len(props), ", appts =", appts
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
@@ -551,52 +550,41 @@ def render_edit():
 
 
 
-
-@ht_server.route('/proposal/create', methods=['POST'])
-@req_authentication
-def ht_api_proposal_create():
-	print 'ht_api_prop_create - enter'
-	uid = session['uid']
-
-	print 'ht_proposal_create' 
-	proposal, msg = ht_proposal_create(request.values, uid)
-	if (proposal is None):
-		return jsonify(usrmsg=msg), 500
-	return redirect('/dashboard')
-
-	# enqueue task to charge the card 24hrs before appt.
-	#pprint(customer)
-
-
-
 def sanitize_render_errors(err):
 	print 'caught error:' + str(err)
 
 
 
-#return jsonify(cost=nts.newslot_price.data, ts_srt1 = str(nts.newslot_starttime.data), ts_end1 = ts_end, begin1=begin, finish1 = finish, bywhom = int(bp.prof_id != hp.prof_id))
+@ht_server.route('/proposal/create', methods=['POST'])
+@req_authentication
+def ht_api_proposal_create():
+	print 'ht_proposal_create' 
+	proposal, msg = ht_proposal_create(request.values, session['uid'])
+	if (proposal is None): return jsonify(usrmsg=msg), 500
+
+	return render_dashboard()
+
+
 
 @ht_server.route('/proposal/accept', methods=['POST'])
 @req_authentication
 def ht_api_proposal_accept():
 	form = ProposalActionForm(request.form)
 	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-
 	log_uevent(session['uid'], pstr)
 
 	if not form.validate_on_submit():
-		rc = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], rc) 
-		return jsonify(usrmsg=str(rc)), 503
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=msg), 503
 
 	try:
-		success, rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		if (success == False): return jsonify(usrmsg=msg), rc
+		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
 	except Exception as e:
-		print e
+		print str(e)
+		print str(msg)
 		db_session.rollback()
-	print 'returning success'
-	return jsonify(usrmsg="success"), 200
+	return jsonify(usrmsg=msg), rc
 
 
 
@@ -612,21 +600,21 @@ def ht_api_proposal_reject():
 		rc = "invalid form: " + str(form.errors)
 		log_uevent(session['uid'], rc) 
 		return jsonify(usrmsg=str(rc)), 504
-	
 
 	try:
-		ht_proposal_reject(form.proposal_id.data, session['uid'])
+		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
 	except NoProposalFound as npf:
+		print rc, msg
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except PermissionDenied as pd: 
-		print pd
-		return jsonify(usrmsg=pd.msg), 501
 	except DB_Error as dbe:
+		print rc, msg
 		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except Exception as e:
 		print e
+		print rc, msg
 		db_session.rollback()
 		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
+	print rc, msg
 	return jsonify(usrmsg="Proposal Deleted"), 200
 
 
@@ -638,7 +626,7 @@ def ht_api_proposal_reject():
 @req_authentication
 def ht_api_proposal_negotiate():
 	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.prop_state = set_flag(the_proposal.prop_state,  PROP_FLAG_RESPONSE)
+	#the_proposal.set_state(APPT_STATE_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
 	#the_proposal.prop_updated = dt.now()
 	return redirect('/notImplemented')

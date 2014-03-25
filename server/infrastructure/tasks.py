@@ -5,6 +5,7 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks_emails	 import *
 from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
+from server.infrastructure.basics		 import *
 from sqlalchemy.exc import IntegrityError
 from pprint import pprint as pp
 import json, smtplib
@@ -12,8 +13,8 @@ import stripe
 
 
 
-def ht_sanitize_errors(err):
-	msg = 'caught error:' + str(err)
+def ht_sanitize_errors(e, details=None):
+	msg = 'caught error:' + str(e)
 	return msg
 
 
@@ -60,6 +61,7 @@ def ht_proposal_create(values, uid):
 #	(ba, bp) = get_account_and_profile(prop.prop_user)
 #	(ha, hp) = get_account_and_profile(prop.prop_hero)
 
+	committed = False
 	try:
 		# raises (No<Resrc>Found errors)
 		hp	= Profile.get_by_prof_id(prop_hero)
@@ -67,29 +69,26 @@ def ht_proposal_create(values, uid):
 		ba  = Account.get_by_uid(uid)
 		ha  = Account.get_by_uid(hp.account)
 		pi  = get_stripe_customer(uid=uid, cc_token=stripe_tokn, cc_card=stripe_card)
-	#	print "HA = ", ha
-	#	print "BA = ", ba
 		print "PI = ", pi
 
 		print 'creating proposal obj' 
 		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
-	except NoProfileFound as npf:
-		msg = ht_sanitize_errors(npf)
-		return None, msg
-	except IntegrityError as ie:
-		msg = ht_sanitize_errors(ie)
-		db_session.rollback()
-		return None, msg
-	except Exception as e:
-		msg = ht_sanitize_errors(e)
-		db_session.rollback()
-		print msg
-		return None, msg
+		committed = True
 
-	email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+		email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+	except NoProfileFound as npf:
+		ht_sanitize_errors(npf, details=None)
+	except IntegrityError as ie:
+		db_session.rollback()
+		ht_sanitize_errors(ie, details=None)
+	except Exception as e:
+		# catch-all
+		db_session.rollback()
+		ht_sanitize_errors(e, details=None)
+
 	return proposal, 'Successfully created proposal'
 
 
@@ -114,73 +113,56 @@ def ht_proposal_update(p_uuid, p_from):
 
 def ht_proposal_accept(prop_id, uid):
 	try:
-		the_proposal = Proposal.get_by_id(prop_id, 'ht_appt_finalize')
+		the_proposal = Proposal.get_by_id(prop_id, 'ht_appt_accept')
 		stripe_card = the_proposal.charge_credit_card
 		stripe_tokn = the_proposal.charge_user_token
 		print 'ht_appointment_finailze() appt: ', prop_id, ", cust: ", the_proposal.charge_customer_id, ", card: ", stripe_card, ", token: ", stripe_tokn 
 
-		# proposal cannot be accepted by the last person modify to the proposal.  
-		if (the_proposal.prop_from == uid): return (None, 500, "Bizarro. You cannot accept your own proposal.")
-		if (the_proposal.prop_state == APPT_ACCEPTED): return (None, 500, "Bizarro. Proposal was already accepted.") # not sure if this is a real error
-
 		# update proposal
-		the_proposal.prop_state = set_flag(the_proposal.prop_state, PROP_FLAG_ACCEPTED)
-		the_proposal.appt_secured = dt.utcnow()
-		the_proposal.prop_updated = dt.utcnow()
-
+		the_proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
 		db_session.add(the_proposal)
 		db_session.commit()
+
+		print 'send confirmation notices to buyer and seller'
+		(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+		(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+
+		chargeTime = the_proposal.prop_ts - timedelta(days=1)
+		remindTime = the_proposal.prop_tf - timedelta(days=2)
+
+		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
+		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
+		#send_appt_emails(ha.email, ba.email, the_proposal) TODO: this did take appointment as third field
+
+		print 'calling ht_capturecard -- delayed'
+		# add timestamp to ensure it hasn't been tampered with
+		rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated) #, eta=chargeTime):
 	except NoProposalFound as npf:
-		return (False , 400, "Weird, proposal doesn\'t exist")
+		return (400, "Weird, proposal doesn\'t exist")
 	except Exception as e:
 		print e
 		db_session.rollback()
-		return (False, 500, e)
-
-	print 'send confirmation notices to buyer and seller'
-	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+		return (500, e)
 
 
-	chargeTime = the_proposal.prop_ts - timedelta(days=1)
-	remindTime = the_proposal.prop_tf - timedelta(days=2)
-
-	print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
-	print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-	#send_appt_emails(ha.email, ba.email, the_proposal) TODO: this did take appointment as third field
-	
-	# add timestamp to ensure it hasn't been tampered with; also send cost; 
-	print 'calling ht_capturecard -- delayed'
-	rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost) #, eta=chargeTime):
+#	in reminder, check to see if it was canceled
 #	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
 #	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
-	print 'back from ht_capturecard -- delayed, ', rc
+
+	print 'returning from ht_appt_finalize', rc
+	return (200, str(rc))
 
 
-	print 'returning from ht_appt_finalize'
-	return True, 200, rc
 
 
-
-def ht_proposal_reject(p_uuid, rejector):
+def ht_proposal_reject(p_uuid, rejector_uid):
 	print 'received proposal uuid: ', p_uuid 
-
 	the_proposal = Proposal.get_by_id(p_uuid) 
-	the_proposal.prop_state = set_flag(the_proposal.state, PROP_FLAG_REJECTED)
-
-	# get data to send emails
-	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
-#	print 'will send prop reject notice to buyer: ', ba.email, ba.userid, bp.prof_name.encode('utf8', 'ignore')
-#	print 'will send prop reject notice to sellr: ', ha.email, ha.userid, hp.prof_name.encode('utf8', 'ignore')
-
-	# bit of over-engineering; 
-	if (rejector != ha.userid and rejector != ba.userid):	#only Hero / Buyer can reject proposal
-		raise PermissionDenied('reject prop', rejector, 'You do not have permission to reject this proposal')
+	the_proposal.set_state(APPT_STATE_REJECTED, uid=rejector_uid)
 
 	try: # delete proposal 
 		#TODO save these somewhere.
-		db_session.delete(the_proposal)
+		db_session.add(the_proposal)
 		db_session.commit()
 	except Exception as e:
 		# cleanup DB immediately
@@ -188,29 +170,11 @@ def ht_proposal_reject(p_uuid, rejector):
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
 
-	print 'send rejection emails: ', the_proposal.prop_hero, the_proposal.prop_user
-	send_proposal_reject_emails(ha.email, hp.prof_name.encode('utf8', 'ignore'), ba.email, bp.prof_name.encode('utf8', 'ignore'), the_proposal)
-
-
-@mngr.task
-def send_recovery_email(toEmail, challenge_hash):
-	url = 'https://herotime.co/newpassword/' + str(challenge_hash) + "?email=" + str(toEmail)
-	
-	#prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
-	#prop_created = Column(DateTime(), nullable = False)
-
-	
+	send_proposal_reject_emails(the_proposal)
+	return (200, 'success')
 
 
 
-def get_account_and_profile(profile_id):
-	try:
-		p = Profile.query.filter_by(prof_id = profile_id).all()[0]		# browsing profile
-		a = Account.query.filter_by(userid  = p.account).all()[0]
-	except Exception as e:
-		print "Oh shit, caught error at get_account_and_profile" + e
-		raise e
-	return (a, p)
 
 
 @mngr.task
@@ -241,9 +205,9 @@ def enable_reviews(the_proposal):
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	
-	the_proposal.prop_state = set_flag(the_proposal.prop_state, PROP_FLAG_OCCURRED)
 	the_proposal.review_user = review_bp.review_id
 	the_proposal.review_hero = review_hp.review_id
+	the_proposal.set_state(APPT_STATE_OCCURRED)
 
 	try:
 		db_session.add(the_proposal)
@@ -263,20 +227,22 @@ def enable_reviews(the_proposal):
 @mngr.task
 def disable_reviews(jsonObj):
 	#30 days after enable, shut it down!
+	#the_proposal.set_state(APPT_STATE_COMPLETE)
 	print 'disable_reviews()'
 	return None
 
 
 @mngr.task
-def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost):
+def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time):
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
 	print 'ht_capture_creditecard called: buyer_cust_token = ', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
 	the_proposal = Proposal.get_by_id(prop_id, 'capture_cc')
 	print the_proposal
 
-	if (test_flag(the_proposal.prop_state, PROP_FLAG_CANCELED)):
-		print 'state is cancled'
-		return
+	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
+		trace (str(the_proposal.prop_uuid) + ' state is canceled (?, ' + str(the_proposal.prop_state) +  ')')
+		print the_proposal.prop_uuid, ' state is canceled (?, ', the_proposal.prop_state ,')'
+		return 'success, but state was canceld'
 
 #	print str(the_appointment.updated)
 #	print str(appointment.ts_begin)
@@ -299,6 +265,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 	except Exception as e:
 		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
 		print e
+		return 'failed with ' + str(e)
 	print 'That\'s all folks, it should have worked?'
 
 
@@ -327,6 +294,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 	print 'calling enable_reviews'
 	enable_reviews(the_proposal)
 	print 'returning out of charge'
+	return 'Good -- becomes # when delayed'
 	
 
 
