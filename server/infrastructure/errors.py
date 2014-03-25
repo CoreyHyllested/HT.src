@@ -6,9 +6,11 @@ from datetime import datetime as dt
 #seen: we tried to index a list (from DB) that was zero
 
 class Sanitized_Exception(Exception):
-	def __init__(self, caught, msg=None):
+	def __init__(self, caught, httpRC=None, httpJSON=None, msg=None):
 		self.caught = caught
 		self.sanitized_msg = 'Ooops'
+		self.rc = httpRC
+		self.json = httpJSON
 		if (msg): self.sanitized_msg = msg
 	
 	def orig_error(self):
@@ -16,6 +18,12 @@ class Sanitized_Exception(Exception):
 	
 	def sanitized_msg(self):
 		return self.sanitized_msg
+	
+	def httpRC(self):
+		return self.rc
+
+	def httpResp(self):
+		return self.json
 
 
 
@@ -36,10 +44,13 @@ class StateTransitionError(Exception):
 class DB_Error(Exception):
 	def __init__(self, db_err, usr_msg):
 		self.db_err  = db_err
-		self.usr_msg = usr_msg
+		self.msg = usr_msg
+
+	def sanitized_msg(self):
+		return self.msg 
 
 	def __str__(self):
-		return "DB_ERR(%s, %s)" % (self.db_err, self.usr_msg)
+		return "DB_ERR(%s, %s)" % (self.db_err, self.msg)
 
 
 
@@ -48,6 +59,10 @@ class PermissionDenied(Exception):
 		self.task = task
 		self.usr  = usr
 		self.msg  = usr_msg
+
+	def sanitized_msg(self):
+		return self.msg 
+
 
 	def __str__(self):
 		return "PermissionError(%s, %s, %s)" % (self.task, self.usr, self.msg)
@@ -62,16 +77,23 @@ class NoResourceFound(Exception):
 		self.msg = msg
 		self.loc = loc
 
+	def sanitized_msg(self):
+		return self.msg 
+
 	def __str__(self):
 		return '<No%rFound::%r>' % (self.rt, self.id)
 
 
 
 class NoOauthFound(Exception):
-	def __init__(self, uid, otype):
+	def __init__(self, uid, otype, msg=None):
 		self.uid = uid 
 		self.ot  = otype
+		self.msg = msg 
 		
+	def sanitized_msg(self):
+		return self.msg 
+
 	def __str__(self):
 		return "Oauth (%s, %s) not found" % (self.uid, self.ot)
 
