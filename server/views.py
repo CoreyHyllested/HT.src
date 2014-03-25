@@ -16,7 +16,7 @@ from server.infrastructure.errors import *
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
-from sqlalchemy     import or_
+from sqlalchemy     import distinct, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
@@ -386,8 +386,8 @@ def render_dashboard(usrmsg=None, focus=None):
 	"""
 
 	uid = session['uid']
-	bp = Profile.query.filter_by(account=uid).all()[0]
-	print 'profile.account = ', uid
+	bp = Profile.get_by_uid(uid)
+	print 'profile.account = ', uid, bp
 
 	# Reservations?
 	# Earnings (this month, last month, year)
@@ -403,9 +403,10 @@ def render_dashboard(usrmsg=None, focus=None):
 	print 'db_session prop_out'
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appts_and_props = db_session.query(Proposal, user, hero)											\
+	appts_and_props = db_session.query(Proposal, user, hero)														\
 								.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-								.join(user, user.prof_id == Proposal.prop_user)							\
+								.distinct(Proposal.prop_uuid)														\
+								.join(user, user.prof_id == Proposal.prop_user)										\
 								.join(hero, hero.prof_id == Proposal.prop_hero).all();
 	
 	
@@ -413,7 +414,7 @@ def render_dashboard(usrmsg=None, focus=None):
 	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a:  (a.Proposal.prop_state == APPT_STATE_ACCEPTED), 													 appts_and_props)
-	print "proposals =", len(props), ", appts =", appts
+	print "proposals =", len(props), ", appts =", len(appts)
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
@@ -559,9 +560,10 @@ def sanitize_render_errors(err):
 @req_authentication
 def ht_api_proposal_create():
 	print 'ht_proposal_create' 
-	proposal, msg = ht_proposal_create(request.values, session['uid'])
-	if (proposal is None): return jsonify(usrmsg=msg), 500
-
+	try:
+		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
+	except Sanitized_Exception as se:
+		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
 	return render_dashboard()
 
 
@@ -580,6 +582,8 @@ def ht_api_proposal_accept():
 
 	try:
 		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
+	except Sanitized_Exception as se:
+		return jsonify(usrmsg=se.sanitized_msg()), 500
 	except Exception as e:
 		print str(e)
 		print str(msg)
@@ -596,22 +600,29 @@ def ht_api_proposal_reject():
 	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
 	log_uevent(session['uid'], pstr)
 
+
 	if not form.validate_on_submit():
-		rc = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], rc) 
-		return jsonify(usrmsg=str(rc)), 504
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=str(msg)), 504
 
 	try:
+	
 		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
+
 	except NoProposalFound as npf:
 		print rc, msg
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except DB_Error as dbe:
-		print rc, msg
+	except StateTransitionError as ste:
+		db_session.rollback()
+		print ste, ste.sanitized_msg()
+		return jsonify(usrmsg=ste.sanitized_msg()), 500
+	except DB_Error as ste:
+		db_session.rollback()
+		print ste
 		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except Exception as e:
 		print e
-		print rc, msg
 		db_session.rollback()
 		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
 	print rc, msg
