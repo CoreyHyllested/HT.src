@@ -362,10 +362,10 @@ $(function () {
         //catch response.  make any modificaitons.
         xhr.onreadystatechange = function(e) {
             if (4 == this.readyState) {
+				msg = JSON.parse(xhr.responseText);
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
-					msg = JSON.parse(xhr.responseText);
 					openAlertWindow('Success.\n' + msg['usrmsg']);
 					$(sid).remove();
                 } else if (this.status == 500) {
@@ -373,7 +373,6 @@ $(function () {
                     openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else if (this.status == 501) {
                     console.log(['xhr post complete, err=501 ', e]);
-                    msg = JSON.parse(xhr.responseText);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=?? ', this.status,  e]);
