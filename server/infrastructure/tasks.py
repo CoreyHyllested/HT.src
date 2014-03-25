@@ -14,9 +14,14 @@ import stripe
 
 
 def ht_sanitize_errors(e, details=None):
-	msg = 'caught error:' + str(e)
-	return msg
-
+	msg = 'caught error: ' + str(e)
+	print msg
+	if (type(e) == NoResourceFound):
+		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
+	elif (type(e) == StateTransitionError):
+		raise Sanitized_Exception(e, httpRC=500, msg=e.sanitized_msg())
+	else:
+		raise e
 
 
 
@@ -72,24 +77,26 @@ def ht_proposal_create(values, uid):
 		print "PI = ", pi
 
 		print 'creating proposal obj' 
-		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
-		db_session.add(proposal)
+		the_proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
+		db_session.add(the_proposal)
 		db_session.commit()		 # raises IntegrityError
 		committed = True
 
-		email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
-	except NoProfileFound as npf:
-		ht_sanitize_errors(npf, details=None)
-	except IntegrityError as ie:
+		email_hero_proposal_updated(the_proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+		email_user_proposal_updated(the_proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+	except NoResourceFound as npf:
+		ht_sanitize_errors(npf)
+	except IntegrityError as ie:	#TODO: add to ht_sanitize
 		db_session.rollback()
-		ht_sanitize_errors(ie, details=None)
+		ht_sanitize_errors(ie)
+	except StateTransitionError as ste:
+		db_session.rollback()
+		ht_sanitize_errors(ste, details=500)
 	except Exception as e:
-		# catch-all
 		db_session.rollback()
-		ht_sanitize_errors(e, details=None)
+		ht_sanitize_errors(e)
 
-	return proposal, 'Successfully created proposal'
+	return (the_proposal, 'Successfully created proposal')
 
 
 
@@ -98,10 +105,7 @@ def ht_proposal_update(p_uuid, p_from):
 	# send email to buyer.   (prop_from sent you a proposal).
 	# send email to seller.  (proposal has been sent)
 
-	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
-	if (len(proposals) != 1): raise NoProposalFound(p_uuid, p_from)
-	prop = proposals[0]
-
+	prop = Proposal.get_by_id(p_uuid)
 	(ha, hp) = get_account_and_profile(prop.prop_hero)
 	(ba, bp) = get_account_and_profile(prop.prop_user)
 
@@ -137,13 +141,18 @@ def ht_proposal_accept(prop_id, uid):
 		print 'calling ht_capturecard -- delayed'
 		# add timestamp to ensure it hasn't been tampered with
 		rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated) #, eta=chargeTime):
-	except NoProposalFound as npf:
-		return (400, "Weird, proposal doesn\'t exist")
+
+	except StateTransitionError as ste:
+		print ste
+		db_session.rollback()
+		return (500, ste.sanitized_msg())
+	except NoResourceFound as nrf:
+		print nrf
+		return (400, nrf.sanitized_msg())
 	except Exception as e:
 		print e
 		db_session.rollback()
 		return (500, e)
-
 
 #	in reminder, check to see if it was canceled
 #	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
@@ -155,21 +164,22 @@ def ht_proposal_accept(prop_id, uid):
 
 
 
-def ht_proposal_reject(p_uuid, rejector_uid):
+def ht_proposal_reject(p_uuid, uid):
 	print 'received proposal uuid: ', p_uuid 
+	committed = False
+	bp = Profile.get_by_uid(uid)
 	the_proposal = Proposal.get_by_id(p_uuid) 
-	the_proposal.set_state(APPT_STATE_REJECTED, uid=rejector_uid)
+	the_proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
 
 	try: # delete proposal 
 		#TODO save these somewhere.
 		db_session.add(the_proposal)
 		db_session.commit()
+		committed = True
 	except Exception as e:
-		# cleanup DB immediately
 		db_session.rollback()
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
-
 	send_proposal_reject_emails(the_proposal)
 	return (200, 'success')
 
@@ -262,16 +272,31 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 			#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
 		)
 
+		print 'That\'s all folks, it should have worked?'
+
+
+		pp(charge)
+		print 'Post Charge'
+		print charge['customer']
+		print charge['captured']
+		print charge['balance_transaction']
+		if charge['captured'] != True:
+				print 'whoa'
+
+		the_proposal.charge_transaction = charge['balance_transaction']
+		the_proposal.set_state(APPT_STATE_CAPTURED)
+		db_session.add(the_proposal)
+		db_session.commit()
+		#commie
+	except StateTransitionError as ste:
+		print e
+		db_session.rollback()
 	except Exception as e:
 		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
 		print e
 		return 'failed with ' + str(e)
-	print 'That\'s all folks, it should have worked?'
 
 
-	pp(charge)
-	print 'Post Charge'
-	print charge['customer']
 
 #	Transaction 
 	#transaction.timestamp = dt.utcnow()
