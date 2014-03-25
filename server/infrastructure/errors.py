@@ -5,6 +5,34 @@ from datetime import datetime as dt
 #IndexError: list index out of range
 #seen: we tried to index a list (from DB) that was zero
 
+class Sanitized_Exception(Exception):
+	def __init__(self, caught, msg=None):
+		self.caught = caught
+		self.sanitized_msg = 'Ooops'
+		if (msg): self.sanitized_msg = msg
+	
+	def orig_error(self):
+		return self.caught
+	
+	def sanitized_msg(self):
+		return self.sanitized_msg
+
+
+
+class StateTransitionError(Exception):
+	def __init__(self, uuid, s_cur, s_nxt, flags, msg):
+		self.uuid  = uuid
+		self.s_cur = s_cur
+		self.s_nxt = s_nxt
+		self.flags = flags
+		self.msg = msg 
+	
+	def sanitized_msg(self):
+		return self.msg 
+
+	def __str__(self):
+		return "<TransitionError(%r, %r) [%r]=>[%r]>" % (self.uuid, self.flags, self.s_cur, self.s_nxt)
+
 class DB_Error(Exception):
 	def __init__(self, db_err, usr_msg):
 		self.db_err  = db_err
@@ -23,6 +51,19 @@ class PermissionDenied(Exception):
 
 	def __str__(self):
 		return "PermissionError(%s, %s, %s)" % (self.task, self.usr, self.msg)
+
+
+
+class NoResourceFound(Exception):
+
+	def __init__(self, r_type, r_id, msg=None, loc=None):
+		self.rt = r_type
+		self.id = r_id
+		self.msg = msg
+		self.loc = loc
+
+	def __str__(self):
+		return '<No%rFound::%r>' % (self.rt, self.id)
 
 
 

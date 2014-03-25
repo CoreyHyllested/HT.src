@@ -9,29 +9,43 @@ import uuid
 
     #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
 
-APPT_PROPOSED = 0
-APPT_RESPONSE = 1
-APPT_ACCEPTED = 2
-APPT_CAPTURED = 4
-APPT_OCCURRED = 8
-APPT_REVIEWED = 16
-APPT_REVIEWED = 512
 
-APPT_REJECTED = 1024
-APPT_CANCELED = 2048
-APPT_DISPUTED = 4096
-APPT_FLAGS_NONE = 0
+APPT_FLAG_PROPOSED = 0
+APPT_FLAG_RESPONSE = 1
+APPT_FLAG_ACCEPTED = 2
+APPT_FLAG_CAPTURED = 3
+APPT_FLAG_OCCURRED = 4
+APPT_FLAG_REVIEWED = 5
+APPT_FLAG_COMPLETE = 6
+APPT_FLAG_DISPUTED = 7
+APPT_FLAG_RESOLVED = 8
 
-PROP_FLAG_PROPOSED = 0
-PROP_FLAG_RESPONSE = 1
-PROP_FLAG_ACCEPTED = 2
-PROP_FLAG_CAPTURED = 3
-PROP_FLAG_OCCURRED = 4
-PROP_FLAG_REVIEWED = 5
+APPT_FLAG_USERPAID = 15		# if buyer has paid us.
+APPT_FLAG_HEROPAID = 16		# if hero has been paid.
+APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
+APPT_FLAG_CANCELED = 18		# use from to see who canceled it
 
-PROP_FLAG_REJECTED = 10
-PROP_FLAG_CANCELED = 11
-PROP_FLAG_DISPUTED = 12
+APPT_FLAG_QUIET		= 29
+APPT_FLAG_DIGITAL	= 30
+APPT_FLAG_RUNOVER	= 31
+
+
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)
+APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)
+APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)
+APPT_STATE_REVIEWED = (0x1 << APPT_FLAG_REVIEWED)
+APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)
+APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)
+
+APPT_STATE_REJECTED = -1
+APPT_STATE_CANCELED = -3
+
+
+
+
 
 
 OAUTH_NONE   = 0
@@ -269,8 +283,8 @@ class Proposal(Base):
 	prop_uuid	= Column(String(40), primary_key=True)													# NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	prop_user	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
-	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED,			index=True)			# Pure State (as in Machine)
-	prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Attributes: Quiet?, Digital?, Run-Over Enabled?
+	prop_state	= Column(Integer, nullable=False, default=APPT_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
+	prop_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
 	prop_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	prop_cost	= Column(Integer, nullable=False, default=0)											# Cost.
 	prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# LastProfile to Touch proposal. 
@@ -326,11 +340,63 @@ class Proposal(Base):
 		if (updated_state is not None):	self.prop_state = updated_state
 		if (updated_flags is not None):	self.prop_flags = updated_flags
 
+
 	@staticmethod
-	def get_by_id(prop_id, location):
+	def get_by_id(prop_id, location=None):
 		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
-		if len(proposals) != 1: raise NoProposalFound(prop_id, location)
+		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_id)
 		return proposals[0]
+	
+
+
+	def set_state(self, s_nxt, flag=None, uid=None):
+		s_cur = self.prop_state 
+		flags = self.prop_flags
+		valid = True
+		msg = None
+
+
+		if ((s_nxt == APPT_STATE_RESPONSE) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			self.prop_count = self.prop_count + 1
+		elif ((s_nxt == APPT_STATE_TIMEDOUT) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			s_nxt = APPT_STATE_REJECTED
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
+		elif ((s_nxt == APPT_STATE_REJECTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			if (((uid != self.prop_hero) and (uid != self.prop_user))): msg = 'REJECTOR: ' + uid + " isn't HERO or USER"
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_ACCEPTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
+			self.appt_secured = dt.utcnow()
+		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
+			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
+			flags = set_flag(flags, APPT_FLAG_USERPAID)
+		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_CAPTURED)):
+			pass
+		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
+			pass
+		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_COMPLETE) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_OCCURRED))):
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_DISPUTED) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_COMPLETE))):
+			flags = set_flag(flags, APPT_FLAG_DISPUTED)
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		else:
+			valid = False
+			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
+
+		if (msg or not valid):
+			raise StateTransitionError(self.prop_uuid, self.prop_state, s_nxt, flags, msg)
+
+		self.prop_state = s_nxt
+		self.prop_flags = flags
+		self.prop_updated = dt.utcnow()
+			
+
+
+	
+			
 
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
@@ -481,7 +547,6 @@ class Review(Base):
 			tmp_comments = tmp_comments[:20]
 			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.rating, tmp_comments)
-
 
 
 	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
