@@ -30,11 +30,11 @@ APPT_FLAG_DIGITAL	= 30
 APPT_FLAG_RUNOVER	= 31
 
 
-APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)
-APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)
-APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)
-APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)
-APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#1
+APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)	#2
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#4
+APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)	#8
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#16
 APPT_STATE_REVIEWED = (0x1 << APPT_FLAG_REVIEWED)
 APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)
 APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)
@@ -371,6 +371,8 @@ class Proposal(Base):
 		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
 			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
 			flags = set_flag(flags, APPT_FLAG_USERPAID)
+			self.appt_charged = dt.now()
+
 		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_CAPTURED)):
 			pass
 		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
@@ -517,8 +519,7 @@ class Review(Base):
 	__tablename__ = "review"
 
 	enumRating = [(str(k), v) for k, v in enumerate(['','','','',''])]
-
-	review_id		= Column(String(40), primary_key=True, index=True, default=str(uuid.uuid4()))
+	review_id		= Column(String(40), primary_key=True, index=True)
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
@@ -536,6 +537,7 @@ class Review(Base):
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow()) 				# CAH: date of appointment? -- why would we care when the review is posted?
 
 	def __init__ (self, prop_id, usr_reviewed, usr_author):
+		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
 		self.prof_reviewed = usr_reviewed
 		self.prof_authored = usr_author
