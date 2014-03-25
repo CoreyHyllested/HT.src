@@ -121,15 +121,39 @@ def render_profile(usrmsg=None):
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
-	reviews = db_session.query(Review.prof_reviewed, Review.appt_value, Review.appt_score, \
-								Review.generalcomments, Review.rev_updated, Review.rev_status, \
-								Profile.prof_name, Profile.location, Profile.headline, Profile.prof_img, Profile.reviews, Profile.rating, Profile.prof_rate)\
-				.join(Profile, Review.prof_authored == Profile.prof_id) \
-				.filter(Review.prof_reviewed == hp.prof_id).all()
+	#rev_status	= Column(Integer, default=REV_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
+	#appt_score = Column(Integer, nullable = False, default = -1)	# 1 - 5
+	#appt_value = Column(Integer, nullable = False, default = -1)	# in dollars.
+	#generalcomments = Column(String(5000))
+	#rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow()) 				# CAH: date of appointment? -- why would we care when the review is posted?
+
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	all_reviews = db_session.query(Review, user, hero).distinct(Review.review_id)								\
+							.filter(or_(Review.prof_reviewed == bp.prof_id, Review.prof_authored == bp.prof_id))	\
+							.join(user, user.prof_id == Review.prof_authored)									\
+							.join(hero, hero.prof_id == Review.prof_reviewed).all();
+
+	print 'calling map on all reviews'
+	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
+	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
+
+				#.filter(Review.prof_reviewed == hp.prof_id).all()
 				#.filter(bool(Review.rev_status & REV_POSTED) == True).
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=hero_reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+
+
+def display_reviews_of_hero(r, hero_is):
+	if (hero_is == r.Review.prof_reviewed): 
+		#user it the reviewed, we should display all these reviews; image of the other bloke
+		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
+		setattr(r, 'display', r.user) 
+	else:
+		print r.Review.prof_authored, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user-x',  r.hero.prof_name
+		setattr(r, 'display', r.hero)
+
 
 
 
@@ -396,11 +420,7 @@ def render_dashboard(usrmsg=None, focus=None):
 	# number of appotintments (this week, next week).
 	# number of proposals (all)
 
-	#hero = getDossierBySession()
-	#hero = getDossierByID()
-
 	#SQL Alchemy improve perf.
-	print 'db_session prop_out'
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appts_and_props = db_session.query(Proposal, user, hero)														\
@@ -582,13 +602,14 @@ def ht_api_proposal_accept():
 
 	try:
 		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		print rc, msg
 	except Sanitized_Exception as se:
 		return jsonify(usrmsg=se.sanitized_msg()), 500
 	except Exception as e:
 		print str(e)
-		print str(msg)
 		db_session.rollback()
-	return jsonify(usrmsg=msg), rc
+		jsonify(usrmsg=str(e)), 500
+	return render_dashboard(usrmsg=msg)
 
 
 
