@@ -607,9 +607,7 @@ def ht_api_proposal_reject():
 		return jsonify(usrmsg=str(msg)), 504
 
 	try:
-	
 		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
-
 	except NoProposalFound as npf:
 		print rc, msg
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505

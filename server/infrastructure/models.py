@@ -349,7 +349,7 @@ class Proposal(Base):
 	
 
 
-	def set_state(self, s_nxt, flag=None, uid=None):
+	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):
 		s_cur = self.prop_state 
 		flags = self.prop_flags
 		valid = True
@@ -363,7 +363,7 @@ class Proposal(Base):
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
 		elif ((s_nxt == APPT_STATE_REJECTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
-			if (((uid != self.prop_hero) and (uid != self.prop_user))): msg = 'REJECTOR: ' + uid + " isn't HERO or USER"
+			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
 			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
