@@ -7,6 +7,7 @@ from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
+from server.infrastructure.basics		 import *
 from pprint import pprint as pp
 import json, smtplib
 import stripe
@@ -133,23 +134,26 @@ def send_passwd_change_email(toEmail):
 
 
 
-@mngr.task
-def send_proposal_reject_emails(hero_email_addr, hero_name, buyer_email_addr, buyer_name, prop):
-	hero_msg_html = "Hey, hero you can put away your cape and cowl for now..  You rejected proposal %s from USER." % (prop)
+def send_proposal_reject_emails(the_proposal):
+	print 'send proposal rejection notice to users'
+	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(the_proposal)
+
+	#TODO: Professionalize
+	hero_msg_html = "Hey, hero you can put away your cape and cowl for now..  You rejected proposal %s from USER." % (the_proposal)
 	hero_msg = MIMEMultipart('alternative')
 	hero_msg['Subject']	= '%s'  % Header('HeroTime rejection notice.', 'utf-8')
-	hero_msg['To']	 = "\"%s\" <%s>" % (Header(hero_name, 'utf-8'), hero_email_addr)
+	hero_msg['To']	 = "\"%s\" <%s>" % (Header(hero_name, 'utf-8'), hero_addr)
 	hero_msg['From'] = "\"%s\" <%s>" % (Header(u'HeroTime', 'utf-8'), 'noreply@herotime.co')
 	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
 	ht_send_email(hero_email_addr, hero_msg)
 
-	buyer_msg_html = "Hey, keep your money.  Your hero is in another castle.  Your hero rejected your proposal %s." % (prop)
+	buyer_msg_html = "Hey, keep your money.  Your hero is in another castle.  Your hero rejected your proposal %s." % (the_proposal)
 	buyer_msg = MIMEMultipart('alternative')
 	buyer_msg['Subject']	= '%s'  % Header('HeroTime rejection notice.', 'utf-8')
-	buyer_msg['To']			= "\"%s\" <%s>" % (Header(buyer_name, 'utf-8'), buyer_email_addr)
+	buyer_msg['To']			= "\"%s\" <%s>" % (Header(user_name, 'utf-8'), user_addr)
 	buyer_msg['From']		= "\"%s\" <%s>" % (Header(u'HeroTime', 'utf-8'), 'noreply@herotime.co')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
-	ht_send_email(buyer_email_addr, buyer_msg)
+	ht_send_email(user_addr, buyer_msg)
 
 
 
