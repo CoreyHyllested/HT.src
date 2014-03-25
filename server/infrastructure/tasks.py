@@ -111,13 +111,62 @@ def ht_proposal_update(p_uuid, p_from):
 	email_user_proposal_updated(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 
 
+
+def ht_proposal_accept(prop_id, uid):
+	try:
+		the_proposal = Proposal.get_by_id(prop_id, 'ht_appt_finalize')
+		stripe_card = the_proposal.charge_credit_card
+		stripe_tokn = the_proposal.charge_user_token
+		print 'ht_appointment_finailze() appt: ', prop_id, ", cust: ", the_proposal.charge_customer_id, ", card: ", stripe_card, ", token: ", stripe_tokn 
+
+		# proposal cannot be accepted by the last person modify to the proposal.  
+		if (the_proposal.prop_from == uid): return (None, 500, "Bizarro. You cannot accept your own proposal.")
+		if (the_proposal.prop_state == APPT_ACCEPTED): return (None, 500, "Bizarro. Proposal was already accepted.") # not sure if this is a real error
+
+		# update proposal
+		the_proposal.prop_state = set_flag(the_proposal.prop_state, PROP_FLAG_ACCEPTED)
+		the_proposal.appt_secured = dt.utcnow()
+		the_proposal.prop_updated = dt.utcnow()
+
+		db_session.add(the_proposal)
+		db_session.commit()
+	except NoProposalFound as npf:
+		return (False , 400, "Weird, proposal doesn\'t exist")
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return (False, 500, e)
+
+	print 'send confirmation notices to buyer and seller'
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+
+
+	chargeTime = the_proposal.prop_ts - timedelta(days=1)
+	remindTime = the_proposal.prop_tf - timedelta(days=2)
+
+	print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
+	print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
+	#send_appt_emails(ha.email, ba.email, the_proposal) TODO: this did take appointment as third field
+	
+	# add timestamp to ensure it hasn't been tampered with; also send cost; 
+	print 'calling ht_capturecard -- delayed'
+	rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost) #, eta=chargeTime):
+#	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
+#	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
+	print 'back from ht_capturecard -- delayed, ', rc
+
+
+	print 'returning from ht_appt_finalize'
+	return True, 200, rc
+
+
+
 def ht_proposal_reject(p_uuid, rejector):
 	print 'received proposal uuid: ', p_uuid 
 
-	proposals = Proposal.query.filter_by(prop_uuid = p_uuid).all()
-	if len(proposals) == 0: raise NoProposalFound(p_uuid, rejector)
-	the_proposal = proposals[0]
-	the_proposal.status = APPT_REJECTED
+	the_proposal = Proposal.get_by_id(p_uuid) 
+	the_proposal.prop_state = set_flag(the_proposal.state, PROP_FLAG_REJECTED)
 
 	# get data to send emails
 	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
@@ -176,68 +225,40 @@ def getDBCorey(x):
 
 
 
-@mngr.task
-def ht_appointment_finalize(appt_id,  stripe_cust, stripe_card, stripe_tokn):
-	print 'ht_appointment_finailze() appt: ', appt_id, ", cust: ", stripe_cust, ", card: ", stripe_card, ", token: ", stripe_tokn 
-	appointment = Appointment.query.filter_by(apptid=appt_id).all()[0]		# browsing profile
-	print appointment
-	print 'send final appt notice to profiles: ', appointment.buyer_prof, appointment.sellr_prof 
-	(ba, bp) = get_account_and_profile(appointment.buyer_prof)
-	(ha, hp) = get_account_and_profile(appointment.sellr_prof)
-	print 'send final appt notice to buyer: ', ba.email
-	print 'send final appt notice to sellr: ', ha.email
-
-	chargeTime = appointment.ts_begin  - timedelta(days=1)
-	remindTime = appointment.ts_begin  - timedelta(days=2)
-	print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
-	print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-	send_appt_emails(ha.email, ba.email, appointment)
-	
-	(ha, hp) = get_account_and_profile(appointment.sellr_prof)
-	(ba, bp) = get_account_and_profile(appointment.buyer_prof)
-	# add timestamp to ensure it hasn't been tampered with; also send cost; 
-	print 'calling ht_capturecard -- delayed'
-	rc = ht_capture_creditcard(appointment.apptid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, stripe_cust) #, eta=chargeTime):
-	print 'back from ht_capturecard -- delayed, ', rc
-
-
-
-	print 'returning from ht_appt_finalize'
-#	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
-#	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
-	return None
 
 
 
 
 
 
-@mngr.task
-def enable_reviews(the_appointment):
+def enable_reviews(the_proposal):
 	#is this submitted after stripe?  
-	hp = the_appointment.sellr_prof
-	bp = the_appointment.buyer_prof
+	hp = the_proposal.prop_hero
+	bp = the_proposal.prop_user
 
 	print 'enable_reviews()'
 
-	review_hp = Review(hp, bp, None, None)
-	review_bp = Review(bp, hp, None, None)
+	review_hp = Review(the_proposal.prop_uuid, hp, bp)
+	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	
-	the_appointment.status = APPT_CAPTURED
-	the_appointment.reviewOfBuyer = review_bp.id
-	the_appointment.reviewOfSellr = review_hp.id
+	the_proposal.prop_state = set_flag(the_proposal.prop_state, PROP_FLAG_OCCURRED)
+	the_proposal.review_user = review_bp.review_id
+	the_proposal.review_hero = review_hp.review_id
 
 	try:
-		db_session.add(the_appointment)
+		db_session.add(the_proposal)
 		db_session.add(review_hp)
 		db_session.add(review_bp)
 		db_session.commit()
+
 		# TODO create two events to send in 1 hr after meeting completion to do review
+		# TODO send one event to disable the reviews in 1 month
 	except Exception as e:
 		db_session.rollback()
 		print e	
 	
 	return None
+
 
 @mngr.task
 def disable_reviews(jsonObj):
@@ -247,27 +268,28 @@ def disable_reviews(jsonObj):
 
 
 @mngr.task
-def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token):
+def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost):
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
 	print 'ht_capture_creditecard called: buyer_cust_token = ', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
-	the_appointment = Appointment.query.filter_by(apptid=appt_id).all()[0]		# browsing profile
-	print the_appointment
+	the_proposal = Proposal.get_by_id(prop_id, 'capture_cc')
+	print the_proposal
 
-	if (the_appointment.status == APPT_CANCELED):
+	if (test_flag(the_proposal.prop_state, PROP_FLAG_CANCELED)):
 		print 'state is cancled'
+		return
 
 #	print str(the_appointment.updated)
 #	print str(appointment.ts_begin)
 #	print str(appointment.ts_finish)
-	print str(the_appointment.cust)
+	print str(the_proposal.charge_customer_id)
 
 	try:
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token, 	#		customer.id is the second one passed in
 			#stripe_cust = Oauth(uid, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-			amount=(the_appointment.cost * 100),
+			amount=(the_proposal.prop_cost * 100),
 			currency='usd',
-			description=the_appointment.description,
+			description=the_proposal.prop_desc,
 			#application_fee=int((the_appointment.cost * 7.1)-30),
 			api_key="sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
 					#if this key is an api_key -- i.e. someone's customer key -- e.g. the heros' customer key
@@ -303,7 +325,7 @@ def ht_capture_creditcard(appt_id, buyer_email, buyer_name, buyer_cc_token, buye
 
 	#queue two events to create review.  Need to create two addresses.
 	print 'calling enable_reviews'
-	enable_reviews(the_appointment)
+	enable_reviews(the_proposal)
 	print 'returning out of charge'
 	
 

@@ -17,7 +17,7 @@ from server.infrastructure.tasks  import *
 from server.ht_utils import *
 from pprint import pprint
 from sqlalchemy     import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
 from urllib import urlencode
@@ -133,7 +133,7 @@ def render_profile(usrmsg=None):
 
 
 
-
+@ht_csrf.exempt
 @ht_server.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
 def render_login(usrmsg=None):
@@ -400,75 +400,35 @@ def render_dashboard(usrmsg=None, focus=None):
 	#hero = getDossierBySession()
 	#hero = getDossierByID()
 
-	# get proposals ; add prop_updated; use PROP_FROM?
 	#SQL Alchemy improve perf.
 	print 'db_session prop_out'
-	proposal_out = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_user,	\
-								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
-								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
-								Proposal.prop_desc, Proposal.prop_place, 							\
-						  		Profile.prof_id, Profile.prof_name, Profile.prof_img, Profile.rating,		\
-								Profile.reviews, Profile.headline)									\
-							.join(Profile, Proposal.prop_hero == Profile.prof_id)					\
-							.filter(Proposal.prop_user == bp.prof_id).all()
-
-	print 'db_session prop_in'
-	proposal_in = db_session.query(Proposal.prop_uuid, Proposal.prop_hero, Proposal.prop_user,		\
-								Proposal.prop_state, Proposal.prop_flags, Proposal.prop_cost,		\
-								Proposal.prop_from,	Proposal.prop_ts, Proposal.prop_tf, 			\
-								Proposal.prop_desc, Proposal.prop_place, 							\
-						  		Profile.prof_id, Profile.prof_name, Profile.prof_img, Profile.rating,		\
-								Profile.reviews, Profile.headline)									\
-							.join(Profile, Proposal.prop_user == Profile.prof_id)					\
-							.filter(Proposal.prop_hero == bp.prof_id).all()
-	proposals = proposal_in +  proposal_out
-
-	print 'db_session appt_by_me'
-	appt_by_me = db_session.query(Appointment.apptid, Appointment.status, \
-							Appointment.buyer_prof, Appointment.sellr_prof, \
-							Appointment.location, \
-							Appointment.description, \
-							Appointment.ts_begin, \
-							Appointment.ts_finish, \
-							Appointment.ts_finish, \
-							Appointment.cost, \
-							Profile.prof_id, \
-							Profile.prof_name, \
-							Profile.prof_img, \
-							Profile.reviews, \
-							Profile.rating, \
-							Profile.headline) \
-							.join(Profile, Profile.prof_id == Appointment.buyer_prof)\
-							.filter(Appointment.sellr_prof == bp.prof_id) \
-							.filter(Appointment.status == APPT_ACCEPTED).all()
-							
-
-	print 'db_session appt_of_me'
-	appt_of_me = db_session.query(Appointment.apptid, Appointment.status, \
-							Appointment.buyer_prof, \
-							Appointment.sellr_prof, \
-							Appointment.location, \
-							Appointment.description, \
-							Appointment.ts_begin, \
-							Appointment.ts_finish, \
-							Appointment.ts_finish, \
-							Appointment.cost, \
-							Profile.prof_id, \
-							Profile.prof_name, \
-							Profile.prof_img, \
-							Profile.reviews, \
-							Profile.rating, \
-							Profile.headline) \
-							.join(Profile, Profile.prof_id == Appointment.sellr_prof)\
-							.filter(Appointment.buyer_prof == bp.prof_id)\
-							.filter(Appointment.status == APPT_ACCEPTED).all()
-#							.filter(or_(Appointment.buyer_prof == bp.prof_id, Appointment.sellr_prof == bp.prof_id)).all()
-	appt_timeslots = appt_of_me + appt_by_me
-	print "number of appt_timeslots = ", appt_timeslots
-
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appts_and_props = db_session.query(Proposal, user, hero)											\
+								.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
+								.join(user, user.prof_id == Proposal.prop_user)							\
+								.join(hero, hero.prof_id == Proposal.prop_hero).all();
+	
+	
+	print 'calling map on all appts_and_props'
+	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
+	props = filter(lambda p: bool(test_flag(p.Proposal.prop_state, PROP_FLAG_ACCEPTED)) == False, appts_and_props)
+	appts = filter(lambda a: 	  test_flag(a.Proposal.prop_state, PROP_FLAG_ACCEPTED),			  appts_and_props)
+	print "proposals =", len(props), ", appts =", appts
+	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, ts_prop=proposals, ts_appt=appt_timeslots, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
 
+	
+
+def display_other_user(p, user_is):
+	if (user_is == p.Proposal.prop_hero): 
+		#user it the hero, we should display all the 'user'
+		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
+		setattr(p, 'display', p.user) 
+	else:
+		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
+		setattr(p, 'display', p.hero)
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -623,77 +583,18 @@ def ht_api_proposal_accept():
 	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
 
 	log_uevent(session['uid'], pstr)
-#	ba = ht_get_account()
-#	bp = ht_browsingprofile()
-#	print 'ba = ', ba
-#	print 'bp = ', bp
-#	if form.proposal_id.data != session(uid) :: fail
 
 	if not form.validate_on_submit():
 		rc = "invalid form: " + str(form.errors)
 		log_uevent(session['uid'], rc) 
 		return jsonify(usrmsg=str(rc)), 503
 
-
-	prop = Proposal.query.filter_by(prop_uuid=form.proposal_id.data).all()
-	if len(prop) == 0: return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 504
-
-
-	the_proposal = prop[0]
-	if (the_proposal.prop_from == session.get('uid')):
-		# A proposal cannot be accepted by the last person modify to the proposal..  
-		return jsonify(usrmsg="Bizarro.  It appears you accepted your own proposal.  Shouldn't be possible."), 505
-
-	if (the_proposal.stripe_cust == None or the_proposal.stripe_card == None or the_proposal.stripe_tokn == None): 
-		try:
-			db_session.delete(the_proposal)
-			db_session.commit()
-		except Exception as e:
-			print e
-			db_session.rollback()
-		return jsonify(usrmsg='Just deleted, no cc info') 
-		
-
 	try:
-		# create appt; delete prop
-		# make sure state/status in good condition?
-		appointment = Appointment()
-		appointment.apptid     = the_proposal.prop_uuid
-		appointment.sellr_prof = the_proposal.prop_hero
-		appointment.buyer_prof = the_proposal.prop_user
-
-		#prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
-		#prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
-		#prop_count	= Column(Integer, nullable=False, default=0)							# keep for data mining (negotiation count)
-		#prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)		# keep for data mining (who touched proposal last)
-		#if (the_proposal.stripe_cust == None or the_proposal.stripe_card == None or the_proposal.stripe_tokn == None): 
-
-		appointment.status		= APPT_ACCEPTED
-		appointment.location	= the_proposal.prop_place
-		appointment.ts_begin	= the_proposal.prop_ts
-		appointment.ts_finish 	= the_proposal.prop_tf
-		appointment.cust		= the_proposal.stripe_cust
-		appointment.cost		= the_proposal.prop_cost
-		appointment.description = the_proposal.prop_desc
-		appointment.paid		= False
-		appointment.created		= the_proposal.prop_created
-		appointment.updated		= dt.now()
-		print appointment
-
-		db_session.add(appointment)
-		db_session.delete(the_proposal)
-		db_session.commit()
-
-		# enqueue task to charge cc
-		print 'calling ht_appointment finalize: apptid=', appointment.apptid,  ', cust=', the_proposal.stripe_cust, ', card=', the_proposal.stripe_card, ', token=', the_proposal.stripe_tokn
-		ht_appointment_finalize(appointment.apptid,  the_proposal.stripe_cust, the_proposal.stripe_card, the_proposal.stripe_tokn)
+		success, rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		if (success == False): return jsonify(usrmsg=msg), rc
 	except Exception as e:
 		print e
 		db_session.rollback()
-	# get buyer; becomes Hero's (seller) customer id.
-	# get seller's API/ACCESS_TOKEN -- Its like they charge them.  But we need to take API_FEE.
-		# perhaps Not Required? -- We could send email stating they can accept and we can write check.  But signup and get paid directly.
-	# if seller has pub_key, use it.
 	print 'returning success'
 	return jsonify(usrmsg="success"), 200
 
@@ -731,10 +632,15 @@ def ht_api_proposal_reject():
 
 
 
+
+
 @ht_server.route('/proposal/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_proposal_negotiate():
-	#APPT_RESPONSE = 1
+	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
+	#the_proposal.prop_state = set_flag(the_proposal.prop_state,  PROP_FLAG_RESPONSE)
+	#the_proposal.prop_count = the_proposal.prop_count + 1
+	#the_proposal.prop_updated = dt.now()
 	return redirect('/notImplemented')
 
 
@@ -752,16 +658,11 @@ def settings():
 		- detect HT Session info.  Provide modified info.
 	"""
 	uid = session['uid']
-	bp   = Profile.query.filter_by(account=uid).all()[0]
-	ba   = Account.query.filter_by(userid=uid).all()[0]
+	bp	= Profile.get_by_uid(uid)
+	ba	= Account.get_by_uid(uid)
+	#pi	= Oauth.get_stripe_by_uid(uid)
+
 	card = 'Null'
-#	card = Oauth.query.filter_by(account=uid).all()
-#	if (len(card) == 0):
-#		print "No stripe account"
-#		card = "Payments not setup"
-#	else:
-#		card = card[0].stripe
-#		print "card", card
 
 	errmsg = None
 	form = SettingsForm(request.form)
@@ -1043,6 +944,7 @@ def review():
 			db_session.rollback()
 	log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
 	return jsonify(usrmsg='Data invalid')
+
 
 
 @ht_server.route("/email/<heroName>", methods=['GET'])

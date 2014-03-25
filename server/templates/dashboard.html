@@ -17,7 +17,7 @@
 	  });
 		jQuery(function($) {
 		  $('#datepicker2').change(function() {
-	        var c = {{ts_appt|length}};
+	        var c = {{appointments|length}};
 		    for (var i = 1; i < c + 1; i++){
               if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
                 document.getElementById(i).style.display = 'none';
@@ -48,8 +48,8 @@
 		</div>
 		<div id="notifications">
 			<p>
-				<a href="javascript:tab_switch_dash('tab-dapps', 'content-box-dapps');">{{ts_appt|length}} Appointments</a><br/>
-				<a href="javascript:tab_switch_dash('tab-dprop', 'content-box-dprop');">{{ts_prop|length}} Proposals</a>
+				<a href="javascript:tab_switch_dash('tab-dapps', 'content-box-dapps');">{{appointments|length}} Appointments</a><br/>
+				<a href="javascript:tab_switch_dash('tab-dprop', 'content-box-dprop');">{{proposals|length}} Proposals</a>
 			</p>
 		</div>
 	</div>
@@ -72,13 +72,13 @@
 			<input type="hidden" id="a" name="appt">
 		</form>
 
-		{% for appt in ts_appt|sort(attribute='ts_begin') %}
+		{% for appt in appointments|sort(attribute='Proposal.prop_ts') %}
 		<a href="#">
-		    <div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{appt.location}}', {{loop.index}})">
-				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appt.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+		    <div id="{{loop.index}}" class="time-slot" onclick="cal_map('{{appt.Proposal.prop_place}}', {{loop.index}})">
+				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appt.display.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 				<div class="slot-info">
-					<p><span class="big-text">{{appt.name}}</span><br/>
-						<span id="day-{{loop.index}}">{{appt.ts_begin.strftime('%H:%M %p')}}</span></p>
+					<p><span class="big-text">{{appt.display.prof_name}}</span><br/>
+						<span id="day-{{loop.index}}">{{appt.Proposal.prop_ts.strftime('%H:%M %p')}}</span></p>
 				</div>
 				<div class="slot-bought"></div>
 			</div>
@@ -88,10 +88,10 @@
 		    <div id="map-canvas-cal-{{loop.index}}" class="map-canvas-cal"></div>
 			<div class="slot-details-left">
 				<span class="big-text">Time</span>
-				<p>{{appt.ts_begin.strftime('%A, %b %d, %Y')}}<br>{{appt.ts_begin.strftime('%H:%M %p')}}
+				<p>{{appt.Proposal.prop_ts.strftime('%A, %b %d, %Y')}}<br>{{appt.Proposal.prop_ts.strftime('%H:%M %p')}}
 					<script>
-						d1 = new Date("{{appt.ts_finish.strftime('%Y-%m-%dT%H:%M:%S')}}");
-						d2 = new Date("{{appt.ts_begin.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						d1 = new Date("{{appt.Proposal.prop_tf.strftime('%Y-%m-%dT%H:%M:%S')}}");
+						d2 = new Date("{{appt.Proposal.prop_ts.strftime('%Y-%m-%dT%H:%M:%S')}}");
 						diff = d1 - d2; 
 						if (diff == 1.0) {
 							document.write(' (1 hour)');
@@ -101,20 +101,20 @@
 				   </script>
 				</p><br />
 
-				<span class="big-text">Location</span><p>{{appt.location}}</p><br />
+				<span class="big-text">Location</span><p>{{appt.Proposal.prop_place}}</p><br />
 			</div>
 
 			<div class="slot-details-right">
-				<span class="big-text" onclick="document.getElementById('h').value='{{appt.heroid}}'; document.p.submit();"><a href="#">{{appt.name}}</a></span>
-				<p>{{appt.headline}}</p>
-				<script>star_reviews({{appt.rating}}, {{appt.reviews}}, '{{appt.heroid}}');</script>
+				<span class="big-text" onclick="document.getElementById('h').value='{{appt.Proposal.prop_hero}}'; document.p.submit();"><a href="#">{{appt.display.prof_name}}</a></span>
+				<p>{{appt.display.headline}}</p>
+				<script>star_reviews({{appt.display.rating}}, {{appt.display.reviews}}, '{{appt.Proposal.prop_hero}}');</script>
 				<br />
-				<p>{{appt.description}}</p>
+				<p>{{appt.Proposal.prop_desc}}</p>
 			</div>
 
 			<div class="buttons">
 				<div class="request-wrap">
-					<a href="#" onclick="javascript:document.getElementById('a').value='{{appt.apptid}}'; document.c.submit();">
+					<a href="#" onclick="javascript:document.getElementById('a').value='{{appt.Proposal.prop_uuid}}'; document.c.submit();">
 						<div class="cancel-button">
 							<p><img src="static/img/reject-red.svg" />Cancel appointment</p>
 						</div>
@@ -153,15 +153,15 @@
 	<div id="content-top"></div>
 	<div id="proposals">
 
-		{% for prop in ts_prop|sort(attribute='prop_ts') %}
+		{% for prop in proposals|sort(attribute='Proposal.prop_ts') %}
 		<div id="prop-{{loop.index}}">
 			<a href="#">
-				<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.prop_place}}', '{{loop.index}}p')">
-					<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
+				<div id="{{loop.index}}p" class="time-slot" onclick="cal_map('{{prop.Proposal.prop_place}}', '{{loop.index}}p')">
+					<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{prop.display.prof_img}}" style="height:83px; width:149px; display:block margin:0 auto;"/>
 					<div class="slot-info">
 						<p>
-							<span class="big-text">{{prop.prof_name}}</span><br/>
-							{% if bp.prof_id == prop.prop_hero %}wants to buy your time for{% else %}is considering your offer of{% endif %} ${{prop.prop_cost}}
+							<span class="big-text">{{prop.display.prof_name}}</span><br/>
+							{% if bp.prof_id == prop.Proposal.prop_hero %}wants to buy your time for{% else %}is considering your offer of{% endif %} ${{prop.Proposal.prop_cost}}
 						</p>
 					</div>
 					<div class="slot-pending"></div>
@@ -172,10 +172,10 @@
 				<div id="map-canvas-cal-{{loop.index}}p" class="map-canvas-cal"></div>
 				<div class="slot-details-left">
 					<span class="big-text">Time</span>
-					<p>{{prop.prop_ts.strftime('%A, %b %d, %Y')}}<br>{{prop.prop_ts.strftime('%H:%M %p')}}
+					<p>{{prop.Proposal.prop_ts.strftime('%A, %b %d, %Y')}}<br>{{prop.Proposal.prop_ts.strftime('%H:%M %p')}}
 						<script>
-							d1 = new Date("{{prop.prop_tf.strftime('%Y-%m-%dT%H:%M:%S')}}");
-							d2 = new Date("{{prop.prop_ts.strftime('%Y-%m-%dT%H:%M:%S')}}");
+							d1 = new Date("{{prop.Proposal.prop_tf.strftime('%Y-%m-%dT%H:%M:%S')}}");
+							d2 = new Date("{{prop.Proposal.prop_ts.strftime('%Y-%m-%dT%H:%M:%S')}}");
 							diff = d1 - d2; 
 							if (diff == 1.0) {
 								document.write(' (1 hour)');
@@ -185,25 +185,29 @@
 					   </script>
 					</p>
 					<br>
-					<span class="big-text">Location</span><p>{{prop.prop_place}}</p><br>
-					<span class="big-text">Price   </span><p>${{prop.prop_cost}}</p>
+					<span class="big-text">Location</span><p>{{prop.Proposal.prop_place}}</p><br>
+					<span class="big-text">Price   </span><p>${{prop.Proposal.prop_cost}}</p>
 				</div>
 
 				<div class="slot-details-right">
-					<span class="big-text" onclick="document.getElementById('h').value='{{prop.prop_hero}}'; document.p.submit();"><a href="#">{{prop.prof_name}}</a></span>
+					<span class="big-text" onclick="document.getElementById('h').value='{{prop.Proposal.prop_hero}}'; document.p.submit();"><a href="#">{{prop.Proposal.prof_name}}</a></span>
 					<p>{{prop.headline}}</p>
-					<script>star_reviews({{prop.rating}}, {{prop.reviews}}, '{{prop.prop_hero}}');</script>
+					<script>star_reviews({{prop.display.rating}}, {{prop.display.reviews}}, '{{prop.Proposal.prop_hero}}');</script>
 					<br />
-					<p>{{prop.description}} </p>
+					<p>{{prop.Proposal.prop_desc}} </p>
 				</div>
 
 				<div class="clear"></div>
 				<div class="buttons">
 					{% if bp.prof_id == prop.prop_from %}
 					{% else %}
-					<div class="reject-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}" idx="{{loop.index}}" ><a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a></div>
+					<div class="reject-wrap" id="{{prop.Proposal.prop_uuid}}" ch="{{prop.Proposal.prop_cost}}" idx="{{loop.index}}" >
+						<a href="#"><div class="reject-button"><p><img src="static/img/reject.svg" />Reject</p></div></a>
+					</div>
 					<!--div class="negotiate-wrap"><a href="/proposals/{{prop.challenge}}/negotiate"><div class="negotiate-button"><p><img src="static/img/negotiate.svg" />Negotiate</p></div></a></div-->
-					<div class="accept-wrap" id="{{prop.prop_uuid}}" ch="{{prop.prop_cost}}"><a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a> </div>
+					<div class="accept-wrap" id="{{prop.Proposal.prop_uuid}}" ch="{{prop.Proposal.prop_cost}}">
+						<a href="#"><div class="accept-button"><p><img src="static/img/accept.svg" />Accept</p></div></a> 
+					</div>
 					{% endif  %}
 				</div>
 				<div class="clear"></div>
