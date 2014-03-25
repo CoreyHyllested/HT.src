@@ -37,6 +37,7 @@ def ht_bind_session(bp):
 	""" preserve userid server-side """
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
 	session['uid'] = bp.account
+	session['pid'] = bp.prof_id
 	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + ']')
 
 

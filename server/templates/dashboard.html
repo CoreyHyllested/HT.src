@@ -145,7 +145,6 @@
 
 	<div id="content-top"></div>
 	<div id="proposals">
-
 		{% for prop in proposals|sort(attribute='Proposal.prop_ts') %}
 		<div id="prop-{{loop.index}}">
 			<a href="#">
@@ -177,14 +176,13 @@
 						   }
 					   </script>
 					</p>
-					<br>
-					<span class="big-text">Location</span><p>{{prop.Proposal.prop_place}}</p><br>
-					<span class="big-text">Price   </span><p>${{prop.Proposal.prop_cost}}</p>
+					<br><span class="big-text">Location</span><p>{{prop.Proposal.prop_place}}</p>
+					<br><span class="big-text">Price   </span><p>${{prop.Proposal.prop_cost}}</p>
 				</div>
 
 				<div class="slot-details-right">
-					<span class="big-text" onclick="document.getElementById('h').value='{{prop.Proposal.prop_hero}}'; document.p.submit();"><a href="#">{{prop.Proposal.prof_name}}</a></span>
-					<p>{{prop.headline}}</p>
+					<span class="big-text" onclick="document.getElementById('h').value='{{prop.Proposal.prop_hero}}'; document.p.submit();"><a href="#">{{prop.display.prof_name}}</a></span>
+					<p>{{prop.display.headline}}</p>
 					<script>star_reviews({{prop.display.rating}}, {{prop.display.reviews}}, '{{prop.Proposal.prop_hero}}');</script>
 					<br />
 					<p>{{prop.Proposal.prop_desc}} </p>
