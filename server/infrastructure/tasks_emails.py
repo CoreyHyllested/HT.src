@@ -145,7 +145,7 @@ def send_proposal_reject_emails(the_proposal):
 	hero_msg['To']	 = "\"%s\" <%s>" % (Header(hero_name, 'utf-8'), hero_addr)
 	hero_msg['From'] = "\"%s\" <%s>" % (Header(u'HeroTime', 'utf-8'), 'noreply@herotime.co')
 	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
-	ht_send_email(hero_email_addr, hero_msg)
+	ht_send_email(hero_addr, hero_msg)
 
 	buyer_msg_html = "Hey, keep your money.  Your hero is in another castle.  Your hero rejected your proposal %s." % (the_proposal)
 	buyer_msg = MIMEMultipart('alternative')
