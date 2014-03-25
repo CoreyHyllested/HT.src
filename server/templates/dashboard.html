@@ -404,25 +404,22 @@ $(function () {
         xhr.send(fd)
 
         //catch response.  make any modificaitons.
-        xhr.onreadystatechange = function(e) {
-            if (4 == this.readyState) {
+		xhr.onreadystatechange = function(e) {
+			if (4 == this.readyState) {
+				msg = JSON.parse(xhr.responseText);
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
-                    //rc = JSON.parse(xhr.responseText);
-                    console.log(xhr.responseText);
-                    msg = JSON.parse(xhr.responseText);
                     openAlertWindow('Success!\n' + msg['usrmsg']);
-					//document.reload();
+					document.write(xhr.responseText);
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    openAlertWindow('Failure 500: ' + msg['usrmsg']);
                 } else if (this.status == 501) {
                     console.log(['xhr post complete, err=501 ', e]);
-                    msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    openAlertWindow('Failure 501: ' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + this.status + ': ' + msg['usrmsg']);
                 }
             }
         };
