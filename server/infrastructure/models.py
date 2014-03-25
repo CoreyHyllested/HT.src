@@ -20,8 +20,19 @@ APPT_REVIEWED = 512
 APPT_REJECTED = 1024
 APPT_CANCELED = 2048
 APPT_DISPUTED = 4096
+APPT_FLAGS_NONE = 0
 
-APPT_FLAGS_NONE	= 0
+PROP_FLAG_PROPOSED = 0
+PROP_FLAG_RESPONSE = 1
+PROP_FLAG_ACCEPTED = 2
+PROP_FLAG_CAPTURED = 3
+PROP_FLAG_OCCURRED = 4
+PROP_FLAG_REVIEWED = 5
+
+PROP_FLAG_REJECTED = 10
+PROP_FLAG_CANCELED = 11
+PROP_FLAG_DISPUTED = 12
+
 
 OAUTH_NONE   = 0
 OAUTH_LINKED = 1
@@ -35,6 +46,10 @@ REV_CREATED = 1
 REV_SENT 	= 2
 REV_POSTED	= 4 
 REV_FLAGGED = 8
+
+
+def set_flag(state, flag):  return (state | (0x1 << flag))
+def test_flag(state, flag): return (state & (0x1 << flag))
 
 
 
@@ -194,7 +209,7 @@ class Profile(Base):
 		- i.e. Corey's 'DJ Core' profile, which is different from Corey's 'Financial Analyst' ident
 	"""
 	__tablename__ = "profile"
-	prof_id	= Column(String(40), primary_key=True, index=True, default=str(uuid.uuid4()))
+	prof_id	= Column(String(40), primary_key=True, index=True)
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
 	prof_name	= Column(String(120),							nullable=False)
 	prof_vanity	= Column(String(100))
@@ -204,7 +219,7 @@ class Profile(Base):
 	reviews  = Column(Integer(), nullable=False, default=0)
 
 	prof_img	= Column(String(120), default="no_pic_big.svg",	nullable=False) 
-	prof_url	= Column(String(120),  default='http://herotime.co')
+	prof_url	= Column(String(120), default='http://herotime.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
@@ -220,8 +235,9 @@ class Profile(Base):
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
 	def __init__ (self, name, acct):
-		self.prof_name = name
-		self.account = acct
+		self.prof_id	= str(uuid.uuid4())
+		self.prof_name	= name
+		self.account	= acct
 
 	def __repr__ (self):
 		tmp_headline = self.headline
@@ -250,7 +266,7 @@ class Profile(Base):
 
 class Proposal(Base):
 	__tablename__ = "proposal"
-	prop_uuid	= Column(String(40), primary_key=True, default = str(uuid.uuid4()))						 # NonSequential ID
+	prop_uuid	= Column(String(40), primary_key=True)													# NonSequential ID
 	prop_hero	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	prop_user	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
 	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED,			index=True)			# Pure State (as in Machine)
@@ -268,7 +284,7 @@ class Proposal(Base):
 	appt_secured = Column(DateTime(), nullable = True)
 	appt_charged = Column(DateTime(), nullable = True)
 
-	challengeID	= Column(String(40),	nullable = False, default=str(uuid.uuid4()))
+	challengeID	= Column(String(40), nullable = False)
 	charge_customer_id	= Column(String(40), nullable = True)	# stripe customer id
 	charge_credit_card	= Column(String(40), nullable = True)	# stripe credit card
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
@@ -279,6 +295,7 @@ class Proposal(Base):
 
 	#Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (prop_cost), location=prop_place, description=prop_desc, token=stripe_tokn, cust=pi, card=stripe_card)
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
+		self.prop_uuid	= str(uuid.uuid4())
 		self.prop_hero	= str(hero)
 		self.prop_user	= str(buyer)
 		self.prop_cost	= int(cost)
@@ -289,6 +306,7 @@ class Proposal(Base):
 		self.prop_tf	= datetime_f
 		self.prop_place	= location 
 		self.prop_desc	= description
+		self.challengeID = str(uuid.uuid4())
 
 		self.charge_customer_id = customer
 		self.charge_credit_card = card
@@ -308,6 +326,11 @@ class Proposal(Base):
 		if (updated_state is not None):	self.prop_state = updated_state
 		if (updated_flags is not None):	self.prop_flags = updated_flags
 
+	@staticmethod
+	def get_by_id(prop_id, location):
+		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
+		if len(proposals) != 1: raise NoProposalFound(prop_id, location)
+		return proposals[0]
 
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
@@ -446,14 +469,10 @@ class Review(Base):
 
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow()) 				# CAH: date of appointment? -- why would we care when the review is posted?
 
-	def __init__ (self, apptid, usr_reviewed, usr_author, rating, value, text):
-		self.rev_appt = apptid
-		self.rev_status = REC_CREATED
+	def __init__ (self, prop_id, usr_reviewed, usr_author):
+		self.rev_appt = prop_id 
 		self.prof_reviewed = usr_reviewed
 		self.prof_authored = usr_author
-		self.appt_score = rating
-		self.appt_value = value
-		self.generalcomments = text
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
@@ -462,6 +481,14 @@ class Review(Base):
 			tmp_comments = tmp_comments[:20]
 			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.rating, tmp_comments)
+
+
+
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
+
 
 	@staticmethod
 	def retreive_by_id(find_id):
