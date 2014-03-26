@@ -248,16 +248,12 @@
 
 			console.log('sent');
 			xhr.onreadystatechange = function(e) {
+				msg = JSON.parse(xhr.responseText);
 				if (4 == this.readyState) {
 					if (this.status == 200) {
 						console.log(['xhr post complete ', e]);
-						//rc = JSON.parse(xhr.responseText);
-				//		console.log(xhr.responseText);
-				//				msg = JSON.parse(xhr.responseText);
 						document.write(xhr.responseText);
-						//document.reload();
 					} else if (this.status == 500) {
-						msg = JSON.parse(xhr.responseText);
 						console.log(xhr.responseText);
 						openAlertWindow('Uh oh!\n' + msg['usrmsg']);
 					}

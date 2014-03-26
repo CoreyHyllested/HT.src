@@ -129,9 +129,11 @@ def render_profile(usrmsg=None):
 
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	all_reviews = db_session.query(Review, user, hero).distinct(Review.review_id)								\
+	appt = aliased(Proposal, name='appt')
+	all_reviews = db_session.query(Review, appt, user, hero).distinct(Review.review_id)							\
 							.filter(or_(Review.prof_reviewed == bp.prof_id, Review.prof_authored == bp.prof_id))	\
-							.join(user, user.prof_id == Review.prof_authored)									\
+							.join(appt, appt.prop_uuid == Review.rev_appt)											\
+							.join(user, user.prof_id == Review.prof_authored)										\
 							.join(hero, hero.prof_id == Review.prof_reviewed).all();
 
 	print 'calling map on all reviews'
@@ -146,6 +148,7 @@ def render_profile(usrmsg=None):
 
 
 def display_reviews_of_hero(r, hero_is):
+	print r.Review.review_id, r.Review.rev_appt , r.appt.prop_uuid
 	if (hero_is == r.Review.prof_reviewed): 
 		#user it the reviewed, we should display all these reviews; image of the other bloke
 		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
