@@ -417,11 +417,11 @@ def render_dashboard(usrmsg=None, focus=None):
 	# number of proposals (all)
 
 	#SQL Alchemy improve perf.
+	#							.distinct(Proposal.prop_uuid)														\
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appts_and_props = db_session.query(Proposal, user, hero)														\
 								.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-								.distinct(Proposal.prop_uuid)														\
 								.join(user, user.prof_id == Proposal.prop_user)										\
 								.join(hero, hero.prof_id == Proposal.prop_hero).all();
 	
@@ -429,8 +429,15 @@ def render_dashboard(usrmsg=None, focus=None):
 	print 'calling map on all appts_and_props'
 	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
-	appts = filter(lambda a:  (a.Proposal.prop_state == APPT_STATE_ACCEPTED), 													 appts_and_props)
+	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED)), appts_and_props)
 	print "proposals =", len(props), ", appts =", len(appts)
+	
+	for x in props:
+		print 'prop: ', x.Proposal.prop_uuid, x.Proposal.prop_hero, bp.prof_id, x.Proposal.prop_user
+
+	print 'now appts: '
+	for x in appts:
+		print 'appt : ', x.Proposal.prop_uuid, x.Proposal.prop_hero, bp.prof_id, x.Proposal.prop_user
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
