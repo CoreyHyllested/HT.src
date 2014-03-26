@@ -190,7 +190,7 @@
 
 				<div class="clear"></div>
 				<div class="buttons">
-					{% if bp.prof_id == prop.prop_from %}
+					{% if bp.prof_id == prop.Proposal.prop_from %}
 					{% else %}
 					<div class="reject-wrap" id="{{prop.Proposal.prop_uuid}}" ch="{{prop.Proposal.prop_cost}}" idx="{{loop.index}}" >
 						<a href="#"><div class="reject-button"><p><img src="/static/img/reject.svg" />Reject</p></div></a>
