@@ -121,12 +121,6 @@ def render_profile(usrmsg=None):
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
-	#rev_status	= Column(Integer, default=REV_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
-	#appt_score = Column(Integer, nullable = False, default = -1)	# 1 - 5
-	#appt_value = Column(Integer, nullable = False, default = -1)	# in dollars.
-	#generalcomments = Column(String(5000))
-	#rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow()) 				# CAH: date of appointment? -- why would we care when the review is posted?
-
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
@@ -140,15 +134,14 @@ def render_profile(usrmsg=None):
 	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
 	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
 
-				#.filter(Review.prof_reviewed == hp.prof_id).all()
-				#.filter(bool(Review.rev_status & REV_POSTED) == True).
+	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
+	print 'show reviews = ', len (show_reviews)
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=hero_reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
 
 
 def display_reviews_of_hero(r, hero_is):
-	print r.Review.review_id, r.Review.rev_appt , r.appt.prop_uuid
 	if (hero_is == r.Review.prof_reviewed): 
 		#user it the reviewed, we should display all these reviews; image of the other bloke
 		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
