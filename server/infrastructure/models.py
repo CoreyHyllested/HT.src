@@ -7,8 +7,6 @@ from datetime import datetime as dt
 import datetime
 import uuid
 
-    #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
-
 
 APPT_FLAG_PROPOSED = 0
 APPT_FLAG_RESPONSE = 1
@@ -56,10 +54,18 @@ OAUTH_FACEBK = 4
 OAUTH_TWITTR = 5
 
 
-REV_CREATED = 1
-REV_SENT 	= 2
-REV_POSTED	= 4 
-REV_FLAGGED = 8
+REV_FLAG_CREATED = 0
+REV_FLAG_ENABLED = 1
+REV_FLAG_WAITING = 2
+REV_FLAG_VISIBLE = 3
+REV_FLAG_FLAGGED = 7
+REV_FLAG_NOTUSED = 8
+
+REV_STATE_CREATED = (0x1 << REV_FLAG_CREATED)
+REV_STATE_ENABLED = (0x1 << REV_FLAG_ENABLED)
+REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
+REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
+REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
 
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
@@ -523,7 +529,7 @@ class Review(Base):
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
-	rev_status	= Column(Integer, default=REV_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
+	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
 	rev_appt	= Column(String(40), nullable = False)
 	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
 
@@ -534,7 +540,8 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
-	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow()) 				# CAH: date of appointment? -- why would we care when the review is posted?
+	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	rev_flags   = Column(Integer, default=0)
 
 	def __init__ (self, prop_id, usr_reviewed, usr_author):
 		self.review_id = str(uuid.uuid4())
