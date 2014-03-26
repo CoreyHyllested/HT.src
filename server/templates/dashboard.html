@@ -237,7 +237,6 @@
 	    });
 
 		$("#to-profile-wrap").click(function () {
-			console.log('profile-wrap');
 			var fd = new FormData();
 			fd.append('hero', '{{bp.prof_id}}');
 			console.log('profile-wrap', '{{bp.prof_id}}');
@@ -246,12 +245,10 @@
 			xhr.open('post', "/profile", true);
 			xhr.send(fd);
 
-			console.log('sent');
 			xhr.onreadystatechange = function(e) {
 				if (4 == this.readyState) {
 					if (this.status == 200) {
 						console.log(['xhr post complete ', e]);
-						msg = JSON.parse(xhr.responseText);
 						document.write(xhr.responseText);
 					} else if (this.status == 500) {
 						console.log(xhr.responseText);
