@@ -417,7 +417,6 @@ def render_dashboard(usrmsg=None, focus=None):
 	# number of proposals (all)
 
 	#SQL Alchemy improve perf.
-	#							.distinct(Proposal.prop_uuid)														\
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appts_and_props = db_session.query(Proposal, user, hero)														\
