@@ -14,7 +14,7 @@ import stripe
 
 
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
-	url = 'https://127.0.0.1:5000/profile?hero=' + str(hero_id)
+	url = 'https://herotime.co/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
 	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
@@ -33,7 +33,7 @@ def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_i
 def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_id):
 	print "Proposal to hero (" + str(prop.prop_uuid) + ") last touched by", str(prop.prop_from)
 
-	url = 'https://127.0.0.1:5000/profile?hero=' + str(buyer_id)
+	url = 'https://herotime.co/profile?hero=' + str(buyer_id)
 	msg_html =	"Congrats. <br>";
 	msg_html = msg_html + "<a href=\"" + url + "\">" 
 	msg_html = msg_html + buyer_name 

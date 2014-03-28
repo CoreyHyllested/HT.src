@@ -45,7 +45,7 @@ def homepage():
 	if 'uid' in session:
 		return redirect('/dashboard')
 
-	return redirect('https://127.0.0.1:5000/login')
+	return redirect('https://herotime.co/login')
 
 
 
@@ -96,7 +96,7 @@ def render_profile(usrmsg=None):
 	hp = request.values.get('hero')
 	if (hp is None):
 		print "No hero profile requested, Error"
-		return redirect('https://127.0.0.1:5000/dashboard')	
+		return redirect('https://herotime.co/dashboard')	
 
 	try:
 		# Replace 'hp' with the actual Hero's Profile.
