@@ -291,9 +291,6 @@ $(function () {
         var csrf = "{{ csrf_token() }}";
 		var sid = "#appt-" + idx;
 
-        //console.log(['this is get started', id]);
-        //console.log('this is get started ' +  ch);
-
         var fd = new FormData();
         fd.append('appt_id', id);
         fd.append('appt_stat', 'cancel');
@@ -310,9 +307,9 @@ $(function () {
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
+					$(sid).remove();
 					msg = JSON.parse(xhr.responseText);
 					openAlertWindow('Success.\n' + msg['usrmsg']);
-					$(sid).remove();
                 } else if (this.status == 400) {
                     console.log(['xhr post complete, err=500 ', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);

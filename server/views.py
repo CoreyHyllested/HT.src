@@ -362,7 +362,7 @@ def ht_api_appt_cancel():
 	""" Cancels a logged in user's appointment. """
 
 	uid = session['uid']
-	print 'apptid = ', request.values.get('appt', 'Nothing found here, sir')
+	print 'apptid = ', request.values.get('appt_id', 'Nothing found here, sir')
 
 	try:
 		the_proposal = Proposal.get_by_id(request.values.get('appt_id'))
