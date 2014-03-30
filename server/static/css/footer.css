@@ -1,0 +1,145 @@
+/*
+There are three responsive design ranges for the header (ht_header.html):
+a) 240px - 549px (phones);
+b) 550px - 767px (phablets);
+c) 768px - ... (tablets, desktops);
+*/
+
+/* Common Elements */
+
+#footer {
+	background-color: #333333;
+	border-top: 2px solid #29abe2;
+	width: 100%;
+	z-index: 10;
+}
+
+#footer a {
+	-moz-transition: all 0.2s ease-in;
+	-o-transition: all 0.2s ease-in;
+	-webkit-transition: all 0.2s ease-in;
+}
+
+.footerMenu ul {list-style-type: none;}
+
+.footerMenu ul li {
+	color: #808080;
+	display: inline;
+	font-size: 0.9em;
+}
+
+.footerMenu ul li a {color: white;}
+.footerMenu ul li a:hover, .footerMenu ul li a:active {color: #29abe2;}
+
+
+
+
+/* Phones (240px - 549px) */
+@media only screen and (min-width: 240px) and (max-width: 549px) {
+
+	#footer {height: 130px;}
+
+	.footerContentWrapper {
+		margin: auto;
+		padding-top: 15px;
+		width: 90%;
+	}
+	
+	.footerLogo {display: none;}
+	.footerMenu {text-align: center;}
+
+	.footerCopyright {
+		color: #cccccc;
+		font-size: 0.65em;
+		font-weight: 300;
+		padding-top: 10px;
+		text-align: center;
+	}
+
+}
+
+
+/* Phablets (550px - 767px) */
+@media only screen and (min-width: 550px) and (max-width: 767px) {
+
+	#footer {height: 80px;}
+
+	.footerContentWrapper {
+		display: block;
+		margin: 15px auto 0;
+		position: relative;
+		width: 94%;
+	}
+
+	.footerLogo {
+		background: url("../img/logo.svg") no-repeat;
+		height: 20px;
+		left: 20px;
+		position: absolute;
+		top: 0;
+		width: 111px;
+	}
+
+	.footerMenu {
+		left: 160px;
+		position: absolute;
+		text-align: left;
+		top: -6px;
+	}
+
+	.footerCopyright {
+		color: #cccccc;
+		font-size: 0.7em;
+		font-weight: 300;
+		letter-spacing: 0.05em;
+		line-height: 1.5em;
+		position: absolute;
+		left: 160px;
+		text-align: left;
+		top: 30px;
+	}
+
+}
+
+/* Tablets, desktops (768px and bigger) */
+@media only screen and (min-width: 768px) {
+
+	#footer {height: 80px; position: static;}
+
+	.footerContentWrapper {
+		display: block;
+		margin: 15px auto 0;
+		position: relative;
+		width: 768px;
+	}
+
+	.footerLogo {
+		background: url("../img/logo.svg") no-repeat;
+		height: 20px;
+		left: 20px;
+		position: absolute;
+		top: 0;
+		width: 111px;
+	}
+
+	.footerMenu {
+		font-size: 0.85em;
+		position: absolute;
+		left: 160px;
+		text-align: left;
+		top: -6px;
+	}
+
+	.footerCopyright {
+		color: #cccccc;
+		font-size: 0.65em;
+		font-weight: 300;
+		letter-spacing: 0.05em;
+		line-height: 1.5em;
+		position: absolute;
+		left: 160px;
+		text-align: left;
+		top: 30px;
+	}
+
+}

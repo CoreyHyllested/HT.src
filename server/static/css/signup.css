@@ -1,0 +1,487 @@
+/*
+There are three responsive design ranges for the signup page (signup.html):
+a) 240px - 349px (phones)
+b) 350 - 889px (phablets, tablets)
+c) 890px - ... (desktops)
+
+*/
+
+/* ANIMATIONS */
+
+	/* LinkedIn Button Pulse */
+	@-moz-keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+	@-webkit-keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+	@keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+/* COMMON ELEMENTS */
+
+.signupContentWrapper a:hover {
+	text-decoration: underline;
+}
+
+.signupLink {
+		clear: both;
+		display: block;
+		font-size: 0.9em;
+		margin-top: 5px;
+		text-align: center;
+	}
+
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+
+	.pageWrapper {
+		background-color: white;
+		height: 100%;
+		min-height: 540px;
+	}
+
+	.signupContentWrapper {
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 100%;
+	}
+
+	.signupContentWrapper h2 {
+		display: none;
+	}
+
+	/* Signup Switch */
+	
+	.signupSwitch {
+		height: 35px;		
+		margin: 20px auto 0;
+		-ms-user-select: none;
+		-moz-user-select: none;		
+		-o-user-select: none;
+		-webkit-user-select: none;
+		width: 90%;
+	}
+
+	.signupSwitchEmail {
+		border: 1px #29abe2 solid;
+		border-radius: 3px 0 0 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 35px;
+		text-align: center;
+		width: 50%;
+	}
+
+	.signupSwitchSocial {
+		border: 1px #29abe2 solid;
+		border-radius: 0 3px 3px 0;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 35px;
+		text-align: center;
+		width: 50%;
+		position: relative;
+	}
+
+	.signupSwitchActive {
+		background-color: #29abe2;
+		color: white;
+	}
+
+
+	/* Email signup */
+
+	.signupEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 30px auto 10px;
+		padding-bottom: 15px;
+		width: 90%;
+	}
+
+	.signupEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		height: 40px;
+		margin-bottom: -1px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="text"]:focus, input[type="password"]:focus {
+		border: 1px #cccccc solid;
+		margin-bottom: -1px;
+	}
+
+	#signupEmailName {
+		border-radius: 5px 5px 0 0;
+	}
+
+	#signupEmailConfirm {
+		border-radius:  0 0 5px 5px;
+	}
+
+	.signupAcceptTOS {
+		font-size: 0.9em;
+		margin-top: 20px;
+	}
+
+	.signupEmailSubmitWrapper {
+		margin: 20px 0 10px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="submit"] {	
+		width: 100%;
+	}
+
+	/* Social signup */
+	.signupSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		display: none;
+		margin: 30px auto 0;
+		margin-bottom: 10px;
+		padding-bottom: 15px;
+		width: 90%;
+	}
+
+	.signupLinkedIn {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background: url("../img/linkedin.svg") #007cb3 no-repeat 1px 2px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		padding-left: 45px;
+		text-align: left;
+		width: 100%;
+		vertical-align: middle;
+	}
+
+	.signupLinkedInNotice {
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+}
+
+/* PHABLET/TABLET DESIGN */
+@media only screen and (min-width: 350px) and (max-width: 889px) {
+
+	/* Signup panel slides into view */
+	@-moz-keyframes signupAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes signupAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes signupAppear {
+		from {opacity: 0; margin-top: 300px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 770px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
+		width: 100%;
+	}
+
+	.signupContentWrapper {
+		-webkit-animation: signupAppear 1s;
+		animation: signupAppear 1s;
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		margin: 40px auto 30px;
+		padding: 10px;
+		width: 300px;
+	}
+
+	.signupContentWrapper h2 {
+		margin-bottom: 10px;
+		padding: 10px;
+		text-align: center;
+	}
+
+	/* Signup Switch */
+	
+	.signupSwitch {display: none;}
+
+	/* Email signup */
+
+	.signupEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 0 auto 10px;
+		padding-bottom: 5px;
+		width: 280px;
+	}
+
+	.signupEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		height: 40px;
+		margin-bottom: -1px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="text"]:focus, input[type="password"]:focus {
+		border: 1px #cccccc solid;
+		height: 40px;
+		margin-bottom: -1px;
+	}
+
+	#signupEmailName {
+		border-radius: 5px 5px 0 0;
+	}
+
+	#signupEmailConfirm {
+		border-radius:  0 0 5px 5px;
+	}
+
+	.signupAcceptTOS {
+		font-size: 0.9em;
+		margin-top: 20px;
+	}
+
+	.signupEmailSubmitWrapper {
+		margin: 20px 0 20px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="submit"] {	
+		height: 40px;
+		width: 100%;
+	}
+
+
+	/* Social signup */
+	.signupSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);		
+		display: none;
+		margin: 10px auto 0;
+		padding-bottom: 15px;
+		width: 280px;
+	}
+
+	.signupLinkedIn {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background: url("../img/linkedin.svg") #007cb3 no-repeat 1px 2px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		cursor: pointer;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;
+	}
+
+	.signupLinkedIn:hover {
+		-moz-animation: linkedinPulse 2s infinite;
+		-webkit-animation: linkedinPulse 2s infinite;
+  		animation: linkedinPulse 2s infinite;
+	}
+
+	.signupLinkedInNotice {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+}
+
+/* DESKTOP DESIGN */
+@media only screen and (min-width: 890px) {
+
+	.signupLink:hover {
+		text-decoration: underline;
+	}
+
+	/* signup panel slides into view */
+	@-moz-keyframes signupAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes signupAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes signupAppear {
+		from {opacity: 0; margin-top: 300px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+	.pageWrapper {
+		background: url('../img/background-superwoman.jpg') no-repeat center center;
+		-o-background-size: cover;
+		-webkit-background-size: cover;		
+		background-size: cover;
+		height: 100%;
+		min-height: 780px;
+		overflow-x: hidden;
+		width: 100%;
+	}
+
+	.signupContentWrapper {
+		-webkit-animation: signupAppear 1s;
+		animation: signupAppear 1s;
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);		
+		margin: 40px 0 30px calc((100% - 768px)/2 + 20px);
+		padding: 10px;
+		width: 300px;
+	}
+
+	.signupContentWrapper h2 {
+		margin-bottom: 10px;
+		padding: 10px;
+		text-align: center;
+	}
+
+	/* Signup Switch */
+	
+	.signupSwitch {display: none;}
+
+
+	/* Email signup */
+
+	.signupEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 0 auto 10px;
+		padding-bottom: 5px;
+		width: 280px;
+	}
+
+	.signupEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		height: 40px;
+		margin-bottom: -1px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="text"]:focus, input[type="password"]:focus {
+		border: 1px #cccccc solid;
+		height: 40px;
+		margin-bottom: -1px;
+	}
+
+	#signupEmailName {
+		border-radius: 5px 5px 0 0;
+	}
+
+	#signupEmailConfirm {
+		border-radius:  0 0 5px 5px;
+	}
+
+	.signupAcceptTOS {
+		font-size: 0.9em;
+		margin-top: 20px;
+	}
+
+	.signupEmailSubmitWrapper {
+		margin: 20px 0 20px;
+		width: 100%;
+	}
+
+	.signupEmail input[type="submit"] {	
+		height: 40px;
+		width: 100%;
+	}
+
+
+	/* Social signup */
+	.signupSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);		
+		display: none;
+		margin: 10px auto 0;
+		padding-bottom: 15px;
+		width: 280px;
+	}
+
+	.signupLinkedIn {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background: url("../img/linkedin.svg") #007cb3 no-repeat 1px 2px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		cursor: pointer;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;
+	}
+
+	.signupLinkedIn:hover {
+		-moz-animation: linkedinPulse 2s infinite;
+		-webkit-animation: linkedinPulse 2s infinite;
+  		animation: linkedinPulse 2s infinite;
+	}
+
+	.signupLinkedInNotice {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+}
+
+
+
