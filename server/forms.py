@@ -122,6 +122,7 @@ class ProposalActionForm(Form):
 
 
 class ReviewForm(Form):
+	review_id	 = HiddenField("id",	[validators.Required(), validators.length(min=1, max=40)])
 	input_review = TextAreaField('Review') #,      [validators.length(min=0, max=5000)])
 	input_rating = RadioField('Rating', coerce=str, choices=(Review.enumRating))
 

@@ -16,6 +16,7 @@ import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
 
+
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -27,6 +28,7 @@ from server.infrastructure.tasks  import *
 from server.ht_utils import *
 from server import ht_server, linkedin
 from string import Template
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
@@ -35,6 +37,7 @@ def ht_bind_session(bp):
 	""" preserve userid server-side """
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
 	session['uid'] = bp.account
+	session['pid'] = bp.prof_id
 	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + ']')
 
 
@@ -73,6 +76,7 @@ def ht_authenticate_user(user_email, password):
 	return None
 
 
+
 def ht_password_recovery(email):
 	""" Password recovery
 		returns a string provided to the user on success and failure.
@@ -102,28 +106,64 @@ def ht_password_recovery(email):
 	return usrmsg
 
 
+
 def create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
 	try:
-		hero = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		prof = Profile(name, hero.userid)
-
+		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		prof  = Profile(name, hero.userid)
 		db_session.add(hero)
 		db_session.add(prof)
 		db_session.commit()
+
+	except IntegrityError as ie:
+		print ie
+		db_session.rollback()
+		return None, False
 	except Exception as e:
-		trace(str(e))
+		print e
 		db_session.rollback()
 		return None, False
 
-	log_uevent(hero.userid, 'successfully created user')
+	print 'create_account: successful', hero.userid 
+	print hero
+	print prof
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
 
 
-def import_profile(data_provider, json_profile):
-	print "importing data from " + str(data_provider)
+
+def import_profile(bp, oauth_provider, oauth_data):
+	try:
+		linked_id = oauth_data.get('id')
+		summary   = oauth_data.get('summary')
+		#recommend = oauth_data.get('recommendationsReceived')
+		headline  = oauth_data.get('headline')
+		industry  = oauth_data.get('industry')
+		location  = oauth_data.get('location')
+
+		print ("update profile")
+		if (summary  is not None): bp.prof_bio = summary
+		if (headline is not None): bp.headline = headline
+		if (industry is not None): bp.industry = industry #linked_in_sanatize(INDUSTRY, industry)
+		if (location['name'] is not None): bp.location = location['name'] #linked_in_sanatize(LOCATION, loc[name])
+
+		print 'hero & prof created', bp.account, oauth_provider 
+		oauth = Oauth(str(bp.account), oauth_provider, linked_id, token=session.get('linkedin_token'))
+
+		db_session.add(bp)
+		db_session.add(oauth)
+		print ("committ update bp")
+		db_session.commit()
+	except IntegrityError as ie:
+		print 'ah fuck, it failed', ie
+		db_session.rollback()
+	except Exception as e:
+		print 'ah fuck, it failed other place', e
+		db_session.rollback()
+
+
 
 
 

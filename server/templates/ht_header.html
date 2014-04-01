@@ -116,6 +116,7 @@
 				}
 			});
 
+
 			// [Login] Switch to email login
 			$('.loginSwitchEmail').click(function() {
 
@@ -131,8 +132,7 @@
 
 				// Hide the social login and show email login
 				$('.loginSocial').hide();
-				$('.loginEmail').show();
-						
+				$('.loginEmail').show();	
 			});
 
 
@@ -212,18 +212,13 @@
 				$('.signupSocial').show();
 
 			});
-
-
-
 		});
-
-	
-
 	</script>
-
 </head>
 
 <body>
+	<form name='p' action=/profile method=POST><input type="hidden" id="h" name="hero"></form>
+
 	<!-- MODAL WINDOWS -->
 	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
 			
@@ -256,7 +251,6 @@
 			<li><a href="/signup">Signup</a></li>
 			<li><a href="/login">Login</a></li>
 			{% endif %}
-
 		</ul>
 	</div>
 
@@ -306,9 +300,6 @@
 		{% block content %}
 		{% endblock %}
 
-
-
-
 	
 	</div><!-- Page wrapper ends here -->
 
@@ -337,5 +328,23 @@
 			</div>
 		</div>
 	</div><!-- Footer ends here -->
+
+	<script>
+	$(function () {
+		function rp(id) {
+			document.getElementById('h').value=id;
+			document.p.submit();
+		}
+	});
+
+	$(function () {
+		function searchBar() {
+			var x=document.forms["srchForm"]["search"].value;
+			if (x==null || x=="") { return false; }
+			return true;
+		}
+	});
+	</script>
+
 </body>
 </html>

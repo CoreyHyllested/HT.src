@@ -22,7 +22,8 @@ def trace(msg):
 	ht_server.logger.info(msg)
 
 def ht_debug(msg):
-	if ht_server.debug: ht_server.logger.info(msg)
+	#if ht_server.debug: ht_server.logger.info(msg)
+	if ht_server.debug: print(msg)
 
 def log_uevent(uid, msg):
 	ht_server.logger.info(str(uid) + " " + str(msg))

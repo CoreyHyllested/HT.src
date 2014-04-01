@@ -1,46 +1,77 @@
 from server.infrastructure.srvc_database import Base
+from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
-import datetime, uuid
+from datetime import datetime as dt
+import datetime
+import uuid
 
 
-TS_PROP_BY_HERO = 0
-TS_PROP_BY_USER = 1
-TS_USER_ACCEPTD = 2
-TS_PROP_PURCHSD = 2
-TS_PROP_COMPLTD = 4
+APPT_FLAG_PROPOSED = 0
+APPT_FLAG_RESPONSE = 1
+APPT_FLAG_ACCEPTED = 2
+APPT_FLAG_CAPTURED = 3
+APPT_FLAG_OCCURRED = 4
+APPT_FLAG_REVIEWED = 5
+APPT_FLAG_COMPLETE = 6
+APPT_FLAG_DISPUTED = 7
+APPT_FLAG_RESOLVED = 8
 
-TS_HERO_REMOVED = -1
-TS_APP_CANCELED = -2
+APPT_FLAG_USERPAID = 15		# if buyer has paid us.
+APPT_FLAG_HEROPAID = 16		# if hero has been paid.
+APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
+APPT_FLAG_CANCELED = 18		# use from to see who canceled it
 
-#APPT_DISPUTED		= -2
-#APPT_CANCELED		= -1 
-APPT_HAVE_AGREEMENT	=  0
-APPT_CARD_CAPTURED	=  1   #money is captured, heros will get paid
-APPT_SEND_REVIEWS	=  2   #24 hours after meeting, send reviews
-APPT_POST_REVIEWS	=  3   #30 days after meeting, post reviews
+APPT_FLAG_QUIET		= 29
+APPT_FLAG_DIGITAL	= 30
+APPT_FLAG_RUNOVER	= 31
 
-    #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
 
-APPT_PROPOSED = 0
-APPT_RESPONSE = 1
-APPT_ACCEPTED = 2
-APPT_CAPTURED = 4
-APPT_OCCURRED = 8
-APPT_REVIEWED = 16
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#1
+APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)	#2
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#4
+APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)	#8
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#16
+APPT_STATE_REVIEWED = (0x1 << APPT_FLAG_REVIEWED)
+APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)
+APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)
 
-#APPT_REVIEWED = 32
-#APPT_REVIEWED = 64
-#APPT_REVIEWED = 128
-#APPT_REVIEWED = 256
-APPT_REVIEWED = 512
+APPT_STATE_REJECTED = -1
+APPT_STATE_CANCELED = -3
 
-APPT_REJECTED = 1024
-APPT_CANCELED = 2048
-APPT_DISPUTED = 4096
 
-APPT_FLAGS_NONE	= 0
+
+
+
+
+OAUTH_NONE   = 0
+OAUTH_LINKED = 1
+OAUTH_STRIPE = 2
+OAUTH_GOOGLE = 3
+OAUTH_FACEBK = 4
+OAUTH_TWITTR = 5
+
+
+REV_FLAG_CREATED = 0
+REV_FLAG_ENABLED = 1
+REV_FLAG_WAITING = 2
+REV_FLAG_VISIBLE = 3
+REV_FLAG_FLAGGED = 7
+REV_FLAG_NOTUSED = 8
+
+REV_STATE_CREATED = (0x1 << REV_FLAG_CREATED)
+REV_STATE_ENABLED = (0x1 << REV_FLAG_ENABLED)
+REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
+REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
+REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
+
+
+def set_flag(state, flag):  return (state | (0x1 << flag))
+def test_flag(state, flag): return (state & (0x1 << flag))
+
+
 
 ################################################################################
 #### EXAMPLE: Reading from PostgreSQL. #########################################
@@ -60,7 +91,8 @@ APPT_FLAGS_NONE	= 0
 #### EXAMPLE: ALTER TABLE from PostgreSQL. #####################################
 ################################################################################
 # BEGIN; 
-# ALTER TABLE timeslot 	   ADD   COLUMN challenge   varchar(40); 
+# LOCK appointments;
+# ALTER TABLE appointments ADD   COLUMN challenge   varchar(40); 
 # ALTER TABLE appointments ALTER COLUMN transaction drop not null; 
 # END; 
 ################################################################################
@@ -72,26 +104,24 @@ APPT_FLAGS_NONE	= 0
 class Account(Base):
 	"""Account maintains identity information each individual."""
 	__tablename__ = "account"
+
 	USER_UNVERIFIED = 0
 	USER_ACTIVE		= 1
 	USER_INACTIVE	= -1
 	USER_BANNED		= -2
 
-	userid  = Column(String(40), primary_key=True,            unique=True)
-	email   = Column(String(120), nullable=False, index=True, unique=True)
+	userid  = Column(String(40), primary_key=True, index=True, unique=True)
+	email   = Column(String(120), nullable=False,  index=True, unique=True)
 	name    = Column(String(120), nullable=False)
 	pwhash	= Column(String(120), nullable=False)
 	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)   
-	source  = Column(Integer,		nullable=False, default=0)   # 0 = User created id here. Else: Linkedin = 1, FB = 2, Google = 3, Twitter = 4, StackOverflow = 5
+	source  = Column(Integer,		nullable=False, default=OAUTH_NONE)
+	phone	= Column(String(20))
 	dob     = Column(DateTime())
 	created = Column(DateTime())
+	updated = Column(DateTime())
 	sec_question = Column(String(120))
 	sec_answer   = Column(String(50))
-	# optional phone number?
-	# add stripe ID
-	# add stripe token?
-#	oauth_stripe = Column(Integer,  
-#	oauth_stripe = Column(String(40), ForeignKey('oauth.id'), nullable=False, index=True)
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -101,37 +131,57 @@ class Account(Base):
 		self.name   = user_name
 		self.email  = user_email
 		self.pwhash	= user_pass
-		self.created = datetime.datetime.now()
+		self.created = dt.utcnow()
+		self.updated = dt.utcnow()
 
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
+#	@staticmethod
+#	def get_by_prof_id(profile_id):
+#		accounts = Account.query.filter_by(profiles.prof_id=profile_id).all()
+#		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
+#		return accounts[0]
+
+	@staticmethod
+	def get_by_uid(uid):
+		accounts = Account.query.filter_by(userid=uid).all()
+		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
+		return accounts[0]
+
 	def set_email(self, e):
 		self.email = e
+		self.updated = dt.utcnow()
 		return self
 	
 	def set_name(self, n):
 		self.name = n
+		self.updated = dt.utcnow()
 		return self
 	
 	def set_dob(self, bd):
 		self.dob = bd
+		self.updated = dt.utcnow()
 		return self
 		
 	def set_source(self, src):
 		self.source = src
+		self.updated = dt.utcnow()
 		return self
 	
 	def set_status(self, s):
 		self.status = s
+		self.updated = dt.utcnow()
 		return self
 		
 	def set_sec_question(self, q):
 		self.sec_question = q
+		self.updated = dt.utcnow()
 		return self
 
 	def set_sec_answer(self, a):
 		self.sec_answer = a
+		self.updated = dt.utcnow()
 		return self
 
 	def update(self, new_values_dict):
@@ -139,43 +189,38 @@ class Account(Base):
 
 
 
-#class Oauth(Base):
-#	__tablename__ = "oauth_accounts"
-#	id      = Column(Integer, primary_key = True)
-#	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-#	oa_name = Column(String(40),									nullable=False)
-#	oa_user = Column(String(40),									nullable=False)
-#	token   = Column(String(120),									nullable=False)
-
-
-
-class OauthStripe(Base):
-	""" Account for maintaining stripe info """ 
-
-	__tablename__ = "oauth_stripe"
+class Oauth(Base):
+	__tablename__ = "oauth"
 	id      = Column(Integer, primary_key = True)
 	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-	stripe  = Column(String(40), nullable=False, index=True)	
-	token   = Column(String(40), nullable=False)	# customer ID
-	pubkey  = Column(String(40), nullable=False)
-	#semail   = Column(String(120), nullable=False)	#it may change.
-	
-	#id = Column(String(25), primary_key = True)	
-	#stripe_cust = Column(String(25), primary_key = True)	
-	#stripe_tokn = Column(String(25), primary_key = True)	
-	#charges = Column(String(25), primary_key = True)	
-	#cancels = Column(String(25), primary_key = True)	
+	oa_service	= Column(String(40), nullable=False)	#LINKEDIN = 1, Google = 2
+	oa_userid	= Column(String(40), nullable=False, index=True)	#user id returned back
+	opt_token	= Column(String(200))
+	opt_email	= Column(String(120))
+										#linkedin	#Stripe		#Google
+	opt_data1	= Column(String(200))	#?			CC token
+	opt_data2	= Column(String(200))	#?			Dflt CC		
+	opt_data3	= Column(String(200))	#?			chrge key	
 
-	def __init__ (self, account, token, pubkey, stripe):
-		self.account = account		#account.userid
-		self.token   = token		# cust token
-		self.stripe = stripe		# creditcard token -- used to find/charge (?) customer? 
-		self.pubkey = pubkey		# dflt cc_card
-
+	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
+	def __init__ (self, account, provider, userid, token=None, data1=None, data2=None, data3=None):
+		self.account = account		# account.userid
+		self.oa_service	= provider
+		self.oa_userid	= userid		# third_party user_ID 
+		self.opt_token	= token		# opt_token for accessing accounts
+		self.opt_email	= None
+		self.opt_data1	= data1		# opt_value
+		self.opt_data2	= data2		# opt_value
+		self.opt_data3	= data3		
 
 	def __repr__ (self):
-		return '<oauth_stripe, %r %r %r>' % (self.account, self.stripe, self.token)
+		return '<oauth, %r %r %r>' % (self.account, self.oa_service, self.oa_userid)
 		
+	@staticmethod
+	def get_stripe_by_uid(uid):
+		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		return stripe_custs[0]
 
 
 
@@ -184,114 +229,113 @@ class Profile(Base):
 		- i.e. Corey's 'DJ Core' profile, which is different from Corey's 'Financial Analyst' ident
 	"""
 	__tablename__ = "profile"
-	id       = Column(Integer, primary_key=True)	
-	heroid   = Column(String(40), index=True, unique=True, nullable=False)
-	account  = Column(String(40), ForeignKey('account.userid'), nullable=False)
-	name     = Column(String(120), 								 nullable=False)
-	imgURL	 = Column(String(120), default="no_pic_big.svg",		 nullable=False) 
-	skills	 = Column(String(120), 								 nullable=True) #CSV => #x, #y, #z
-	vanity   = Column(String(100), 								 nullable=True)
+	prof_id	= Column(String(40), primary_key=True, index=True)
+	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
+	prof_name	= Column(String(120),							nullable=False)
+	prof_vanity	= Column(String(100))
+	#prof_skills	= relationship('skills', backref='profile', cascade='all,delete') 
 
 	rating   = Column(Float(),   nullable=False, default=-1)
 	reviews  = Column(Integer(), nullable=False, default=0)
 
-	img      = Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
-	url      = Column(String(120),  default='http://herotime.co')
-	bio      = Column(String(5000), default='About me')
+	prof_img	= Column(String(120), default="no_pic_big.svg",	nullable=False) 
+	prof_url	= Column(String(120), default='http://herotime.co')
+	prof_bio	= Column(String(5000), default='About me')
+	prof_tz		= Column(String(20))  #calendar export.
+	prof_rate	= Column(Integer, nullable=False, default=40)
 
-	industry   = Column(String(50), nullable=True)
-	headline   = Column(String(50), nullable=True)
-	location   = Column(String(50), nullable=False, default="Berkeley, CA")
-	baserate   = Column(Integer,    nullable=False, default=100)
-	negotiable = Column(Boolean,	  nullable=False, default=True)
+	industry	= Column(String(50))
+	headline	= Column(String(50))
+	location	= Column(String(50), nullable=False, default="Berkeley, CA")
 
-#    timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', uselist=True, lazy=False)
+	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
+	created = Column(DateTime(), nullable=False, default = dt.utcnow())
+
+	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
-	
-	zipcode  = Column(Integer)
-	timezone = Column(String(20))  #calendar export.
-	updated = Column(DateTime(), nullable=False, default = datetime.datetime.now())
-	created = Column(DateTime(), nullable=False, default = datetime.datetime.now())
 
-	def __init__ (self, profile_name, acct):
-		self.name = profile_name
-		self.heroid  = str(uuid.uuid4())
-		self.account = acct
+	def __init__ (self, name, acct):
+		self.prof_id	= str(uuid.uuid4())
+		self.prof_name	= name
+		self.account	= acct
 
 	def __repr__ (self):
-		return '<profile, %r, %r, %r, %r>' % (self.heroid, self.name, self.baserate, self.headline[:20])
+		tmp_headline = self.headline
+		if (tmp_headline is not None):
+			tmp_headline = tmp_headline[:20]
+		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
+
+	@staticmethod
+	def get_by_prof_id(profile_id):
+		profiles = Profile.query.filter_by(prof_id=profile_id).all()
+		print "len = ", len(profiles), profile_id
+		if len(profiles) != 1: 
+			raise NoProfileFound(profile_id, 'Sorry, profile not found')
+		return profiles[0]
+
+	@staticmethod
+	def get_by_uid(uid):
+		profiles = Profile.query.filter_by(account=uid).all()
+		print "len = ", len(profiles), uid
+		if len(profiles) != 1: 
+			raise NoProfileFound(uid, 'Sorry, profile not found')
+		return profiles[0]
+
+
 		
-
-	# x) UUID
-    # x) Seller/ Hero
-    # x) Buyer
-    # x) meeting start time (datetime, timezone)
-    # x) meeting length of time
-    # x) can run over?
-    # x) cost
-    # x) Location
-    # x) description
-    # x) init create time
-    # x) updated time
-    # x) negotiation_count (iterations)
-    # x) negotiator_to_respond.
-
-    #x) current status (state machine? :: proposed, prop_in_negotiation, prop_rejected; appt; appt_canceled; appt_completed. 
-    # 14) Buyer's Stripe Cust hash
-    # 15) Buyer's Stripe Card hash
-
 
 class Proposal(Base):
 	__tablename__ = "proposal"
-	####CAH TODO: id  = Column(String(40), primary_key=True,            unique=True)
-	id			= Column(Integer, primary_key = True)
-	prop_uuid	= Column(String(40), nullable = False)													# NonSequential ID
-	prop_hero	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE SELLER. The Hero
-	prop_buyer	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# THE BUYER; requested hero.
-	prop_state	= Column(Integer, nullable=False, default=APPT_PROPOSED, index=True)
-	prop_flags	= Column(Integer, nullable=False, default=APPT_FLAGS_NONE)								# Quiet?, Digital?, Run-Over Enabled?
-	prop_count	= Column(Integer, nullable=False, default=0)
-	prop_cost	= Column(Integer, nullable=False, default=0)
-	prop_from	= Column(String(40), ForeignKey('profile.heroid'), nullable=False)						# LastProfile to Touch proposal. 
-	prop_ts		= Column(DateTime(),   nullable = False)
-	prop_tf		= Column(DateTime(),   nullable = False)
-	prop_place	= Column(String(1000), nullable = False)
-	prop_desc	= Column(String(3000), nullable = True)
-	prop_created = Column(DateTime(), nullable = False)
-	#TODO prop_updated = Column(DateTime(), nullable = False)
-	stripe_cust	= Column(String(40), nullable = True)
-	stripe_card	= Column(String(40), nullable = True)
-	stripe_tokn	= Column(String(40), nullable = True)
-	prop_updated = Column(DateTime(), nullable = False)
+	prop_uuid	= Column(String(40), primary_key=True)													# NonSequential ID
+	prop_hero	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
+	prop_user	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
+	prop_state	= Column(Integer, nullable=False, default=APPT_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
+	prop_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
+	prop_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
+	prop_cost	= Column(Integer, nullable=False, default=0)											# Cost.
+	prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# LastProfile to Touch proposal. 
+	prop_ts		= Column(DateTime(timezone=True),   nullable = False)
+	prop_tf		= Column(DateTime(timezone=True),   nullable = False)
+	prop_tz		= Column(String(20))
+	prop_desc	= Column(String(3000))
+	prop_place	= Column(String(1000),	nullable = False)	
+	prop_created = Column(DateTime(),	nullable = False, default = dt.utcnow())
+	prop_updated = Column(DateTime(),	nullable = False, default = dt.utcnow())
+	appt_secured = Column(DateTime(), nullable = True)
+	appt_charged = Column(DateTime(), nullable = True)
 
+	challengeID	= Column(String(40), nullable = False)
+	charge_customer_id	= Column(String(40), nullable = True)	# stripe customer id
+	charge_credit_card	= Column(String(40), nullable = True)	# stripe credit card
+	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
+	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
+	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
+	review_hero	= Column(String(40), ForeignKey('review.review_id'))
+	review_user = Column(String(40), ForeignKey('review.review_id'))
 
-
-	def __init__(self, prof_hero, prof_buyer, datetime_s, datetime_f, cost, location, description, tokn=None, cust=None, card=None, state=None, flags=None): 
-		self.prop_uuid = str(uuid.uuid4())
-		self.prop_hero	= str(prof_hero)
-		self.prop_buyer	= str(prof_buyer)
-		self.prop_state	= state
-		self.prop_flags = flags
-		self.prop_count = 1
+	#Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (prop_cost), location=prop_place, description=prop_desc, token=stripe_tokn, cust=pi, card=stripe_card)
+	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
+		self.prop_uuid	= str(uuid.uuid4())
+		self.prop_hero	= str(hero)
+		self.prop_user	= str(buyer)
 		self.prop_cost	= int(cost)
-		self.prop_from = str(prof_buyer)
+		self.prop_from	= str(buyer)
+		if (flags is not None): self.prop_flags = flags
 
 		self.prop_ts	= datetime_s
 		self.prop_tf	= datetime_f
 		self.prop_place	= location 
 		self.prop_desc	= description
+		self.challengeID = str(uuid.uuid4())
 
-		self.prop_created = datetime.datetime.utcnow()
-		self.prop_updated = datetime.datetime.utcnow()
-
-		self.stripe_tokn = tokn
-		self.stripe_cust = cust
-		self.stripe_card = card
+		self.charge_customer_id = customer
+		self.charge_credit_card = card
+		self.charge_user_token = token
 
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
 		self.prop_from = prof_updated
-		self.prop_updated	= datetime.datetime.utcnow()
+		self.prop_updated	= dt.utcnow()
 		self.prop_count		= self.prop_count + 1
 
 		if (updated_s is not None): self.prop_ts = updated_s
@@ -303,59 +347,76 @@ class Proposal(Base):
 		if (updated_flags is not None):	self.prop_flags = updated_flags
 
 
+	@staticmethod
+	def get_by_id(prop_id, location=None):
+		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
+		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_id)
+		return proposals[0]
+	
+
+
+	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):
+		s_cur = self.prop_state 
+		flags = self.prop_flags
+		valid = True
+		msg = None
+
+
+		if ((s_nxt == APPT_STATE_RESPONSE) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			self.prop_count = self.prop_count + 1
+		elif ((s_nxt == APPT_STATE_TIMEDOUT) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			s_nxt = APPT_STATE_REJECTED
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
+		elif ((s_nxt == APPT_STATE_REJECTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_ACCEPTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
+			self.appt_secured = dt.utcnow()
+		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
+			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
+			flags = set_flag(flags, APPT_FLAG_USERPAID)
+			self.appt_charged = dt.now()
+		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_CAPTURED)):
+			pass
+		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
+			pass
+		elif ((s_nxt == APPT_STATE_CANCELED) and ((s_cur == APPT_STATE_ACCEPTED) or (s_cur == APPT_STATE_CAPTURED))):
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+			#TODO disable / do not fire reviews.
+		elif ((s_nxt == APPT_STATE_COMPLETE) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_OCCURRED))):
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_DISPUTED) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_COMPLETE))):
+			flags = set_flag(flags, APPT_FLAG_DISPUTED)
+			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		else:
+			valid = False
+			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
+
+		if (msg or not valid):
+			raise StateTransitionError(self.prop_uuid, self.prop_state, s_nxt, flags, msg)
+
+		self.prop_state = s_nxt
+		self.prop_flags = flags
+		self.prop_updated = dt.utcnow()
+			
+
+
+	
+			
+
 	def __repr__(self):
-		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_buyer, self.prop_state)
-
-
-
-class Timeslot(Base):
-	__tablename__ = "timeslot"
-	id         = Column(Integer, primary_key = True)
-	profile_id = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# SELLER
-	creator_id = Column(String(40), ForeignKey('profile.heroid'), nullable=True,  index=True)			# BUYER (always a prop) 
-	status     = Column(Integer, default=0)		#0 = free, #1 = bid on?  #2 = purchased, #4 = completed.   -1 = Removed/unlisted, #4 = canceled?
-
-
-	location  = Column(String(1000), nullable = False)
-	ts_begin  = Column(DateTime(),   nullable = False)
-	ts_finish = Column(DateTime(),   nullable = False) # better to have this as a length of time?
-	cost      = Column(Integer,    nullable = False)
-
-	description = Column(String(3000),                            nullable = True)
-	created = Column(DateTime(), nullable = False)
-	updated = Column(DateTime(), nullable = False)
-	challenge   = Column(String(40), nullable = False)	#use this to identify transaction instead of id 
-
-	#booking = relationship("Booking", backref="timeslot", order_by="booking.id", lazy=False, uselist=False)
-	#digital = Column(Boolean, default=0)#0 means the timeslot is not digital appointment
-
-	def __init__(self, listing_profile, begin, finish, cost, desc, location, creator=None, status=TS_PROP_BY_HERO):
-		self.profile_id  = listing_profile
-		self.creator_id  = creator
-		self.ts_begin    = begin
-		self.ts_finish   = finish
-		self.cost 		 = cost 
-		self.description = desc
-		self.location    = location 
-		self.status      = status
-		self.created = datetime.datetime.now()
-		self.updated = datetime.datetime.now()
-		self.challenge = str(uuid.uuid4())
-
-	def __repr__(self):
-		return '<timeslot %r, %r, %r, %r>' % (self.id, self.profile, self.ts_start, self.status)
-
+		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
 
 
 
 class Appointment(Base):
-	__tablename__ = "appointment2"
-
-	id			= Column(Integer, primary_key = True)
+	__tablename__ = "appointment"
 	apptid		= Column(String(40), unique = True, primary_key = True, index=True)   #use challenge 
-	buyer_prof	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-	sellr_prof	= Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)			# if creator_id != profile_id; prop = True
+	buyer_prof	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	sellr_prof	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# if creator_id != profile_id; prop = True
 	status		= Column(Integer, default=0)		#0 = free, #1 = bid on?  #2 = purchased, #4 = completed.   -1 = Removed/unlisted, #4 = canceled?
 
 	location	= Column(String(1000), nullable = False)
@@ -371,10 +432,8 @@ class Appointment(Base):
 	updated		= Column(DateTime(), nullable = False, default = datetime.datetime.now())
 	agreement	= Column(DateTime(), nullable = False, default = datetime.datetime.now())
 
-	#TODO --make review ID the hash.
-	reviewOfBuyer	= Column(Integer, ForeignKey('review.id'), nullable = True)
-	reviewOfSellr	= Column(Integer, ForeignKey('review.id'), nullable = True)
-
+	reviewOfBuyer	= Column(String(40), ForeignKey('review.review_id'), nullable = True)
+	reviewOfSellr	= Column(String(40), ForeignKey('review.review_id'), nullable = True)
 
 	#booking_id=Column(Integer, ForeignKey('booking.id'))
 	#transaction_id=Column(Integer, ForeignKey('transaction.id'))
@@ -386,90 +445,45 @@ class Appointment(Base):
 		pass
 
 	def __repr__ (self):
-		return '<appt2, b:%r, s:%r, C:%r>' % (self.buyer_prof, self.sellr_prof, self.cost)
+		return '<appt, b:%r, s:%r, C:%r>' % (self.buyer_prof, self.sellr_prof, self.cost)
 
 
 
 
-class Transaction (Base):
-	#stripe.api_key = "sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
-	#stripe.Charge.retrieve("ch_2lAMeA9z956LjW", expand=["balance_transaction"])
-	__tablename__ = "transaction"
-	id	=		Column(Integer, primary_key=True)
-#	purchaser_account = Column(String(40), ForeignKey('account.heroid'), nullable=False, index=True)
-#	purchaser_profile = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-#	purchaser_customr = Column(String(20));	#charge.card.cust; stripe i
-
-#	seller_account = Column(String(40), ForeignKey('account.heroid'), nullable=False, index=True)
-#	seller_profile = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-#	seller_customr = Column(String(20));	#charge.cust; stripe i
-
-#	stripe_charge_id			# charge_id, used to find transaction object
-#	stripe_balance_transaction 	# transaction_info
-
-	def __init__ (self):
-		pass
-
-	def __repr__ (self):
-		return '<"transaction", %r>' % (self.id)
+#class BlockUser(Base):
+#	""" BlockUser provides a listing of every asynchronous blocking """ 
+#	__tablename__ = "BlockUser"
+#	id = Column(Integer,primary_key=True)
+#	profileId = Column(Integer,    nullable=False)
+#	filterId  = Column(Integer,    nullable=False)
+#	reason    = Column(String(80), nullable=False)
+#
+#	def __init__(self, blocked_user_id, blocked_by_user_id, user_reason):
+#		self.profileId = blocked_by_user_id
+#		self.filterId  = blocked_user_id
+#		self.reason    = user_reason
+#
+#	def __repr__(self):
+#		return '<BlockUser, %r ==>X %r>' % (self.filterId, self.profileId)
 
 
 
+#class Image(Base):
+#	__tablename__ = "image"
+#	id  = Column(Integer, primary_key=True)
+#	ts  = Column(DateTime,    nullable=False)
+#	fs  = Column(String(120))				#where file exists on FS
+#	img = Column(LargeBinary, nullable=True)
+#	profile = relationship("Profile", backref="image", lazy=False)
+#
+#	def __init__(self, image):
+#		self.img = image
+#		self.tsc = datetime.datetime.now()
+#
+#	def __repr__ (self):
+#		return '< image, %r, %r>' % (self.img, self.ts) ... can we use profile ID/name?
+#		return '<image, %s>' % (self.ts)
 
-class BlockUser(Base):
-	""" BlockUser provides a listing of every asynchronous blocking """ 
-	__tablename__ = "BlockUser"
-	id = Column(Integer,primary_key=True)
-	profileId = Column(Integer,    nullable=False)
-	filterId  = Column(Integer,    nullable=False)
-	reason    = Column(String(80), nullable=False)
-
-	def __init__(self, blocked_user_id, blocked_by_user_id, user_reason):
-		self.profileId = blocked_by_user_id
-		self.filterId  = blocked_user_id
-		self.reason    = user_reason
-
-	def __repr__(self):
-		return '<BlockUser, %r ==>X %r>' % (self.filterId, self.profileId)
-
-
-
-class Image(Base):
-	__tablename__ = "image"
-
-	id  = Column(Integer, primary_key=True)
-	ts  = Column(DateTime,    nullable=False)
-	fs  = Column(String(120))				#where file exists on FS
-	img = Column(LargeBinary, nullable=True)
-	profile = relationship("Profile", backref="image", lazy=False)
-
-
-	def __init__(self, image):
-		self.img = image
-		self.tsc = datetime.datetime.now()
-
-	def __repr__ (self):
-		#return '< image, %r, %r>' % (self.img, self.ts) ... can we use profile ID/name?
-		return '<image, %s>' % (self.ts)
-
-
-
-
-class Organization(Base):
-	__tablename__= "organization"
-	id   = Column(Integer, primary_key=True)
-	name = Column(String(50), nullable=False, unique=True)
-	#CAH - do we need someone (account(s)) to maintain Organization info?
-	#CAH - what about organization information like 'About IBM, or About Kaiser Permanente, Industry Info, Contact info to be verified?
-	
-	#CAH - add foreign key to Account.  
-	#CAH - should organizations have contact info and/or extra information... listing profiles that want to be associated [obviously, must be 2-way] 
-
-	def __init__ (self, org_name):
-		self.name = org_name
-
-	def __repr__ (self):
-		return '<Organization, %r>' % (self.name)
 
 
 class Industry(Base):
@@ -490,42 +504,79 @@ class Industry(Base):
 
 
 
-class Review(Base):
-	__tablename__ = "review"
-	# insert into "Review"(profile, author, rating, ts, text) VALUES (7, 3, 4, '2013-09-16 16:05:17.073843', 'One bad mofo');
+class Skills(Base):
+	__tablename__ = "skills"
 
-	ratePoints = ['',  '', '', '', '']
-	enumRating = [(str(k), v) for k, v in enumerate(ratePoints)]
+	skill_id   = Column(Integer, primary_key = True)
+	skill_name = Column(String(80), nullable = False)
+	skill_prof = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
-	id      = Column(Integer, primary_key = True, unique = True)
-	heroid  = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-	author  = Column(String(40), ForeignKey('profile.heroid'), nullable=False, index=True)
-	rating  = Column(Integer)
-	ts      = Column(DateTime(), nullable = False) 				# CAH: date of appointment? -- why would we care when the review is posted?
-	text    = Column(String(5000))
-	twin    = Column(Integer, unique = True, nullable = True) 	#twin or sibling review
-	#TODO viewable = Column(Boolean(), .
-
-	#appointment_id=Column(Integer, ForeignKey('appointment.key'))
-	#review_status=Column(Boolean, default=0)
-	#review_flagged?
-
-	def __init__ (self, reviewed_heroid, author_profile, rating, text):  #add rating
-		self.heroid= reviewed_heroid
-		self.author  = author_profile
-		self.rating  = rating
-		self.ts      = datetime.datetime.now()
-		self.text    = text
+	def __init__ (self, name, prof):
+		self.skill_name = name
+		self.skill_prof = prof
 
 	def __repr__ (self):
-		return '<review %r, %r, %r, %r>' % (self.author, self.heroid, self.rating, self.text[:20])
+		return '<skill %r>' % (self.name)
 
 
 
-#session table
-# heroid, nonce, ts - gets updated every action.
+
+class Review(Base):
+	__tablename__ = "review"
+
+	enumRating = [(str(k), v) for k, v in enumerate(['','','','',''])]
+	review_id		= Column(String(40), primary_key=True, index=True)
+	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+
+	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
+	rev_appt	= Column(String(40), nullable = False)
+	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
+
+	appt_score = Column(Integer, nullable = False, default = -1)	# 1 - 5
+	appt_value = Column(Integer, nullable = False, default = -1)	# in dollars.
+
+	score_attr_time = Column(Integer)	#their time management skills
+	score_attr_comm = Column(Integer)	#their communication skills
+	generalcomments = Column(String(5000))
+
+	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	rev_flags   = Column(Integer, default=0)
+
+	def __init__ (self, prop_id, usr_reviewed, usr_author):
+		self.review_id = str(uuid.uuid4())
+		self.rev_appt = prop_id 
+		self.prof_reviewed = usr_reviewed
+		self.prof_authored = usr_author
+
+	def __repr__ (self):
+		tmp_comments = self.generalcomments
+
+		if (tmp_comments is not None):
+			tmp_comments = tmp_comments[:20]
+			
+		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.rating, tmp_comments)
 
 
-# timeslot => appt.  Appt must match 1 to 1, take hash of prof.
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
 
+
+	@staticmethod
+	def retreive_by_id(find_id):
+		reviews = Review.query.filter_by(review_id=find_id).all()
+		if len(reviews) != 1: raise NoReviewFound(find_id, 'Sorry, review not found')
+		return reviews
+
+
+	def validate (session_prof_id):
+		if (self.prof_authored != session_prof_id):
+			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
+			return "no fucking way -- review author matches current profile_id"
+
+		
+	def if_posted(self, flag):
+		return (self.rev_status & (0x1 << flag))
 
