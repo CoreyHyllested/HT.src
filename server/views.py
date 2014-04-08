@@ -42,10 +42,13 @@ def homepage():
 	""" Returns the HeroTime front page for users and Heros
 		- detect HT Session info.  Provide modified info.
 	"""
-	if 'uid' in session:
-		return redirect('/dashboard')
 
-	return redirect('https://herotime.co/login')
+	bp = None
+
+	if 'uid' in session:
+		bp = Profile.get_by_uid(uid)
+
+	return make_response(render_template('index.html', bp=bp))
 
 
 
