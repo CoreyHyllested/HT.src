@@ -1,0 +1,605 @@
+/*
+
+There are five responsive design ranges for the cover image:
+a) 240px - 319px (crappy phones)
+b) 320px - 524px (normal phones)
+c) 525px - 600px (phablets)
+d) 601px - 889px (tablet)
+e) 889px - ... (desktop)
+
+
+Next, there are three ranges for the layout of the content area:
+a) 240px - 549px (phones)
+b) 550px - 999px (tablets)
+c) 1000px - ... (desktop)
+
+
+Finally, there are three ranges for the content itself:
+a) 240px - 489px (phones)
+b) 490px - 999px (tablets)
+c) 1000px - ... (desktops)
+
+*/
+
+
+/* COMMON ELEMENTS */
+
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+	.indexCover {
+		display: block;
+		position: relative;
+		width: 100%;
+	}
+
+	.indexCoverPic {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;			
+		min-width: 100%;
+		width: 100% !important;
+	}
+
+	.indexCoverHeading h2 {
+		font-family: Garamond, Georgia, serif;
+		font-style: italic;
+	}
+
+/* COVER IMAGE */
+
+	/* Crappy phones */
+
+	@media only screen and (min-device-width: 240px) and (max-width: 319px) {
+
+		.indexCoverContentWrapper {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+		}
+
+		.indexCoverHeading {
+			margin: auto;
+			width: 90%;
+		}
+
+		.indexCoverHeading h1 {
+			font-weight: 800;
+			font-size: 1.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverHeading h2 {
+			color: white;
+			font-size: 1.1em;
+			line-height: 1.2em;
+			margin-top: 0.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverSearch {
+			display: none;
+		}
+
+		.indexMobileSearch {
+			background-color: rgba(0,0,0, 0.4);
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			height: 50px;
+			padding: 5px;
+			position: relative;
+			top: -6px;
+			width: 100%;
+		}
+
+		.indexMobileSearch input[type="text"] {
+			border: 1px solid white;
+			border-radius: 3px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			line-height: 100%;
+			margin: auto;
+			height: 40px;
+			width: 100%;
+		}
+
+		.indexMobileSearch input[type="submit"] {
+			display: none;
+		}
+
+	}
+
+	/* Normal phones */
+	@media only screen and (min-width: 320px) and (max-width: 524px) {
+
+		.indexCoverContentWrapper {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+		}
+
+		.indexCoverHeading {
+			margin: auto;
+			width: 90%;
+		}
+
+		.indexCoverHeading h1 {
+			font-weight: 800;
+			font-size: 2em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverHeading h2 {
+			color: white;
+			font-size: 1.1em;
+			margin-top: 0.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverSearch {
+			background-color: rgba(0,0,0, 0.4);
+			border-radius: 6px;
+			bottom: 10%;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			height: 50px;
+			margin: 0.5em auto;
+			padding: 5px;
+			width: 90%;
+		}
+
+		.indexCover input[type="text"] {
+			border: 1px solid white;
+			border-radius: 3px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			line-height: 100%;
+			height: 40px;
+			width: 100%;
+		}
+
+		.indexCover input[type="submit"] {display: none;}
+
+		.indexMobileSearch {display: none;}
+
+	}
+
+	/* Phablet */
+	@media only screen and (min-width: 525px) and (max-width: 600px) {
+
+		.indexCoverContentWrapper {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+		}
+
+		.indexCoverHeading {
+			margin: auto;
+			width: 90%;
+		}
+
+		.indexCoverHeading h1 {
+			font-weight: 800;
+			font-size: 2.5em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverHeading h2 {
+			color: white;
+			font-size: 1.25em;
+			margin-top: 0.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverSearch {
+			background-color: rgba(0,0,0, 0.4);
+			border-radius: 6px;
+			bottom: 10%;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			height: 60px;
+			margin: 0.5em auto;
+			padding: 10px;
+			width: 75%;
+		}
+
+		.indexCover input[type="text"] {
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;
+			border: 1px solid white;
+			border-radius: 3px;
+			font-size: 1.1em;
+			line-height: 100%;
+			height: 40px;
+			width: 100%;
+		}
+
+		.indexCover input[type="submit"] {display: none;}
+
+		.indexMobileSearch {display: none;}
+
+	}
+
+	/* Tablet */
+	@media only screen and (min-width: 601px) and (max-width: 889px) {
+
+		.indexCoverContentWrapper {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+		}
+
+		.indexCoverHeading h1 {
+			font-weight: 800;
+			font-size: 3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverHeading h2 {
+			color: white;
+			font-size: 1.5em;
+			margin-top: 0.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverSearch {
+			background-color: rgba(0,0,0, 0.4);
+			border-radius: 6px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			margin: 0.5em auto;
+			height: 60px;
+			padding: 10px;
+			width: 535px;
+		}
+
+		.indexCover input[type="text"] {
+			border: 1px solid white;
+			border-radius: 3px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			float: left;
+			font-size: 1.1em;
+			line-height: 100%;
+			height: 40px;
+			padding-left: 8px;
+			width: 100%;
+		}
+
+		.indexCover input[type="submit"] {
+			display: none
+		}
+
+		.indexMobileSearch {display: none;}
+
+	}
+
+	/* Desktop */
+	@media only screen and (min-width: 890px) {
+
+		.pageWrapper {
+			background: rgba(255,255,255,1);
+			background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+			background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+			background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+			background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+			background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+			background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+		}
+
+		.indexCoverContentWrapper {
+			position: absolute;
+			top: 25%;
+			width: 100%;
+		}
+
+		.indexCoverHeading h1 {
+			font-weight: 800;
+			font-size: 4em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverHeading h2 {
+			color: white;
+			font-size: 1.8em;
+			margin-top: 0.3em;
+			text-align: center;
+			text-shadow: 0px 1px 4px rgba(0,0,0, 0.6);
+		}
+
+		.indexCoverSearch {
+			background-color: rgba(0,0,0, 0.4);
+			border-radius: 6px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			margin: 0.7em auto;
+			height: 60px;
+			padding: 10px;
+			width: 535px;
+		}
+
+		.indexCover input[type="text"] {
+			border: 1px solid white;
+			border-radius: 3px;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			float: left;
+			font-size: 1.1em;
+			line-height: 100%;
+			height: 40px;
+			padding-left: 8px;
+			width: 100%;
+		}
+
+		.indexCover input[type="submit"] {
+			display: none;
+		}
+
+		.indexMobileSearch {display: none;}
+
+	}
+
+
+/* MAIN LAYOUT */
+
+	/* Phones */
+	@media only screen and (min-device-width: 240px) and (max-width: 549px) {
+		
+		.indexContentWrapper {
+			background-color: white;
+			z-index: 30;
+		}
+
+	}
+
+	/* Tablet */
+	@media only screen and (min-width: 550px) and (max-width: 999px) {
+			
+		.indexContentWrapper {
+			background-color: white;
+			margin: -100px auto 0;
+			min-height: 400px;
+			position: relative;
+			width: 100%;
+		}
+
+	}
+
+	/* Desktop */
+	@media only screen and (min-width: 1000px) {
+
+		.indexContentWrapper {
+			background-color: white;
+			border-top: 10px solid #d1eefc;
+			box-shadow: rgba(0,0,0, 0.1) 0px 2px 2px;
+			margin: -200px auto 0;
+			width: 980px;
+			z-index: 30;
+			position: relative;
+		}
+
+	}
+
+
+/* FEATURES & BLURB */
+
+	/* Phones, phablets */
+	@media only screen and (min-device-width: 240px) and (max-width: 489px) {
+
+		.indexFeatures {
+			position: relative;
+			top: -6px;
+		}
+
+		.indexFeature {
+			background-color: #fafafd;
+			margin: auto;
+			padding: 20px 0;
+			text-align: center;
+			width: 100%;
+		}
+
+		.indexFeature:nth-of-type(2) {
+			background-color: white
+		}
+
+		.indexFeaturePic {
+			border-radius: 100%;
+			height: 150px;
+			margin: auto;
+			width: 150px;
+		}
+
+		.indexFeature h2 {
+			margin-top: 20px;
+		}
+
+		.indexFeature p {
+			line-height: 1.2em;
+			margin-top: 20px;
+			padding: 0 10px 0;
+		}
+
+		.indexBlurbWrapper {		
+			margin: auto;
+			padding: 20px 0 0;
+			width: 90%;
+		}
+
+		.indexBlurb {
+			width: 100%;
+			padding-bottom: 30px;
+		}
+
+		.indexBlurb h2 {
+			color: rgba(0,0,0, 0.9);
+			line-height: 1.2em;
+		}
+
+		.indexCategories {
+			display: none;
+/*			font-weight: 200;
+			font-size: 1.2em;
+			margin: 20px 0;
+			text-align: center;*/
+		}
+
+		.indexCategories a {
+			line-height: 2.4em;
+		}
+		
+
+	}
+
+
+	/* Tablet */
+	@media only screen and (min-width: 490px) and (max-width: 999px) {
+
+		.indexFeature {
+			display: inline-block;
+			float: left;
+			padding-top: 20px;
+			text-align: center;
+			width: 33.33%;
+		}
+
+		.indexFeature h2 {
+			margin-top: 20px;
+		}
+
+		.indexFeature p {
+			line-height: 1.2em;
+			margin: 10px auto;
+			width: 75%;
+		}
+
+		.indexFeaturePic {
+			border-radius: 100%;
+			height: 60%;
+			margin: auto;
+			width: 60%;
+		}
+
+		.indexBlurbWrapper {
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			background-color: #fafafd;
+			float: right;
+			margin: auto;
+			padding: 40px;
+			width: 100%;
+		}
+
+		.indexBlurb {
+			border-right: 1px solid rgba(0,0,0, 0.1);
+			float: left;
+			padding-right: 10%;
+			width: 60%;
+		}
+
+		.indexBlurb h2 {
+			color: rgba(0,0,0, 0.9);
+			line-height: 1.2em;
+		}
+
+		.indexCategories {
+			float: right;
+			font-weight: 200;
+			width: 20%;
+		}
+
+		.indexCategories a {
+			line-height: 2.4em;
+		}
+
+
+	}
+
+	/* Desktop */
+	@media only screen and (min-width: 1000px) {
+
+		.indexFeature {
+			display: inline-block;
+			float: left;
+			padding: 20px 0;
+			text-align: center;
+			width: 33.33%;
+		}
+
+		.indexFeature h2 {
+			margin-top: 20px;
+		}
+
+		.indexFeature p {
+			line-height: 1.2em;
+			margin: 10px auto;
+			width: 75%;
+		}
+
+		.indexFeaturePic {
+			border-radius: 100%;
+			height: 60%;
+			margin: auto;
+			width: 60%;
+		}
+
+		.indexBlurbWrapper {
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+			background-color: #fafafd;
+			float: right;
+			margin: auto;
+			padding: 40px;
+			width: 100%;
+		}
+
+		.indexBlurb {
+			border-right: 1px solid rgba(0,0,0, 0.1);
+			float: left;
+			padding-right: 10%;
+			width: 60%;
+		}
+
+		.indexBlurb h2 {
+			color: rgba(0,0,0, 0.9);
+			line-height: 1.2em;
+		}
+
+		.indexCategories {
+			float: right;
+			font-weight: 200;
+			width: 20%;
+		}
+
+		.indexCategories a {
+			line-height: 2.4em;
+		}
+
+
+	}

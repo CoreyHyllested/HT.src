@@ -1,0 +1,80 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/login.css">
+{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+	function validateForm() {
+		// Fetch form elements
+		var email = document.forms["LoginWithEmail"]["input_login_email"];
+		var password = document.forms["LoginWithEmail"]["input_login_password"];
+
+		// Check for empty fields; if found, highlight them
+		var form_fields = [email, password];
+		for (var i = 0; i < form_fields.length; i++) {
+			var current_element = form_fields[i];
+			var current_value = form_fields[i].value;
+			if (current_value.match(/^\s*$/)) {
+				$(current_element).focus();
+				return false;
+			}
+		}		
+   }
+
+</script>
+
+
+
+<div class="loginContentWrapper">
+
+	<h2>Email Login</h2>
+
+	<div class="loginSwitch">
+		<div class="loginSwitchEmail loginSwitchActive">Email Login</div>
+		<div class="loginSwitchSocial">Social Login</div>
+	</div>
+
+	<div class="loginEmail">
+
+		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
+			{{form.hidden_tag()}}
+
+			{{form.input_login_email(placeholder="Email")}}
+			{{form.input_login_password(placeholder="Password")}}
+
+			{% if errmsg != none %}
+				<script>
+					openAlertWindow('{{errmsg}}')
+				</script>
+			{% endif %}
+
+			<div class="loginEmailSubmitWrapper">
+				<input type="submit" value="Log in" class="blueButton">
+			</div>
+		</form>
+
+	</div>
+
+	<h2>Social Login</h2> 
+
+	<div class="loginSocial">
+
+		<form method="link" action="/login/linkedin">
+			<input type="submit" class="loginLinkedIn" name="loginLinkedIn" value="LinkedIn"> 
+		</form>
+			
+		<div class="loginLinkedInNotice">			
+			By clicking the button above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
+		</div>
+	</div>
+	
+	<a class="loginLink" href="/signup">Join HeroTime</a>
+	<a class="loginLink" href="/recovery">Forgot your password?</a>
+
+</div>
+
+{% endblock %}

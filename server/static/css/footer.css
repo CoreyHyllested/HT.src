@@ -1,8 +1,8 @@
 /*
 There are three responsive design ranges for the header (ht_header.html):
 a) 240px - 549px (phones);
-b) 550px - 767px (phablets);
-c) 768px - ... (tablets, desktops);
+b) 550px - 999px (phablets);
+c) 1000px - ... (tablets, desktops);
 */
 
 /* Common Elements */
@@ -34,7 +34,7 @@ c) 768px - ... (tablets, desktops);
 
 
 
-/* Phones (240px - 549px) */
+/* Phones, phablets (240px - 549px) */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
 
 	#footer {height: 130px;}
@@ -59,8 +59,8 @@ c) 768px - ... (tablets, desktops);
 }
 
 
-/* Phablets (550px - 767px) */
-@media only screen and (min-width: 550px) and (max-width: 767px) {
+/* Tablets (550px - 999px) */
+@media only screen and (min-width: 550px) and (max-width: 999px) {
 
 	#footer {height: 80px;}
 
@@ -74,14 +74,14 @@ c) 768px - ... (tablets, desktops);
 	.footerLogo {
 		background: url("../img/logo.svg") no-repeat;
 		height: 20px;
-		left: 20px;
+		left: 0;
 		position: absolute;
 		top: 0;
 		width: 111px;
 	}
 
 	.footerMenu {
-		left: 160px;
+		left: 140px;
 		position: absolute;
 		text-align: left;
 		top: -6px;
@@ -94,15 +94,15 @@ c) 768px - ... (tablets, desktops);
 		letter-spacing: 0.05em;
 		line-height: 1.5em;
 		position: absolute;
-		left: 160px;
+		left: 140px;
 		text-align: left;
 		top: 30px;
 	}
 
 }
 
-/* Tablets, desktops (768px and bigger) */
-@media only screen and (min-width: 768px) {
+/* Desktops (999px and bigger) */
+@media only screen and (min-width: 1000px) {
 
 	#footer {height: 80px; position: static;}
 
@@ -110,13 +110,13 @@ c) 768px - ... (tablets, desktops);
 		display: block;
 		margin: 15px auto 0;
 		position: relative;
-		width: 768px;
+		width: 980px;
 	}
 
 	.footerLogo {
 		background: url("../img/logo.svg") no-repeat;
 		height: 20px;
-		left: 20px;
+		left: 0;
 		position: absolute;
 		top: 0;
 		width: 111px;
@@ -125,7 +125,7 @@ c) 768px - ... (tablets, desktops);
 	.footerMenu {
 		font-size: 0.85em;
 		position: absolute;
-		left: 160px;
+		left: 140px;
 		text-align: left;
 		top: -6px;
 	}
@@ -137,7 +137,7 @@ c) 768px - ... (tablets, desktops);
 		letter-spacing: 0.05em;
 		line-height: 1.5em;
 		position: absolute;
-		left: 160px;
+		left: 140px;
 		text-align: left;
 		top: 30px;
 	}

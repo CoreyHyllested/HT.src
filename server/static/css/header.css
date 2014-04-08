@@ -1,8 +1,8 @@
 /*
 There are three responsive design ranges for the header (ht_header.html):
 a) 240px - 549px (phones);
-b) 550px - 767px (phablets);
-c) 768px - 979px (tablets, desktops);
+b) 550px - 999px (phablets, tablets);
+c) 1000px - ... (desktop)
 */
 
 /* Phones (240px - 549px) */
@@ -148,8 +148,8 @@ c) 768px - 979px (tablets, desktops);
 	.headerTextMenu {display: none;}
 }
 
-/* Phablets (550px - 767px) */
-@media only screen and (min-width: 550px) and (max-width: 767px) {
+/* Phablets (550px - 999px) */
+@media only screen and (min-width: 550px) and (max-width: 999px) {
 
 	/* Page Wrapper */
 
@@ -201,7 +201,7 @@ c) 768px - 979px (tablets, desktops);
 		background: url("../img/logo.svg") no-repeat;
 		background-size: 97px 14px;
 		height: 15px;
-		left: 20px;
+		left: 0;
 		position: absolute;
 		top: 14px;
 		width: 97px;
@@ -231,7 +231,7 @@ c) 768px - 979px (tablets, desktops);
 	.headerTextMenu {
 		list-style-type: none;
 		position: absolute;
-		right: 20px;
+		right: 0;
 		top: 8px;
 	}
 
@@ -256,8 +256,8 @@ c) 768px - 979px (tablets, desktops);
 
 }
 
-/* Tablets, desktops (768px and greater) */
-@media only screen and (min-width: 768px) {
+/* Tablets, desktops (1000px and greater) */
+@media only screen and (min-width: 1000px) {
 
 	/* Page Wrapper */
 
@@ -329,7 +329,7 @@ c) 768px - 979px (tablets, desktops);
 		height: 40px;
 		margin: auto;
 		position: relative;
-		width: 768px;
+		width: 980px;
 	}
 
 
@@ -339,7 +339,7 @@ c) 768px - 979px (tablets, desktops);
 		background: url("../img/logo.svg") no-repeat;
 		background-size: 97px 14px;
 		height: 15px;
-		left: 20px;
+		left: 0;
 		position: absolute;
 		top: 14px;
 		width: 97px;
@@ -369,7 +369,7 @@ c) 768px - 979px (tablets, desktops);
 	.headerTextMenu {
 		list-style-type: none;
 		position: absolute;
-		right: 20px;
+		right: 0px;
 		top: 8px;
 	}
 

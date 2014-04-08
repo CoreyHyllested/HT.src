@@ -8,11 +8,7 @@
 		}
 	});
 
-	function searchBar() {
-		var x=document.forms["srchForm"]["search"].value;
-		if (x==null || x=="") { return false; }
-		return true;
-	}
+
 
 	// Modal windows: Open
 	function openAlertWindow(text) {

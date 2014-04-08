@@ -20,11 +20,24 @@ strong {
 	font-weight: bold;
 }
 
+h1 {
+	color: white;
+	font-size: 3em;
+	font-weight: 400;
+	line-height: 1em;
+}
+
 h2 {
 	color: rgba(0, 0, 0, 0.9);
 	font-size: 1.5em;
 	font-weight: 400;
+	line-height: 1em;
 }
+
+.clear {
+	clear: both;
+}
+
 
 /* ANIMATIONS */
 
@@ -78,6 +91,14 @@ a:visited {color: #29abe1;}
 
 
 /* FORMS */
+
+/* Placeholder */
+
+:-moz-placeholder {color: #939292;} /* Firefox 18- */ 
+::-moz-placeholder {color: #939292;} /* Firefox 19+ */ 
+:-ms-input-placeholder {color: #939292;}
+::-webkit-input-placeholder {color: #939292;}
+
 
 /* Buttons */
 
