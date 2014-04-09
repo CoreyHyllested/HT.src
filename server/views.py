@@ -46,7 +46,7 @@ def homepage():
 	bp = None
 
 	if 'uid' in session:
-		bp = Profile.get_by_uid(uid)
+		bp = Profile.get_by_uid(session['uid'])
 
 	return make_response(render_template('index.html', bp=bp))
 
