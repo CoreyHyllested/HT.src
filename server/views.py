@@ -1005,7 +1005,8 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	session.pop('uid')
+	if (session.get('uid') is not None):
+		session.pop('uid')
 	return redirect('/')
 
 
