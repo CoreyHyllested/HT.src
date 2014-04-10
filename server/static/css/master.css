@@ -28,10 +28,16 @@ h1 {
 }
 
 h2 {
-	color: rgba(0, 0, 0, 0.9);
+	color: rgba(0,0,0, 0.9);
 	font-size: 1.5em;
 	font-weight: 400;
-	line-height: 1em;
+	line-height: 1.2em;
+}
+
+h3 {
+	font-size: 1.2em;
+	font-weight: 500;
+	line-height: 1.2em;
 }
 
 .clear {
@@ -229,6 +235,38 @@ a:visited {color: #29abe1;}
 		font-size: 0.9em;
 		text-transform: uppercase;
 	}
+
+	select {
+	    -moz-appearance: none;
+		-webkit-appearance: none;
+		background: url('../img/dropdown.svg') no-repeat right white;
+		border: 1px #cccccc solid;
+		border-radius: 0;
+		font-size: 0.9em;
+		height: 40px;
+		line-height: 1.5em;
+		outline: none;
+		padding: 2px 0 0 5px;
+		text-indent: 1px;
+	    text-overflow: '';
+	}
+
+@-moz-document url-prefix() {
+	select {
+		-moz-appearance: none;
+		-webkit-appearance: none;
+		background: url('../img/dropdown.svg') no-repeat right white;
+		border: 1px #cccccc solid;
+		border-radius: 0;
+		font-size: 0.9em;
+		height: 40px;
+		line-height: 1.5em;
+		outline: none;
+		padding: 9px 0 0 0;
+		text-indent: 1px;
+	    text-overflow: '';
+	}
+}
 
 /* MODAL WINDOWS */
 

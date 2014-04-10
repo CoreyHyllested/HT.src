@@ -117,6 +117,7 @@ c) 1000px - ... (desktop)
 	.headerContentWrapper {
 		height: 40px;
 		margin: 0 auto;
+		position: relative;
 		width: 90%;
 	}
 
@@ -126,6 +127,7 @@ c) 1000px - ... (desktop)
 		background: url("../img/logo.svg") no-repeat;
 		background-size: 97px 14px;
 		height: 15px;
+		left: 0;
 		position: absolute;
 		top: 14px;
 		width: 97px;
@@ -138,9 +140,9 @@ c) 1000px - ... (desktop)
 		background-size: 25px 15px;
 		display: block;
 		height: 15px;
-		padding: 13px;
+		right: 0;
+		padding: 13px 0 13px 13px;
 		position: absolute;
-		right: 0px;
 		top: 0px;
 		width: 25px;
 	}
