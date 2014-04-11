@@ -97,18 +97,20 @@ c) 980px - ... (desktops)
 	}
 
 	.searchResultsHeading h2 {
-		float: left;
-		font-size: 1.2em;
+		color: rgba(0,0,0, 0.5);
+		float: right;
+		font-size: 1em;
 	}
 
 	.searchOptionsMenu {
 		color: #29abe2;
 		cursor: pointer;
 		display: block;
+		font-weight: bold;
 		position: absolute;
 		text-align: right;
-		top: 59px;
-		right: 5%;
+		top: 57px;
+		left: 5%;
 		-moz-user-select: none;
 		-ms-user-select: none;
 		-o-user-select: none;
