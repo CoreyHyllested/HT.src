@@ -2,99 +2,79 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/index.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/login.css">
 {% endblock %}
 
 {% block content %}
 
-<div class="indexCover">
+<script type="text/javascript">
+	function validateForm() {
+		// Fetch form elements
+		var email = document.forms["LoginWithEmail"]["input_login_email"];
+		var password = document.forms["LoginWithEmail"]["input_login_password"];
+
+		// Check for empty fields; if found, highlight them
+		var form_fields = [email, password];
+		for (var i = 0; i < form_fields.length; i++) {
+			var current_element = form_fields[i];
+			var current_value = form_fields[i].value;
+			if (current_value.match(/^\s*$/)) {
+				$(current_element).focus();
+				return false;
+			}
+		}		
+   }
+
+</script>
+
+
+
+<div class="loginContentWrapper">
+
+	<h2>Email Login</h2>
+
+	<div class="loginSwitch">
+		<div class="loginSwitchEmail loginSwitchActive">Email Login</div>
+		<div class="loginSwitchSocial">Social Login</div>
+	</div>
+
+	<div class="loginEmail">
+
+		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
+			{{form.hidden_tag()}}
+
+			{{form.input_login_email(placeholder="Email")}}
+			{{form.input_login_password(placeholder="Password")}}
+
+			{% if errmsg != none %}
+				<script>
+					openAlertWindow('{{errmsg}}')
+				</script>
+			{% endif %}
+
+			<div class="loginEmailSubmitWrapper">
+				<input type="submit" value="Log in" class="blueButton">
+			</div>
+		</form>
+
+	</div>
+
+	<h2>Social Login</h2> 
+
+	<div class="loginSocial">
+
+		<form method="link" action="/login/linkedin">
+			<input type="submit" class="loginLinkedIn" name="loginLinkedIn" value="LinkedIn"> 
+		</form>
+			
+		<div class="loginLinkedInNotice">			
+			By clicking the button above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
+		</div>
+	</div>
 	
-	<img class="indexCoverPic" src="/static/img/farmer.jpg">
-
-	<div class="indexCoverContentWrapper">
-
-		<div class="indexCoverHeading">
-			<h1>NEED A HAND?</h1>
-			<h2>Meet lifestyle experts in your local community.</h2>
-		</div>
-
-		<div class="indexCoverSearch">
-			<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
-				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-				<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
-				<input class="blueButton" type="submit" value="Search">
-			</form>
-		</div>
-
-	</div>
+	<a class="loginLink" href="/signup">Join HeroTime</a>
+	<a class="loginLink" href="/recovery">Forgot your password?</a>
 
 </div>
-
-<div class="indexMobileSearch">
-	<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
-		<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-		<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
-		<input class="blueButton" type="submit" value="Search">
-	</form>
-</div>
-
-<div class="indexContentWrapper">
-
-	<div class="indexBlurbWrapper">
-
-		<div class="indexBlurb">
-			<h2>Where Do You Find an Autoharp Virtuoso Who Speaks Chinese When You Need One?</h2>
-			<br>
-			<p>Well, one actually happens to live down the street, in the green building three blocks away from you. He could be at your place for the first lesson in fifteen minutes. By the way, the guy is awesome at wet sanding and buffing, too. (His YouTube tutorial has five million views.) But you've already seen that on his profile here, haven't you?
-			<br><br>
-			<strong>We help you schedule in-person meetings with trusted local specialists whose expertise you need to enrich your busy life.</strong>
-
-		</div>
-
-		<div class="indexCategories">
-			<a href="#">Arts/Design</a><br>
-			<a href="#">Beauty/Style</a><br>
-			<a href="#">Food</a><br>
-			<a href="#">Music</a><br>
-			<a href="#">Sports</a><br>
-			<a href="#">Spirituality</a><br>
-			<a href="#">Technology</a><br>
-			<a href="#">Travel/Leisure</a><br>
-			<a href="#">Wellness</a><br>
-		</div>
-	</div>
-	
-	<div class="clear"></div>
-
-
-	<div class="indexFeatures">
-
-		<div class="indexFeature">
-			<img class="indexFeaturePic" src="/static/img/timing.jpg">
-			<h2>Convenient</h2>
-			<p>Schedule the meeting at the time that best fits your busy schedule.</p>
-		</div>
-
-		<div class="indexFeature">
-			<img class="indexFeaturePic" src="/static/img/photographer.jpg">
-			<h2>Affordable</h2>
-			<p>Negotiate the best price possible with the expert you want - every time.</p>
-		</div>
-
-		<div class="indexFeature">
-			<img class="indexFeaturePic" src="/static/img/snjezana.jpg">
-			<h2>Trustworthy</h2>
-			<p>Two-way reviews, social integration, and more for your peace of mind.</p>
-		</div>
-	</div>
-
-
-
-
-	<div class="clear"></div>
-
-</div>
-
-<div class="clear"></div>
 
 {% endblock %}

@@ -2,7 +2,8 @@
 *.pyd
 *.pyo
 *.sw[oprstuv]
-*.DS_Store
+
+.DS_Store
 
 #for heroku
 #requirements.txt

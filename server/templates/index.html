@@ -1,14 +1,16 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-	<title>HeroTime {{title}}</title>
+	<title>HeroTime </title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 	
 
 	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
 
-	{% block head %}
+	
+	
 	
 	<!-- STYLESHEETS -->
 
@@ -23,7 +25,9 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
 
-	{% endblock %}
+	
+	<link type="text/css" rel="stylesheet" href="/static/css/index.css">
+
 
 
 	<!--<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">-->
@@ -32,13 +36,11 @@
 	
 	<!-- SCRIPTS -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script>
-	<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>-->
-	<script src="/static/js/modal_windows.js"></script>	
-
-	{% if jsfiles %}
-	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
-	{% endif %}
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+	<script src="/static/js/modal_windows.js"></script>
+	
+	<!-- Not sure if we need this once we finish separate CSS for each page -->
+	
 
 	<script>
 
@@ -212,11 +214,6 @@
 				$('.signupSocial').show();
 
 			});
-
-			// [Search] On mobile, toggle search options on/off
-			$('.searchOptionsMenu').click(function() {
-				$('.searchOptions').toggleClass('searchOptionsOn');
-			});
 		});
 	</script>
 </head>
@@ -240,22 +237,15 @@
 
 	<div class="menu">
 		<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
-			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+			<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
 			<input name="search" id="menuSearch" type="text" autocomplete="off">
 		</form>
 		<ul>
 
-			{% if bp %}
-			<li id="menuUserName">{{bp.name}}
-			<li><a href="/dashboard">Dashboard</a></li>
-			<li><a href="/profile">Profile</a></li>
-			<li><a href="/settings">Settings</a></li>
-			<li><a href="/logout">Log Out</a></li>
-
-			{% else %}
+			
 			<li><a href="/signup">Signup</a></li>
 			<li><a href="/login">Login</a></li>
-			{% endif %}
+			
 		</ul>
 	</div>
 
@@ -269,22 +259,17 @@
 
 				<!-- HEADER LOGO -->
 				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a href="/dashboard">{% else %}<a href="/">{% endif %}
+				<a href="/">
 					<div class="headerLogo"></div>
 				</a>
 
 				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
-					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+					<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
 					<input name="search" id="headerSearch" type="text" autocomplete="off">
 				</form>
 
 				<!-- HEADER MENU -->
-				{% if bp %}
-
-				<div class="headerGraphicalMenu"></div>
-
-				</div>
-				{% else %}
+				
 
 				<div class="headerGraphicalMenu"></div>
 
@@ -293,7 +278,7 @@
 					<li><a href="/login">Login</a></li>
 				</ul>
 
-				{% endif %}
+				
 				</div>
 				<div id="top-flash">
 					<span id="fmsg"></span>
@@ -302,8 +287,99 @@
 		<!-- Header ends here -->
 
 		
-		{% block content %}
-		{% endblock %}
+		
+
+<div class="indexCover">
+	
+	<img class="indexCoverPic" src="/static/img/farmer.jpg">
+
+	<div class="indexCoverContentWrapper">
+
+		<div class="indexCoverHeading">
+			<h1>NEED A HAND?</h1>
+			<h2>Meet lifestyle experts in your local community.</h2>
+		</div>
+
+		<div class="indexCoverSearch">
+			<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
+				<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
+				<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
+				<input class="blueButton" type="submit" value="Search">
+			</form>
+		</div>
+
+	</div>
+
+</div>
+
+<div class="indexMobileSearch">
+	<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
+		<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
+		<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
+		<input class="blueButton" type="submit" value="Search">
+	</form>
+</div>
+
+<div class="indexContentWrapper">
+
+	<div class="indexBlurbWrapper">
+
+		<div class="indexBlurb">
+			<h2>Where Do You Find an Autoharp Virtuoso Who Speaks Chinese When You Need One?</h2>
+			<br>
+			<p>Well, one actually happens to live down the street, in the green building three blocks away from you. He could be at your place for the first lesson in fifteen minutes. By the way, the guy is awesome at wet sanding and buffing, too. (His YouTube tutorial has five million views.) But you've already seen that on his profile here, haven't you?
+			<br><br>
+			<strong>We help you schedule in-person meetings with trusted local specialists whose expertise you need to enrich your busy life.</strong>
+
+		</div>
+
+		<div class="indexCategories">
+			<a href="#">Arts/Design</a><br>
+			<a href="#">Beauty/Style</a><br>
+			<a href="#">Food</a><br>
+			<a href="#">Music</a><br>
+			<a href="#">Sports</a><br>
+			<a href="#">Spirituality</a><br>
+			<a href="#">Technology</a><br>
+			<a href="#">Travel/Leisure</a><br>
+			<a href="#">Wellness</a><br>
+		</div>
+	</div>
+	
+	<div class="clear"></div>
+
+
+	<div class="indexFeatures">
+
+		<div class="indexFeature">
+			<img class="indexFeaturePic" src="/static/img/timing.jpg">
+			<h2>Convenient</h2>
+			<p>Schedule the meeting at the time that best fits your busy schedule.</p>
+		</div>
+
+		<div class="indexFeature">
+			<img class="indexFeaturePic" src="/static/img/photographer.jpg">
+			<h2>Affordable</h2>
+			<p>Negotiate the best price possible with the expert you want - every time.</p>
+		</div>
+
+		<div class="indexFeature">
+			<img class="indexFeaturePic" src="/static/img/snjezana.jpg">
+			<h2>Trustworthy</h2>
+			<p>Two-way reviews, social integration, and more for your peace of mind.</p>
+		</div>
+	</div>
+
+
+
+
+	<div class="clear"></div>
+
+</div>
+
+<div class="clear"></div>
+
+
 
 	
 	</div><!-- Page wrapper ends here -->

@@ -42,10 +42,13 @@ def homepage():
 	""" Returns the HeroTime front page for users and Heros
 		- detect HT Session info.  Provide modified info.
 	"""
-	if 'uid' in session:
-		return redirect('/dashboard')
 
-	return redirect('https://herotime.co/login')
+	bp = None
+
+	if 'uid' in session:
+		bp = Profile.get_by_uid(session['uid'])
+
+	return make_response(render_template('index.html', bp=bp))
 
 
 
@@ -581,12 +584,13 @@ def sanitize_render_errors(err):
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'ht_proposal_create' 
+	print 'ht_proposal_create'
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
 	except Sanitized_Exception as se:
 		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
-	return render_dashboard()
+	usrmsg = "success"
+	return render_dashboard(usrmsg=usrmsg)
 
 
 
@@ -1001,7 +1005,8 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	session.pop('uid')
+	if (session.get('uid') is not None):
+		session.pop('uid')
 	return redirect('/')
 
 

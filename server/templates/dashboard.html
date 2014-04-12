@@ -56,7 +56,6 @@
 	</div>
 </div>
 
-
 <div id="content-box-dapps" class="content-box">
 	<ul id="tabs">
 		<li id="tab-dapps" class="active"><p><img src="/static/img/calendar-active.svg" alt="Appointments" />Appointments</p></li>
@@ -209,6 +208,12 @@
 
 	<div class="clear"></div>
 </div>
+
+{% if usrmsg != none %}
+	<script>
+		tab_switch_dash('tab-dprop', 'content-box-dprop');
+	</script>
+{% endif %}
 
 <script>
   //var jq = $.noConflict();
