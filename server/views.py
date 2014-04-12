@@ -231,7 +231,9 @@ def li_authorized(resp):
 		# suggest they create a password if that's not done.
 		session['uid'] = possible_accts[0].userid
 		print 'calling render_dashboard'
-		return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
+		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
+		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
+		return redirect('/dashboard')
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
