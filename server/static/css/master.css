@@ -1,0 +1,316 @@
+@charset "UTF-8";
+
+/*@-ms-viewport {width: device-width;}*/
+
+/*@viewport {width: device-width;}*/
+
+* {font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;}
+
+html, body {
+	-webkit-font-smoothing: subpixel-antialiased;
+	color: rgba(0, 0, 0, 0.5);
+	font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+	font-size: 1em;
+	font-weight: normal;
+	height: 100%;
+	line-height: 1.5em;
+}
+
+strong {
+	font-weight: bold;
+}
+
+h1 {
+	color: white;
+	font-size: 3em;
+	font-weight: 400;
+	line-height: 1em;
+}
+
+h2 {
+	color: rgba(0, 0, 0, 0.9);
+	font-size: 1.5em;
+	font-weight: 400;
+	line-height: 1em;
+}
+
+.clear {
+	clear: both;
+}
+
+
+/* ANIMATIONS */
+
+/* Blue Button Pulse */
+
+	@-moz-keyframes bluePulse {
+	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  50% {background-color: #33CCFF; border: 1px #33CCFF solid;}
+	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	}
+
+	@-webkit-keyframes bluePulse {
+	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  50% {background-color: #33CCFF; border: 1px #33CCFF solid;}
+	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	}
+
+/* Red Button Pulse */
+
+	@-moz-keyframes redPulse {
+	  0% {background-color: white;}
+	  50% {background-color: #FFE8E8;}
+	  100% {background-color: white;}
+	}
+
+	@-webkit-keyframes redPulse {
+	  0% {background-color: white;}
+	  50% {background-color: #FFE8E8;}
+	  100% {background-color: white;}
+	}
+
+/* White Button Pulse */
+
+	@-moz-keyframes whitePulse {
+	  0% {background-color: white;}
+	  50% {background-color: #E3F8FF;}
+	  100% {background-color: white;}
+	}
+
+	@-webkit-keyframes whitePulse {
+	  0% {background-color: white;}
+	  50% {background-color: #E3F8FF;}
+	  100% {background-color: white;}
+	}
+
+/* LINKS */
+
+a:active {color: #29abe1;}
+a:link {color: #29abe1; text-decoration: none}
+a:visited {color: #29abe1;}
+
+
+/* FORMS */
+
+/* Placeholder */
+
+:-moz-placeholder {color: #939292;} /* Firefox 18- */ 
+::-moz-placeholder {color: #939292;} /* Firefox 19+ */ 
+:-ms-input-placeholder {color: #939292;}
+::-webkit-input-placeholder {color: #939292;}
+
+
+/* Buttons */
+
+	.blueButton {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background-color: #29abe2;
+		border: 1px #29abe2 solid;
+	  	-webkit-border-radius: 3px;
+	  	border-radius: 3px;
+		color: white;
+		cursor: pointer;
+		display: table-cell;
+		font-size: 0.9em;
+		height: 40px;
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.blueButton:hover {
+		-moz-animation-duration: 2s;
+		-moz-animation-iteration-count: infinite;
+		-moz-animation-name: bluePulse;
+	  	-webkit-animation-duration: 2s;
+	  	-webkit-animation-iteration-count: infinite;
+	  	-webkit-animation-name: bluePulse;
+		animation-duration: 2s;
+		animation-iteration-count: infinite;
+		animation-name: bluePulse;
+	}
+
+	.whiteButton {
+		background-color: white;
+		border: 1px #29abe2 solid;
+	  	-webkit-border-radius: 3px;
+	  	border-radius: 3px;
+		color: #29abe1;	
+		font-size: 1em;
+		font-weight: 400;
+		height: 35px;
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.whiteButton:hover {
+		-moz-animation-duration: 2s;
+		-moz-animation-iteration-count: infinite;
+		-moz-animation-name: whitePulse;
+	  	-webkit-animation-duration: 2s;
+	  	-webkit-animation-iteration-count: infinite;
+	  	-webkit-animation-name: whitePulse;
+		animation-duration: 2s;
+		animation-iteration-count: infinite;
+		animation-name: whitePulse;
+		text-decoration: none;
+	}
+
+
+/* Checkboxs */
+
+	input[type="checkbox"] {
+		display: none;
+	}
+
+	input[type="checkbox"].checkbox {
+		border: 0;
+		clip: rect(0 0 0 0); 
+		height: 1px; 
+		margin: -1px; 
+		overflow: hidden; 
+		padding: 0;
+		position: absolute;
+		width: 1px; 
+	}
+
+	input[type="checkbox"].checkbox + label.checkbox-label {
+		background-position: 0 0;
+		background-repeat:no-repeat;
+		cursor: pointer;
+		display: inline-block;
+		height: 17px;
+		font-size: 0.9em;
+		line-height: 17px;
+		padding-left: 25px;
+		vertical-align: middle;
+		/* Makes the label unselectable */
+		-moz-user-select: -moz-none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	input[type="checkbox"].checkbox:checked + label.checkbox-label {
+		background-position: 0 -17px;
+	}
+
+	.checkbox-label {
+		background-image:url('../img/checkbox.svg');
+	}
+
+	/* Input fields */
+
+	input[type="text"], input[type="email"], input[type="password"] {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		border: 1px #cccccc solid;
+		height: 40px;
+		font-size: 0.9em;	
+		line-height: 1em;
+		outline: none;
+		padding-left: 5px;
+	}
+
+	input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		border: 1px #cccccc solid;
+		height: 40px;
+		outline: none;
+	}
+
+	input[type="submit"] {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		font-size: 0.9em;
+		text-transform: uppercase;
+	}
+
+/* MODAL WINDOWS */
+
+
+	.alertOverlay {
+		opacity: 0;
+		-moz-transition: opacity 0.3s;
+		-o-transition: opacity 0.3s;
+		-webkit-transition: opacity 0.3s;
+		transition: opacity 0.3s;
+	}
+
+	.alertOverlayOn {
+		background-color: black;
+		display: block;
+		height: 100%;
+		left: 0;
+		opacity: 0.8;
+		position: fixed;
+		top: 0;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		width: 100%;
+		z-index: 99998;
+	}
+
+	.alertWindowWrap {
+		opacity: 0;
+		top: -20%;
+	}
+
+	.alertWindowWrapOn {
+		display: inline;
+		height: 0;
+		left: 0;
+		opacity: 1;
+		position: fixed;
+		right: 0;
+		text-align: center;
+		top: 20%;
+		-moz-transition: top 0.5s ease;
+		-o-transition: top 0.5s ease;
+		-webkit-transition: top 0.5s ease;
+		transition: top 0.5s ease;
+		z-index: 99999;
+	}
+
+	.alertWindow {
+		background-color: rgba(255, 255, 255, 0.9);
+		-webkit-border-radius: 6px;
+		border-radius: 6px;
+		display: none;
+		padding: 15px 10px 10px;
+		text-align: center;
+	}
+
+	.alertWindowOn {
+		display: inline-block;
+	}
+
+	.alertMessage {
+		font-size: 0.9em;
+		line-height: 1.35em;
+		margin-bottom: 15px;
+		text-align: center;
+	}
+
+	.alertButtonWrap {
+		display: inline-block;
+	}
+
+	.alertButton {
+		width: 100px;
+	}
+
+@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+
+	.alertWindow {width: 80%;}
+
+}
+
+@media only screen and (min-width: 350px) {
+
+	.alertWindow {width: 240px;}
+}
