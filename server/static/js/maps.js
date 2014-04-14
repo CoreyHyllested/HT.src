@@ -1,3 +1,4 @@
+//creating a Google API Map on the page
 var geocoder1, map1;
 function cal_map(address, id) {
     geocoder1 = new google.maps.Geocoder();

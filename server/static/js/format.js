@@ -1,3 +1,4 @@
+//checking if the key currently typed in is a number
 function isNumberKey(evt) {
   var charCode = (evt.which) ? evt.which : event.keyCode;
   if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
@@ -7,6 +8,8 @@ function isNumberKey(evt) {
     var len = document.getElementById("newslot_price").value.length;
     var index = document.getElementById("newslot_price").value.indexOf('.'); 
 
+    //checking if the current value is a decimal number and whether we
+    //will allow a dot in this field
     if (index > 0 && charCode == 46) { 
       return false; 
     } 
@@ -22,8 +25,9 @@ function isNumberKey(evt) {
     }
   }
   return true; 
-} 
+}
 
+//formating a large number to have a thousand separator
 function format(value) {
 	value = value.toString();
   comma = ',';
