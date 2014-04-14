@@ -113,10 +113,10 @@ def render_profile(usrmsg=None):
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
-	bp = session.get('uid')
-	if (bp is not None):
-		# replace 'uid' with actual browsing profile object
-		bp  = Profile.query.filter_by(account=bp).all()[0]
+	bp = None 
+	if (session.get('uid') is not None):
+		print 'Qua'
+		bp = Profile.get_by_uid(session.get('uid'))
 		print "BP = ", bp.prof_name, bp.prof_id, bp.account
 
 
@@ -128,7 +128,7 @@ def render_profile(usrmsg=None):
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
 	all_reviews = db_session.query(Review, appt, user, hero).distinct(Review.review_id)							\
-							.filter(or_(Review.prof_reviewed == bp.prof_id, Review.prof_authored == bp.prof_id))	\
+							.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
 							.join(appt, appt.prop_uuid == Review.rev_appt)											\
 							.join(user, user.prof_id == Review.prof_authored)										\
 							.join(hero, hero.prof_id == Review.prof_reviewed).all();
