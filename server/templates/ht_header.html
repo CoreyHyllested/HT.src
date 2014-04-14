@@ -269,7 +269,8 @@
 
 				<!-- HEADER LOGO -->
 				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a href="/dashboard">{% else %}<a href="/">{% endif %}
+				{% if bp %}<a href="/dashboard">
+				{% else %}<a href="/">{% endif %}
 					<div class="headerLogo"></div>
 				</a>
 
@@ -283,21 +284,19 @@
 
 				<div class="headerGraphicalMenu"></div>
 
-				</div>
 				{% else %}
-
 				<div class="headerGraphicalMenu"></div>
-
 				<ul class="headerTextMenu">
 					<li><a href="/signup">Signup</a></li>
 					<li><a href="/login">Login</a></li>
 				</ul>
 
 				{% endif %}
-				</div>
-				<div id="top-flash">
-					<span id="fmsg"></span>
-				</div>
+
+			</div>
+			<div id="top-flash">
+				<span id="fmsg"></span>
+			</div>
 		</div>
 		<!-- Header ends here -->
 
