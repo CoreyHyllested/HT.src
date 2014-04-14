@@ -1,0 +1,203 @@
+/*
+There are three responsive design ranges for the login page (login.html):
+a) 240px - 349px (phones)
+b) 350 - 889px (phablets, tablets)
+c) 890px - ... (desktops)
+
+*/
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+
+	.pageWrapper {
+		background-color: white;
+		height: 100%;
+		min-height: 440px;
+		width: 100%;
+	}
+
+	.settingsContentWrapper {
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 100%;
+	}
+
+	input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		width: 100%;	
+	}
+
+	/* Settings Switch */
+	
+	.settingsSwitch {
+		height: 35px;		
+		margin: 20px auto 0;
+		-ms-user-select: none;
+		-moz-user-select: none;		
+		-o-user-select: none;
+		-webkit-user-select: none;
+		width: 90%;
+	}
+
+	.settingsSwitchEmail {
+		border: 1px #29abe2 solid;
+		border-radius: 3px 0 0 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 32px;
+		margin: 0 -1px 0 2px;
+		text-align: center;
+		width: 33%;
+	}
+
+	.settingsSwitchPassword {
+		border: 1px #29abe2 solid;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 32px;
+		margin-right: -1px;
+		text-align: center;
+		width: 33%;
+		position: relative;
+	}
+
+	.settingsSwitchPayout {
+		border: 1px #29abe2 solid;
+		border-radius: 0 3px 3px 0;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 32px;
+		text-align: center;
+		width: 33%;
+		position: relative;
+	}
+
+	.settingsSwitchActive {
+		background-color: #29abe2;
+		color: white;
+	}
+
+	/* Email tab */
+
+	.settingsEmail {
+		margin: 30px auto 10px;
+		padding-bottom: 15px;
+		width: 90%;		
+	}
+
+	.settingsEmail h2 {
+		display: none;
+	}
+
+	.settingsEmail input[type="text"] {
+		border-radius: 5px 5px 0 0;
+	}
+
+	.settingsEmail input[type="password"] {
+		border-radius: 0 0 5px 5px;
+		margin-bottom: 20px;
+		margin-top: -1px;
+	}
+
+	/* Password tab */
+
+	.settingsPassword {
+		display: none;
+		margin: 30px auto 10px;
+		padding-bottom: 15px;
+		width: 90%;		
+	}
+
+	.settingsPassword h2 {
+		display: none;
+	}
+
+	.settingsPassword input[type="password"]:nth-of-type(1) {
+		border-radius: 5px 5px 0 0;
+	}
+
+	.settingsPassword input[type="password"]:nth-of-type(2) {
+		margin-top: -1px;
+	}
+
+	.settingsPassword input[type="password"]:nth-of-type(3) {
+		border-radius: 0 0 5px 5px;
+		margin-top: -1px;
+	}
+
+	/* Payout tab */
+
+	.settingsPayout {
+		display: none;
+		margin: 30px auto 10px;
+		padding-bottom: 15px;
+		width: 90%;		
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+/* PHABLET, TABLET DESIGN */
+@media only screen and (min-width: 350px) and (max-width: 889px) {
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
+		width: 100%;
+	}
+}
+
+/* DESKTOP DESIGN */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: url('../img/background-superman.jpg') no-repeat center center;
+		background-position: 100% 30%;
+		-o-background-size: cover;
+		-webkit-background-size: cover;		
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		width: 100%;
+	}
+	
+}	
