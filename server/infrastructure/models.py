@@ -488,9 +488,7 @@ class Appointment(Base):
 
 class Industry(Base):
 	__tablename__ = "industry"
-	industries = ['Personal Wellness & Lifecoaches', 'Academia & Research', 'Artists, Architects, & Designers', 'Business and Finance', 'Education', 'Engineering and Technology',
-		'Food', 'Government and Non-Profits', '--Healthcare and Law ', 'Hospitality', 'Finance, Accountants', 'Media & Entertainment',
-		'Real Estate', 'Environment', 'Retail', 'Transportation Services', 'Travel & Leisure', 'Other']
+	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
 
 	id   = Column(Integer, primary_key = True)
