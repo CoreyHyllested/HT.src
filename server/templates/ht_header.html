@@ -230,7 +230,7 @@
 		<div class="alertWindow">
 			<div class="alertMessage"></div>
 			<div class="alertButtonWrap">
-				<div class="alertButton blueButton" onclick="closeAlertWindow()">OK</div>
+				<div class="alertButton" onclick="closeAlertWindow()">OK</div>
 			</div>
 		</div>
 	</div>
@@ -266,9 +266,9 @@
 
 				<!-- HEADER LOGO -->
 				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a href="/dashboard">
-				{% else %}<a href="/">{% endif %}
-					<div class="headerLogo"></div>
+				{% if bp %}<a class="headerLogo" href="/dashboard">
+				{% else %}<a class="headerLogo" href="/">
+				{% endif %}
 				</a>
 
 				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">

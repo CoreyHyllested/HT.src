@@ -18,42 +18,42 @@
 
 	<form action=settings method=POST>
 
-		<div class="settingsEmail">
-			<h2>Change Email</h2>
+		<div class="settingsLeftSideWrapper">
+			<div class="settingsEmail">
+				<h2>Email</h2>
 
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-			{{form.set_input_email()}}			
-			{{form.set_input_email_pass(placeholder="Current password")}}
+				{{form.set_input_email(placeholder="Current email")}}			
+				{{form.set_input_email_pass(placeholder="Current password")}}
 
-			{% if errmsg != none %}
-				<script>
-					openAlertWindow('{{errmsg}}')
-				</script>
-			{% endif %}
+				{% if errmsg != none %}
+					<script>
+						openAlertWindow('{{errmsg}}')
+					</script>
+				{% endif %}
+				<input class="whiteButton" id="set-save" type="submit" value="Change email" />
+			</div>
 
-		</div>
+			<div class="settingsPassword">
 
-		<div class="settingsPassword">
-
-			<h2>Change Password</h2>
-			{{form.set_input_curpass(placeholder="Current password", autocomplete="off")}}
-			{{form.set_input_newpass(placeholder="New password")}}
-			{{form.set_input_verpass(placeholder="Verify password")}}
-
+				<h2>Password</h2>
+				{{form.set_input_curpass(placeholder="Current password", autocomplete="off")}}
+				{{form.set_input_newpass(placeholder="New password")}}
+				{{form.set_input_verpass(placeholder="Verify password")}}
+				<input class="whiteButton" id="set-save" type="submit" value="Save password" />
+			</div>
 		</div>
 
 		<div class="settingsPayout">
-			<h2>Payout Information</h2>
+			<h2>Payout</h2>
 
-			<p>We use Stripe's services to pay you for the services you sell. <a href="https://stripe.com" target="_blank">Stripe</a> is a company that provides a secure way for individuals and businesses to accept payments over the Internet. (<a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here</a> for the list of supported countries.)</p>
+			<p>We use Stripe's services to pay you for the services you sell. <a href="https://stripe.com" target="_blank">Stripe</a> is a company that provides a secure way for individuals and businesses to accept payments over the Internet. <a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here for the list of supported countries.</a></p>
 
-			<label id="set-label-stripeid" for="oauth_stripe">Your Stripe ID</label>
+			<label for="oauth_stripe">Your Stripe ID</label>
 			{{form.oauth_stripe(readonly=readonly)}}
 
-			<div id="set-stripe-wrap">
-				<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-			</div>
+			<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
 
 			<!-- LS: I commented out this just in case we need it later.
 			<div id="set-stripe-register-wrap">
@@ -62,16 +62,10 @@
 			-->
 		</div>
 
-		<input class="blueButton" id="set-save" type=submit value="Save changes" />
-
 	</form>
-
+	<div class="clear"></div>
 </div>
-
-
-
-
-
+<div class="clear"></div>
 
 <!-- Bottom bar -->
 
