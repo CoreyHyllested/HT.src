@@ -1,5 +1,10 @@
 {% extends "ht_header.html" %}
 
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
+{% endblock %}
+
 
 <script type="text/javascript">
    function isNumberKey(evt) {
@@ -56,36 +61,38 @@
 </script>
 
 
-<div id="signup-wrap">
+
+
+<div class="signupContentWrapper">
 	
-	<div id="signup-email">
-		<h2>Sign up with email</h2>
+	<h2>Email Signup</h2>
+
+	<div class="signupSwitch">
+		<div class="signupSwitchEmail signupSwitchActive">Email Signup</div>
+		<div class="signupSwitchSocial">Social Signup</div>
+	</div>
+
+	<div class="signupEmail">
+		
 		<form id="SignupNow" onsubmit="return validateForm();" action="/signup" method="POST">
 			{{form.hidden_tag()}}
-			<label id="label-signup-name" for="input_signup_name">Name</label>
-			{{form.input_signup_name}}
 
-			<label id="label-signup-email" for="input_signup_email">Email</label>
-			{{form.input_signup_email}}
+			{{form.input_signup_name(placeholder="Name", id="signupEmailName")}}
+			{{form.input_signup_email(placeholder="Email")}}
+			{{form.input_signup_password(placeholder="Password")}}
+			{{form.input_signup_confirm(placeholder="Confirm password", id="signupEmailConfirm")}}
 
-			<label id="label-signup-password" for="input_signup_password">Password</label>
-			{{form.input_signup_password}}
-
-			<label id="label-signup-confirm" for="input_signup_confirm">Confirm password</label>
-			{{form.input_signup_confirm}}
-
-			<div id="signup-agree">
+			<div class="signupAcceptTOS">
 				{{form.accept_tos(class="checkbox")}}
-				<label for="accept_tos" class="checkbox-label">&nbsp;I agree to HeroTime's <a href="/terms" target="_blank">Terms of Service</a></label>
+
+				<label for="accept_tos" class="checkbox-label">I agree to <a href="/terms" target="_blank">Terms of Service</a></label>
+
 			</div>
 
-			<div id="signup-join-wrap">
-				<input type="submit" class="blueButton signupJoin" value="Join now" />
+			<div class="signupEmailSubmitWrapper">
+				<input type="submit" value="Join now" class="blueButton">
 			</div>
 
-			<div id="signup-already-wrap">
-				<a href="/login" class="whiteButton signupAlready">Already a member?</a>
-			</div>
 		</form>	
 	</div>
 
@@ -95,27 +102,26 @@
 		</script>
 	{% endif %}
 
-	<div id="signup-social">
-		<h2>Connect using...</h2>
+	<h2>Social Signup</h2>
+
+	<div class="signupSocial">
 		
-		<div id="linkedin-wrap">
-			<a href="/signup/linkedin"><div id="signup-linkedin">LinkedIn</div></a>
-			<br>
-			By clicking the button above, you agree to HeroTime's <a href="/terms" target="_blank">Terms of Service</a>.
-		</div>
-		<!-- No Facebook and Twitter in first release
-		<div id="facebook-wrap">
-			<a href="#"><div id="signup-facebook">Sign up with Facebook</div></a>
+		<form method="link" action="/signup/linkedin">
+			<input type="submit" class="signupLinkedIn" name="signupLinkedIn" value="LinkedIn" target="_blank"> 
+		</form>
+
+
+		<div class="signupLinkedInNotice">			
+			By clicking the button above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
 
-		<div id="twitter-wrap">
-			<a href="#"><div id="signup-twitter">Sign up with Twitter</div></a>
-		</div>
-		-->
 	</div>
+
+	<a class="signupLink" href="/login">Already a member?</a>
+
 </div>
 
-
+<div class="clear"></div>
 <!-- Bottom bar -->
 
 {% endblock %}

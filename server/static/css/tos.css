@@ -1,0 +1,42 @@
+.pageWrapper {
+	background-color: white;
+}
+
+/* Common Elements */
+.tosWrapper {
+	margin: auto;
+}
+
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 549px) {}
+
+	.tosWrapper {
+		padding: 20px 0 20px;
+		width: 90%;
+	}
+
+	.tosWrapper h2 {
+		margin-bottom: 1em;
+	}
+
+}
+
+@media only screen and (min-width:: 550px) and (max-width: 767px) {
+	.tosWrapper {
+		width: 94%;
+	}
+
+}
+
+@media only screen and (min-width: 768px) {
+	.tosWrapper {
+		padding: 20px;
+		width: 728px;
+	}
+
+	.tosWrapper p {
+		padding-left: 32px;
+	}
+
+}

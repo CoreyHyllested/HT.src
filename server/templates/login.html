@@ -1,4 +1,10 @@
 {% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/login.css">
+{% endblock %}
+
 {% block content %}
 
 <script type="text/javascript">
@@ -21,22 +27,24 @@
 
 </script>
 
-<div id="login-wrap">
-	
-	<div id="login-email">
-		<h2>Log in with email</h2>
+
+
+<div class="loginContentWrapper">
+
+	<h2>Email Login</h2>
+
+	<div class="loginSwitch">
+		<div class="loginSwitchEmail loginSwitchActive">Email Login</div>
+		<div class="loginSwitchSocial">Social Login</div>
+	</div>
+
+	<div class="loginEmail">
+
 		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
 			{{form.hidden_tag()}}
-			<label id="label-login-email" for="input_login_email">Email</label>
-			{{form.input_login_email}}
 
-			<label id="label-login-password" for="input_login_password">Password</label>
-			{{form.input_login_password}}
-
-			<div id="checkbox-keeplogged">
-				<input type="checkbox" id="keeplogged" name="keeplogged" value="keeplogged" class="checkbox">
-				<label for="keeplogged" class="checkbox-label">&nbsp;Keep me logged in</label>
-			</div>
+			{{form.input_login_email(placeholder="Email")}}
+			{{form.input_login_password(placeholder="Password")}}
 
 			{% if errmsg != none %}
 				<script>
@@ -44,31 +52,29 @@
 				</script>
 			{% endif %}
 
-			<div id="login-login-wrap">
-				<input type="submit" value="Log in" class="blueButton signupJoin" />
+			<div class="loginEmailSubmitWrapper">
+				<input type="submit" value="Log in" class="blueButton">
 			</div>
-		</form>	
-
-		<div id="login-notyet-wrap"><a href="/signup" class="whiteButton loginNotYet">Not yet a member?</a></div>
-		<div id="login-recovery-wrap"><a href="/recovery" class="whiteButton loginRecovery">Forgot your password?</a></div>
+		</form>
 
 	</div>
 
-	<div id="signup-social">
-		<h2>Connect using...</h2>
-		
-		<div id="linkedin-wrap">
-			<a href="/login/linkedin"><div id="signup-linkedin">LinkedIn</div></a>
-			<br>
-			By clicking the button above, you agree to HeroTime's <a href="/terms" target="_blank">Terms of Service</a>.
+	<h2>Social Login</h2> 
+
+	<div class="loginSocial">
+
+		<form method="link" action="/login/linkedin">
+			<input type="submit" class="loginLinkedIn" name="loginLinkedIn" value="LinkedIn"> 
+		</form>
+			
+		<div class="loginLinkedInNotice">			
+			By clicking the button above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
-
-		<!-- No FB, Twitter in current release
-		<div id="facebook-wrap"><a href="#"><div id="signup-facebook">Log in with Facebook</div></a></div>
-		<div id="twitter-wrap"><a href="#"><div id="signup-twitter">Log in with Twitter</div></a></div>
-		-->
 	</div>
+	
+	<a class="loginLink" href="/signup">Join HeroTime</a>
+	<a class="loginLink" href="/recovery">Forgot your password?</a>
 
 </div>
-
+<div class="clear"></div>
 {% endblock %}

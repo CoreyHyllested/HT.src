@@ -1,18 +1,24 @@
 {% extends "ht_header.html" %}
 
-<script type="text/javascript">
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/tos.css">
+{% endblock %}
+
+
+<!-- Not really sure what this script does here. -->
+<!--<script type="text/javascript">
    function isNumberKey(evt) {
      var charCode = (evt.which) ? evt.which : event.keyCode;
      if (charCode > 31 && (charCode < 48 || charCode > 57))
        return false;
      return true;
    }
-</script>
+</script>-->
 
 {% block content %}
 
-<div id="terms_wrap">
-	<div id="tos">
+<div class="tosWrapper">
 		<h2>Terms of Service</h2>
 		
 		<strong>1.1. Purpose</strong>
@@ -57,7 +63,6 @@
 
 		<strong>3.1. Dispute resolution</strong>
 		<p>Maecenas sed diam eget risus varius blandit sit amet non magna. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>		
-	</div>
 </div>
 
 {% endblock %}

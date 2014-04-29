@@ -1,440 +1,335 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>HeroTime {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	<title>HeroTime {{title}}</title>
-	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
-	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
-	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-	{% if cssfiles %}
-	{% for file in cssfiles %}
-	<link type="text/css" rel="stylesheet" href={{file}}>
-	{% endfor %}
-	{% endif %}
 	
+
+	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
+
+	{% block head %}
+
+	<!-- Import Open Sans from Google Fonts (may be unnecessary if we drop the font -->
+	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+
+	<!-- CSS reset -->
+	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
+
+	<!-- Master sheets for responsive design -->
+	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
+
+	<!-- SCRIPTS -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script>
+	<!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>-->
+	<script src="/static/js/modal_windows.js"></script>	
+
+	{% endblock %}
+
+
+	<!--<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">-->
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
+
 	{% if jsfiles %}
 	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
 	{% endif %}
 
 	<script>
 
-	// If ESC is pressed, close all modal windows
-	$(document).keyup(function(e) {
-		if (e.keyCode == 27) {
-			closeAlertWindow();
-			closeCheckoutWindow();
-		}
-	});
+		// [All pages] Sticky footer (Mar 2014, replaces whatever else we had before)
 
-	function searchBar() {
-		var x=document.forms["srchForm"]["search"].value;
-		if (x==null || x=="") { return false; }
-		return true;
-	}
+		// Window load event used just in case window height is dependant upon images
+		$(window).bind("load", function() { 
+		       
+		       var footerHeight = 0,
+		           footerTop = 0,
+		           $footer = $("#footer");
+		           
+		       positionFooter();
+		       
+		       function positionFooter() {
+		       
+		                footerHeight = $footer.height();
+		                footerTop = ($(window).scrollTop()+$(window).height()-footerHeight)+"px";
+		                
+		                /* DEBUGGING STUFF
+		                
+		                console.log("Document height: ", $(document.body).height());
+		                console.log("Window height: ", $(window).height());
+		                console.log("Window scroll: ", $(window).scrollTop());
+		                console.log("Footer height: ", footerHeight);
+		                console.log("Footer top: ", footerTop);
+		                console.log("-----------") */
+		                
+		               
+		       
+		               if ( ($(document.body).height()+footerHeight) < $(window).height()) {
+		                   $footer.css({
+		                        position: "absolute"
+		                   }).stop().animate({
+		                        top: footerTop
+		                   })
+		               } else {
+		                   $footer.css({
+		                        position: "static"
+		                   })
+		               }
+		               
+		       }
 
-	// Modal windows: Open
-	function openAlertWindow(text) {
-		$('.alertOverlay').css('display', 'block');
-		$('.alertWindowWrap').css('display', 'block');
-		$('.alertWindow').css('display', 'block');			
-		$('.alertMessage').html(text);
-		return false;
-	}
-
-	// Modal windows: Close
-	function closeAlertWindow() {
-		$('.alertMessage').html('');
-		$('.alertWindow').css('display', 'none');		
-		$('.alertWindowWrap').css('display', 'none');
-		$('.alertOverlay').css('display', 'none');
-		return false;
-	}
-
-	// Checkout window: Open
-	function openCheckoutWindow() {
-		$('.alertOverlay').css('display', 'block');
-		$('.checkoutWindowWrap').css('display', 'block');
-		$('.checkoutWindow').css('display', 'block');
-		return false;
-	}
-
-	// Checkout window: Close
-	function closeCheckoutWindow() {
-		$('.alertOverlay').css('display', 'none');
-		$('.checkoutWindowWrap').css('display', 'none');
-		$('.checkoutWindow').css('display', 'none');
-		return false;
-	}
-
-	// Checkout window: Auto-insert a '/' after second number
-	$(document).ready(function() {
-		$('#expiration').bind('keyup', function(pressed_key) {
-			var code = (pressed_key.keyCode ? pressed_key.keyCode : pressed_key.which);
-			var strokes = $('#expiration').val().length;
-			if (strokes === 2 && code !== 8) {
-				var thisVal = $(this).val();
-				thisVal += '/';
-				$(this).val(thisVal);
-			}
+		       $(window)
+		               .scroll(positionFooter)
+		               .resize(positionFooter)
+		               
 		});
-	});
+
+		
+		$(document).ready(function() {
+
+			// [All pages] Off-canvas navigation slider
+			$('.headerGraphicalMenu').click(function() {
+				$('.pageWrapper').toggleClass('pageWrapperSlide');
+			});
+
+			// [Login] On load, show full content on high resolutions
+			if ($('.loginSwitch').css('display') == 'none') {
+				$('.loginEmail').show();
+				$('.loginSocial').show();
+			}
+
+			// [Login] On resize, show full content on high resolutions
+			$(window).resize(function() {	
+				if ($('.loginSwitch').css('display') == 'none') {
+					$('.loginEmail').show();
+					$('.loginSocial').show();
+				}
+
+				else if ($('.loginSwitch').css('display') !== 'none') {
+					$('.loginEmail').show();
+					$('.loginSocial').hide();
+				}
+			});
+
+
+			// [Login] Switch to email login
+			$('.loginSwitchEmail').click(function() {
+
+				// If not highlighted, make it so
+				if (!$(this).hasClass('loginSwitchActive')) {
+					$(this).toggleClass('loginSwitchActive');
+				}
+
+				// Take away the highlight from the other tab
+				if ($('.loginSwitchSocial').hasClass('loginSwitchActive')) {
+					$('.loginSwitchSocial').toggleClass('loginSwitchActive');
+				}
+
+				// Hide the social login and show email login
+				$('.loginSocial').hide();
+				$('.loginEmail').show();	
+			});
+
+
+			// [Login] Switch to social login
+			$('.loginSwitchSocial').click(function() {
+
+				// If not highlighted, make it so
+				if (!$(this).hasClass('loginSwitchActive')) {
+					$(this).toggleClass('loginSwitchActive');
+				}
+				// Take away the highlight from the other tab
+				if ($('.loginSwitchEmail').hasClass('loginSwitchActive')) {
+					$('.loginSwitchEmail').toggleClass('loginSwitchActive');
+				}
+
+				// Hide the email login and show social login
+				$('.loginEmail').hide();
+				$('.loginSocial').show();
+
+			});
+
+
+			// [Signup] On load, show full content on high resolutions
+			if ($(".signupSwitch").css("display") == "none") {
+				$('.signupEmail').show();
+				$('.signupSocial').show();
+			}
+
+			// [Signup] On resize, show full content on high resolutions
+			$(window).resize(function() {	
+				if ($(".signupSwitch").css("display") == "none") {
+					$('.signupEmail').show();
+					$('.signupSocial').show();
+				}
+
+				else if ($(".signupSwitch").css("display") !== "none") {
+					$('.signupEmail').show();
+					$('.signupSocial').hide();
+				}
+			});
+
+
+			// [Signup] Switch to email signup
+			$('.signupSwitchEmail').click(function() {
+
+				// If not highlighted, make it so
+				if (!$(this).hasClass('signupSwitchActive')) {
+					$(this).toggleClass('signupSwitchActive');
+				}
+
+				// Take away the highlight from the other tab
+				if ($('.signupSwitchSocial').hasClass('signupSwitchActive')) {
+					$('.signupSwitchSocial').toggleClass('signupSwitchActive');
+				}
+
+				// Hide the social signup and show email signup
+				$('.signupSocial').hide();
+				$('.signupEmail').show();
+						
+			});
+
+
+			// [Signup] Switch to social signup
+			$('.signupSwitchSocial').click(function() {
+
+				// If not highlighted, make it so
+				if (!$(this).hasClass('signupwitchActive')) {
+					$(this).toggleClass('signupSwitchActive');
+				}
+				// Take away the highlight from the other tab
+				if ($('.signupSwitchEmail').hasClass('signupSwitchActive')) {
+					$('.signupSwitchEmail').toggleClass('signupSwitchActive');
+				}
+
+				// Hide the email signup and show social signup
+				$('.signupEmail').hide();
+				$('.signupSocial').show();
+
+			});
+
+			// [Search] On mobile, toggle search options on/off
+			$('.searchOptionsMenu').click(function() {
+				$('.searchOptions').toggleClass('searchOptionsOn');
+			});
+		});
 	</script>
 </head>
-
-
 
 <body>
 	<form name='p' action=/profile method=POST><input type="hidden" id="h" name="hero"></form>
 
+	<!-- MODAL WINDOWS -->
 	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
-	<div class="alertOverlay" onclick="closeAlertWindow(); closeCheckoutWindow();"></div>
-	
+			
+	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
+			
 	<div class="alertWindowWrap">
 		<div class="alertWindow">
 			<div class="alertMessage"></div>
 			<div class="alertButtonWrap">
-				<div class="alertButton">
-					<div class="blueButton" onclick="closeAlertWindow()">OK</div>
-				</div>
+				<div class="alertButton" onclick="closeAlertWindow()">OK</div>
 			</div>
 		</div>
 	</div>
 
-	<!-- Checkout window -->
-	<div class="checkoutWindowWrap">
-		<div class="checkoutWindow">
-			<h2>Billing Information</h2>
-			<form>
+	<div class="menu">
+		<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+			<input name="search" id="menuSearch" type="text" autocomplete="off">
+		</form>
+		<ul>
 
-				<input type="text" name="name" placeholder="Name on card">
-				<input type="text" name="street" placeholder="Street address">
-				<input type="text" name="zip" placeholder="ZIP code">
-				<input type="text" name="city" placeholder="City">
-				
-				<select name="country">
-					<option value="AF">Afghanistan</option>
-					<option value="AL">Albania</option>
-					<option value="DZ">Algeria</option>
-					<option value="AD">Andorra</option>
-					<option value="AO">Angola</option>
-					<option value="AI">Anguilla</option>
-					<option value="AG">Antigua and Barbuda</option>
-					<option value="AR">Argentina</option>
-					<option value="AM">Armenia</option>
-					<option value="AW">Aruba</option>
-					<option value="AU">Australia</option>
-					<option value="AT">Austria</option>
-					<option value="AZ">Azerbaijan</option>
-					<option value="BS">Bahamas</option>
-					<option value="BH">Bahrain</option>
-					<option value="BD">Bangladesh</option>
-					<option value="BB">Barbados</option>
-					<option value="BY">Belarus</option>
-					<option value="BE">Belgium</option>
-					<option value="BZ">Belize</option>
-					<option value="BJ">Benin</option>
-					<option value="BM">Bermuda</option>
-					<option value="BT">Bhutan</option>
-					<option value="BO">Bolivia</option>
-					<option value="BA">Bosnia Herzegovina</option>
-					<option value="BW">Botswana</option>
-					<option value="BV">Bouvet Island</option>
-					<option value="BR">Brazil</option>
-					<option value="IO">British Indian Ocean Territory</option>
-					<option value="VG">British Virgin Islands</option>
-					<option value="BN">Brunei Darussalam</option>
-					<option value="BG">Bulgaria</option>
-					<option value="BF">Burkina Faso</option>
-					<option value="BI">Burundi</option>
-					<option value="KH">Cambodia</option>
-					<option value="CM">Cameroon</option>
-					<option value="CA">Canada</option>
-					<option value="CV">Cape Verde</option>
-					<option value="KY">Cayman Islands</option>
-					<option value="CF">Central African Republic</option>
-					<option value="TD">Chad</option>
-					<option value="CL">Chile</option>
-					<option value="CN">China</option>
-					<option value="CX">Christmas Island</option>
-					<option value="CC">Cocos (Keeling) Islands</option>
-					<option value="CO">Colombia</option>
-					<option value="KM">Comoros</option>
-					<option value="CG">Congo</option>
-					<option value="CD">Congo (The Democratic Republic of the)</option>
-					<option value="CK">Cook Islands</option>
-					<option value="CR">Costa Rica</option>
-					<option value="CI">Cote d Ivoire (Ivory Coast)</option>
-					<option value="HR">Croatia</option>
-					<option value="CU">Cuba</option>
-					<option value="CY">Cyprus</option>
-					<option value="CZ">Czech Republic</option>
-					<option value="DK">Denmark</option>
-					<option value="DJ">Djibouti</option>
-					<option value="DM">Dominica</option>
-					<option value="DO">Dominican Republic</option>
-					<option value="TL">East Timor</option>
-					<option value="EC">Ecuador</option>
-					<option value="EG">Egypt</option>
-					<option value="SV">El Salvador</option>
-					<option value="GQ">Equatorial Guinea</option>
-					<option value="ER">Eritrea</option>
-					<option value="EE">Estonia</option>
-					<option value="ET">Ethiopia</option>
-					<option value="FK">Falkland Islands (Malvinas)</option>
-					<option value="FO">Faroe Islands</option>
-					<option value="FJ">Fiji</option>
-					<option value="FI">Finland</option>
-					<option value="FR">France</option>
-					<option value="GF">French Guiana</option>
-					<option value="PF">French Polynesia</option>
-					<option value="TF">French Southern Territories</option>
-					<option value="GA">Gabon</option>
-					<option value="GM">Gambia</option>
-					<option value="GE">Georgia</option>
-					<option value="DE">Germany</option>
-					<option value="GH">Ghana</option>
-					<option value="GI">Gibraltar</option>
-					<option value="GR">Greece</option>
-					<option value="GL">Greenland</option>
-					<option value="GD">Grenada</option>
-					<option value="GP">Guadeloupe</option>
-					<option value="GT">Guatemala</option>
-					<option value="GN">Guinea</option>
-					<option value="GW">Guinea-Bissau</option>
-					<option value="GY">Guyana</option>
-					<option value="HT">Haiti</option>
-					<option value="HM">Heard Island and McDonald Islands</option>
-					<option value="VA">Holy See (Vatican City State)</option>
-					<option value="HN">Honduras</option>
-					<option value="HK">Hong Kong</option>
-					<option value="HU">Hungary</option>
-					<option value="IS">Iceland</option>
-					<option value="IN">India</option>
-					<option value="ID">Indonesia</option>
-					<option value="IQ">Iraq</option>
-					<option value="IE">Ireland</option>
-					<option value="IR">Islamic Republic of Iran</option>
-					<option value="IL">Israel</option>
-					<option value="IT">Italy</option>
-					<option value="JM">Jamaica</option>
-					<option value="JP">Japan</option>
-					<option value="JO">Jordan</option>
-					<option value="KZ">Kazakhstan</option>
-					<option value="KE">Kenya</option>
-					<option value="KI">Kiribati</option>
-					<option value="KP">Korea (Democratic People s Republic of)</option>
-					<option value="KR">Korea (Republic of)</option>
-					<option value="KW">Kuwait</option>
-					<option value="KG">Kyrgzstan</option>
-					<option value="LA">Lao People's Democratic Republic</option>
-					<option value="LV">Latvia</option>
-					<option value="LB">Lebanon</option>
-					<option value="LS">Lesotho</option>
-					<option value="LR">Liberia</option>
-					<option value="LY">Libyan Arab Jamahiriya</option>
-					<option value="LI">Liechtenstein</option>
-					<option value="LT">Lithuania</option>
-					<option value="LU">Luxembourg</option>
-					<option value="MO">Macao</option>
-					<option value="MK">Macedonia (The Former Yugoslav Republic of)</option>
-					<option value="MG">Madagascar</option>
-					<option value="MW">Malawi</option>
-					<option value="MY">Malaysia</option>
-					<option value="MV">Maldives</option>
-					<option value="ML">Mali</option>
-					<option value="MT">Malta</option>
-					<option value="MH">Marshall Islands</option>
-					<option value="MQ">Martinique</option>
-					<option value="MR">Mauritania</option>
-					<option value="MU">Mauritius</option>
-					<option value="YT">Mayotte</option>
-					<option value="MX">Mexico</option>
-					<option value="MD">Moldova</option>
-					<option value="MC">Monaco</option>
-					<option value="MN">Mongolia</option>
-					<option value="MS">Montserrat</option>
-					<option value="MA">Morocco</option>
-					<option value="MZ">Mozambique</option>
-					<option value="MM">Myanmar</option>
-					<option value="NA">Namibia</option>
-					<option value="NR">Nauru</option>
-					<option value="NP">Nepal</option>
-					<option value="NL">Netherlands</option>
-					<option value="AN">Netherlands Antilles</option>
-					<option value="NC">New Caledonia</option>
-					<option value="NZ">New Zealand</option>
-					<option value="NI">Nicaragua</option>
-					<option value="NE">Niger</option>
-					<option value="NG">Nigeria</option>
-					<option value="NU">Niue</option>
-					<option value="NF">Norfolk Island</option>
-					<option value="NO">Norway</option>
-					<option value="OM">Oman</option>
-					<option value="PK">Pakistan</option>
-					<option value="PW">Palau</option>
-					<option value="PA">Panama</option>
-					<option value="PG">Papua New Guinea</option>
-					<option value="PY">Paraguay</option>
-					<option value="PE">Peru</option>
-					<option value="PH">Philippines</option>
-					<option value="PN">Pitcairn</option>
-					<option value="PL">Poland</option>
-					<option value="PT">Portugal</option>
-					<option value="QA">Qatar</option>
-					<option value="RE">Reunion</option>
-					<option value="RO">Romania</option>
-					<option value="RU">Russian Federation</option>
-					<option value="RW">Rwanda</option>
-					<option value="SH">Saint Helena</option>
-					<option value="KN">Saint Kitts and Nevis</option>
-					<option value="LC">Saint Lucia</option>
-					<option value="PM">Saint Pierre and Miquelon</option>
-					<option value="VC">Saint Vincent and the Grenadines</option>
-					<option value="WS">Samoa</option>
-					<option value="SM">San Marino</option>
-					<option value="ST">Sao Tome and Principe</option>
-					<option value="SA">Saudi Arabia</option>
-					<option value="SN">Senegal</option>
-					<option value="RS">Serbia</option>
-					<option value="SC">Seychelles</option>
-					<option value="SL">Sierra Leone</option>
-					<option value="SG">Singapore</option>
-					<option value="SK">Slovakia</option>
-					<option value="SI">Slovenia</option>
-					<option value="SB">Solomon Islands</option>
-					<option value="SO">Somalia</option>
-					<option value="ZA">South Africa</option>
-					<option value="GS">South Georgia and the South Sandwich Islands</option>
-					<option value="ES">Spain</option>
-					<option value="LK">Sri Lanka</option>
-					<option value="SD">Sudan</option>
-					<option value="SR">Suriname</option>
-					<option value="SJ">Svalbard and Jan Mayen</option>
-					<option value="SZ">Swaziland</option>
-					<option value="SE">Sweden</option>
-					<option value="CH">Switzerland</option>
-					<option value="SY">Syrian Arab Republic</option>
-					<option value="TW">Taiwan</option>
-					<option value="TJ">Tajikstan</option>
-					<option value="TZ">Tanzania United Republic</option>
-					<option value="TH">Thailand</option>
-					<option value="TG">Togo</option>
-					<option value="TK">Tokelau</option>
-					<option value="TO">Tonga</option>
-					<option value="TT">Trinidad and Tobago</option>
-					<option value="TN">Tunisia</option>
-					<option value="TR">Turkey</option>
-					<option value="TM">Turkmenistan</option>
-					<option value="TC">Turks and Caicos Islands</option>
-					<option value="TV">Tuvalu</option>
-					<option value="UG">Uganda</option>
-					<option value="UA">Ukraine</option>
-					<option value="AE">United Arab Emirates</option>
-					<option value="GB">United Kingdom</option>
-					<option value="US" selected>United States</option>
-					<option value="UY">Uruguay</option>
-					<option value="UZ">Uzbekistan</option>
-					<option value="VU">Vanuatu</option>
-					<option value="VE">Venezuela</option>
-					<option value="VN">Vietnam</option>
-					<option value="WF">Wallis and Futuna</option>
-					<option value="EH">Western Sahara</option>
-					<option value="YE">Yemen</option>
-					<option value="ZM">Zambia</option>
-					<option value="ZW">Zimbabwe</option>
-				</select>
-				
-				<input type="text" name="card_number" placeholder="Card number" onkeypress='return event.charCode >= 48 && event.charCode <= 57' >
-				<input type="text" id="expiration" name="expiration" placeholder="MM/YY" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="5">
-				<input type="text" name="cvc" placeholder="CVC" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="4" >
-				<a class="checkoutPoweredByStripe" href="https://stripe.com/" target="_blank"></a>
-			</form>
-				
-				<div class="makePaymentButtonWrap">
-						<div class="blueButton makePaymentButton">Make Payment</div>
-				</div>
-			</form>
-		</div>
+			{% if bp %}
+			<li id="menuUserName">{{bp.name}}
+			<li><a href="/dashboard">Dashboard</a></li>
+			<li><a href="/profile">Profile</a></li>
+			<li><a href="/settings">Settings</a></li>
+			<li><a href="/logout">Log Out</a></li>
+
+			{% else %}
+			<li><a href="/signup">Signup</a></li>
+			<li><a href="/login">Login</a></li>
+			{% endif %}
+		</ul>
 	</div>
 
+	<div class="pageWrapper"><!-- Page wrapper starts here -->
 
+		<!-- HEADER -->
+		<!-- Header starts here -->
+		<div class="headerBackground">
+			<!-- Content wrapper contains all header elements in necessary width -->
+			<div class="headerContentWrapper">
 
+				<!-- HEADER LOGO -->
+				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
+				{% if bp %}<a class="headerLogo" href="/dashboard">
+				{% else %}<a class="headerLogo" href="/">
+				{% endif %}
+				</a>
 
-	<div id="top-bar">
-		<div id="top-wrapper">
-		{% if bp %}<a href="/dashboard">{% else %}<a href="/">{% endif %}
-			<div id="top-logo">
-				<div id="clock-hand-1"></div>
-				<div id="clock-hand-2"></div>
-			</div></a>		
+				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+					<input name="search" id="headerSearch" type="text" autocomplete="off">
+				</form>
 
-			<div id="top-search">
-				  <div id="top-search-input">
-					  <form name=srchForm action='/search' method=POST onsubmit="return searchBar()">
-						<input type="text" name="search" placeholder="Who do you want to meet?" />
-					  </form>
-				  </div>
-			</div>
-		{% if bp %}
-			<nav>
-				<ul>
-					<li>{{bp.prof_name}}
-						<ul>
-							<li><a href="/dashboard">Dashboard</a></li>
-							<li><a href="#" onclick="document.getElementById('h').value='{{bp.prof_id}}'; document.p.submit();">Profile</a></li>
-							<li><a href="/settings">Settings</a></li>
-							<li><a href="/logout">Log Out</a></li>
-						</ul>
-					</li>
-			</nav>
-		{% else %}
-			<div id="top-menu">
-				<ul>
-					<li><a href="/signup">Sign up</a></li>
-					<li><a href="/login">Log in</a></li>
+				<!-- HEADER MENU -->
+				{% if bp %}
+
+				<div class="headerGraphicalMenu"></div>
+
+				{% else %}
+				<div class="headerGraphicalMenu"></div>
+				<ul class="headerTextMenu">
+					<li><a href="/signup">Signup</a></li>
+					<li><a href="/login">Login</a></li>
 				</ul>
-			</div>
-		{% endif %}
-		</div>
-	</div>
 
-	{% block content %}
-	{% endblock %}
+				{% endif %}
+
+			</div>
+			<div id="top-flash">
+				<span id="fmsg"></span>
+			</div>
+		</div>
+		<!-- Header ends here -->
+
+		
+		{% block content %}
+		{% endblock %}
+
 	
-	<div id="bottom-bar">
-		<div id="bottom-wrapper">
-			<div id="bottom-logo"></div>
-			<div id="footer-menu">
+	</div><!-- Page wrapper ends here -->
+
+	<!-- Footer starts here -->
+	<div id="footer">
+		<div class="footerContentWrapper">
+			<div class="footerLogo"></div>
+			<div class="footerMenu">
 				<ul>
-					<li><a href="#">Help</a> |</li>
 					<li><a href="#">Blog</a> |</li>
 					<li><a href="#">Team</a> |</li>
-					<li><a href="#">Press</a> |</li>
 					<li><a href="#">Terms &amp; Privacy</a> |</li>
 					<li><a href="#">DMCA</a> |</li>
-					<li><a href="#">Contact us</a></li>
+					<li><a href="#">Contact</a></li>
 				</ul>
-				<ul>
+			</div>
+				<!-- <ul>
 					<li><a href="http://www.linkedin.com/company/herotime">LinkedIn</a> |</li>
 					<li><a href="https://www.facebook.com/pages/HeroTime/545914632110849">Facebook</a> |</li>
 					<li><a href="https://plus.google.com/u/0/117608740634064140119">Google+</a> |</li>
 					<li><a href="https://twitter.com/HeroTimeCo">Twitter</a> |</li>
 					<li><a href="http://www.youtube.com/channel/UCIgliSHZYHZNAdJqpjeUTVw/feed?view_as=public">YouTube</a></li>
-				</ul>
-				<div id="footer-copyright">
-				Copyright © 2013-<script>document.write(new Date().getFullYear())</script> HeroTime Inc. All rights reserved.
-				</div>
-			</div>
-			<div id="footer-mobile">
-				<object data="static/img/appstore.svg" type="image/svg+xml"></object>
+				</ul> -->
+			<div class="footerCopyright">
+				Copyright © 2013-<script>document.write(new Date().getFullYear())</script> HeroTime Inc.
 			</div>
 		</div>
-	</div>
+	</div><!-- Footer ends here -->
+
 	<script>
 	$(function () {
 		function rp(id) {
@@ -442,6 +337,15 @@
 			document.p.submit();
 		}
 	});
+
+	$(function () {
+		function searchBar() {
+			var x=document.forms["srchForm"]["search"].value;
+			if (x==null || x=="") { return false; }
+			return true;
+		}
+	});
 	</script>
+
 </body>
 </html>

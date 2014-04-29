@@ -1,54 +1,35 @@
 {% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
+{% endblock %}
+
+
 {% block content %}
 
-<div id="recovery-wrap">
-	
-	<div id="recovery-box">
-		<h2>Password Recovery</h2>
-		<form method=POST>		
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-			<label id="label-login-email" for="rec_input_email">Enter your email to get the instructions</label>
-			{{form.rec_input_email(type="email")}}
 
-			{% if errmsg != none %}
-				<script>
-					openAlertWindow('{{errmsg}}')
-				</script>
-			{% endif %}
-			
-			<!--input type="email" id="rec_input_email" width="310px" height="30px" pad-left="5"/-->
-			<div id="recSubmitWrap">
-				<input type="submit" id = "rec_submit" class="blueButton recSubmit" value="Send password recovery email" onclick="this.style.visibility='hidden'">
-			</div>
-			<div id="rec-back-wrap">
-				<a href="/login" class="whiteButton recBack">Back to login</a>
-			</div>
+<div class="recoveryContentWrapper">
+	<h2>Password Recovery</h2>
+	<form method="post">		
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+		<div class="recoveryInstructions">Enter the email registered with your HeroTime account and we will send you the reset link.</div>
+		{{form.rec_input_email(type="email", placeholder="Email", autocomplete="off")}}
 
-			<!-- After the user submits his email, the button should turn into:
-			<div class="login-light">Back to login</div>
-			-->
-		</form>
-	</div>
-</div>
-
-<!-- OAuth withheld until next release
-	<div id="signup-social">
-		<h2>Log in with...</h2>
+		{% if errmsg != none %}
+		<script>
+			openAlertWindow('{{errmsg}}')
+		</script>
+		{% endif %}
 		
-		<div id="linkedin-wrap">
-			<a href="#"><div id="signup-linkedin">Log in with LinkedIn</div></a>
+		<div class="recoverySubmitWrapper">
+			<input type="submit" id="rec_submit" class="blueButton" value="Send Reset Link" onclick="this.style.visibility='hidden'">
 		</div>
 
-		<div id="facebook-wrap">
-			<a href="#"><div id="signup-facebook">Log in with Facebook</div></a>
-		</div>
+		<a href="/login" class="recoveryLink">Back to Login</a>
 
-		<div id="twitter-wrap">
-			<a href="#"><div id="signup-twitter">Log in with Twitter</div></a>
-		</div>
-	</div>
--->
-
+	</form>
+</div>
 
 <!-- Bottom bar -->
 

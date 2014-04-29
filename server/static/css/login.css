@@ -1,0 +1,399 @@
+/*
+There are three responsive design ranges for the login page (login.html):
+a) 240px - 349px (phones)
+b) 350 - 889px (phablets, tablets)
+c) 890px - ... (desktops)
+
+*/
+
+/* ANIMATIONS */
+
+	/* LinkedIn Button Pulse */
+	@-moz-keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+	@-webkit-keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+	@keyframes linkedinPulse {
+		0% {background-color: #007cb3;}
+		50% {background-color: #00a1e8;}
+		100% {background-color: #007cb3;}
+	}
+
+/* COMMON ELEMENTS */
+
+	.loginContentWrapper a:hover {
+		text-decoration: underline;
+	}
+
+	.loginEmail input[type="text"] {
+		border-radius: 5px 5px 0 0;
+		margin-bottom: 0;
+	}
+
+	.loginEmail input[type="submit"] {
+		width: 100%;
+	}
+
+	.loginLinkedIn {
+		background: url("../img/linkedin.svg") #007cb3 no-repeat 2px 3px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;
+	}
+
+	.loginLinkedInNotice {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+	.loginLink {
+		clear: both;
+		display: block;
+		font-size: 0.9em;
+		margin-top: 5px;
+		text-align: center;
+	}
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 30px;
+	}
+
+	.loginContentWrapper {
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 100%;
+	}
+
+	.loginContentWrapper h2 {
+		display: none;
+	}
+
+	/* Login Switch */
+	
+	.loginSwitch {
+		height: 35px;		
+		margin: 20px auto 0;
+		-ms-user-select: none;
+		-moz-user-select: none;		
+		-o-user-select: none;
+		-webkit-user-select: none;
+		width: 90%;
+	}
+
+	.loginSwitchEmail {
+		border: 1px #29abe2 solid;
+		border-radius: 3px 0 0 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 32px;
+		text-align: center;
+		width: 50%;
+	}
+
+	.loginSwitchSocial {
+		border: 1px #29abe2 solid;
+		border-radius: 0 3px 3px 0;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #29abe2;
+		cursor: pointer;
+		float: left;
+		font-size: 0.9em;
+		height: 35px;
+		line-height: 32px;
+		text-align: center;
+		width: 50%;
+		position: relative;
+	}
+
+	.loginSwitchActive {
+		background-color: #29abe2;
+		color: white;
+	}
+
+
+	/* Email Login */
+
+	.loginEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 30px auto 10px;
+		padding-bottom: 15px;
+		width: 90%;
+	}
+
+	.loginEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		width: 100%;
+	}
+
+	.loginEmail input[type="password"] {
+		border-radius: 0 0 5px 5px;
+		margin-bottom: 20px;
+		margin-top: -1px;
+	}
+
+	.loginEmail input[type="password"]:focus {
+		margin-top: -1px;
+		margin-bottom: 20px;
+	}
+
+	.loginEmailSubmitWrapper {
+		margin: 10px 0 10px;
+		width: 100%;
+	}
+
+	.loginEmail a {
+		clear: both;
+		display: block;
+		font-size: 0.9em;
+		margin-bottom: 5px;
+		text-align: center;
+	}
+
+
+	/* Social Login */
+	.loginSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		display: none;
+		margin: 30px auto 0;
+		margin-bottom: 10px;
+		padding-bottom: 15px;
+		width: 90%;
+	}
+
+}
+
+/* PHABLET, TABLET DESIGN */
+@media only screen and (min-width: 350px) and (max-width: 889px) {
+
+	/* Login panel slides into view */
+	@-moz-keyframes loginAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes loginAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes loginAppear {
+		from {opacity: 0; margin-top: 300px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
+		width: 100%;
+	}
+
+	.loginContentWrapper {
+		-moz-animation: loginAppear 1s;
+		-o-animation: loginAppear 1s;
+		-webkit-animation: loginAppear 1s;
+		animation: loginAppear 1s;
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		margin: 40px auto 30px;
+		padding: 10px;
+		width: 300px;
+	}
+
+
+	.loginContentWrapper h2 {
+		margin-bottom: 10px;
+		padding: 10px;
+		text-align: center;
+	}
+
+	/* Login Switch */
+	
+	.loginSwitch {display: none;}
+
+
+	/* Email Login */
+
+	.loginEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 0 auto 10px;
+		padding-bottom: 5px;
+		width: 280px;
+	}
+
+	.loginEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		height: 40px;
+		width: 100%;
+	}
+
+	.loginEmail input[type="password"] {
+		border-radius: 0 0 5px 5px;
+		margin-top: -1px;
+	}
+
+	.loginEmailSubmitWrapper {
+		margin: 20px 0 20px;
+		width: 100%;
+	}
+
+	/* Social Login */
+	.loginSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);		
+		display: none;
+		margin: 10px auto 0;
+		padding-bottom: 15px;
+		width: 280px;
+	}
+
+	.loginLinkedIn:hover {
+		-moz-animation: linkedinPulse 2s infinite;
+		-webkit-animation: linkedinPulse 2s infinite;
+  		animation: linkedinPulse 2s infinite;
+	}
+
+}
+
+/* DESKTOP DESIGN */
+@media only screen and (min-width: 890px) {
+
+	/* Login panel slides into view */
+	@-moz-keyframes loginAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes loginAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes loginAppear {
+		from {opacity: 0; margin-top: 300px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+	.pageWrapper {
+		background: url('../img/background-login.jpg') no-repeat center center;
+		background-position: 100% 30%;
+		-o-background-size: cover;
+		-webkit-background-size: cover;		
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		width: 100%;
+	}
+
+	.loginContentWrapper {
+		-webkit-animation: loginAppear 1s;
+		animation: loginAppear 1s;
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);		
+		margin: 40px 0 30px 7.5%; /* Fallback w/o calc() support*/
+		margin: 40px 0 30px calc((100% - 768px)/2);
+		padding: 10px;
+		width: 300px;
+	}
+
+	.loginContentWrapper h2 {
+		margin-bottom: 10px;
+		padding: 10px;
+		text-align: center;
+	}
+
+	/* Login Switch */
+	
+	.loginSwitch {display: none;}
+
+
+	/* Email Login */
+
+	.loginEmail {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);
+		margin: 0 auto 10px;
+		padding-bottom: 5px;
+		width: 280px;
+	}
+
+	.loginEmail input[type="text"], input[type="password"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		width: 100%;
+	}
+
+	.loginEmail input[type="password"] {
+		border-radius: 0 0 5px 5px;
+		margin-top: -1px;
+	}
+
+	.loginEmailSubmitWrapper {
+		margin: 20px 0 20px;
+		width: 100%;
+	}
+
+	/* Social Login */
+	.loginSocial {
+		border-bottom: 1px solid rgba(0,0,0, 0.15);		
+		display: none;
+		margin: 10px auto 0;
+		padding-bottom: 15px;
+		width: 280px;
+	}
+
+	.loginLinkedIn:hover {
+		-moz-animation: linkedinPulse 2s infinite;
+		-webkit-animation: linkedinPulse 2s infinite;
+  		animation: linkedinPulse 2s infinite;
+	}
+
+	.loginLink:hover {
+		text-decoration: underline;
+	}
+
+}
