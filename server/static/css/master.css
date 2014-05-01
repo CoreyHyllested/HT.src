@@ -213,13 +213,28 @@ label {
 
 	/* Input fields */
 
+	textarea {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		border: 1px #e1e8ed solid;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		height: 120px;
+		font-size: 0.9em;
+		line-height: 1.5em;
+		outline: none;
+		padding: 0.4em 5px;
+	}
+
 	input[type="text"], input[type="email"], input[type="password"] {
 		-moz-appearance: none;
 		-o-appearance: none;
 		-webkit-appearance: none;
 		border: 1px #e1e8ed solid;
 		height: 40px;
-		font-size: 0.9em;	
+		font-size: 0.9em;
 		line-height: 1em;
 		outline: none;
 		padding-left: 5px;
@@ -240,6 +255,14 @@ label {
 		-webkit-appearance: none;
 		font-size: 0.9em;
 		text-transform: uppercase;
+	}
+
+	input[type="button"] {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		font-size: 0.9em;
+		text-transform: uppercase;		
 	}
 
 	select {

@@ -1,13 +1,14 @@
 /*
-There are three responsive design ranges for the login page (login.html):
-a) 240px - 349px (phones)
-b) 350px - 569px (phablets)
-c) 570px - 799px (two columns)
-d) 800px - 999px (three columns, fluid)
-e) 1000px - ... (three columns, fixed)
+There are five responsive design ranges for the login page (login.html):
+a) 240px - 449px (phones)
+b) 450px - ... (everything else)
 */
 
 /* COMMON ELEMENTS */
+
+	.settingsContentWrapper h2 {
+		margin-bottom: 10px;
+	}
 
 	/* Forms */
 
@@ -52,6 +53,10 @@ e) 1000px - ... (three columns, fixed)
 		border-radius: 0 0 5px 5px;
 		margin-bottom: 20px;
 		margin-top: -1px;
+	}
+
+	.settingsPayout p:nth-of-type(2) {
+		margin: 20px 0;
 	}
 
 	/* Connect with Stripe */
@@ -171,7 +176,7 @@ e) 1000px - ... (three columns, fixed)
 
 
 /* PHONE DESIGN */
-@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+@media only screen and (min-device-width: 240px) and (max-width: 449px) {
 
 	.pageWrapper {
 		background-color: white;
@@ -187,77 +192,6 @@ e) 1000px - ... (three columns, fixed)
 		width: 90%;
 	}
 
-	/* Settings Switch */
-	
-	.settingsSwitch {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		height: 35px;		
-		margin: 0 auto 30px;
-		-ms-user-select: none;
-		-moz-user-select: none;		
-		-o-user-select: none;
-		-webkit-user-select: none;
-		width: 100%;
-	}
-
-	.settingsSwitchEmail {
-		border: 1px #29abe2 solid;
-		border-radius: 3px 0 0 3px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		color: #29abe2;
-		cursor: pointer;
-		float: left;
-		font-size: 0.9em;
-		height: 35px;
-		line-height: 32px;
-		margin: 0 -1px 0 2px;
-		text-align: center;
-		width: 30.33%;
-	}
-
-	.settingsSwitchPassword {
-		border: 1px #29abe2 solid;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		color: #29abe2;
-		cursor: pointer;
-		float: left;
-		font-size: 0.9em;
-		height: 35px;
-		line-height: 32px;
-		margin-right: -1px;
-		text-align: center;
-		width: 39.33%;
-		position: relative;
-	}
-
-	.settingsSwitchPayout {
-		border: 1px #29abe2 solid;
-		border-radius: 0 3px 3px 0;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		color: #29abe2;
-		cursor: pointer;
-		float: left;
-		font-size: 0.9em;
-		height: 35px;
-		line-height: 32px;
-		text-align: center;
-		width: 30.33%;
-		position: relative;
-	}
-
-	.settingsSwitchActive {
-		background-color: #29abe2;
-		color: white;
-	}
-
 	/* Email tab */
 
 	.settingsEmail {
@@ -265,34 +199,20 @@ e) 1000px - ... (three columns, fixed)
 		width: 100%;		
 	}
 
-	.settingsEmail h2 {
-		display: none;
-	}
-
 	/* Password tab */
 
 	.settingsPassword {
-		display: none;
 		margin: 30px auto 10px;
 		padding-bottom: 15px;
 		width: 100%;		
 	}
 
-	.settingsPassword h2 {
-		display: none;
-	}
-
 	/* Payout tab */
 
 	.settingsPayout {
-		display: none;
 		margin: 30px auto 0;
 		padding-bottom: 15px;
 		width: 100%;		
-	}
-
-	.settingsPayout h2 {
-		display: none;
 	}
 
 	.settingsPayout p {
@@ -306,285 +226,60 @@ e) 1000px - ... (three columns, fixed)
 
 }
 
-/* PHABLET DESIGN */
-@media only screen and (min-width: 350px) and (max-width: 569px) {
+@media only screen and (min-width: 450px) {
 
 	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 30px;
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
 		width: 100%;
 	}
 
 	.settingsContentWrapper {
 		background-color: white;
-		border: 1px solid #cfd7db;
 		border-radius: 6px;
-		margin: 40px auto 30px;
-		padding: 10px 20px;
-		width: 300px;
-	}
-
-	.settingsContentWrapper h2 {
-		margin-bottom: 10px;
-		text-align: center;
-	}
-
-	.settingsSwitch {
-		display: none;
-	}
-
-	/* Email section */
-
-	.settingsEmail {
-		border-bottom: 1px solid #e1e8ed;
-		margin-bottom: 20px;
-		padding-bottom: 20px;
-		width: 100%;	
-	}
-
-	/* Password section */
-
-	.settingsPassword {
-		border-bottom: 1px solid #e1e8ed;
-		margin-bottom: 20px;
-		padding-bottom: 20px;
-		width: 100%;		
-	}
-
-	/* Payout tab */
-
-	.settingsPayout {
-		padding-bottom: 20px;
-		width: 100%;		
-	}
-
-	.settingsPayout p {
-		margin-bottom: 15px;
-	}
-
-	.stripe-connect.light-blue {
-		width: 100%;
-	}
-
-}
-
-/* TWO COLUMNS */
-@media only screen and (min-width: 570px) and (max-width: 799px) {
-
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 30px;
-		width: 100%;
-	}
-
-	.settingsContentWrapper {
-		background-color: white;
-		border: 1px solid #cfd7db;
-		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
+		box-sizing: border-box;
 		margin: 40px auto 30px;
 		padding: 20px;
-		width: 94%;
+		width: 400px;
 	}
 
 	.settingsContentWrapper h2 {
-		margin-bottom: 20px;
+		padding: 10px 10px 10px 0;
 	}
-
-	.settingsSwitch {
-		display: none;
-	}
-
-	.settingsLeftSideWrapper {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		float: left;
-		width: 50%;
-		padding-right: 20px;
-		border-right: 1px solid #e1e8ed;
-	}
-
-	/* Email section */
-
+	
 	.settingsEmail {
-		float: left;
-		width: 100%;
-	}
-
-	/* Password section */
-
-	.settingsPassword {	
-		float: left;
-		margin-top: 30px;
+		margin: auto;
+		padding-bottom: 20px;
 		position: relative;
-		width: 100%;
+		width: 350px;
 	}
-
-	/* Payout section */
-
-	.settingsPayout {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		float: right;
-		padding-left: 20px;
-		width: 50%;
-	}
-
-	.settingsPayout p {
-		margin-bottom: 15px;
-	}
-
-	.stripe-connect.light-blue {
-		width: 100%;
-	}
-
-}	
-
-/* THREE COLUMNS, FLUID */
-@media only screen and (min-width: 800px) and (max-width: 999px) {
-
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 30px;
-		width: 100%;
-	}
-
-	.settingsContentWrapper {
-		background-color: white;
-		border: 1px solid #cfd7db;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		margin: 40px auto 30px;
-		padding: 20px;
-		width: 94%;
-	}
-
-	.settingsContentWrapper h2 {
-		margin-bottom: 20px;
-	}
-
-	.settingsSwitch {
-		display: none;
-	}
-
-	/* Email section */
-
-	.settingsEmail {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;			
-		float: left;
-		padding-right: 30px;
-		width: 33.33%;
-	}
-
-	/* Password section */
 
 	.settingsPassword {
-		border-left: 1px solid #e1e8ed;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;			
-		float: left;
-		padding: 0 30px 0;
-		width: 33.33%;
+		margin: auto;
+		padding: 20px 0;
+		width: 350px;
 	}
-
-	/* Payout section */
 
 	.settingsPayout {
-		border-left: 1px solid #e1e8ed;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;			
-		float: right;
-		padding-left: 30px;
-		width: 33.33%;
-	}
-
-	.settingsPayout p {
-		margin-bottom: 15px;
+		margin: auto;
+		padding-top: 20px;
+		width: 350px;
 	}
 
 	.stripe-connect.light-blue {
+		margin-top: 20px;
 		width: 100%;
 	}
 
 }
-
-/* THREE COLUMNS, FIXED */
-@media only screen and (min-width: 1000px) {
-
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 30px;
-		width: 100%;
-	}
-
-	.settingsContentWrapper {
-		background-color: white;
-		border: 1px solid #cfd7db;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		margin: 40px auto 30px;
-		padding: 10px;
-		width: 980px;
-	}
-
-	.settingsContentWrapper h2 {
-		margin-bottom: 20px;
-	}
-
-	.settingsSwitch {
-		display: none;
-	}
-
-	/* Email section */
-
-	.settingsEmail {
-		float: left;
-		margin: 10px 30px 0 20px;
-		width: 265px;
-	}
-
-	/* Password section */
-
-	.settingsPassword {
-		border-left: 1px solid #e1e8ed;	
-		float: left;
-		margin-top: 10px;
-		padding: 0 30px 0;
-		width: 265px;
-	}
-
-	/* Payout section */
-
-	.settingsPayout {
-		border-left: 1px solid #e1e8ed;
-		float: right;
-		margin: 10px 20px 20px 0;
-		padding-left: 30px;
-		width: 265px;
-	}
-
-	.settingsPayout p {
-		margin-bottom: 15px;
-	}
-
-	.stripe-connect.light-blue {
-		width: 100%;
-	}
-
-}	

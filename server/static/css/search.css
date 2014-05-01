@@ -40,6 +40,7 @@ c) 980px - ... (desktops)
 
 	.searchOptions h2 {
 		font-size: 1.2em;
+		text-align: right;
 	}
 
 	.searchOptions {

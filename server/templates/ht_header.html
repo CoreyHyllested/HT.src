@@ -94,122 +94,6 @@
 				$('.pageWrapper').toggleClass('pageWrapperSlide');
 			});
 
-			// [Login] On load, show full content on high resolutions
-			if ($('.loginSwitch').css('display') == 'none') {
-				$('.loginEmail').show();
-				$('.loginSocial').show();
-			}
-
-			// [Login] On resize, show full content on high resolutions
-			$(window).resize(function() {	
-				if ($('.loginSwitch').css('display') == 'none') {
-					$('.loginEmail').show();
-					$('.loginSocial').show();
-				}
-
-				else if ($('.loginSwitch').css('display') !== 'none') {
-					$('.loginEmail').show();
-					$('.loginSocial').hide();
-				}
-			});
-
-
-			// [Login] Switch to email login
-			$('.loginSwitchEmail').click(function() {
-
-				// If not highlighted, make it so
-				if (!$(this).hasClass('loginSwitchActive')) {
-					$(this).toggleClass('loginSwitchActive');
-				}
-
-				// Take away the highlight from the other tab
-				if ($('.loginSwitchSocial').hasClass('loginSwitchActive')) {
-					$('.loginSwitchSocial').toggleClass('loginSwitchActive');
-				}
-
-				// Hide the social login and show email login
-				$('.loginSocial').hide();
-				$('.loginEmail').show();	
-			});
-
-
-			// [Login] Switch to social login
-			$('.loginSwitchSocial').click(function() {
-
-				// If not highlighted, make it so
-				if (!$(this).hasClass('loginSwitchActive')) {
-					$(this).toggleClass('loginSwitchActive');
-				}
-				// Take away the highlight from the other tab
-				if ($('.loginSwitchEmail').hasClass('loginSwitchActive')) {
-					$('.loginSwitchEmail').toggleClass('loginSwitchActive');
-				}
-
-				// Hide the email login and show social login
-				$('.loginEmail').hide();
-				$('.loginSocial').show();
-
-			});
-
-
-			// [Signup] On load, show full content on high resolutions
-			if ($(".signupSwitch").css("display") == "none") {
-				$('.signupEmail').show();
-				$('.signupSocial').show();
-			}
-
-			// [Signup] On resize, show full content on high resolutions
-			$(window).resize(function() {	
-				if ($(".signupSwitch").css("display") == "none") {
-					$('.signupEmail').show();
-					$('.signupSocial').show();
-				}
-
-				else if ($(".signupSwitch").css("display") !== "none") {
-					$('.signupEmail').show();
-					$('.signupSocial').hide();
-				}
-			});
-
-
-			// [Signup] Switch to email signup
-			$('.signupSwitchEmail').click(function() {
-
-				// If not highlighted, make it so
-				if (!$(this).hasClass('signupSwitchActive')) {
-					$(this).toggleClass('signupSwitchActive');
-				}
-
-				// Take away the highlight from the other tab
-				if ($('.signupSwitchSocial').hasClass('signupSwitchActive')) {
-					$('.signupSwitchSocial').toggleClass('signupSwitchActive');
-				}
-
-				// Hide the social signup and show email signup
-				$('.signupSocial').hide();
-				$('.signupEmail').show();
-						
-			});
-
-
-			// [Signup] Switch to social signup
-			$('.signupSwitchSocial').click(function() {
-
-				// If not highlighted, make it so
-				if (!$(this).hasClass('signupwitchActive')) {
-					$(this).toggleClass('signupSwitchActive');
-				}
-				// Take away the highlight from the other tab
-				if ($('.signupSwitchEmail').hasClass('signupSwitchActive')) {
-					$('.signupSwitchEmail').toggleClass('signupSwitchActive');
-				}
-
-				// Hide the email signup and show social signup
-				$('.signupEmail').hide();
-				$('.signupSocial').show();
-
-			});
-
 			// [Search] On mobile, toggle search options on/off
 			$('.searchOptionsMenu').click(function() {
 				$('.searchOptions').toggleClass('searchOptionsOn');
@@ -243,7 +127,8 @@
 		<ul>
 
 			{% if bp %}
-			<li id="menuUserName">{{bp.name}}
+			<!-- CAH: The line below should display the user's name, but it doesn't -->
+			<li id="menuUserName">{{bp.name}}User's Name</li>
 			<li><a href="/dashboard">Dashboard</a></li>
 			<li><a href="/profile">Profile</a></li>
 			<li><a href="/settings">Settings</a></li>
@@ -301,7 +186,7 @@
 		{% block content %}
 		{% endblock %}
 
-	
+	<div class="clear"></div>
 	</div><!-- Page wrapper ends here -->
 
 	<!-- Footer starts here -->

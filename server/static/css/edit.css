@@ -1,0 +1,288 @@
+/*
+There are three responsive design ranges for the login page (login.html):
+a) 240px - 449px (phones)
+b) 450px - ... (everything else)
+*/
+
+
+/* COMMON ELEMENTS */
+
+	.editContentWrapper h2 {
+		margin-bottom: 10px;
+	}
+
+	/* Form elements */
+
+	input[type="text"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		width: 100%;	
+	}
+
+	input[type="submit"] {
+		width: 100%;
+	}
+
+	.editContentWrapper a:hover {
+		text-decoration: underline;
+	}
+
+	/* Basic Information */
+
+	.editBasicInfo input {
+		margin-top: -1px;
+	}
+
+	.editBasicInfo input:nth-of-type(1) { /* Name */
+		border-radius: 3px 3px 0 0;
+	}
+
+	.editBasicInfo input:nth-of-type(3) { /* Hourly rate */
+		padding-left: 15px;
+	}
+
+	.editBasicInfo input:nth-of-type(5) { /* Web address */
+		border-radius: 0 0 3px 3px;
+	}
+
+	.editBasicInfo select {
+		margin-top: -1px;
+		width: 100%;
+	}
+
+	/* About Me */
+
+	.editAboutMe textarea {
+		border-radius: 3px;
+		width: 100%;
+	}
+
+	/* Change Photo */
+
+	.editPhoto p {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin: 10px 0 20px;
+	}
+
+	#change-photo-button {
+		display:none;
+	}
+
+	#editChooseImage {
+		width: 100%;
+	}
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 449px) {
+
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 30px;
+		width: 100%;
+	}
+
+	.editContentWrapper {
+		margin: 30px auto 10px;
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 90%;
+	}
+
+	/* Basic Info */
+	
+	.editBasicInfo {
+		padding-bottom: 20px;
+		position: relative;
+	}
+
+	.editRateDollars {
+		color: black;
+		cursor: default;		
+		font-size: 0.9em;		
+		position: absolute;
+		left: 6px;
+		line-height: 1em;		
+		top: 128px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;		
+	}
+
+	.editRatePerHour {
+		color: #889aa6;
+		cursor: default;
+		font-size: 0.9em;		
+		position: absolute;
+		line-height: 1em;
+		right: 6px;
+		text-align: right;	
+		top: 128px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}		
+
+	/* About Me */
+
+	.editAboutMe {
+		padding: 20px 0;
+	}
+
+	/* Change Photo */
+
+	.editPhoto {
+		padding-top: 20px;
+	}
+
+	#profile_img {
+		border-radius: 3px;
+		margin: 0 auto;
+		width: 100%;
+	}
+
+	/* Buttons */
+
+	#edit-save {
+		margin: 40px 0 20px;
+	}
+
+	.editBackToProfile {
+		border-top: 1px solid rgba(0,0,0, 0.15);	
+		padding-top: 10px;
+		text-align: center;
+		width: 100%;
+	}
+
+}
+
+@media only screen and (min-width: 450px) {
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 620px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
+		width: 100%;
+	}
+
+	.editContentWrapper {
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 40px auto 30px;
+		padding: 20px;
+		width: 400px;
+	}
+
+	.editContentWrapper h2 {
+		padding: 10px 10px 10px 0;
+	}
+
+	/* Basic Info */
+	
+	.editBasicInfo {
+		margin: auto;
+		padding-bottom: 20px;
+		position: relative;
+		width: 350px;
+	}	
+
+	.editRateDollars {
+		color: black;
+		cursor: default;		
+		font-size: 0.9em;		
+		position: absolute;
+		left: 6px;
+		line-height: 1em;		
+		top: 148px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;		
+	}
+
+	.editRatePerHour {
+		color: #889aa6;
+		cursor: default;
+		font-size: 0.9em;		
+		position: absolute;
+		line-height: 1em;
+		right: 6px;
+		text-align: right;	
+		top: 148px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}	
+
+	/* About Me */
+
+	.editAboutMe {
+		margin: auto;
+		padding: 20px 0;
+		width: 350px;
+	}
+
+	.editAboutMe textarea {
+		height: 235px;
+	}
+
+	/* Change Photo */
+
+	.editPhoto {
+		margin: auto;
+		padding-top: 20px;
+		width: 350px;
+	}
+
+	#profile_img {
+		border-radius: 6px;
+		cursor: pointer;
+		margin: 0 auto;
+		width: 100%;
+	}
+
+	/* Buttons */
+
+	#edit-save-wrap {
+		margin: auto;
+		width: 350px;
+	}
+
+	#edit-save {
+		margin: 40px auto 20px;
+	}
+
+	.editBackToProfile {
+		border-top: 1px solid rgba(0,0,0, 0.15);
+		margin: auto;
+		padding-top: 10px;
+		text-align: center;
+		width: 350px;
+	}
+
+}
