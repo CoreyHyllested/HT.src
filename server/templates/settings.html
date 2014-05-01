@@ -13,7 +13,7 @@
 
 		<div class="settingsLeftSideWrapper">
 			<div class="settingsEmail">
-				<h2>Email</h2>
+				<h2>Change Email</h2>
 
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -30,7 +30,7 @@
 
 			<div class="settingsPassword">
 
-				<h2>Password</h2>
+				<h2>Change Password</h2>
 				{{form.set_input_curpass(placeholder="Current password", autocomplete="off")}}
 				{{form.set_input_newpass(placeholder="New password")}}
 				{{form.set_input_verpass(placeholder="Verify password")}}
@@ -39,7 +39,7 @@
 		</div>
 
 		<div class="settingsPayout">
-			<h2>Payout</h2>
+			<h2>Payment Information</h2>
 
 			<p>We use <a href="https://stripe.com" target="_blank">Stripe</a> to pay you for the services you sell. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet.</p>
 

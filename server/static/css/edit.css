@@ -55,6 +55,7 @@ b) 450px - ... (everything else)
 
 	.editAboutMe textarea {
 		border-radius: 3px;
+		height: 235px;
 		width: 100%;
 	}
 
@@ -90,6 +91,12 @@ b) 450px - ... (everything else)
 		overflow-y: scroll;
 		padding-bottom: 10px;
 		width: 90%;
+	}
+
+	/* Change Photo */
+
+	.editPhoto {
+		margin-bottom: 40px;
 	}
 
 	/* Basic Info */
@@ -130,18 +137,12 @@ b) 450px - ... (everything else)
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
-	}		
+	}
 
 	/* About Me */
 
 	.editAboutMe {
 		padding: 20px 0;
-	}
-
-	/* Change Photo */
-
-	.editPhoto {
-		padding-top: 20px;
 	}
 
 	#profile_img {
@@ -197,6 +198,13 @@ b) 450px - ... (everything else)
 		padding: 10px 10px 10px 0;
 	}
 
+	/* Change Photo */
+
+	.editPhoto {
+		margin: 0 auto 40px;
+		width: 350px;
+	}
+
 	/* Basic Info */
 	
 	.editBasicInfo {
@@ -244,18 +252,6 @@ b) 450px - ... (everything else)
 	.editAboutMe {
 		margin: auto;
 		padding: 20px 0;
-		width: 350px;
-	}
-
-	.editAboutMe textarea {
-		height: 235px;
-	}
-
-	/* Change Photo */
-
-	.editPhoto {
-		margin: auto;
-		padding-top: 20px;
 		width: 350px;
 	}
 

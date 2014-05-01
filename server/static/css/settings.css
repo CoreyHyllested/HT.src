@@ -272,7 +272,7 @@ b) 450px - ... (everything else)
 	}
 
 	.settingsPayout {
-		margin: auto;
+		margin: 0 auto 20px;
 		padding-top: 20px;
 		width: 350px;
 	}

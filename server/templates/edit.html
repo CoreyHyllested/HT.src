@@ -16,6 +16,14 @@
 	
 		{{form.hidden_tag()}}
 
+<div class="editPhoto">
+			<h2>Profile Picture</h2>
+			<img id="profile_img" src={{photoURL}} />
+			<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
+			{{form.edit_photo(id="change-photo-button")}}
+			<input type="button" class="whiteButton" id="editChooseImage" value="Choose Image...">
+		</div>
+
 		<div class="editBasicInfo">
 			<h2>Basic Information</h2>
 			{{form.edit_name(placeholder="Name")}}
@@ -33,13 +41,7 @@
 			{{form.edit_bio}}
 		</div>
 
-		<div class="editPhoto">
-			<h2>Profile Picture</h2>
-			<img id="profile_img" src={{photoURL}} />
-			<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
-			{{form.edit_photo(id="change-photo-button")}}
-			<input type="button" class="whiteButton" id="editChooseImage" value="Choose Image...">
-		</div>
+		
 
 		<div id="edit-save-wrap">
 			<input type="submit" id="edit-save" class="blueButton" value="Save changes">
