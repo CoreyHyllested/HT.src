@@ -96,15 +96,23 @@ def render_profile(usrmsg=None):
 		- Ensure all necessary fields are still populated when submit is hit.
 	"""
 
-	hp = request.values.get('hero')
-	if (hp is None):
-		print "No hero profile requested, Error"
-		return redirect('https://herotime.co/dashboard')	
+	bp = None 
+	if (session.get('uid') is not None):
+		bp = Profile.get_by_uid(session.get('uid'))
+		print "BP = ", bp.prof_name, bp.prof_id, bp.account
 
 	try:
-		# Replace 'hp' with the actual Hero's Profile.
-		print "hero profile requested,", hp
-		hp = Profile.get_by_prof_id(hp)
+		hp = request.values.get('hero')
+		if (hp is not None):
+			print "hero profile requested,", hp
+			hp = Profile.get_by_prof_id(hp)
+		else:
+			if (bp == None): 
+				# no hero requested or logged in. go to login
+				return redirect('https://herotime.co/login')	
+			hp = bp
+
+		# replace 'hp' with the actual Hero's Profile.
 		print "HP = ", hp.prof_name, hp.prof_id, hp.account
 	except NoProfileFound as nf:
 		print nf
@@ -113,11 +121,6 @@ def render_profile(usrmsg=None):
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
-	bp = None 
-	if (session.get('uid') is not None):
-		print 'Qua'
-		bp = Profile.get_by_uid(session.get('uid'))
-		print "BP = ", bp.prof_name, bp.prof_id, bp.account
 
 
 	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
