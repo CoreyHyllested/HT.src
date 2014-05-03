@@ -25,14 +25,14 @@
 @media only screen and (min-width: 890px) {
 
 	.pageWrapper {
-		background: rgba(255,255,255,1);
-		background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
-		background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
-		background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
-		background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
-		background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
-		background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+		background: #dfdfdf;
+		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
 	}
 
 
@@ -48,7 +48,7 @@
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
 		margin: -200px auto 0;
-		padding: 30px;
+		padding: 41px;
 		position: relative;
 		width: 980px;
 		z-index: 30;
@@ -67,18 +67,293 @@
 	}
 
 	.profileLeftColumn {
+		float: left;
 		width: 492px;
 	}
 
+	.profileLeftColumn h3 {
+		color: black;
+	}
+
 	.profileAboutMe {
+		color: #6e7980;
 		font-family: Garamond, Georgia, serif;
 		font-style: italic;
+		line-height: 2em;
+		margin-bottom: 50px;
 		white-space: pre-wrap;
+	}
+
+	.profileReviewsInfo:first-of-type {
+		border-bottom: 1px solid #b0b4b7;
+		height: 1.188em;
+		padding-bottom: 15px;
+	}
+
+	.profileReviewsInfo:last-of-type {
+		border-top: 1px solid #b0b4b7;
+		height: 1.188em;
+		padding-top: 15px;
+	}
+
+	.profileReviewsInfo h3, .profileReviewBox h3 {
+		color: black;
+		float: left;
+		font-size: 1.188em;
+	}
+
+	.profileReviewsInfo a {
+		font-weight: 500;
+		float: right;
+	}
+
+	.profileNoReviews {
+		color: #6e7980;
+		font-size: 2em;
+		font-weight: 300;
+		line-height: 1.2em;
+		margin: 41px 0;
+	}
+
+	.profileReviewBox {
+		border-bottom: 1px solid #e2e4e6;
+		margin-top: 40px;
+		padding-bottom: 40px;		
+	}
+
+	.profileReviewBox:last-of-type {
+		border-bottom: none;
+	}
+
+	.profileReviewLeft {
+		float: left;
+		margin-right: 17px;		
+		width: 210px;
+	}
+
+	.profileReviewImageWrap {
+		margin-bottom: 16px;
+		position: relative;
+	}
+
+	.profileReviewImageFacebook {
+		background: url('../img/facebook_review.svg') no-repeat center center;
+		background-size: 22px 22px;
+		display: block;
+		height: 22px;
+		left: 5px;
+		position: absolute;
+		top: 5px;
+		width: 22px;
+	}
+
+	.profileReviewImageWrap img {
+		border-radius: 6px;		
+		width: 100%;
+	}
+
+	.profileReviewLeft h3 {
+		color: #29abe1;
+		font-weight: bold;
+		margin-bottom: 5px;
+		width: 100%;
+	}
+
+	.profileReviewLeft h4 {
+		color: #6e7980;
+		/*font-size: 0.875em;*/
+		font-size: 1em;
+		font-weight: bold;
+	}
+
+
+	.profileReviewRight {
+		float: right;
+		width: 265px;
+	}
+
+	/* Review Rating */
+
+	.profileReviewRating {
+		height: 61px;
+		position: relative;
+	}
+
+	.profileReviewRatingLabels {
+		color: #6e7980;
+		font-size: 0.8em;
+		font-weight: bold;
+		left: 0;
+		line-height: 23px;
+		position: absolute;
+		text-align: right;
+		top: 0;
+		width: 115px;
+	}
+
+	.profileReviewRatingNumerical {
+		font-size: 0.8em;		
+		font-weight: normal;
+		top: -16px;
+		line-height: 23px;
+		position: relative;
+		right: -31px;
+	}
+
+	.profileReviewRatingBars {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: #6e7980;		
+		font-size: 1em;
+		position: absolute;
+		right: 0;
+		padding-left: 11px;
+		text-align: right;
+		top: 0;
+		width: 140px;
+	}
+
+	.profileReviewRatingDivider {
+		background-color: #d1d8db;
+		height: 70px;
+		left: 125px;
+		position: absolute;
+		width: 1px;
+	}
+
+	.profileReviewRatingBar {
+		background-color: #d1d8db;
+		height: 8px;
+		line-height: 23px;		
+		width: 90px;
+	}
+
+	.profileReviewRatingBarFillOne {
+		background-color: red;
+		height: 100%;
+		width: 18px;
+	}
+
+	.profileReviewRatingBarFillTwo {
+		background-color: #29abe1;
+		height: 100%;
+		width: 36px;
+	}
+
+	.profileReviewRatingBarFillThree {
+		background-color: #29abe1;
+		height: 100%;
+		width: 54px;
+	}
+
+	.profileReviewRatingBarFillFour {
+		background-color: #29abe1;
+		height: 100%;
+		width: 72px;
+	}
+
+	.profileReviewRatingBarFillFive {
+		background-color: #29abe1;
+		height: 100%;
+		width: 90px;
+	}	
+
+	.profileReviewRatingBar:first-of-type {
+		margin-top: 8px;
+	}
+
+	.profileReviewRatingBar:nth-of-type(2) {
+		margin: 15px 0;
+	}
+
+	.profileReviewRatingBar:last-of-type {
+		margin-bottom: 8px;
+	}
+
+	.profileReviewRatingBarNumerical {
+		margin: -1em -2em 0 0;
+	}
+
+	.profileReviewBoxText {
+		color: #6e7980;
+		float: right;				
+		font-family: Garamond, Georgia, serif;
+		font-style: italic;
+		line-height: 1.8em;
+		margin-top: 27px;
+		white-space: wrap;
+		width: 265px;		
 	}
 
 	.profileRightColumn {
 		float: right;
 		width: 322px;
+	}
+
+	.profilePriceBox {
+		float: right;
+		height: 3em;
+		margin-bottom: 40px;
+	}
+
+	.profilePriceBox h1 {
+		display: inline-block;
+		line-height: 1em;
+	}
+
+	.profilePriceBox span {
+		color: black;
+		font-size: 1.438em;
+		vertical-align: 0.7em;
+	}
+
+	.perHour {
+		display: inline-block;
+		font-size: 1.188em;
+		height: 3em;
+	}
+
+	.profileBasicInfo {
+		border-bottom: 1px solid #858585;
+		border-top: 1px solid #858585;
+		margin: 82px 0 41px;
+		width: 100%;
+	}
+
+	.profileInfoBox {
+		border-bottom: 1px solid #e2e4e6;
+		color: #6e7980;
+		font-weight: bold;
+		padding: 11px 0 11px 41px;
+	}
+
+	.profileInfoBox:nth-of-type(1) {
+		background: url('../img/location.svg') no-repeat 11px center;
+		background-size: 18px 18px;
+	}
+
+	.profileInfoBox:nth-of-type(2) {
+		background: url('../img/passion.svg') no-repeat 11px center;
+		background-size: 18px 18px;
+	}
+
+	.profileInfoBox:nth-of-type(3) {
+		background: url('../img/star-full.svg') no-repeat 11px center;
+		background-size: 18px 18px;
+	}
+
+	.profileInfoBox:nth-of-type(4) {
+		background: url('../img/website.svg') no-repeat 11px center;
+		background-size: 18px 18px;
+	}	
+
+	.profileInfoBox:last-of-type {
+		border-bottom: none;
+	}
+
+	.profileRightColumn input[type="submit"] {
+		width: 100%;
 	}
 
 }
