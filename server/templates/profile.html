@@ -1,56 +1,81 @@
 {% extends "ht_header.html" %}
 
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
+	<script src="/static/js/profile.js"></script>
+
+	<!-- CAH: It'd be great if we could figure out which of the scripts from the list below the app still uses and roll them into the single file above. -->
+	<script src="/static/js/date.js"></script>
+	<script src="/static/js/maps.js"></script>
+	<script src="/static/js/format.js"></script>
+	<script src="/static/js/slot_expand.js"></script>
+	<script src="/static/js/view_more.js"></script>
+	<script src="/static/js/calendar.js"></script>
+	<script src="/static/js/calendar1.js"></script>
+	<script src="/static/js/tab_switch.js"></script>
+	<script src="/static/js/add_times.js"></script>
+	<script src="/static/js/moment.min.js"></script>
+	<script src="https://checkout.stripe.com/v2/checkout.js"></script>
+{% endblock %}
+
+
 {% block content %}
-<script src="/static/js/date.js"></script>
-<script src="/static/js/maps.js"></script>
-<script src="/static/js/format.js"></script>
-<script src="/static/js/slot_expand.js"></script>
-<script src="/static/js/view_more.js"></script>
-<script src="/static/js/calendar.js"></script>
-<script src="/static/js/calendar1.js"></script>
-<script src="/static/js/tab_switch.js"></script>
-<script src="/static/js/add_times.js"></script>
-<script src="/static/js/moment.min.js"></script>
-<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 
-<script>
-	  jQuery(function($) {
-		  $( "#datepicker" ).datepicker({
-  			  inline: true
-  		  });
-	  });
-	  jQuery(function($) {
-		  $( "#datepicker1" ).datepicker({
-  			  inline: true
-  		  });
-	  });
+<div class="profileCover">
+	
+	<img class="profileCoverPic" src="{{profile_img}}">
 
-		jQuery(function($) {
-			$('#datepicker').change(function() {
-				var d1 = new Date(document.getElementById("datepicker").value);
-				var d2 = new Date(document.getElementById("datepicker1").value);
-				var timeDiff = d2.getTime() - d1.getTime();
-				if (timeDiff < 0 || document.getElementById("datepicker1").value == "") {
-					document.getElementById("datepicker1").value = document.getElementById("datepicker").value;
-				}
-				update_time_diff({{hp.prof_rate}});
-			});
-		});
+</div>
 
-		jQuery(function($) {
-			$('#datepicker1').change(function() {
-				var d1 = new Date(document.getElementById("datepicker").value);
-				var d2 = new Date(document.getElementById("datepicker1").value);
-				var timeDiff = d2.getTime() - d1.getTime();
-				if (timeDiff < 0 || document.getElementById("datepicker").value == "") {
-                  document.getElementById("datepicker").value = document.getElementById("datepicker1").value;
-				}
-                  update_time_diff({{hp.prof_rate}});
-			});
-		});
-</script>
+<div class="profileContentWrapper">
 
-<div id="profile_pic">
+	<div class="profileBlurbWrapper">
+
+		<div class="profileLeftColumn">
+			<h1>{{hp.prof_name}}</h1>
+			<h2>{{hp.headline| default('No headline')}}</h2>
+			<div class="profileAboutMe">{{hp.prof_bio}}</div>
+		</div>
+
+		<div class="profileRightColumn">
+			{% if hp.reviews == 0 %}
+		<h2>No reviews available</h2>
+		{% else %}
+		<h2>Average rating:  {{ '%0.1f' | format(hp.rating|float)}} out of 5 stars</h2>
+		{% endif %}
+
+		{% for review in revs %}
+		<div class="review_wrap">
+			<div class="profile_preview">
+				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}" class="profile_preview_pic"/> </a>
+				<span class="profile_preview_price">${{review.appt.prop_cost}}<span class="disabled"></span></span>				
+				<div class="profile_preview_info">
+					<p><a href="#">{{review.display.prof_name}}</a></p>
+					<p>{{review.display.headline}}</p>
+					<p>{{'%0.1f' | format(review.display.rating|float)}} out of 5<a href="#"> ({{review.display.reviews}} reviews)</a></p>
+				</div>
+			</div>
+
+			<div class="review">
+				<p>Transaction with {{review.display.prof_name}} occurred in {{review.appt.prop_ts.strftime('%B %Y')}}</p>
+				<p id='r_place_{{loop.index}}'>get_state('{{review.appt.prop_place}}', 'r_place_{{loop.index}}')"</p>
+				<p><script>star_rating({{review.Review.appt_score}});</script></p>
+				<p>{{review.Review.generalcomments}}</p>
+			</div>
+		</div>
+		{% endfor %} 
+		</div>
+
+
+
+	<div class="clear"></div>
+
+</div>
+<div class="clear"></div>
+
+
+<!-- <div id="profile_pic">
 	<img src="{{profile_img}}" style="height:534px; width:950px; display:block margin:0 auto;"/>
 	<div id="profile_pic_box">
 		<h1>{{hp.prof_name}}</h1>
@@ -65,9 +90,9 @@
 				</a>
 			</div>
 	</div>
-</div>
+</div> -->
 
-<div id="info_box">
+<!-- <div id="info_box">
 	<div id="about_me">
 		<h2>About me</h2>
 		<p id="about_text">{{hp.prof_bio}}</p>
@@ -90,18 +115,18 @@
 	</div>
 
 	<div class="clear"></div>
-</div>
+</div> -->
 
-<div id="content-box-cal" class="content-box">
+<!-- <div id="content-box-cal" class="content-box">
 	<ul id="tabs">
 		<li id="tab-cal" class="active"><p><img src="/static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
 		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="/static/img/reviews-inactive.svg" alt="{{revs|length}} Reviews" />{{hp.reviews}} Reviews</p></li></a>
 	</ul>
 
 	<div id="content-top"></div>
-	<div id="appointments">
+	<div id="appointments"> -->
 		<!--h2 id="header"></h2-->
-		<div id="make_proposal_wrap">
+<!-- 		<div id="make_proposal_wrap">
 			<h3>{% if hp is sameas bp %}Your calendar will be here. {% else %}Meet this Hero.{% endif %}</h3>
 			{% if hp is sameas bp %}
 			{% else %}
@@ -112,9 +137,9 @@
 		</div>
 	</div>
 	<div style="clear: both"></div>
-</div>
+</div> -->
 
-<div id="content-box-revs" class="content-box">
+<!-- <div id="content-box-revs" class="content-box">
 	<ul id="tabs">
 		<a href="javascript:tab_switch('tab-cal', 'content-box-cal');"><li id="tab-cal" class="inactive"><p><img src="/static/img/calendar-inactive.svg" alt="Calendar" />Calendar</p></li></a>
 		<li id="tab-revs" class="active"><p><img src="/static/img/reviews-active.svg" alt="{{hp.reviews}} reviews" />{{ revs|length }} Reviews</p></li>
@@ -146,19 +171,19 @@
 				<p>{{review.Review.generalcomments}}</p>
 			</div>
 		</div>
-		{% endfor %}
+		{% endfor %} -->
 
 		<!--div class="show_more">Show more reviews (29 remaining)</div-->
-		<div class="clear"></div>
+<!-- 		<div class="clear"></div>
 	</div>
 	<div style="clear: both"></div>
-</div>
+</div> -->
 
 
-<div class="clear"></div>
-</div>
+<!-- <div class="clear"></div>
+</div> -->
 
-<div id="content-box-prop" class="content-box">
+<!-- <div id="content-box-prop" class="content-box">
 	<ul id="tabs">
 		<li id="tab-prop" class="active"><p><img src="/static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
 		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="/static/img/reviews-inactive.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} reviews</p></li></a>
@@ -229,147 +254,7 @@
 	{% endif %}
 
 
-</div>
-
-<script>
-	var jq = $.noConflict();
-    //ensure enter doesn't submit form
-    $("form[name=newts]").bind("keypress", function (e) {
-        if (e.keyCode == 13) {
-            return false;
-        }
-    });
-
-    google.maps.event.addDomListener(window, 'load', initialize);
-	document.getElementById("profile_price").innerHTML = "$" + format({{hp.prof_rate}});
-	document.getElementById("li_rate").innerHTML = "$" + format({{hp.prof_rate}}) + " / hour";
-	$('#newslot_starttime').change(function() {
-		update_time_diff({{hp.prof_rate}});
-	});
-	$('#newslot_endtime').change(function() {
-		update_time_diff({{hp.prof_rate}});
-	});
-    if (document.getElementById("datepicker") != null) {
-    	document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
-    }
-    if (document.getElementById("datepicker1") != null) {
-		document.getElementById("datepicker1").value = moment().format("dddd, MMM D, YYYY");
-	}
-	if (document.getElementById("newslot-label-rate") != null) {
-		document.getElementById("newslot-label-rate").innerHTML = "This person's default rate is $" + format({{hp.prof_rate}}) + " / hour"
-	}
-	window.onload = function() {
-      var today = new Date();
-      today.setDate(today.getDate()-1);
-	};
-</script>
-
-<script>
-	$(document).ready(function() {
-		$('#send_proposal').click(function() {
-			$hero_acct = '{{hp.prof_id}}';
-			$hero_name = '{{hp.prof_name}}';
-			$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
-			$time = $('#newslot-duration').html();
-			$desc = $('#newslot_description').val();
-			$area = $('#newslot_location').val();
-			$ts_d = $('#datepicker').val();
-			$ts_h = $('#newslot_starttime').val();
-
-			$tf_d = $('#datepicker1').val();
-			$tf_h = $('#newslot_endtime').val();
-
-			$bp_name = '{{bp.prof_name}}';
-			$bp_id   = '{{bp.prof_id}}';
-			console.log('hero_acct = ' + $hero_acct + ' ;' + $hero_name);
-			console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
-			console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
-//			console.log('hero_cost = ' + $hero_cost + " asInt(" + $hc_1 + "); *100 =" + $hc_2 );
-			console.log('@ cost = ' + $cost);
-//			alert('Seller: ' + $hero_name + '\nSellID: ' + $hero_acct + '\n' + $time + ' @ $' + $cost + '\nMeet: ' + $area + '\nFor: ' + $desc + '\nBuyer:' + $bp_name);
-
-			var srv_callback = function(res) {
-				console.log('srv_callback is happening');
-				console.log('time = ' + $time);
-				console.log('cost = ' + $cost);
-
-				/*
-				$.each(res.card, function(key, element) {
-					    console.log('res.' + key + ' = ' + element);
-				});
-				res.id = tok_3dAR0tkCHTAETp 
-				res.livemode = false 
-				res.created = 1394322237 
-				res.used = false 
-				res.object = token 
-				res.type = card 
-				res.card = [object Object] 
-				res.email = corey.hyllested@gmail.com 
-				
-				[[res.card] == 
-					res.card.id = card_3dAUcwyJebTMrO 
-					res.card.id.object = card 
-					res.last4 = 4242 
-					res.type = Visa 
-					res.exp_month = 8 
-					res.exp_year = 2015 
-					res.fingerprint = cOBLtIWQiyFZUGvf 
-					res.customer = null 
-					res.country = US 
-					res.name = Corey Hyllested 
-					res.address_line1 = Apartment T-331 
-					res.address_line2 = null 
-					res.address_city = Boulder 
-					res.address_state = CO 
-					res.address_zip = 80305 
-					res.address_country = United States 
-				]
-				*/
+</div> -->
 
 
-				var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
-
-			   	var $stripe_tokn = $('<input type=hidden name=stripe_tokn />').val(res.id);
-			   	var $stripe_card = $('<input type=hidden name=stripe_card />').val(res.card.id);
-			   	var $stripe_name = $('<input type=hidden name=stripe_name />').val(res.card.name);
-			   	var $stripe_city = $('<input type=hidden name=stripe_city />').val(res.card.address_city);
-			   	var $stripe_stat = $('<input type=hidden name=stripe_stat />').val(res.card.address_state);
-			   	var $stripe_cust = $('<input type=hidden name=stripe_cust />').val(res.card.customer);
-			   	var $stripe_fngr = $('<input type=hidden name=stripe_fngr />').val(res.card.fingerprint);
-			   	var $stripe_mail = $('<input type=hidden name=stripe_mail />').val(res.email);
-
-			   	var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
-			   	var $prop_cost =  $('<input type=hidden name=prop_cost />').val($cost);
-			   	var $prop_area =  $('<input type=hidden name=prop_area />').val($area);
-			   	var $prop_desc =  $('<input type=hidden name=prop_desc />').val($desc);
-
-			   	var $prop_s_date =  $('<input type=hidden name=prop_s_date />').val($ts_d);
-			   	var $prop_s_hour =  $('<input type=hidden name=prop_s_hour />').val($ts_h);
-			   	var $prop_f_date =  $('<input type=hidden name=prop_f_date />').val($tf_d);
-			   	var $prop_f_hour =  $('<input type=hidden name=prop_f_hour />').val($tf_h);
-				
-				$('form[name="charge"]').append($csrf);
-				console.log('append stripe');
-				$('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr).append($stripe_mail);
-				$('form[name="charge"]').append($prop_hero).append($prop_cost).append($prop_area).append($prop_desc);
-				$('form[name="charge"]').append($prop_s_date).append($prop_s_hour);
-				$('form[name="charge"]').append($prop_f_date).append($prop_f_hour);
-				$('form[name="charge"]').submit();
-			};
-
-			/*$desc.substring(0,50)*/
-			StripeCheckout.open({
-				key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
-				amount:		 $cost,
-				address:     true,
-				description: 'You will not be charged until one day before the meeting', 
-				name:		 $hero_name, 
-				currency:	 'usd',
-				panelLabel:	 'Checkout',
-				token:		srv_callback
-			});
-			return false;
-		});
-	});
-</script>
 {% endblock %}
