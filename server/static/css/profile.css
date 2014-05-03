@@ -1,0 +1,84 @@
+/* COMMON ELEMENTS */
+
+.pageWrapper {
+	background-color: white;
+	min-height: 100%;
+	padding-bottom: 50px;		
+	width: 100%;
+}
+
+.profileCover {
+	display: block;
+	position: relative;
+	width: 100%;
+}
+
+.profileCoverPic {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;			
+	min-width: 100%;
+	width: 100% !important;
+}
+
+/* Desktop */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: rgba(255,255,255,1);
+		background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+		background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );
+	}
+
+
+}
+
+@media only screen and (min-width: 1000px) {
+
+	.profileContentWrapper {
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: rgba(0,0,0, 0.1) 0px 2px 2px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: -200px auto 0;
+		padding: 30px;
+		position: relative;
+		width: 980px;
+		z-index: 30;
+	}
+
+	.profileContentWrapper h1 {
+		color: black;
+		font-weight: bold;
+		margin-bottom: 25px;
+	}
+
+	.profileContentWrapper h2 {
+		color: #6e7980;
+		font-weight: bold;
+		margin-bottom: 25px;
+	}
+
+	.profileLeftColumn {
+		width: 492px;
+	}
+
+	.profileAboutMe {
+		font-family: Garamond, Georgia, serif;
+		font-style: italic;
+		white-space: pre-wrap;
+	}
+
+	.profileRightColumn {
+		float: right;
+		width: 322px;
+	}
+
+}
