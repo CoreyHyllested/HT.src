@@ -929,16 +929,15 @@ def render_review_page(review_id):
 
 
 
-@ht_server.route("/postreview", methods=['POST'])
+@ht_server.route("/postreview", methods=['GET','POST'])
 @req_authentication
 def review():
 	uid = session['uid']
-	bp = Profile.query.filter_by(account=uid).all()[0]		# browsing profile
+	bp = Profile.get_by_uid(session['uid'])
 	print 'enter postreview'
 
 	review_form = ReviewForm(request.form)
 	print 'got form'
-	print review_form.review_id.data
 
 	if review_form.validate_on_submit():
 		try:
@@ -971,8 +970,9 @@ def review():
 		except Exception as e:
 			print "had an exception with Review" + str(e)
 			db_session.rollback()
-	log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
-	return jsonify(usrmsg='Data invalid')
+			log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
+			return jsonify(usrmsg='Data invalid')
+	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
 
 
 
