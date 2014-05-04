@@ -4,20 +4,6 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<script src="/static/js/profile.js"></script>
-
-	<!-- CAH: It'd be great if we could figure out which of the scripts from the list below the app still uses and roll them into the single file above. -->
-	<script src="/static/js/date.js"></script>
-	<script src="/static/js/maps.js"></script>
-	<script src="/static/js/format.js"></script>
-	<script src="/static/js/slot_expand.js"></script>
-	<script src="/static/js/view_more.js"></script>
-	<script src="/static/js/calendar.js"></script>
-	<script src="/static/js/calendar1.js"></script>
-	<script src="/static/js/tab_switch.js"></script>
-	<script src="/static/js/add_times.js"></script>
-	<script src="/static/js/moment.min.js"></script>
-	<!-- keep -->
-	<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 {% endblock %}
 
 
@@ -40,9 +26,11 @@
 			{% else %}
 			<div class="profileReviews">
  				<div class="profileReviewsInfo">
-					<h3>Reviews ({{hp.reviews}})</h3>
-					<!-- CAH: Write Review should appear only if the user has purchased time with the person -->
+					<h3>Reviews ({{revs|length}})</h3>
+					<!-- CAH: Write Review should appear if user has purchased time with the person.
+						 CAH: Will make this happen later.  Currently, sent as an email.
 					<a href="/postreview">Write Review</a>
+					-->
 				</div>
 				<div class="profileLatestReviews">
 
@@ -51,41 +39,97 @@
 					<div class="profileReviewBox">
 						<div class="profileReviewLeft">
 							<div class="profileReviewImageWrap">
-								<!-- CAH: Here's the FB icon; maybe we should display it only on first one or two reviews to simulate what we have in mind for social reviews? -->
+								<!-- Social Media icon. -->
+								{% if loop.index == 1 %}
 								<div class="profileReviewImageFacebook"></div>
-								<!-- CAH: The image needs to be linked to the person's profile -->
-								<a href="#">
+								{% endif %}
+								<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
 									<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
 								</a>
 							</div>
-							<!-- CAH: The name needs to be linked to the person's profile -->
-							<a href="#"><h3>{{review.display.prof_name}}</h3></a>
+							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
+								<h3>{{review.display.prof_name}}</h3>
+							</a>
 							<h4>{{review.display.headline}}</h4>
 						</div>
 						<div class="profileReviewRight">
 							<div class="profileReviewRating">
 								<div class="profileReviewRatingLabels">
+									Overall Value<br>
 									Promptness<br>
-									Communication<br>
-									Overall Value
+									Communication
 								</div>
 								<div class="profileReviewRatingDivider"></div>
 								<div class="profileReviewRatingBars">
-									<!-- CAH: Promptness goes here -->
+
+									<!-- Overall Value -->
 									<div class="profileReviewRatingBar">
-										<div class="profileReviewRatingBarFillOne"></div>
-										<div class="profileReviewRatingNumerical">1/5</div>
+										{% if review.Review.appt_score == 1 %}
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 2 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 3 %}
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 4 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 5 %}
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% endif %}
 									</div>
-									<!-- CAH: Communication goes here -->
+
+									<!-- Promptness goes here -->
 									<div class="profileReviewRatingBar">
-										<div class="profileReviewRatingBarFillFour"></div>
-										<div class="profileReviewRatingNumerical">4/5</div>
+										{% if not review.Review.score_attr_time %}
+											<div class="profileReviewRatingBarFillZero"></div>
+											<div class="profileReviewRatingNumerical">n/a</div>
+										{% elif review.Review.score_attr_time == 1 %}
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 2 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 3 %}
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 4 %}
+											<div class="profileReviewRatingBarFillFour"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 5 %}
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% else %}
+											<div class="profileReviewRatingNumerical"> SubZero </div>
+										{% endif %}
 									</div>
-									<!-- CAH: Overall Value goes here -->
+
+									<!-- Communication -->
 									<div class="profileReviewRatingBar">
-										<div class="profileReviewRatingBarFillTwo"></div>
-										<div class="profileReviewRatingNumerical">2/5</div>
+										{% if not review.Review.score_attr_comm %}
+										  <div class="profileReviewRatingBarFillZero"></div>
+										  <div class="profileReviewRatingNumerical"> n/a </div>
+										{% elif review.Review.score_attr_comm == 1 %} 
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 2 %} 
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 3 %} 
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 4 %} 
+											<div class="profileReviewRatingBarFillFour"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 5 %} 
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% endif %}
 									</div>
+									<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
 								</div>
 							</div>
 							<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
@@ -201,32 +245,33 @@
 	</ul>
 	<div id="content-top"></div>
 	<div id="reviews">
-		{% if hp.reviews == 0 %}
+		{ % if hp.reviews == 0 %}
 		<h2>No reviews available</h2>
-		{% else %}
-		<h2>Average rating:  {{ '%0.1f' | format(hp.rating|float)}} out of 5 stars</h2>
-		{% endif %}
+		{ % else %}
+		<h2>Average rating:  { { '%0.1f' | format(hp.rating|float)}} out of 5 stars</h2>
+		{ % endif %}
 
-		{% for review in revs %}
+		{ % for review in revs %}
 		<div class="review_wrap">
 			<div class="profile_preview">
-				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}" class="profile_preview_pic"/> </a>
-				<span class="profile_preview_price">${{review.appt.prop_cost}}<span class="disabled"></span></span>				
+				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{ {review.display.prof_img}}" class="profile_preview_pic"/> </a>
+				<span class="profile_preview_price">${ {review.appt.prop_cost}}<span class="disabled"></span></span>				
 				<div class="profile_preview_info">
-					<p><a href="#">{{review.display.prof_name}}</a></p>
-					<p>{{review.display.headline}}</p>
-					<p>{{'%0.1f' | format(review.display.rating|float)}} out of 5<a href="#"> ({{review.display.reviews}} reviews)</a></p>
+					<p><a href="#">{ {review.display.prof_name}}</a></p>
+					<p>{ {review.display.headline}}</p>
+					<p>{ {'%0.1f' | format(review.display.rating|float)}} out of 5<a href="#"> ({ {review.display.reviews}} reviews)</a></p>
 				</div>
 			</div>
 
 			<div class="review">
-				<p>Transaction with {{review.display.prof_name}} occurred in {{review.appt.prop_ts.strftime('%B %Y')}}</p>
-				<p id='r_place_{{loop.index}}'>get_state('{{review.appt.prop_place}}', 'r_place_{{loop.index}}')"</p>
-				<p><script>star_rating({{review.Review.appt_score}});</script></p>
-				<p>{{review.Review.generalcomments}}</p>
+				<p>Transaction with { {review.display.prof_name} } occurred in { {review.appt.prop_ts.strftime('%B %Y')} }</p>
+				<span class="profile_preview_price">${ {review.appt.prop_cost}}<span class="disabled"></span></span>				
+				<p id='r_place_{ {loop.index} }'>get_state('{ {review.appt.prop_place} }', 'r_place_{ {loop.index} }')"</p>
+				<p><script>star_rating({ {review.Review.appt_score}});</script></p>
+				<p>{ {review.Review.generalcomments}}</p>
 			</div>
 		</div>
-		{% endfor %} -->
+		{ % endfor %} -->
 
 		<!--div class="show_more">Show more reviews (29 remaining)</div-->
 <!-- 		<div class="clear"></div>
