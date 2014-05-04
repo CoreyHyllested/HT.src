@@ -528,7 +528,7 @@ class Review(Base):
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
 	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
-	rev_appt	= Column(String(40), nullable = False)
+	rev_appt	= Column(String(40), nullable = False)	# should be appt.
 	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
 
 	appt_score = Column(Integer, nullable = False, default = -1)	# 1 - 5
@@ -553,7 +553,7 @@ class Review(Base):
 		if (tmp_comments is not None):
 			tmp_comments = tmp_comments[:20]
 			
-		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.rating, tmp_comments)
+		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.appt_score, tmp_comments)
 
 
 	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
