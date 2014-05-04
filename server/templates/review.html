@@ -1,54 +1,71 @@
 {% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/review.css">
+	<script src="static/js/slot_expand.js"></script>
+{% endblock %}
+
 {% block content %}
-<script src="static/js/slot_expand.js"></script>
 
+<div class="reviewContentWrapper">
 
-<div id="write-review-wrap">
-	<div id="write-review">
-		<h2>Write review ({{daysleft}} days left)</h2>
+	<div class="reviewLeftColumn">
+		<p>You are reviewing</p>
+		<h2>{{hero.name}}</h2>
+		<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}">
+	</div>
 
-		<div class="search-result">
-			<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}" style="height:83px; width:150px; display:block; margin:0 auto;" alt="review-hero"/>
-			<div class="result-info">
-				<h3>{{hero.name}}</h3>
-				<p>{{hero.headline}}</p>
-				<p>
-				{% if bp.reviews == 0 %}
-					No reviews
-				{% else %}
-					{{ '%0.1f' | format(hero.rating|float)}} out of 5 stars ({{hero.reviews}} reviews)
-				{% endif %}
-				<p class="result-location">{{hero.location}}</p>
-			</div>
-			<div class="price-box">
-					<!-- actual meeting cost -->
-					<h3>${{hero.baserate}}</h3>
-					<p>Meeting Cost</p>
-			</div>
-		</div>
+	<div class="reviewRightColumn">
+
+		<h3>Your Impressions</h3>
+	
+		<select>
+			<option selected="true" disabled>Overall Value</option>
+			<option value="1">Poor Value</option>
+			<option value="2">Fair Value</option>
+			<option value="3">Good Value</option>
+			<option value="4">Very Good Value</option>
+			<option value="5">Excellent Value</option>
+		</select>
+
+		<select>
+			<option selected="true" disabled>Promptness</option>
+			<option value="1">Poor Promptness</option>
+			<option value="2">Fair Promptness</option>
+			<option value="3">Good Promptness</option>
+			<option value="4">Very Good Promptness</option>
+			<option value="5">Excellent Promptness</option>
+		</select>
+
+		<select>
+			<option selected="true" disabled>Communication</option>
+			<option value="1">Poor Communication</option>
+			<option value="2">Fair Communication</option>
+			<option value="3">Good Communication</option>
+			<option value="4">Very Good Communication</option>
+			<option value="5">Excellent Communication</option>
+		</select>
 
 		<form name='post_review' action=/postreview method=POST>
 			{{form.hidden_tag()}}
 
-			<div class="rating-text">Based on your experience, how would you rate this person?</div>
-			<span class="rating">
-				{% for subfield in form.input_rating %}
-					{{ subfield(class="rating-input") }}
-					{{ subfield.label(class="rating-star") }}
-				{% endfor %}
-			</span>
-
+			<h3>Your Experience</h3>
 			{{form.input_review(autofocus="autofocus")}}
-			<div id="review-buttons">
-				<div id="edit-cancel-wrap">
-					<a href="/profile"><div class="whiteButton editCancel">Back to profile</div></a>
-				</div>
-				<div id="edit-save-wrap">
-					<input type="submit" id="edit-save" value="Post review"/>
-				</div>
-			</div>
+
+		<!-- Buttons -->
+			<input type="submit" class="blueButton reviewPostButton" value="Post Review"/>
+
 		</form>
+
+		<form method="link" action="/profile">
+			<input type="submit" class="whiteButton reviewCancelButton" value="Cancel">
+		</form>
+
 	</div>
+
+	<div class="clear"></div>
+	
 </div>
 
 {% endblock %}
