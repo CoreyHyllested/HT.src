@@ -387,7 +387,9 @@ def signup_verify(challengeHash):
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
+	usrmsg = None
 	bp = Profile.get_by_uid(session.get('uid'))
+
 	return make_response(render_template('schedule.html', title="- " + bp.prof_name, bp=bp, errmsg=usrmsg))
 
 
