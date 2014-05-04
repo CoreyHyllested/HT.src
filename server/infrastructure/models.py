@@ -527,7 +527,7 @@ class Review(Base):
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
-	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)  #TODO CAH rename (status::posted, flagged, 
+	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)
 	rev_appt	= Column(String(40), nullable = False)	# should be appt.
 	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
 
@@ -540,7 +540,7 @@ class Review(Base):
 
 	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
-	rev_flags   = Column(Integer, default=0)
+	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
 
 	def __init__ (self, prop_id, usr_reviewed, usr_author):
 		self.review_id = str(uuid.uuid4())
