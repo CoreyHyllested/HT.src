@@ -522,7 +522,7 @@ class Skills(Base):
 class Review(Base):
 	__tablename__ = "review"
 
-	enumRating = [(str(k), v) for k, v in enumerate(['','','','',''])]
+	enumRating = [(str(k), v) for k, v in enumerate(['Overall Value', 'Poor Value','Fair Value','Good Value','Great Value','Excellent Value'])]
 	review_id		= Column(String(40), primary_key=True, index=True)
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)

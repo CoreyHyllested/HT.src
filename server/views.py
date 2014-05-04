@@ -978,13 +978,15 @@ def review():
 	print 'got form'
 
 	if review_form.validate_on_submit():
+		print 'form is valid'
 		try:
 			# add review to database
 			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
 			the_review.appt_score = 5-int(review_form.input_rating.data)
 			the_review.generalcomments = review_form.input_review.data
-			#the_review.posted = True
+			the_review.rev_status = the_review.rev_status | REV_STATE_VISIBLE
 			rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
+			print 'form is updated'
 
 			db_session.add(the_review)
 			log_uevent(uid, "posting " + str(the_review))
@@ -1002,6 +1004,7 @@ def review():
 			log_uevent(rp.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
 			db_session.add(rp)
 			db_session.commit()
+			print 'data has been posted'
 
 			# flash review will be posted at end of daysleft
 			# email alt user to know review was captured
@@ -1011,6 +1014,11 @@ def review():
 			db_session.rollback()
 			log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
 			return jsonify(usrmsg='Data invalid')
+	elif request.method == 'POST':
+		print "POST New password isn't valid " + str(review_form.errors)
+	else:
+		print "form wasn't posted"
+		
 	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
 
 
