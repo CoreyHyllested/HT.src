@@ -118,10 +118,16 @@
 				<div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div>
 			</div>
 
+			{% if hp is sameas bp %}
+			<form method="link" action="/edit">
+				<input type="submit" class="whiteButton" value="Edit Profile">
+			</form>
+			{% else %}
 			<form method="link" action="#">
 				<input type="submit" class="blueButton" value="Schedule Appointment">
 			</form>
-			
+			{% endif %}
+
 		</div>
 	</div>
 	<div class="clear"></div>
