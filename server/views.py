@@ -884,26 +884,35 @@ def tos():
 
 @ht_server.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_page(review_id):
+def render_review_page(appt_id, review_id):
 	uid = session['uid']
 
 	try:
-		print review_id, ' = id of Review'
+		bp = Profile.get_by_uid(session['uid'])
+		#print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
-		the_review = Review.retreive_by_id(review_id)
+		#the_review = Review.retreive_by_id(review_id)  #save
+		the_review = Review(appt_id, '24e66639-d274-4a9d-962a-c2ea1e04d997', bp.prof_id)
+		print the_review
+
+		review_id = the_review.review_id #delete when done
+		print review_id, ' = id of Review' #move above with print appt_id
 
 		the_review.validate(bp.prof_id)
 		print 'we\'re the intended audience'
 
-		print the_review.author
+		print the_review.prof_authored
 		print uid
 		print dt.utcnow()
 
-		bp = Profile.query.filter_by(account=uid).all()[0]					# authoring profile
-		rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]	# reviewed  profile
+		bp = Profile.get_by_uid(session['uid'])					# authoring profile
+		rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
+
+		db_session.add(the_review)
+		db_session.commit()
 
 
-		days_since_created = timedelta(days=30) + the_review.ts - dt.utcnow() 
+		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow() 
 		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
 		#show the -cost, -time, -description, -location
 		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
@@ -914,15 +923,19 @@ def render_review_page(review_id):
 
 	except NoReviewFound as rnf:
 		print rnf 
+		db_session.rollback()
 		return jsonify(usrmsg=rnf.msg)
 	except ReviewError as re:
 		print re
+		db_session.rollback()
 		return jsonify(usrmsg=re.msg)
 	except Exception as e:
 		print e
+		db_session.rollback()
 		return redirect('/failure')
 	except IndexError as ie:
 		print 'trying to access, review, author or reviewer account and fialed'
+		db_session.rollback()
 		return redirect('/dbFailure')
 		
 
@@ -942,25 +955,26 @@ def review():
 	if review_form.validate_on_submit():
 		try:
 			# add review to database
-			the_review = Review.retreive_by_id(int(review_form.review_id.data))[0]
-			the_review.rating=5-int(review_form.input_rating.data)
-			the_review.text=review_form.input_review.data
-			the_review.posted = True
-			rp = Profile.query.filter_by(prof_id=the_review.heroid).all()[0]	# reviewed profile
+			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
+			the_review.appt_score = 5-int(review_form.input_rating.data)
+			the_review.generalcomments = review_form.input_review.data
+			#the_review.posted = True
+			rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 
 			db_session.add(the_review)
 			log_uevent(uid, "posting " + str(the_review))
 
 			# update the reviewed profile's ratings, in the future, delay this
-			reviews = Review.query.filter_by(heroid=rp.heroid).all()
-			sum_ratings = the_review.rating
+			# kick this out to another function.  
+			reviews = Review.query.filter_by(prof_reviewed = rp.prof_id).all()
+			sum_ratings = the_review.appt_score
 			for old_review in reviews:
-				sum_ratings += old_review.rating
+				sum_ratings += old_review.appt_score
 
 			rp.updated = dt.now()
 			rp.reviews = len(reviews) + 1
 			rp.rating  = float(sum_ratings) / (len(reviews) + 1)
-			log_uevent(rp.heroid, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
+			log_uevent(rp.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
 			db_session.add(rp)
 			db_session.commit()
 
