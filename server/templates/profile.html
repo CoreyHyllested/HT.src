@@ -20,7 +20,7 @@
 			<h2>{{hp.headline| default('No headline')}}</h2>
 			<div class="profileAboutMe">{{hp.prof_bio}}</div>
 
-			{% if revs is defined %}
+			{% if revs|count == 0 %}
 			<h3>There are no reviews for this person yet.</h3>
 
 			{% else %}
