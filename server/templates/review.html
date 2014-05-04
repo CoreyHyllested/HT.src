@@ -12,8 +12,8 @@
 
 	<div class="reviewLeftColumn">
 		<p>You are reviewing</p>
-		<h2>{{hero.name}}</h2>
-		<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.imgURL}}">
+		<h2>{{hero.prof_name}}</h2>
+		<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}">
 	</div>
 
 	<div class="reviewRightColumn">
@@ -53,19 +53,16 @@
 			<h3>Your Experience</h3>
 			{{form.input_review(autofocus="autofocus")}}
 
-		<!-- Buttons -->
+			<!-- Buttons -->
 			<input type="submit" class="blueButton reviewPostButton" value="Post Review"/>
-
 		</form>
 
 		<form method="link" action="/profile">
 			<input type="submit" class="whiteButton reviewCancelButton" value="Cancel">
 		</form>
-
 	</div>
 
 	<div class="clear"></div>
-	
 </div>
 
 {% endblock %}
