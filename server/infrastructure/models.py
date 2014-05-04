@@ -538,6 +538,7 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
+	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
 	rev_flags   = Column(Integer, default=0)
 
@@ -569,7 +570,7 @@ class Review(Base):
 		return reviews
 
 
-	def validate (session_prof_id):
+	def validate (self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
