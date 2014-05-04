@@ -130,21 +130,42 @@ def render_profile(usrmsg=None):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
-	all_reviews = db_session.query(Review, appt, user, hero).distinct(Review.review_id)							\
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
 							.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
 							.join(appt, appt.prop_uuid == Review.rev_appt)											\
 							.join(user, user.prof_id == Review.prof_authored)										\
 							.join(hero, hero.prof_id == Review.prof_reviewed).all();
 
-	print 'calling map on all reviews'
+	for r in all_reviews:
+		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+
+	print ''
+	print ''
+
+	print 'flter all reviews,', len(all_reviews), 'find me -- the hero -- being reviewed.'
 	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
 	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
 
+	print ''
+	print ''
+
+	print 'mapped Hero reviews = ', len (hero_reviews)
+	for r in hero_reviews:
+		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
+
+
+	print ''
+	print ''
+
 	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
 	print 'show reviews = ', len (show_reviews)
+	for r in show_reviews:
+		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, key=stripe_keys['public'] ))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img))
+
+
 
 
 def display_reviews_of_hero(r, hero_is):
@@ -889,14 +910,11 @@ def render_review_page(appt_id, review_id):
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		#print review_id, ' = id of Review'
+		print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
-		#the_review = Review.retreive_by_id(review_id)  #save
-		the_review = Review(appt_id, '24e66639-d274-4a9d-962a-c2ea1e04d997', bp.prof_id)
+		the_review = Review.retreive_by_id(review_id)[0] 
 		print the_review
 
-		review_id = the_review.review_id #delete when done
-		print review_id, ' = id of Review' #move above with print appt_id
 
 		the_review.validate(bp.prof_id)
 		print 'we\'re the intended audience'
@@ -908,11 +926,8 @@ def render_review_page(appt_id, review_id):
 		bp = Profile.get_by_uid(session['uid'])					# authoring profile
 		rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 
-		db_session.add(the_review)
-		db_session.commit()
 
-
-		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow() 
+		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow()  #CAH FIXME TODO
 		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
 		#show the -cost, -time, -description, -location
 		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
@@ -1101,3 +1116,34 @@ def newpassword(challengeHash):
 		trace("POST New password isn't valid " + str(form.errors))
 
 	return render_template('newpassword.html', form=form)
+
+
+@ht_server.route("/fakereview/<buyer>/<sellr>", methods=['GET'])
+def render_rake_page(buyer, sellr):
+
+	print 'ready to get uid'
+	bp = Profile.get_by_prof_id(str(buyer))
+	print 'buyer', bp
+
+	sp = Profile.get_by_prof_id(str(sellr))
+	print 'sellr', sp
+
+	values = {}
+	values['stripe_tokn'] = 'abc123'
+	values['stripe_card'] = '4242424242424242'
+	values['stripe_cust'] = 'cus_100'
+	values['stripe_fngr'] = 'fngr_fingerprint'
+	values['prop_hero']   = bp.account
+	values['prop_cost']   = 1000
+	values['prop_desc']   = 'CAH desc'
+	values['prop_area']   = 'SF'
+	values['prop_s_date'] = 'Monday, May 05, 2015 10:00 am'
+	values['prop_s_hour'] = ''
+	values['prop_s_date'] = 'Monday, May 05, 2015 11:00 am'
+	values['prop_f_hour'] = ''
+
+	print 'create appt'
+	(proposal, msg) = ht_proposal_create(values, bp)
+	return msg
+
+
