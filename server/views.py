@@ -382,6 +382,14 @@ def signup_verify(challengeHash):
 
 
 
+@ht_server.route('/schedule', methods=['GET', 'POST'])
+@req_authentication
+def render_schedule_page():
+	""" Schedule a new appointment appointment. """
+
+	bp = Profile.get_by_uid(session.get('uid'))
+	return make_response(render_template('schedule.html', title="- " + bp.prof_name, bp=bp, errmsg=usrmsg))
+
 
 
 @ht_server.route('/appointment/cancel', methods=['POST'])
