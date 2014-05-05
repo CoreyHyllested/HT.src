@@ -311,32 +311,31 @@ h3 {color: black;}
 	}
 
 	.profileBasicInfo {
-		/*border-bottom: 1px solid #858585;*/
-		margin: 10px 0 40px;
-		padding-bottom: 10px;
+		border-bottom: 1px solid #b5b6b8;
+		margin: 30px 0 30px;
 		width: 100%;
 	}
 
 	.profileInfoBox {
+		background-size: 18px 18px;		
 		border-bottom: 1px solid #e2e4e6;
 		color: #6e7980;
 		font-weight: bold;
-		padding: 11px 0 11px 41px;
+		padding: 11px 0 11px 30px;
 	}
 
-	.profileInfoBox:nth-of-type(1) {
-		background: url('../img/location.svg') no-repeat 11px center;
-		background-size: 18px 18px;
+	.profileInfoBox:first-of-type {
+		background: url('../img/location.svg') no-repeat left center;
+		border-top: 1px solid #b5b6b8;
 	}
 
 	.profileInfoBox:nth-of-type(2) {
-		background: url('../img/passion.svg') no-repeat 11px center;
-		background-size: 18px 18px;
+		background: url('../img/passion.svg') no-repeat left center;
 	}
 
-	.profileInfoBox:nth-of-type(3) {
-		background: url('../img/star-full.svg') no-repeat 11px center;
-		background-size: 18px 18px;
+	.profileInfoBox:last-of-type {
+		background: url('../img/star-full.svg') no-repeat left center;
+		border-bottom: none;
 	}
 
 	/*.profileInfoBox:nth-of-type(4) {
@@ -344,17 +343,8 @@ h3 {color: black;}
 		background-size: 18px 18px;
 	}*/
 
-	.profileInfoBox:last-of-type {
-		border-bottom: none;
-	}
-
 	.profileRightColumn input[type="submit"] {
 		width: 100%;
-	}
-
-	.profileRightColumn h3 {
-		font-weight: bold;
-		margin-bottom: 20px;
 	}
 
 	.profilePortfolioImage {
@@ -367,10 +357,10 @@ h3 {color: black;}
 		float: left;
 		height: 100px;
 		margin-bottom: 11px;
-		-moz-transition: 0.5s ease background-size;
-		-o-transition: 0.5s ease background-size;
-		-webkit-transition: 0.5s ease background-size;
-		transition: 0.5s ease background-size;		
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;
 		width: 100px;
 	}
 
@@ -427,6 +417,10 @@ h3 {color: black;}
 		margin-bottom: 11px;
 		text-align: center;
 		text-transform: uppercase;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;		
 		-moz-user-select: -moz-none;
 		-webkit-user-select: none;
 		-ms-user-select: none;
@@ -440,6 +434,6 @@ h3 {color: black;}
 	}
 
 	.addImage:hover {
-		border: 1px solid #29abe2;
+		border: 1px solid #29abe2;	
 	}
 }
