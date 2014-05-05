@@ -266,6 +266,16 @@ b) 450px - ... (everything else)
 		width: 100%;
 	}
 
+	.scheduleIntro {
+		margin-bottom: 30px;
+	}
+
+	.scheduleIntro textarea {
+		border-radius: 3px;
+		height: 81px;
+		width: 100%;
+	}
+
 	.scheduleBilling {
 		margin-bottom: 30px;
 	}
