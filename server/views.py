@@ -977,13 +977,22 @@ def review():
 	review_form = ReviewForm(request.form)
 	print 'got form'
 
+	print review_form
+	print review_form.input_rating.data
+	print review_form.input_review.data
+	print review_form.review_id.data
+	print review_form.score_comm.data
+	print review_form.score_time.data
+
 	if review_form.validate_on_submit():
 		print 'form is valid'
 		try:
 			# add review to database
 			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
-			the_review.appt_score = 5-int(review_form.input_rating.data)
+			the_review.appt_score = int(review_form.input_rating.data)
 			the_review.generalcomments = review_form.input_review.data
+			the_review.score_attr_comm = int(review_form.score_comm.data)
+			the_review.score_attr_time = int(review_form.score_time.data)
 			the_review.rev_status = the_review.rev_status | REV_STATE_VISIBLE
 			rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 			print 'form is updated'
@@ -1016,6 +1025,7 @@ def review():
 			return jsonify(usrmsg='Data invalid')
 	elif request.method == 'POST':
 		print "POST New password isn't valid " + str(review_form.errors)
+		return jsonify(usrmsg=str(review_form.errors))
 	else:
 		print "form wasn't posted"
 		
