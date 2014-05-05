@@ -4,6 +4,8 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<script src="/static/js/profile.js"></script>
+	<script src="/static/js/lightbox.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 {% endblock %}
 
 
@@ -172,6 +174,11 @@
 				<input type="submit" class="blueButton" value="Schedule Appointment">
 			</form>
 			{% endif %}
+			<!-- Test profile (work in progress) -->
+			<div class="profilePortfolio">
+				<a href="/static/img/skater.jpg" data-lightbox="portfolio" data-title="Caption">Image #1</a>
+				<a href="/static/img/snjezana.jpg" data-lightbox="portfolio" data-title="Some other caption">Image #2</a>
+			</div>
 		</div>
 	</div>
 	<div class="clear"></div>
