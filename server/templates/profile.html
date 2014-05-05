@@ -170,7 +170,8 @@
 				<input type="submit" class="whiteButton" value="Edit Profile">
 			</form>
 			{% else %}
-			<form method="link" action="/schedule">
+			<form method="link" action="/schedule" method="POST">
+				<input type="hidden" name="hp" value="{{hp.prof_id}}">
 				<input type="submit" class="blueButton" value="Schedule Appointment">
 			</form>
 			{% endif %}
