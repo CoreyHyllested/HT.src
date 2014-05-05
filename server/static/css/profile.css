@@ -1,5 +1,7 @@
 /* COMMON ELEMENTS */
 
+h3 {color: black;}
+
 .pageWrapper {
 	background-color: white;
 	min-height: 100%;
@@ -70,10 +72,6 @@
 		width: 492px;
 	}
 
-	.profileLeftColumn h3 {
-		color: black;
-	}
-
 	.profileAboutMe {
 		color: #6e7980;
 		font-family: Garamond, Georgia, serif;
@@ -96,7 +94,6 @@
 	}
 
 	.profileReviewsInfo h3, .profileReviewBox h3 {
-		color: black;
 		float: left;
 		font-size: 1.188em;
 	}
@@ -314,9 +311,9 @@
 	}
 
 	.profileBasicInfo {
-		border-bottom: 1px solid #858585;
-		border-top: 1px solid #858585;
-		margin: 82px 0 41px;
+		/*border-bottom: 1px solid #858585;*/
+		margin: 10px 0 40px;
+		padding-bottom: 10px;
 		width: 100%;
 	}
 
@@ -342,10 +339,10 @@
 		background-size: 18px 18px;
 	}
 
-	.profileInfoBox:nth-of-type(4) {
+	/*.profileInfoBox:nth-of-type(4) {
 		background: url('../img/website.svg') no-repeat 11px center;
 		background-size: 18px 18px;
-	}	
+	}*/
 
 	.profileInfoBox:last-of-type {
 		border-bottom: none;
@@ -355,4 +352,94 @@
 		width: 100%;
 	}
 
+	.profileRightColumn h3 {
+		font-weight: bold;
+		margin-bottom: 20px;
+	}
+
+	.profilePortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 100px;
+		margin-bottom: 11px;
+		-moz-transition: 0.5s ease background-size;
+		-o-transition: 0.5s ease background-size;
+		-webkit-transition: 0.5s ease background-size;
+		transition: 0.5s ease background-size;		
+		width: 100px;
+	}
+
+	.profilePortfolioImage:hover {
+		background-color: white;
+		background-size: 120px 120px;
+		border: 1px solid #29abe2;
+		
+	}
+
+	.profilePortfolioImage:first-of-type {margin-right: 11px;}
+	.profilePortfolioImage:nth-of-type(3) {margin-left: 11px;}
+	.profilePortfolioImage:nth-of-type(4) {margin-right: 11px;}
+	.profilePortfolioImage:nth-of-type(5) {margin-right: 11px;}
+
+	.acroyoga {
+		background: url('../img/portfolio_acroyoga_thumb.jpg') no-repeat center center;
+		background-size: 100px 100px;
+	}
+
+	.latteart {
+		background: url('../img/portfolio_latteart_thumb.jpg') no-repeat center center;
+		background-size: 100px 100px;
+	}
+
+	.silkscreening {
+		background: url('../img/portfolio_silkscreening_thumb.jpg') no-repeat center center;
+		background-size: 100px 100px;
+	}
+
+	.macaroons {
+		background: url('../img/portfolio_macaroons_thumb.jpg') no-repeat center center;
+		background-size: 100px 100px;
+	}
+
+	.livingwall {background: url('../img/portfolio_livingwall_thumb.jpg') no-repeat center center;
+		background-size: 100px 100px;
+	}
+
+	.addImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;					
+		color: #29abe2;
+		cursor: pointer;
+		display: table;
+		float: left;
+		font-size: 0.9em;
+		font-weight: 200;
+		height: 100px;
+		line-height: 1.4em;
+		margin-bottom: 11px;
+		text-align: center;
+		text-transform: uppercase;
+		-moz-user-select: -moz-none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		width: 100px;
+	}
+
+	.addImage p {
+		display: table-cell;
+		text-align: center;
+		vertical-align: middle;	
+	}
+
+	.addImage:hover {
+		border: 1px solid #29abe2;
+	}
 }

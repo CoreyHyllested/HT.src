@@ -152,6 +152,16 @@
 				<h1>{{hp.prof_rate}}</h1>
 				<div class="perHour">per<br>hour</div>
 			</div>
+						{% if hp is sameas bp %}
+			<form method="link" action="/edit">
+				<input type="submit" class="whiteButton" value="Edit Profile">
+			</form>
+			{% else %}
+			<form method="link" action="/schedule" method="POST">
+				<input type="hidden" name="hp" value="{{hp.prof_id}}">
+				<input type="submit" class="blueButton" value="Schedule Appointment">
+			</form>
+			{% endif %}
 			<div class="profileBasicInfo">
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
@@ -162,23 +172,20 @@
 					{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
 				{% endif %}
 				</div>
-				<div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div>
+				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
 
-			{% if hp is sameas bp %}
-			<form method="link" action="/edit">
-				<input type="submit" class="whiteButton" value="Edit Profile">
-			</form>
-			{% else %}
-			<form method="link" action="/schedule" method="POST">
-				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule Appointment">
-			</form>
-			{% endif %}
+
 			<!-- Test profile (work in progress) -->
 			<div class="profilePortfolio">
-				<a href="/static/img/skater.jpg" data-lightbox="portfolio" data-title="Caption">Image #1</a>
-				<a href="/static/img/snjezana.jpg" data-lightbox="portfolio" data-title="Some other caption">Image #2</a>
+				<h3>My Portfolio</h3>
+				<a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a>
+				<a href="/static/img/portfolio_latteart.jpg" data-lightbox="portfolio" data-title="When I'm not twisting people into weird positions in yoga classes, I enjoy making latte art." class="profilePortfolioImage latteart"></a>
+				<a href="/static/img/portfolio_macaroons.jpg" data-lightbox="portfolio" data-title="My love of preparing foods &amp; drinks extends beyond just coffee - take a look at some of the macaroons I made for my best friend's birthday." class="profilePortfolioImage macaroons"></a>
+				<a href="/static/img/portfolio_silkscreening.jpg" data-lightbox="portfolio" data-title="My other hobby is silk screening. Now, I'm not a master by any stretch, but I can definitely get you started and pointed in the right direction." class="profilePortfolioImage silkscreening"></a>
+				<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
+				<!-- CAH: When clicked, the button below should pop-up a modal window saying the feature is still a prototype or something. -->
+				<div class="addImage"><p>Add<br>Image</p></div>
 			</div>
 		</div>
 	</div>
