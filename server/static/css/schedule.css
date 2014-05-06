@@ -273,6 +273,7 @@ b) 450px - ... (everything else)
 	.scheduleIntro textarea {
 		border-radius: 3px;
 		height: 81px;
+		resize: none;
 		width: 100%;
 	}
 
