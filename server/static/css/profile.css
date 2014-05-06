@@ -160,6 +160,7 @@ h3 {color: black;}
 		color: #6e7980;
 		font-size: 0.875em;
 		font-weight: bold;
+		line-height: 0.875em;
 	}
 
 
@@ -320,7 +321,7 @@ h3 {color: black;}
 		background-size: 18px 18px;		
 		border-bottom: 1px solid #e2e4e6;
 		color: #6e7980;
-		font-weight: bold;
+		font-size: 0.875em;
 		padding: 11px 0 11px 30px;
 	}
 

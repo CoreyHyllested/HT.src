@@ -51,42 +51,12 @@ h3 {
 
 	@-moz-keyframes bluePulse {
 	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
-	  50% {background-color: #007cb3; border: 1px #007cb3 solid;}
-	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  100% {background-color: #007cb3; border: 1px #007cb3 solid;}
 	}
 
 	@-webkit-keyframes bluePulse {
 	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
-	  50% {background-color: #007cb3; border: 1px #007cb3 solid;}
-	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
-	}
-
-/* Red Button Pulse */
-
-	@-moz-keyframes redPulse {
-	  0% {background-color: white;}
-	  50% {background-color: #FFE8E8;}
-	  100% {background-color: white;}
-	}
-
-	@-webkit-keyframes redPulse {
-	  0% {background-color: white;}
-	  50% {background-color: #FFE8E8;}
-	  100% {background-color: white;}
-	}
-
-/* White Button Pulse */
-
-	@-moz-keyframes whitePulse {
-	  0% {background-color: white;}
-	  50% {background-color: #E3F8FF;}
-	  100% {background-color: white;}
-	}
-
-	@-webkit-keyframes whitePulse {
-	  0% {background-color: white;}
-	  50% {background-color: #E3F8FF;}
-	  100% {background-color: white;}
+	  100% {background-color: #007cb3; border: 1px #007cb3 solid;}
 	}
 
 /* LINKS */
@@ -127,25 +97,44 @@ label {
 		font-size: 0.9em;
 		height: 35px;
 		text-align: center;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;		
 		vertical-align: middle;
 	}
 
 	.blueButton:hover {
-		-moz-animation-duration: 2s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-name: bluePulse;
-	  	-webkit-animation-duration: 2s;
-	  	-webkit-animation-iteration-count: infinite;
-	  	-webkit-animation-name: bluePulse;
-		animation-duration: 2s;
-		animation-iteration-count: infinite;
-		animation-name: bluePulse;
+		border: 1px solid #007cb3;
+		background-color: #007cb3;
+		text-decoration: none;
+	}
+
+	.redButton {
+		background-color: white;
+		border: 1px solid #e2e4e6;
+	  	border-radius: 3px;
+		color: red;
+		cursor: pointer;
+		font-size: 1em;
+		font-weight: 400;
+		height: 35px;
+		text-align: center;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;
+		vertical-align: middle;
+	}
+
+	.redButton:hover {
+		border: 1px solid red;
+		text-decoration: none;
 	}
 
 	.whiteButton {
 		background-color: white;
-		border: 1px #29abe2 solid;
-	  	-webkit-border-radius: 3px;
+		border: 1px #e2e4e6 solid;
 	  	border-radius: 3px;
 		color: #29abe1;
 		cursor: pointer;
@@ -153,19 +142,15 @@ label {
 		font-weight: 400;
 		height: 35px;
 		text-align: center;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;
 		vertical-align: middle;
 	}
 
 	.whiteButton:hover {
-		-moz-animation-duration: 2s;
-		-moz-animation-iteration-count: infinite;
-		-moz-animation-name: whitePulse;
-	  	-webkit-animation-duration: 2s;
-	  	-webkit-animation-iteration-count: infinite;
-	  	-webkit-animation-name: whitePulse;
-		animation-duration: 2s;
-		animation-iteration-count: infinite;
-		animation-name: whitePulse;
+		border: 1px solid #29abe2;
 		text-decoration: none;
 	}
 
