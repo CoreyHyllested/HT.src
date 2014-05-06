@@ -26,11 +26,11 @@
 			
 			<div class="dashboardOffer">
 				<div class="dashboardOfferLeftColumn">
-					<img src="/static/img/skater.jpg">
+					<a href="#"><img src="/static/img/skater.jpg"></a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
 					<h3>John Doe</h3>
-					<h4>Skateboarding Specialist</h4>
+					<h4>Skateboarding Specialist Werewolf Specialist Brand of Fire</h4>
 					<div class="dashboardOfferIntro">“Hi Jenn! I’d like to meet up with you and get an introducory lesson in latte art. Do you think an hour will suffice?”</div>
 				</div>
 				<div class="dashboardOfferRightColumn">
@@ -44,8 +44,8 @@
 					<div class="dashboardOfferRightColumnInfo">
 						102 S Hall Rd, Berkeley, CA 94720<a href="#"> (see map)</a>
 					</div>
-					<input type="button" class="redButton" value="Reject">
-					<input type="button" class="blueButton" value="Accept">
+					<input type="button" value="Reject">
+					<input type="button" value="Accept">
 
 				</div>
 				<div class="clear"></div>
@@ -53,7 +53,7 @@
 
 			<div class="dashboardOffer">
 				<div class="dashboardOfferLeftColumn">
-					<img src="/static/img/farmer.jpg">
+					<a href="#"><img src="/static/img/farmer.jpg"></a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
 					<h3>John Zacharakis</h3>
@@ -71,8 +71,8 @@
 					<div class="dashboardOfferRightColumnInfo">
 						Bulevar oslobođenja 3, 11000 Belgrade, Serbia<a href="#"> (see map)</a>
 					</div>
-					<input type="button" class="redButton" value="Reject">
-					<input type="button" class="blueButton" value="Accept">
+					<input type="button" value="Reject">
+					<input type="button" value="Accept">
 
 				</div>
 				<div class="clear"></div>
@@ -80,10 +80,10 @@
 		</div>
 
 		<div class="dashboardAppointments">
-			<h2>Scheduled Appointments</h2>
+			<h1>Scheduled Appointments (1)</h1>
 			<div class="dashboardOffer">
 				<div class="dashboardOfferLeftColumn">
-					<img src="/static/img/skater.jpg">
+					<a href="#"><img src="/static/img/skater.jpg"></a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
 					<h3>John Doe</h3>
@@ -109,10 +109,8 @@
 	</div>
 
 	<div class="dashboardRightColumn">
-		<a href="/profile">
-			<img src="{{profile_img}}">
-			<h3>{{bp.prof_name}}</h3>
-		</a>
+		<a href="/profile"><img src="{{profile_img}}"></a>
+		<a href="/profile"><h3>{{bp.prof_name}}</h3></a>
 		<h4>{{bp.headline}}</h4>
 		<div class="dashboardBasicInfo">
 			<div class="dashboardInfoBox">{{bp.location}}</div>

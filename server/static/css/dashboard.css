@@ -46,7 +46,7 @@
 	float: left;
 	height: 100%;
 	margin-right: 20px;
-	width: 210px;
+	width: 123px;
 }
 
 .dashboardOffer img {
@@ -56,26 +56,22 @@
 
 .dashboardOfferCenterColumn {
 	float: left;
-	width: 230px;
+	width: 287px;
 }
 
 .dashboardOfferCenterColumn h3 {
 	color: #29abe1;
 	cursor: pointer;
+	display: inline-block;
 	font-weight: bold;
 	margin-bottom: 5px;
-	width: 100%;
-}
-
-.dashboardOfferCenterColumn h3:hover {
-	text-decoration: underline;
 }
 
 .dashboardOfferCenterColumn h4 {
 	color: #6e7980;
 	font-size: 0.875em;
 	font-weight: bold;
-	line-height: 0.875em;
+	line-height: 1.4em;
 	margin-bottom: 20px;
 }
 
@@ -91,7 +87,7 @@
 .dashboardOfferRightColumn {
 	float: right;
 	font-size: 0.8em;
-	width: 184px;
+	width: 206px;
 }
 
 .dashboardOfferRightColumnInfo {
@@ -108,22 +104,45 @@
 	padding-top: 0;
 }
 
-.dashboardOfferRightColumnInfo:last-of-type {
-	border-bottom: none;
+.dashboardOffer input[type="button"] {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: white;
+	border: none;
+	cursor: pointer;
+	padding: 0;
 }
 
 input[value="Reject"] {
+	color: red;
 	float: left;
-	width: 85px;
+}
+
+input[value="Reject"]:hover {
+	text-decoration: underline;
 }
 
 input[value="Accept"] {
+	color: #29abe2;
 	float: right;
-	width: 85px;
+	font-weight: bold;
+}
+
+input[value="Accept"]:hover {
+	text-decoration: underline;
 }
 
 input[value="Cancel Appointment"] {
-	width: 100%;
+	float: left;
+}
+
+input[value="Cancel Appointment"] {
+	float: left;
+}
+
+input[value="Cancel Appointment"]:hover {
+	text-decoration: underline;
 }
 
 .dashboardAppointments h2 {
@@ -147,20 +166,16 @@ input[value="Cancel Appointment"] {
 
 .dashboardRightColumn h3 {
 	color: #29abe1;
+	display: inline-block; 
 	font-weight: bold;
 	margin: 20px 0 5px;
-	width: 100%;
-}
-
-.dashboardRightColumn h3:hover {
-	text-decoration: underline;
 }
 
 .dashboardRightColumn h4 {
 	color: #6e7980;
 	font-size: 0.875em;
 	font-weight: bold;
-	line-height: 0.875em;
+	line-height: 1.4em;
 }
 
 .dashboardBasicInfo {

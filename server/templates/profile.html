@@ -149,7 +149,7 @@
 		<div class="profileRightColumn">
 			<div class="profilePriceBox">
 				<span>$</span>
-				<h1>{{hp.prof_rate}}</h1>
+				<h1>{{'{0:,}'.format(hp.prof_rate)}}</h1>
 				<div class="perHour">per<br>hour</div>
 			</div>
 						{% if hp is sameas bp %}
