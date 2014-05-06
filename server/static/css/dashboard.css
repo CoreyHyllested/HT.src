@@ -31,6 +31,28 @@
 	width: 100%;
 }
 
+.dashboardEmpty {
+	margin-bottom: 40px;
+}
+
+.dashboardEmpty h2 {
+	color: black;
+	font-size: 1.188em;
+	font-weight: bold;
+	margin: 20px 0;
+}
+
+.dashboardEmpty p:first-of-type {
+	font-weight: bold;	
+}
+
+.dashboardEmpty p {
+	color: #6e7980;
+	font-size: 0.875em;
+	line-height: 1.4em;
+	margin-bottom: 1em;
+}
+
 .dashboardOffers {
 	margin-bottom: 40px;
 }
