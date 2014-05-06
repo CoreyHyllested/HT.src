@@ -1,23 +1,17 @@
 /*
 There are three responsive design ranges for the header (ht_header.html):
-a) 240px - 549px (phones);
-b) 550px - 999px (phablets);
+a) 240px - 599px (phones);
+b) 600px - 999px (phablets);
 c) 1000px - ... (tablets, desktops);
 */
 
 /* Common Elements */
 
 #footer {
-	background-color: #333333;
-	border-top: 2px solid #29abe2;
+	background-color: white;
+	border-top: 1px solid #e6e6e6;
 	width: 100%;
 	z-index: 10;
-}
-
-#footer a {
-	-moz-transition: all 0.2s ease-in;
-	-o-transition: all 0.2s ease-in;
-	-webkit-transition: all 0.2s ease-in;
 }
 
 .footerMenu ul {list-style-type: none;}
@@ -25,17 +19,15 @@ c) 1000px - ... (tablets, desktops);
 .footerMenu ul li {
 	color: #808080;
 	display: inline;
-	font-size: 0.9em;
 }
 
-.footerMenu ul li a {color: white;}
 .footerMenu ul li a:hover, .footerMenu ul li a:active {color: #29abe2;}
 
 
 
 
-/* Phones, phablets (240px - 549px) */
-@media only screen and (min-width: 240px) and (max-width: 549px) {
+/* Phones, phablets (240px - 599px) */
+@media only screen and (min-width: 240px) and (max-width: 599px) {
 
 	#footer {height: 130px;}
 
@@ -45,13 +37,11 @@ c) 1000px - ... (tablets, desktops);
 		width: 90%;
 	}
 	
-	.footerLogo {display: none;}
 	.footerMenu {text-align: center;}
 
 	.footerCopyright {
-		color: #cccccc;
-		font-size: 0.65em;
-		font-weight: 300;
+		color: rgba(0,0,0, 0.5);
+		font-size: 0.875em;
 		padding-top: 10px;
 		text-align: center;
 	}
@@ -59,8 +49,8 @@ c) 1000px - ... (tablets, desktops);
 }
 
 
-/* Tablets (550px - 999px) */
-@media only screen and (min-width: 550px) and (max-width: 999px) {
+/* Tablets (600px - 999px) */
+@media only screen and (min-width: 600px) and (max-width: 999px) {
 
 	#footer {height: 80px;}
 
@@ -71,32 +61,21 @@ c) 1000px - ... (tablets, desktops);
 		width: 94%;
 	}
 
-	.footerLogo {
-		background: url("../img/logo.svg") no-repeat;
-		height: 20px;
-		left: 0;
-		position: absolute;
-		top: 0;
-		width: 111px;
-	}
-
 	.footerMenu {
-		left: 140px;
-		position: absolute;
-		text-align: left;
-		top: -6px;
+		display: block;
+		float: left;
+		font-size: 0.875em;
+		line-height: 1em;
+		margin-top: 16px;
 	}
 
 	.footerCopyright {
-		color: #cccccc;
-		font-size: 0.7em;
-		font-weight: 300;
-		letter-spacing: 0.05em;
-		line-height: 1.5em;
-		position: absolute;
-		left: 140px;
-		text-align: left;
-		top: 30px;
+		color: rgba(0,0,0, 0.5);
+		display: block;
+		float: right;		
+		font-size: 0.875em;
+		line-height: 1em;
+		margin-top: 16px;
 	}
 
 }
@@ -104,7 +83,9 @@ c) 1000px - ... (tablets, desktops);
 /* Desktops (999px and bigger) */
 @media only screen and (min-width: 1000px) {
 
-	#footer {height: 80px; position: static;}
+	#footer {
+		height: 80px;
+		position: static;}
 
 	.footerContentWrapper {
 		display: block;
@@ -113,33 +94,30 @@ c) 1000px - ... (tablets, desktops);
 		width: 980px;
 	}
 
-	.footerLogo {
+	/*.footerLogo {
 		background: url("../img/logo.svg") no-repeat;
 		height: 20px;
 		left: 0;
 		position: absolute;
 		top: 0;
 		width: 111px;
-	}
+	}*/
 
 	.footerMenu {
-		font-size: 0.85em;
-		position: absolute;
-		left: 140px;
-		text-align: left;
-		top: -6px;
+		display: block;
+		float: left;
+		font-size: 0.875em;
+		line-height: 1em;
+		margin-top: 16px;
 	}
 
 	.footerCopyright {
-		color: #cccccc;
-		font-size: 0.65em;
-		font-weight: 300;
-		letter-spacing: 0.05em;
-		line-height: 1.5em;
-		position: absolute;
-		left: 140px;
-		text-align: left;
-		top: 30px;
+		color: rgba(0,0,0, 0.5);
+		display: block;
+		float: right;		
+		font-size: 0.875em;
+		line-height: 1em;
+		margin-top: 16px;
 	}
 
 }
