@@ -154,8 +154,8 @@
 				<h1 id="profilePriceBoxRate">
 					<script>
 						// Animation for counting the hourly rate up from zero to the actual price
-						var options = {useEasing : true, useGrouping : true, separator : ',', decimal : '.' }
-						var price = new countUp("profilePriceBoxRate", 0, {{hp.prof_rate}}, 0, 3, options);
+						var options = {useEasing : false, useGrouping : true, separator : ',', decimal : '.' }
+						var price = new countUp("profilePriceBoxRate", 0, {{hp.prof_rate}}, 0, 1, options);
 						price.start();
 					</script>
 					
@@ -169,7 +169,7 @@
 			{% else %}
 			<form method="link" action="/schedule" method="POST">
 				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule Appointment">
+				<input type="submit" class="blueButton" value="Schedule Lesson">
 			</form>
 			{% endif %}
 			<div class="profileBasicInfo">
