@@ -392,7 +392,11 @@ def render_schedule_page():
 	hp = Profile.get_by_prof_id(request.values.get('hp', None))
 	print hp
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, errmsg=usrmsg))
+	nts = NTSForm(request.form)
+	nts.hero.data = hp.prof_id
+
+
+	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
 
 
 
@@ -623,6 +627,17 @@ def sanitize_render_errors(err):
 @req_authentication
 def ht_api_proposal_create():
 	print 'ht_proposal_create'
+
+	prop_s_date = request.values.get('prop_s_date')
+	prop_s_hour = request.values.get('prop_s_hour')
+	prop_f_date = request.values.get('prop_f_date')
+	prop_f_hour = request.values.get('prop_f_hour')
+
+	print 'prop_s_date = ', prop_s_date 
+	print 'prop_s_hour= ', prop_s_hour
+	print 'prop_f_date = ', prop_f_date 
+	print 'prop_f_hour= ', prop_f_hour
+	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
 	except Sanitized_Exception as se:
