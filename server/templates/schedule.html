@@ -3,6 +3,11 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/schedule.css">
+	<script src="/static/js/schedule.times.js"></script>
+	<script src="/static/js/maps.js">
+	<script src="/static/js/moment.min.js"></script>
+	<script src="/static/js/format.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -15,10 +20,10 @@
 		<img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hp.prof_img}}'>
 
 		<!-- CAH: Total lesson time goes here. -->
-		<div class="scheduleLeftColumnInfo">Duration <span>6 hours 30 minutes</span></div>
+		<div class="scheduleLeftColumnInfo">Duration <span id="newslot-duration">?</span></div>
 
 		<!-- CAH: Total lesson cost goes here. -->
-		<div class="scheduleLeftColumnInfo">Price <span>$325</span></div>
+		<div class="scheduleLeftColumnInfo">Price <span id="newslot_price">${{hp.prof_rate}}/hour</span></div>
 		<p>You will not be charged until after the lesson, and you may see the amount as pending on your credit card statement. If the request is accepted by {{hp.prof_name}}, your card will be securely processed. {{hp.prof_name}} will never get to see your credit card number.</p>
 	</div>
 
@@ -33,7 +38,7 @@
 		<div class="scheduleTime">
 			<h3>Date &amp; Time</h3>
 			<input type="text" placeholder="MM / DD / YYYY">
-			<select>
+			<select id="newslot_starttime">
 				<option selected="true" disabled>Start Time</option>
 				<option>00:30 AM</option>
 				<option>01:00 AM</option>
@@ -84,7 +89,7 @@
 				<option>11:30 PM</option>
 				<option>12:00 PM</option>
 			</select>
-			<select>
+			<select id="newslot_endtime">
 				<option selected="true" disabled>End Time</option>
 				<option>00:30 AM</option> <option>01:00 AM</option> <option>01:30 AM</option> <option>02:00 AM</option>
 				<option>02:30 AM</option> <option>03:00 AM</option> <option>03:30 AM</option> <option>04:00 AM</option>
@@ -104,11 +109,10 @@
 
 		<div class="scheduleLocation">
 			<h3>Location</h3>
-			<!-- CAH: Prepopulate the field with default location (say, "UC Berkeley School of Information<br>
-			102 S Hall Rd, Berkeley, CA 94720"), but allow the user to customize it. -->
-			<input type="text" placeholder="Address" value="102 S Hall Rd, Berkeley, CA 94705">
+			<!-- CAH: Prepopulate the field with default location (say, "UC Berkeley School of Information<br>102 S Hall Rd, Berkeley, CA 94720"), but allow the user to customize it. -->
+			<input type="text" id="newslot_location" placeholder="Address" value="South Hall, Berkeley, CA 94705">
 			<!-- CAH: Google Map goes here. -->
-			<div class="scheduleMap"></div>
+            <div class="scheduleMap" id="map-canvas"></div>
 			<p></p>
 		</div>
 
@@ -140,4 +144,10 @@
 	<div class="clear"></div>
 </div>
 
+<script>
+	google.maps.event.addDomListener(window, 'load', initialize);
+	$('#newslot_starttime').change(function() { update_time_diff({{hp.prof_rate}}); });
+	$('#newslot_endtime').change(function() { update_time_diff({{hp.prof_rate}}); });
+</script>
+<script src="https://checkout.stripe.com/v2/checkout.js"></script>
 {% endblock %}
