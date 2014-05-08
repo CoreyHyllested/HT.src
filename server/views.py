@@ -451,6 +451,9 @@ def render_dashboard(usrmsg=None, focus=None):
 	"""
 
 	uid = session['uid']
+	print uid  
+	bp = Profile.get_by_uid(uid)
+	print bp
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
@@ -493,9 +496,11 @@ def display_other_user(p, user_is):
 		#user it the hero, we should display all the 'user'
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
 		setattr(p, 'display', p.user) 
+		setattr(p, 'buyer', False) 
 	else:
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
 		setattr(p, 'display', p.hero)
+		setattr(p, 'buyer', True) 
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -668,7 +673,8 @@ def ht_api_proposal_accept():
 		print str(e)
 		db_session.rollback()
 		jsonify(usrmsg=str(e)), 500
-	return render_dashboard(usrmsg=msg)
+	#return render_dashboard(usrmsg=msg)
+	return make_response(redirect('/dashboard'))
 
 
 

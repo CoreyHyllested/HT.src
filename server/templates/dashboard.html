@@ -3,12 +3,8 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
-	<!-- CAH: I have no idea what's in dashboard.js - I just moved all scripts from the file there. -->
-	<script type="text/javascript" src="/static/js/dashboard.js"></script>
-	<!-- CAH: Please see which of these we can delete or move to dashboard.js -->
 	<script src="/static/js/maps.js"></script>
 	<script src="/static/js/format.js"></script>
-	<script src="/static/js/slot_expand.js"></script>
 	<script src="/static/js/calendar.js"></script>
 	<script src="/static/js/calendar1.js"></script>
 	<script src="/static/js/tab_switch.js"></script>
@@ -21,7 +17,6 @@
 
 	<div class="dashboardLeftColumn">
 
-		<!-- CAH: Show dashboardEmpty only if there are not offers and/or lesson-->
 		<div class="dashboardEmpty">
 			<h1>Welcome to HeroTime!</h1>
 			<h2>This is your personal dashboard.</h2>
@@ -31,91 +26,93 @@
 			<p>Aenean tincidunt augue vitae eleifend pretium. Aliquam suscipit quis ipsum quis cursus. Vivamus tempus odio ac turpis ultrices porttitor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam et malesuada libero, vel blandit mi. Duis vulputate, urna eget venenatis feugiat, massa ipsum sodales purus, vitae dictum diam odio id libero. In scelerisque iaculis tellus. Duis sed eros nec enim molestie fermentum.</p>
 		</div>
 
-		<!-- CAH: Show dashboardOffers only if there are pending offers -->
 		<div class="dashboardOffers">
-			<!-- CAH: Number of offers goes into parenthesis -->
-			<h1>Pending Offers (2)</h1>
+			<h1>Pending Offers ({{proposals|length}})</h1>
 
-			<div class="dashboardOffer">
+			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
+			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<!-- CAH: Link this to the profile of the person who sent/received the offer. -->
-					<a href="#">
-						<!-- CAH: The image of the person who sent/received the offer. -->
-						<img src="/static/img/farmer.jpg">
+					<a href="#" onclick="document.getElementById('h').value='{{proposal.user.prof_id}}'; document.p.submit();">
+						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.user.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<!-- CAH: The person who sent/received the offer goes here. -->
-					<h3>John Zacharakis</h3>
-					<!-- CAH: The headline of the person who sent/received the offer goes here. -->
-					<h4>Urban Farmer</h4>
-					<!-- CAH: Introduction text from Schedule Lessons goes here. -->
-					<div class="dashboardOfferIntro">“Here's some Borat Ipsum for CAH: America national sport is called baseballs. It very similar to our sport, shurik, where we take dogs, shoot them in a field, and then have a party.”</div>
+					<h3>{{proposal.user.prof_name}}</h3>
+					<h4>{{proposal.user.headline}}</h4>
+					<div class="dashboardOfferIntro">{{proposal.Proposal.prop_desc}}</div>
 				</div>
+
 				<div class="dashboardOfferRightColumn">
-					<!-- CAH: This is description of the value of transaction. If the user proposed the meeting, it should say "You offered $x."; if the user got the offer, it should say "You were offered $x." -->
 					<div class="dashboardOfferRightColumnInfo">
-						You offered $25.
+						{% if proposal.buyer == True %}
+						You offered ${{proposal.Proposal.prop_cost}}.
+						{% else %}
+						You were offered ${{proposal.Proposal.prop_cost}}.
+						{% endif %}
 					</div>
-					<!-- CAH: Meeting date goes into first line, meeting time goes into second line. -->
+
 					<div class="dashboardOfferRightColumnInfo">
-						April 27, 2014<br>
-						5:00 PM - 6:00 PM
+						{{proposal.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
+						{{proposal.Proposal.prop_ts.strftime('%H:%M %p')}} - {{proposal.Proposal.prop_tf.strftime('%H:%M %p')}}
 					</div>
-					<!-- CAH: Meeting address goes here. -->
+
 					<div class="dashboardOfferRightColumnInfo">
-						Bulevar oslobođenja 3, 11000 Belgrade, Serbia
+						{{proposal.Proposal.prop_place}}
+
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" target="_blank"> (see map)</a>
 					</div>
-					<!-- CAH: This rejects the proposal. -->
-					<input type="button" value="Reject">
-					<!-- CAH: This accepts the proposal. -->
-					<input type="button" value="Accept">
-
+					<input type="button" class="reject" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
+					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
 				</div>
 				<div class="clear"></div>
 			</div>
+			{% endfor %}
 		</div>
 
-		<!-- CAH: Show dashboardAppointments only if there are any lessons -->
+
 		<div class="dashboardAppointments">
-			<!-- CAH: Number of lessons goes into parenthesis -->
-			<h1>Scheduled Lessons (1)</h1>
-			<div class="dashboardOffer">
+			<h1>Scheduled Lessons ({{appointments|length}})</h1>
+			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
+			<div class="dashboardOffer" id="appt-{{appointment.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<!-- CAH: The image of the person who sent/received the offer. -->
-					<a href="#"><img src="/static/img/skater.jpg"></a>
+					<a href="#" onclick="document.getElementById('h').value='{{appointment.user.prof_id}}'; document.p.submit();">
+						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.user.prof_img}}">
+					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<!-- CAH: The person who sent/received the offer goes here. -->
-					<h3>John Doe</h3>
-					<!-- CAH: The headline of the person who sent/received the offer goes here. -->
-					<h4>Skateboarding Specialist</h4>
-					<!-- CAH: Introduction text from Schedule Lessons goes here. -->
-					<div class="dashboardOfferIntro">“Hi Jenn! I’d like to meet up with you and get an introducory lesson in latte art. Do you think an hour will suffice?”</div>
+					<h3>{{appointment.user.prof_name}}</h3>
+					<h4>{{appointment.user.headline}}</h4>
+					<div class="dashboardOfferIntro">
+						{{appointment.Proposal.prop_desc}}
+					</div>
 				</div>
 				<div class="dashboardOfferRightColumn">
-					<!-- CAH: This is description of the value of transaction. If the user proposed the meeting, it should say "You will pay $x."; if the user got the offer, it should say "You will get $x." -->
 					<div class="dashboardOfferRightColumnInfo">
-						You will pay $45.
+						{% if appointment.buyer == True %}
+						You will play ${{appointment.Proposal.prop_cost}}.
+						{% else %}
+						You will get paid ${{appointment.Proposal.prop_cost}}.
+						{% endif %}
 					</div>
-					<!-- CAH: Meeting date goes into first line, meeting time goes into second line. -->
 					<div class="dashboardOfferRightColumnInfo">
-						April 27, 2014<br>
-						5:00 PM - 6:00 PM
+						{{appointment.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
+						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
 					</div>
 					<!-- CAH: Meeting address goes here. -->
 					<div class="dashboardOfferRightColumnInfo">
 						102 S Hall Rd, Berkeley, CA 94720
+					<!-- CAH: This is description of the value of transaction. If the user proposed the meeting, it should say "You will pay $x."; if the user got the offer, it should say "You will get $x." -->
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" target="_blank"> (see map)</a>
 					</div>
-					<!-- CAH: This cancels the lessons. The button should disappear 24 hours before the meeting. -->
-					<input type="button" class="redButton" value="Cancel Lesson">
+
+					<!-- CAH: The button should disappear 24 hours before the meeting. -->
+					<input type="button" class="redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
+			{% endfor %}
 		</div>
 	</div>
 
@@ -139,8 +136,152 @@
 		</form>
 	</div>
 
-
-
 </div>
+
+<script>
+$(function () {
+    $('.accept').click(function () {
+        var id = this.id;
+        var ch = $(this).attr("ch");
+        var csrf = "{{ csrf_token() }}";
+
+        console.log(['this is get started', id, ch]);
+
+        var fd = new FormData();
+        fd.append('proposal_id', id);
+        fd.append('proposal_stat', 'accept');
+        fd.append('proposal_challenge', ch);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/proposal/accept", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf);
+		xhr.send(fd);
+		console.log('sent');
+
+        //catch response.  make any modificaitons.
+/*        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                console.log(xhr.responseText);
+				if (this.status == 200) {
+					console.log(['xhr post complete ', e]);
+					msg = JSON.parse(xhr.responseText);
+					console.log(msg);
+					openAlertWindow('Success!\n' + msg['usrmsg']);
+					document.write(xhr.responseText);
+				} else if (this.status == 500) {
+					msg = JSON.parse(xhr.responseText);
+					console.log(msg);
+					console.log(['xhr post complete, err=500 ', e]);
+					openAlertWindow('Failure 500: ' + msg['usrmsg']);
+                } else if (this.status == 501) {
+					msg = JSON.parse(xhr.responseText);
+					console.log(msg);
+                    console.log(['xhr post complete, err=501 ', e]);
+                    openAlertWindow('Failure 501: ' + msg['usrmsg']);
+                } else {
+					msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    openAlertWindow('Failure: ' + this.status + ': ' + msg['usrmsg']);
+                }
+            }
+        };
+        return false;
+*/
+    });
+
+
+   $('.redButton').click(function () {
+        var id = this.id;
+        var ch = $(this).attr("ch");
+        var csrf = "{{ csrf_token() }}";
+		var sid = "#appt-" + id;
+
+        var fd = new FormData();
+        fd.append('appt_id', id);
+        fd.append('appt_stat', 'cancel');
+        fd.append('appt_challenge', ch);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/appointment/cancel", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.send(fd);
+
+        //catch response.  make any modificaitons.
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    console.log(xhr.responseText);
+					$(sid).remove();
+					msg = JSON.parse(xhr.responseText);
+					openAlertWindow('Success.\n' + msg['usrmsg']);
+                } else if (this.status == 400) {
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 500) {
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 501) {
+                    console.log(['xhr post complete, err=501 ', e]);
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else {
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                }
+            }
+        };
+
+        return false;
+    });
+
+
+   $('.reject').click(function () {
+        var id = this.id;
+        var ch = $(this).attr("ch");
+        var csrf = "{{ csrf_token() }}";
+        var sid = "#prop-" + id;
+
+        var fd = new FormData();
+        fd.append('proposal_id', id);
+        fd.append('proposal_stat', 'reject');
+        fd.append('proposal_challenge', ch);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/proposal/reject", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.send(fd);
+
+        //catch response.  make any modificaitons.
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                msg = JSON.parse(xhr.responseText);
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    console.log(xhr.responseText);
+                    openAlertWindow('Success.\n' + msg['usrmsg']);
+                    $(sid).remove();
+                } else if (this.status == 500) {
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 501) {
+                    console.log(['xhr post complete, err=501 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else {
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                }
+            }
+        };
+
+        return false;
+    });
+
+});
+
+
+
+
+</script>
 
 {% endblock %}
