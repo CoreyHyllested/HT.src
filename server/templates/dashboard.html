@@ -32,13 +32,13 @@
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{proposal.user.prof_id}}'; document.p.submit();">
-						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.user.prof_img}}">
+					<a href="#" onclick="document.getElementById('h').value='{{proposal.display.prof_id}}'; document.p.submit();">
+						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<h3>{{proposal.user.prof_name}}</h3>
-					<h4>{{proposal.user.headline}}</h4>
+					<h3>{{proposal.display.prof_name}}</h3>
+					<h4>{{proposal.display.headline}}</h4>
 					<div class="dashboardOfferIntro">{{proposal.Proposal.prop_desc}}</div>
 				</div>
 
@@ -76,13 +76,13 @@
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardOffer" id="appt-{{appointment.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{appointment.user.prof_id}}'; document.p.submit();">
-						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.user.prof_img}}">
+					<a href="#" onclick="document.getElementById('h').value='{{appointment.display.prof_id}}'; document.p.submit();">
+						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<h3>{{appointment.user.prof_name}}</h3>
-					<h4>{{appointment.user.headline}}</h4>
+					<h3>{{appointment.display.prof_name}}</h3>
+					<h4>{{appointment.display.headline}}</h4>
 					<div class="dashboardOfferIntro">
 						{{appointment.Proposal.prop_desc}}
 					</div>
@@ -101,8 +101,7 @@
 					</div>
 					<!-- CAH: Meeting address goes here. -->
 					<div class="dashboardOfferRightColumnInfo">
-						102 S Hall Rd, Berkeley, CA 94720
-					<!-- CAH: This is description of the value of transaction. If the user proposed the meeting, it should say "You will pay $x."; if the user got the offer, it should say "You will get $x." -->
+						{{appointment.Proposal.prop_place}}
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" target="_blank"> (see map)</a>
 					</div>
