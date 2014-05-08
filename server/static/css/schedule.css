@@ -1,5 +1,5 @@
 /*
-There are three responsive design ranges for the login page (login.html):
+There are three responsive design ranges for Schedule Lesson page (schedule.html):
 a) 240px - 449px (phones)
 b) 450px - 749px (phablets)
 c) 750px - ... (tablets, desktops)
@@ -209,15 +209,13 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.schedulePostButton {
-		float: right;
-		margin-bottom: 10px;
-		width: 60%;
+		margin-bottom: 20px;
+		width: 100%;
 	}
 
 	.scheduleCancelButton {
-		float: left;
 		margin-bottom: 10px;
-		width: 30%;		
+		width: 100%;		
 	}
 
 }
@@ -269,7 +267,7 @@ c) 750px - ... (tablets, desktops)
 		margin: 40px auto 30px;
 		min-height: 568px;
 		padding: 20px 25px;
-		width: 449px;
+		width: 440px;
 	}
 
 	.scheduleContentWrapper h2 {
@@ -428,14 +426,14 @@ c) 750px - ... (tablets, desktops)
 
 	.schedulePostButton {
 		float: right;
-		margin-bottom: 10px;
-		width: 60%;
+		margin-bottom: 20px;
+		width: 100%;
 	}
 
 	.scheduleCancelButton {
 		float: left;
 		margin-bottom: 10px;
-		width: 30%;		
+		width: 100%;		
 	}
 
 }
