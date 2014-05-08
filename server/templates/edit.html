@@ -26,7 +26,7 @@
 
 		<div class="editBasicInfo">
 			<h2>Basic Information</h2>
-			{{form.edit_name(placeholder="Name")}}
+			{{form.edit_name(placeholder="Name", maxlength="40")}}
 			{{form.edit_headline(placeholder="Profile Headline")}}
 			{{form.edit_rate(maxlength="7", onkeypress="return isNumberKey(event)")}}
 			{{form.edit_industry(placeholder="Industry")}}

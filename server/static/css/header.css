@@ -257,6 +257,97 @@ c) 1000px - ... (desktop)
 		color: white;
 	}
 
+	/* Dropdown menu */
+	
+	.headerDropdownMenu {
+		color: white;
+		display: inline;
+		float: right;
+		list-style: none;
+		margin: 0;
+		min-width: 100px;
+		position: relative;
+		text-align: right;
+		top: 12px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;		
+		z-index: 100;
+	}
+
+	.headerDropdownMenu .headerDropdownMenuName {
+		display: inline-block;
+		position: relative;
+		color: white;
+		cursor: pointer;
+		font-size: 0.875em;
+		line-height: 41px;
+		max-width: 140px;
+		min-width: 110px;	
+		overflow: hidden;	
+		padding: 0 10px;
+		text-align: left;
+		text-overflow: ellipsis;
+		top: -12px;
+		white-space: nowrap;
+	}
+
+	.headerDropdownMenu .headerDropdownMenuName:hover {
+		overflow: visible;
+	}
+
+	.headerDropdownMenu li:hover {
+		color: #29abe1;
+	}
+
+	.headerDropdownMenu li ul {
+		font-size: 1em;
+		height: 0;
+		left: 0;
+		overflow: hidden;
+		position: absolute;
+		text-align: left;
+		top: 41px;
+		-webkit-transition: all 0.4s;
+		-moz-transition: all 0.3s;
+		-ms-transition: all 0.2s;
+		-o-transition: all 0.2s;
+		transition: all 0.4s;
+		width: 100%;
+		z-index: 99999;
+	}
+
+	.headerDropdownMenu li:hover ul {
+		display: block;
+		min-height: 400px;
+	}
+
+	.headerDropdownMenu li ul a li:hover {
+		color: white;
+	}
+
+	.headerDropdownMenu li ul a li {
+		background: rgba(0,0,0, 0.8);
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		color: white;
+		display: block;
+		padding-left: 10px;
+		width: 100%;
+	}
+
+	.headerDropdownMenu li ul a:last-of-type li {
+		border-radius: 0 0 3px 3px;
+	}	
+
+	.headerDropdownMenu li ul a li:hover {
+		background: #29abe2;
+	}
+
 }
 
 /* Tablets, desktops (1000px and greater) */
@@ -394,6 +485,8 @@ c) 1000px - ... (desktop)
 		color: white;
 	}
 
+	/* Dropdown menu */
+
 	.headerDropdownMenu {
 		color: white;
 		display: inline;
@@ -404,6 +497,12 @@ c) 1000px - ... (desktop)
 		position: relative;
 		text-align: right;
 		top: 12px;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 		z-index: 100;
 	}
 
@@ -414,10 +513,18 @@ c) 1000px - ... (desktop)
 		cursor: pointer;
 		font-size: 0.875em;
 		line-height: 41px;
-		min-width: 110px;		
+		max-width: 350px;
+		min-width: 110px;	
+		overflow: hidden;	
 		padding: 0 10px;
 		text-align: left;
-		top: -12px;	
+		text-overflow: ellipsis;
+		top: -12px;
+		white-space: nowrap;
+	}
+
+	.headerDropdownMenu .headerDropdownMenuName:hover {
+		overflow: visible;
 	}
 
 	.headerDropdownMenu li:hover {
