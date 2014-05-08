@@ -1,27 +1,5 @@
 // Script #1
-
-jQuery(function($) {
-  $( "#datepicker2" ).datepicker({
-		  inline: true
-	  });
-});
-jQuery(function($) {
-  $('#datepicker2').change(function() {
-    var c = {{appointments|length}};
-    for (var i = 1; i < c + 1; i++){
-      if (document.getElementById("day-"+i).innerHTML != document.getElementById("datepicker2").value){
-        document.getElementById(i).style.display = 'none';
-        document.getElementById("slot-expand-"+i).style.display = 'none';
-      }
-      else {
-  	    document.getElementById(i).style.display = 'block';
-      }
-    };
-    document.getElementById("header").innerHTML = document.getElementById("datepicker2").value;
-  });
-});
-
-
+// Removed - no datepicker2 stuff. 
 
 // Script #2
 
