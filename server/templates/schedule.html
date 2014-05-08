@@ -131,6 +131,7 @@
 </div>
 
 <script>
+$(function() {
 	google.maps.event.addDomListener(window, 'load', initialize);
 	$('#newslot_starttime').change(function() { update_time_diff({{hp.prof_rate}}); });
 	$('#newslot_endtime').change(function() { update_time_diff({{hp.prof_rate}}); });
@@ -210,11 +211,9 @@
             return false;
         });
     });
-
-
-
-	
+});
 </script>
+
 <!--script src="https://checkout.stripe.com/v2/checkout.js"></script-->
 <script src="https://checkout.stripe.com/checkout.js"></script>
 
