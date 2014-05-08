@@ -5,7 +5,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<script src="/static/js/profile.js"></script>
 	<script src="/static/js/lightbox.min.js"></script>
-	<script src="/static/js/countUp.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 
 {% endblock %}
@@ -151,15 +150,7 @@
 		<div class="profileRightColumn">
 			<div class="profilePriceBox">
 				<span>$</span>
-				<h1 id="profilePriceBoxRate">
-					<script>
-						// Animation for counting the hourly rate up from zero to the actual price
-						var options = {useEasing : false, useGrouping : true, separator : ',', decimal : '.' }
-						var price = new countUp("profilePriceBoxRate", 0, {{hp.prof_rate}}, 0, 1, options);
-						price.start();
-					</script>
-					
-				</h1>
+				<h1 id="profilePriceBoxRate">{{'{0:,}'.format(hp.prof_rate)}}</h1>
 				<div class="perHour">per<br>hour</div>
 			</div>
 						{% if hp is sameas bp %}

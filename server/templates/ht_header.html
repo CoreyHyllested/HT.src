@@ -162,8 +162,19 @@
 
 				<!-- HEADER MENU -->
 				{% if bp %}
-
 				<div class="headerGraphicalMenu"></div>
+
+				<ul class="headerDropdownMenu">
+					<li class="headerDropdownMenuName">{{bp.prof_name}}
+						<ul>
+							<a href="/dashboard"><li>Dashboard</li></a>
+							<a href="/profile"><li>Profile</li></a>
+							<a href="/settings"><li>Settings</li></a>
+							<a href="/logout"><li>Log Out</li></a>
+						</ul>
+					</li>
+				</ul>
+
 
 				{% else %}
 				<div class="headerGraphicalMenu"></div>
