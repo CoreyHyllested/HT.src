@@ -17,176 +17,211 @@
 </div>
 
 <div class="profileContentWrapper">
-	<div class="profileBlurbWrapper">
-		<div class="profileLeftColumn">
+
+	<div class="profileLeftColumn">
+		<div class="profileNameHeadline">
 			<h1>{{hp.prof_name}}</h1>
 			<h2>{{hp.headline| default('No headline')}}</h2>
-			<div class="profileAboutMe">{{hp.prof_bio}}</div>
-
-			{% if revs|count == 0 %}
-			<h3>There are no reviews for this person yet.</h3>
-
-			{% else %}
-			<div class="profileReviews">
- 				<div class="profileReviewsInfo">
-					<h3>Reviews ({{revs|length}})</h3>
-					<!-- CAH: Write Review should appear if user has purchased time with the person.
-						 CAH: Will make this happen later.  Currently, sent as an email.
-					<a href="/postreview">Write Review</a>
-					-->
-				</div>
-				<div class="profileLatestReviews">
-
-					{% for review in revs %}
-					<!-- The individual review box starts here -->
-					<div class="profileReviewBox">
-						<div class="profileReviewLeft">
-							<div class="profileReviewImageWrap">
-								<!-- Social Media icon. -->
-								{% if loop.index == 1 %}
-								<div class="profileReviewImageFacebook"></div>
-								{% endif %}
-								<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
-									<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
-								</a>
-							</div>
-							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
-								<h3>{{review.display.prof_name}}</h3>
-							</a>
-							<h4>{{review.display.headline}}</h4>
-						</div>
-						<div class="profileReviewRight">
-							<div class="profileReviewRating">
-								<div class="profileReviewRatingLabels">
-									Overall Value<br>
-									Promptness<br>
-									Communication
-								</div>
-								<div class="profileReviewRatingDivider"></div>
-								<div class="profileReviewRatingBars">
-
-									<!-- Overall Value -->
-									<div class="profileReviewRatingBar">
-										{% if review.Review.appt_score == 1 %}
-											<div class="profileReviewRatingBarFillOne"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-										{% elif review.Review.appt_score == 2 %}
-											<div class="profileReviewRatingBarFillTwo"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-										{% elif review.Review.appt_score == 3 %}
-											<div class="profileReviewRatingBarFillThree"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-										{% elif review.Review.appt_score == 4 %}
-											<div class="profileReviewRatingBarFillTwo"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-										{% elif review.Review.appt_score == 5 %}
-											<div class="profileReviewRatingBarFillFive"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-										{% endif %}
-									</div>
-
-									<!-- Promptness goes here -->
-									<div class="profileReviewRatingBar">
-										{% if not review.Review.score_attr_time %}
-											<div class="profileReviewRatingBarFillZero"></div>
-											<div class="profileReviewRatingNumerical">n/a</div>
-										{% elif review.Review.score_attr_time == 1 %}
-											<div class="profileReviewRatingBarFillOne"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-										{% elif review.Review.score_attr_time == 2 %}
-											<div class="profileReviewRatingBarFillTwo"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-										{% elif review.Review.score_attr_time == 3 %}
-											<div class="profileReviewRatingBarFillThree"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-										{% elif review.Review.score_attr_time == 4 %}
-											<div class="profileReviewRatingBarFillFour"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-										{% elif review.Review.score_attr_time == 5 %}
-											<div class="profileReviewRatingBarFillFive"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-										{% else %}
-											<div class="profileReviewRatingNumerical"> SubZero </div>
-										{% endif %}
-									</div>
-
-									<!-- Communication -->
-									<div class="profileReviewRatingBar">
-										{% if not review.Review.score_attr_comm %}
-										  <div class="profileReviewRatingBarFillZero"></div>
-										  <div class="profileReviewRatingNumerical"> n/a </div>
-										{% elif review.Review.score_attr_comm == 1 %} 
-											<div class="profileReviewRatingBarFillOne"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-										{% elif review.Review.score_attr_comm == 2 %} 
-											<div class="profileReviewRatingBarFillTwo"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-										{% elif review.Review.score_attr_comm == 3 %} 
-											<div class="profileReviewRatingBarFillThree"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-										{% elif review.Review.score_attr_comm == 4 %} 
-											<div class="profileReviewRatingBarFillFour"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-										{% elif review.Review.score_attr_comm == 5 %} 
-											<div class="profileReviewRatingBarFillFive"></div>
-											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-										{% endif %}
-									</div>
-									<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
-								</div>
-							</div>
-							<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
-						</div>
-						<div class="clear"></div>
-					</div>
-					{% endfor %}
-
-				</div>
-				<div class="profileReviewsInfo"></div>
-			</div>
-			{% endif %}
+			<h3>${{hp.prof_rate}}</h3>
 		</div>
-
-		<div class="profileRightColumn">
-			<div class="profilePriceBox">
-				<span>$</span>
-				<h1 id="profilePriceBoxRate">{{hp.prof_rate}}</h1>
-				<div class="perHour">per<br>hour</div>
-			</div>
-						{% if hp is sameas bp %}
+		<div class="profileMobileBlock">
+			{% if hp is sameas bp %}
 			<form method="link" action="/edit">
 				<input type="submit" class="whiteButton" value="Edit Profile">
 			</form>
+
 			{% else %}
+
 			<form method="link" action="/schedule" method="POST">
 				<input type="hidden" name="hp" value="{{hp.prof_id}}">
 				<input type="submit" class="blueButton" value="Schedule Lesson">
 			</form>
+
 			{% endif %}
 			<div class="profileBasicInfo">
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
-				{% if hp.reviews == 0 %}
-					No Reviews
-				{% else %}
-					{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
-				{% endif %}
-				</div>
-				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
+			{% if hp.reviews == 0 %}
+				No Reviews
+			{% else %}
+				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+			{% endif %}
 			</div>
+			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
+		</div>
+		</div>
+		<div class="profileAboutMe">{{hp.prof_bio}}</div>
 
-			<div class="profilePortfolio">
-				<a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a>
-				<a href="/static/img/portfolio_latteart.jpg" data-lightbox="portfolio" data-title="When I'm not twisting people into weird positions in yoga classes, I enjoy making latte art." class="profilePortfolioImage latteart"></a>
-				<a href="/static/img/portfolio_macaroons.jpg" data-lightbox="portfolio" data-title="My love of preparing foods &amp; drinks extends beyond just coffee - take a look at some of the macaroons I made for my best friend's birthday." class="profilePortfolioImage macaroons"></a>
-				<a href="/static/img/portfolio_silkscreening.jpg" data-lightbox="portfolio" data-title="My other hobby is silk screening. Now, I'm not a master by any stretch, but I can definitely get you started and pointed in the right direction." class="profilePortfolioImage silkscreening"></a>
-				<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
-				<!-- CAH: When clicked, the button below should pop-up a modal window saying the feature is still a prototype or something. -->
-				<div class="addImage"><p>Add<br>Image</p></div>
+		{% if revs|count == 0 %}
+		<h3>There are no reviews for this person yet.</h3>
+
+		{% else %}
+		<div class="profileReviews">
+				<div class="profileReviewsInfo">
+				<h3>Reviews ({{revs|length}})</h3>
+				<!-- CAH: Write Review should appear if user has purchased time with the person.
+					 CAH: Will make this happen later.  Currently, sent as an email.
+				<a href="/postreview">Write Review</a>
+				-->
 			</div>
+			<div class="profileLatestReviews">
+
+				{% for review in revs %}
+				<!-- The individual review box starts here -->
+				<div class="profileReviewBox">
+					<div class="profileReviewLeft">
+						<div class="profileReviewImageWrap">
+							<!-- Social Media icon. -->
+							{% if loop.index == 1 %}
+							<div class="profileReviewImageFacebook"></div>
+							{% endif %}
+							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
+								<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
+							</a>
+						</div>
+						
+						<div class="profileReviewLeftNameHeadline">
+							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
+								<h3>{{review.display.prof_name}}</h3>
+							</a>
+							<h4>{{review.display.headline}}</h4>
+						</div>
+					</div>
+					<div class="profileReviewRight">
+						<div class="profileReviewRating">
+							<div class="profileReviewRatingLabels">
+								Overall Value<br>
+								Promptness<br>
+								Communication
+							</div>
+							<div class="profileReviewRatingDivider"></div>
+							<div class="profileReviewRatingBars">
+
+								<!-- Overall Value -->
+								<div class="profileReviewRatingBar">
+									{% if review.Review.appt_score == 1 %}
+										<div class="profileReviewRatingBarFillOne"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+									{% elif review.Review.appt_score == 2 %}
+										<div class="profileReviewRatingBarFillTwo"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+									{% elif review.Review.appt_score == 3 %}
+										<div class="profileReviewRatingBarFillThree"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+									{% elif review.Review.appt_score == 4 %}
+										<div class="profileReviewRatingBarFillTwo"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+									{% elif review.Review.appt_score == 5 %}
+										<div class="profileReviewRatingBarFillFive"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+									{% endif %}
+								</div>
+
+								<!-- Promptness goes here -->
+								<div class="profileReviewRatingBar">
+									{% if not review.Review.score_attr_time %}
+										<div class="profileReviewRatingBarFillZero"></div>
+										<div class="profileReviewRatingNumerical">n/a</div>
+									{% elif review.Review.score_attr_time == 1 %}
+										<div class="profileReviewRatingBarFillOne"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+									{% elif review.Review.score_attr_time == 2 %}
+										<div class="profileReviewRatingBarFillTwo"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+									{% elif review.Review.score_attr_time == 3 %}
+										<div class="profileReviewRatingBarFillThree"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+									{% elif review.Review.score_attr_time == 4 %}
+										<div class="profileReviewRatingBarFillFour"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+									{% elif review.Review.score_attr_time == 5 %}
+										<div class="profileReviewRatingBarFillFive"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+									{% else %}
+										<div class="profileReviewRatingNumerical"> SubZero </div>
+									{% endif %}
+								</div>
+
+								<!-- Communication -->
+								<div class="profileReviewRatingBar">
+									{% if not review.Review.score_attr_comm %}
+									  <div class="profileReviewRatingBarFillZero"></div>
+									  <div class="profileReviewRatingNumerical"> n/a </div>
+									{% elif review.Review.score_attr_comm == 1 %} 
+										<div class="profileReviewRatingBarFillOne"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+									{% elif review.Review.score_attr_comm == 2 %} 
+										<div class="profileReviewRatingBarFillTwo"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+									{% elif review.Review.score_attr_comm == 3 %} 
+										<div class="profileReviewRatingBarFillThree"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+									{% elif review.Review.score_attr_comm == 4 %} 
+										<div class="profileReviewRatingBarFillFour"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+									{% elif review.Review.score_attr_comm == 5 %} 
+										<div class="profileReviewRatingBarFillFive"></div>
+										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+									{% endif %}
+								</div>
+								<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
+							</div>
+						</div>
+						<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+				{% endfor %}
+
+			</div>
+			<div class="profileReviewsInfo"></div>
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="profileRightColumn">
+		<div class="profilePriceBox">
+			<span>$</span>
+			<h1 id="profilePriceBoxRate">{{hp.prof_rate}}</h1>
+			<div class="perHour">per<br>hour</div>
+		</div>
+		{% if hp is sameas bp %}
+		<form method="link" action="/edit">
+			<input type="submit" class="whiteButton" value="Edit Profile">
+		</form>
+		{% else %}
+		<form method="link" action="/schedule" method="POST">
+			<input type="hidden" name="hp" value="{{hp.prof_id}}">
+			<input type="submit" class="blueButton" value="Schedule Lesson">
+		</form>
+		{% endif %}
+		<div class="profileBasicInfo">
+			<div class="profileInfoBox">{{hp.location}}</div>
+			<div class="profileInfoBox">{{hp.industry}}</div>
+			<div class="profileInfoBox">
+			{% if hp.reviews == 0 %}
+				No Reviews
+			{% else %}
+				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+			{% endif %}
+			</div>
+			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
+		</div>
+
+		<div class="profilePortfolio">
+			<a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a>
+			<a href="/static/img/portfolio_latteart.jpg" data-lightbox="portfolio" data-title="When I'm not twisting people into weird positions in yoga classes, I enjoy making latte art." class="profilePortfolioImage latteart"></a>
+			<a href="/static/img/portfolio_macaroons.jpg" data-lightbox="portfolio" data-title="My love of preparing foods &amp; drinks extends beyond just coffee - take a look at some of the macaroons I made for my best friend's birthday." class="profilePortfolioImage macaroons"></a>
+			<a href="/static/img/portfolio_silkscreening.jpg" data-lightbox="portfolio" data-title="My other hobby is silk screening. Now, I'm not a master by any stretch, but I can definitely get you started and pointed in the right direction." class="profilePortfolioImage silkscreening"></a>
+			<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
+			<!-- CAH: When clicked, the button below should pop-up a modal window saying the feature is still a prototype or something. -->
+			{% if hp is sameas bp %}
+			<div class="addImage"><p>Add<br>Image</p></div>
+			{% endif %}
 		</div>
 	</div>
+
 	<div class="clear"></div>
 </div>
 
