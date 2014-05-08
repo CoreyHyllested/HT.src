@@ -140,6 +140,10 @@ c) 1000px - ... (desktops)
 		font-size: 0.8em;
 	}
 
+	.profileMobileBlock {
+		display: block;
+	}
+
 	.profileMobileBlock input {
 		width: 100%;
 	}
