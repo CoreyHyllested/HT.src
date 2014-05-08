@@ -26,7 +26,6 @@ c) 980px - ... (desktops)
 @media only screen and (min-device-width: 240px) and (max-width: 549px) {
 
 	.pageWrapper {
-		background-color: #f5f8fa;
 		min-height: 100%;
 		width: 100%;
 	}
@@ -125,13 +124,16 @@ c) 980px - ... (desktops)
 		margin: 10px 0 20px;
 	}
 
-	.searchListing img {
+	.searchListingImage {
 		border: 1px solid #e1e8ed;
 		border-radius: 6px 6px 0 0;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
+		box-sizing: border-box;	
+		display: block;
+		height: 0;
 		margin: 0;
+		padding: 56.25% 0 0 0;
 		width: 100%;
 	}
 
@@ -196,7 +198,6 @@ c) 980px - ... (desktops)
 @media only screen and (min-width: 550px) and (max-width: 999px) {
 
 	.pageWrapper {
-		background-color: #f5f8fa;
 		min-height: 100%;
 		width: 100%;
 	}
@@ -210,9 +211,6 @@ c) 980px - ... (desktops)
 	/* Search Options */
 
 	.searchOptions {
-		background-color: white;
-		border-radius: 6px;
-		box-shadow: 0px 2px 3px rgba(0,0,0, 0.15);
 		float: right;		
 		margin-top: 20px;
 		padding: 20px;
@@ -257,9 +255,6 @@ c) 980px - ... (desktops)
 	}
 
 	.searchResults {
-		background-color: white;
-		border-radius: 6px;
-		box-shadow: 0px 2px 3px rgba(0,0,0, 0.15);
 		float: left;	
 		margin: 20px 0;
 		padding: 20px;
@@ -281,13 +276,16 @@ c) 980px - ... (desktops)
 		margin: 10px 0 20px;
 	}
 
-	.searchListing img {
+	.searchListingImage {
 		border: 1px solid #e1e8ed;
 		border-radius: 6px 6px 0 0;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
+		box-sizing: border-box;	
+		display: block;
+		height: 0;
 		margin: 0;
+		padding: 56.25% 0 0 0;
 		width: 100%;
 	}
 
@@ -351,7 +349,6 @@ c) 980px - ... (desktops)
 @media only screen and (min-width: 1000px) {
 
 	.pageWrapper {
-		background-color: #f5f8fa;
 		min-height: 100%;
 		width: 100%;
 	}
@@ -369,9 +366,6 @@ c) 980px - ... (desktops)
 	}
 
 	.searchOptions {
-		background-color: white;
-		border-radius: 6px;
-		box-shadow: 0px 2px 3px rgba(0,0,0, 0.15);
 		float: right;		
 		margin-top: 20px;
 		padding: 20px;
@@ -417,9 +411,6 @@ c) 980px - ... (desktops)
 	/* Search Results */
 
 	.searchResults {
-		background-color: white;
-		border-radius: 6px;
-		box-shadow: 0px 2px 3px rgba(0,0,0, 0.15);
 		float: left;	
 		margin: 20px 0;
 		padding: 20px;
@@ -443,20 +434,19 @@ c) 980px - ... (desktops)
 		position: relative;
 	}
 
-	.searchListing:last-child {
-		margin: 10px 0 0;
-	}
-
-	.searchListing img {
+	.searchListingImage {
 		border: 1px solid #e1e8ed;
 		border-radius: 6px 0 0 6px;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		float: left;
+		box-sizing: border-box;	
+		display: block;
 		height: 133px;
-		margin: 0;
-		width: 235px;
+		width: 216px;
+	}
+
+	.searchListing:last-child {
+		margin: 10px 0 0;
 	}
 
 	.searchListingInfo {

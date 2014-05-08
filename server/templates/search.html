@@ -24,7 +24,7 @@
 			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
 			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
 
-			<input type="submit" class="blueButton" value="Search">
+			<input type="submit" class="whiteButton" value="Search">
 		</form>
 	</div>
 
@@ -38,8 +38,8 @@
 		{% for hero in heroes %}
 		<div class="searchListing">
 			
-			<a href='/profile?hero={{hero.prof_id}}'>
-				<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();" alt="search-result"/>
+			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="		background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();">
+				
 			</a>
 
 
@@ -67,7 +67,7 @@
 					
 					<tr class="searchListingTableLastRow">
 						<td>{{hero.industry}}</td>
-						<td class="searchListingTablePrice"><strong>${{hero.prof_rate}}</strong> / hour</td>
+						<td class="searchListingTablePrice"><strong>${{'{0:,}'.format(hero.prof_rate)}}</strong> / hour</td>
 					</tr>
 
 				</table>
