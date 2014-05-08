@@ -57,7 +57,7 @@
 						{{proposal.Proposal.prop_place}}
 
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
-						<a href="#" target="_blank"> (see map)</a>
+						<a href="#" class="falseMap">(see map)</a>
 					</div>
 					<input type="button" class="reject" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
 					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
@@ -103,7 +103,7 @@
 					<div class="dashboardOfferRightColumnInfo">
 						{{appointment.Proposal.prop_place}}
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
-						<a href="#" target="_blank"> (see map)</a>
+						<a href="#" class="falseMap">(see map)</a>
 					</div>
 
 					<!-- CAH: The button should disappear 24 hours before the meeting. -->
@@ -276,8 +276,12 @@ $(function () {
         return false;
     });
 
-});
+	$('.falseMap').click(function () {
+		openAlertWindow('Sorry! Not available yet');
+		return false;
+	});
 
+});
 
 
 
