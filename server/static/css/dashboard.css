@@ -1,233 +1,356 @@
+/*
+There are three responsive design ranges for the dashboard page (dashboard.html):
+a) 240px - 489px (phones)
+b) 490px - 999px (tablets)
+c) 1000px - ... (desktops)
+*/
+
+
 /* COMMON ELEMENTS */
 
-.pageWrapper {
-	background-color: white;
-	min-height: 100%;
-	padding-bottom: 50px;		
-	width: 100%;
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+	.dashboardEmpty {
+		margin-bottom: 40px;
+	}
+
+	.dashboardEmpty h2 {
+		color: black;
+		font-size: 1.188em;
+		font-weight: bold;
+		margin: 20px 0;
+	}
+
+	.dashboardEmpty p:first-of-type {
+		font-weight: bold;	
+	}
+
+	.dashboardEmpty p {
+		color: #6e7980;
+		font-size: 0.875em;
+		line-height: 1.4em;
+		margin-bottom: 1em;
+	}
+
+	.dashboardOffers {
+		margin-bottom: 40px;
+	}
+
+	.dashboardOffer {
+		border-bottom: 1px solid #cfd7db;
+		display: block;
+		margin-top: 20px;
+		padding-bottom: 20px;
+	}
+
+	.dashboardOffer img {
+		border-radius: 3px;
+		width: 100%;
+	}
+
+	.dashboardOfferCenterColumn h3 {
+		color: #29abe1;
+		cursor: pointer;
+		display: inline-block;
+		font-weight: bold;
+		margin-bottom: 5px;
+	}
+
+	.dashboardOfferCenterColumn h4 {
+		color: #6e7980;
+		font-size: 0.875em;
+		font-weight: bold;
+		line-height: 1.4em;
+		margin-bottom: 20px;
+	}
+
+	.dashboardOfferRightColumnInfo {
+		border-bottom: 1px solid #e1e8ed;
+		color: #6e7980;
+		line-height: 1.5em;
+		margin-bottom: 10px;
+		padding-bottom: 10px;
+	}
+
+	.dashboardOfferRightColumnInfo:first-of-type {
+		color: black;
+		font-weight: bold;
+		padding-top: 0;
+	}
+
+	.dashboardOffer input[type="button"] {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background-color: white;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+	}
+
+	input[value="Reject"] {
+		color: red;
+		float: left;
+	}
+
+	input[value="Reject"]:hover {text-decoration: underline;}
+
+	input[value="Accept"] {
+		color: #29abe2;
+		float: right;
+	}
+
+	input[value="Accept"]:hover {text-decoration: underline;}
+	input[value="Cancel Lesson"] {float: left;}
+	input[value="Cancel Lesson"] {float: left;}
+	input[value="Cancel Lesson"]:hover {text-decoration: underline;}
+
+	.dashboardAppointments h2 {
+		border-bottom: 1px solid #b0b4b7;
+		color: black;
+		font-size: 1.188em;
+		font-weight: bold;
+		padding-bottom: 15px;
+		width: 100%;
+	}
+
+	.dashboardRightColumn img {
+		border-radius: 3px;	
+		width: 100%;
+	}
+
+	.dashboardRightColumn h3 {
+		color: #29abe1;
+		display: inline-block; 
+		font-weight: bold;
+		margin: 20px 0 5px;
+	}
+
+	.dashboardRightColumn h4 {
+		color: #6e7980;
+		font-size: 0.875em;
+		font-weight: bold;
+		line-height: 1.4em;
+	}
+
+	.dashboardBasicInfo {
+		border-bottom: 1px solid #b5b6b8;
+		margin: 20px 0 30px;
+		width: 100%;
+	}
+
+	input[value="Edit Profile"] {
+		width: 100%;
+	}
+
+	.dashboardInfoBox {
+		background-size: 18px 18px;		
+		border-bottom: 1px solid #e2e4e6;
+		color: #6e7980;
+		font-size: 0.875em;
+		padding: 11px 0 11px 30px;
+	}
+
+	.dashboardInfoBox:first-of-type {
+		background: url('../img/location.svg') no-repeat left center;
+		border-top: 1px solid #b5b6b8;
+	}
+
+	.dashboardInfoBox:nth-of-type(2) {
+		background: url('../img/passion.svg') no-repeat left center;
+	}
+
+	.dashboardInfoBox:last-of-type {
+		background: url('../img/star-full.svg') no-repeat left center;
+		border-bottom: none;
+	}
+
+
+@media only screen and (min-device-width: 240px) and (max-width: 489px) {
+
+	.dashboardContentWrapper {
+		background-color: white;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 41px auto;
+		position: relative;
+		width: 90%;
+		z-index: 30;
+	}
+
+	.dashboardLeftColumn {
+		width: 100%;
+	}
+
+	.dashboardLeftColumn h1 {
+		border-bottom: 1px solid #b0b4b7;
+		color: black;
+		font-size: 1.5em;
+		padding-bottom: 15px;
+		width: 100%;
+	}
+
+	.dashboardOffer {
+		padding-bottom: 10px;
+	}
+
+	.dashboardOfferIntro {
+		border-top: 1px solid #e1e8ed;;
+		color: #6e7980;
+		font-family: Garamond, Georgia, serif;
+		font-size: 0.875em;
+		font-style: italic;
+		line-height: 1.5em;
+		padding: 10px 0;
+		white-space: pre-wrap;
+	}
+
+	.dashboardOfferCenterColumn h3 {padding-top: 10px;}
+	.dashboardOfferRightColumn {width: 100%;}
+	.dashboardOfferCenterColumn {width: 100%;}
+	.dashboardOfferLeftColumn {width: 100%;}
+	.dashboardRightColumn {display: none;}
+
+	.dashboardOfferRightColumnInfo:first-of-type {
+		border-top: 1px solid #e1e8ed;;
+		color: black;
+		font-weight: bold;
+		padding-top: 10px;
+	}
+
+	input[value="Reject"] {font-size: 1em;}
+	input[value="Accept"] {font-size: 1em;}
+	input[value="Cancel Lesson"] {font-size: 1em;}
 }
 
-.dashboardContentWrapper {
-	background-color: white;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	margin: 41px auto;
-	position: relative;
-	width: 980px;
-	z-index: 30;
+@media only screen and (min-width: 490px) and (max-width: 999px) {
+
+	.dashboardContentWrapper {
+		background-color: white;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 41px auto;
+		position: relative;
+		width: 94%;
+		z-index: 30;
+	}
+
+	.dashboardLeftColumn {
+		float: left;
+		width: 50%;
+	}
+
+	.dashboardRightColumn {
+		float: right;
+		width: 40%;
+	}
+
+	.dashboardLeftColumn h1 {
+		border-bottom: 1px solid #b0b4b7;
+		color: black;
+		font-size: 1.5em;
+		padding-bottom: 15px;
+		width: 100%;
+	}
+
+	.dashboardOffer {
+		padding-bottom: 10px;
+	}
+
+	.dashboardOfferIntro {
+		border-top: 1px solid #e1e8ed;;
+		color: #6e7980;
+		font-family: Garamond, Georgia, serif;
+		font-size: 0.875em;
+		font-style: italic;
+		line-height: 1.5em;
+		padding: 10px 0;
+		white-space: pre-wrap;
+	}
+
+	.dashboardOfferCenterColumn h3 {padding-top: 10px;}
+	.dashboardOfferRightColumn {width: 100%;}
+	.dashboardOfferCenterColumn {width: 100%;}
+	.dashboardOfferLeftColumn {width: 100%;}
+
+	.dashboardOfferRightColumnInfo:first-of-type {
+		border-top: 1px solid #e1e8ed;;
+		color: black;
+		font-weight: bold;
+		padding-top: 10px;
+	}
+
+	input[value="Reject"] {font-size: 1em;}
+	input[value="Accept"] {font-size: 1em;}
+	input[value="Cancel Lesson"] {font-size: 1em;}
+
 }
 
-.dashboardLeftColumn {
-	float: left;
-	width: 656px;
-}
 
-.dashboardLeftColumn h1 {
-	border-bottom: 1px solid #b0b4b7;
-	color: black;
-	font-size: 2.5em;
-	padding-bottom: 15px;
-	width: 100%;
-}
+@media only screen and (min-width: 1000px) {
 
-.dashboardEmpty {
-	margin-bottom: 40px;
-}
+	.dashboardContentWrapper {
+		background-color: white;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 41px auto;
+		position: relative;
+		width: 980px;
+		z-index: 30;
+	}
 
-.dashboardEmpty h2 {
-	color: black;
-	font-size: 1.188em;
-	font-weight: bold;
-	margin: 20px 0;
-}
+	.dashboardLeftColumn {
+		float: left;
+		width: 656px;
+	}
 
-.dashboardEmpty p:first-of-type {
-	font-weight: bold;	
-}
+	.dashboardLeftColumn h1 {
+		border-bottom: 1px solid #b0b4b7;
+		color: black;
+		font-size: 2.5em;
+		padding-bottom: 15px;
+		width: 100%;
+	}
 
-.dashboardEmpty p {
-	color: #6e7980;
-	font-size: 0.875em;
-	line-height: 1.4em;
-	margin-bottom: 1em;
-}
 
-.dashboardOffers {
-	margin-bottom: 40px;
-}
+	.dashboardRightColumn {
+		float: right;
+		width: 246px;
+	}	
 
-.dashboardOffer {
-	border-bottom: 1px solid #cfd7db;
-	display: block;
-	margin-top: 20px;
-	padding-bottom: 20px;
-}
+	.dashboardOfferIntro {
+		color: #6e7980;
+		font-family: Garamond, Georgia, serif;
+		font-size: 0.875em;
+		font-style: italic;
+		line-height: 1.5em;
+		white-space: pre-wrap;
+	}
 
-.dashboardOfferLeftColumn {
-	float: left;
-	height: 100%;
-	margin-right: 20px;
-	width: 123px;
-}
+	.dashboardOfferLeftColumn {
+		float: left;
+		height: 100%;
+		margin-right: 20px;
+		width: 123px;
+	}
 
-.dashboardOffer img {
-	border-radius: 3px;
-	width: 100%;
-}
+	.dashboardOfferCenterColumn {
+		float: left;
+		width: 287px;
+	}
 
-.dashboardOfferCenterColumn {
-	float: left;
-	width: 287px;
-}
+	.dashboardOfferRightColumn {
+		float: right;
+		font-size: 0.8em;
+		width: 206px;
+	}
 
-.dashboardOfferCenterColumn h3 {
-	color: #29abe1;
-	cursor: pointer;
-	display: inline-block;
-	font-weight: bold;
-	margin-bottom: 5px;
-}
-
-.dashboardOfferCenterColumn h4 {
-	color: #6e7980;
-	font-size: 0.875em;
-	font-weight: bold;
-	line-height: 1.4em;
-	margin-bottom: 20px;
-}
-
-.dashboardOfferIntro {
-	color: #6e7980;
-	font-family: Garamond, Georgia, serif;
-	font-size: 0.875em;
-	font-style: italic;
-	line-height: 1.5em;
-	white-space: pre-wrap;
-}
-
-.dashboardOfferRightColumn {
-	float: right;
-	font-size: 0.8em;
-	width: 206px;
-}
-
-.dashboardOfferRightColumnInfo {
-	border-bottom: 1px solid #e1e8ed;
-	color: #6e7980;
-	line-height: 1.5em;
-	margin-bottom: 10px;
-	padding-bottom: 10px;
-}
-
-.dashboardOfferRightColumnInfo:first-of-type {
-	color: black;
-	font-weight: bold;
-	padding-top: 0;
-}
-
-.dashboardOffer input[type="button"] {
-	-moz-appearance: none;
-	-o-appearance: none;
-	-webkit-appearance: none;
-	background-color: white;
-	border: none;
-	cursor: pointer;
-	padding: 0;
-}
-
-input[value="Reject"] {
-	color: red;
-	float: left;
-}
-
-input[value="Reject"]:hover {
-	text-decoration: underline;
-}
-
-input[value="Accept"] {
-	color: #29abe2;
-	float: right;
-	font-weight: bold;
-}
-
-input[value="Accept"]:hover {
-	text-decoration: underline;
-}
-
-input[value="Cancel Appointment"] {
-	float: left;
-}
-
-input[value="Cancel Appointment"] {
-	float: left;
-}
-
-input[value="Cancel Appointment"]:hover {
-	text-decoration: underline;
-}
-
-.dashboardAppointments h2 {
-	border-bottom: 1px solid #b0b4b7;
-	color: black;
-	font-size: 1.188em;
-	font-weight: bold;
-	padding-bottom: 15px;
-	width: 100%;
-}
-
-.dashboardRightColumn {
-	float: right;
-	width: 246px;
-}
-
-.dashboardRightColumn img {
-	border-radius: 3px;	
-	width: 100%;
-}
-
-.dashboardRightColumn h3 {
-	color: #29abe1;
-	display: inline-block; 
-	font-weight: bold;
-	margin: 20px 0 5px;
-}
-
-.dashboardRightColumn h4 {
-	color: #6e7980;
-	font-size: 0.875em;
-	font-weight: bold;
-	line-height: 1.4em;
-}
-
-.dashboardBasicInfo {
-	border-bottom: 1px solid #b5b6b8;
-	margin: 20px 0 30px;
-	width: 100%;
-}
-
-input[value="Edit Profile"] {
-	width: 100%;
-}
-
-.dashboardInfoBox {
-	background-size: 18px 18px;		
-	border-bottom: 1px solid #e2e4e6;
-	color: #6e7980;
-	font-size: 0.875em;
-	padding: 11px 0 11px 30px;
-}
-
-.dashboardInfoBox:first-of-type {
-	background: url('../img/location.svg') no-repeat left center;
-	border-top: 1px solid #b5b6b8;
-}
-
-.dashboardInfoBox:nth-of-type(2) {
-	background: url('../img/passion.svg') no-repeat left center;
-}
-
-.dashboardInfoBox:last-of-type {
-	background: url('../img/star-full.svg') no-repeat left center;
-	border-bottom: none;
 }

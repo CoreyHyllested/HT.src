@@ -25,13 +25,6 @@ c) 1000px - ... (desktops)
 
 	h3 {color: black;}
 
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 50px;		
-		width: 100%;
-	}
-
 	.profileCover {
 		display: block;
 		position: relative;
@@ -47,6 +40,14 @@ c) 1000px - ... (desktops)
 	}
 
 /* PAGE WRAPPERS */
+
+/* Mobiles, phablets, and tablets */
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
 
 /* Desktop */
 @media only screen and (min-width: 890px) {
@@ -478,7 +479,7 @@ c) 1000px - ... (desktops)
 		display: table;
 		float: left;
 		font-size: 0.9em;
-		height: 100px;
+		height: 35px;
 		line-height: 1.4em;
 		margin-bottom: 11px;
 		text-align: center;
@@ -865,7 +866,7 @@ c) 1000px - ... (desktops)
 		display: table;
 		float: left;
 		font-size: 0.9em;
-		height: 100px;
+		height: 35px;
 		line-height: 1.4em;
 		margin-bottom: 11px;
 		text-align: center;
