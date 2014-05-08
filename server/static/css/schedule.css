@@ -1,7 +1,8 @@
 /*
 There are three responsive design ranges for the login page (login.html):
 a) 240px - 449px (phones)
-b) 450px - ... (everything else)
+b) 450px - 749px (phablets)
+c) 750px - ... (tablets, desktops)
 */
 
 
@@ -54,80 +55,175 @@ b) 450px - ... (everything else)
 		width: 90%;
 	}
 
-	/* Change Photo */
+	.scheduleContentWrapper h2 {
+		font-weight: bold;
+		padding: 10px 10px 16px 0;
+	}
 
-	.editPhoto {
+	.scheduleLeftColumn {
+		float: left;
+		width: 100%;
+	}
+
+	.scheduleLeftColumn p:first-of-type {
+		color: #6e7980;
+		font-size: 0.875em;
+		font-weight: 300;
+		line-height: 0.875em;
+	}
+
+	.scheduleLeftColumnInfo {
+		border-bottom: 1px solid #e2e4e6;		
+		color: #6e7980;
+		font-size: 0.875em;
+		line-height: 0.875em;
+		margin-top: 16px;
+		padding-bottom: 16px;
+	}
+
+	.scheduleLeftColumnInfo span {	
+		color: black;
+		float: right;
+		line-height: 0.875em;
+	}
+
+	.scheduleLeftColumn p:last-of-type {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+	.scheduleRightColumn {
+		color: black;
+		float: right;
+		line-height: 0.875em;
+		margin-top: 41px;
+		width: 100%;
+	}
+
+	.scheduleTime {
+		margin-bottom: 30px;
+	}
+
+	.scheduleTime input[type="text"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		border-radius: 3px 3px 0 0;
+	}
+
+	.scheduleTime select:nth-of-type(1) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
+	}
+
+	.scheduleTime select:nth-of-type(2) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		margin-left: -1px;
+		width: 50%;
+		width: calc(50% + 1px);
+	}
+
+	.scheduleLocation {
+		margin-bottom: 30px;
+	}
+
+	.scheduleLocation input[type="text"] {
+		border-bottom: none;
+		border-radius: 3px 3px 0 0;
+	}
+
+	.scheduleMap {
+		background-color: rgba(0,0,0, 0.05);
+		border: 1px #e1e8ed solid;
+		border-radius: 0 0 3px 3px;
+		border-top: none;		
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;			
+		height: 205px;
+		width: 100%;
+	}
+
+	.scheduleIntro {
+		margin-bottom: 30px;
+	}
+
+	.scheduleIntro textarea {
+		border-radius: 3px;
+		height: 81px;
+		resize: none;
+		width: 100%;
+	}
+
+	.scheduleBilling {
+		margin-bottom: 30px;
+	}
+
+	.scheduleBilling input[type="text"] {
+		margin-top: -1px;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(1) {
+		border-radius: 3px 3px 0 0;
+		margin-top: 0;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(4) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(5) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		margin-left: -1px;
+		width: 186px;
+	}
+
+	.scheduleCard {
 		margin-bottom: 40px;
 	}
 
-	/* Basic Info */
-	
-	.editBasicInfo {
-		padding-bottom: 20px;
-		position: relative;
+	.scheduleCard input[type="text"] {
+		margin-top: -1px;
 	}
 
-	.editRateDollars {
-		color: black;
-		cursor: default;		
-		font-size: 0.9em;		
-		position: absolute;
-		left: 6px;
-		line-height: 1em;		
-		top: 128px;
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;		
+	.scheduleCard input[type="text"]:nth-of-type(1) {
+		border-radius: 3px 3px 0 0;
+		margin-top: 0;
 	}
 
-	.editRatePerHour {
-		color: #889aa6;
-		cursor: default;
-		font-size: 0.9em;		
-		position: absolute;
-		line-height: 1em;
-		right: 6px;
-		text-align: right;	
-		top: 128px;
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
+	.scheduleCard input[type="text"]:nth-of-type(2) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
 	}
 
-	/* About Me */
-
-	.editAboutMe {
-		padding: 20px 0;
+	.scheduleCard input[type="text"]:nth-of-type(3) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		margin-left: -1px;
+		width: 186px;
 	}
 
-	#profile_img {
-		border-radius: 3px;
-		margin: 0 auto;
-		width: 100%;
+	.schedulePostButton {
+		float: right;
+		margin-bottom: 10px;
+		width: 60%;
 	}
 
-	/* Buttons */
-
-	#edit-save {
-		margin: 40px 0 20px;
-	}
-
-	.editBackToProfile {
-		border-top: 1px solid rgba(0,0,0, 0.15);	
-		padding-top: 10px;
-		text-align: center;
-		width: 100%;
+	.scheduleCancelButton {
+		float: left;
+		margin-bottom: 10px;
+		width: 30%;		
 	}
 
 }
 
-@media only screen and (min-width: 450px) {
+/* PHABLETS */
+@media only screen and (min-width: 450px) and (max-width: 749px) {
 
 	/* Settings panel slides into view */
 	@-moz-keyframes scheduleAppear {
@@ -150,7 +246,225 @@ b) 450px - ... (everything else)
 		background-position: 100% 30%;
 		background-size: cover;
 		height: 100%;
-		min-height: 1020px;
+		min-height: 850px;
+		overflow-x: hidden;
+		-moz-transition: 0.15s ease;
+		-o-transition: 0.15s ease;
+		-webkit-transition: 0.15s ease;
+		transition: 0.15s ease;
+		width: 100%;
+	}
+
+	.scheduleContentWrapper {
+		-moz-animation: scheduleAppear 1s;
+		-o-animation: scheduleAppear 1s;
+		-webkit-animation: scheduleAppear 1s;
+		animation: scheduleAppear 1s;		
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 40px auto 30px;
+		min-height: 568px;
+		padding: 20px 25px;
+		width: 449px;
+	}
+
+	.scheduleContentWrapper h2 {
+		font-weight: bold;
+		padding: 10px 10px 16px 0;
+	}
+
+	.scheduleLeftColumn {
+		float: left;
+		width: 100%;
+	}
+
+	.scheduleLeftColumn p:first-of-type {
+		color: #6e7980;
+		font-size: 0.875em;
+		font-weight: 300;
+		line-height: 0.875em;
+	}
+
+	.scheduleLeftColumnInfo {
+		border-bottom: 1px solid #e2e4e6;		
+		color: #6e7980;
+		font-size: 0.875em;
+		line-height: 0.875em;
+		margin-top: 16px;
+		padding-bottom: 16px;
+	}
+
+	.scheduleLeftColumnInfo span {	
+		color: black;
+		float: right;
+		line-height: 0.875em;
+	}
+
+	.scheduleLeftColumn p:last-of-type {
+		color: gray;
+		font-size: 0.7em;
+		line-height: 1.7em;
+		margin-top: 20px;
+	}
+
+	.scheduleRightColumn {
+		color: black;
+		float: right;
+		line-height: 0.875em;
+		margin-top: 41px;
+		width: 100%;
+	}
+
+	.scheduleTime {
+		margin-bottom: 30px;
+		position: relative;
+	}
+
+	.scheduleTime input[type="text"] {
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		border-radius: 3px 3px 0 0;
+	}
+
+	.scheduleTime select:nth-of-type(1) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
+	}
+
+	.scheduleTime select:nth-of-type(2) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		position: absolute;
+		right: 0;
+		width: 201px;
+	}
+
+	.scheduleLocation {
+		margin-bottom: 30px;
+	}
+
+	.scheduleLocation input[type="text"] {
+		border-bottom: none;
+		border-radius: 3px 3px 0 0;
+	}
+
+	.scheduleMap {
+		background-color: rgba(0,0,0, 0.05);
+		border: 1px #e1e8ed solid;
+		border-radius: 0 0 3px 3px;
+		border-top: none;		
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;			
+		height: 205px;
+		width: 100%;
+	}
+
+	.scheduleIntro {
+		margin-bottom: 30px;
+	}
+
+	.scheduleIntro textarea {
+		border-radius: 3px;
+		height: 81px;
+		resize: none;
+		width: 100%;
+	}
+
+	.scheduleBilling {
+		margin-bottom: 30px;
+	}
+
+	.scheduleBilling input[type="text"] {
+		margin-top: -1px;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(1) {
+		border-radius: 3px 3px 0 0;
+		margin-top: 0;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(4) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
+	}
+
+	.scheduleBilling input[type="text"]:nth-of-type(5) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		margin-left: -1px;
+		width: 186px;
+	}
+
+	.scheduleCard {
+		margin-bottom: 40px;
+	}
+
+	.scheduleCard input[type="text"] {
+		margin-top: -1px;
+	}
+
+	.scheduleCard input[type="text"]:nth-of-type(1) {
+		border-radius: 3px 3px 0 0;
+		margin-top: 0;
+	}
+
+	.scheduleCard input[type="text"]:nth-of-type(2) {
+		border-radius: 0 0 0 3px;
+		width: 50%;
+	}
+
+	.scheduleCard input[type="text"]:nth-of-type(3) {
+		border-radius: 0 0 3px 0;
+		float: right;
+		margin-left: -1px;
+		width: 186px;
+	}
+
+	.schedulePostButton {
+		float: right;
+		margin-bottom: 10px;
+		width: 60%;
+	}
+
+	.scheduleCancelButton {
+		float: left;
+		margin-bottom: 10px;
+		width: 30%;		
+	}
+
+}
+
+/* TABLETS & DESKTOPS */
+@media only screen and (min-width: 750px) {
+
+	/* Settings panel slides into view */
+	@-moz-keyframes scheduleAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes scheduleAppear {
+		0% {opacity: 0; margin-top: 300px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes scheduleAppear {
+		from {opacity: 0; margin-top: 300px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 850px;
 		overflow-x: hidden;
 		-moz-transition: 0.15s ease;
 		-o-transition: 0.15s ease;
