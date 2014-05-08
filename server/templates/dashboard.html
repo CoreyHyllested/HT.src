@@ -5,9 +5,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
 	<script src="/static/js/maps.js"></script>
 	<script src="/static/js/format.js"></script>
-	<script src="/static/js/calendar.js"></script>
-	<script src="/static/js/calendar1.js"></script>
-	<script src="/static/js/tab_switch.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
 
@@ -64,6 +61,11 @@
 					</div>
 					<input type="button" class="reject" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
 					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					<!--
+					{% if proposal.buyer == false %}
+					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					{% endif %}
+					-->
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -83,9 +85,7 @@
 				<div class="dashboardOfferCenterColumn">
 					<h3>{{appointment.display.prof_name}}</h3>
 					<h4>{{appointment.display.headline}}</h4>
-					<div class="dashboardOfferIntro">
-						{{appointment.Proposal.prop_desc}}
-					</div>
+					<div class="dashboardOfferIntro">{{appointment.Proposal.prop_desc}}</div>
 				</div>
 				<div class="dashboardOfferRightColumn">
 					<div class="dashboardOfferRightColumnInfo">
@@ -157,35 +157,35 @@ $(function () {
 		xhr.send(fd);
 		console.log('sent');
 
-        //catch response.  make any modificaitons.
-/*        xhr.onreadystatechange = function(e) {
+        xhr.onreadystatechange = function(e) {
             if (4 == this.readyState) {
-                console.log(xhr.responseText);
-				if (this.status == 200) {
-					console.log(['xhr post complete ', e]);
-					msg = JSON.parse(xhr.responseText);
-					console.log(msg);
-					openAlertWindow('Success!\n' + msg['usrmsg']);
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    console.log(xhr.responseText);
+                    openAlertWindow('Success.');
 					document.write(xhr.responseText);
-				} else if (this.status == 500) {
-					msg = JSON.parse(xhr.responseText);
-					console.log(msg);
-					console.log(['xhr post complete, err=500 ', e]);
-					openAlertWindow('Failure 500: ' + msg['usrmsg']);
+                } else if (this.status == 400) {
+                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=400 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 500) {
+                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else if (this.status == 501) {
-					msg = JSON.parse(xhr.responseText);
-					console.log(msg);
+                    msg = JSON.parse(xhr.responseText);
                     console.log(['xhr post complete, err=501 ', e]);
-                    openAlertWindow('Failure 501: ' + msg['usrmsg']);
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else {
-					msg = JSON.parse(xhr.responseText);
+                    msg = JSON.parse(xhr.responseText);
                     console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + this.status + ': ' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 }
             }
         };
+
         return false;
-*/
     });
 
 
