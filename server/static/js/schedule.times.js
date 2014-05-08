@@ -63,5 +63,6 @@ function update_time_diff(price) {
 	  }
 	  //write it to the appropriate element on the page
 	  document.getElementById("newslot_price").innerHTML = "$" + formatNr(total);
+	  document.getElementById("newslot_price").value = formatNr(total);
   };
 };
