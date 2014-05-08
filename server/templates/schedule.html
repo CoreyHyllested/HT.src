@@ -49,7 +49,7 @@
 
 		<div class="scheduleIntro">
 			<h3>Introduction</h3>
-			<textarea placeholder="Tell {{hp.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
+			<textarea id="newslot_description" placeholder="Tell {{hp.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
 		</div>
 		
 		<div class="scheduleTime">
@@ -96,8 +96,7 @@
 
 		<div class="scheduleLocation">
 			<h3>Location</h3>
-			<!-- CAH: Prepopulate the field with default location (say, "UC Berkeley School of Information<br>102 S Hall Rd, Berkeley, CA 94720"), but allow the user to customize it. -->
-			<input type="text" id="newslot_location" placeholder="Address" value="South Hall, Berkeley, CA 94705">
+			<input type="text" id="newslot_location" placeholder="UC Berkeley School of Information, 102 S Hall Road, Berkeley, CA, United States">
             <div class="scheduleMap" id="map-canvas"></div>
 			<p></p>
 		</div>
@@ -109,9 +108,9 @@
 			<input id="bill_city"   type="text" placeholder="City">
 			<input id="bill_state"  type="text" placeholder="State" maxlength="2">
 			<input id="bill_zip"    type="text" placeholder="ZIP" maxlength="5">
-		</div-->
+		</div>
 
-		<!--div class="scheduleCard">
+		<div class="scheduleCard">
 			<h3>Card Information</h3>
 			<input type="text" placeholder="Card Number" maxlength="19">
 			<input type="text" placeholder="Expiration (MM / YY)">		
@@ -119,7 +118,7 @@
 		</div-->
 		
 		<!-- Buttons -->
- 		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout"/>
+ 		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
 		</form>
 
 		<form method="link" action="/profile">
@@ -131,6 +130,7 @@
 </div>
 
 <script>
+$(function() {
 	google.maps.event.addDomListener(window, 'load', initialize);
 	$('#newslot_starttime').change(function() { update_time_diff({{hp.prof_rate}}); });
 	$('#newslot_endtime').change(function() { update_time_diff({{hp.prof_rate}}); });
@@ -210,11 +210,9 @@
             return false;
         });
     });
-
-
-
-	
+});
 </script>
+
 <!--script src="https://checkout.stripe.com/v2/checkout.js"></script-->
 <script src="https://checkout.stripe.com/checkout.js"></script>
 
