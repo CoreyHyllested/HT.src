@@ -457,10 +457,6 @@ def render_dashboard(usrmsg=None, focus=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	# Reservations?
-	# Earnings (this month, last month, year)
-	# Reviews, avg review
-
 	# number of appotintments (this week, next week).
 	# number of proposals (all)
 
@@ -480,11 +476,11 @@ def render_dashboard(usrmsg=None, focus=None):
 	print "proposals =", len(props), ", appts =", len(appts)
 	
 	for x in props:
-		print 'prop: ', x.Proposal.prop_uuid, x.Proposal.prop_hero, bp.prof_id, x.Proposal.prop_user
+		print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
 
 	print 'now appts: '
 	for x in appts:
-		print 'appt : ', x.Proposal.prop_uuid, x.Proposal.prop_hero, bp.prof_id, x.Proposal.prop_user
+		print 'appt : ', x.Proposal.prop_uuid, x.Proposal.prop_hero, x.Proposal.prop_user, 'display other person as'
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
@@ -496,11 +492,13 @@ def display_other_user(p, user_is):
 		#user it the hero, we should display all the 'user'
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
 		setattr(p, 'display', p.user) 
+		setattr(p, 'sellr', True) 
 		setattr(p, 'buyer', False) 
 	else:
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
 		setattr(p, 'display', p.hero)
 		setattr(p, 'buyer', True) 
+		setattr(p, 'sellr', False) 
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -637,12 +635,17 @@ def ht_api_proposal_create():
 	prop_s_hour = request.values.get('prop_s_hour')
 	prop_f_date = request.values.get('prop_f_date')
 	prop_f_hour = request.values.get('prop_f_hour')
+	prop_f_hour = request.values.get('prop_f_hour')
+	prop_hero = request.values.get('prop_hero')
 
 	print 'prop_s_date = ', prop_s_date 
 	print 'prop_s_hour= ', prop_s_hour
 	print 'prop_f_date = ', prop_f_date 
 	print 'prop_f_hour= ', prop_f_hour
+	print 'prop_hero = ', prop_hero
+
 	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
 	except Sanitized_Exception as se:
