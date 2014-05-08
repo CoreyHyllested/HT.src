@@ -331,6 +331,7 @@ c) 1000px - ... (desktop)
 
 	.headerDropdownMenu li ul a li {
 		background: rgba(0,0,0, 0.8);
+		border-bottom: 1px solid rgba(0,0,0, 0.3);
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
@@ -559,6 +560,7 @@ c) 1000px - ... (desktop)
 
 	.headerDropdownMenu li ul a li {
 		background: rgba(0,0,0, 0.8);
+		border-bottom: 1px solid rgba(0,0,0, 0.3);
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
