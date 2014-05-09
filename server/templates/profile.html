@@ -217,7 +217,7 @@
 			<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
 			<!-- CAH: When clicked, the button below should pop-up a modal window saying the feature is still a prototype or something. -->
 			{% if hp is sameas bp %}
-			<div class="addImage"><p>Add Image</p></div>
+			<div class="addImage" onclick="openAlertWindow('Add image currently unavailable'); return false;"><p>Add Image</p></div>
 			{% endif %}
 		</div>
 	</div>
