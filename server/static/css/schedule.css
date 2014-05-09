@@ -104,6 +104,7 @@ c) 750px - ... (tablets, desktops)
 
 	.scheduleTime {
 		margin-bottom: 30px;
+		position: relative;
 	}
 
 	.scheduleTime input[type="text"] {
@@ -120,8 +121,8 @@ c) 750px - ... (tablets, desktops)
 
 	.scheduleTime select:nth-of-type(2) {
 		border-radius: 0 0 3px 0;
-		float: right;
-		margin-left: -1px;
+		right: 0;
+		position: absolute;
 		width: 50%;
 		width: calc(50% + 1px);
 	}
@@ -336,10 +337,10 @@ c) 750px - ... (tablets, desktops)
 
 	.scheduleTime select:nth-of-type(2) {
 		border-radius: 0 0 3px 0;
-		float: right;
 		position: absolute;
 		right: 0;
-		width: 201px;
+		width: 50%;
+		width: calc(50% + 1px);
 	}
 
 	.scheduleLocation {
@@ -536,6 +537,7 @@ c) 750px - ... (tablets, desktops)
 
 	.scheduleTime {
 		margin-bottom: 30px;
+		position: relative;
 	}
 
 	.scheduleTime input[type="text"] {
@@ -552,9 +554,10 @@ c) 750px - ... (tablets, desktops)
 
 	.scheduleTime select:nth-of-type(2) {
 		border-radius: 0 0 3px 0;
-		float: right;
-		margin-left: -1px;
-		width: 186px;
+		position: absolute;
+		right: 0;
+		width: 50%;
+		width: calc(50% + 1px);
 	}
 
 	.scheduleLocation {
