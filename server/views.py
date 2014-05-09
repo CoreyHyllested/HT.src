@@ -451,9 +451,6 @@ def render_dashboard(usrmsg=None, focus=None):
 	"""
 
 	uid = session['uid']
-	print uid  
-	bp = Profile.get_by_uid(uid)
-	print bp
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
@@ -472,15 +469,16 @@ def render_dashboard(usrmsg=None, focus=None):
 	print 'calling map on all appts_and_props'
 	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED)), appts_and_props)
+	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
 	print "proposals =", len(props), ", appts =", len(appts)
 	
+
 	for x in props:
 		print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
 
 	print 'now appts: '
 	for x in appts:
-		print 'appt : ', x.Proposal.prop_uuid, x.Proposal.prop_hero, x.Proposal.prop_user, 'display other person as'
+		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
