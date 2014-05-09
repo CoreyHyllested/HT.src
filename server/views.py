@@ -1172,6 +1172,16 @@ def newpassword(challengeHash):
 	return render_template('newpassword.html', form=form)
 
 
+
+@ht_server.route("/dmca", methods=['GET', 'POST'])
+def render_dmca_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('dmca.html', bp=bp))
+	
+
+
+
 @ht_server.route("/fakereview/<buyer>/<sellr>", methods=['GET'])
 def render_rake_page(buyer, sellr):
 
