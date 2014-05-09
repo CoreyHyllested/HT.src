@@ -39,6 +39,7 @@
 
 			{% endif %}
 			<div class="profileBasicInfo">
+				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
@@ -197,9 +198,10 @@
 		</form>
 		{% endif %}
 		<div class="profileBasicInfo">
-			<div class="profileInfoBox">{{hp.location}}</div>
-			<div class="profileInfoBox">{{hp.industry}}</div>
-			<div class="profileInfoBox">
+				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
+				<div class="profileInfoBox">{{hp.location}}</div>
+				<div class="profileInfoBox">{{hp.industry}}</div>
+				<div class="profileInfoBox">
 			{% if hp.reviews == 0 %}
 				No Reviews
 			{% else %}
