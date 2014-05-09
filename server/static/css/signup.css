@@ -41,6 +41,36 @@ c) 890px - ... (desktops)
 		text-align: center;
 	}
 
+	.signupFacebook {
+		background: url("../img/facebook.svg") #47629c no-repeat 2px 3px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		margin-top: 10px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;		
+	}
+
+	.signupTwitter {
+		background: url("../img/twitter.svg") #59adeb no-repeat 2px 3px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		margin-top: 10px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;		
+	}
+
 
 /* PHONE DESIGN */
 @media only screen and (min-device-width: 240px) and (max-width: 349px) {
