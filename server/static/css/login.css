@@ -57,8 +57,7 @@ c) 890px - ... (desktops)
 	}
 
 	.loginFacebook {
-		background: url("../img/facebook.svg") #007cb3 no-repeat 2px 3px;
-		background-color: #47629c;
+		background: url("../img/facebook.svg") #47629c no-repeat 2px 3px;
 		border: 0;
 		border-radius: 3px;
 		color: white;
@@ -66,11 +65,26 @@ c) 890px - ... (desktops)
 		font-size: 1em;
 		font-weight: 400;
 		height: 40px;
-		margin-top: 20px;
+		margin-top: 10px;
 		text-align: center;
 		width: 100%;
 		vertical-align: middle;		
 	}
+
+	.loginTwitter {
+		background: url("../img/twitter.svg") #59adeb no-repeat 2px 3px;
+		border: 0;
+		border-radius: 3px;
+		color: white;
+		display: table-cell;
+		font-size: 1em;
+		font-weight: 400;
+		height: 40px;
+		margin-top: 10px;
+		text-align: center;
+		width: 100%;
+		vertical-align: middle;		
+	}	
 
 	.loginLinkedInNotice {
 		color: gray;
