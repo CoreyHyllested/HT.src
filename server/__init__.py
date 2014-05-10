@@ -60,20 +60,27 @@ ht_oauth = OAuth(ht_server)
 
 
 
-linkedin = ht_oauth.remote_app(
-    'linkedin',
-    consumer_key=ht_server.config['LINKEDIN_KEY'],
-    consumer_secret=ht_server.config['LINKEDIN_SEC'],
-    request_token_params={
-        'scope': 'r_basicprofile r_emailaddress',
-        'state': 'deadbeefcafe',	#<== CRLF
-    },
-    base_url='https://api.linkedin.com/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
-    authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
-)
+twitter = ht_oauth.remote_app(  'twitter',
+								consumer_key=ht_server.config['TWITTER_KEY'],
+								consumer_secret=ht_server.config['TWITTER_SEC'],
+								request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+								base_url='https://api.twitter.com/1/',
+								access_token_method='POST',
+								access_token_url='https://api.twitter.com/oauth/access_token',
+								request_token_url='https://api.twitter.com/oauth/request_token',
+								authorize_url='https://api.twitter.com/oauth/authorize',
+							)
+
+linkedin = ht_oauth.remote_app(  'linkedin',
+								consumer_key=ht_server.config['LINKEDIN_KEY'],
+								consumer_secret=ht_server.config['LINKEDIN_SEC'],
+								request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+								base_url='https://api.linkedin.com/v1/',
+								request_token_url=None,
+								access_token_method='POST',
+								access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
+								authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+							)
 
 # must do this (approx.) last.
 from server import views, controllers 
