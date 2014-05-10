@@ -214,14 +214,99 @@ def render_login(usrmsg=None):
 
 
 @ht_server.route('/login/linkedin', methods=['GET'])
-def login_linkedin():
+def oauth_login_linkedin():
 	# redirects to LinkedIn, which gets token and comes back to 'authorized'
 	print 'login_linkedin()' 
 	session['oauth_signup'] = False
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
+@ht_server.route('/login/twitter', methods=['GET'])
+def oauth_twitter_1_redir():
+	# redirects to Twiter, which gets token and comes back to 'authorized_twitter'
+	print 'login_twitter()' 
+	session['oauth_signup'] = False
+	return twitter.authorize(callback=url_for('oauth_twitter_2_auth', _external=True, next=request.args.get('next') or request.referrer or None))
 
 
+
+@ht_server.route('/authorized/twitter')
+@twitter.authorized_handler
+def oauth_twitter_2_auth(resp, oauth_token):
+	print 'authorized/twitter'
+
+	next_url = request.args.get('next')
+	if resp is None:
+		# Needs a better error page 
+		print 'resp is none'
+		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+
+	session['twitter_token'] = (
+		resp['oauth_token'],
+		resp['oauth_token_secret']
+	)
+	session['twitter_user'] = resp['screen_name']
+
+	print('You were signed in as %s' % resp['screen_name'])
+	print resp.get('access_token')
+	print oauth_token
+	return redirect(next_url)
+
+	#get Oauth Info.
+	session['twitter_access_token'] = (resp['access_token'], '')
+	session['twitter_oauth_token'] = oauth_token
+
+	r = twitter.get('account/verify_credentials.json', oauth_token=token)
+	print r
+
+	#me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
+	#email = linkedin.get('people/~/email-address')
+
+	# format collected info... prep for init.
+	print('li_auth - collect data ')
+	#user_name = me.data.get('formattedName')
+
+
+	print('li_auth - find account')
+	# also look for linkedin-account/id number (doesn't exist today).
+	#possible_accts = Account.query.filter_by(email=email.data).all()
+	#if (len(possible_accts) == 1):
+		# suggest they create a password if that's not done.
+	#	session['uid'] = possible_accts[0].userid
+	#	print 'calling render_dashboard'
+		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
+		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
+	#	return redirect('/dashboard')
+
+ 	# try creating new account.  We don't have known password; set to random string and sent it to user.
+	#print ("attempting create_account(" , user_name , ")")
+	#(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	#if (bp):
+	#	print ("created_account, uid = " , str(bp.account))
+	#	ht_bind_session(bp)
+	#	print ("ht_bind_session = ", bp)
+	#	import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
+
+		#send_welcome_email(email.data)
+	#	resp = redirect('/dashboard')
+	#else:
+		# something failed.  
+	#	print bh if (bh is not None) else 'None'
+
+
+
+
+
+
+
+
+@twitter.tokengetter
+def get_twitter_token(token=None):
+    return session.get('twitter_token')
+
+
+@linkedin.tokengetter
+def get_linkedin_oauth_token():
+	return session.get('linkedin_token')
 
 @ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
@@ -318,10 +403,6 @@ def signup_linkedin():
 	session['oauth_signup'] = True
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
-
-@linkedin.tokengetter
-def get_linkedin_oauth_token():
-	return session.get('linkedin_token')
 
 
 
