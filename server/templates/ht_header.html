@@ -95,6 +95,16 @@
 				$('.pageWrapper').toggleClass('pageWrapperSlide');
 			});
 
+			// [All pages] Allow clicking instead of :hover for dropdown menus
+		    $('.headerDropdownMenuName').click( function(event){
+		        event.stopPropagation();
+		        $('.headerDropdownMenuActive').toggle();
+		    });
+
+		    $(document).click( function(){
+		        $('.headerDropdownMenuActive').hide();
+		    });
+
 			// [Search] On mobile, toggle search options on/off
 			$('.searchOptionsMenu').click(function() {
 				$('.searchOptions').toggleClass('searchOptionsOn');
@@ -167,7 +177,7 @@
 
 				<ul class="headerDropdownMenu">
 					<li class="headerDropdownMenuName">{{bp.prof_name}}
-						<ul>
+						<ul class="headerDropdownMenuActive">
 							<a href="/dashboard"><li>Dashboard</li></a>
 							<a href="/profile"><li>Profile</li></a>
 							<a href="/settings"><li>Settings</li></a>

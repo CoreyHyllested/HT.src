@@ -456,9 +456,28 @@ c) 1000px - ... (desktops)
 	/* Phones, phablets */
 	@media only screen and (min-device-width: 240px) and (max-width: 489px) {
 
+		.indexSharePassion {
+			background-color: #29abe1;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;	
+			color: white;
+			left: 0;
+			padding: 5px;
+			position: relative;
+			text-align: center;
+			top: 0;
+			width: 100%;
+		}
+
+		.indexSharePassion a {
+			color: white;
+			text-decoration: underline;
+		}
+
 		.indexFeatures {
 			position: relative;
-			padding: 5px;
+			padding: 15px 5px 5px 5px;
 		}
 
 		.indexFeature {
@@ -528,6 +547,29 @@ c) 1000px - ... (desktops)
 	/* Tablet */
 	@media only screen and (min-width: 490px) and (max-width: 999px) {
 
+		.indexSharePassion {
+			background-color: #29abe1;
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;	
+			color: white;
+			left: 0;
+			padding: 5px;
+			position: relative;
+			text-align: center;
+			top: 0;
+			width: 100%;
+		}
+
+		.indexSharePassion a {
+			color: white;
+			text-decoration: underline;
+		}
+
+		.indexFeatures {
+			padding-top: 15px;
+		}
+
 		.indexFeature {
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
@@ -595,6 +637,28 @@ c) 1000px - ... (desktops)
 
 	/* Desktop */
 	@media only screen and (min-width: 1000px) {
+
+		.indexSharePassion {
+			background-color: #29abe1;
+			border-radius: 6px 6px 0 0;
+			color: white;
+			height: 35px;
+			left: 0;
+			line-height: 35px;
+			position: absolute;
+			text-align: center;
+			top: 0;
+			width: 100%;
+		}
+
+		.indexSharePassion a {
+			color: white;
+			text-decoration: underline;
+		}
+
+		.indexFeatures {
+			padding-top: 45px;
+		}		
 
 		.indexFeature {
 			-moz-box-sizing: border-box;
