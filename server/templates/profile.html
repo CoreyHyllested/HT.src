@@ -202,13 +202,13 @@
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
-			{% if hp.reviews == 0 %}
-				No Reviews
-			{% else %}
-				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
-			{% endif %}
-			</div>
-			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
+					{% if hp.reviews == 0 %}
+						No Reviews
+					{% else %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+					{% endif %}
+				</div>
+				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
 
 		<div class="profilePortfolio">
@@ -217,9 +217,8 @@
 			<a href="/static/img/portfolio_macaroons.jpg" data-lightbox="portfolio" data-title="My love of preparing foods &amp; drinks extends beyond just coffee - take a look at some of the macaroons I made for my best friend's birthday." class="profilePortfolioImage macaroons"></a>
 			<a href="/static/img/portfolio_silkscreening.jpg" data-lightbox="portfolio" data-title="My other hobby is silk screening. Now, I'm not a master by any stretch, but I can definitely get you started and pointed in the right direction." class="profilePortfolioImage silkscreening"></a>
 			<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
-			<!-- CAH: When clicked, the button below should pop-up a modal window saying the feature is still a prototype or something. -->
 			{% if hp is sameas bp %}
-			<div class="addImage" onclick="openAlertWindow('Add image currently unavailable'); return false;"><p>Add Image</p></div>
+			<div class="addImage" id="addImage"><p>Add Image</p></div>
 			{% endif %}
 		</div>
 	</div>
@@ -229,187 +228,47 @@
 
 
 
-<!-- <div id="profile_pic">
-	<img src="{{profile_img}}" style="height:534px; width:950px; display:block margin:0 auto;"/>
-	<div id="profile_pic_box">
-		<h1>{{hp.prof_name}}</h1>
-		<p>{{hp.headline| default('No headline')}}</p>
-		<h3 id="profile_price"></h3><span> / hour</span>
-		<div id="profile_pic_button_wrap">
-			{% if hp is sameas bp %}
-				<a href="edit" class="blueButton">Edit profile...
-			{% else %}
-				<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="blueButton">Propose a meeting...
-			{% endif %}
-				</a>
-			</div>
-	</div>
-</div> -->
+<script>
+$(function () {
+    $('.addImage').click(function () {
+        var csrf = "{{ csrf_token() }}";
+        console.log(['this is get started']);
 
-<!-- <div id="info_box">
-	<div id="about_me">
-		<h2>About me</h2>
-		<p id="about_text">{{hp.prof_bio}}</p>
-		<div id="button" onlick="javascript:view_more"></div>
-	</div>
+        var fd = new FormData();
+        var xhr = new XMLHttpRequest();
+        xhr.open('post', "/cah_unknown", true);
+        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+		console.log(['xhr post complete, state=', this.status,  e]);
+                if (this.status == 200) {
+                    console.log(xhr.responseText);
+                    openAlertWindow('Success.');
+                } else if (this.status == 400) {
+                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=400 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 500) {
+                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=500 ', e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 501) {
+                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=501 ', e]);
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else {
+                    console.log('xhr post complete, uncaught');
+                    openAlertWindow('Failure: API point doesn\'t exist.');
+                }
+            }
+        };
 
-	<div id="at_glance">
-		<h2>At a glance</h2>
-		<ul>
-			<li id="li_industry">{{hp.industry}}</li>
-			<li id="li_location">{{hp.location}}</li>
-			{% if hp.reviews == 0 %}
-			<li id="li_rating">No reviews</li>
-			{% else %}
-			<li id="li_rating">{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"> ({{hp.reviews}} reviews)</a></li>
-			{% endif %}
-			<li id="li_url"><a href="{{hp.prof_url}}" target="_blank">{{hp.prof_url}}</a></li>
-			<li id="li_rate"></li>
-		</ul>
-	</div>
-
-	<div class="clear"></div>
-</div> -->
-
-<!-- <div id="content-box-cal" class="content-box">
-	<ul id="tabs">
-		<li id="tab-cal" class="active"><p><img src="/static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
-		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="/static/img/reviews-inactive.svg" alt="{{revs|length}} Reviews" />{{hp.reviews}} Reviews</p></li></a>
-	</ul>
-
-	<div id="content-top"></div>
-	<div id="appointments"> -->
-		<!--h2 id="header"></h2-->
-<!-- 		<div id="make_proposal_wrap">
-			<h3>{% if hp is sameas bp %}Your calendar will be here. {% else %}Meet this Hero.{% endif %}</h3>
-			{% if hp is sameas bp %}
-			{% else %}
-				<div id="make_proposal_button_wrap">
-					<a href="javascript:tab_switch('tab-prop', 'content-box-prop', 'true');" class="whiteButton makeProposalButton">Propose a meeting...</a>
-				</div>
-			{% endif %}
-		</div>
-	</div>
-	<div style="clear: both"></div>
-</div> -->
-
-<!-- <div id="content-box-revs" class="content-box">
-	<ul id="tabs">
-		<a href="javascript:tab_switch('tab-cal', 'content-box-cal');"><li id="tab-cal" class="inactive"><p><img src="/static/img/calendar-inactive.svg" alt="Calendar" />Calendar</p></li></a>
-		<li id="tab-revs" class="active"><p><img src="/static/img/reviews-active.svg" alt="{{hp.reviews}} reviews" />{{ revs|length }} Reviews</p></li>
-	</ul>
-	<div id="content-top"></div>
-	<div id="reviews">
-		{ % if hp.reviews == 0 %}
-		<h2>No reviews available</h2>
-		{ % else %}
-		<h2>Average rating:  { { '%0.1f' | format(hp.rating|float)}} out of 5 stars</h2>
-		{ % endif %}
-
-		{ % for review in revs %}
-		<div class="review_wrap">
-			<div class="profile_preview">
-				<a href='#'><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{ {review.display.prof_img}}" class="profile_preview_pic"/> </a>
-				<span class="profile_preview_price">${ {review.appt.prop_cost}}<span class="disabled"></span></span>				
-				<div class="profile_preview_info">
-					<p><a href="#">{ {review.display.prof_name}}</a></p>
-					<p>{ {review.display.headline}}</p>
-					<p>{ {'%0.1f' | format(review.display.rating|float)}} out of 5<a href="#"> ({ {review.display.reviews}} reviews)</a></p>
-				</div>
-			</div>
-
-			<div class="review">
-				<p>Transaction with { {review.display.prof_name} } occurred in { {review.appt.prop_ts.strftime('%B %Y')} }</p>
-				<span class="profile_preview_price">${ {review.appt.prop_cost}}<span class="disabled"></span></span>				
-				<p id='r_place_{ {loop.index} }'>get_state('{ {review.appt.prop_place} }', 'r_place_{ {loop.index} }')"</p>
-				<p><script>star_rating({ {review.Review.appt_score}});</script></p>
-				<p>{ {review.Review.generalcomments}}</p>
-			</div>
-		</div>
-		{ % endfor %} -->
-
-		<!--div class="show_more">Show more reviews (29 remaining)</div-->
-<!-- 		<div class="clear"></div>
-	</div>
-	<div style="clear: both"></div>
-</div> -->
-
-
-<!-- <div class="clear"></div>
-</div> -->
-
-<!-- <div id="content-box-prop" class="content-box">
-	<ul id="tabs">
-		<li id="tab-prop" class="active"><p><img src="/static/img/calendar-active.svg" alt="Calendar" />Calendar</p></li>
-		<a href="javascript:tab_switch('tab-revs', 'content-box-revs');"><li id="tab-revs" class="inactive"><p><img src="/static/img/reviews-inactive.svg" alt="{{hp.reviews}} reviews" />{{hp.reviews}} reviews</p></li></a>
-	</ul>
-	<div id="content-top"></div>
-
-	{% if hp is sameas bp %} 
-	<h2> DANGER WILL ROBINSON! </h2>
-	{% else %}
-
-	<div id="newslot">
-		<form name=charge action='/proposal/create' method=POST></form>
-		<h2> Make proposal </h2>
-		
-		<form name="newts" action=/profile method=POST>
-			{{ntsform.hidden_tag()}}
-			{{ntsform.hero()}}
-
-			<label id="newslot-label-start">Starting time</label>
-			{{ntsform.newslot_starttime()}}
-			{{ntsform.datepicker(class="newslot-startdate", readonly="readonly")}}
-
-			<label id="newslot-label-end">Ending time</label>
-			{{ntsform.newslot_endtime}}
-			{{ntsform.datepicker1(class="newslot-enddate", placehoder="Today", readonly="readonly")}}
-
-			<label id="newslot-label-duration">Total duration</label>
-			<span id="newslot-duration"> </span>
-			
-			<label id="newslot-label-price">Listed price</label>
-			<label id="newslot-label-dollar">$</label>
-			{{ntsform.newslot_price(onkeypress="return isNumberKey(event)", maxlength="9")}}
-			<label id="newslot-label-rate">This person's default rate is ${{hp.prof_rate}} / hour</label>
-
-			
-			<label id="newslot-label-location">Location</label>
-			{{ntsform.newslot_location(placeholder=" ")}}
-			
-	        <div id="map-canvas"></div>
-
-			<label id="newslot-label-description">Message to {{hp.prof_name}}</label>
-			{{ntsform.newslot_description}}
-
-			<div id="newslot-notif1">
-				<p>By making a direct offer to a person, you get an opportunity to book an appointment outside of time slots already listed for sale.</p> <br />
-				<p>You can also use direct offers to customize listed time slots: merge two or more slots together, change location, negotiate price, etc.</p>
-			</div>
-
-			<div id="newslot-notif2">
-				<p>The exact address of the proposed meeting place is required.</p> <br />
-				<p>If your search doesn’t return the proper location, please make sure you pinpoint it manually by dragging the marker.</p>
-			</div>
-
-			<div id="newslot-notif3">
-				Want to tell this person something about your offer? This is your chance to do so.
-			</div>
-
-			<div id="proposal-buttons">
-				<div id="to_calendar_wrap">
-					<a href="javascript:tab_switch('tab-cal', 'content-box-cal', 'true');" class="whiteButton toCalendar">Back to profile</a>
-				</div>
-				<div id="proposal_send_wrap">
-					<input id='send_proposal' type="submit" class="blueButton newSlotList" value="Send proposal"/>
-				</div>
-			</div>
-		</form>
-	</div>
-	{% endif %}
-
-
-</div> -->
-
+	xhr.send(fd);
+	console.log('sent');
+        return false;
+    });
+});//jQuery ready
+</script>
 
 {% endblock %}
