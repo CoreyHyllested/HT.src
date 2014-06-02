@@ -17,9 +17,9 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
-from flask.ext.mail			import Mail
-from flask_wtf.csrf			import CsrfProtect
-from flask_redis			import Redis   
+from flask.ext.mail		import Mail
+from flask_wtf.csrf		import CsrfProtect
+from flask_redis		import Redis
 from server.infrastructure.srvc_sessions	import RedisSessionInterface
 
 
