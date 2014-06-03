@@ -16,7 +16,7 @@
 	
 		{{form.hidden_tag()}}
 
-<div class="editPhoto">
+		<div class="editPhoto">
 			<h2>Profile Picture</h2>
 			<img id="profile_img" src={{photoURL}} />
 			<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
@@ -41,7 +41,6 @@
 			{{form.edit_bio}}
 		</div>
 
-		
 
 		<div id="edit-save-wrap">
 			<input type="submit" id="edit-save" class="blueButton" value="Save changes">
@@ -52,82 +51,6 @@
 		</div>
 	</form>
 </div>
-
-<!-- 	<div id="edit-panel">
-		<form method=POST action=/edit id='editform' enctype=multipart/form-data>
-		{{form.hidden_tag()}}
-
-		
-		<div id="edit-basic">
-			<h2>Basic Information</h2>
-				<label id="label-name" for="edit_name">Name</label>
-				{{form.edit_name}}
-
-				<label id="label-headline" for="edit_headline">Profile Headline</label>
-				{{form.edit_headline}}
-
-				<label id="label-rate" for="edit_rate">Default Rate</label>
-				<label id="label-dollar">$</label>
-				{{form.edit_rate(onkeypress="return isNumberKey(event)")}}
-
-				<label id="label-perhour">/ hour</label>			
-
-				<label id="label-industry" for="edit_industry">Industry</label>
-				{{form.edit_industry}}
-
-				<label id="label-location" for="edit_location">Location</label>
-				{{form.edit_location}}
-
-				<label id="label-url" for="edit_url">Website</label>
-				{{form.edit_url}}		
-		</div>
-		
-		<div style="clear:both"></div>
-
-		<div id="edit-about">
-			<h2>About me</h2>
-			{{form.edit_bio}}
-		</div>
-
-		
-		<div id="change-photo">
-			<h2>Profile Picture</h2>
-			<div id="img-placeholder" style="height:151px; width:269px; display:block; margin:0 auto; position:relative;">
-				<img id='profile_img' src={{photoURL}} style= "height:151px; width:269px; margin:0 auto;" />
-			</div>
-			<p>For best results, please make sure the image is at least 950 pixels wide and 534 pixels high.</p>
-			<br />
-
-			<span class="photo-button-wrap">
-				{{form.edit_photo(id="change-photo-button")}}
-				<span class="whiteButton photoButton">Choose a photo...</span>
-			</span>
-			<div style="clear:both;"></div>
-		</div>
-
-
-
-
-		<div id="edit-buttons">
-			<div id="edit-cancel-wrap">
-				<a href="#" class="whiteButton editCancel" onclick="document.getElementById('h').value='{{bp.prof_id}}'; document.p.submit();">Back to profile</a>
-			</div>
-			<div id="edit-save-wrap">
-				<input type="submit" id="edit-save" value="Save changes">
-			</div>
-		</div>
-
-
-
-
-
-		</form>
-
-	</div> -->
-
-
-
-
 
 <!-- Bottom bar -->
 
