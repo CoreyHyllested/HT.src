@@ -219,6 +219,7 @@
 			<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
 			{% if hp is sameas bp %}
 			<div class="addImage" id="addImage"><p>Add Image</p></div>
+			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple />
 			{% endif %}
 		</div>
 	</div>
@@ -229,45 +230,66 @@
 
 
 <script>
+
+
+
 $(function () {
     $('.addImage').click(function () {
-        var csrf = "{{ csrf_token() }}";
-        console.log(['this is get started']);
+		$('#selectFile').click();
+		return false;
+	});
 
-        var fd = new FormData();
-        var xhr = new XMLHttpRequest();
-        xhr.open('post', "/cah_unknown", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf);
-        xhr.onreadystatechange = function(e) {
-            if (4 == this.readyState) {
-		console.log(['xhr post complete, state=', this.status,  e]);
-                if (this.status == 200) {
-                    console.log(xhr.responseText);
-                    openAlertWindow('Success.');
-                } else if (this.status == 400) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=400 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 500) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 501) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=501 ', e]);
-                    msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else {
-                    console.log('xhr post complete, uncaught');
-                    openAlertWindow('Failure: API point doesn\'t exist.');
-                }
-            }
-        };
+	$('#selectFile').change(function(e) {
+		//reloadProfImg("../static/img/loader.gif", true, false);
+		var csrf = "{{ csrf_token() }}";
+		var fd = new FormData();
 
-	xhr.send(fd);
-	console.log('sent');
-        return false;
-    });
+		if (this.files[0] == undefined) {
+			console.log('no file, quit');
+			return false;
+		}
+
+		fd.append('file', this.files[0]);
+		fd.append('orig', 'profile');
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(e) {
+			if (4 == this.readyState) {
+				console.log(['xhr post complete, state=', this.status,  e]);
+				if (this.status == 200) {
+					console.log(xhr.responseText);
+					openAlertWindow('Success.');
+				} else if (this.status == 400) {
+					console.log(['xhr post complete, err=400 ', e]);
+					openAlertWindow('Fail.');
+				} else if (this.status == 404) {
+					console.log(['xhr post complete, err=404 ', e]);
+					openAlertWindow('Fail.');
+				} else if (this.status == 500) {
+					console.log(['xhr post complete, err=500 ', e]);
+					openAlertWindow('Fail.');
+				} else if (this.status == 501) {
+					console.log(['xhr post complete, err=501 ', e]);
+					openAlertWindow('Fail.');
+				} else {
+					console.log('xhr post complete, uncaught');
+					openAlertWindow('Failure: API point doesn\'t exist.');
+				}
+			}
+		};
+
+		if (xhr.upload) {
+			xhr.upload.onprogress = function(e) {
+				var done = e.position || e.loaded, total = e.totalSize || e.total;
+				console.log('xhr.upload progress: ' + done + ' / ' + total + ' = ' + (Math.floor(done/total*1000)/10) + '%');
+			};
+		}
+
+		xhr.open('POST', "/upload", true);
+		xhr.setRequestHeader("X-CSRFToken", csrf);
+		xhr.send(fd);
+		return false;
+	});
 });//jQuery ready
 </script>
 
