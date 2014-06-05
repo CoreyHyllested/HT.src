@@ -507,6 +507,12 @@ def upload():
 	#trace(request.files)
 	print 'enter'
 
+	orig = request.values.get('orig')
+	prof = request.values.get('prof')
+
+	print 'orig', orig
+	print 'prof', prof
+
 	for mydict in request.files:
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
 		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
@@ -1085,7 +1091,7 @@ def hero_profile(heroName):
 
 @ht_server.route('/uploads/<filename>')
 def uploaded_file(filename):
-	print 'enter here'
+	# add sec protection?
 	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 
 
