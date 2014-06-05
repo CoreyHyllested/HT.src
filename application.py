@@ -10,8 +10,6 @@ context.use_certificate_file('security/herotime.crt')
 
 
 def main():
-	from server.infrastructure.srvc_database import init_db
-	init_db()
 	application.run(debug = True, ssl_context=context)
 
 
