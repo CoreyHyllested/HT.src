@@ -212,13 +212,14 @@
 		</div>
 
 		<div class="profilePortfolio">
-			<a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a>
-			<a href="/static/img/portfolio_latteart.jpg" data-lightbox="portfolio" data-title="When I'm not twisting people into weird positions in yoga classes, I enjoy making latte art." class="profilePortfolioImage latteart"></a>
-			<a href="/static/img/portfolio_macaroons.jpg" data-lightbox="portfolio" data-title="My love of preparing foods &amp; drinks extends beyond just coffee - take a look at some of the macaroons I made for my best friend's birthday." class="profilePortfolioImage macaroons"></a>
-			<a href="/static/img/portfolio_silkscreening.jpg" data-lightbox="portfolio" data-title="My other hobby is silk screening. Now, I'm not a master by any stretch, but I can definitely get you started and pointed in the right direction." class="profilePortfolioImage silkscreening"></a>
-			<a href="/static/img/portfolio_livingwall.jpg" data-lightbox="portfolio" data-title="I have a green thumb, too. Here's a detail from a living wall I created for a Client's yard." class="profilePortfolioImage livingwall"></a>
+			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
+			{% for img in portfolio %}
+				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a>
+
+			{% endfor %}
+
 			{% if hp is sameas bp %}
-			<div class="addImage" id="addImage"><p>Add Image</p></div>
+			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
 			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple />
 			{% endif %}
 		</div>

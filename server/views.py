@@ -122,6 +122,12 @@ def render_profile(usrmsg=None):
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
 
+	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	print 'images in portfolio:', len(portfolio)
+	for img in portfolio:
+		print img
+	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
+	#print 'images in portfolio:', len(portfolio)
 
 	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
 	nts = NTSForm(request.form)
@@ -163,7 +169,7 @@ def render_profile(usrmsg=None):
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
 
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
 
 
@@ -507,6 +513,7 @@ def upload():
 	#trace(request.files)
 	print 'enter'
 
+	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
 
@@ -520,19 +527,28 @@ def upload():
 		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
-			tmp_filename = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], tmp_filename), 'w')
+			# create Image.
+			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+			metaImg = Image(img_hashname, bp.prof_id, comment="Portfolio Img")
+			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
+			try:
+				print 'adding metaimg to db'
+				db_session.add(metaImg)
+				db_session.commit()
+			except Exception as e:
+				print e
+				db_session.rollback()
+
 
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + tmp_filename)
+		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
 		sml.set_contents_from_file(StringIO(image_data))
 
-	#print 'returning back tmp_filename'
-	return jsonify(tmp="/uploads/" + str(tmp_filename))
+	return jsonify(tmp="/uploads/" + str(img_hashname))
 
 
 
