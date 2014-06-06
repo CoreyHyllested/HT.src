@@ -543,8 +543,7 @@ class UserMessage(Base):
 			thread = str(self.msg_id)
 			thread_parent = None
 		else:
-			raise Exception('no threading exists')
-			# if not thread_parent suggested, raise an error
+			if (thread_parent == None): raise Exception('not valid threading')
 
 		self.msg_thread	= thread
 		self.msg_parent	= thread_parent
@@ -553,6 +552,11 @@ class UserMessage(Base):
 		content = self.msg_content[:20]
 		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
 
+	@staticmethod
+	def get_by_msg_id(uid):
+		msgs = UserMessage.query.filter_by(msg_id=uid).all()
+		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
+		return msgs[0]
 
 
 
