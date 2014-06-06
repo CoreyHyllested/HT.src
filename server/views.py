@@ -553,6 +553,39 @@ def upload():
 
 
 
+@ht_server.route('/sendmsg', methods=['POST'])
+@req_authentication
+def ht_api_send_message():
+	""" Sends a user a message. """
+
+	uid = session['uid']
+
+	try:
+		bp  = Profile.get_by_prof_id(session['uid'])
+		hp  = Profile.get_by_prof_id(request.values.get('hp'))
+		msg = request.values.get('msg')
+		metaMsg = Message(bp, hp, msg)
+
+		db_session.add(metaMsg)
+		db_session.commit()
+		print the_proposal
+
+		#todo: notifying users.
+		print "success, saved msg"
+	except DB_Error as dbe:
+		print dbe
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg='Bizarre, something failed'), 500
+
+	return jsonify(usrmsg="succesfully canceled proposal"), 200
+
+
+
+
 @ht_server.route('/edit', methods=['GET', 'POST'])
 #@dbg_enterexit
 @req_authentication
