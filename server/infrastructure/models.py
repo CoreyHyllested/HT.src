@@ -508,6 +508,34 @@ class Skills(Base):
 
 
 
+class UserMessage(Base):
+	__tablename__ = "umsg"
+	msg_id		= Column(String(40), primary_key=True)													# NonSequential ID
+	msg_to		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_thread	= Column(String(40), nullable=False, index=True)
+	msg_parent  = Column(String(40))
+	msg_content = Column(String(1024), nullable=False)
+	msg_created = Column(DateTime(), nullable=False)
+	msg_noticed = Column(DateTime())
+	msg_opened  = Column(DateTime())
+
+
+	def __init__ (self, prof_to, prof_from, content, thread=None, thread_parent=None):
+		msg_id		= str(uuid.uuid4())
+		msg_to		= prof_to
+		msg_from	= prof_from
+		msg_content	= content
+		msg_created = dt.utcnow()
+		msg_thread	= thread
+		msg_parent	= thread_parent
+
+	def __repr__(self):
+		return '<umsg>'
+
+
+
+
 class Review(Base):
 	__tablename__ = "review"
 
