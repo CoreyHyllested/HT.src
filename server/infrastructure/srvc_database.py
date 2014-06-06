@@ -12,10 +12,13 @@
 #################################################################################
 
 
+import os
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
+SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
+SQLALCHEMY_MIGRATE_REPO = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db_repository')
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)
 # gotten from http://flask.pocoo.org/docs/patterns/sqlalchemy/ ... under Declaritive
@@ -26,8 +29,8 @@ from sqlalchemy.ext.declarative import declarative_base
 #    db_session.remove()
 
 print 'import::db -- create engine'
-#engine = create_engine('postgresql://brjwzdmhzipgwg:nYIJrHWrnkRruzOdzzCdFqKdXp@ec2-54-204-43-200.compute-1.amazonaws.com:5432/d23r20cnqg2c72')
-engine = create_engine('postgresql://htdb:passw0rd@beta.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb')
+#engine = create_engine('postgresql://htdb:passw0rd@beta.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb', echo=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URI, echo=True)
 
 print 'import::db -- create sessionmaker'
 db_session = scoped_session(sessionmaker(bind=engine))
@@ -37,20 +40,11 @@ Base = declarative_base()
 Base.query = db_session.query_property()
 
 
-# must come after Base
+# models uses (Base)
 from server.infrastructure.models import *
 
 def init_db():
 	# configure postgresql, by creating
 	print 'import::db -- create_all()'
 	Base.metadata.create_all(bind=engine)
-	db_session.commit()
 	print 'returned'
-
-
-
-#print 'import -- create sq SM'
-#sq = SM()
-
-# must do this (approx.) last.
-#print sq.query(models.Review).join(models.Profile, models.Review.author == models.Profile.id).all()

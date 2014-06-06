@@ -1,12 +1,20 @@
 import os
 
+print 'configuring environment'
+basedir = os.path.abspath(os.path.dirname(__file__))
+LOCAL_MODE = os.environ.get("LOCAL", None)
+
 CSRF_ENABLED = True
 SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
-#SQLALCHEMY_DATABASE_URI = 'postgresql://ezjlivdbtrqwgx:lM5sTTQ8mMRM7CPM0JrSb50vDJ@ec2-54-235-70-146.compute-1.amazonaws.com:5432/d673en78hg143l'
-#SQLALCHEMY_DATABASE_URI = 'postgresql://aysevvyxmqbmhd:Vpt-i6asNIpgkv96PZQ2pLWOqv@ec2-54-225-101-18.compute-1.amazonaws.com:5432/d87o5r1so43ija'
-#SQLALCHEMY_DATABASE_URI = 'sqlite:///ht.db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/beta'
+SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 DATABASE_QUERY_TIMEOUT = 1.0 
+
+if (LOCAL_MODE == True):
+	SQLALCHEMY_DATABASE_URI = 'sqlite:///ht.db'
+
+print 'SQLALCHEMY_DB: ' + str(SQLALCHEMY_DATABASE_URI) 
 
 # HeroTime definitions
 HT_UPLOAD_DIR='/tmp/ht_upload/'
