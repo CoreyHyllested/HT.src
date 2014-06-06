@@ -561,14 +561,18 @@ def ht_api_send_message():
 	uid = session['uid']
 
 	try:
-		bp  = Profile.get_by_prof_id(session['uid'])
-		hp  = Profile.get_by_prof_id(request.values.get('hp'))
-		msg = request.values.get('msg')
-		metaMsg = Message(bp, hp, msg)
+		bp = Profile.get_by_uid(session['uid'])
+		hp = Profile.get_by_prof_id(request.values.get('hp'))
+		parent	= request.values.get('parent')
+		print parent
+		content	= request.values.get('msg')
 
-		db_session.add(metaMsg)
+		message = UserMessage(bp.prof_id, hp.prof_id, content)
+		print message
+		
+		print 'add to db session'
+		db_session.add(message)
 		db_session.commit()
-		print the_proposal
 
 		#todo: notifying users.
 		print "success, saved msg"
@@ -577,6 +581,7 @@ def ht_api_send_message():
 		db_session.rollback()
 		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except Exception as e:
+		print type(e)
 		print e
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed'), 500

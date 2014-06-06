@@ -520,7 +520,7 @@ class Skills(Base):
 
 class UserMessage(Base):
 	__tablename__ = "umsg"
-	msg_id		= Column(String(40), primary_key=True)													# NonSequential ID
+	msg_id		= Column(String(40), primary_key=True, unique=True)													# NonSequential ID
 	msg_to		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	msg_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	msg_thread	= Column(String(40), nullable=False, index=True)
@@ -532,16 +532,26 @@ class UserMessage(Base):
 
 
 	def __init__ (self, prof_to, prof_from, content, thread=None, thread_parent=None):
-		msg_id		= str(uuid.uuid4())
-		msg_to		= prof_to
-		msg_from	= prof_from
-		msg_content	= content
-		msg_created = dt.utcnow()
-		msg_thread	= thread
-		msg_parent	= thread_parent
+		print 'running usrmessage init'
+		self.msg_id	= str(uuid.uuid4())
+		self.msg_to	= str(prof_to)
+		self.msg_from = str(prof_from)
+		self.msg_content = str(content)
+		self.msg_created = dt.utcnow()
+
+		if (thread == None):
+			thread = str(self.msg_id)
+			thread_parent = None
+		else:
+			raise Exception('no threading exists')
+			# if not thread_parent suggested, raise an error
+
+		self.msg_thread	= thread
+		self.msg_parent	= thread_parent
 
 	def __repr__(self):
-		return '<umsg>'
+		content = self.msg_content[:20]
+		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
 
 
 
