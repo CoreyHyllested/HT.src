@@ -106,6 +106,16 @@ def test_flag(state, flag): return (state & (0x1 << flag))
 ################################################################################
 # BEGIN; 
 # UPDATE appointment2 SET buyer_prof = 62e9e608-12cd-4b47-9eb4-ff6998dca89a WHERE 
+################################################################################
+
+################################################################################
+#### EXAMPLE: INSERT ROW INTO TABLE from PostgreSQL. ###########################
+################################################################################
+# begin;
+# insert into umsg (msg_id, msg_to, msg_from, msg_thread, msg_content, msg_created) VALUES ('testing-1-2-3-4-5', (select prof_id from profile where prof_name like '%Corey%'), (select prof_id from profile where prof_name like '%Frank%'), 'testing-1-2-3-4-5', 'Garbage in, garbage out', '2014-06-05 17:59:12.311562');
+# commit;
+################################################################################
+
  
 
 
