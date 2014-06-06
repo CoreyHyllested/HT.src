@@ -192,6 +192,12 @@
 			<input type="submit" class="whiteButton" value="Edit Profile">
 		</form>
 		{% else %}
+		<form action="/sendmsg" method="POST">
+			<input type="hidden" name="hp"  value="{{hp.prof_id}}">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
+			<input type="submit" class="blueButton" value="Send message">
+		</form>
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
 			<input type="submit" class="blueButton" value="Schedule meeting...">
