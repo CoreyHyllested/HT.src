@@ -9,7 +9,7 @@ from flask import render_template, make_response, session, request, flash, redir
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 from httplib2 import Http
-from server import ht_server, ht_csrf
+from server import ht_server, ht_csrf, facebook
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.infrastructure.errors import * 
@@ -216,6 +216,32 @@ def render_login(usrmsg=None):
 		usrmsg = "Incorrect username or password."
 
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
+
+
+
+@ht_server.route('/login/facebook', methods=['GET'])
+def login_facebook():
+	# redirects to facebook, which gets token and comes back to 'fb_authorized'
+	print 'login_facebook()'
+	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
+@ht_server.route('/login/authorized')
+@facebook.authorized_handler
+def facebook_authorized(resp):
+	print 'reached facebook_authorized'
+	if resp is None:
+		return 'Access denied: reason=%s error=%s' % ( request.args['error_reason'], request.args['error_description'])
+
+	print 'resp is not none', resp['access_token']
+	session['oauth_token'] = (resp['access_token'], '')
+	me = facebook.get('/me')
+
+	return 'Logged in as id=%s name=%s redirect=%s' % (me.data['id'], me.data['name'], request.args.get('next'))	
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+	return session.get('oauth_token')
 
 
 
