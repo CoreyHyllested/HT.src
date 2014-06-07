@@ -51,6 +51,18 @@ Compress(ht_server)
 ht_csrf  = CsrfProtect(ht_server)
 ht_oauth = OAuth(ht_server)
 
+facebook = ht_oauth.remote_app(
+	'facebook',
+	base_url='https://graph.facebook.com',
+	request_token_url=None,
+	access_token_url='/oauth/access_token',
+	authorize_url='https://www.facebook.com/dialog/oauth',
+	consumer_key=ht_server.config['FACEBOOK_APP_ID'],
+	consumer_secret=ht_server.config['FACEBOOK_APP_SEC'],
+	request_token_params={
+		'scope': 'email'
+	}
+)
 
 linkedin = ht_oauth.remote_app(
     'linkedin',
