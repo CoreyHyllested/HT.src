@@ -245,6 +245,14 @@ def get_facebook_oauth_token():
 
 
 
+@twitter.tokengetter
+def get_twitter_token():
+	if 'twitter_oauth' in session:
+		resp = session['twitter_oauth']
+		x = resp['oauth_token'], resp['oauth_token_secret']
+		return x
+
+
 @ht_server.route('/login/linkedin', methods=['GET'])
 def oauth_login_linkedin():
 	# redirects to LinkedIn, which gets token and comes back to 'authorized'
@@ -252,12 +260,14 @@ def oauth_login_linkedin():
 	session['oauth_signup'] = False
 	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
 
+
 @ht_server.route('/login/twitter', methods=['GET'])
 def oauth_twitter_1_redir():
 	# redirects to Twiter, which gets token and comes back to 'authorized_twitter'
 	print 'login_twitter()' 
 	session['oauth_signup'] = False
-	return twitter.authorize(callback=url_for('oauth_twitter_2_auth', _external=True, next=request.args.get('next') or request.referrer or None))
+	callback_url = url_for('oauth_twitter_2_auth', next=request.args.get('next'))
+	return twitter.authorize(callback=callback_url or request.referrer or None)
 
 
 
@@ -266,40 +276,70 @@ def oauth_twitter_1_redir():
 def oauth_twitter_2_auth(resp):
 	print 'authorized/twitter'
 
-	next_url = request.args.get('next')
 	if resp is None:
-		# Needs a better error page 
-		print 'resp is none'
-		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		print 'You denied the request to sign in.'
+	else:
+		bp = Profile.get_by_prof_id('21225867-9ad3-4640-b04b-25694df0e730')
+		ht_bind_session(bp)
+		session['twitter_oauth'] = resp
+		print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
+	print 'authorized_handler return redir(index)'
 
-	session['twitter_token'] = (
-		resp['oauth_token'],
-		resp['oauth_token_secret']
-	)
-	session['twitter_user'] = resp['screen_name']
+	return redirect(url_for('render_dashboard'))
 
 
-	print('You were signed in as %s' % resp['screen_name'])
-	print 'access_token', resp.get('access_token')
-	print 'oauth_token', resp.get('oauth_token')
-	return redirect(next_url)
 
-	#get Oauth Info.
-	session['twitter_access_token'] = (resp['access_token'], '')
-	session['twitter_oauth_token'] = oauth_token
 
-	r = twitter.get('account/verify_credentials.json', oauth_token=token)
-	print r
+#@twitter.authorized_handler
+#	next_url = request.args.get('next')
+#	print 'requested ', next_url 
+#	if resp is None:
+#		# Needs a better error page 
+#		print 'resp is none'
+#		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+#
+#	session['twitter_oauth'] = resp
+#	print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
+#	session['twitter_token'] = (
+#		resp['oauth_token'],
+#		resp['oauth_token_secret']
+#	)
 
+#	session['twitter_user'] = resp['screen_name']
+	#oa_account	= resp['user_id']
+#	oa_username	= resp['screen_name']
+
+
+#	print('You were signed in as %s' % resp['screen_name'])
+#	ot = resp.get('oauth_token')
+#	ot = session['twitter_token']
+#	print 'ot', ot
+#	print 'oauth_token', resp.get('oauth_token')
+#	print 'oauth_token_secret', resp.get('oauth_token_secret')
+	#r = twitter.request('statuses/home_timeline.json', token=ot)
+
+	#print r
+	#if (r.status == 200):
+	#	print 'went fine'
+	#	print r.data
+	#	return r.data
+	#else:
+	#	print r.status
+	#twittrAcct = Oauth(uid, OAUTH_TWITTR, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
+	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
+	#def Oauth(ht_account, oa_provider, oa_userid, token=None, data1=None, data2=None, data3=None):
+
+#	print 'telling them to go to /index2'
+#	return make_response(redirect('/index2'))
 	#me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	#email = linkedin.get('people/~/email-address')
 
 	# format collected info... prep for init.
-	print('li_auth - collect data ')
+#	print('li_auth - collect data ')
 	#user_name = me.data.get('formattedName')
 
 
-	print('li_auth - find account')
+#	print('li_auth - find account')
 	# also look for linkedin-account/id number (doesn't exist today).
 	#possible_accts = Account.query.filter_by(email=email.data).all()
 	#if (len(possible_accts) == 1):
@@ -325,16 +365,6 @@ def oauth_twitter_2_auth(resp):
 		# something failed.  
 	#	print bh if (bh is not None) else 'None'
 
-
-
-
-
-
-
-
-@twitter.tokengetter
-def get_twitter_token(token=None):
-    return session.get('twitter_token')
 
 
 @linkedin.tokengetter
@@ -570,6 +600,18 @@ def render_dashboard(usrmsg=None, focus=None):
 
 	# number of appotintments (this week, next week).
 	# number of proposals (all)
+	tweets = None
+	if session.get('twitter_oauth') is not None:
+		print 'index calling request'
+		resp = twitter.request('statuses/home_timeline.json')
+		resp = twitter.request('friends/ids.json?screen_name=CoreyHyllested&stringify_ids=true')
+		print 'request.status', resp.status
+		if resp.status == 200:
+			tweets = resp.data['ids']
+			for t in tweets:
+				print t
+
+			print 'tweet count', len(tweets)
 
 	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
@@ -595,7 +637,7 @@ def render_dashboard(usrmsg=None, focus=None):
 		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg, tweets=tweets))
 
 	
 
@@ -1221,8 +1263,7 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	if (session.get('uid') is not None):
-		session.pop('uid')
+	session.clear()
 	return redirect('/')
 
 
