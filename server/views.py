@@ -9,7 +9,7 @@ from flask import render_template, make_response, session, request, flash, redir
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 from httplib2 import Http
-from server import ht_server, ht_csrf, facebook
+from server import ht_server, ht_csrf, twitter, facebook
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.infrastructure.errors import * 
@@ -263,7 +263,7 @@ def oauth_twitter_1_redir():
 
 @ht_server.route('/authorized/twitter')
 @twitter.authorized_handler
-def oauth_twitter_2_auth(resp, oauth_token):
+def oauth_twitter_2_auth(resp):
 	print 'authorized/twitter'
 
 	next_url = request.args.get('next')
@@ -278,9 +278,10 @@ def oauth_twitter_2_auth(resp, oauth_token):
 	)
 	session['twitter_user'] = resp['screen_name']
 
+
 	print('You were signed in as %s' % resp['screen_name'])
-	print resp.get('access_token')
-	print oauth_token
+	print 'access_token', resp.get('access_token')
+	print 'oauth_token', resp.get('oauth_token')
 	return redirect(next_url)
 
 	#get Oauth Info.
