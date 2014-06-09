@@ -200,14 +200,25 @@ class Account(Base):
 class Oauth(Base):
 	__tablename__ = "oauth"
 	id      = Column(Integer, primary_key = True)
+	#ht_account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+	#oa_account = Column(String(64), nullable=False, index=True)	#user id returned back
+	#oa_service	= Column(Integer(),  nullable=False)	#LINKEDIN = 1, Google = 2		#should be integer...
+	#oa_flags	= Column(Integer(),  nullable=False)	# (valid?  
+	#oa_email   = Column(String(120), nullable=True, index=True)
+	#oa_token	= Column(String(64), nullable=True)
+	#oa_secret	= Column(String(64), nullable=True)
+	#oa_ts_first = Column(datetime) 	#first login time.
+	#oa_ts_last  = Column(datetime) 	#first login time.
+
+
 	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-	oa_service	= Column(String(40), nullable=False)	#LINKEDIN = 1, Google = 2
+	oa_service	= Column(String(40), nullable=False)	#LINKEDIN = 1, Google = 2		#should be integer...
 	oa_userid	= Column(String(40), nullable=False, index=True)	#user id returned back
 	opt_token	= Column(String(200))
 	opt_email	= Column(String(120))
-										#linkedin	#Stripe		#Google
-	opt_data1	= Column(String(200))	#?			CC token
-	opt_data2	= Column(String(200))	#?			Dflt CC		
+										#linkedin	#Stripe		#Google		#twitter
+	opt_data1	= Column(String(200))	#?			CC token				oa_token
+	opt_data2	= Column(String(200))	#?			Dflt CC					oa_token_secret	
 	opt_data3	= Column(String(200))	#?			chrge key	
 
 	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
