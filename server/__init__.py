@@ -64,16 +64,18 @@ facebook = ht_oauth.remote_app(
 	}
 )
 
-twitter = ht_oauth.remote_app(  'twitter',
-								consumer_key=ht_server.config['TWITTER_KEY'],
-								consumer_secret=ht_server.config['TWITTER_SEC'],
-								request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
-								base_url='https://api.twitter.com/1/',
-								access_token_method='POST',
-								access_token_url='https://api.twitter.com/oauth/access_token',
-								request_token_url='https://api.twitter.com/oauth/request_token',
-								authorize_url='https://api.twitter.com/oauth/authorize',
-							)
+twitter = ht_oauth.remote_app(
+    'twitter',
+    consumer_key=ht_server.config['TWITTER_KEY'],
+    consumer_secret=ht_server.config['TWITTER_SEC'],
+    base_url='https://api.twitter.com/1.1/',
+    request_token_url='https://api.twitter.com/oauth/request_token',
+    access_token_url='https://api.twitter.com/oauth/access_token',
+    authorize_url='https://api.twitter.com/oauth/authorize',
+#	#request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+#	access_token_method = 'GET' # <--- add this line
+)
+
 
 linkedin = ht_oauth.remote_app(  'linkedin',
 								consumer_key=ht_server.config['LINKEDIN_KEY'],
