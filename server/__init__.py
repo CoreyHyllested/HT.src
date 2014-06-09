@@ -17,9 +17,10 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
-from flask.ext.mail			import Mail
-from flask_wtf.csrf			import CsrfProtect
-from flask_redis			import Redis   
+from flask.ext.mail		import Mail
+from flask_wtf.csrf		import CsrfProtect
+from flask_redis		import Redis
+from server.infrastructure.initialize_ht	import *
 from server.infrastructure.srvc_sessions	import RedisSessionInterface
 
 
@@ -27,6 +28,8 @@ log_frmtr = logging.Formatter('%(asctime)s %(levelname)s %(message)s')	#[in %(pa
 log_hndlr = RotatingFileHandler('/tmp/ht.log', 'a', 1024*1024, 10) 
 log_hndlr.setFormatter(log_frmtr)
 log_hndlr.setLevel(logging.INFO)
+
+create_dir('/tmp/ht_upload/')
 
 ht_server = Flask(__name__)
 ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
@@ -42,23 +45,24 @@ redis_cache = Redis(ht_server)
 ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 
 
-# configure postgresql -- dropped flask-sqlalchemy, more manual now.
-#db.init_app(ht_server)
-#db = SQLAlchemy(ht_server)
-#db.create_all()
-#engine = create_engine(ht_server.config['SQLALCHEMY_DATABASE_URI'])
-#SM = sessionmaker(bind=engine)
-#sq = SM()
-
-
 # don't think we're using emailer
 emailer = Mail(ht_server)
 Compress(ht_server)
 ht_csrf  = CsrfProtect(ht_server)
 ht_oauth = OAuth(ht_server)
 
-
-
+facebook = ht_oauth.remote_app(
+	'facebook',
+	base_url='https://graph.facebook.com',
+	request_token_url=None,
+	access_token_url='/oauth/access_token',
+	authorize_url='https://www.facebook.com/dialog/oauth',
+	consumer_key=ht_server.config['FACEBOOK_APP_ID'],
+	consumer_secret=ht_server.config['FACEBOOK_APP_SEC'],
+	request_token_params={
+		'scope': 'email'
+	}
+)
 
 twitter = ht_oauth.remote_app(  'twitter',
 								consumer_key=ht_server.config['TWITTER_KEY'],
