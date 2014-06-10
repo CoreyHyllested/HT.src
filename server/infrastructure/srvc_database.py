@@ -17,7 +17,7 @@ from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
+SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta1.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
 SQLALCHEMY_MIGRATE_REPO = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'db_repository')
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)

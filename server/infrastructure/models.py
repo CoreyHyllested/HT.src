@@ -67,6 +67,13 @@ REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
 REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
 REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
 
+IMG_FLAG_PROFILE = 0	# A Profile Image
+IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
+IMG_FLAG_VISIBLE = 2	# Image is visible or shown.  Maybe flagged, deleted, or not ready yet.
+
+IMG_STATE_PROFILE = (0x1 << IMG_FLAG_PROFILE)
+IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
+IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -457,7 +464,7 @@ class Image(Base):
 	#img_x, int
 	#img_y, int
 
-	def __init__(self, imgid, prof_id=None, comment=None):
+	def __init__(self, imgid, prof_id, comment=None):
 		self.img_id  = imgid
 		self.img_profile = str(prof_id)
 		self.img_comment = comment
