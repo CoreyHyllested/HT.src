@@ -5,18 +5,25 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<!--script src="/static/js/profile.js"></script-->
 	<script src="/static/js/lightbox.min.js"></script>
+	<script src="/static/js/dropzone.js"></script>
+	<script src="/static/js/dz.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dz.css">
 
 {% endblock %}
 
 
 {% block content %}
 
-<div class="profileCover">
-	<img class="profileCoverPic" src="{{profile_img}}">
-</div>
-
 <div class="profileContentWrapper">
+
+	<div class="profileHeaderColumn">
+		<div class="profilePicContainer">
+			<img class="profilePic" src="{{profile_img}}">
+		</div>
+	</div>
+
 
 	<div class="profileLeftColumn">
 		<div class="profileNameHeadline">
@@ -188,9 +195,7 @@
 			<div class="perHour">per<br>hour</div>
 		</div>
 		{% if hp is sameas bp %}
-		<form method="link" action="/edit">
-			<input type="submit" class="whiteButton" value="Edit Profile">
-		</form>
+			<a href="/edit"><button id="edit-profile-button" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
@@ -211,6 +216,10 @@
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
 
+		{% if hp is sameas bp %}
+			<a href="/multiple_uploader"><button id="portfolio-upload-button" class="whiteButton">Add Portfolio Images</button></a>
+		{% endif %}
+
 		<div class="profilePortfolio">
 			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
 			{% for img in portfolio %}
@@ -219,22 +228,64 @@
 			{% endfor %}
 
 			{% if hp is sameas bp %}
-			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
-			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple />
+<!-- 			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
+			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple /> -->
 			{% endif %}
 		</div>
+
 	</div>
+
+	{% if hp is sameas bp %}
+	<!-- This doesn't work properly yet. Strange errors with the display / z-index when hiding/showing -->
+	<div id="portfolio-upload" class="modal hidden" hidden>
+		<div class="dzContentWrapper modal-content">
+				<div class="modal-header">
+			      	<a href="#" class="btn-close" aria-hidden="true">×</a>
+			    </div>
+			    <div class="modal-info">
+					<h2>Upload Portfolio Images</h2>
+					<h4>(Drag to re-order)</h4>
+				</div>
+				<div class="dropzone-wrapper">
+					<form action="upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<div class="fallback">
+					    	<input name="file" type="file" multiple />
+					  	</div>
+					</form>
+				</div> 
+
+				<div class="dropzone-content-submit">
+					<button type="button" class="blueButton multiple-upload-button">
+						Upload Images
+					</button>
+				</div>
+
+				<form action="manage-portfolio" method="post" class="files-form">
+				</form>
+		</div>
+	</div>
+
+	{% endif %}
 
 	<div class="clear"></div>
 </div>
 
-
-
+<script src="/static/js/dropzone.js"></script>
+<script src="/static/js/dz.js"></script>	
 <script>
-
-
-
 $(function () {
+
+	// $('#portfolio-upload-button').click(function(event) {
+	// 	event.preventDefault();
+	// 	$('#portfolio-upload').show();
+	// });
+
+	// $('.btn-close').click(function(event) {
+	// 	event.preventDefault();
+	// 	$('#portfolio-upload').hide();
+	// });
+
     $('.addImage').click(function () {
 		$('#selectFile').click();
 		return false;

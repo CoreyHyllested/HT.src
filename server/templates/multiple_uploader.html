@@ -1,0 +1,49 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
+	<!--script src="/static/js/profile.js"></script-->
+	<script src="/static/js/lightbox.min.js"></script>
+
+	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dz.css">
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="dzContentWrapper">
+
+	<h2>Upload Portfolio Images</h2>
+	<h4>(Drag to re-order)</h4>
+
+	<div class="dropzone-status"></div>
+
+	<div class="dropzone-wrapper">
+		<form action="upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+			<div class="fallback">
+		    	<input name="file" type="file" multiple />
+		  	</div>
+		</form>
+	</div> 
+
+	<div class="dropzone-content-submit">
+		<button type="button" class="blueButton multiple-upload-button">
+			Upload Images
+		</button>
+	</div>
+
+	<form action="profile" method="post" id="dropzone-continue">
+	</form>
+
+</div>
+
+<script src="/static/js/dropzone.js"></script>
+<script src="/static/js/dz.js"></script>
+
+
+{% endblock %}
