@@ -1,0 +1,90 @@
+
+.dropzone {
+	border:1px dotted gray;
+	background-color: white;
+}
+
+.dropzone-box img.preview {
+	height:100px;
+	width:100px;
+}
+
+.dropzone .multiple-upload {
+	padding:10px;
+	background-color: lightgray;
+	border:2px solid white;
+
+
+}
+
+.dropzone .multiple-upload img {
+	margin-bottom:10px;
+}
+
+.dropzone-content-submit button {
+	width: 250px;
+	margin: 10px auto;
+}
+
+.dz-preview:hover, .dz-details:hover, .data-dz-thumbnail:hover, .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview,
+.dropzone-previews .dz-preview {
+  margin: 6px;
+  vertical-align: top;
+  border: 1px solid #acacac;
+  border-radius: 3px;
+  padding: 6px 6px 6px 6px;
+}
+
+.dropzone-status {
+	display: none;
+	text-align: center;
+}
+
+.dropzone-status .success{
+	color: green;
+}
+
+.dropzone-status .error{
+	color: red;
+}
+
+.pageWrapper {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
+
+.dzContentWrapper {
+	-moz-animation: editAppear 1s;
+	-o-animation: editAppear 1s;
+	-webkit-animation: editAppear 1s;
+	animation: editAppear 1s;		
+	background-color: white;
+	border-radius: 6px;
+	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 40px auto 30px;
+	padding: 10px 20px;
+	width: 800px;
+}
+
+

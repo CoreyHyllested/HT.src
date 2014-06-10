@@ -72,6 +72,8 @@ window.onload = function() {
 
 // Script #3
 $(document).ready(function() {
+
+
 	$('#send_proposal').click(function() {
 		$hero_acct = '{{hp.prof_id}}';
 		$hero_name = '{{hp.prof_name}}';

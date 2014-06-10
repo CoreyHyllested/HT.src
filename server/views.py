@@ -667,19 +667,28 @@ def upload():
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
 
+
 	print 'orig', orig
 	print 'prof', prof
 
 	for mydict in request.files:
+
+		# not working yet - it gets the same caption for all uploaded photos. not sure how to distinguish between them.
+		comment = request.values.get('caption')
+		if (len(comment) == 0):
+			comment = "Portfolio Img"
+
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
 		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
 		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		
+		print("comment = " + str(comment))
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			# create Image.
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment="Portfolio Img")
+			metaImg = Image(img_hashname, bp.prof_id, comment)
 			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
@@ -1380,3 +1389,9 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
+@ht_server.route("/multiple_uploader", methods=['GET', 'POST'])
+def render_multiupload_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('multiple_uploader.html', bp=bp))
+	
