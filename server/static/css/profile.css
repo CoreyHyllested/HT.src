@@ -26,7 +26,8 @@ c) 1000px - ... (desktops)
 	h3 {color: black;}
 
 	.profileCover {
-		display: block;
+		display: none;
+		/*display: block;*/
 		position: relative;
 		width: 100%;
 	}
@@ -69,6 +70,35 @@ c) 1000px - ... (desktops)
 	}
 }
 
+.hidden {
+	display: none;
+}
+
+.modal {
+	background: rgba(0,0,0,.6);
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    z-index: 998;
+}
+.modal-content {
+	padding: 12px;
+	position: relative;
+	background: #fefefe;
+	border: gray solid 1px;
+	border-radius: 3px;
+	z-index: 999;
+} 
+.modal-header .btn-close{
+	font-size: 30px;
+	text-decoration: none;
+	position: absolute;
+	right: 5px;
+	top: 0px;
+
+}
 
 /* MAIN LAYOUT */
 
@@ -90,7 +120,8 @@ c) 1000px - ... (desktops)
 			
 		.profileContentWrapper {
 			background-color: white;
-			margin: -100px auto 0;
+			margin: 0px auto;
+			/*margin: -100px auto 0;*/
 			min-height: 400px;
 			position: relative;
 			width: 100%;
@@ -101,13 +132,33 @@ c) 1000px - ... (desktops)
 	/* Desktop */
 	@media only screen and (min-width: 1000px) {
 
+		.profileHeaderColumn {
+			float: left;
+			width: 100%;
+			min-height: 400px;
+			margin-bottom: 8px;
+		}
+
+
+		.profilePicContainer {
+			border-radius: 6px;
+			overflow: hidden;
+		}
+
+		.profilePic {
+			min-width: 100%;
+			width: 100% !important;
+		}
+
+
 		.profileContentWrapper {
 			background-color: white;
 			border-radius: 6px;
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;
-			margin: -200px auto 0;
+			margin: 12px auto 0px;
+			/*margin: -200px auto 0;*/
 			padding: 41px;
 			position: relative;
 			width: 980px;
@@ -1206,6 +1257,10 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
 	.profilePortfolioImage {
 		border: 1px solid #e2e4e6;
 		border-radius: 3px;
@@ -1215,6 +1270,7 @@ c) 1000px - ... (desktops)
 		display: block;
 		float: left;
 		height: 100px;
+		margin-right: 11px;
 		margin-bottom: 11px;
 		-moz-transition: 0.3s ease;
 		-o-transition: 0.3s ease;
@@ -1230,10 +1286,8 @@ c) 1000px - ... (desktops)
 		
 	}
 
-	.profilePortfolioImage:first-of-type {margin-right: 11px;}
-	.profilePortfolioImage:nth-of-type(3) {margin-left: 11px;}
-	.profilePortfolioImage:nth-of-type(4) {margin-right: 11px;}
-	.profilePortfolioImage:nth-of-type(5) {margin-right: 11px;}
+	.profilePortfolioImage:nth-of-type(3n+0) {margin-right: 0px;}
+
 
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga_thumb.jpg') no-repeat center center;
