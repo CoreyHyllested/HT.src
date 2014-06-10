@@ -67,6 +67,13 @@ REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
 REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
 REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
 
+IMG_FLAG_PROFILE = 0	# A Profile Image
+IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
+IMG_FLAG_VISIBLE = 2	# Image is visible or shown.  Maybe flagged, deleted, or not ready yet.
+
+IMG_STATE_PROFILE = (0x1 << IMG_FLAG_PROFILE)
+IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
+IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -77,6 +84,7 @@ def test_flag(state, flag): return (state & (0x1 << flag))
 #### EXAMPLE: Reading from PostgreSQL. #########################################
 ################################################################################
 # psql "dbname=d673en78hg143l host=ec2-54-235-70-146.compute-1.amazonaws.com user=ezjlivdbtrqwgx password=lM5sTTQ8mMRM7CPM0JrSb50vDJ port=5432 sslmode=require"
+# psql postgresql://name:password@instance:port/database
 ################################################################################
 
 
@@ -402,10 +410,6 @@ class Proposal(Base):
 		self.prop_updated = dt.utcnow()
 			
 
-
-	
-			
-
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
@@ -450,39 +454,24 @@ class Appointment(Base):
 
 
 
-#class BlockUser(Base):
-#	""" BlockUser provides a listing of every asynchronous blocking """ 
-#	__tablename__ = "BlockUser"
-#	id = Column(Integer,primary_key=True)
-#	profileId = Column(Integer,    nullable=False)
-#	filterId  = Column(Integer,    nullable=False)
-#	reason    = Column(String(80), nullable=False)
-#
-#	def __init__(self, blocked_user_id, blocked_by_user_id, user_reason):
-#		self.profileId = blocked_by_user_id
-#		self.filterId  = blocked_user_id
-#		self.reason    = user_reason
-#
-#	def __repr__(self):
-#		return '<BlockUser, %r ==>X %r>' % (self.filterId, self.profileId)
+class Image(Base):
+	__tablename__ = "image"
+	img_id = Column(String(64), primary_key=True)
+	img_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	img_comment = Column(String(256))
+	img_created = Column(DateTime())
+	img_flags	= Column(Integer, default=0)
+	#img_x, int
+	#img_y, int
 
+	def __init__(self, imgid, prof_id, comment=None):
+		self.img_id  = imgid
+		self.img_profile = str(prof_id)
+		self.img_comment = comment
+		self.img_created = dt.utcnow()
 
-
-#class Image(Base):
-#	__tablename__ = "image"
-#	id  = Column(Integer, primary_key=True)
-#	ts  = Column(DateTime,    nullable=False)
-#	fs  = Column(String(120))				#where file exists on FS
-#	img = Column(LargeBinary, nullable=True)
-#	profile = relationship("Profile", backref="image", lazy=False)
-#
-#	def __init__(self, image):
-#		self.img = image
-#		self.tsc = datetime.datetime.now()
-#
-#	def __repr__ (self):
-#		return '< image, %r, %r>' % (self.img, self.ts) ... can we use profile ID/name?
-#		return '<image, %s>' % (self.ts)
+	def __repr__ (self):
+		return '<image %s %s>' % (self.img_id, self.img_profile)
 
 
 
