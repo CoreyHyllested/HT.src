@@ -64,17 +64,6 @@ facebook = ht_oauth.remote_app(
 	}
 )
 
-twitter = ht_oauth.remote_app(
-    'twitter',
-    consumer_key=ht_server.config['TWITTER_KEY'],
-    consumer_secret=ht_server.config['TWITTER_SEC'],
-    base_url='https://api.twitter.com/1.1/',
-    request_token_url='https://api.twitter.com/oauth/request_token',
-    access_token_url='https://api.twitter.com/oauth/access_token',
-    authorize_url='https://api.twitter.com/oauth/authorize',
-#	access_token_method = 'GET' # <--- add this line
-)
-
 
 linkedin = ht_oauth.remote_app(  'linkedin',
 								consumer_key=ht_server.config['LINKEDIN_KEY'],
