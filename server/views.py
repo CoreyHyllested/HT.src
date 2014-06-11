@@ -257,83 +257,6 @@ def get_facebook_oauth_token():
 
 
 
-#@twitter.authorized_handler
-#	next_url = request.args.get('next')
-#	print 'requested ', next_url 
-#	if resp is None:
-#		# Needs a better error page 
-#		print 'resp is none'
-#		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-#
-#	session['twitter_oauth'] = resp
-#	print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
-#	session['twitter_token'] = (
-#		resp['oauth_token'],
-#		resp['oauth_token_secret']
-#	)
-
-#	session['twitter_user'] = resp['screen_name']
-	#oa_account	= resp['user_id']
-#	oa_username	= resp['screen_name']
-
-
-#	print('You were signed in as %s' % resp['screen_name'])
-#	ot = resp.get('oauth_token')
-#	ot = session['twitter_token']
-#	print 'ot', ot
-#	print 'oauth_token', resp.get('oauth_token')
-#	print 'oauth_token_secret', resp.get('oauth_token_secret')
-	#r = twitter.request('statuses/home_timeline.json', token=ot)
-
-	#print r
-	#if (r.status == 200):
-	#	print 'went fine'
-	#	print r.data
-	#	return r.data
-	#else:
-	#	print r.status
-	#twittrAcct = Oauth(uid, OAUTH_TWITTR, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
-	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-	#def Oauth(ht_account, oa_provider, oa_userid, token=None, data1=None, data2=None, data3=None):
-
-#	print 'telling them to go to /index2'
-#	return make_response(redirect('/index2'))
-	#me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
-	#email = linkedin.get('people/~/email-address')
-
-	# format collected info... prep for init.
-#	print('li_auth - collect data ')
-	#user_name = me.data.get('formattedName')
-
-
-#	print('li_auth - find account')
-	# also look for linkedin-account/id number (doesn't exist today).
-	#possible_accts = Account.query.filter_by(email=email.data).all()
-	#if (len(possible_accts) == 1):
-		# suggest they create a password if that's not done.
-	#	session['uid'] = possible_accts[0].userid
-	#	print 'calling render_dashboard'
-		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
-		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
-	#	return redirect('/dashboard')
-
- 	# try creating new account.  We don't have known password; set to random string and sent it to user.
-	#print ("attempting create_account(" , user_name , ")")
-	#(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
-	#if (bp):
-	#	print ("created_account, uid = " , str(bp.account))
-	#	ht_bind_session(bp)
-	#	print ("ht_bind_session = ", bp)
-	#	import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
-
-		#send_welcome_email(email.data)
-	#	resp = redirect('/dashboard')
-	#else:
-		# something failed.  
-	#	print bh if (bh is not None) else 'None'
-
-
-
 @linkedin.tokengetter
 def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
@@ -567,18 +490,6 @@ def render_dashboard(usrmsg=None, focus=None):
 
 	# number of appotintments (this week, next week).
 	# number of proposals (all)
-	tweets = None
-	if session.get('twitter_oauth') is not None:
-		print 'index calling request'
-		resp = twitter.request('statuses/home_timeline.json')
-		resp = twitter.request('friends/ids.json?screen_name=CoreyHyllested&stringify_ids=true')
-		print 'request.status', resp.status
-		if resp.status == 200:
-			tweets = resp.data['ids']
-			for t in tweets:
-				print t
-
-			print 'tweet count', len(tweets)
 
 	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
@@ -604,7 +515,7 @@ def render_dashboard(usrmsg=None, focus=None):
 		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg, tweets=tweets))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg:)
 
 	
 
