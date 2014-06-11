@@ -535,7 +535,7 @@ def render_dashboard(usrmsg=None, focus=None):
 		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg:)
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
 
 	
 
