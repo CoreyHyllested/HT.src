@@ -191,15 +191,13 @@ def display_reviews_of_hero(r, hero_is):
 @dbg_enterexit
 def render_login(usrmsg=None):
 	""" Logs user into HT system
-		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
 
 	if ('uid' in session):
-		# if logged in; take 'em home
+		# user already logged in; take 'em home
 		return redirect('/dashboard')
-
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
@@ -215,15 +213,37 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
+	msg = request.values.get('messages')
+	if (msg is not None):
+		usrmsg = msg
+
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
 
 @ht_server.route('/login/facebook', methods=['GET'])
-def login_facebook():
+def oauth_login_facebook():
 	# redirects to facebook, which gets token and comes back to 'fb_authorized'
 	print 'login_facebook()'
+	session['oauth_facebook_signup'] = False
 	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
+@ht_server.route('/login/linkedin', methods=['GET'])
+def oauth_login_linkedin():
+	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	print 'login_linkedin()'
+	session['oauth_linkedin_signup'] = False
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+
+
+@ht_server.route('/login/twitter', methods=['GET'])
+def oauth_login_twitter():
+	# redirects to Twiter, which gets token and comes back to 'authorized_twitter'
+	print 'login_twitter()'
+	session['oauth_twitter_signup'] = False
+	callback_url = url_for('twitter_authorized', next=request.args.get('next'))
+	return twitter.authorize(callback=callback_url or request.referrer or None)
 
 
 @ht_server.route('/login/authorized')
@@ -239,6 +259,7 @@ def facebook_authorized(resp):
 
 	return 'Logged in as id=%s name=%s redirect=%s' % (me.data['id'], me.data['name'], request.args.get('next'))	
 
+
 @facebook.tokengetter
 def get_facebook_oauth_token():
 	return session.get('oauth_token')
@@ -253,36 +274,24 @@ def get_twitter_token():
 		return x
 
 
-@ht_server.route('/login/linkedin', methods=['GET'])
-def oauth_login_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'authorized'
-	print 'login_linkedin()' 
-	session['oauth_signup'] = False
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
-
-
-@ht_server.route('/login/twitter', methods=['GET'])
-def oauth_twitter_1_redir():
-	# redirects to Twiter, which gets token and comes back to 'authorized_twitter'
-	print 'login_twitter()' 
-	session['oauth_signup'] = False
-	callback_url = url_for('oauth_twitter_2_auth', next=request.args.get('next'))
-	return twitter.authorize(callback=callback_url or request.referrer or None)
-
 
 
 @ht_server.route('/authorized/twitter')
 @twitter.authorized_handler
-def oauth_twitter_2_auth(resp):
-	print 'authorized/twitter'
-
+def twitter_authorized(resp):
 	if resp is None:
-		print 'You denied the request to sign in.'
-	else:
-		bp = Profile.get_by_prof_id('21225867-9ad3-4640-b04b-25694df0e730')
-		ht_bind_session(bp)
-		session['twitter_oauth'] = resp
-		print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
+		msg = 'You were denied the request to sign in.'
+		trace(msg)
+		return redirect(url_for('render_login', messages=msg))
+
+	# user successfully authenticated.
+	signin = session['oauth_twitter_signup']
+	print 'sigin =', signin
+	#bp = Profile.get_by_prof_id('21225867-9ad3-4640-b04b-25694df0e730')
+	#ht_bind_session(bp)
+	session['twitter_oauth'] = resp
+	print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
+
 	print 'authorized_handler return redir(index)'
 
 	return redirect(url_for('render_dashboard'))
@@ -373,7 +382,7 @@ def get_linkedin_oauth_token():
 
 @ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
-def li_authorized(resp):
+def linkedin_authorized(resp):
 	print 'authorized/linkedin (li_authorized)'
 
 	if resp is None:
@@ -502,7 +511,7 @@ def signup_verify(challengeHash):
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
 			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return render_login(usrmsg=msg)
+			return redirect(url_for('render_login', messages=msg))
 
 	try:
 		# update user's account.
