@@ -239,7 +239,6 @@ def oauth_login_linkedin():
 
 @ht_server.route('/login/twitter', methods=['GET'])
 def oauth_login_twitter():
-	# redirects to Twiter, which gets token and comes back to 'authorized_twitter'
 	print 'login_twitter()'
 	session['oauth_twitter_signup'] = False
 	callback_url = url_for('twitter_authorized', next=request.args.get('next'))
@@ -285,11 +284,47 @@ def twitter_authorized(resp):
 		return redirect(url_for('render_login', messages=msg))
 
 	# user successfully authenticated.
-	signin = session['oauth_twitter_signup']
-	print 'sigin =', signin
+	session['twitter_oauth'] = resp
+	print resp
+
+	
+	r = twitter.request('account/verify_credentials.json')
+	print 'request.status', r.status
+	if r.status == 200:
+		userdata = r.data
+		print userdata
+		for t in userdata:
+			print t
+
+	signup = session['oauth_twitter_signup']
+	print 'signup =', signup
+	if (signup == True):
+			#def __init__ (self, account, service, userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
+			print ("twitter_authorized: attempting create_account(" , user_name , ")")
+			#create_account(name, email, passwd)
+			(bh, bp) = create_account(user_name, email.data, 'twitter_oauth')
+			if (bp):
+				print ("created_account, uid = " , str(bp.account))
+				ht_bind_session(bp)
+				#print ("ht_bind_session = ", bp)
+				#import_profile(bp, OAUTH_TWITTR, oauth_data=me.data)
+				#newUser = Oauth(account, service, userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
+
+				#send_welcome_email(email.data)
+				resp = redirect('/dashboard')
+			else:
+				# something failed.  
+				print bh if (bh is not None) else 'None'
+				print bp if (bp is not None) else 'None'
+				print ('create account failed, using', str(email.data))
+
+	if (signup == False):
+			print 'find user in database'
+
+
+
 	#bp = Profile.get_by_prof_id('21225867-9ad3-4640-b04b-25694df0e730')
 	#ht_bind_session(bp)
-	session['twitter_oauth'] = resp
 	print 'authorized_handler twitter_oauth = ', session['twitter_oauth']
 
 	print 'authorized_handler return redir(index)'
