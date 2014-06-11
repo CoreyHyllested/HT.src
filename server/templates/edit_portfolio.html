@@ -1,0 +1,87 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
+	<!--script src="/static/js/profile.js"></script-->
+	<script src="/static/js/lightbox.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="editPortfolioWrapper">
+	<h3>Edit Portfolio Images</h3>
+	(drag and drop to re-order)<br>
+	<a href="/profile">Back to Profile</a> | <a href="/upload_portfolio">Upload New Images</a> 
+	<ul class="editPortfolioList">
+		{% for img in portfolio %}
+
+			<li class="editPortfolioListItem">
+				<div class="editPortfolioImageContainer">
+					<div class="editPortfolioImageWrapper">
+						<div class="header">
+							<div class="img-delete">×</div>
+						</div>
+						<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" data-id="{{img.img_id}}" class="editPortfolioImage" ></a>
+						<div class="caption">
+							<textarea rows="3" cols="20" class='editPortfolioImageCaption' name='caption' maxlength='100' placeholder='Enter a caption' />{{img.img_comment}}</textarea>
+						</div>
+						<div class="save-button">
+							<button class="editPortfolioSave whiteButton">Save Changes</button>
+						</div>
+					</div>
+				</div>
+			</li>
+
+		{% endfor %}
+	</ul>
+</div>
+
+<script>
+
+
+$(".editPortfolioList").sortable({
+    items:'.editPortfolioListItem',
+    cursor: 'move',
+    opacity: 0.5,
+    containment: '.editPortfolioWrapper',
+    tolerance: 'pointer',
+    start: function(event, ui){
+    	console.log("starting position is "+ui.item.index());
+    },
+    update: function(event, ui) {
+    	console.log("dropped to new position: "+ui.item.index());
+    	alert("You chose to move the image to position "+ui.item.index());
+    }
+});
+
+$(".img-delete").click(function() {
+	var this_img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
+	var this_img_title = $(this).parent().siblings(".editPortfolioImage").data("title");
+	alert("You chose to delete the image '"+this_img_title+"', with the filename "+this_img_id);
+
+});
+
+$(".editPortfolioSave").click(function() {
+	var this_img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
+	var old_caption = $(this).parent().siblings(".editPortfolioImage").data("title");
+	var new_caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
+	alert("You chose to change the caption the image with filename "+this_img_id+" - see console for details");
+	console.log("Caption Changed for Image "+this_img_id);
+	console.log("Old caption: "+old_caption);
+	console.log("New caption: "+new_caption);
+
+	$(this).parent().fadeOut();
+
+});
+
+$(".editPortfolioImageCaption").keyup(function(){
+	$(this).parent().siblings(".save-button").fadeIn();
+});
+
+</script>
+
+
+{% endblock %}

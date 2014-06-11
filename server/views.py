@@ -1267,9 +1267,16 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
-@ht_server.route("/multiple_uploader", methods=['GET', 'POST'])
+@ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('multiple_uploader.html', bp=bp))
+	return make_response(render_template('upload_portfolio.html', bp=bp))
+	
+@ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
+def render_edit_portfolio_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 	
