@@ -21,8 +21,7 @@ APPT_FLAG_RESOLVED = 8
 APPT_FLAG_USERPAID = 15		# if buyer has paid us.
 APPT_FLAG_HEROPAID = 16		# if hero has been paid.
 APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
-APPT_FLAG_CANCELED = 18		# use from to see who canceled it
-
+APPT_FLAG_CANCELED = 18		# use from to see who canceled it 
 APPT_FLAG_QUIET		= 29
 APPT_FLAG_DIGITAL	= 30
 APPT_FLAG_RUNOVER	= 31
@@ -196,6 +195,20 @@ class Account(Base):
 		self.__dict__.update(new_values_dict)
 
 
+#class Email(Base):
+#	__tablename__ = "email"
+
+#	id = Column(Integer, primary_key = True)
+#	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+#	email	= Column(String(128),	nullable=False)
+#	flags	= Column(Integer,		nullable=False)
+	
+#	def __init__ (self, account, email, flags=None):
+#		self.ht_account = account
+#		self.email = email
+
+	
+
 
 class Oauth(Base):
 	__tablename__ = "oauth"
@@ -226,17 +239,17 @@ class Oauth(Base):
 		self.oa_token	= token
 		self.oa_secret	= secret
 		self.oa_email	= email
-	
+
 
 	def __repr__ (self):
-		return '<oauth2, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
+		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
 
-	@staticmethod
-	def get_stripe_by_uid(uid):
-		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
-		return stripe_custs[0]
+#	@staticmethod
+#	def get_stripe_by_uid(uid):
+#		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+#		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+#		return stripe_custs[0]
 
 
 class Profile(Base):

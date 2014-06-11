@@ -675,8 +675,8 @@ def upload():
 
 		# not working yet - it gets the same caption for all uploaded photos. not sure how to distinguish between them.
 		comment = request.values.get('caption')
-		if (len(comment) == 0):
-			comment = "Portfolio Img"
+		#if (len(comment) == 0):
+		comment = "Portfolio Img"
 
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
 		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
