@@ -195,7 +195,7 @@
 			<div class="perHour">per<br>hour</div>
 		</div>
 		{% if hp is sameas bp %}
-			<a href="/edit"><button id="edit-profile-button" class="whiteButton">Edit Profile</button></a>
+			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
@@ -217,16 +217,23 @@
 		</div>
 
 		{% if hp is sameas bp %}
-			<a href="/multiple_uploader"><button id="portfolio-upload-button" class="whiteButton">Add Portfolio Images</button></a>
+		<div class="portfolioButtons">
+			{% if portfolio|length == 0 %}	
+				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
+			{% else %}
+				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
+			{% endif %}
+		</div>
 		{% endif %}
 
 		<div class="profilePortfolio">
+			<ul class="profilePortfolioList">
 			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
 			{% for img in portfolio %}
-				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a>
+				<li class="profilePortfolioListItem"><a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
 
 			{% endfor %}
-
+			</ul>
 			{% if hp is sameas bp %}
 <!-- 			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
 			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple /> -->
@@ -274,9 +281,18 @@
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/dz.js"></script>	
 <script>
+
 $(function () {
 
-	// $('#portfolio-upload-button').click(function(event) {
+	// $(".profilePortfolioList").sortable();
+	// $(".profilePortfolioList").sortable("disable");
+
+	// $(".profilePortfolioSortEnable").click(function(event) {
+	// 	event.preventDefault;
+	// 	$(".profilePortfolioList").sortable("enable");
+	// });
+
+	// $('#portfolioUploadButton').click(function(event) {
 	// 	event.preventDefault();
 	// 	$('#portfolio-upload').show();
 	// });
