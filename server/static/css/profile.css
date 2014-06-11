@@ -104,24 +104,27 @@ c) 1000px - ... (desktops)
 
 	/* Phones */
 	@media only screen and (min-device-width: 240px) and (max-width: 549px) {
+
+
 		
 		.profileContentWrapper {
 			background-color: white;
 			margin: auto;
-			padding-top: 20px;
-			width: 90%;
+			padding: 20px 12px 0px 12px;
+			width: 100%;
 			z-index: 30;
+			overflow: auto;
 		}
 
 	}
 
 	/* Tablet */
 	@media only screen and (min-width: 550px) and (max-width: 999px) {
+
 			
 		.profileContentWrapper {
 			background-color: white;
 			margin: 0px auto;
-			/*margin: -100px auto 0;*/
 			min-height: 400px;
 			position: relative;
 			width: 100%;
@@ -131,25 +134,6 @@ c) 1000px - ... (desktops)
 
 	/* Desktop */
 	@media only screen and (min-width: 1000px) {
-
-		.profileHeaderColumn {
-			float: left;
-			width: 100%;
-			min-height: 400px;
-			margin-bottom: 8px;
-		}
-
-
-		.profilePicContainer {
-			border-radius: 6px;
-			overflow: hidden;
-		}
-
-		.profilePic {
-			min-width: 100%;
-			width: 100% !important;
-		}
-
 
 		.profileContentWrapper {
 			background-color: white;
@@ -172,6 +156,23 @@ c) 1000px - ... (desktops)
 
 /* Phones */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		margin-bottom: 8px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -438,7 +439,7 @@ c) 1000px - ... (desktops)
 
 	.profilePriceBox {display: none;}
 
-	.profileRightColumn .profileBasicInfo {display: none;}
+	.profileRightColumn .profileBasicInfo, #editProfileButton {display: none;}
 
 	.profileBasicInfo {
 		border-bottom: 1px solid #b5b6b8;
@@ -479,6 +480,12 @@ c) 1000px - ... (desktops)
 
 	.profileRightColumn input[type="submit"] {display: none;}
 
+
+	.portfolioButtons {
+		margin-top: 20px;
+		text-align: center;
+	}
+
 	.profilePortfolio:before {
 		background-size: 18px 18px;
 		color: black;
@@ -490,6 +497,14 @@ c) 1000px - ... (desktops)
 		margin-top: 41px;
 		padding-bottom: 10px;
 		width: 100%;
+	}
+
+	ul.profilePortfolioList {
+		list-style-type: none;
+	}
+	li.profilePortfolioListItem {
+		display: inline;
+		float: none;
 	}
 
 	.profilePortfolioImage {
@@ -504,6 +519,117 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+
+
+
+	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
+
+	/* Styles for editing the portfolio */
+
+	.editPortfolioWrapper{
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 90%;
+		z-index: 30;
+		text-align: center;		
+	}
+
+
+	.editPortfolioWrapper h2 {
+		color: #6e7980;
+		font-weight: bold;
+		margin-bottom: 25px;
+	}
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 100%;
+	}
+	li.editPortfolioListItem:nth-of-type(3n+0) {
+
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageCaption {
+		width: 100%;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
 		background-size: cover;
@@ -563,6 +689,25 @@ c) 1000px - ... (desktops)
 
 /* Tablets */
 @media only screen and (min-width: 550px) and (max-width: 999px) {
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		min-height: 400px;
+		margin-bottom: 8px;
+		padding: 12px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -883,6 +1028,19 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+	.portfolioButtons {
+		text-align: center;
+	}
+
+	ul.profilePortfolioList {
+		list-style-type: none;
+	}
+	li.profilePortfolioListItem {
+		display: inline;
+		float: none;
+	}
+
+
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
@@ -895,6 +1053,115 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+
+	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
+
+
+	/* Styles for editing the portfolio */
+
+	.editPortfolioWrapper{
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 100%;
+		z-index: 30;		
+	}
+
+
+	.editPortfolioWrapper h2 {
+		color: #6e7980;
+		font-weight: bold;
+		margin-bottom: 25px;
+	}
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 50%;
+	}
+	li.editPortfolioListItem:nth-of-type(3n+0) {
+
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageCaption {
+		width: 100%;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
 		background-size: cover;
@@ -957,6 +1224,26 @@ c) 1000px - ... (desktops)
 }
 
 @media only screen and (min-width: 1000px) {
+
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		min-height: 400px;
+		margin-bottom: 8px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
+
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -1261,6 +1548,19 @@ c) 1000px - ... (desktops)
 		margin-top: 30px;
 	}
 
+	.portfolioButtons {
+		text-align: center;
+	}
+
+	ul.profilePortfolioList {
+		list-style-type: none;
+	}
+	li.profilePortfolioListItem {
+		display: inline;
+		float: left;
+	}
+
+
 	.profilePortfolioImage {
 		border: 1px solid #e2e4e6;
 		border-radius: 3px;
@@ -1286,8 +1586,115 @@ c) 1000px - ... (desktops)
 		
 	}
 
-	.profilePortfolioImage:nth-of-type(3n+0) {margin-right: 0px;}
+	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
 
+	/* Styles for editing the portfolio */
+
+	.editPortfolioWrapper{
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 980px;
+		z-index: 30;		
+	}
+
+
+	.editPortfolioWrapper h2 {
+		color: #6e7980;
+		font-weight: bold;
+		margin-bottom: 25px;
+	}
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 33%
+	}
+	li.editPortfolioListItem:nth-of-type(3n+0) {
+
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageCaption {
+		width: 100%;
+		height: 80px;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
 
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga_thumb.jpg') no-repeat center center;
