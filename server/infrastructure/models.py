@@ -218,7 +218,7 @@ class Oauth(Base):
 	oa_service	= Column(Integer(),  nullable=False)	#LINKEDIN = 1, Google = 2					#OA Service
 	oa_flags	= Column(Integer(),  nullable=False)	# (valid?									#OA Flags
 	oa_email	= Column(String(128))									#OA Email
-	oa_token	= Column(String(64))													#OA TOKEN  -- user token
+	oa_token	= Column(String(256))
 	oa_secret	= Column(String(64))													#OA SECRET -- for remote call
 	oa_optdata1 = Column(String(256))
 	oa_optdata2 = Column(String(256))
@@ -481,8 +481,7 @@ class Image(Base):
 	img_comment = Column(String(256))
 	img_created = Column(DateTime())
 	img_flags	= Column(Integer, default=0)
-	#img_x, int
-	#img_y, int
+	img_order	= Column(Integer, default=0, nullable=False)
 
 	def __init__(self, imgid, prof_id, comment=None):
 		self.img_id  = imgid

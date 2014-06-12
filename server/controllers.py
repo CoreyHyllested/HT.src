@@ -141,6 +141,7 @@ def ht_create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
 	try:
+		print 'create account and profile'
 		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
 		prof  = Profile(name, hero.userid)
 		db_session.add(hero)
@@ -159,9 +160,6 @@ def ht_create_account(name, email, passwd):
 		db_session.rollback()
 		return None, False
 
-	print 'create_account: successful', hero.userid 
-	print hero
-	print prof
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
 
@@ -169,26 +167,20 @@ def ht_create_account(name, email, passwd):
 
 def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 	print 'ht_create_account_with_oauth: ', name, email, oa_provider
-	challenge_hash = uuid.uuid4()
+	(hero, prof) = ht_create_account(name, email, str(uuid.uuid4()))
+
+	if (hero is None):
+		print 'create_account failed. happens when same email address is used'
+		print 'Right, now mention an account uses this email address.'
+		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
+		return None, False
 
 	try:
-		print 'create account'
-		hero	= Account(name, email, generate_password_hash(str(uuid.uuid4()))).set_sec_question(str(challenge_hash))
-		print 'create profile'
-		prof	= Profile(name, hero.userid)
-		print 'create oauth'
+		print 'create oauth account'
 		oa_user = Oauth(str(hero.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
-		print 'adding to session'
-		db_session.add(hero)
-		db_session.add(prof)
 		db_session.add(oa_user)
 		db_session.commit()
-
 	except IntegrityError as ie:
-		print 'happens, when you use the same email address'
-		print 'save all oa variables in Redis.'
-		print 'set session making users login again.  If they can login immediately.'
-		print 'Right, now mention an account uses this email address.'
 		print ie
 		db_session.rollback()
 		return None, False
@@ -198,8 +190,6 @@ def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 		db_session.rollback()
 		return None, False
 
-	print 'create_account_w_oa: successful.', hero.userid
-	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
 
 
@@ -251,7 +241,7 @@ def normalize_oa_account_data(provider, oa_data):
 	data = {}
 	print 'normalizing oauth data'
 	if provider == OAUTH_LINKED:
-		data['oa_service']	= provider 
+		data['oa_service']	= provider
 		data['oa_account']	= oa_data.get('id')
 		data['oa_email']	= oa_data.get('CAH_email', None)
 		data['oa_token']	= oa_data.get('CAH_token', None)
@@ -260,16 +250,15 @@ def normalize_oa_account_data(provider, oa_data):
 		facebook = oa_data
 
 		print 'normalize facebook data'
-		data['oa_service']	= provider 
+		data['oa_service']	= provider
 		data['oa_account']	= facebook['id']
 		data['oa_name']		= facebook['name']
 		data['oa_email']	= facebook['email']
 		data['oa_token']	= facebook['token']
-		data['oa_secret']	= None 
+		data['oa_secret']	= None
 		data['oa_timezone'] = facebook.get('timezone', None)
 		pp(data)
 
-		
 	return data
 
 

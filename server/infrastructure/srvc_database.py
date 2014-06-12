@@ -29,7 +29,7 @@ MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
 #    db_session.remove()
 
 print 'init::db -- create engine and scoped connection'
-db_engine	= create_engine(DATABASE_URI, echo=True)
+db_engine	= create_engine(DATABASE_URI) #, echo=True)
 db_session	= scoped_session(sessionmaker(bind=db_engine))
 
 Base = declarative_base(bind=db_engine)
