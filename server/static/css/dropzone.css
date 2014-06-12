@@ -87,10 +87,10 @@
 .dropzone-previews .dz-preview.dz-success .dz-success-mark {
   display: block;
 }
-.dropzone .dz-preview:hover .dz-details img,
+/*.dropzone .dz-preview:hover .dz-details img,
 .dropzone-previews .dz-preview:hover .dz-details img {
   display: none;
-}
+}*/
 .dropzone .dz-preview .dz-success-mark,
 .dropzone-previews .dz-preview .dz-success-mark,
 .dropzone .dz-preview .dz-error-mark,
@@ -101,7 +101,7 @@
   height: 40px;
   font-size: 30px;
   text-align: center;
-  right: -10px;
+  left: -10px;
   top: -10px;
 }
 .dropzone .dz-preview .dz-success-mark,
@@ -140,13 +140,10 @@
 .dropzone-previews .dz-preview .dz-error-message {
   display: none;
   position: absolute;
-  top: -5px;
-  left: -20px;
-  background: rgba(245,245,245,0.8);
+  bottom: 2px;
+  background: rgba(255,255,255,0.9);
   padding: 8px 10px;
   color: #800;
-  min-width: 140px;
-  max-width: 500px;
   z-index: 500;
 }
 .dropzone .dz-preview:hover.dz-error .dz-error-message,
@@ -216,13 +213,13 @@
   box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
   font-size: 14px;
 }
-.dropzone .dz-preview.dz-image-preview:hover .dz-details img,
+/*.dropzone .dz-preview.dz-image-preview:hover .dz-details img,
 .dropzone-previews .dz-preview.dz-image-preview:hover .dz-details img {
   display: block;
   opacity: 0.1;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=10)";
   filter: alpha(opacity=10);
-}
+}*/
 .dropzone .dz-preview.dz-success .dz-success-mark,
 .dropzone-previews .dz-preview.dz-success .dz-success-mark {
   opacity: 1;

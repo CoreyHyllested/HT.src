@@ -74,6 +74,8 @@ c) 1000px - ... (desktops)
 	display: none;
 }
 
+/* Modal styles - not currently implemented. Try using other modal styles in master.css */
+
 .modal {
 	background: rgba(0,0,0,.6);
     position: fixed;
@@ -487,25 +489,16 @@ c) 1000px - ... (desktops)
 	}
 
 	.profilePortfolio:before {
-		background-size: 18px 18px;
 		color: black;
-		content: 'Portfolio (5)';
+		content: 'Portfolio';
 		display: block;		
-		font-size: 1.2em;
+		font-size: 1.3em;
 		font-weight: 500;
-		line-height: 1.2em;
-		margin-top: 41px;
+		margin-top: 28px;
 		padding-bottom: 10px;
 		width: 100%;
 	}
 
-	ul.profilePortfolioList {
-		list-style-type: none;
-	}
-	li.profilePortfolioListItem {
-		display: inline;
-		float: none;
-	}
 
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
@@ -520,116 +513,6 @@ c) 1000px - ... (desktops)
 	}
 
 
-
-
-	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
-
-	/* Styles for editing the portfolio */
-
-	.editPortfolioWrapper{
-		float: none;
-		overflow: auto;
-		background-color: white;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 12px auto 0px;
-		padding: 41px;
-		position: relative;
-		width: 90%;
-		z-index: 30;
-		text-align: center;		
-	}
-
-
-	.editPortfolioWrapper h2 {
-		color: #6e7980;
-		font-weight: bold;
-		margin-bottom: 25px;
-	}
-
-	ul.editPortfolioList {
-		list-style-type: none;
-	}
-
-	li.editPortfolioListItem {
-		display: inline;
-		float: left;
-		margin-bottom: 20px;
-		width: 100%;
-	}
-	li.editPortfolioListItem:nth-of-type(3n+0) {
-
-	}
-
-	.editPortfolioImageContainer{
-		float: left;
-		padding: 16px;
-		width: 90%;
-	}
-
-	.editPortfolioImageWrapper{
-		float: left;
-		padding: 4px;
-		background: #fff;
-		border: 1px solid #b5b6b8;
-		border-radius: 3px;
-		width: 98%;
-	}
-
-	.editPortfolioImageWrapper .header{
-		float: left;
-		width: 100%;
-	}
-
-	.editPortfolioImageWrapper .header .img-delete{
-		float: right;
-		font-size: 1.5em;
-		text-align: right;
-		cursor: pointer;
-		line-height: 10px;
-		height: 20px;
-	}
-
-	.editPortfolioImageWrapper .caption{
-		float: left;
-		width: 100%;
-	}
-	.editPortfolioImageWrapper .save-button{
-		height: 40px;
-		display: none;
-		float: left;
-		width: 100%;
-	}
-	.editPortfolioImageCaption {
-		width: 100%;
-		resize: none;
-	}
-
-	.editPortfolioImage {
-		border: 1px solid #e2e4e6;
-		border-radius: 3px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		display: block;
-		float: left;
-		height: 200px;
-		margin-right: 11px;
-		margin-bottom: 11px;
-		-moz-transition: 0.3s ease;
-		-o-transition: 0.3s ease;
-		-webkit-transition: 0.3s ease;
-		transition: 0.3s ease;
-		width: 100%;
-	}
-
-	.editPortfolioImage:hover {
-
-		border: 1px solid #29abe2;
-		
-	}	
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
 		background-size: cover;
@@ -1032,15 +915,6 @@ c) 1000px - ... (desktops)
 		text-align: center;
 	}
 
-	ul.profilePortfolioList {
-		list-style-type: none;
-	}
-	li.profilePortfolioListItem {
-		display: inline;
-		float: none;
-	}
-
-
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
@@ -1048,120 +922,12 @@ c) 1000px - ... (desktops)
 		display: block;
 		float: left;
 		height: 110px;
-		margin: 10px 0;
+		margin-right: 10px;
+		margin-top: 0px;
 		text-align: center;
 		width: 100%;
 	}
 
-
-	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
-
-
-	/* Styles for editing the portfolio */
-
-	.editPortfolioWrapper{
-		float: none;
-		overflow: auto;
-		background-color: white;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 12px auto 0px;
-		padding: 41px;
-		position: relative;
-		width: 100%;
-		z-index: 30;		
-	}
-
-
-	.editPortfolioWrapper h2 {
-		color: #6e7980;
-		font-weight: bold;
-		margin-bottom: 25px;
-	}
-
-	ul.editPortfolioList {
-		list-style-type: none;
-	}
-
-	li.editPortfolioListItem {
-		display: inline;
-		float: left;
-		margin-bottom: 20px;
-		width: 50%;
-	}
-	li.editPortfolioListItem:nth-of-type(3n+0) {
-
-	}
-
-	.editPortfolioImageContainer{
-		float: left;
-		padding: 16px;
-		width: 90%;
-	}
-
-	.editPortfolioImageWrapper{
-		float: left;
-		padding: 4px;
-		background: #fff;
-		border: 1px solid #b5b6b8;
-		border-radius: 3px;
-		width: 98%;
-	}
-
-	.editPortfolioImageWrapper .header{
-		float: left;
-		width: 100%;
-	}
-
-	.editPortfolioImageWrapper .header .img-delete{
-		float: right;
-		font-size: 1.5em;
-		text-align: right;
-		cursor: pointer;
-		line-height: 10px;
-		height: 20px;
-	}
-
-	.editPortfolioImageWrapper .caption{
-		float: left;
-		width: 100%;
-	}
-	.editPortfolioImageWrapper .save-button{
-		height: 40px;
-		display: none;
-		float: left;
-		width: 100%;
-	}
-	.editPortfolioImageCaption {
-		width: 100%;
-		resize: none;
-	}
-
-	.editPortfolioImage {
-		border: 1px solid #e2e4e6;
-		border-radius: 3px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		display: block;
-		float: left;
-		height: 200px;
-		margin-right: 11px;
-		margin-bottom: 11px;
-		-moz-transition: 0.3s ease;
-		-o-transition: 0.3s ease;
-		-webkit-transition: 0.3s ease;
-		transition: 0.3s ease;
-		width: 100%;
-	}
-
-	.editPortfolioImage:hover {
-
-		border: 1px solid #29abe2;
-		
-	}	
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
 		background-size: cover;
@@ -1546,20 +1312,13 @@ c) 1000px - ... (desktops)
 
 	.profilePortfolio {
 		margin-top: 30px;
+/*		max-height: 400px;
+		overflow-y: scroll;*/
 	}
 
 	.portfolioButtons {
 		text-align: center;
 	}
-
-	ul.profilePortfolioList {
-		list-style-type: none;
-	}
-	li.profilePortfolioListItem {
-		display: inline;
-		float: left;
-	}
-
 
 	.profilePortfolioImage {
 		border: 1px solid #e2e4e6;
@@ -1586,115 +1345,8 @@ c) 1000px - ... (desktops)
 		
 	}
 
-	li.profilePortfolioListItem:nth-of-type(3n+0) .profilePortfolioImage {margin-right: 0px;}
+	.profilePortfolioImage:nth-of-type(3n+0) {margin-right: 0px;}
 
-	/* Styles for editing the portfolio */
-
-	.editPortfolioWrapper{
-		float: none;
-		overflow: auto;
-		background-color: white;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 12px auto 0px;
-		padding: 41px;
-		position: relative;
-		width: 980px;
-		z-index: 30;		
-	}
-
-
-	.editPortfolioWrapper h2 {
-		color: #6e7980;
-		font-weight: bold;
-		margin-bottom: 25px;
-	}
-
-	ul.editPortfolioList {
-		list-style-type: none;
-	}
-
-	li.editPortfolioListItem {
-		display: inline;
-		float: left;
-		margin-bottom: 20px;
-		width: 33%
-	}
-	li.editPortfolioListItem:nth-of-type(3n+0) {
-
-	}
-
-	.editPortfolioImageContainer{
-		float: left;
-		padding: 16px;
-		width: 90%;
-	}
-
-	.editPortfolioImageWrapper{
-		float: left;
-		padding: 4px;
-		background: #fff;
-		border: 1px solid #b5b6b8;
-		border-radius: 3px;
-		width: 98%;
-	}
-
-	.editPortfolioImageWrapper .header{
-		float: left;
-		width: 100%;
-	}
-
-	.editPortfolioImageWrapper .header .img-delete{
-		float: right;
-		font-size: 1.5em;
-		text-align: right;
-		cursor: pointer;
-		line-height: 10px;
-		height: 20px;
-	}
-
-	.editPortfolioImageWrapper .caption{
-		float: left;
-		width: 100%;
-	}
-	.editPortfolioImageWrapper .save-button{
-		height: 40px;
-		display: none;
-		float: left;
-		width: 100%;
-	}
-
-	.editPortfolioImageCaption {
-		width: 100%;
-		height: 80px;
-		resize: none;
-	}
-
-	.editPortfolioImage {
-		border: 1px solid #e2e4e6;
-		border-radius: 3px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		display: block;
-		float: left;
-		height: 200px;
-		margin-right: 11px;
-		margin-bottom: 11px;
-		-moz-transition: 0.3s ease;
-		-o-transition: 0.3s ease;
-		-webkit-transition: 0.3s ease;
-		transition: 0.3s ease;
-		width: 100%;
-	}
-
-	.editPortfolioImage:hover {
-
-		border: 1px solid #29abe2;
-		
-	}	
 
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga_thumb.jpg') no-repeat center center;
