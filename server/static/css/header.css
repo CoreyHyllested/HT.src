@@ -440,6 +440,15 @@ c) 1000px - ... (desktop)
 		width: 97px;
 	}
 
+.mailBox {
+		background: url("../img/mail.png") no-repeat;
+		background-size: 22px 20px;
+		height: 25px;
+		right: 60px;
+		position: absolute;
+		top: 10px;
+		width: 97px;
+	}
 
 	/* Header Search */
 
