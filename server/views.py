@@ -203,7 +203,7 @@ def render_login(usrmsg=None):
 	if form.validate_on_submit():
 		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
-			bp = ht_get_profile(ba)
+			bp = Profile.get_by_uid(ba.userid)
 			ht_bind_session(bp)
 			return redirect('/dashboard')
 
@@ -244,21 +244,26 @@ def facebook_authorized(resp):
 		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 		return redirect(url_for('render_login', messages=msg))
 
-	# save oauth_token in session.
-	session['oauth_token'] = (resp['access_token'], '')
 	# User has successfully authenticated with Facebook.
-	if (session['oauth_facebook_signup'] == True):
-		print 'facebook user is creating an account.'
-		me = facebook.get('/me')
-		# should really have an intermediate page.
-		(bh, bp) = create_account(me.data['name'], me.data['email'], 'facebook_oauth')
-		if (bp):
-			print ("created_account, uid = " , str(bp.account))
-			ht_bind_session(bp)
-		#	import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
+	session['oauth_token'] = (resp['access_token'], '')
 
+	print 'facebook user is creating an account.'
+	# grab signup/login info
+	me = facebook.get('/me')
+	me.data['token']=session['oauth_token']
 
-	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
+	ba = ht_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	if (ba):
+		print ("created_account, uid = " , str(ba.userid), ', get profile')
+		bp = Profile.get_by_uid(ba.userid)
+		print 'bind session'
+		ht_bind_session(bp)
+		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
+		resp = redirect('/dashboard')
+	else:
+		print ('create account failed')
+		resp = redirect('/dbFailure')
+	return resp
 
 
 @facebook.tokengetter
@@ -301,8 +306,9 @@ def linkedin_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
+	#(bh, bp) = ht_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
 
-	print('li_auth - find account')
+
 	# also look for linkedin-account/id number (doesn't exist today).
 	possible_accts = Account.query.filter_by(email=email.data).all()
 	if (len(possible_accts) == 1):
@@ -315,7 +321,7 @@ def linkedin_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
@@ -325,7 +331,7 @@ def linkedin_authorized(resp):
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
-		# something failed.  
+		# something failed.
 		print bh if (bh is not None) else 'None'
 		print bp if (bp is not None) else 'None'
 		print ('create account failed, using', str(email.data))
@@ -351,7 +357,7 @@ def render_signup_page(usrmsg = None):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
-			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			(bh, bp) = ht_create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
