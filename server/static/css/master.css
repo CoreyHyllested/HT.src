@@ -81,6 +81,24 @@ label {
 :-ms-input-placeholder {color: #939292;}
 ::-webkit-input-placeholder {color: #939292;}
 
+
+/* Close Window Button */
+.windowClose {
+	position: absolute;
+	top: 5px;
+	right: 10px;
+	cursor: pointer;
+	font-size: 1.3em;
+}
+
+.windowClose a {
+	color: #d1d1d1;
+}
+.windowClose a:hover {
+	color: #adadad;
+	text-decoration: none !important;
+}
+
 /* Buttons */
 
 	.blueButton {

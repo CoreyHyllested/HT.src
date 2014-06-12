@@ -92,6 +92,7 @@ b) 450px - ... (everything else)
 		overflow-y: scroll;
 		padding-bottom: 10px;
 		width: 90%;
+		position: relative;
 	}
 
 	/* Change Photo */
@@ -213,6 +214,7 @@ b) 450px - ... (everything else)
 		margin: 40px auto 30px;
 		padding: 10px 20px;
 		width: 400px;
+		position: relative;
 	}
 
 	.editContentWrapper h2 {
