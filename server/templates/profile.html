@@ -17,7 +17,7 @@
 {% block content %}
 
 <div class="profileContentWrapper">
-
+	
 	<div class="profileHeaderColumn">
 		<div class="profilePicContainer">
 			<img class="profilePic" src="{{profile_img}}">
@@ -227,13 +227,13 @@
 		{% endif %}
 
 		<div class="profilePortfolio">
-			<ul class="profilePortfolioList">
+			
 			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
 			{% for img in portfolio %}
-				<li class="profilePortfolioListItem"><a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
+				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
 
 			{% endfor %}
-			</ul>
+			
 			{% if hp is sameas bp %}
 <!-- 			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
 			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple /> -->

@@ -2,7 +2,7 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
 	<!--script src="/static/js/profile.js"></script-->
 	<script src="/static/js/lightbox.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
@@ -12,9 +12,11 @@
 {% block content %}
 
 <div class="editPortfolioWrapper">
-	<h3>Edit Portfolio Images</h3>
-	(drag and drop to re-order)<br>
+	<div class="windowClose"><a href="/profile">&#x2715;</a></div>
+	<h2>Edit Portfolio Images</h2>
+	(Drag and drop to re-order)<br>
 	<a href="/profile">Back to Profile</a> | <a href="/upload_portfolio">Upload New Images</a> 
+	<div class="editPortfolioStatus"></div>
 	<ul class="editPortfolioList">
 		{% for img in portfolio %}
 
@@ -36,7 +38,16 @@
 			</li>
 
 		{% endfor %}
+		<li class="uploadNewImageListItem">
+			<div class="editPortfolioImageContainer">
+				<div class="uploadNewImageWrapper">
+					<h3>Upload Images</h3>
+					<div class="uploadImageSign">+</div>
+				</div>
+			</div>
+		</li>
 	</ul>
+
 </div>
 
 <script>
@@ -55,6 +66,10 @@ $(".editPortfolioList").sortable({
     	console.log("dropped to new position: "+ui.item.index());
     	alert("You chose to move the image to position "+ui.item.index());
     }
+});
+
+$(".uploadNewImageWrapper").click(function() {
+	window.location.href = "/upload_portfolio";
 });
 
 $(".img-delete").click(function() {
