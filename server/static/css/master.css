@@ -130,6 +130,35 @@ label {
 		text-decoration: none;
 	}
 
+	.messageButton {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background-color: #29abe2;
+		border: 1px #29abe2 solid;
+	  	-webkit-border-radius: 3px;
+	  	border-radius: 3px;
+		color: white;
+		cursor: pointer;
+		display: table-cell;
+		font-size: 0.9em;
+		height: 35px;
+		margin-top: -12px;
+		text-align: center;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;		
+		vertical-align: middle;
+		width: 100%;
+
+	}
+
+	.messageButton:hover {
+		border: 1px solid #007cb3;
+		background-color: #007cb3;
+		text-decoration: none;
+	}
 	.redButton {
 		background-color: white;
 		border: 1px solid #e2e4e6;
