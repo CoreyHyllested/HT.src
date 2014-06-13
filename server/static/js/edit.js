@@ -12,7 +12,6 @@ $(document).ready(function() {
 
 
 	$("#edit-save-wrap").click(function () {
-
 		var fd = new FormData($('#editform')[0]);
 		fd.append('csrf_token', $('#csrf_token').val())
 		fd.append('edit_name',     $('#edit_name').val())
