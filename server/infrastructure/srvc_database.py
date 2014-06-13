@@ -12,10 +12,13 @@
 #################################################################################
 
 
+from server import ht_server
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
+DATABASE_URI = ht_server.config['SQLALCHEMY_DATABASE_URI']
+MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)
 # gotten from http://flask.pocoo.org/docs/patterns/sqlalchemy/ ... under Declaritive
@@ -25,32 +28,19 @@ from sqlalchemy.ext.declarative import declarative_base
 #def shutdown_session(exception=None):
 #    db_session.remove()
 
-print 'import::db -- create engine'
-#engine = create_engine('postgresql://brjwzdmhzipgwg:nYIJrHWrnkRruzOdzzCdFqKdXp@ec2-54-204-43-200.compute-1.amazonaws.com:5432/d23r20cnqg2c72')
-engine = create_engine('postgresql://htdb:passw0rd@beta1.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb')
+print 'init::db -- create engine and scoped connection'
+db_engine	= create_engine(DATABASE_URI) #, echo=True)
+db_session	= scoped_session(sessionmaker(bind=db_engine))
 
-print 'import::db -- create sessionmaker'
-db_session = scoped_session(sessionmaker(bind=engine))
-
-print 'import::db -- create db base'
-Base = declarative_base()
+Base = declarative_base(bind=db_engine)
 Base.query = db_session.query_property()
 
 
-# must come after Base
-from server.infrastructure.models import *
+# models uses (Base)
+from server.infrastructure import models
 
 def init_db():
-	# configure postgresql, by creating
-	print 'import::db -- create_all()'
-	Base.metadata.create_all(bind=engine)
-	db_session.commit()
-	print 'returned'
-
-
-
-#print 'import -- create sq SM'
-#sq = SM()
-
-# must do this (approx.) last.
-#print sq.query(models.Review).join(models.Profile, models.Review.author == models.Profile.id).all()
+	# import and create metadata models
+	print 'init::db -- import database models'
+	#Base.metadata.create_all(bind=engine)
+	print 'init::db -- done'

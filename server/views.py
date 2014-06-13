@@ -191,21 +191,19 @@ def display_reviews_of_hero(r, hero_is):
 @dbg_enterexit
 def render_login(usrmsg=None):
 	""" Logs user into HT system
-		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
 
 	if ('uid' in session):
-		# if logged in; take 'em home
+		# user already logged in; take 'em home
 		return redirect('/dashboard')
-
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
 		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
-			bp = ht_get_profile(ba)
+			bp = Profile.get_by_uid(ba.userid)
 			ht_bind_session(bp)
 			return redirect('/dashboard')
 
@@ -215,50 +213,79 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
+	msg = request.values.get('messages')
+	if (msg is not None):
+		usrmsg = msg
+
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
 
 @ht_server.route('/login/facebook', methods=['GET'])
-def login_facebook():
+def oauth_login_facebook():
 	# redirects to facebook, which gets token and comes back to 'fb_authorized'
 	print 'login_facebook()'
+	session['oauth_facebook_signup'] = False
 	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
-@ht_server.route('/login/authorized')
+@ht_server.route('/login/linkedin', methods=['GET'])
+def oauth_login_linkedin():
+	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	print 'login_linkedin()'
+	session['oauth_linkedin_signup'] = False
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+
+
+@ht_server.route('/authorized/facebook')
 @facebook.authorized_handler
 def facebook_authorized(resp):
-	print 'reached facebook_authorized'
 	if resp is None:
-		return 'Access denied: reason=%s error=%s' % ( request.args['error_reason'], request.args['error_description'])
+		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('render_login', messages=msg))
 
-	print 'resp is not none', resp['access_token']
+	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
-	me = facebook.get('/me')
 
-	return 'Logged in as id=%s name=%s redirect=%s' % (me.data['id'], me.data['name'], request.args.get('next'))	
+	print 'facebook user is creating an account.'
+	# grab signup/login info
+	me = facebook.get('/me')
+	me.data['token']=session['oauth_token']
+
+	ba = ht_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	if (ba):
+		print ("created_account, uid = " , str(ba.userid), ', get profile')
+		bp = Profile.get_by_uid(ba.userid)
+		print 'bind session'
+		ht_bind_session(bp)
+		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
+		resp = redirect('/dashboard')
+	else:
+		print ('create account failed')
+		resp = redirect('/dbFailure')
+	return resp
+
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
 	return session.get('oauth_token')
 
-
-
-@ht_server.route('/login/linkedin', methods=['GET'])
-def login_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'authorized'
-	print 'login_linkedin()' 
-	session['oauth_signup'] = False
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
+@ht_server.route('/facebook')
+def render_facebook_stats():
+	me = facebook.get('/me')
+	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
+	
 
 
 
+@linkedin.tokengetter
+def get_linkedin_oauth_token():
+	return session.get('linkedin_token')
 
 @ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
-def li_authorized(resp):
-	print 'authorized/linkedin (li_authorized)'
+def linkedin_authorized(resp):
+	print 'login() linkedin_authorized'
 
 	if resp is None:
 		# Needs a better error page 
@@ -266,7 +293,7 @@ def li_authorized(resp):
 		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 
 	#get Oauth Info.
-	signup = bool(session.pop('oauth_signup'))
+	signup = bool(session.pop('oauth_linkedin_signup'))
 	print('li_auth - signup', str(signup))
 	print('li_auth - login ', str(not signup))
 
@@ -279,8 +306,9 @@ def li_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
+	#(bh, bp) = ht_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
 
-	print('li_auth - find account')
+
 	# also look for linkedin-account/id number (doesn't exist today).
 	possible_accts = Account.query.filter_by(email=email.data).all()
 	if (len(possible_accts) == 1):
@@ -293,7 +321,7 @@ def li_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
@@ -303,7 +331,7 @@ def li_authorized(resp):
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
-		# something failed.  
+		# something failed.
 		print bh if (bh is not None) else 'None'
 		print bp if (bp is not None) else 'None'
 		print ('create account failed, using', str(email.data))
@@ -329,7 +357,7 @@ def render_signup_page(usrmsg = None):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
-			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			(bh, bp) = ht_create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
@@ -343,17 +371,17 @@ def render_signup_page(usrmsg = None):
 
 
 
+@ht_server.route('/signup/facebook', methods=['GET'])
+def signup_facebook():
+	session['oauth_facebook_signup'] = True
+	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
 @ht_server.route('/signup/linkedin', methods=['GET'])
 def signup_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'li_authorized'
 	print 'signup_linkedin'
-	session['oauth_signup'] = True
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
-
-
-@linkedin.tokengetter
-def get_linkedin_oauth_token():
-	return session.get('linkedin_token')
+	session['oauth_linkedin_signup'] = True
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
 
 
 
@@ -390,7 +418,7 @@ def signup_verify(challengeHash):
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
 			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return render_login(usrmsg=msg)
+			return redirect(url_for('render_login', messages=msg))
 
 	try:
 		# update user's account.
@@ -1144,8 +1172,7 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	if (session.get('uid') is not None):
-		session.pop('uid')
+	session.clear()
 	return redirect('/')
 
 

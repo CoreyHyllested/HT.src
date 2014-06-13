@@ -21,8 +21,7 @@ APPT_FLAG_RESOLVED = 8
 APPT_FLAG_USERPAID = 15		# if buyer has paid us.
 APPT_FLAG_HEROPAID = 16		# if hero has been paid.
 APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
-APPT_FLAG_CANCELED = 18		# use from to see who canceled it
-
+APPT_FLAG_CANCELED = 18		# use from to see who canceled it 
 APPT_FLAG_QUIET		= 29
 APPT_FLAG_DIGITAL	= 30
 APPT_FLAG_RUNOVER	= 31
@@ -119,17 +118,17 @@ class Account(Base):
 	USER_BANNED		= -2
 
 	userid  = Column(String(40), primary_key=True, index=True, unique=True)
-	email   = Column(String(120), nullable=False,  index=True, unique=True)
-	name    = Column(String(120), nullable=False)
-	pwhash	= Column(String(120), nullable=False)
+	email   = Column(String(128), nullable=False,  index=True, unique=True)
+	name    = Column(String(128), nullable=False)
+	pwhash	= Column(String(128), nullable=False)
 	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)   
 	source  = Column(Integer,		nullable=False, default=OAUTH_NONE)
 	phone	= Column(String(20))
 	dob     = Column(DateTime())
 	created = Column(DateTime())
 	updated = Column(DateTime())
-	sec_question = Column(String(120))
-	sec_answer   = Column(String(50))
+	sec_question = Column(String(128))
+	sec_answer   = Column(String(128))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -196,40 +195,61 @@ class Account(Base):
 		self.__dict__.update(new_values_dict)
 
 
+#class Email(Base):
+#	__tablename__ = "email"
+
+#	id = Column(Integer, primary_key = True)
+#	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+#	email	= Column(String(128),	nullable=False)
+#	flags	= Column(Integer,		nullable=False)
+	
+#	def __init__ (self, account, email, flags=None):
+#		self.ht_account = account
+#		self.email = email
+
+	
+
 
 class Oauth(Base):
 	__tablename__ = "oauth"
 	id      = Column(Integer, primary_key = True)
-	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-	oa_service	= Column(String(40), nullable=False)	#LINKEDIN = 1, Google = 2
-	oa_userid	= Column(String(40), nullable=False, index=True)	#user id returned back
-	opt_token	= Column(String(200))
-	opt_email	= Column(String(120))
-										#linkedin	#Stripe		#Google
-	opt_data1	= Column(String(200))	#?			CC token
-	opt_data2	= Column(String(200))	#?			Dflt CC		
-	opt_data3	= Column(String(200))	#?			chrge key	
+	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)		#HT UserID
+	oa_account	= Column(String(64), nullable=False, index=True)		#user id returned back		#OA UserID
+	oa_service	= Column(Integer(),  nullable=False)	#LINKEDIN = 1, Google = 2					#OA Service
+	oa_flags	= Column(Integer(),  nullable=False)	# (valid?									#OA Flags
+	oa_email	= Column(String(128))									#OA Email
+	oa_token	= Column(String(256))
+	oa_secret	= Column(String(64))													#OA SECRET -- for remote call
+	oa_optdata1 = Column(String(256))
+	oa_optdata2 = Column(String(256))
+	oa_optdata3 = Column(String(256))
+	oa_created	= Column(DateTime()) 	#first login time.											#OA first
+	oa_ts_login	= Column(DateTime()) 	#last  login time.
+
 
 	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-	def __init__ (self, account, provider, userid, token=None, data1=None, data2=None, data3=None):
-		self.account = account		# account.userid
-		self.oa_service	= provider
-		self.oa_userid	= userid		# third_party user_ID 
-		self.opt_token	= token		# opt_token for accessing accounts
-		self.opt_email	= None
-		self.opt_data1	= data1		# opt_value
-		self.opt_data2	= data2		# opt_value
-		self.opt_data3	= data3		
+	def __init__ (self, account, service, userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
+		self.ht_account = account
+		self.oa_account = userid
+		self.oa_service = service
+		self.oa_flags	= 0
+		self.oa_created	= dt.utcnow()
+		self.oa_ts_login = dt.utcnow()
+
+		self.oa_token	= token
+		self.oa_secret	= secret
+		self.oa_email	= email
+
 
 	def __repr__ (self):
-		return '<oauth, %r %r %r>' % (self.account, self.oa_service, self.oa_userid)
-		
-	@staticmethod
-	def get_stripe_by_uid(uid):
-		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
-		return stripe_custs[0]
+		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
+
+#	@staticmethod
+#	def get_stripe_by_uid(uid):
+#		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+#		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+#		return stripe_custs[0]
 
 
 class Profile(Base):
@@ -239,22 +259,22 @@ class Profile(Base):
 	__tablename__ = "profile"
 	prof_id	= Column(String(40), primary_key=True, index=True)
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
-	prof_name	= Column(String(120),							nullable=False)
-	prof_vanity	= Column(String(100))
+	prof_name	= Column(String(128), nullable=False)
+	prof_vanity	= Column(String(128))
 	#prof_skills	= relationship('skills', backref='profile', cascade='all,delete') 
 
 	rating   = Column(Float(),   nullable=False, default=-1)
 	reviews  = Column(Integer(), nullable=False, default=0)
 
-	prof_img	= Column(String(120), default="no_pic_big.svg",	nullable=False) 
-	prof_url	= Column(String(120), default='http://herotime.co')
+	prof_img	= Column(String(128), default="no_pic_big.svg",	nullable=False) 
+	prof_url	= Column(String(128), default='http://herotime.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
 
-	industry	= Column(String(50))
-	headline	= Column(String(50))
-	location	= Column(String(50), nullable=False, default="Berkeley, CA")
+	industry	= Column(String(64))
+	headline	= Column(String(128))
+	location	= Column(String(64), nullable=False, default="Berkeley, CA")
 
 	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
 	created = Column(DateTime(), nullable=False, default = dt.utcnow())
@@ -461,8 +481,7 @@ class Image(Base):
 	img_comment = Column(String(256))
 	img_created = Column(DateTime())
 	img_flags	= Column(Integer, default=0)
-	#img_x, int
-	#img_y, int
+	img_order	= Column(Integer, default=0, nullable=False)
 
 	def __init__(self, imgid, prof_id, comment=None):
 		self.img_id  = imgid
