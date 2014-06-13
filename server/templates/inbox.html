@@ -2,12 +2,29 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/tos.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
 {% endblock %}
 
 
 {% block content %}
 
-<div>TEST</div>
-{% endblock %}
+<div class="profileContentWrapper">
+  
+  <div class="inboxMessagesHeader">
+    <h1>Messages</h1>
+  </div>
+  
+  <div class="inboxLeftColumn">
+    <ul class="inBoxLeftNavigationList">
+      <li>INBOX</li></a>
+      <li>SENT</li></a>
+      <li>TRASH</li></a>
+    </ul>
+  </div>
+  
+  <div class="inboxRightColumn">
+  </div>
+  
 
+</div>
+{% endblock %}
