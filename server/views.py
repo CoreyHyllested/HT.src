@@ -1302,3 +1302,8 @@ def render_edit_portfolio_page():
 	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 	
+@ht_server.route("/inbox", methods=['GET', 'POST'])
+def render_inbox_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('inbox.html', bp=bp))
