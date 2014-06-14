@@ -2,12 +2,32 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/tos.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
 {% endblock %}
 
 
 {% block content %}
 
-<div>TEST</div>
-{% endblock %}
+<div class="profileContentWrapper">
+  
+  <div class="inboxMessagesHeader">
+    <h1>Messages</h1>
+<!--     <div id="inboxSearch"></div> -->
+  </div>
+  
+  <div class="inboxLeftColumn">
+    <input type="#" class="composeButton" value="COMPOSE">
+    <ul class="inBoxLeftNavigationList">
+      <div class="profileInfoBox">INBOX</div>
+      <div class="profileInfoBox">SENT</div>
+      <div class="profileInfoBox">TRASH</div>
+    </ul>
+  </div>
+  
+  <div class="inboxRightColumn">
+  This is where the messages will go.
+  </div>
+  
 
+</div>
+{% endblock %}
