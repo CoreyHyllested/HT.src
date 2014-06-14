@@ -97,12 +97,22 @@
 	}
 	
 	.profileInfoBox {
-    background-size: 18px 18px;
-    border-bottom: 1px solid #e2e4e6;
-    color: #6e7980;
-    font-size: 0.875em;
-    padding: 11px 0 11px 30px;
+	    background-size: 18px 18px;
+	    border-bottom: 1px solid #e2e4e6;
+	    color: #6e7980;
+	    font-size: 0.875em;
+	    padding: 11px 0 11px 30px;
+	    cursor: pointer;
 	}
+
+	.profileInfoBox:hover {
+	    color: #007cb3;
+	}
+
+	.profileInfoBox i {
+			padding-left: 6px; 
+	}
+
 	
   #inboxSearch {
 		background: url("../img/search.svg") #f6f6f6 no-repeat 420px;
