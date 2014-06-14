@@ -45,6 +45,7 @@ c) 1000px - ... (desktops)
 		position: relative;
 	}
 
+
 /* PAGE WRAPPERS */
 
 /* Mobiles, phablets, and tablets */
@@ -488,6 +489,10 @@ c) 1000px - ... (desktops)
 		text-align: center;
 	}
 
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
 	.profilePortfolio:before {
 		color: black;
 		content: 'Portfolio';
@@ -915,6 +920,10 @@ c) 1000px - ... (desktops)
 		text-align: center;
 	}
 
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
@@ -923,7 +932,7 @@ c) 1000px - ... (desktops)
 		float: left;
 		height: 110px;
 		margin-right: 10px;
-		margin-top: 0px;
+		margin-top: 10px;
 		text-align: center;
 		width: 100%;
 	}
@@ -1312,8 +1321,6 @@ c) 1000px - ... (desktops)
 
 	.profilePortfolio {
 		margin-top: 30px;
-/*		max-height: 400px;
-		overflow-y: scroll;*/
 	}
 
 	.portfolioButtons {

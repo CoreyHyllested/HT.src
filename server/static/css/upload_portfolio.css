@@ -18,8 +18,10 @@
 .dropzone {
 	border:1px dotted gray;
 	background-color: white;
+
 }
 
+/* necessary? defined in js */
 .dropzone-box img.preview {
 	height:100px;
 	width:100px;
@@ -116,11 +118,17 @@
 
 /* CONTENT */
 
+
+.multipleUploadButton:disabled{
+	opacity: 0.3;
+}
+
 .dropzone .header{
 	float: right;
 	width: 100%;
 
 }
+
 
 .dropzone .header .img-delete{
 	float: right;
@@ -129,6 +137,18 @@
 	cursor: pointer;
 	line-height: 10px;
 	height: 20px;
+}
+
+.dropzoneMessage{
+	width: 100%;
+	text-align: center;
+	font-size: 2.0em;
+	color: lightgray;
+	line-height: 1.2em;
+	padding: 0px 20px;
+	left: 0px;
+	top: 150px;
+	position: absolute;
 }
 
 .dzContentWrapper {
@@ -148,6 +168,28 @@
 	width: 980px;
 }
 
-.multipleUploadButton:disabled{
-	opacity: 0.3;
+/* Phones */
+@media only screen and (min-width: 240px) and (max-width: 549px) {
+
+	.dzContentWrapper {
+		width: 90%;
+	}
+}
+
+
+/* Tablets */
+@media only screen and (min-width: 550px) and (max-width: 999px) {
+
+	.dzContentWrapper {
+		width: 90%;
+	}
+
+}
+
+@media only screen and (min-width: 1000px) {
+
+	.dzContentWrapper {
+		width: 980px;
+	}
+
 }

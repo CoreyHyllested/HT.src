@@ -21,6 +21,15 @@ h3 {color: black;}
 	text-align: center;
 }
 
+.editPortfolioDone {
+	float: left;
+	width: 100%;
+}
+
+.editPortfolioDone button {
+	width: 250px;
+	margin: 10px auto;
+}
 
 /* CONTENT */
 
