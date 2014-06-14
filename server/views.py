@@ -1307,3 +1307,56 @@ def render_inbox_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('inbox.html', bp=bp))
+
+
+@ht_server.route("/portfolio/<operation>/", methods=['POST'])
+def ht_api_update_portfolio(operation):
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	print operation
+
+	try:
+		# get user's portfolio
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	if (operation == 'add'):
+		print 'adding file'
+	elif (operation == 'update'):
+		print 'usr request: update portfolio'
+		images = request.values.get('images')
+
+		try:
+			for img in portfolio:
+				update = False;
+				print img, img.img_id
+				jsn = request.values.get(img.img_id)
+				if jsn is None:
+					print img.img_id, 'doesnt exist in user-set, deleted.'
+					db_session.delete(img)
+					continue
+
+				obj = json.loads(jsn)
+				print img.img_id, obj['idx'], obj['cap']
+				if (img.img_order != obj['idx']):
+					update = True
+					print 'update img_order'
+					img.img_order = int(obj['idx'])
+				if (img.img_comment != obj['cap']):
+					update = True
+					print 'update img_cap'
+					img.img_comment = obj['cap']
+
+				if (update): db_session.add(img)
+
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+			return jsonify(usrmsg='This is embarassing.  We failed'), 500
+
+		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
+	else:
+		return jsonify(usrmsg='Unknown operation.'), 500

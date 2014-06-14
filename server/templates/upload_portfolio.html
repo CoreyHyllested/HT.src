@@ -23,7 +23,7 @@
 	<div class="dropzone-status"></div>
 
 	<div class="dropzone-wrapper">
-		<form action="upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+		<form action="/upload" method="post" class="dropzone dz-clickable square" id="upload-form">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 			<div class="fallback">
 		    	<input name="file" type="file" multiple />
