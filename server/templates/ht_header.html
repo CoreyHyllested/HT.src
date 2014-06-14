@@ -4,13 +4,11 @@
 	<title>HeroTime {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	
-
 	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
 
 	{% block head %}
 
-	<!-- Import Open Sans from Google Fonts (may be unnecessary if we drop the font -->
+	<!-- Import Open Sans from Google Fonts -->
 	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 
 	<!-- CSS reset -->
@@ -20,20 +18,17 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
 	<!-- SCRIPTS -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 	<!--script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script-->
 
 	<script src="/static/js/modal_windows.js"></script>	
 
 	{% endblock %}
-
-
-	<!--<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">-->
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
 	{% if jsfiles %}
 	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
