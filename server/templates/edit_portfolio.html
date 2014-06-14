@@ -3,10 +3,8 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
-	<!--script src="/static/js/profile.js"></script-->
-	<script src="/static/js/lightbox.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
-
+	<script src="/static/js/lightbox.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -15,37 +13,30 @@
 	<div class="windowClose"><a href="/profile">&#x2715;</a></div>
 	<h2>Edit Portfolio Images</h2>
 	(Drag and drop to re-order)<br>
-	<a href="/profile">Back to Profile</a> | <a href="/upload_portfolio">Upload New Images</a> 
+	<a href="/profile">Back to Profile</a> | <a href="/upload_portfolio">Upload Images</a> | <a href="#" onclick="savePortfolio()">Save Portfolio Changes</a>
 	<div class="editPortfolioStatus"></div>
 	<ul class="editPortfolioList">
-		{% for img in portfolio %}
+		{% for img in portfolio|sort(attribute='img_order') %}
 
-			<li class="editPortfolioListItem">
+			<li class="editPortfolioListItem" order="{{img.img_order}}" orig_caption="{{img.img_comment}}">
 				<div class="editPortfolioImageContainer">
 					<div class="editPortfolioImageWrapper">
 						<div class="header">
 							<div class="img-delete">×</div>
 						</div>
 						<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" data-id="{{img.img_id}}" class="editPortfolioImage" ></a>
+
 						<div class="caption">
 							<textarea rows="3" cols="20" class='editPortfolioImageCaption' name='caption' maxlength='100' placeholder='Enter a caption' />{{img.img_comment}}</textarea>
 						</div>
 						<div class="save-button">
-							<button class="editPortfolioSave whiteButton">Save Changes</button>
+							<button class="editPortfolioSave whiteButton">Save Caption</button>
 						</div>
 					</div>
 				</div>
 			</li>
 
 		{% endfor %}
-		<li class="uploadNewImageListItem">
-			<div class="editPortfolioImageContainer">
-				<div class="uploadNewImageWrapper">
-					<h3>Upload Images</h3>
-					<div class="uploadImageSign">+</div>
-				</div>
-			</div>
-		</li>
 	</ul>
 
 <div class="editPortfolioDone">
@@ -56,6 +47,46 @@
 </div>
 
 <script>
+function savePortfolio() {
+	var fd = new FormData();
+	var csrf = "{{ csrf_token() }}";
+	fd.append('csrf_token', csrf);
+	var images = [];
+
+	$(".editPortfolioList li").each(function(i, el) {
+		var img	= new Object();
+		img.idx	= $(el).index();
+		img.old	= $(el).attr('order');
+		img.cap	= $(this).find(".editPortfolioImage").data("title");
+		img_id	= $(this).find(".editPortfolioImage").data("id");
+		images.push(img);
+		fd.append(img_id, JSON.stringify(img));
+	});
+	fd.append('images', images.length);
+	console.log(JSON.stringify(images));
+
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function(e) {
+		if (4 == this.readyState) {
+			console.log(['xhr post complete ', e]);
+			if (this.status == 200) {
+				msg = JSON.parse(xhr.responseText);
+				console.log(xhr.responseText);
+				openAlertWindow(msg['usrmsg']);
+			} else if (this.status == 500) {
+				msg = JSON.parse(xhr.responseText);
+				console.log(['xhr upload complete', e]);
+				openAlertWindow('Failure: ' + msg['usrmsg']);
+			} else {
+				msg = JSON.parse(xhr.responseText);
+				openAlertWindow(msg['usrmsg']);
+			}
+		}
+	};
+	xhr.open('POST', "/portfolio/update/", true);
+	xhr.send(fd);
+	return false;
+}
 
 
 $(".editPortfolioList").sortable({
@@ -64,37 +95,21 @@ $(".editPortfolioList").sortable({
     opacity: 0.5,
     containment: '.editPortfolioWrapper',
     tolerance: 'pointer',
-    start: function(event, ui){
-    	console.log("starting position is "+ui.item.index());
-    },
-    update: function(event, ui) {
-    	console.log("dropped to new position: "+ui.item.index());
-    	alert("You chose to move the image to position "+ui.item.index());
-    }
+    /*start: function(event, ui){console.log(ui.item.index());},
+    update: function(event, ui) {} */
 });
 
-$(".uploadNewImageWrapper").click(function() {
-	window.location.href = "/upload_portfolio";
-});
 
 $(".img-delete").click(function() {
-	var this_img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
-	var this_img_title = $(this).parent().siblings(".editPortfolioImage").data("title");
-	alert("You chose to delete the image '"+this_img_title+"', with the filename "+this_img_id);
-
+	var img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
+	$(this).parent().parent().parent().parent().remove();
+	//console.log("deleted: " + img_id);
 });
 
 $(".editPortfolioSave").click(function() {
-	var this_img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
-	var old_caption = $(this).parent().siblings(".editPortfolioImage").data("title");
-	var new_caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
-	alert("You chose to change the caption the image with filename "+this_img_id+" - see console for details");
-	console.log("Caption Changed for Image "+this_img_id);
-	console.log("Old caption: "+old_caption);
-	console.log("New caption: "+new_caption);
-
+	var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
+	$(this).parent().siblings(".editPortfolioImage").data("title", caption);
 	$(this).parent().fadeOut();
-
 });
 
 $(".editPortfolioImageCaption").keyup(function(){
@@ -105,3 +120,4 @@ $(".editPortfolioImageCaption").keyup(function(){
 
 
 {% endblock %}
+
