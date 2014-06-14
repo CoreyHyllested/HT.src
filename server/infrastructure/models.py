@@ -105,6 +105,15 @@ def test_flag(state, flag): return (state & (0x1 << flag))
 ################################################################################
 # BEGIN; 
 # UPDATE appointment2 SET buyer_prof = 62e9e608-12cd-4b47-9eb4-ff6998dca89a WHERE 
+################################################################################
+
+################################################################################
+#### EXAMPLE: INSERT ROW INTO TABLE from PostgreSQL. ###########################
+################################################################################
+# begin;
+# insert into umsg (msg_id, msg_to, msg_from, msg_thread, msg_content, msg_created) VALUES ('testing-1-2-3-4-5', (select prof_id from profile where prof_name like '%Corey%'), (select prof_id from profile where prof_name like '%Frank%'), 'testing-1-2-3-4-5', 'Garbage in, garbage out', '2014-06-05 17:59:12.311562');
+# commit;
+################################################################################
  
 
 
@@ -524,6 +533,48 @@ class Skills(Base):
 	def __repr__ (self):
 		return '<skill %r>' % (self.name)
 
+
+
+
+class UserMessage(Base):
+	__tablename__ = "umsg"
+	msg_id		= Column(String(40), primary_key=True, unique=True)													# NonSequential ID
+	msg_to		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_thread	= Column(String(40), nullable=False, index=True)
+	msg_parent  = Column(String(40))
+	msg_content = Column(String(1024), nullable=False)
+	msg_created = Column(DateTime(), nullable=False)
+	msg_noticed = Column(DateTime())
+	msg_opened  = Column(DateTime())
+
+
+	def __init__ (self, prof_to, prof_from, content, thread=None, thread_parent=None):
+		print 'running usrmessage init'
+		self.msg_id	= str(uuid.uuid4())
+		self.msg_to	= str(prof_to)
+		self.msg_from = str(prof_from)
+		self.msg_content = str(content)
+		self.msg_created = dt.utcnow()
+
+		if (thread == None):
+			thread = str(self.msg_id)
+			thread_parent = None
+		else:
+			if (thread_parent == None): raise Exception('not valid threading')
+
+		self.msg_thread	= thread
+		self.msg_parent	= thread_parent
+
+	def __repr__(self):
+		content = self.msg_content[:20]
+		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+
+	@staticmethod
+	def get_by_msg_id(uid):
+		msgs = UserMessage.query.filter_by(msg_id=uid).all()
+		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
+		return msgs[0]
 
 
 
