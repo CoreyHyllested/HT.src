@@ -4,6 +4,7 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<script src="/static/js/lightbox.min.js"></script>
 {% endblock %}
 
@@ -11,9 +12,8 @@
 
 <div class="editPortfolioWrapper">
 	<div class="windowClose"><a href="/profile">&#x2715;</a></div>
-	<h2>Edit Portfolio Images</h2>
-	(Drag and drop to re-order)<br>
-	<a href="/profile">Back to Profile</a> | <a href="/upload_portfolio">Upload Images</a> | <a href="#" onclick="savePortfolio()">Save Portfolio Changes</a>
+	<h1>Edit Portfolio Images</h1>
+	<a href="/profile"><i class="fa fa-arrow-left"> Back</i></a> | <a href="/upload_portfolio"><i class="fa fa-upload"> Upload </i></a> | <a href="#" onclick="savePortfolio()"><i class="fa fa-save"> Save Changes</i></a>
 	<div class="editPortfolioStatus"></div>
 	<ul class="editPortfolioList">
 		{% for img in portfolio|sort(attribute='img_order') %}

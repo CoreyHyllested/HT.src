@@ -1,4 +1,13 @@
 
+h1 {
+color: black;
+font-size: 3em;
+font-weight: 400;
+line-height: 1em;
+margin-top: 10px;
+margin-left: 12px;
+}
+
 h3 {color: black;}
 
 .pageWrapper {
@@ -17,7 +26,7 @@ h3 {color: black;}
 
 .editPortfolioStatus {
 	line-height: 40px;
-	height: 40px;
+	height: 25px;
 	text-align: center;
 }
 
@@ -422,6 +431,7 @@ h3 {color: black;}
 		margin-top: 20px;
 		color: gray;
 	}
+	
 	.uploadImageSign{
 		font-size: 14em;
 		text-align: center;
@@ -431,4 +441,9 @@ h3 {color: black;}
 		line-height: .8em;
 	}
 
-}
+  i.fa-upload, .fa-save, .fa-arrow-left {
+  font-size: 1.5em;
+  margin-top: 10px;
+  margin-left: 12px;
+  padding: 6px;
+  }
