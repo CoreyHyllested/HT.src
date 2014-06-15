@@ -23,8 +23,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
-
-
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
@@ -213,11 +211,10 @@
 		</div>
 		<!-- Header ends here -->
 
-		
 		{% block content %}
 		{% endblock %}
 
-	<div class="clear"></div>
+		<div class="clear"></div>
 	</div><!-- Page wrapper ends here -->
 
 	<!-- Footer starts here -->
@@ -243,14 +240,12 @@
 	</div><!-- Footer ends here -->
 
 	<script>
-	$(function () {
+	$(document).ready(function() {
 		function rp(id) {
 			document.getElementById('h').value=id;
 			document.p.submit();
 		}
-	});
 
-	$(function () {
 		function searchBar() {
 			var x=document.forms["srchForm"]["search"].value;
 			if (x==null || x=="") { return false; }
