@@ -1382,12 +1382,30 @@ def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
 	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
-	
+
+
+
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
 	uid = session['uid']
-	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('inbox.html', bp=bp))
+	bp = Profile.get_by_uid(uid)
+
+	messages = []
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	return make_response(render_template('inbox.html', bp=bp, messages=messages))
+
 
 
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])
