@@ -657,16 +657,17 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
+		thread	= None
 
 		print parent
 
 		if (parent):
 			parent_msg	= UserMessage.get_by_msg_id(parent) 
-			parent_thrd	= parent_msg.msg_thread
-			msg_to = parent_msg.msg_from
+			thread	= parent_msg.msg_thread
+			msg_to	= parent_msg.msg_from
 			
 
-		message = UserMessage(msg_to, msg_from, content, thread=parent_thrd, thread_parent=parent)
+		message = UserMessage(msg_to, msg_from, content, thread=thread, parent=parent)
 		print message
 		
 		db_session.add(message)

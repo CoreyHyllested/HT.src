@@ -549,7 +549,7 @@ class UserMessage(Base):
 	msg_opened  = Column(DateTime())
 
 
-	def __init__ (self, prof_to, prof_from, content, thread=None, thread_parent=None):
+	def __init__ (self, prof_to, prof_from, content, thread=None, parent=None):
 		print 'running usrmessage init'
 		self.msg_id	= str(uuid.uuid4())
 		self.msg_to	= str(prof_to)
@@ -559,12 +559,12 @@ class UserMessage(Base):
 
 		if (thread == None):
 			thread = str(self.msg_id)
-			thread_parent = None
+			parent = None
 		else:
-			if (thread_parent == None): raise Exception('not valid threading')
+			if (parent == None): raise Exception('not valid threading')
 
 		self.msg_thread	= thread
-		self.msg_parent	= thread_parent
+		self.msg_parent	= parent
 
 	def __repr__(self):
 		content = self.msg_content[:20]
