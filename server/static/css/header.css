@@ -149,6 +149,33 @@ c) 1000px - ... (desktop)
 
 	.headerTextMenu {display: none;}
 	.headerDropdownMenu {display: none;}
+
+
+	/* Header Icons */
+
+	.headerIcons {
+		height: 25px;
+		line-height: 38px;
+		float: right;
+		margin-right: 36px;
+		font-size: 1.2em;
+	}
+	.headerIcons a{
+		transition: all 0.2s ease-in;
+		-moz-transition: all 0.2s ease-in;
+		-o-transition: all 0.2s ease-in;
+		-webkit-transition: all 0.2s ease-in;
+		transition: all 0.2s ease-in;
+	}
+
+	.headerIcons a:hover{
+		color: #fff;
+	}
+
+	.headerIcons .icon {
+		margin-right: 6px;
+	}
+
 }
 
 /* Phablets (550px - 999px) */
@@ -226,7 +253,7 @@ c) 1000px - ... (desktop)
 		padding: 0 20px 0 5px;
 		position: absolute;
 		top: 7px;
-		width: 40%;
+		width: 25%;
 	}
 
 	/* Header Menu */
@@ -255,6 +282,31 @@ c) 1000px - ... (desktop)
 
 	.headerTextMenu a:hover {
 		color: white;
+	}
+
+
+	/* Header Icons */
+
+	.headerIcons {
+		height: 25px;
+		line-height: 38px;
+		float: right;
+
+	}
+	.headerIcons a{
+		transition: all 0.2s ease-in;
+		-moz-transition: all 0.2s ease-in;
+		-o-transition: all 0.2s ease-in;
+		-webkit-transition: all 0.2s ease-in;
+		transition: all 0.2s ease-in;
+	}
+
+	.headerIcons a:hover{
+		color: #fff;
+	}
+
+	.headerIcons .icon {
+		margin-right: 6px;
 	}
 
 	/* Dropdown menu */
@@ -440,15 +492,30 @@ c) 1000px - ... (desktop)
 		width: 97px;
 	}
 
-.mailBox {
-		background: url("../img/mail.png") no-repeat;
-		background-size: 22px 20px;
+	/* Header Icons */
+
+	.headerIcons {
 		height: 25px;
-		right: 60px;
-		position: absolute;
-		top: 10px;
-		width: 97px;
+		line-height: 38px;
+		float: right;
+
 	}
+	.headerIcons a{
+		transition: all 0.2s ease-in;
+		-moz-transition: all 0.2s ease-in;
+		-o-transition: all 0.2s ease-in;
+		-webkit-transition: all 0.2s ease-in;
+		transition: all 0.2s ease-in;
+	}
+
+	.headerIcons a:hover{
+		color: #fff;
+	}
+
+	.headerIcons .icon {
+		margin-right: 6px;
+	}
+
 
 	/* Header Search */
 

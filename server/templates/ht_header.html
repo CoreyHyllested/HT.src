@@ -11,6 +11,9 @@
 	<!-- Import Open Sans from Google Fonts -->
 	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
 
+	<!-- Import FontAwesome Icons -->
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
 	<!-- CSS reset -->
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
 
@@ -19,6 +22,8 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
+
+
 
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -157,11 +162,13 @@
 
 				<!-- HEADER LOGO -->
 				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a class="headerLogo" href="/dashboard">
-				<a class="mailBox" href="/dashboard">
-				{% else %}<a class="headerLogo" href="/">
+				{% if bp %}
+					<a class="headerLogo" href="/dashboard"></a>
+
+				{% else %}
+					<a class="headerLogo" href="/"></a>
 				{% endif %}
-				</a>
+				
 
 				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
@@ -172,18 +179,23 @@
 				{% if bp %}
 				<div class="headerGraphicalMenu"></div>
 
-				<ul class="headerDropdownMenu">
-					<li class="headerDropdownMenuName">{{bp.prof_name}}
-						<ul class="headerDropdownMenuActive">
-							<a href="/dashboard"><li>Dashboard</li></a>
-							<a href="/profile"><li>Profile</li></a>
-							<a href="/inbox"><li>Messages</li></a>
-							<a href="/settings"><li>Settings</li></a>
-							<a href="/logout"><li>Log Out</li></a>
-						</ul>
-					</li>
-				</ul>
-
+				<div>
+					<ul class="headerDropdownMenu">
+						<li class="headerDropdownMenuName">{{bp.prof_name}}
+							<ul class="headerDropdownMenuActive">
+								<a href="/dashboard"><li>Dashboard</li></a>
+								<a href="/profile"><li>Profile</li></a>
+								<a href="/inbox"><li>Messages</li></a>
+								<a href="/settings"><li>Settings</li></a>
+								<a href="/logout"><li>Log Out</li></a>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="headerIcons">
+					<a class="notification icon" href=""><i class="fa fa-bell-o"></i></a>
+					<a class="mailbox icon" href="/inbox"><i class="fa fa-envelope-o"></i></a>
+				</div>
 
 				{% else %}
 				<div class="headerGraphicalMenu"></div>

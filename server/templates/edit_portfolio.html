@@ -39,6 +39,11 @@
 		{% endfor %}
 	</ul>
 
+<div class="editPortfolioDone">
+	<button type="button" class="blueButton editPortfolioDoneButton">
+		Save Changes
+	</button>
+</div>
 </div>
 
 <script>
@@ -110,6 +115,10 @@ $(".editPortfolioSave").click(function() {
 $(".editPortfolioImageCaption").keyup(function(){
 	$(this).parent().siblings(".save-button").fadeIn();
 });
+
+$(".editPortfolioDoneButton").click(function() {
+	savePortfolio();
+})
 
 </script>
 
