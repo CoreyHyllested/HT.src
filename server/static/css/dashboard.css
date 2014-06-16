@@ -110,6 +110,10 @@ c) 1000px - ... (desktops)
 	input[value="Cancel Lesson"] {float: left;}
 	input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 
+	.dashboardAppointments {
+		margin-bottom: 40px;
+	};
+
 	.dashboardAppointments h2 {
 		border-bottom: 1px solid #b0b4b7;
 		color: black;
