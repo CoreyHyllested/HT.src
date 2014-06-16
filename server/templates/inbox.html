@@ -18,16 +18,112 @@
   <div class="inboxLeftColumn">
     <input type="#" class="composeButton" value="COMPOSE">
     <ul class="inBoxLeftNavigationList">
-      <div class="profileInfoBox">INBOX</div>
-      <div class="profileInfoBox">SENT</div>
-      <div class="profileInfoBox">TRASH</div>
+      <div class="profileInfoBox" id="mainLink">INBOX</div>
+      <div class="profileInfoBox" id="sentLink">SENT</div>
+      <div class="profileInfoBox" id="trashLink">TRASH</div>
     </ul>
   </div>
   
   <div class="inboxRightColumn">
-  This is where the messages will go.
+
+    <!-- Main Inbox Messages -->
+    <div class="inboxView inboxMain">
+      <ul class="inboxWell" id="threads">
+        <li class="message" id="thread_number">
+          <div class="user"> user user
+          </div>
+          <div class="messageSubjectLine">This is the subject line.</div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+
+        </li>
+        <li class="message" id="thread_number">
+          <div class="user"> user user
+          </div>
+          <div class="messageSubjectLine">This is the subject line.
+          </div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+          </li>
+      </ul>  
+    </div>    
+
+    <!-- Sent Messages -->
+    <div class="inboxView inboxSent">
+      <ul class="inboxWell" id="threads">
+        <li class="message" id="thread_number">
+          <div class="user"> Me 
+          </div>
+          <div class="messageSubjectLine">This is a message i sent.</div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+
+        </li>
+        <li class="message" id="thread_number">
+          <div class="user"> user user
+          </div>
+          <div class="messageSubjectLine">This is an older message I sent.
+          </div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+          </li>
+      </ul>  
+    </div>
+
+    <!-- Trashed Messages -->
+    <div class="inboxView inboxTrash">
+      <ul class="inboxWell" id="threads">
+        <li class="message" id="thread_number">
+          <div class="user">Some user 
+          </div>
+          <div class="messageSubjectLine">An old message that is in the trash</div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+
+        </li>
+        <li class="message" id="thread_number">
+          <div class="user">Another user
+          </div>
+          <div class="messageSubjectLine">And another older trashed message.
+          </div>
+          <div class="messageDate">Date</div>
+          <div class="messageDelete">x</div>
+          </li>
+      </ul>  
+    </div>
+
+
   </div>
-  
+
 
 </div>
+
+<script>
+
+$(document).ready(function() {
+
+  $('#mainLink').click(function() {
+    $('.inboxView').hide();
+    $('.inboxMain').show();
+  });
+
+  $('#sentLink').click(function() {
+    $('.inboxView').hide();
+    $('.inboxSent').show();
+  });
+
+  $('#trashLink').click(function() {
+    $('.inboxView').hide();
+    $('.inboxTrash').show();
+  });
+
+
+});
+
+
+
+
+</script>
+
+
 {% endblock %}
