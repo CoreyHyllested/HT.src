@@ -9,99 +9,81 @@
 {% block content %}
 
 <div class="profileContentWrapper">
+	<div class="inboxMessagesHeader">
+		<h1>Messages ({{messages|length}})</h1>
+	</div>
   
-  <div class="inboxMessagesHeader">
-    <h1>Messages</h1>
-<!--     <div id="inboxSearch"></div> -->
-  </div>
-  
-  <div class="inboxLeftColumn">
-    <input type="#" class="composeButton" value="COMPOSE">
-    <ul class="inBoxLeftNavigationList">
-      <div class="profileInfoBox">INBOX<i class="fa fa-envelope-o"></i></div>
-      <div class="profileInfoBox">SENT<i class="fa fa-paper-plane-o"></i></div>
-      <div class="profileInfoBox">TRASH<i class="fa fa-trash-o"></i></div>
-    </ul>
-  </div>
-  
-  <div class="inboxRightColumn">
+  	<div class="container">
+		<div class="inboxLeftColumn">
+			<input type="#" class="composeButton" value="COMPOSE">
+			<ul class="inBoxLeftNavigationList">
+				<div class="profileInfoBox" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+				<div class="profileInfoBox" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div>
+				<div class="profileInfoBox" id="trashLink">TRASH<i class="fa fa-trash-o"></i></div>
+			</ul>
+		</div>
 
-    <!-- Main Inbox Messages -->
-    <div class="inboxView inboxMain">
-      <ul class="inboxWell" id="threads">
-        <li class="message" id="thread_number">
-          <div class="user"> user user
-          </div>
-          <div class="messageSubjectLine">This is the subject line.</div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
+		<div class="inboxRightColumn">
+			<div class="inboxView inboxMain">
+				<ul class="inboxWell" id="threads">
+					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
+					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
+						<div class="messageDate">Sent {{msg.UserMessage.msg_created.strftime('%A, %b %d %H:%M %p')}}</div>
+						<!-- no subject line now:: div class="messageSubjectLine">This is the subject line.</div-->
+						<br>
+						<div class="LeftColumn">
+							<a href="#" onclick="document.getElementById('h').value='{{msg.display.prof_id}}'; document.p.submit();">
+							<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}">
+							</a>
+						</div>
+						<div class="CenterColumn">
+							<div class="user">{{msg.display.prof_name}}<br>{{msg.display.headline}}</div>
+							<div class="dashboardOfferIntro">{{msg.UserMessage.msg_content}}</div>
+						</div>
 
-        </li>
-        <li class="message" id="thread_number">
-          <div class="user"> user user
-          </div>
-          <div class="messageSubjectLine">This is the subject line.
-          </div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
-          </li>
-      </ul>  
-    </div>    
+						<div class="RightColumn">
+							<form action="/sendmsg" method="POST">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+								<input type="hidden" name="parent" value="{{msg.UserMessage.msg_id}}">
+								<input type="submit" class="whiteButton" id="{{msg.UserMessage.msg_id}}" value="Respond">
+								<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
+							</form>
+						</div>
+						<div class="clear"></div>
+					</li>
+					{% endfor %}
+				</ul>  
+			</div>    
+	
+			<div class="inboxView inboxSent">
+				<ul class="inboxWell" id="threads">
+					<li class="message" id="thread_number">
+						<div class="user"> Me </div>
+						<div class="messageSubjectLine">This is a message i sent.</div>
+						<div class="messageDate">Date</div>
+						<div class="messageDelete">x</div>
+					</li>
+				</ul>  
+			</div>
 
-    <!-- Sent Messages -->
-    <div class="inboxView inboxSent">
-      <ul class="inboxWell" id="threads">
-        <li class="message" id="thread_number">
-          <div class="user"> Me 
-          </div>
-          <div class="messageSubjectLine">This is a message i sent.</div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
-
-        </li>
-        <li class="message" id="thread_number">
-          <div class="user"> user user
-          </div>
-          <div class="messageSubjectLine">This is an older message I sent.
-          </div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
-          </li>
-      </ul>  
-    </div>
-
-    <!-- Trashed Messages -->
-    <div class="inboxView inboxTrash">
-      <ul class="inboxWell" id="threads">
-        <li class="message" id="thread_number">
-          <div class="user">Some user 
-          </div>
-          <div class="messageSubjectLine">An old message that is in the trash</div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
-
-        </li>
-        <li class="message" id="thread_number">
-          <div class="user">Another user
-          </div>
-          <div class="messageSubjectLine">And another older trashed message.
-          </div>
-          <div class="messageDate">Date</div>
-          <div class="messageDelete">x</div>
-          </li>
-      </ul>  
-    </div>
-
-
-  </div>
-
+			<div class="inboxView inboxTrash">
+				<ul class="inboxWell" id="threads">
+					<li class="message" id="thread_number">
+						<div class="user">Some user </div>
+						<div class="messageSubjectLine">An old message that is in the trash</div>
+						<div class="messageDate">Date</div>
+						<div class="messageDelete">x</div>
+					</li>
+				</ul>  
+			</div>
+		</div><!--right column-->
+	</div><!--empty, container-->
 
 </div>
 
+
 <script>
-
 $(document).ready(function() {
-
   $('#mainLink').click(function() {
     $('.inboxView').hide();
     $('.inboxMain').show();
@@ -116,13 +98,7 @@ $(document).ready(function() {
     $('.inboxView').hide();
     $('.inboxTrash').show();
   });
-
-
 });
-
-
-
-
 </script>
 
 
