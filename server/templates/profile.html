@@ -44,14 +44,14 @@
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
-			{% if hp.reviews == 0 %}
-				No Reviews
-			{% else %}
-				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
-			{% endif %}
+					{% if hp.reviews == 0 %}
+						No Reviews
+					{% else %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+					{% endif %}
+				</div>
+				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
-			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
-		</div>
 		</div>
 		<div class="profileAboutMe">{{hp.prof_bio}}</div>
 

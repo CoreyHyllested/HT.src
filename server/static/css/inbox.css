@@ -46,8 +46,75 @@
 	
 	.inboxRightColumn {
 	  float:right;
-	  margin-right: 275px;
+	  height: 1000px;
+	  width: 720px;
+	  margin-top: 18px;
 	
+	}
+
+	.inboxView{
+
+	}
+
+	.inboxMain {
+
+	}
+	.inboxSent {
+		display: none;
+	}
+
+	.inboxTrash {
+		display: none;
+	}
+
+	/* MESSAGES*/
+
+	.message {
+		border-bottom: 1px solid #e1e0de;
+		float:left;
+		width: 100%;
+		height: 30px;
+		line-height: 30px;
+		font-size: .9em;
+	}
+	.message:nth-of-type(2n+0) {
+		background: #fafafa;
+	}
+
+	.user {
+		float: left;
+/*		height: 20px;*/
+/*		line-height: 10px;*/
+		width: 20%;
+	}
+
+	.messageSubjectLine {
+		cursor: pointer;
+/*		height: 20px;
+		line-height: 10px;*/
+		color: gray;
+		float: left;
+		width: 60%;
+	}
+
+	.messageDate {
+		cursor: pointer;
+/*		height: 20px;*/
+		color: gray;
+		float: left;
+/*		line-height: 10px;*/
+		width: 10%;
+	}
+
+	.messageDelete {
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 25px;
+		height: 25px;
+		color: red;
+		float: right;
+		width: 10%;
 	}
 	
 	.composeButton {
