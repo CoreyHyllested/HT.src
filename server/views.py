@@ -584,9 +584,13 @@ def display_partner_message(p, user_is):
 		#user it the hero, we should display all the 'user'
 		print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
 		setattr(p, 'display', p.msg_from) 
+		setattr(p, 'left', p.msg_from)
+		setattr(p, 'right', p.msg_to)
 	else:
 		print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
 		setattr(p, 'display', p.msg_to)
+		setattr(p, 'left', p.msg_to)
+		setattr(p, 'right', p.msg_from)
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -642,6 +646,8 @@ def upload():
 
 
 
+# TODO this cannot be csrf exempt
+@ht_csrf.exempt
 @ht_server.route('/sendmsg', methods=['POST'])
 @req_authentication
 def ht_api_send_message():
@@ -657,17 +663,17 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
+		subject = request.values.get('subject', 'default subject')
 		thread	= None
 
-		print parent
+		print 'parent=', parent, 'subject=', subject
 
 		if (parent):
 			parent_msg	= UserMessage.get_by_msg_id(parent) 
 			thread	= parent_msg.msg_thread
 			msg_to	= parent_msg.msg_from
 			
-
-		message = UserMessage(msg_to, msg_from, content, thread=thread, parent=parent)
+		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
 		print message
 		
 		db_session.add(message)
@@ -688,7 +694,7 @@ def ht_api_send_message():
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed'), 500
 
-	return jsonify(usrmsg="succesfully canceled proposal"), 200
+	return jsonify(usrmsg="Message sent."), 200
 
 
 
