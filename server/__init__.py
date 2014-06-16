@@ -47,27 +47,35 @@ redis_cache = Redis(ht_server)
 ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 
 
-# don't think we're using emailer
-#emailer = Mail(ht_server)
 Compress(ht_server)
 ht_csrf  = CsrfProtect(ht_server)
 ht_oauth = OAuth(ht_server)
 
-
-linkedin = ht_oauth.remote_app(
-    'linkedin',
-    consumer_key=ht_server.config['LINKEDIN_KEY'],
-    consumer_secret=ht_server.config['LINKEDIN_SEC'],
-    request_token_params={
-        'scope': 'r_basicprofile r_emailaddress',
-        'state': 'deadbeefcafe',	#<== CRLF
-    },
-    base_url='https://api.linkedin.com/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
-    authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+facebook = ht_oauth.remote_app(
+	'facebook',
+	base_url='https://graph.facebook.com',
+	request_token_url=None,
+	access_token_url='/oauth/access_token',
+	authorize_url='https://www.facebook.com/dialog/oauth',
+	consumer_key=ht_server.config['FACEBOOK_APP_ID'],
+	consumer_secret=ht_server.config['FACEBOOK_APP_SEC'],
+	request_token_params={
+		'scope': 'email'
+	}
 )
 
-# must do this (approx.) last.
+
+linkedin = ht_oauth.remote_app(  'linkedin',
+								consumer_key=ht_server.config['LINKEDIN_KEY'],
+								consumer_secret=ht_server.config['LINKEDIN_SEC'],
+								request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+								base_url='https://api.linkedin.com/v1/',
+								request_token_url=None,
+								access_token_method='POST',
+								access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
+								authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+							)
+
+
+from server.infrastructure import srvc_database
 from server import views, controllers 

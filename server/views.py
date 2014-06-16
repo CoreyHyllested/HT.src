@@ -9,7 +9,7 @@ from flask import render_template, make_response, session, request, flash, redir
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 from httplib2 import Http
-from server import ht_server, ht_csrf
+from server import ht_server, ht_csrf, facebook
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.infrastructure.errors import * 
@@ -202,21 +202,19 @@ def display_reviews_of_hero(r, hero_is):
 @dbg_enterexit
 def render_login(usrmsg=None):
 	""" Logs user into HT system
-		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
 
 	if ('uid' in session):
-		# if logged in; take 'em home
+		# user already logged in; take 'em home
 		return redirect('/dashboard')
-
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
 		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
-			bp = ht_get_profile(ba)
+			bp = Profile.get_by_uid(ba.userid)
 			ht_bind_session(bp)
 			return redirect('/dashboard')
 
@@ -226,24 +224,79 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
+	msg = request.values.get('messages')
+	if (msg is not None):
+		usrmsg = msg
+
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
 
+@ht_server.route('/login/facebook', methods=['GET'])
+def oauth_login_facebook():
+	# redirects to facebook, which gets token and comes back to 'fb_authorized'
+	print 'login_facebook()'
+	session['oauth_facebook_signup'] = False
+	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
 @ht_server.route('/login/linkedin', methods=['GET'])
-def login_linkedin():
+def oauth_login_linkedin():
 	# redirects to LinkedIn, which gets token and comes back to 'authorized'
-	print 'login_linkedin()' 
-	session['oauth_signup'] = False
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
+	print 'login_linkedin()'
+	session['oauth_linkedin_signup'] = False
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+
+
+@ht_server.route('/authorized/facebook')
+@facebook.authorized_handler
+def facebook_authorized(resp):
+	if resp is None:
+		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('render_login', messages=msg))
+
+	# User has successfully authenticated with Facebook.
+	session['oauth_token'] = (resp['access_token'], '')
+
+	print 'facebook user is creating an account.'
+	# grab signup/login info
+	me = facebook.get('/me')
+	me.data['token']=session['oauth_token']
+
+	ba = ht_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	if (ba):
+		print ("created_account, uid = " , str(ba.userid), ', get profile')
+		bp = Profile.get_by_uid(ba.userid)
+		print 'bind session'
+		ht_bind_session(bp)
+		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
+		resp = redirect('/dashboard')
+	else:
+		print ('create account failed')
+		resp = redirect('/dbFailure')
+	return resp
+
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+	return session.get('oauth_token')
+
+@ht_server.route('/facebook')
+def render_facebook_stats():
+	me = facebook.get('/me')
+	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
+	
 
 
 
+@linkedin.tokengetter
+def get_linkedin_oauth_token():
+	return session.get('linkedin_token')
 
 @ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
-def li_authorized(resp):
-	print 'authorized/linkedin (li_authorized)'
+def linkedin_authorized(resp):
+	print 'login() linkedin_authorized'
 
 	if resp is None:
 		# Needs a better error page 
@@ -251,7 +304,7 @@ def li_authorized(resp):
 		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 
 	#get Oauth Info.
-	signup = bool(session.pop('oauth_signup'))
+	signup = bool(session.pop('oauth_linkedin_signup'))
 	print('li_auth - signup', str(signup))
 	print('li_auth - login ', str(not signup))
 
@@ -264,8 +317,9 @@ def li_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
+	#(bh, bp) = ht_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
 
-	print('li_auth - find account')
+
 	# also look for linkedin-account/id number (doesn't exist today).
 	possible_accts = Account.query.filter_by(email=email.data).all()
 	if (len(possible_accts) == 1):
@@ -278,7 +332,7 @@ def li_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
@@ -288,7 +342,7 @@ def li_authorized(resp):
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
-		# something failed.  
+		# something failed.
 		print bh if (bh is not None) else 'None'
 		print bp if (bp is not None) else 'None'
 		print ('create account failed, using', str(email.data))
@@ -314,7 +368,7 @@ def render_signup_page(usrmsg = None):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
-			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			(bh, bp) = ht_create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
@@ -328,17 +382,17 @@ def render_signup_page(usrmsg = None):
 
 
 
+@ht_server.route('/signup/facebook', methods=['GET'])
+def signup_facebook():
+	session['oauth_facebook_signup'] = True
+	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
 @ht_server.route('/signup/linkedin', methods=['GET'])
 def signup_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'li_authorized'
 	print 'signup_linkedin'
-	session['oauth_signup'] = True
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
-
-
-@linkedin.tokengetter
-def get_linkedin_oauth_token():
-	return session.get('linkedin_token')
+	session['oauth_linkedin_signup'] = True
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
 
 
 
@@ -375,7 +429,7 @@ def signup_verify(challengeHash):
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
 			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return render_login(usrmsg=msg)
+			return redirect(url_for('render_login', messages=msg))
 
 	try:
 		# update user's account.
@@ -547,19 +601,24 @@ def upload():
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
 
+
 	print 'orig', orig
 	print 'prof', prof
 
 	for mydict in request.files:
+
+		comment = ""
+
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
 		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
 		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			# create Image.
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment="Portfolio Img")
+			metaImg = Image(img_hashname, bp.prof_id, comment)
 			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
@@ -1193,8 +1252,7 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	if (session.get('uid') is not None):
-		session.pop('uid')
+	session.clear()
 	return redirect('/')
 
 
@@ -1311,3 +1369,74 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
+@ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
+def render_multiupload_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('upload_portfolio.html', bp=bp))
+	
+@ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
+def render_edit_portfolio_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
+	
+@ht_server.route("/inbox", methods=['GET', 'POST'])
+def render_inbox_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('inbox.html', bp=bp))
+
+
+@ht_server.route("/portfolio/<operation>/", methods=['POST'])
+def ht_api_update_portfolio(operation):
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	print operation
+
+	try:
+		# get user's portfolio
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	if (operation == 'add'):
+		print 'adding file'
+	elif (operation == 'update'):
+		print 'usr request: update portfolio'
+		images = request.values.get('images')
+
+		try:
+			for img in portfolio:
+				update = False;
+				print img, img.img_id
+				jsn = request.values.get(img.img_id)
+				if jsn is None:
+					print img.img_id, 'doesnt exist in user-set, deleted.'
+					db_session.delete(img)
+					continue
+
+				obj = json.loads(jsn)
+				print img.img_id, obj['idx'], obj['cap']
+				if (img.img_order != obj['idx']):
+					update = True
+					print 'update img_order'
+					img.img_order = int(obj['idx'])
+				if (img.img_comment != obj['cap']):
+					update = True
+					print 'update img_cap'
+					img.img_comment = obj['cap']
+
+				if (update): db_session.add(img)
+
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+			return jsonify(usrmsg='This is embarassing.  We failed'), 500
+
+		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
+	else:
+		return jsonify(usrmsg='Unknown operation.'), 500

@@ -1,0 +1,33 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="profileContentWrapper">
+  
+  <div class="inboxMessagesHeader">
+    <h1>Messages</h1>
+<!--     <div id="inboxSearch"></div> -->
+  </div>
+  
+  <div class="inboxLeftColumn">
+    <input type="#" class="composeButton" value="COMPOSE">
+    <ul class="inBoxLeftNavigationList">
+      <div class="profileInfoBox">INBOX<i class="fa fa-envelope-o"></i></div>
+      <div class="profileInfoBox">SENT<i class="fa fa-paper-plane-o"></i></div>
+      <div class="profileInfoBox">TRASH<i class="fa fa-trash-o"></i></div>
+    </ul>
+  </div>
+  
+  <div class="inboxRightColumn">
+  This is where the messages will go.
+  </div>
+  
+
+</div>
+{% endblock %}

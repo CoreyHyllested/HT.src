@@ -1,0 +1,130 @@
+/* PAGE WRAPPERS */
+
+/* Mobiles, phablets, and tablets */
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+/* Desktop */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: #dfdfdf;
+		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
+	}
+}
+
+/* CONTENT */
+
+	.inboxMessagesHeader {
+    margin-bottom: 10px;
+		width: 100%;
+	}
+
+	.inboxMessagesHeader h1 {
+		border-bottom: 1px solid #b0b4b7;
+		color: black;
+		font-size: 2.5em;
+		padding-bottom: 15px;
+		width: 100%;
+	}
+	
+	.inboxLeftColumn {
+    float: left;
+    text-align: right;
+	
+	}
+	
+	.inboxRightColumn {
+	  float:right;
+	  margin-right: 275px;
+	
+	}
+	
+	.composeButton {
+		-moz-appearance: none;
+		-o-appearance: none;
+		-webkit-appearance: none;
+		background-color: #29abe2;
+		border: 1px #29abe2 solid;
+	  	-webkit-border-radius: 3px;
+	  	border-radius: 3px;
+		color: white;
+		cursor: pointer;
+		display: table-cell;
+		font-size: 0.9em;
+		height: 24px;
+		margin-top: 9px;
+		margin-bottom: 15px;
+		text-align: center;
+		-moz-transition: 0.5s ease;
+		-o-transition: 0.5s ease;
+		-webkit-transition: 0.5 ease;
+		transition: 0.5s ease;		
+		vertical-align: middle;
+		width: 100%;
+
+	}
+
+	.composeButton:hover {
+		border: 1px solid #007cb3;
+		background-color: #007cb3;
+		text-decoration: none;
+	}
+	  
+	.profileContentWrapper {
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		/*margin: -200px auto 0;*/
+		padding: 41px;
+		position: relative;
+		overflow: auto;
+		width: 980px;
+		z-index: 30;
+	}
+	
+	.profileInfoBox {
+	    background-size: 18px 18px;
+	    border-bottom: 1px solid #e2e4e6;
+	    color: #6e7980;
+	    font-size: 0.875em;
+	    padding: 11px 0 11px 30px;
+	    cursor: pointer;
+	}
+
+	.profileInfoBox:hover {
+	    color: #007cb3;
+	}
+
+	.profileInfoBox i {
+			padding-left: 6px; 
+	}
+
+	
+  #inboxSearch {
+		background: url("../img/search.svg") #f6f6f6 no-repeat 420px;
+		border-radius: 2px;
+		border-style: none;
+		color: white;
+		font-size: 0.8em;
+		height: 27px;
+		left: 135px;
+		line-height: 1.2em;
+		margin: 10px;
+		margin-right: 150px;
+		padding: 0 20px 0 5px;
+		width: 420px;
+	}

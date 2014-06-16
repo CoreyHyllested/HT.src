@@ -4,14 +4,15 @@
 	<title>HeroTime {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	
-
 	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
 
 	{% block head %}
 
-	<!-- Import Open Sans from Google Fonts (may be unnecessary if we drop the font -->
+	<!-- Import Open Sans from Google Fonts -->
 	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+
+	<!-- Import FontAwesome Icons -->
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
 	<!-- CSS reset -->
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
@@ -20,19 +21,17 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
 	<!-- SCRIPTS -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 	<!--script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script-->
 
 	<script src="/static/js/modal_windows.js"></script>	
 
 	{% endblock %}
-
-
-	<!--<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">-->
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
 	{% if jsfiles %}
 	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
@@ -161,10 +160,13 @@
 
 				<!-- HEADER LOGO -->
 				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a class="headerLogo" href="/dashboard">
-				{% else %}<a class="headerLogo" href="/">
+				{% if bp %}
+					<a class="headerLogo" href="/dashboard"></a>
+
+				{% else %}
+					<a class="headerLogo" href="/"></a>
 				{% endif %}
-				</a>
+				
 
 				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
@@ -175,17 +177,23 @@
 				{% if bp %}
 				<div class="headerGraphicalMenu"></div>
 
-				<ul class="headerDropdownMenu">
-					<li class="headerDropdownMenuName">{{bp.prof_name}}
-						<ul class="headerDropdownMenuActive">
-							<a href="/dashboard"><li>Dashboard</li></a>
-							<a href="/profile"><li>Profile</li></a>
-							<a href="/settings"><li>Settings</li></a>
-							<a href="/logout"><li>Log Out</li></a>
-						</ul>
-					</li>
-				</ul>
-
+				<div>
+					<ul class="headerDropdownMenu">
+						<li class="headerDropdownMenuName">{{bp.prof_name}}
+							<ul class="headerDropdownMenuActive">
+								<a href="/dashboard"><li>Dashboard</li></a>
+								<a href="/profile"><li>Profile</li></a>
+								<a href="/inbox"><li>Messages</li></a>
+								<a href="/settings"><li>Settings</li></a>
+								<a href="/logout"><li>Log Out</li></a>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="headerIcons">
+					<a class="notification icon" href=""><i class="fa fa-bell-o"></i></a>
+					<a class="mailbox icon" href="/inbox"><i class="fa fa-envelope-o"></i></a>
+				</div>
 
 				{% else %}
 				<div class="headerGraphicalMenu"></div>
@@ -203,11 +211,10 @@
 		</div>
 		<!-- Header ends here -->
 
-		
 		{% block content %}
 		{% endblock %}
 
-	<div class="clear"></div>
+		<div class="clear"></div>
 	</div><!-- Page wrapper ends here -->
 
 	<!-- Footer starts here -->
@@ -233,14 +240,12 @@
 	</div><!-- Footer ends here -->
 
 	<script>
-	$(function () {
+	$(document).ready(function() {
 		function rp(id) {
 			document.getElementById('h').value=id;
 			document.p.submit();
 		}
-	});
 
-	$(function () {
 		function searchBar() {
 			var x=document.forms["srchForm"]["search"].value;
 			if (x==null || x=="") { return false; }

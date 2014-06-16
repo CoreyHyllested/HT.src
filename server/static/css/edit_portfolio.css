@@ -1,0 +1,458 @@
+
+h1 {
+color: black;
+font-size: 3em;
+font-weight: 400;
+line-height: 1em;
+margin-top: 10px;
+margin-left: 12px;
+}
+
+h3 {color: black;}
+
+.pageWrapper {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
+
+.editPortfolioStatus {
+	line-height: 40px;
+	height: 25px;
+	text-align: center;
+}
+
+.editPortfolioDone {
+	float: left;
+	width: 100%;
+}
+
+.editPortfolioDone button {
+	width: 250px;
+	margin: 10px auto;
+}
+
+/* CONTENT */
+
+/* Phones */
+@media only screen and (min-width: 240px) and (max-width: 549px) {
+
+
+	.editPortfolioWrapper{
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 90%;
+		z-index: 30;
+		text-align: center;		
+	}
+
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 100%;
+	}
+	li.editPortfolioListItem:nth-of-type(3n+0) {
+
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageCaption {
+		width: 100%;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
+	li.uploadNewImageListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 100%
+	}
+	.uploadNewImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px dashed #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+		text-align: center;
+		height: 318px;
+		cursor: pointer;
+	}	
+	
+	.uploadNewImageWrapper h3 {
+		margin-top: 20px;
+		color: gray;
+	}
+	.uploadImageSign{
+		font-size: 14em;
+		text-align: center;
+		width: 100%;
+		color: #e0e0e0;
+		float: left;
+		line-height: .8em;
+	}
+}
+
+
+/* Tablets */
+@media only screen and (min-width: 550px) and (max-width: 999px) {
+
+
+	.editPortfolioWrapper{
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 100%;
+		z-index: 30;		
+	}
+
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 50%;
+	}
+	li.editPortfolioListItem:nth-of-type(3n+0) {
+
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageCaption {
+		width: 100%;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
+	li.uploadNewImageListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 50%
+	}
+	.uploadNewImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px dashed #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+		text-align: center;
+		height: 318px;
+		cursor: pointer;
+	}	
+
+	.uploadNewImageWrapper h3 {
+		margin-top: 20px;
+		color: gray;
+	}
+	.uploadImageSign{
+		font-size: 14em;
+		text-align: center;
+		width: 100%;
+		color: #e0e0e0;
+		float: left;
+		line-height: .8em;
+	}
+}
+
+
+@media only screen and (min-width: 1000px) {
+
+	.editPortfolioWrapper{
+		/*	-moz-animation: editAppear 1s;
+		-o-animation: editAppear 1s;
+		-webkit-animation: editAppear 1s;
+		animation: editAppear 1s;	*/	
+		float: none;
+		overflow: auto;
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		margin: 40px auto 30px;
+		padding: 10px 20px;
+		position: relative;
+		width: 980px;
+		z-index: 30;		
+	}
+
+
+
+
+	ul.editPortfolioList {
+		list-style-type: none;
+	}
+
+	li.editPortfolioListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 33%
+	}
+
+	.editPortfolioImageContainer{
+		float: left;
+		padding: 16px;
+		width: 90%;
+	}
+
+	.editPortfolioImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px solid #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+		-webkit-box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
+  		box-shadow: 1px 1px 4px rgba(0,0,0,0.16);
+	}
+
+	.editPortfolioImageWrapper .header{
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageWrapper .header .img-delete{
+		float: right;
+		font-size: 1.5em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 10px;
+		height: 20px;
+	}
+
+	.editPortfolioImageWrapper .caption{
+		float: left;
+		width: 100%;
+	}
+	.editPortfolioImageWrapper .save-button{
+		height: 40px;
+		display: none;
+		float: left;
+		width: 100%;
+	}
+
+	.editPortfolioImageCaption {
+		width: 100%;
+		height: 80px;
+		resize: none;
+	}
+
+	.editPortfolioImage {
+		border: 1px solid #e2e4e6;
+		border-radius: 3px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;		
+		display: block;
+		float: left;
+		height: 200px;
+		margin-right: 11px;
+		margin-bottom: 11px;
+		-moz-transition: 0.3s ease;
+		-o-transition: 0.3s ease;
+		-webkit-transition: 0.3s ease;
+		transition: 0.3s ease;
+		width: 100%;
+	}
+
+	.editPortfolioImage:hover {
+
+		border: 1px solid #29abe2;
+		
+	}	
+
+	li.uploadNewImageListItem {
+		display: inline;
+		float: left;
+		margin-bottom: 20px;
+		width: 33%
+	}
+	.uploadNewImageWrapper{
+		float: left;
+		padding: 4px;
+		background: #fff;
+		border: 1px dashed #b5b6b8;
+		border-radius: 3px;
+		width: 98%;
+		text-align: center;
+		height: 318px;
+		cursor: pointer;
+	}	
+	.uploadNewImageWrapper h3 {
+		margin-top: 20px;
+		color: gray;
+	}
+	
+	.uploadImageSign{
+		font-size: 14em;
+		text-align: center;
+		width: 100%;
+		color: #e0e0e0;
+		float: left;
+		line-height: .8em;
+	}
+
+  i.fa-upload, .fa-save, .fa-arrow-left {
+  font-size: 1.5em;
+  margin-top: 10px;
+  margin-left: 12px;
+  padding: 6px;
+  }

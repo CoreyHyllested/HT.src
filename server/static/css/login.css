@@ -390,13 +390,17 @@ c) 890px - ... (desktops)
 		width: 280px;
 	}
 
-	.loginEmail input[type="text"], input[type="password"] {
+	.loginEmail input {
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
 		width: 100%;
 	}
 
+	.loginEmail input[type="email"] {
+		border-radius: 5px 5px 0 0;
+
+	}
 	.loginEmail input[type="password"] {
 		border-radius: 0 0 5px 5px;
 		margin-top: -1px;

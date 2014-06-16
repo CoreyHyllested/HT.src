@@ -3,20 +3,21 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
-	<!--script src="/static/js/profile.js"></script-->
-	<script src="/static/js/lightbox.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
-
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
 {% endblock %}
 
 
 {% block content %}
 
-<div class="profileCover">
-	<img class="profileCoverPic" src="{{profile_img}}">
-</div>
-
 <div class="profileContentWrapper">
+	
+	<div class="profileHeaderColumn">
+		<div class="profilePicContainer">
+			<img class="profilePic" src="{{profile_img}}">
+		</div>
+	</div>
+
 
 	<div class="profileLeftColumn">
 		<div class="profileNameHeadline">
@@ -188,9 +189,7 @@
 			<div class="perHour">per<br>hour</div>
 		</div>
 		{% if hp is sameas bp %}
-		<form method="link" action="/edit">
-			<input type="submit" class="whiteButton" value="Edit Profile">
-		</form>
+			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 		<form action="/sendmsg" method="POST">
 			<input type="hidden" name="hp"  value="{{hp.prof_id}}">
@@ -200,7 +199,11 @@
 		</form>
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton" value="Schedule meeting...">
+			<input type="submit" class="blueButton" value="Schedule Lesson">
+		</form><br>
+		<form method="link" action="/schedule" method="POST">
+			<input type="hidden" name="hp" value="{{hp.prof_id}}">
+			<input type="submit" class="messageButton" value="Message Me">
 		</form>
 		{% endif %}
 		<div class="profileBasicInfo">
@@ -217,30 +220,93 @@
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
 
-		<div class="profilePortfolio">
-			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
-			{% for img in portfolio %}
-				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a>
-
-			{% endfor %}
-
-			{% if hp is sameas bp %}
-			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
-			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple />
+		{% if hp is sameas bp %}
+		<div class="portfolioButtons">
+			{% if portfolio|length == 0 %}	
+				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
+			{% else %}
+				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
 			{% endif %}
 		</div>
+		{% endif %}
+
+		<div class="profilePortfolio">
+			
+			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
+			{% for img in portfolio %}
+				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
+
+			{% endfor %}
+			
+			{% if hp is sameas bp %}
+<!-- 			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
+			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple /> -->
+			{% endif %}
+		</div>
+
 	</div>
+
+	{% if hp is sameas bp %}
+	<!-- This doesn't work properly yet. Strange errors with the display / z-index when hiding/showing -->
+	<div id="portfolio-upload" class="modal hidden" hidden>
+		<div class="dzContentWrapper modal-content">
+				<div class="modal-header">
+			      	<a href="#" class="btn-close" aria-hidden="true">×</a>
+			    </div>
+			    <div class="modal-info">
+					<h2>Upload Portfolio Images</h2>
+					<h4>(Drag to re-order)</h4>
+				</div>
+				<div class="dropzone-wrapper">
+					<form action="upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<div class="fallback">
+					    	<input name="file" type="file" multiple />
+					  	</div>
+					</form>
+				</div> 
+
+				<div class="dropzone-content-submit">
+					<button type="button" class="blueButton multiple-upload-button">
+						Upload Images
+					</button>
+				</div>
+
+				<form action="manage-portfolio" method="post" class="files-form">
+				</form>
+		</div>
+	</div>
+
+	{% endif %}
 
 	<div class="clear"></div>
 </div>
 
 
-
+<script src="/static/js/lightbox.min.js"></script>
+<script src="/static/js/dropzone.js"></script>
 <script>
 
-
-
 $(function () {
+
+	// $(".profilePortfolioList").sortable();
+	// $(".profilePortfolioList").sortable("disable");
+
+	// $(".profilePortfolioSortEnable").click(function(event) {
+	// 	event.preventDefault;
+	// 	$(".profilePortfolioList").sortable("enable");
+	// });
+
+	// $('#portfolioUploadButton').click(function(event) {
+	// 	event.preventDefault();
+	// 	$('#portfolio-upload').show();
+	// });
+
+	// $('.btn-close').click(function(event) {
+	// 	event.preventDefault();
+	// 	$('#portfolio-upload').hide();
+	// });
+
     $('.addImage').click(function () {
 		$('#selectFile').click();
 		return false;

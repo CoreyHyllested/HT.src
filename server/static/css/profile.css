@@ -26,7 +26,8 @@ c) 1000px - ... (desktops)
 	h3 {color: black;}
 
 	.profileCover {
-		display: block;
+		display: none;
+		/*display: block;*/
 		position: relative;
 		width: 100%;
 	}
@@ -43,6 +44,7 @@ c) 1000px - ... (desktops)
 		top: 3px;
 		position: relative;
 	}
+
 
 /* PAGE WRAPPERS */
 
@@ -69,28 +71,63 @@ c) 1000px - ... (desktops)
 	}
 }
 
+.hidden {
+	display: none;
+}
+
+/* Modal styles - not currently implemented. Try using other modal styles in master.css */
+
+.modal {
+	background: rgba(0,0,0,.6);
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    z-index: 998;
+}
+.modal-content {
+	padding: 12px;
+	position: relative;
+	background: #fefefe;
+	border: gray solid 1px;
+	border-radius: 3px;
+	z-index: 999;
+} 
+.modal-header .btn-close{
+	font-size: 30px;
+	text-decoration: none;
+	position: absolute;
+	right: 5px;
+	top: 0px;
+
+}
 
 /* MAIN LAYOUT */
 
 	/* Phones */
 	@media only screen and (min-device-width: 240px) and (max-width: 549px) {
+
+
 		
 		.profileContentWrapper {
 			background-color: white;
 			margin: auto;
-			padding-top: 20px;
-			width: 90%;
+			padding: 20px 12px 0px 12px;
+			width: 100%;
 			z-index: 30;
+			overflow: auto;
 		}
 
 	}
 
 	/* Tablet */
 	@media only screen and (min-width: 550px) and (max-width: 999px) {
+
 			
 		.profileContentWrapper {
 			background-color: white;
-			margin: -100px auto 0;
+			margin: 0px auto;
 			min-height: 400px;
 			position: relative;
 			width: 100%;
@@ -107,7 +144,8 @@ c) 1000px - ... (desktops)
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;
-			margin: -200px auto 0;
+			margin: 12px auto 0px;
+			/*margin: -200px auto 0;*/
 			padding: 41px;
 			position: relative;
 			width: 980px;
@@ -121,6 +159,23 @@ c) 1000px - ... (desktops)
 
 /* Phones */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		margin-bottom: 8px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -387,7 +442,7 @@ c) 1000px - ... (desktops)
 
 	.profilePriceBox {display: none;}
 
-	.profileRightColumn .profileBasicInfo {display: none;}
+	.profileRightColumn .profileBasicInfo, #editProfileButton {display: none;}
 
 	.profileBasicInfo {
 		border-bottom: 1px solid #b5b6b8;
@@ -428,18 +483,27 @@ c) 1000px - ... (desktops)
 
 	.profileRightColumn input[type="submit"] {display: none;}
 
+
+	.portfolioButtons {
+		margin-top: 20px;
+		text-align: center;
+	}
+
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
 	.profilePortfolio:before {
-		background-size: 18px 18px;
 		color: black;
-		content: 'Portfolio (5)';
+		content: 'Portfolio';
 		display: block;		
-		font-size: 1.2em;
+		font-size: 1.3em;
 		font-weight: 500;
-		line-height: 1.2em;
-		margin-top: 41px;
+		margin-top: 28px;
 		padding-bottom: 10px;
 		width: 100%;
 	}
+
 
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
@@ -452,6 +516,7 @@ c) 1000px - ... (desktops)
 		text-align: center;
 		width: 100%;
 	}
+
 
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
@@ -512,6 +577,25 @@ c) 1000px - ... (desktops)
 
 /* Tablets */
 @media only screen and (min-width: 550px) and (max-width: 999px) {
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		min-height: 400px;
+		margin-bottom: 8px;
+		padding: 12px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -832,6 +916,14 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+	.portfolioButtons {
+		text-align: center;
+	}
+
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
 	.profilePortfolioImage {
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
@@ -839,7 +931,8 @@ c) 1000px - ... (desktops)
 		display: block;
 		float: left;
 		height: 110px;
-		margin: 10px 0;
+		margin-right: 10px;
+		margin-top: 10px;
 		text-align: center;
 		width: 100%;
 	}
@@ -906,6 +999,26 @@ c) 1000px - ... (desktops)
 }
 
 @media only screen and (min-width: 1000px) {
+
+
+	.profileHeaderColumn {
+		float: left;
+		width: 100%;
+		min-height: 400px;
+		margin-bottom: 8px;
+	}
+
+
+	.profilePicContainer {
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	.profilePic {
+		min-width: 100%;
+		width: 100% !important;
+	}
+
 
 	.profileContentWrapper h1 {
 		color: black;
@@ -1206,6 +1319,14 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
+	.profilePortfolio {
+		margin-top: 30px;
+	}
+
+	.portfolioButtons {
+		text-align: center;
+	}
+
 	.profilePortfolioImage {
 		border: 1px solid #e2e4e6;
 		border-radius: 3px;
@@ -1215,6 +1336,7 @@ c) 1000px - ... (desktops)
 		display: block;
 		float: left;
 		height: 100px;
+		margin-right: 11px;
 		margin-bottom: 11px;
 		-moz-transition: 0.3s ease;
 		-o-transition: 0.3s ease;
@@ -1230,10 +1352,8 @@ c) 1000px - ... (desktops)
 		
 	}
 
-	.profilePortfolioImage:first-of-type {margin-right: 11px;}
-	.profilePortfolioImage:nth-of-type(3) {margin-left: 11px;}
-	.profilePortfolioImage:nth-of-type(4) {margin-right: 11px;}
-	.profilePortfolioImage:nth-of-type(5) {margin-right: 11px;}
+	.profilePortfolioImage:nth-of-type(3n+0) {margin-right: 0px;}
+
 
 	.acroyoga {
 		background: url('../img/portfolio_acroyoga_thumb.jpg') no-repeat center center;
