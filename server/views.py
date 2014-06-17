@@ -25,15 +25,6 @@ from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash #rm -- should be in controllers only
 
 
-stripe_keys = {}
-stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
-stripe_keys['secret'] = 'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
-#stripe.api_key = stripe_keys['secret']
-#ht_appointment_finalize.apply_async(args=[appointment.apptid])
-            
-
-
-
 
 @ht_server.route('/', methods=['GET', 'POST'])
 @ht_server.route('/index')
@@ -42,7 +33,6 @@ def homepage():
 	""" Returns the HeroTime front page for users and Heros
 		- detect HT Session info.  Provide modified info.
 	"""
-
 	bp = None
 
 	if 'uid' in session:
@@ -454,7 +444,6 @@ def render_schedule_page():
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
-
 
 	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
 
@@ -951,7 +940,7 @@ def settings_verify_stripe():
 	print "verify -- use request Token to get userINFO"
 	stripeHTTP = Http()
 	postdata = {}
-	postdata['client_secret'] = stripe_keys['secret']
+	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
 
@@ -1067,7 +1056,7 @@ def render_review_page(appt_id, review_id):
 		print 'trying to access, review, author or reviewer account and fialed'
 		db_session.rollback()
 		return redirect('/dbFailure')
-		
+
 
 
 
@@ -1137,31 +1126,6 @@ def review():
 	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
 
 
-
-@ht_server.route("/email/<heroName>", methods=['GET'])
-def emailHero(heroName):
-	#ht_server.logger.debug(request.headers);
-	#if (url[:8] != "https://"):
-	#	if (url[:7] != "http://"):
-	#		url = "HTTP://" + url;
-	#uid = htLog('create', request, '{ "reqName" : "' + new + '", "url" : "' + url + '" }')
-	print "heroName = '" + heroName + "'"
-	email(heroName, "sent from HT")
-	return "Good job", 200
-
-
-@ht_server.route("/heroes/<heroName>", methods=['GET'])
-def hero_profile(heroName):
-	"""Redirect the request to the URL associated =heroName=."""
-	""" otherwise return 404 NOT FOUND"""
-
-	#split profile into a parsing Headers and a 'go get shit' part.
-	# this can call into the 'go get shit'
-	hero = Profile.query.filter_by(vanity=heroName).all()
-	if len(hero) == 1: 
-		hp = hero[0]
-
-	return pageNotFound('unknown', 404);
 
 
 @ht_server.route('/uploads/<filename>')
@@ -1360,3 +1324,4 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
+
