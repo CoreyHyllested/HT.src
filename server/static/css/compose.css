@@ -1,0 +1,142 @@
+/* PAGE WRAPPERS */
+
+/* Mobiles, phablets, and tablets */
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+/* Desktop */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: #dfdfdf;
+		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
+	}
+}
+
+/* Content */
+
+.composeWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+}
+
+.composeHeader {
+	border-bottom: 1px solid #b0b4b7;
+	margin-bottom: 20px;
+	float: left;
+	width: 100%;
+}
+.composeHeader h1 {
+	color: black;
+	font-size: 2em;
+	padding-bottom: 15px;
+}
+
+.navigation {
+	float: left;
+	font-size: 1em;
+	width: 100%;
+	padding-bottom: 15px;
+}
+.navigation i {
+	font-size: .9em;
+}
+.navigation a {
+	color: #29abe1;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+.navigation a:hover {
+	color: #007cb3;
+}
+
+.composeMessageContainer {
+	width: 100%;
+	float: left;
+}
+
+.composeFieldCaption{
+	font-size: 1.1em;
+	font-weight: bold;
+	text-align: right;
+	line-height: 40px;
+	height: 40px;
+	width: 100px;
+	float: left;
+}
+
+.composeRecipientContainer {
+	width: 100%;
+	float: left;
+}
+
+.composeSubjectContainer {
+	width: 100%;
+	float: left;
+}
+
+.composeBodyContainer {
+	width: 100%;
+	float: left;
+}
+
+input.composeField {
+	float: right;
+	width: 780px;
+	margin-top: -1px;
+}
+
+input.composeField:nth-of-type(1) {
+	border-radius: 3px 3px 0 0;
+}
+
+textarea.composeField {
+	resize: none;
+	float: right;
+	width: 788px;
+	margin-top: -1px;
+	border-radius: 0 0 3px 3px;
+}
+
+.composeMessageSend{
+	width: 100%;
+	float: left;
+}
+
+.composeMessageSendButton{
+	width: 250px;
+	margin: 20px auto;
+}
+
+.composeMessageCancel{
+	width: 100%;
+	text-align: center;
+	font-size: .9em;
+}
+
+
+
+
+
+

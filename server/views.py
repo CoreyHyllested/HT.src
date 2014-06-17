@@ -1387,7 +1387,31 @@ def render_edit_portfolio_page():
 def render_inbox_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('inbox.html', bp=bp))
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = [] 
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+
+	print "messages =", len(messages)
+
+	return make_response(render_template('inbox.html', bp=bp, messages=messages))
+	
+@ht_server.route("/compose", methods=['GET', 'POST'])
+def render_compose_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('compose.html', bp=bp))
 
 
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])

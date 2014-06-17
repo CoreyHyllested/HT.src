@@ -1,0 +1,55 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="composeWrapper">
+
+	<div class="composeHeader">
+		<h1>Compose Message</h1>
+		<div class="navigation"><a href="/inbox" title="Back to Inbox"><i class="fa fa-arrow-circle-left"></i> Back to Inbox</a></div>
+	</div>
+
+
+	<div class="composeMessageContainer">
+		<div class="composeRecipientContainer">
+			<div class="composeFieldCaption">To</div>
+			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" placeholder="Enter Recipient">
+			<!-- TODO - add a temporary drop down to select current members of the site -->
+		</div>		
+		<div class="composeSubjectContainer">
+			<div class="composeFieldCaption">Subject</div>
+			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Enter Message Subject">
+		</div>
+		<div class="composeBodyContainer">
+			<div class="composeFieldCaption">Message</div>
+			<textarea id="composeBody" name="composeBody" class="composeField"></textarea>
+		</div>
+	</div>
+
+	<div class="composeMessageSend">
+		<form action="/sendmsg" method="POST">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			<input type="submit" class="blueButton composeMessageSendButton" value="Send">
+		</form>
+	</div>
+	<div class="composeMessageCancel">
+		<a href="/inbox">Cancel - Return to Inbox</a>
+	</div>
+
+</div>
+
+
+<script>
+$(document).ready(function() {
+
+});
+</script>
+
+
+{% endblock %}	

@@ -8,19 +8,21 @@
 
 {% block content %}
 
-<div class="profileContentWrapper">
+<div class="inboxContentWrapper">
 	<div class="inboxMessagesHeader">
 		<h1>Messages ({{messages|length}})</h1>
 	</div>
   
   	<div class="container">
 		<div class="inboxLeftColumn">
-			<input type="#" class="composeButton" value="COMPOSE">
-			<ul class="inBoxLeftNavigationList">
-				<div class="profileInfoBox" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
-				<div class="profileInfoBox" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div>
-				<div class="profileInfoBox" id="trashLink">TRASH<i class="fa fa-trash-o"></i></div>
-			</ul>
+			<div class="inboxNavContainer">
+				<a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a>
+				<ul class="messagesNavList">
+					<div class="messagesNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+					<div class="messagesNavItem" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div>
+					<div class="messagesNavItem" id="trashLink">TRASH<i class="fa fa-trash-o"></i></div>
+				</ul>
+			</div>
 		</div>
 
 		<div class="inboxRightColumn">
@@ -28,28 +30,11 @@
 				<ul class="inboxWell" id="threads">
 					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
 					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
-						<div class="messageDate">Sent {{msg.UserMessage.msg_created.strftime('%A, %b %d %H:%M %p')}}</div>
-						<!-- no subject line now:: div class="messageSubjectLine">This is the subject line.</div-->
-						<br>
-						<div class="LeftColumn">
-							<a href="#" onclick="document.getElementById('h').value='{{msg.display.prof_id}}'; document.p.submit();">
-							<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}">
-							</a>
-						</div>
-						<div class="CenterColumn">
-							<div class="user">{{msg.display.prof_name}}<br>{{msg.display.headline}}</div>
-							<div class="dashboardOfferIntro">{{msg.UserMessage.msg_content}}</div>
-						</div>
+						<div class="messageUser">{{msg.display.prof_name}}</div>
+						<div class="messageSubjectLine">{{msg.UserMessage.msg_content}}</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d')}}</div>
 
-						<div class="RightColumn">
-							<form action="/sendmsg" method="POST">
-								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-								<input type="hidden" name="parent" value="{{msg.UserMessage.msg_id}}">
-								<input type="submit" class="whiteButton" id="{{msg.UserMessage.msg_id}}" value="Respond">
-								<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
-							</form>
-						</div>
-						<div class="clear"></div>
 					</li>
 					{% endfor %}
 				</ul>  
@@ -58,10 +43,22 @@
 			<div class="inboxView inboxSent">
 				<ul class="inboxWell" id="threads">
 					<li class="message" id="thread_number">
-						<div class="user"> Me </div>
+						<div class="messageUser"> Me </div>
 						<div class="messageSubjectLine">This is a message i sent.</div>
-						<div class="messageDate">Date</div>
-						<div class="messageDelete">x</div>
+						<div class="messageDate">Jun 15</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+					</li>
+					<li class="message" id="thread_number">
+						<div class="messageUser"> Me </div>
+						<div class="messageSubjectLine">This is another message i sent.</div>
+						<div class="messageDate">Jun 11</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+					</li>					
+					<li class="message" id="thread_number">
+						<div class="messageUser"> Me </div>
+						<div class="messageSubjectLine">This is a third message i sent.</div>
+						<div class="messageDate">Jun 10</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
 					</li>
 				</ul>  
 			</div>
@@ -69,10 +66,10 @@
 			<div class="inboxView inboxTrash">
 				<ul class="inboxWell" id="threads">
 					<li class="message" id="thread_number">
-						<div class="user">Some user </div>
+						<div class="messageUser">Mike Tyson</div>
 						<div class="messageSubjectLine">An old message that is in the trash</div>
-						<div class="messageDate">Date</div>
-						<div class="messageDelete">x</div>
+						<div class="messageDate">Jun 8</div>
+						<div class="messageDelete"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
 					</li>
 				</ul>  
 			</div>
