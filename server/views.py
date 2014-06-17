@@ -697,7 +697,7 @@ def sanitize_render_errors(err):
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'ht_proposal_create'
+	print 'ht_api_proposal_create'
 
 	prop_s_date = request.values.get('prop_s_date')
 	prop_s_hour = request.values.get('prop_s_hour')
@@ -706,13 +706,8 @@ def ht_api_proposal_create():
 	prop_f_hour = request.values.get('prop_f_hour')
 	prop_hero = request.values.get('prop_hero')
 
-	print 'prop_s_date = ', prop_s_date 
-	print 'prop_s_hour= ', prop_s_hour
-	print 'prop_f_date = ', prop_f_date 
-	print 'prop_f_hour= ', prop_f_hour
-	print 'prop_hero = ', prop_hero
-
-	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#print dt_start
 
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
