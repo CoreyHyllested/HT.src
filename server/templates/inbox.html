@@ -8,26 +8,108 @@
 
 {% block content %}
 
-<div class="profileContentWrapper">
+<div class="inboxContentWrapper">
+	<div class="inboxMessagesHeader">
+		<h1>Messages ({{messages|length}})</h1>
+	</div>
   
-  <div class="inboxMessagesHeader">
-    <h1>Messages</h1>
-<!--     <div id="inboxSearch"></div> -->
-  </div>
-  
-  <div class="inboxLeftColumn">
-    <input type="#" class="composeButton" value="COMPOSE">
-    <ul class="inBoxLeftNavigationList">
-      <div class="profileInfoBox">INBOX<i class="fa fa-envelope-o"></i></div>
-      <div class="profileInfoBox">SENT<i class="fa fa-paper-plane-o"></i></div>
-      <div class="profileInfoBox">TRASH<i class="fa fa-trash-o"></i></div>
-    </ul>
-  </div>
-  
-  <div class="inboxRightColumn">
-  This is where the messages will go.
-  </div>
-  
+  	<div class="container">
+		<div class="inboxLeftColumn">
+			<div class="inboxNavContainer">
+				<!--a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a-->
+				<ul class="messagesNavList">
+					<div class="messagesNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+					<!--div class="messagesNavItem" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div-->
+					<div class="messagesNavItem" id="trashLink">ARCHIVE<i class="fa fa-trash-o"></i></div>
+				</ul>
+			</div>
+		</div>
+
+		<div class="inboxRightColumn">
+			<div class="inboxView inboxMain">
+				<ul class="inboxWell" id="threads">
+					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
+					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
+						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
+						<div class="messageUser">{{msg.display.prof_name}}</div>
+						<div class="messageSubjectLine">{{msg.UserMessage.msg_content}}</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d')}}</div>
+						<div class="composeBodyContainer">
+							<div class="composeFieldCaption">Message</div>
+							<textarea id="composeBody" name="composeBody" class="composeField"></textarea>
+							<div class="composeMessageSend">
+								<form action="/sendmsg" method="POST">
+									<input type="hidden" name="hero_prof"	value="{{ msg.display.prof_id }}">
+									<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
+								</form>
+							</div>
+						</div>
+					</li>
+					{% endfor %}
+				</ul>  
+			</div>    
+	
+			<!--div class="inboxView inboxSent">
+				<ul class="inboxWell" id="threads">
+					<li class="message" id="thread_number">
+						<div class="messageUser"> Me </div>
+						<div class="messageSubjectLine">This is a message i sent.</div>
+						<div class="messageDate">Jun 15</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+					</li>
+					<li class="message" id="thread_number">
+						<div class="messageUser"> Me </div>
+						<div class="messageSubjectLine">This is another message i sent.</div>
+						<div class="messageDate">Jun 11</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+					</li>					
+					<li class="message" id="thread_number">
+						<div class="messageUser"> Me </div>
+						<div class="messageSubjectLine">This is a third message i sent.</div>
+						<div class="messageDate">Jun 10</div>
+						<div class="messageDelete"><i class="fa fa-times"></i></div>
+					</li>
+				</ul>  
+			</div-->
+
+			<div class="inboxView inboxTrash">
+				<ul class="inboxWell" id="threads">
+					<li class="message" id="thread_number">
+						<div class="messageUser">Mike Tyson</div>
+						<div class="messageSubjectLine">An old message that is in the trash</div>
+						<div class="messageDate">Jun 8</div>
+						<div class="messageDelete"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
+					</li>
+				</ul>  
+			</div>
+		</div><!--right column-->
+	</div><!--empty, container-->
 
 </div>
+
+
+<script>
+$(document).ready(function() {
+	$(".composeBodyContainer").hide();
+
+	$('.message').click(function() {
+		$(".composeBodyContainer").hide();
+		$(this).find('.composeBodyContainer').slideDown(100);
+	});
+
+	$('#mainLink').click(function() {
+		$('.inboxView').hide();
+		$('.inboxMain').show();
+	});
+
+	$('#trashLink').click(function() {
+		$('.inboxView').hide();
+		$('.inboxTrash').show();
+	});
+});
+</script>
+
+
 {% endblock %}

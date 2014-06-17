@@ -58,21 +58,25 @@ def render_search():
 	form = SearchForm(request.form)
 	print "keywords = ", keywords
 
-	results = db_session.query(Profile)
-	print 'there are', len(results.all()), 'profiles'
+	try:
+		results = db_session.query(Profile)
+		print 'there are', len(results.all()), 'profiles'
 
-	if (keywords is not None):
-		print "keywords = ", keywords
-		rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-		rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
-		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
-		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
-
-		# filter by location, use IP as a tell
-		rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
-	else:
-		rc_keys = results.all()
+		if (keywords is not None):
+			print "keywords = ", keywords
+			rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+			rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
+			rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
+			print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
+	
+			# filter by location, use IP as a tell
+			rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
+		else:
+			rc_keys = results.all()
+	except Exception as e:
+		print e
+		db_session.rollback()
 
 	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
 
@@ -112,25 +116,29 @@ def render_profile(usrmsg=None):
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
 
-	portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+	# alias for review searches.
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	try:
+		# complicated search queries can fail and lock up DB.
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
+								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)											\
+								.join(user, user.prof_id == Review.prof_authored)										\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+
 	print 'images in portfolio:', len(portfolio)
 	for img in portfolio:
 		print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
-
-	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
-							.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
-							.join(appt, appt.prop_uuid == Review.rev_appt)											\
-							.join(user, user.prof_id == Review.prof_authored)										\
-							.join(hero, hero.prof_id == Review.prof_reviewed).all();
 
 	for r in all_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
@@ -158,6 +166,9 @@ def render_profile(usrmsg=None):
 	for r in show_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
 
+	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	nts = NTSForm(request.form)
+	nts.hero.data = hp.prof_id
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
@@ -509,32 +520,41 @@ def render_dashboard(usrmsg=None, focus=None):
 	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appts_and_props = db_session.query(Proposal, user, hero)														\
-								.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-								.join(user, user.prof_id == Proposal.prop_user)										\
-								.join(hero, hero.prof_id == Proposal.prop_hero).all();
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = [] 
+
+	try:
+		appts_and_props = db_session.query(Proposal, user, hero)														\
+									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
+									.join(user, user.prof_id == Proposal.prop_user)										\
+									.join(hero, hero.prof_id == Proposal.prop_hero).all();
+		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
 	
-	
-	print 'calling map on all appts_and_props'
-	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
 	print "proposals =", len(props), ", appts =", len(appts)
 	
 
-	for x in props:
-		print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
-
-	print 'now appts: '
-	for x in appts:
-		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
+	#for x in props:
+	#	print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
+	#for x in appts: #print 'now appts: '
+	#	print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
 
 	
 
-def display_other_user(p, user_is):
+def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
 		#user it the hero, we should display all the 'user'
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
@@ -546,6 +566,20 @@ def display_other_user(p, user_is):
 		setattr(p, 'display', p.hero)
 		setattr(p, 'buyer', True) 
 		setattr(p, 'sellr', False) 
+
+
+def display_partner_message(p, user_is):
+	if (user_is == p.UserMessage.msg_to): 
+		#user it the hero, we should display all the 'user'
+		print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
+		setattr(p, 'display', p.msg_from) 
+		setattr(p, 'left', p.msg_from)
+		setattr(p, 'right', p.msg_to)
+	else:
+		print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
+		setattr(p, 'display', p.msg_to)
+		setattr(p, 'left', p.msg_to)
+		setattr(p, 'right', p.msg_from)
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -597,6 +631,60 @@ def upload():
 		sml.set_contents_from_file(StringIO(image_data))
 
 	return jsonify(tmp="/uploads/" + str(img_hashname))
+
+
+
+
+# TODO this cannot be csrf exempt
+@ht_csrf.exempt
+@ht_server.route('/sendmsg', methods=['POST'])
+@req_authentication
+def ht_api_send_message():
+	""" Send a user message. """
+
+	uid = session['uid']
+
+	try:
+		bp = Profile.get_by_uid(session['uid'])
+
+		msg_from = bp.prof_id
+		print 'message from ' + str(bp)
+		msg_to	= request.values.get('hp')
+		content	= request.values.get('msg')
+		parent	= request.values.get('parent')
+		subject = request.values.get('subject', 'default subject')
+		nexturl	= request.values.get('next')
+		thread	= None
+
+		print 'parent=', parent, 'subject=', subject
+
+		if (parent):
+			parent_msg	= UserMessage.get_by_msg_id(parent) 
+			thread	= parent_msg.msg_thread
+			msg_to	= parent_msg.msg_from
+			
+		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
+		print message
+		
+		db_session.add(message)
+		db_session.commit()
+
+		#todo: notifying users.
+		print "success, saved msg"
+	except DB_Error as dbe:
+		print dbe
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except NoResourceFound as nre:
+		print nre
+		return jsonify(usrmsg="Weird, couldn't find something"), 505
+	except Exception as e:
+		print type(e)
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg='Bizarre, something failed'), 500
+
+	return jsonify(usrmsg="Message sent.", nexturl=nexturl), 200
 
 
 
@@ -1248,26 +1336,59 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
+@req_authentication
 @ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 	
+
+@req_authentication
 @ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
-	
+
+
+
+@req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('inbox.html', bp=bp))
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = [] 
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+
+	print "messages =", len(messages)
+
+	return make_response(render_template('inbox.html', bp=bp, messages=messages))
+	
+
+@req_authentication
+@ht_server.route("/compose", methods=['GET', 'POST'])
+def render_compose_page():
+	hid = request.values.get('hp')
+	bp = Profile.get_by_uid(session['uid'])
+	hp = Profile.get_by_prof_id(hid)
+	return make_response(render_template('compose.html', bp=bp, hp=hp))
 
 
+@req_authentication
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])
 def ht_api_update_portfolio(operation):
 	uid = session['uid']

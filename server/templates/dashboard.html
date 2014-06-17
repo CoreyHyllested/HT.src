@@ -110,6 +110,36 @@
 			</div>
 			{% endfor %}
 		</div>
+
+		<div class="dashboardMessages">
+			<h1>Messages ({{messages|length}})</h1>
+			{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
+			<div class="dashboardOffer" id="msg-{{msg.UserMessage.msg_id}}">
+				<p>Sent {{msg.UserMessage.msg_created.strftime('%A, %b %d %H:%M %p')}}</p>
+				<br>
+				<div class="dashboardOfferLeftColumn">
+					<a href="#" onclick="document.getElementById('h').value='{{msg.display.prof_id}}'; document.p.submit();">
+						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}">
+						<h3>{{msg.display.prof_name}}</h3>
+						<h4>{{msg.display.headline}}</h4>
+					</a>
+				</div>
+				<div class="dashboardOfferCenterColumn">
+					<h4>{{msg.UserMessage.msg_subject}}</h4>
+					<div class="dashboardOfferIntro">{{msg.UserMessage.msg_content}}</div>
+				</div>
+				<div class="dashboardOfferRightColumn">
+					<form action="/sendmsg" method="POST">
+						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+						<input type="hidden" name="parent" value="{{msg.UserMessage.msg_id}}">
+						<input type="submit" class="whiteButton" id="{{msg.UserMessage.msg_id}}" value="Respond">
+						<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
+					</form>
+				</div>
+				<div class="clear"></div>
+			</div>
+			{% endfor %}
+		</div>
 	</div>
 
 	<div class="dashboardRightColumn">

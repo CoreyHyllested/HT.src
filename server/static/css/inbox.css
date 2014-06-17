@@ -25,29 +25,115 @@
 
 /* CONTENT */
 
+	.inboxContentWrapper {
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		overflow: auto;
+		width: 980px;
+		z-index: 30;
+	}
+
 	.inboxMessagesHeader {
-    margin-bottom: 10px;
+    	margin-bottom: 10px;
 		width: 100%;
 	}
 
 	.inboxMessagesHeader h1 {
 		border-bottom: 1px solid #b0b4b7;
 		color: black;
-		font-size: 2.5em;
+		font-size: 2em;
 		padding-bottom: 15px;
 		width: 100%;
 	}
 	
 	.inboxLeftColumn {
-    float: left;
-    text-align: right;
-	
+	    float: left;
+	    text-align: right;
+		width: 25%;
 	}
 	
 	.inboxRightColumn {
-	  float:right;
-	  margin-right: 275px;
-	
+		float: right;
+		width: 75%;
+	}
+
+	.inboxNavContainer {
+		padding-right: 36px;
+	}
+
+	.inboxView{
+		height: 1000px;
+		margin-top: 6px;
+	}
+
+	.inboxMain {
+
+	}
+	.inboxSent {
+		display: none;
+	}
+
+	.inboxTrash {
+		display: none;
+	}
+
+	/* MESSAGES*/
+
+	.message {
+		border-bottom: 1px solid #e1e0de;
+		float:left;
+		width: 665px;
+		height: 30px;
+		line-height: 30px;
+		font-size: .9em;
+		padding: 0px 4px;
+		cursor: pointer;
+	}
+	.message:nth-of-type(2n+0) {
+		background: #fcfcfc;
+	}
+	.message:hover {
+		background: #fafafa;
+	}
+	.message .unread {
+		font-weight: bold;
+	}
+
+	.messageUser {
+		float: left;
+		width: 25%;
+	}
+
+	.messageSubjectLine {
+		color: gray;
+		float: left;
+		width: 60%;
+	}
+
+	.messageDate {
+		color: gray;
+		float: left;
+		width: 10%;
+	}
+
+	.messageDelete {
+		font-size: 1.3em;
+		text-align: right;
+		cursor: pointer;
+		line-height: 28px;
+		height: 25px;
+		color: #ec6666;
+		float: right;
+		width: 5%;
+	}
+	.messageDelete:hover {
+		color: red;
 	}
 	
 	.composeButton {
@@ -64,7 +150,7 @@
 		font-size: 0.9em;
 		height: 24px;
 		margin-top: 9px;
-		margin-bottom: 15px;
+		margin-bottom: 6px;
 		text-align: center;
 		-moz-transition: 0.5s ease;
 		-o-transition: 0.5s ease;
@@ -72,7 +158,6 @@
 		transition: 0.5s ease;		
 		vertical-align: middle;
 		width: 100%;
-
 	}
 
 	.composeButton:hover {
@@ -81,22 +166,8 @@
 		text-decoration: none;
 	}
 	  
-	.profileContentWrapper {
-		background-color: white;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 12px auto 0px;
-		/*margin: -200px auto 0;*/
-		padding: 41px;
-		position: relative;
-		overflow: auto;
-		width: 980px;
-		z-index: 30;
-	}
-	
-	.profileInfoBox {
+
+	.messagesNavItem {
 	    background-size: 18px 18px;
 	    border-bottom: 1px solid #e2e4e6;
 	    color: #6e7980;
@@ -105,11 +176,11 @@
 	    cursor: pointer;
 	}
 
-	.profileInfoBox:hover {
+	.messagesNavItem:hover {
 	    color: #007cb3;
 	}
 
-	.profileInfoBox i {
+	.messagesNavItem i {
 			padding-left: 6px; 
 	}
 

@@ -35,7 +35,7 @@
 
 			<form method="link" action="/schedule" method="POST">
 				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule Lesson">
+				<input type="submit" class="blueButton" value="Schedule meeting...">
 			</form>
 
 			{% endif %}
@@ -44,14 +44,14 @@
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
-			{% if hp.reviews == 0 %}
-				No Reviews
-			{% else %}
-				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
-			{% endif %}
+					{% if hp.reviews == 0 %}
+						No Reviews
+					{% else %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+					{% endif %}
+				</div>
+				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
-			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
-		</div>
 		</div>
 		<div class="profileAboutMe">{{hp.prof_bio}}</div>
 
@@ -86,8 +86,8 @@
 						<div class="profileReviewLeftNameHeadline">
 							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
 								<h3>{{review.display.prof_name}}</h3>
+								<h4>{{review.display.headline}}</h4>
 							</a>
-							<h4>{{review.display.headline}}</h4>
 						</div>
 					</div>
 					<div class="profileReviewRight">
@@ -191,14 +191,16 @@
 		{% if hp is sameas bp %}
 			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
+
+		<form method="link" action="/compose" method="POST">
+			<input type="hidden" name="hp" value="{{hp.prof_id}}">
+			<input type="submit" class="blueButton" id='sndmessage' value="Message Me">
+		</form>
+		<br>
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
 			<input type="submit" class="blueButton" value="Schedule Lesson">
 		</form><br>
-		<form method="link" action="/schedule" method="POST">
-			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="messageButton" value="Message Me">
-		</form>
 		{% endif %}
 		<div class="profileBasicInfo">
 				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
@@ -231,11 +233,6 @@
 				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
 
 			{% endfor %}
-			
-			{% if hp is sameas bp %}
-<!-- 			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
-			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple /> -->
-			{% endif %}
 		</div>
 
 	</div>
@@ -282,42 +279,15 @@
 <script>
 
 $(function () {
-
-	// $(".profilePortfolioList").sortable();
-	// $(".profilePortfolioList").sortable("disable");
-
-	// $(".profilePortfolioSortEnable").click(function(event) {
-	// 	event.preventDefault;
-	// 	$(".profilePortfolioList").sortable("enable");
-	// });
-
-	// $('#portfolioUploadButton').click(function(event) {
-	// 	event.preventDefault();
-	// 	$('#portfolio-upload').show();
-	// });
-
-	// $('.btn-close').click(function(event) {
-	// 	event.preventDefault();
-	// 	$('#portfolio-upload').hide();
-	// });
-
-    $('.addImage').click(function () {
-		$('#selectFile').click();
-		return false;
-	});
-
-	$('#selectFile').change(function(e) {
-		//reloadProfImg("../static/img/loader.gif", true, false);
-		var csrf = "{{ csrf_token() }}";
+	$('#sendmessage').click(function(e) {
 		var fd = new FormData();
-
-		if (this.files[0] == undefined) {
-			console.log('no file, quit');
-			return false;
-		}
-
-		fd.append('file', this.files[0]);
-		fd.append('orig', 'profile');
+		var txt = $('#sndmsg_txt').val();
+		var sub = $('#sndmsg_sub').val();
+		var csrf = "{{ csrf_token() }}";
+		fd.append('hp', '{{hp.prof_id}}');
+		fd.append('msg', txt);
+		fd.append('subject', sub);
+		fd.append('csrf_token', csrf);
 
 		var xhr = new XMLHttpRequest();
 		xhr.onreadystatechange = function(e) {
@@ -325,38 +295,21 @@ $(function () {
 				console.log(['xhr post complete, state=', this.status,  e]);
 				if (this.status == 200) {
 					console.log(xhr.responseText);
-					openAlertWindow('Success.');
-				} else if (this.status == 400) {
+                    msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Success: ' + msg['usrmsg']);
+				} else if (this.status > 500) {
 					console.log(['xhr post complete, err=400 ', e]);
 					openAlertWindow('Fail.');
-				} else if (this.status == 404) {
-					console.log(['xhr post complete, err=404 ', e]);
-					openAlertWindow('Fail.');
-				} else if (this.status == 500) {
-					console.log(['xhr post complete, err=500 ', e]);
-					openAlertWindow('Fail.');
-				} else if (this.status == 501) {
-					console.log(['xhr post complete, err=501 ', e]);
-					openAlertWindow('Fail.');
 				} else {
-					console.log('xhr post complete, uncaught');
-					openAlertWindow('Failure: API point doesn\'t exist.');
+					openAlertWindow('Huh?');
 				}
 			}
 		};
-
-		if (xhr.upload) {
-			xhr.upload.onprogress = function(e) {
-				var done = e.position || e.loaded, total = e.totalSize || e.total;
-				console.log('xhr.upload progress: ' + done + ' / ' + total + ' = ' + (Math.floor(done/total*1000)/10) + '%');
-			};
-		}
-
-		xhr.open('POST', "/upload", true);
-		xhr.setRequestHeader("X-CSRFToken", csrf);
+		xhr.open('POST', "/sendmsg", true);
 		xhr.send(fd);
 		return false;
 	});
+
 });//jQuery ready
 </script>
 
