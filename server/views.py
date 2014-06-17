@@ -664,6 +664,7 @@ def ht_api_send_message():
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
 		subject = request.values.get('subject', 'default subject')
+		nexturl	= request.values.get('next')
 		thread	= None
 
 		print 'parent=', parent, 'subject=', subject
@@ -694,7 +695,7 @@ def ht_api_send_message():
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed'), 500
 
-	return jsonify(usrmsg="Message sent."), 200
+	return jsonify(usrmsg="Message sent.", nexturl=nexturl), 200
 
 
 
@@ -1376,12 +1377,15 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
+@req_authentication
 @ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 	
+
+@req_authentication
 @ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	uid = session['uid']
@@ -1391,6 +1395,7 @@ def render_edit_portfolio_page():
 
 
 
+@req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
@@ -1414,12 +1419,17 @@ def render_inbox_page():
 
 	return make_response(render_template('inbox.html', bp=bp, messages=messages))
 	
+
+@req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
-	uid = session['uid']
+	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('compose.html', bp=bp))
+	hp = Profile.get_by_prof_id(hid)
+	return make_response(render_template('compose.html', bp=bp, hp=hp))
 
+
+@req_authentication
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])
 def ht_api_update_portfolio(operation):
 	uid = session['uid']
