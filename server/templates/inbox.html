@@ -32,16 +32,19 @@
 					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
 						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
 						<div class="messageUser">{{msg.display.prof_name}}</div>
-						<div class="messageSubjectLine">{{msg.UserMessage.msg_content}}</div>
+						<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
 						<div class="messageDelete"><i class="fa fa-times"></i></div>
 						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d')}}</div>
+						<!-- div class="messageContent">{{msg.UserMessage.msg_content}}</div-->
+						<!-- TODO div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d %H:%M %p')}}</div-->
 						<div class="composeBodyContainer">
-							<div class="composeFieldCaption">Message</div>
-							<textarea id="composeBody" name="composeBody" class="composeField"></textarea>
+							<div class="composeFieldCaption">Respond</div>
 							<div class="composeMessageSend">
 								<form action="/sendmsg" method="POST">
-									<input type="hidden" name="hero_prof"	value="{{ msg.display.prof_id }}">
-									<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="hidden"	name="hp"			value="{{ msg.display.prof_id }}">
+									<input type="hidden"	name="parent"		value="{{ msg.UserMessage.msg_id }}">
+									<input type="hidden"	name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="textarea"	name="msg">
 									<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
 								</form>
 							</div>
