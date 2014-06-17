@@ -547,21 +547,25 @@ class UserMessage(Base):
 	msg_created = Column(DateTime(), nullable=False)
 	msg_noticed = Column(DateTime())
 	msg_opened  = Column(DateTime())
+	msg_subject	= Column(String(64))
 
 
-	def __init__ (self, prof_to, prof_from, content, thread=None, parent=None):
-		print 'running usrmessage init'
+	def __init__ (self, prof_to, prof_from, content, subject=None, thread=None, parent=None):
 		self.msg_id	= str(uuid.uuid4())
 		self.msg_to	= str(prof_to)
 		self.msg_from = str(prof_from)
 		self.msg_content = str(content)
+		self.msg_subject = subject
 		self.msg_created = dt.utcnow()
 
 		if (thread == None):
+			# First message in thread
 			thread = str(self.msg_id)
 			parent = None
+			if (self.msg_subject is None): raise Exception('first msg needs subject')
 		else:
 			if (parent == None): raise Exception('not valid threading')
+			self.msg_subject = None
 
 		self.msg_thread	= thread
 		self.msg_parent	= parent
