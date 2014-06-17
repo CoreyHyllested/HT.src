@@ -86,8 +86,8 @@
 						<div class="profileReviewLeftNameHeadline">
 							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
 								<h3>{{review.display.prof_name}}</h3>
+								<h4>{{review.display.headline}}</h4>
 							</a>
-							<h4>{{review.display.headline}}</h4>
 						</div>
 					</div>
 					<div class="profileReviewRight">
@@ -192,9 +192,10 @@
 			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 
-		<input type="text"   name="subject" id="sndmsg_sub" placeholder="Msg Subject... ">
-		<input type="text"   name="msg"		id="sndmsg_txt" placeholder="Hi {{hp.prof_name}}, do you know how to make latte art...">
-		<input type="submit" class="blueButton" id="sendmessage" value="Message Me">
+		<form method="link" action="/compose" method="POST">
+			<input type="hidden" name="hp" value="{{hp.prof_id}}">
+			<input type="submit" class="blueButton" id='sndmessage' value="Message Me">
+		</form>
 		<br>
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
