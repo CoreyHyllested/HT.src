@@ -254,11 +254,11 @@ class Oauth(Base):
 		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
 
-#	@staticmethod
-#	def get_stripe_by_uid(uid):
-#		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-#		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
-#		return stripe_custs[0]
+	@staticmethod
+	def get_stripe_by_uid(uid):
+		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		return stripe_custs[0]
 
 
 class Profile(Base):
