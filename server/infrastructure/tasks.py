@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from datetime import datetime as dt, timedelta
+from server import ht_server
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks_emails	 import *
@@ -32,6 +33,7 @@ def ht_proposal_create(values, uid):
 		returns	on failure: None, msg
 	"""
 
+	print 'ht_proposal_create'
 	stripe_tokn = values.get('stripe_tokn')
 	stripe_card = values.get('stripe_card')
 	stripe_cust = values.get('stripe_cust')
@@ -57,11 +59,10 @@ def ht_proposal_create(values, uid):
 	#	v3 - place doesn't matter as much..
 	#	v4 - cost..
 
-#	print 'updated_start = ', dt_start
-#	print 'updated_finsh = ', dt_finsh
 	print 'token = ', stripe_tokn 
-#	print 'scard = ', stripe_card 
-	print 'scust = ', stripe_cust 
+	print 'stripe_card = ', stripe_card 
+	print 'stripe_cust = ', stripe_cust 
+#	print 'updated_start = ', dt_start, '-', dt_finish
 
 #	(ba, bp) = get_account_and_profile(prop.prop_user)
 #	(ha, hp) = get_account_and_profile(prop.prop_hero)
@@ -76,7 +77,7 @@ def ht_proposal_create(values, uid):
 		pi  = get_stripe_customer(uid=uid, cc_token=stripe_tokn, cc_card=stripe_card)
 		print "PI = ", pi
 
-		print 'creating proposal obj' 
+		print 'create proposal' 
 		the_proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
 		db_session.add(the_proposal)
 		db_session.commit()		 # raises IntegrityError
@@ -325,19 +326,18 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 
 
 def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
-	stripe.api_key = "sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
+	stripe.api_key = ht_server.config['STRIPE_SECRET']
 	stripe_cust = None
 
 	try:
-		print 'check db oauth stripe account'
+		print 'check oauth for stripe account'
 		stripe_cust = Oauth.get_stripe_by_uid(uid)
-		print 'returned friome oauth check'
-		return stripe_cust.oa_userid
+		print 'returned from oauth check'
+		return stripe_cust.oa_account
 	except NoOauthFound as nof:
-		print 'customer did not exist, create one'
+		print 'customer does not exist, create'
 		
 
-	print 'create customer from stripe API' 
 	try:
 		print 'create Customer w/ cc = ' + str(cc_token)
 		stripe_cust_resp	= stripe.Customer.create(card=cc_token, description=str(uid))

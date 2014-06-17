@@ -13,18 +13,19 @@
 	<div class="composeHeader">
 		<h1>Compose Message</h1>
 		<div class="navigation"><a href="/inbox" title="Back to Inbox"><i class="fa fa-arrow-circle-left"></i> Back to Inbox</a></div>
+		<div class="navigation"><a href="/profile?hero={{hp.prof_id}}" title="Back to Profile"><i class="fa fa-arrow-circle-left"></i> Back to Profile</a></div>
 	</div>
 
 
 	<div class="composeMessageContainer">
 		<div class="composeRecipientContainer">
 			<div class="composeFieldCaption">To</div>
-			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" placeholder="Enter Recipient">
+			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" value="{{hp.prof_name}}">
 			<!-- TODO - add a temporary drop down to select current members of the site -->
-		</div>		
+		</div>
 		<div class="composeSubjectContainer">
 			<div class="composeFieldCaption">Subject</div>
-			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Enter Message Subject">
+			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Message Subject">
 		</div>
 		<div class="composeBodyContainer">
 			<div class="composeFieldCaption">Message</div>
@@ -34,8 +35,9 @@
 
 	<div class="composeMessageSend">
 		<form action="/sendmsg" method="POST">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-			<input type="submit" class="blueButton composeMessageSendButton" value="Send">
+			<input type="hidden" name="hero_prof"	value="{{ hp.prof_id }}">
+			<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
+			<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
 		</form>
 	</div>
 	<div class="composeMessageCancel">
@@ -47,7 +49,44 @@
 
 <script>
 $(document).ready(function() {
-	console.log("data: "+data);
+
+	$('#sendmessage').click(function(e) {
+		var fd = new FormData();
+		var txt = $('#composeBody').val();
+		var sub = $('#composeSubject').val();
+		var csrf = "{{ csrf_token() }}";
+		fd.append('hp', '{{hp.prof_id}}');
+		fd.append('msg', txt);
+		fd.append('subject', sub);
+		fd.append('csrf_token', csrf);
+		fd.append('next', '/profile?hero={{hp.prof_id}}');
+
+		var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(e) {
+			if (4 == this.readyState) {
+				console.log(['xhr post complete, state=', this.status,  e]);
+				if (this.status == 200) {
+                    msg = JSON.parse(xhr.responseText);
+					console.log('nxt = ', msg['nexturl']);
+                    openAlertWindow('Success: ' + msg['usrmsg']);
+					if (msg['nexturl'] == null) {
+					//	$(document).load('/profile?hero={{hp.prof_id}}');
+					} else {
+						$.get('/');
+					}
+				} else if (this.status > 500) {
+					console.log(['xhr post complete, err=400 ', e]);
+					openAlertWindow('Fail.');
+				} else {
+					openAlertWindow('Huh?');
+				}
+			}
+		};
+		xhr.open('POST', "/sendmsg", true);
+		xhr.send(fd);
+		return false;
+	});
+
 });
 </script>
 

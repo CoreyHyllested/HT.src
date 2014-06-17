@@ -98,7 +98,8 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 	if len(oauth_accounts) == 1:
 		print 'found oauth account for individual'
-		hero = Account.get_by_uid(oa_data['ht_account'])
+		oa_account = oauth_accounts[0]
+		hero = Account.get_by_uid(oa_account.ht_account)
 	else:
 		print 'found ', len(oauth_accounts), 'so sign up user with this oauth account.'
 		(hero, prof) = ht_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)

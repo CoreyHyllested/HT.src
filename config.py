@@ -29,23 +29,17 @@ HT_IMAGES_EXT=set(['png', 'jpg', 'jpeg', 'bmp'])
 REDIS_URL='redis://ht-redis.h6fyv6.0001.use1.cache.amazonaws.com:6379/'
 REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
-#MAIL_SERVER = 'smtp.googlemail.com'
-#MAIL_PORT = 465
-#MAIL_USE_TLS = False
-#MAIL_USE_SSL = True
-#MAIL_USERNAME = 'ht.accnts@gmail.com'
-#MAIL_PASSWORD = 'coming in Nov 2013'
-
 S3_KEY = 'AKIAIVMHLA4ZZXB5NIRQ'
 S3_BUCKET = 'htfileupload'
 S3_SECRET = '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'
 S3_SERVER = 'htfileupload.s3-website-us-west-1.amazonaws.com'	
 S3_DIRECTORY = '/htfileupload/'
 
+STRIPE_PUBLIC =	'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
+STRIPE_SECRET =	'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
+
 LINKEDIN_KEY="ri7ghzey680z"
 LINKEDIN_SEC="LcHMnsf9vVqUg8rE"
 
-#FACEBOOK_APP_ID="243734182481781"
-#FACEBOOK_APP_SEC="96ce9706f605d399a6e06a1dc3d8b099"
 FACEBOOK_APP_ID='243739575814575'
 FACEBOOK_APP_SEC='c08f6c6f920b6cac0a3743822483f7bf'

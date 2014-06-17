@@ -25,15 +25,6 @@ from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash #rm -- should be in controllers only
 
 
-stripe_keys = {}
-stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
-stripe_keys['secret'] = 'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
-#stripe.api_key = stripe_keys['secret']
-#ht_appointment_finalize.apply_async(args=[appointment.apptid])
-            
-
-
-
 
 @ht_server.route('/', methods=['GET', 'POST'])
 @ht_server.route('/index')
@@ -42,7 +33,6 @@ def homepage():
 	""" Returns the HeroTime front page for users and Heros
 		- detect HT Session info.  Provide modified info.
 	"""
-
 	bp = None
 
 	if 'uid' in session:
@@ -466,7 +456,6 @@ def render_schedule_page():
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
-
 	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
 
 
@@ -664,6 +653,7 @@ def ht_api_send_message():
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
 		subject = request.values.get('subject', 'default subject')
+		nexturl	= request.values.get('next')
 		thread	= None
 
 		print 'parent=', parent, 'subject=', subject
@@ -694,7 +684,7 @@ def ht_api_send_message():
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed'), 500
 
-	return jsonify(usrmsg="Message sent."), 200
+	return jsonify(usrmsg="Message sent.", nexturl=nexturl), 200
 
 
 
@@ -795,7 +785,7 @@ def sanitize_render_errors(err):
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'ht_proposal_create'
+	print 'ht_api_proposal_create'
 
 	prop_s_date = request.values.get('prop_s_date')
 	prop_s_hour = request.values.get('prop_s_hour')
@@ -804,13 +794,8 @@ def ht_api_proposal_create():
 	prop_f_hour = request.values.get('prop_f_hour')
 	prop_hero = request.values.get('prop_hero')
 
-	print 'prop_s_date = ', prop_s_date 
-	print 'prop_s_hour= ', prop_s_hour
-	print 'prop_f_date = ', prop_f_date 
-	print 'prop_f_hour= ', prop_f_hour
-	print 'prop_hero = ', prop_hero
-
-	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#print dt_start
 
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
@@ -1038,7 +1023,7 @@ def settings_verify_stripe():
 	print "verify -- use request Token to get userINFO"
 	stripeHTTP = Http()
 	postdata = {}
-	postdata['client_secret'] = stripe_keys['secret']
+	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
 
@@ -1154,7 +1139,7 @@ def render_review_page(appt_id, review_id):
 		print 'trying to access, review, author or reviewer account and fialed'
 		db_session.rollback()
 		return redirect('/dbFailure')
-		
+
 
 
 
@@ -1224,31 +1209,6 @@ def review():
 	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
 
 
-
-@ht_server.route("/email/<heroName>", methods=['GET'])
-def emailHero(heroName):
-	#ht_server.logger.debug(request.headers);
-	#if (url[:8] != "https://"):
-	#	if (url[:7] != "http://"):
-	#		url = "HTTP://" + url;
-	#uid = htLog('create', request, '{ "reqName" : "' + new + '", "url" : "' + url + '" }')
-	print "heroName = '" + heroName + "'"
-	email(heroName, "sent from HT")
-	return "Good job", 200
-
-
-@ht_server.route("/heroes/<heroName>", methods=['GET'])
-def hero_profile(heroName):
-	"""Redirect the request to the URL associated =heroName=."""
-	""" otherwise return 404 NOT FOUND"""
-
-	#split profile into a parsing Headers and a 'go get shit' part.
-	# this can call into the 'go get shit'
-	hero = Profile.query.filter_by(vanity=heroName).all()
-	if len(hero) == 1: 
-		hp = hero[0]
-
-	return pageNotFound('unknown', 404);
 
 
 @ht_server.route('/uploads/<filename>')
@@ -1376,12 +1336,15 @@ def render_rake_page(buyer, sellr):
 	return msg
 
 
+@req_authentication
 @ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 	
+
+@req_authentication
 @ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	uid = session['uid']
@@ -1391,6 +1354,7 @@ def render_edit_portfolio_page():
 
 
 
+@req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
@@ -1414,13 +1378,17 @@ def render_inbox_page():
 
 	return make_response(render_template('inbox.html', bp=bp, messages=messages))
 	
+
+@req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
-	uid = session['uid']
+	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
-	
-	return make_response(render_template('compose.html', bp=bp))
+	hp = Profile.get_by_prof_id(hid)
+	return make_response(render_template('compose.html', bp=bp, hp=hp))
 
+
+@req_authentication
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])
 def ht_api_update_portfolio(operation):
 	uid = session['uid']
@@ -1472,3 +1440,4 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
+
