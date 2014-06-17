@@ -191,15 +191,19 @@
 		{% if hp is sameas bp %}
 			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
-
+		<form>
 		<input type="text"   name="subject" id="sndmsg_sub" placeholder="Msg Subject... ">
 		<input type="text"   name="msg"		id="sndmsg_txt" placeholder="Hi {{hp.prof_name}}, do you know how to make latte art...">
 		<input type="submit" class="blueButton" id="sendmessage" value="Message Me">
+		</form>
 		<br>
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
 			<input type="submit" class="blueButton" value="Schedule Lesson">
 		</form><br>
+
+		<button type="button" id="sendModalMessage" class="blueButton">Message Modal</button>
+		<br>
 		{% endif %}
 		<div class="profileBasicInfo">
 				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
@@ -272,12 +276,23 @@
 	<div class="clear"></div>
 </div>
 
-
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/dropzone.js"></script>
 <script>
 
 $(function () {
+
+	$('#sendModalMessage').click(function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.messageRecipient = "{{hp.prof_name}}";
+		var myString = JSON.stringify(dataObj);
+
+		// TODO: This is successfully passing the variable string to the javascript, but it doesn't make it to the modal. See modal_windows.js.
+		openModalWindow("/compose", ".composeWrapper", myString);	
+
+	});
+
 	$('#sendmessage').click(function(e) {
 		var fd = new FormData();
 		var txt = $('#sndmsg_txt').val();

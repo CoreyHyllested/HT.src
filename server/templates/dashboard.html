@@ -132,7 +132,7 @@
 					<form action="/sendmsg" method="POST">
 						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 						<input type="hidden" name="parent" value="{{msg.UserMessage.msg_id}}">
-						<input type="submit" class="whiteButton" id="{{msg.UserMessage.msg_id}}" value="Respond">
+						<input type="submit" class="whiteButton" id="sendMessage" data-message-id="{{msg.UserMessage.msg_id}}" value="Respond">
 						<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
 					</form>
 				</div>
@@ -162,10 +162,20 @@
 		</form>
 	</div>
 
+<div id="composeModal"></div>
+
 </div>
 
 <script>
 $(function () {
+
+	$('#sendMessage').click(function(event) {
+		event.preventDefault();
+		$("#composeModal").load("/compose").dialog({modal:true});
+
+	});
+
+
     $('.accept').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");

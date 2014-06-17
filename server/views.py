@@ -1418,6 +1418,7 @@ def render_inbox_page():
 def render_compose_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
+	
 	return make_response(render_template('compose.html', bp=bp))
 
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])
