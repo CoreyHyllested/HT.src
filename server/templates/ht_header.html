@@ -142,7 +142,7 @@
 	</div>
 
 	<div class="menu">
-		<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 			<input name="search" id="menuSearch" type="text" autocomplete="off">
 		</form>
@@ -171,19 +171,24 @@
 			<div class="headerContentWrapper">
 
 				<!-- HEADER LOGO -->
-				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}
-					<a class="headerLogo" href="/dashboard"></a>
 
-				{% else %}
-					<a class="headerLogo" href="/"></a>
-				{% endif %}
-				
+				<div class="headerLogo">
+					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
+					{% if bp %}
+						<a href="/dashboard"><img src="static/img/logo.svg" class="headerLogoImg"></a>
 
-				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
-					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-					<input name="search" id="headerSearch" type="text" autocomplete="off">
-				</form>
+					{% else %}
+						<a href="/"><img src="static/img/logo.svg" class="headerLogoImg"></a>
+					{% endif %}
+				</div>
+				<div class="headerSearchBar">
+					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<input name="search" id="headerSearch" type="text" autocomplete="off">
+					</form>
+					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
+				</div>
+
 
 				<!-- HEADER MENU -->
 				{% if bp %}
@@ -253,6 +258,11 @@
 
 	<script>
 	$(document).ready(function() {
+
+		$(".searchIcon").click(function() {
+			$("#srchForm").submit();
+		});
+
 		function rp(id) {
 			document.getElementById('h').value=id;
 			document.p.submit();
