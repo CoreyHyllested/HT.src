@@ -21,31 +21,6 @@ c) 1000px - ... (desktops)
 
 */
 
-/* COMMON ELEMENTS */
-
-	h3 {color: black;}
-
-	.profileCover {
-		display: none;
-		/*display: block;*/
-		position: relative;
-		width: 100%;
-	}
-
-	.profileCoverPic {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;			
-		min-width: 100%;
-		width: 100% !important;
-	}
-
-	.profileInfoBox img {
-		top: 3px;
-		position: relative;
-	}
-
-
 /* PAGE WRAPPERS */
 
 /* Mobiles, phablets, and tablets */
@@ -105,57 +80,119 @@ c) 1000px - ... (desktops)
 
 /* MAIN LAYOUT */
 
-	/* Phones */
-	@media only screen and (min-device-width: 240px) and (max-width: 549px) {
-
-
-		
-		.profileContentWrapper {
-			background-color: white;
-			margin: auto;
-			padding: 20px 12px 0px 12px;
-			width: 100%;
-			z-index: 30;
-			overflow: auto;
-		}
-
+/* Phones */
+@media only screen and (min-device-width: 240px) and (max-width: 549px) {
+	
+	.profileContentWrapper {
+		background-color: white;
+		margin: auto;
+		padding: 20px 12px 0px 12px;
+		width: 100%;
+		z-index: 30;
+		overflow: auto;
 	}
 
-	/* Tablet */
-	@media only screen and (min-width: 550px) and (max-width: 999px) {
+}
 
-			
-		.profileContentWrapper {
-			background-color: white;
-			margin: 0px auto;
-			min-height: 400px;
-			position: relative;
-			width: 100%;
-		}
+/* Tablet */
+@media only screen and (min-width: 550px) and (max-width: 999px) {
 
+	.profileContentWrapper {
+		background-color: white;
+		margin: 0px auto;
+		min-height: 400px;
+		position: relative;
+		width: 100%;
 	}
 
-	/* Desktop */
-	@media only screen and (min-width: 1000px) {
+}
 
-		.profileContentWrapper {
-			background-color: white;
-			border-radius: 6px;
-			-moz-box-sizing: border-box;
-			-webkit-box-sizing: border-box;
-			box-sizing: border-box;
-			margin: 12px auto 0px;
-			/*margin: -200px auto 0;*/
-			padding: 41px;
-			position: relative;
-			width: 980px;
-			z-index: 30;
-		}
+/* Desktop */
+@media only screen and (min-width: 1000px) {
 
+	.profileContentWrapper {
+		background-color: white;
+		border-radius: 6px;
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		margin: 12px auto 0px;
+		padding: 41px;
+		position: relative;
+		width: 980px;
+		z-index: 30;
 	}
+
+}
 
 
 /* CONTENT */
+
+/* Common Elements (Doesn't change based on device width) */
+
+h3 {color: black;}
+
+.profileCover {
+	display: none;
+	/*display: block;*/
+	position: relative;
+	width: 100%;
+}
+
+.profileCoverPic {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;			
+	min-width: 100%;
+	width: 100% !important;
+}
+
+.profileInfoBox img {
+	top: 3px;
+	position: relative;
+}
+
+.profileBasicInfo {
+	border-bottom: 1px solid #b5b6b8;
+	border-top: 1px solid #b5b6b8;
+	margin: 20px 0px;
+	width: 100%;
+}
+
+.profileInfoBox {
+	background-size: 18px 18px;		
+	border-bottom: 1px solid #e2e4e6;
+	color: #6e7980;
+	font-size: 0.875em;
+	padding: 11px 0 11px 30px;
+}
+
+.profileInfoBox:last-of-type{
+	border-bottom: none;
+}
+
+.profileInfoBox.profileInfoFacebookSocial {
+	background: url('../img/facebook_profile.svg') no-repeat left center;	
+}
+
+.profileInfoBox.profileInfoLocation {
+	background: url('../img/location.svg') no-repeat left center;
+}
+
+.profileInfoBox.profileInfoIndustry {
+	background: url('../img/passion.svg') no-repeat left center;
+}
+
+.profileInfoBox.profileInfoRating {
+	background: url('../img/star-full.svg') no-repeat left center;
+}
+
+.sendModalMessage {
+	margin-bottom: 20px;
+}
+.scheduleMtgButton {
+	margin-bottom: 20px;
+}
 
 /* Phones */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
@@ -444,42 +481,6 @@ c) 1000px - ... (desktops)
 
 	.profileRightColumn .profileBasicInfo, #editProfileButton {display: none;}
 
-	.profileBasicInfo {
-		border-bottom: 1px solid #b5b6b8;
-		margin: 30px 0 30px;
-		width: 100%;
-	}
-
-	.profileInfoBox {
-		background-size: 18px 18px;		
-		border-bottom: 1px solid #e2e4e6;
-		color: #6e7980;
-		font-size: 0.875em;
-		padding: 11px 0 11px 30px;
-	}
-
-	.profileInfoBox:first-of-type {
-		background: url('../img/facebook_profile.svg') no-repeat left center;
-		border-top: 1px solid #b5b6b8;		
-	}
-
-	.profileInfoBox:nth-of-type(2) {
-		background: url('../img/location.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(3) {
-		background: url('../img/passion.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(4) {
-		background: url('../img/star-full.svg') no-repeat left center;
-		border-bottom: none;
-	}
-
-	/*.profileInfoBox:nth-of-type(5) {
-		background: url('../img/website.svg') no-repeat 11px center;
-		background-size: 18px 18px;
-	}*/
 
 	.profileRightColumn input[type="submit"] {display: none;}
 
@@ -517,30 +518,6 @@ c) 1000px - ... (desktops)
 		width: 100%;
 	}
 
-
-	.acroyoga {
-		background: url('../img/portfolio_acroyoga.jpg') no-repeat;
-		background-size: cover;
-	}
-
-	.latteart {
-		background: url('../img/portfolio_latteart.jpg') no-repeat center center;
-		background-size: cover;
-	}
-
-	.silkscreening {
-		background: url('../img/portfolio_silkscreening.jpg') no-repeat center center;
-		background-size: cover;
-	}
-
-	.macaroons {
-		background: url('../img/portfolio_macaroons.jpg') no-repeat center center;
-		background-size: cover;
-	}
-
-	.livingwall {background: url('../img/portfolio_livingwall.jpg') no-repeat center center;
-		background-size: cover;
-	}
 
 	.addImage {
 		border: 1px solid #29abe2;
@@ -874,43 +851,6 @@ c) 1000px - ... (desktops)
 		font-size: 1.188em;
 		height: 3em;
 	}
-
-	.profileBasicInfo {
-		border-bottom: 1px solid #b5b6b8;
-		margin: 30px 0 30px;
-		width: 100%;
-	}
-
-	.profileInfoBox {
-		background-size: 18px 18px;		
-		border-bottom: 1px solid #e2e4e6;
-		color: #6e7980;
-		font-size: 0.875em;
-		padding: 11px 0 11px 30px;
-	}
-
-	.profileInfoBox:first-of-type {
-		background: url('../img/facebook_profile.svg') no-repeat left center;
-		border-top: 1px solid #b5b6b8;		
-	}
-
-	.profileInfoBox:nth-of-type(2) {
-		background: url('../img/location.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(3) {
-		background: url('../img/passion.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(4) {
-		background: url('../img/star-full.svg') no-repeat left center;
-		border-bottom: none;
-	}
-
-	/*.profileInfoBox:nth-of-type(4) {
-		background: url('../img/website.svg') no-repeat 11px center;
-		background-size: 18px 18px;
-	}*/
 
 	.profileRightColumn input[type="submit"] {
 		width: 100%;
@@ -1278,42 +1218,6 @@ c) 1000px - ... (desktops)
 		font-size: 1.188em;
 		height: 3em;
 	}
-
-	.profileBasicInfo {
-		border-bottom: 1px solid #b5b6b8;
-		margin: 30px 0 30px;
-		width: 100%;
-	}
-
-	.profileInfoBox {
-		background-size: 18px 18px;		
-		border-bottom: 1px solid #e2e4e6;
-		color: #6e7980;
-		font-size: 0.875em;
-		padding: 11px 0 11px 30px;
-	}
-
-	.profileInfoBox:first-of-type {
-		background: url('../img/facebook_profile.svg') no-repeat left center;
-		border-top: 1px solid #b5b6b8;		
-	}
-
-	.profileInfoBox:nth-of-type(2) {
-		background: url('../img/location.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(3) {
-		background: url('../img/passion.svg') no-repeat left center;
-	}
-
-	.profileInfoBox:nth-of-type(4) {
-		background: url('../img/star-full.svg') no-repeat left center;
-	}
-
-	/*.profileInfoBox:nth-of-type(4) {
-		background: url('../img/website.svg') no-repeat 11px center;
-		background-size: 18px 18px;
-	}*/
 
 	.profileRightColumn input[type="submit"] {
 		width: 100%;
