@@ -5,6 +5,50 @@ b) 550px - 999px (phablets, tablets);
 c) 1000px - ... (desktop)
 */
 
+/***** Common Elements *****/
+
+/* Header Logo */
+
+.headerLogo {
+	height: 40px;
+	line-height: 40px;
+	float: left;
+	width: 97px;
+}
+
+.headerLogoImg {
+
+}
+
+/* Header Icons */
+
+.headerIcons {
+	height: 25px;
+	line-height: 38px;
+	float: right;
+
+}
+.headerIcons a{
+	color: #fff;
+	transition: all 0.2s ease-in;
+	-moz-transition: all 0.2s ease-in;
+	-o-transition: all 0.2s ease-in;
+	-webkit-transition: all 0.2s ease-in;
+	transition: all 0.2s ease-in;
+}
+
+.headerIcons a:hover{
+	color: #29abe1;
+}
+
+.headerIcons .icon {
+	margin-right: 6px;
+}
+
+
+
+/***** Responsive Styles *****/
+
 /* Phones (240px - 549px) */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
 
@@ -38,9 +82,16 @@ c) 1000px - ... (desktop)
 		width: 146px;
 	}
 
+	.headerSearchBar {display: none;}
 	#headerSearch {display: none;}
 	#headerSearch:focus {outline: none;}
+	.headerTextMenu {display: none;}
+	.headerDropdownMenu {display: none;}
 
+	.headerIcons {
+		font-size: 1.2em;
+		margin-right: 36px;
+	}
 
 	.menu a {color: white;}
 	.menu a:active {color: white;}
@@ -118,19 +169,7 @@ c) 1000px - ... (desktop)
 		height: 40px;
 		margin: 0 auto;
 		position: relative;
-		width: 90%;
-	}
-
-	/* Header Logo */
-
-	.headerLogo {
-		background: url("../img/logo.svg") no-repeat;
-		background-size: 97px 14px;
-		height: 15px;
-		left: 0;
-		position: absolute;
-		top: 14px;
-		width: 97px;
+		width: 95%;
 	}
 
 	/* Header Menu (graphical menu turned on, text menu turned off) */
@@ -147,34 +186,7 @@ c) 1000px - ... (desktop)
 		width: 26px;
 	}
 
-	.headerTextMenu {display: none;}
-	.headerDropdownMenu {display: none;}
 
-
-	/* Header Icons */
-
-	.headerIcons {
-		height: 25px;
-		line-height: 38px;
-		float: right;
-		margin-right: 36px;
-		font-size: 1.2em;
-	}
-	.headerIcons a{
-		transition: all 0.2s ease-in;
-		-moz-transition: all 0.2s ease-in;
-		-o-transition: all 0.2s ease-in;
-		-webkit-transition: all 0.2s ease-in;
-		transition: all 0.2s ease-in;
-	}
-
-	.headerIcons a:hover{
-		color: #fff;
-	}
-
-	.headerIcons .icon {
-		margin-right: 6px;
-	}
 
 }
 
@@ -225,36 +237,53 @@ c) 1000px - ... (desktop)
 	}
 
 
-	/* Header Logo */
-
-	.headerLogo {
-		background: url("../img/logo.svg") no-repeat;
-		background-size: 97px 14px;
-		height: 15px;
-		left: 0;
-		position: absolute;
-		top: 14px;
-		width: 97px;
-	}
-
 
 	/* Header Search */
 
+
+	.headerSearchBar {
+		float: left;
+		width: 50%;
+		height: 40px;
+		line-height: 40px;
+	}	
+	.headerSearchBarIcon {
+		float: left;
+		border-radius: 2px;
+		border-style: none;
+		width: 20px;
+		height: 40px;
+		line-height: 40px;
+		margin-left: -23px;
+	}
+
+	.headerSearchBarIcon i.searchIcon {
+		color: #fff;
+		opacity: 0.7;
+		cursor: pointer;
+		transition: all 0.3s ease-in;
+		-moz-transition: all 0.3s ease-in;
+		-o-transition: all 0.3s ease-in;
+		-webkit-transition: all 0.3s ease-in;
+	}	
+	.headerSearchBarIcon i.searchIcon:hover {
+		opacity: 1;
+	}
+
 	#headerSearch {
-		background: url("../img/search.svg") #3b3f45 no-repeat 98%;
+		float: left;
+		background: #3b3f45;
 		border-radius: 2px;
 		border-style: none;
 		color: white;
 		font-size: 0.8em;
 		height: 27px;
-		left: 135px;
-		line-height: 1.2em;
-		margin: 0px;
 		padding: 0 20px 0 5px;
-		position: absolute;
-		top: 7px;
-		width: 25%;
+		width: 50%;
+		margin-top: 7px;
+		margin-left: 12px;
 	}
+
 
 	/* Header Menu */
 
@@ -285,29 +314,7 @@ c) 1000px - ... (desktop)
 	}
 
 
-	/* Header Icons */
 
-	.headerIcons {
-		height: 25px;
-		line-height: 38px;
-		float: right;
-
-	}
-	.headerIcons a{
-		transition: all 0.2s ease-in;
-		-moz-transition: all 0.2s ease-in;
-		-o-transition: all 0.2s ease-in;
-		-webkit-transition: all 0.2s ease-in;
-		transition: all 0.2s ease-in;
-	}
-
-	.headerIcons a:hover{
-		color: #fff;
-	}
-
-	.headerIcons .icon {
-		margin-right: 6px;
-	}
 
 	/* Dropdown menu */
 	
@@ -479,60 +486,50 @@ c) 1000px - ... (desktop)
 		width: 980px;
 	}
 
-
-	/* Header Logo */
-
-	.headerLogo {
-		background: url("../img/logo.svg") no-repeat;
-		background-size: 97px 14px;
-		height: 15px;
-		left: 0;
-		position: absolute;
-		top: 14px;
-		width: 97px;
-	}
-
-	/* Header Icons */
-
-	.headerIcons {
-		height: 25px;
-		line-height: 38px;
-		float: right;
-
-	}
-	.headerIcons a{
-		transition: all 0.2s ease-in;
-		-moz-transition: all 0.2s ease-in;
-		-o-transition: all 0.2s ease-in;
-		-webkit-transition: all 0.2s ease-in;
-		transition: all 0.2s ease-in;
-	}
-
-	.headerIcons a:hover{
-		color: #fff;
-	}
-
-	.headerIcons .icon {
-		margin-right: 6px;
-	}
-
-
 	/* Header Search */
 
+	.headerSearchBar {
+		float: left;
+		width: 420px;
+		height: 40px;
+		line-height: 40px;
+	}
+
+	.headerSearchBarIcon {
+		float: left;
+		border-radius: 2px;
+		border-style: none;
+		width: 20px;
+		height: 40px;
+		line-height: 40px;
+		margin-left: -23px;
+	}
+
+	.headerSearchBarIcon i.searchIcon {
+		color: #fff;
+		opacity: 0.7;
+		cursor: pointer;
+		transition: all 0.3s ease-in;
+		-moz-transition: all 0.3s ease-in;
+		-o-transition: all 0.3s ease-in;
+		-webkit-transition: all 0.3s ease-in;
+	}	
+	.headerSearchBarIcon i.searchIcon:hover {
+		opacity: 1;
+	}
+
 	#headerSearch {
-		background: url("../img/search.svg") #3b3f45 no-repeat 420px;
+		float: left;
+		background: #3b3f45;
 		border-radius: 2px;
 		border-style: none;
 		color: white;
 		font-size: 0.8em;
 		height: 27px;
-		left: 135px;
-		line-height: 1.2em;
-		margin: 0px;
 		padding: 0 20px 0 5px;
-		position: absolute;
-		top: 7px;
-		width: 420px;
+		width: 380px;
+		margin-top: 7px;
+		margin-left: 12px;
 	}
 
 	/* Header Menu */
