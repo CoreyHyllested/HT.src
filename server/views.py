@@ -1363,23 +1363,44 @@ def render_inbox_page():
 
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	messages = [] 
+	msg_threads = []
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+		msg_threads = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .filter(UserMessage.msg_parent == None)													\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "msg_threads =", len(msg_threads)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
+	return make_response(render_template('inbox.html', bp=bp, messages=msg_threads))
+
+
+
+@req_authentication
+@ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
+def ht_api_get(msg_thread):
+	bp = Profile.get_by_uid(session['uid'])
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = []
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+							 .filter(UserMessage.msg_thread == msg_thread)					\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "messages =", len(messages)
+	except Exception as e:
+		print e
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	return make_response(render_template('inbox_msg.html', bp=bp, messages=messages))
 
-	print "messages =", len(messages)
-
-	return make_response(render_template('inbox.html', bp=bp, messages=messages))
-	
 
 @req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
