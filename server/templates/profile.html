@@ -2,6 +2,7 @@
 
 {% block head %}
 	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
@@ -192,25 +193,19 @@
 			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 
-		<form method="link" action="/compose" method="POST">
-			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton" id='sndmessage' value="Message Me">
-		</form>
-		<br>
-		<button type="button" id="sendModalMessage" class="blueButton">Message Modal</button>
-		<br>
+		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
+
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton" value="Schedule Meeting...">
-		</form><br>
+			<input type="submit" class="blueButton scheduleMtgButton" value="Schedule Meeting...">
+		</form>
 
-		
 		{% endif %}
 		<div class="profileBasicInfo">
-				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
-				<div class="profileInfoBox">{{hp.location}}</div>
-				<div class="profileInfoBox">{{hp.industry}}</div>
-				<div class="profileInfoBox">
+				<!-- <div class="profileInfoBox profileInfoFacebookSocial"><img src="/static/img/facebook_thumbnails.jpg"></div> -->
+				<div class="profileInfoBox profileInfoLocation">{{hp.location}}</div>
+				<div class="profileInfoBox profileInfoIndustry">{{hp.industry}}</div>
+				<div class="profileInfoBox profileInfoRating">
 					{% if hp.reviews == 0 %}
 						No Reviews
 					{% else %}
@@ -241,39 +236,6 @@
 
 	</div>
 
-	{% if hp is sameas bp %}
-	<!-- This doesn't work properly yet. Strange errors with the display / z-index when hiding/showing -->
-	<div id="portfolio-upload" class="modal hidden" hidden>
-		<div class="dzContentWrapper modal-content">
-				<div class="modal-header">
-			      	<a href="#" class="btn-close" aria-hidden="true">×</a>
-			    </div>
-			    <div class="modal-info">
-					<h2>Upload Portfolio Images</h2>
-					<h4>(Drag to re-order)</h4>
-				</div>
-				<div class="dropzone-wrapper">
-					<form action="upload" method="post" class="dropzone dz-clickable square" id="upload-form">
-						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<div class="fallback">
-					    	<input name="file" type="file" multiple />
-					  	</div>
-					</form>
-				</div> 
-
-				<div class="dropzone-content-submit">
-					<button type="button" class="blueButton multiple-upload-button">
-						Upload Images
-					</button>
-				</div>
-
-				<form action="manage-portfolio" method="post" class="files-form">
-				</form>
-		</div>
-	</div>
-
-	{% endif %}
-
 	<div class="clear"></div>
 </div>
 
@@ -286,10 +248,9 @@ $(function () {
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();
 		var dataObj = new Object();
-		dataObj.messageRecipient = "{{hp.prof_id}}";
-		var myString = JSON.stringify(dataObj);
+		dataObj.hp = "{{hp.prof_id}}";
 
-		// TODO: This is successfully passing the variable string to the function, but it doesn't make it to the modal. See modal_windows.js.
+		var myString = JSON.stringify(dataObj);
 		openModalWindow("/compose", ".composeWrapper", myString);	
 
 	});

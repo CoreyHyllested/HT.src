@@ -58,9 +58,9 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="reject" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
+					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
 					{% if proposal.buyer == false %}
-					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
 					{% endif %}
 					<!-- -->
 				</div>
@@ -104,7 +104,7 @@
 					</div>
 
 					<!-- CAH: The button should disappear 24 hours before the meeting. -->
-					<input type="button" class="redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -162,19 +162,10 @@
 		</form>
 	</div>
 
-<div id="composeModal"></div>
-
 </div>
 
 <script>
 $(function () {
-
-	$('#sendMessage').click(function(event) {
-		event.preventDefault();
-		$("#composeModal").load("/compose").dialog({modal:true});
-
-	});
-
 
     $('.accept').click(function () {
         var id = this.id;

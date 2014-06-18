@@ -89,12 +89,13 @@ label {
 	right: 10px;
 	cursor: pointer;
 	font-size: 1.3em;
+	z-index: 99999;
 }
 
-.windowClose a {
+.windowClose, .windowClose a {
 	color: #d1d1d1;
 }
-.windowClose a:hover {
+.windowClose:hover, .windowClose a:hover {
 	color: #adadad;
 	text-decoration: none !important;
 }
@@ -357,7 +358,7 @@ label {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 	width: 100%;
-	z-index: 99998;
+	z-index: 99997;
 }
 
 .modalWindowWrap {
@@ -378,7 +379,7 @@ label {
 	-o-transition: top 0.5s ease;
 	-webkit-transition: top 0.5s ease;
 	transition: top 0.5s ease;
-	z-index: 99999;
+	z-index: 99998;
 }
 
 .modalWindow {
@@ -387,10 +388,35 @@ label {
 	border-radius: 6px;
 	display: none;
 	text-align: center;
+	position: relative;
 }
 
 .modalWindowOn {
 	display: inline-block;
+	position: relative;
+}
+
+.modalWindowClose {
+	display: none;
+	position: absolute;
+	top: 5px;
+	right: 10px;
+	cursor: pointer;
+	font-size: 1.3em;
+	z-index: 99999;
+	color: #d1d1d1;
+}
+
+.modalWindowCloseOn {
+	display: inline-block;
+}
+
+.modalWindowClose:hover {
+	color: #adadad;
+}
+
+.modalHeader {
+
 }
 
 .modalContent {

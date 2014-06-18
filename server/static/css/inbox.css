@@ -113,24 +113,23 @@
 	.messageSubjectLine {
 		color: gray;
 		float: left;
-		width: 60%;
+		width: 50%;
 	}
 
 	.messageDate {
 		color: gray;
-		float: left;
-		width: 10%;
+		float: right;
+		width: 20%;
 	}
 
-	.messageDelete {
-		font-size: 1.3em;
+	.messageArchive {
+		font-size: .8em;
 		text-align: right;
 		cursor: pointer;
 		line-height: 28px;
 		height: 25px;
-		color: #ec6666;
 		float: right;
-		width: 5%;
+		/*width: 5%;*/
 	}
 	.messageDelete:hover {
 		color: red;
@@ -167,7 +166,7 @@
 	}
 	  
 
-	.messagesNavItem {
+	.inboxNavItem {
 	    background-size: 18px 18px;
 	    border-bottom: 1px solid #e2e4e6;
 	    color: #6e7980;
@@ -176,11 +175,11 @@
 	    cursor: pointer;
 	}
 
-	.messagesNavItem:hover {
+	.inboxNavItem:hover {
 	    color: #007cb3;
 	}
 
-	.messagesNavItem i {
+	.inboxNavItem i {
 			padding-left: 6px; 
 	}
 

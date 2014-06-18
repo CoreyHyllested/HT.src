@@ -1392,6 +1392,13 @@ def render_compose_page():
 
 	return make_response(render_template('compose.html', bp=bp, hp=hp))
 
+@req_authentication
+@ht_server.route("/message", methods=['GET', 'POST'])
+def render_message_page():
+	bp = Profile.get_by_uid(session['uid'])
+	message = request.values.get('message')
+	return make_response(render_template('message.html', bp=bp, message=message))
+
 
 @req_authentication
 @ht_server.route("/portfolio/<operation>/", methods=['POST'])

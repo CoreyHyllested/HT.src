@@ -8,171 +8,171 @@ c) 1000px - ... (desktops)
 
 /* COMMON ELEMENTS */
 
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 50px;		
-		width: 100%;
-	}
+.pageWrapper {
+	background-color: white;
+	min-height: 100%;
+	padding-bottom: 50px;		
+	width: 100%;
+}
 
-	.dashboardEmpty {
-		margin-bottom: 40px;
-	}
+.dashboardEmpty {
+	margin-bottom: 40px;
+}
 
-	.dashboardEmpty h2 {
-		color: black;
-		font-size: 1.188em;
-		font-weight: bold;
-		margin: 20px 0;
-	}
+.dashboardEmpty h2 {
+	color: black;
+	font-size: 1.188em;
+	font-weight: bold;
+	margin: 20px 0;
+}
 
-	.dashboardEmpty p:first-of-type {
-		font-weight: bold;	
-	}
+.dashboardEmpty p:first-of-type {
+	font-weight: bold;	
+}
 
-	.dashboardEmpty p {
-		color: #6e7980;
-		font-size: 0.875em;
-		line-height: 1.4em;
-		margin-bottom: 1em;
-	}
+.dashboardEmpty p {
+	color: #6e7980;
+	font-size: 0.875em;
+	line-height: 1.4em;
+	margin-bottom: 1em;
+}
 
-	.dashboardOffers {
-		margin-bottom: 40px;
-	}
+.dashboardOffers {
+	margin-bottom: 40px;
+}
 
-	.dashboardOffer {
-		border-bottom: 1px solid #cfd7db;
-		display: block;
-		margin-top: 20px;
-		padding-bottom: 20px;
-	}
+.dashboardOffer {
+	border-bottom: 1px solid #cfd7db;
+	display: block;
+	margin-top: 20px;
+	padding-bottom: 20px;
+}
 
-	.dashboardOffer img {
-		border-radius: 3px;
-		width: 100%;
-	}
+.dashboardOffer img {
+	border-radius: 3px;
+	width: 100%;
+}
 
-	.dashboardOfferCenterColumn h3 {
-		color: #29abe1;
-		cursor: pointer;
-		display: inline-block;
-		font-weight: bold;
-		margin-bottom: 5px;
-	}
+.dashboardOfferCenterColumn h3 {
+	color: #29abe1;
+	cursor: pointer;
+	display: inline-block;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
 
-	.dashboardOfferCenterColumn h4 {
-		color: #6e7980;
-		font-size: 0.875em;
-		font-weight: bold;
-		line-height: 1.4em;
-		margin-bottom: 20px;
-	}
+.dashboardOfferCenterColumn h4 {
+	color: #6e7980;
+	font-size: 0.875em;
+	font-weight: bold;
+	line-height: 1.4em;
+	margin-bottom: 20px;
+}
 
-	.dashboardOfferRightColumnInfo {
-		border-bottom: 1px solid #e1e8ed;
-		color: #6e7980;
-		line-height: 1.5em;
-		margin-bottom: 10px;
-		padding-bottom: 10px;
-	}
+.dashboardOfferRightColumnInfo {
+	border-bottom: 1px solid #e1e8ed;
+	color: #6e7980;
+	line-height: 1.5em;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
 
-	.dashboardOfferRightColumnInfo:first-of-type {
-		color: black;
-		font-weight: bold;
-		padding-top: 0;
-	}
+.dashboardOfferRightColumnInfo:first-of-type {
+	color: black;
+	font-weight: bold;
+	padding-top: 0;
+}
 
-	.dashboardOffer input[type="button"] {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		background-color: white;
-		border: none;
-		cursor: pointer;
-		padding: 0;
-	}
+.dashboardOffer input[type="button"] {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: white;
+	border: none;
+	cursor: pointer;
+	padding: 0;
+}
 
-	input[value="Reject"] {
-		color: red;
-		float: left;
-	}
+input[value="Reject"] {
+	color: red;
+	float: left;
+}
 
-	input[value="Reject"]:hover {text-decoration: underline;}
+input[value="Reject"]:hover {text-decoration: underline;}
 
-	input[value="Accept"] {
-		color: #29abe2;
-		float: right;
-	}
+input[value="Accept"] {
+	color: #29abe2;
+	float: right;
+}
 
-	input[value="Accept"]:hover {text-decoration: underline;}
-	input[value="Cancel Lesson"] {float: left;}
-	input[value="Cancel Lesson"] {float: left;}
-	input[value="Cancel Lesson"]:hover {text-decoration: underline;}
+input[value="Accept"]:hover {text-decoration: underline;}
+input[value="Cancel Lesson"] {float: left;}
+input[value="Cancel Lesson"] {float: left;}
+input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 
-	.dashboardAppointments {
-		margin-bottom: 40px;
-	};
+.dashboardAppointments {
+	margin-bottom: 40px;
+}
 
-	.dashboardAppointments h2 {
-		border-bottom: 1px solid #b0b4b7;
-		color: black;
-		font-size: 1.188em;
-		font-weight: bold;
-		padding-bottom: 15px;
-		width: 100%;
-	}
+.dashboardAppointments h2 {
+	border-bottom: 1px solid #b0b4b7;
+	color: black;
+	font-size: 1.188em;
+	font-weight: bold;
+	padding-bottom: 15px;
+	width: 100%;
+}
 
-	.dashboardRightColumn img {
-		border-radius: 3px;	
-		width: 100%;
-	}
+.dashboardRightColumn img {
+	border-radius: 3px;	
+	width: 100%;
+}
 
-	.dashboardRightColumn h3 {
-		color: #29abe1;
-		display: inline-block; 
-		font-weight: bold;
-		margin: 20px 0 5px;
-	}
+.dashboardRightColumn h3 {
+	color: #29abe1;
+	display: inline-block; 
+	font-weight: bold;
+	margin: 20px 0 5px;
+}
 
-	.dashboardRightColumn h4 {
-		color: #6e7980;
-		font-size: 0.875em;
-		font-weight: bold;
-		line-height: 1.4em;
-	}
+.dashboardRightColumn h4 {
+	color: #6e7980;
+	font-size: 0.875em;
+	font-weight: bold;
+	line-height: 1.4em;
+}
 
-	.dashboardBasicInfo {
-		border-bottom: 1px solid #b5b6b8;
-		margin: 20px 0 30px;
-		width: 100%;
-	}
+.dashboardBasicInfo {
+	border-bottom: 1px solid #b5b6b8;
+	margin: 20px 0 30px;
+	width: 100%;
+}
 
-	input[value="Edit Profile"] {
-		width: 100%;
-	}
+input[value="Edit Profile"] {
+	width: 100%;
+}
 
-	.dashboardInfoBox {
-		background-size: 18px 18px;		
-		border-bottom: 1px solid #e2e4e6;
-		color: #6e7980;
-		font-size: 0.875em;
-		padding: 11px 0 11px 30px;
-	}
+.dashboardInfoBox {
+	background-size: 18px 18px;		
+	border-bottom: 1px solid #e2e4e6;
+	color: #6e7980;
+	font-size: 0.875em;
+	padding: 11px 0 11px 30px;
+}
 
-	.dashboardInfoBox:first-of-type {
-		background: url('../img/location.svg') no-repeat left center;
-		border-top: 1px solid #b5b6b8;
-	}
+.dashboardInfoBox:first-of-type {
+	background: url('../img/location.svg') no-repeat left center;
+	border-top: 1px solid #b5b6b8;
+}
 
-	.dashboardInfoBox:nth-of-type(2) {
-		background: url('../img/passion.svg') no-repeat left center;
-	}
+.dashboardInfoBox:nth-of-type(2) {
+	background: url('../img/passion.svg') no-repeat left center;
+}
 
-	.dashboardInfoBox:last-of-type {
-		background: url('../img/star-full.svg') no-repeat left center;
-		border-bottom: none;
-	}
+.dashboardInfoBox:last-of-type {
+	background: url('../img/star-full.svg') no-repeat left center;
+	border-bottom: none;
+}
 
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
@@ -228,9 +228,9 @@ c) 1000px - ... (desktops)
 		padding-top: 10px;
 	}
 
-	input[value="Reject"] {font-size: 1em;}
-	input[value="Accept"] {font-size: 1em;}
-	input[value="Cancel Lesson"] {font-size: 1em;}
+	input.dashboardActionButton {
+		font-size: 1em;
+	}
 }
 
 @media only screen and (min-width: 490px) and (max-width: 999px) {
@@ -269,7 +269,7 @@ c) 1000px - ... (desktops)
 	}
 
 	.dashboardOfferIntro {
-		border-top: 1px solid #e1e8ed;;
+		border-top: 1px solid #e1e8ed;
 		color: #6e7980;
 		font-family: Garamond, Georgia, serif;
 		font-size: 0.875em;
@@ -285,15 +285,15 @@ c) 1000px - ... (desktops)
 	.dashboardOfferLeftColumn {width: 100%;}
 
 	.dashboardOfferRightColumnInfo:first-of-type {
-		border-top: 1px solid #e1e8ed;;
+		border-top: 1px solid #e1e8ed;
 		color: black;
 		font-weight: bold;
 		padding-top: 10px;
 	}
 
-	input[value="Reject"] {font-size: 1em;}
-	input[value="Accept"] {font-size: 1em;}
-	input[value="Cancel Lesson"] {font-size: 1em;}
+	input.dashboardActionButton {
+		font-size: 1em;
+	}
 
 }
 

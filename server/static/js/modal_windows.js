@@ -32,20 +32,18 @@
 
 	// Modal windows: Open
 	function openModalWindow(url, element, dataStr) {
+		console.log("dataStr: "+dataStr);
 		dataObj = JSON.parse(dataStr);
-		
 		$.each(dataObj, function(key, value){
 		    console.log("dataObj: "+ key, value);
 		});
+		var encodedData = $.param(dataObj);
+		console.log("encodedData: "+ encodedData);
 
 		$('.modalWindowWrap').toggleClass('modalWindowWrapOn');
 		$('.modalWindow').toggleClass('modalWindowOn');
-
-		// TODO: modify the next line to pass data variables.
-		// Something like $('.modalContent').load(url + " " + element, foo=bar);
-		// Or $('.modalContent').load(url + " " + element, {foo:bar, foo2:bar2});
-
-		$('.modalContent').load(url + " " + element);
+		$('.modalWindowClose').toggleClass('modalWindowCloseOn');		
+		$('.modalContent').load(url+"?"+encodedData + " " + element);
 		$('.modalOverlay').toggleClass('modalOverlayOn');
 		return false;
 	}
@@ -54,6 +52,7 @@
 	function closeModalWindow() {
 		$('.modalOverlay').toggleClass('modalOverlayOn');
 		$('.modalWindowWrap').toggleClass('modalWindowWrapOn');
+		$('.modalWindowClose').toggleClass('modalWindowCloseOn');		
 		$('.modalWindow').toggleClass('modalWindowOn');
 		$('.modalContent').html('');
 		return false;

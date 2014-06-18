@@ -1,0 +1,274 @@
+/* PAGE WRAPPERS */
+
+/* Mobiles, phablets, and tablets */
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+/* Desktop */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: #dfdfdf;
+		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
+	}
+}
+
+/* Nav - Inbox Styles */
+
+.messageHeader {
+	margin-bottom: 10px;
+	width: 100%;
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 12px;
+	float: left;
+}
+.messageHeaderTitle {
+	color: black;
+	width: 75%;
+	float: left;
+}
+
+.messageHeader h1 {	
+	width: 100%;
+	font-size: 2em;
+}
+.messageHeader h2 {	
+	width: 100%;
+	font-size: 1.8em;
+}
+
+.messageNavItem {
+    background-size: 18px 18px;
+    border-bottom: 1px solid #e2e4e6;
+    color: #6e7980;
+    font-size: 0.875em;
+    padding: 11px 0 11px 30px;
+    cursor: pointer;
+}
+
+.messageNavItem:hover {
+    color: #007cb3;
+}
+
+.messageNavItem i {
+	padding-left: 6px; 
+}
+
+/* Content */
+
+.messageWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+}
+
+.messageLeftColumn {
+    float: left;
+    text-align: right;
+	width: 25%;
+}
+
+.messageRightColumn {
+	float: right;
+	width: 75%;
+}
+
+.messageNavContainer {
+	padding-right: 36px;
+}
+
+.messageContainer {
+	width: 100%;
+	float: left;
+}
+
+.leftNavigation {
+	float: left;
+	font-size: 1em;
+	width: 25%;
+	height: 30px;
+	line-height: 40px;
+	text-align: right;
+}
+
+.navigation {
+	float: left;
+	font-size: 1em;
+	width: 100%;
+	padding-top: 8px;
+	/*padding-bottom: 15px;*/
+}
+.leftNavigation .navItem {
+	padding-right: 36px;
+}
+
+.navigation, .leftNavigation i {
+	font-size: .9em;
+}
+
+.navigation, .leftNavigation a {
+	color: #29abe1;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+.navigation, .leftNavigation a:hover {
+	color: #007cb3;
+}
+
+
+.messageThread {
+	width: 100%;
+}
+
+.messageThreadHeader {
+}
+
+.messageThreadItem {
+	margin-bottom: 10px;
+	border-bottom: 1px dotted #dedede; 
+	padding: 6px;
+	float: left;
+	min-height: 80px;
+}
+.messageThreadItem:last-of-type {
+	border-bottom: none;
+}
+
+.itemSender {
+	float: left;
+	width: 50%;
+}
+
+.itemSenderImage {
+	float: left;
+	padding-right: 8px;
+}
+
+.itemSenderImage img {
+	border-radius: 3px;
+	width: 40px;
+}
+
+.itemSenderName {
+	float: left;
+	font-size: .9em;
+	color: #6e7980;
+	font-weight: bold;
+}
+
+
+.itemDatetime {
+	float: right;
+	text-align: right;
+	width: 50%;
+	color: #c4c4c4;
+	font-size: .8em;
+}
+
+.itemBody {
+	float: left;
+	width: 100%;
+	font-size: .9em;
+	padding: 8px 0px;
+}
+
+.messageReplyContainer {
+	float: left;
+	width: 100%;
+}
+
+textarea.messageReplyBody {
+	resize: none;
+	float: left;
+	width: 100%;
+	margin-bottom: 20px
+}
+
+.messageReplySendButton {
+	width: 250px;
+	margin: 0px auto;
+}
+
+/*
+
+.composeFieldCaption{
+	font-size: 1.1em;
+	font-weight: bold;
+	text-align: right;
+	line-height: 40px;
+	height: 40px;
+	width: 100px;
+	float: left;
+}
+
+.composeRecipientContainer {
+	width: 100%;
+	float: left;
+}
+
+.composeSubjectContainer {
+	width: 100%;
+	float: left;
+}
+
+.composeBodyContainer {
+	width: 100%;
+	float: left;
+}
+
+input.composeField {
+	float: right;
+	width: 780px;
+	margin-top: -1px;
+}
+
+input.composeField:nth-of-type(1) {
+	border-radius: 3px 3px 0 0;
+}
+
+textarea.composeField {
+	resize: none;
+	float: right;
+	width: 788px;
+	margin-top: -1px;
+	border-radius: 0 0 3px 3px;
+}
+
+.composeMessageSend{
+	width: 100%;
+	float: left;
+}
+
+.composeMessageSendButton{
+	width: 250px;
+	margin: 20px auto;
+}
+
+.composeMessageCancel{
+	width: 100%;
+	text-align: center;
+	font-size: .9em;
+}
+
+
+*/
