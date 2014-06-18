@@ -121,7 +121,8 @@
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
 		</form>
 
-		<form method="link" action="/profile">
+		<form method="post" action="/profile">
+			<input type="hidden" name="hero" value="{{hp.prof_id}}">
 			<input type="submit" class="whiteButton scheduleCancelButton" value="Cancel">
 		</form>
 	</div>
