@@ -23,6 +23,7 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
+
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
@@ -118,6 +119,7 @@
 	<!-- MODAL WINDOWS -->
 	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
 			
+	<!-- Alert Modal -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
 	<div class="alertWindowWrap">
@@ -126,6 +128,16 @@
 			<div class="alertButtonWrap">
 				<div class="alertButton" onclick="closeAlertWindow()">OK</div>
 			</div>
+		</div>
+	</div>
+
+	<!-- Content Modal -->
+	<div class="modalOverlay" onclick="closeModalWindow();"></div>
+			
+	<div class="modalWindowWrap">
+		<div class="modalWindow">
+			<div class="modalWindowClose" onclick="closeModalWindow();">&#x2715;</div>
+			<div class="modalContent"></div>
 		</div>
 	</div>
 

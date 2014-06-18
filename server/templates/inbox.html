@@ -17,10 +17,10 @@
 		<div class="inboxLeftColumn">
 			<div class="inboxNavContainer">
 				<!--a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a-->
-				<ul class="messagesNavList">
-					<div class="messagesNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+				<ul class="inboxNavList">
+					<div class="inboxNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
 					<!--div class="messagesNavItem" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div-->
-					<div class="messagesNavItem" id="trashLink">ARCHIVE<i class="fa fa-trash-o"></i></div>
+					<div class="inboxNavItem" id="trashLink">ARCHIVE<i class="fa fa-archive"></i></div>
 				</ul>
 			</div>
 		</div>
@@ -32,55 +32,35 @@
 					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
 						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
 						<div class="messageUser">{{msg.display.prof_name}}</div>
-						<div class="messageSubjectLine">{{msg.UserMessage.msg_content}}</div>
-						<div class="messageDelete"><i class="fa fa-times"></i></div>
-						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d')}}</div>
-						<div class="composeBodyContainer">
-							<div class="composeFieldCaption">Message</div>
-							<textarea id="composeBody" name="composeBody" class="composeField"></textarea>
+						<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
+						<div class="messageArchive"><i class="fa fa-archive"></i></div>
+						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+						<!-- div class="messageContent">{{msg.UserMessage.msg_content}}</div-->
+						 <!-- TODO div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d %H:%M %p')}}</div -->
+<!-- 						<div class="composeBodyContainer">
+							<div class="composeFieldCaption">Respond</div>
 							<div class="composeMessageSend">
 								<form action="/sendmsg" method="POST">
-									<input type="hidden" name="hero_prof"	value="{{ msg.display.prof_id }}">
-									<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="hidden"	name="hp"			value="{{ msg.display.prof_id }}">
+									<input type="hidden"	name="parent"		value="{{ msg.UserMessage.msg_id }}">
+									<input type="hidden"	name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="textarea"	name="msg">
 									<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
 								</form>
 							</div>
-						</div>
+						</div> -->
 					</li>
 					{% endfor %}
 				</ul>  
 			</div>    
 	
-			<!--div class="inboxView inboxSent">
-				<ul class="inboxWell" id="threads">
-					<li class="message" id="thread_number">
-						<div class="messageUser"> Me </div>
-						<div class="messageSubjectLine">This is a message i sent.</div>
-						<div class="messageDate">Jun 15</div>
-						<div class="messageDelete"><i class="fa fa-times"></i></div>
-					</li>
-					<li class="message" id="thread_number">
-						<div class="messageUser"> Me </div>
-						<div class="messageSubjectLine">This is another message i sent.</div>
-						<div class="messageDate">Jun 11</div>
-						<div class="messageDelete"><i class="fa fa-times"></i></div>
-					</li>					
-					<li class="message" id="thread_number">
-						<div class="messageUser"> Me </div>
-						<div class="messageSubjectLine">This is a third message i sent.</div>
-						<div class="messageDate">Jun 10</div>
-						<div class="messageDelete"><i class="fa fa-times"></i></div>
-					</li>
-				</ul>  
-			</div-->
-
 			<div class="inboxView inboxTrash">
 				<ul class="inboxWell" id="threads">
 					<li class="message" id="thread_number">
 						<div class="messageUser">Mike Tyson</div>
 						<div class="messageSubjectLine">An old message that is in the trash</div>
+						<div class="messageArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
 						<div class="messageDate">Jun 8</div>
-						<div class="messageDelete"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
 					</li>
 				</ul>  
 			</div>
@@ -95,8 +75,8 @@ $(document).ready(function() {
 	$(".composeBodyContainer").hide();
 
 	$('.message').click(function() {
-		$(".composeBodyContainer").hide();
-		$(this).find('.composeBodyContainer').slideDown(100);
+		window.location.href = "/message";
+		//$('.inboxRightColumn').load("/message?id=1", ".messageContainer");
 	});
 
 	$('#mainLink').click(function() {

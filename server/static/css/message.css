@@ -23,9 +23,50 @@
 	}
 }
 
+/* Nav - Inbox Styles */
+
+.messageHeader {
+	margin-bottom: 10px;
+	width: 100%;
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 12px;
+	float: left;
+}
+.messageHeaderTitle {
+	color: black;
+	width: 75%;
+	float: left;
+}
+
+.messageHeader h1 {	
+	width: 100%;
+	font-size: 2em;
+}
+.messageHeader h2 {	
+	width: 100%;
+	font-size: 1.8em;
+}
+
+.messageNavItem {
+    background-size: 18px 18px;
+    border-bottom: 1px solid #e2e4e6;
+    color: #6e7980;
+    font-size: 0.875em;
+    padding: 11px 0 11px 30px;
+    cursor: pointer;
+}
+
+.messageNavItem:hover {
+    color: #007cb3;
+}
+
+.messageNavItem i {
+	padding-left: 6px; 
+}
+
 /* Content */
 
-.composeWrapper {
+.messageWrapper {
 	background-color: white;
 	border-radius: 6px;
 	-moz-box-sizing: border-box;
@@ -39,42 +80,136 @@
 	z-index: 30;
 }
 
-.composeHeader {
-	/*border-bottom: 1px solid #b0b4b7;*/
-	margin-bottom: 20px;
-	float: left;
-	width: 100%;
+.messageLeftColumn {
+    float: left;
+    text-align: right;
+	width: 25%;
 }
-.composeHeader h1 {
-	color: black;
-	font-size: 2em;
-	padding-bottom: 15px;
+
+.messageRightColumn {
+	float: right;
+	width: 75%;
+}
+
+.messageNavContainer {
+	padding-right: 36px;
+}
+
+.messageContainer {
+	width: 100%;
+	float: left;
+}
+
+.leftNavigation {
+	float: left;
+	font-size: 1em;
+	width: 25%;
+	height: 30px;
+	line-height: 40px;
+	text-align: right;
 }
 
 .navigation {
 	float: left;
 	font-size: 1em;
 	width: 100%;
-	padding-bottom: 15px;
+	padding-top: 8px;
+	/*padding-bottom: 15px;*/
 }
-.navigation i {
+.leftNavigation .navItem {
+	padding-right: 36px;
+}
+
+.navigation, .leftNavigation i {
 	font-size: .9em;
 }
-.navigation a {
+
+.navigation, .leftNavigation a {
 	color: #29abe1;
 	-moz-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
 	-webkit-transition: 0.5 ease;
 	transition: 0.5s ease;	
 }
-.navigation a:hover {
+.navigation, .leftNavigation a:hover {
 	color: #007cb3;
 }
 
-.composeMessageContainer {
+
+.messageThread {
 	width: 100%;
-	float: left;
 }
+
+.messageThreadHeader {
+}
+
+.messageThreadItem {
+	margin-bottom: 10px;
+	border-bottom: 1px dotted #dedede; 
+	padding: 6px;
+	float: left;
+	min-height: 80px;
+}
+.messageThreadItem:last-of-type {
+	border-bottom: none;
+}
+
+.itemSender {
+	float: left;
+	width: 50%;
+}
+
+.itemSenderImage {
+	float: left;
+	padding-right: 8px;
+}
+
+.itemSenderImage img {
+	border-radius: 3px;
+	width: 40px;
+}
+
+.itemSenderName {
+	float: left;
+	font-size: .9em;
+	color: #6e7980;
+	font-weight: bold;
+}
+
+
+.itemDatetime {
+	float: right;
+	text-align: right;
+	width: 50%;
+	color: #c4c4c4;
+	font-size: .8em;
+}
+
+.itemBody {
+	float: left;
+	width: 100%;
+	font-size: .9em;
+	padding: 8px 0px;
+}
+
+.messageReplyContainer {
+	float: left;
+	width: 100%;
+}
+
+textarea.messageReplyBody {
+	resize: none;
+	float: left;
+	width: 100%;
+	margin-bottom: 20px
+}
+
+.messageReplySendButton {
+	width: 250px;
+	margin: 0px auto;
+}
+
+/*
 
 .composeFieldCaption{
 	font-size: 1.1em;
@@ -135,16 +270,5 @@ textarea.composeField {
 	font-size: .9em;
 }
 
-/* Modal Window Adjustments */
 
-.modalContent .composeWrapper {
-	margin: 0px;
-}
-
-.modalContent .composeWrapper .navigation, .composeMessageCancel {
-	display: none;
-}
-
-
-
-
+*/

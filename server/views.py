@@ -1384,8 +1384,20 @@ def render_inbox_page():
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
-	hp = Profile.get_by_prof_id(hid)
+
+	if (hid is not None):
+		hp = Profile.get_by_prof_id(hid)
+	else:
+		hp = None
+
 	return make_response(render_template('compose.html', bp=bp, hp=hp))
+
+@req_authentication
+@ht_server.route("/message", methods=['GET', 'POST'])
+def render_message_page():
+	bp = Profile.get_by_uid(session['uid'])
+	message = request.values.get('message')
+	return make_response(render_template('message.html', bp=bp, message=message))
 
 
 @req_authentication
