@@ -11,24 +11,6 @@
 
 <div class="searchWrapper">
 
-	<div class="searchOptions">
-
-		<h2>Search</h2>
-		<form name='q' action="/search" method="POST">
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
-			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
-			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
-
-			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
-			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
-
-			<input type="submit" class="whiteButton" value="Search">
-		</form>
-	</div>
-
-
 	<div class="searchResults">
 		<div class="searchResultsHeading">
 			<h2>{{rc_heroes}} People Found</h2>
@@ -75,6 +57,22 @@
 
 		</div>
 		{% endfor %}
+	</div>
+	<div class="searchOptions">
+
+		<h2>Search</h2>
+		<form name='q' action="/search" method="POST">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
+			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
+			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
+
+			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
+			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
+
+			<input type="submit" class="whiteButton" value="Search">
+		</form>
 	</div>
 	<div class="clear"></div>
 </div>
