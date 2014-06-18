@@ -669,7 +669,9 @@ def ht_api_send_message():
 		db_session.add(message)
 		db_session.commit()
 
-		#todo: notifying users.
+		#todo: send email.
+		hp = Profile.get_by_prof_id(msg_to)
+		email_user_to_user_message(bp, hp, subject, thread, message)
 		print "success, saved msg"
 	except DB_Error as dbe:
 		print dbe

@@ -13,6 +13,10 @@ import json, smtplib
 import stripe
 
 
+def email_user_to_user_message(sender_prof, receiver_prof, subject, thread, message):
+	print 'sending an actual goddamned email'
+
+
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
 	url = 'https://herotime.co/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
