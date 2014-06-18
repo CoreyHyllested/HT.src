@@ -34,7 +34,9 @@
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<h3>{{proposal.display.prof_name}}</h3>
+					<a href="#" onclick="document.getElementById('h').value='{{proposal.display.prof_id}}'; document.p.submit();">
+						<h3>{{proposal.display.prof_name}}</h3>
+					</a>
 					<h4>{{proposal.display.headline}}</h4>
 					<div class="dashboardOfferIntro">{{proposal.Proposal.prop_desc}}</div>
 				</div>
@@ -80,7 +82,9 @@
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<h3>{{appointment.display.prof_name}}</h3>
+					<a href="#" onclick="document.getElementById('h').value='{{appointment.display.prof_id}}'; document.p.submit();">
+						<h3>{{appointment.display.prof_name}}</h3>
+					</a>
 					<h4>{{appointment.display.headline}}</h4>
 					<div class="dashboardOfferIntro">{{appointment.Proposal.prop_desc}}</div>
 				</div>
@@ -121,7 +125,6 @@
 					<a href="#" onclick="document.getElementById('h').value='{{msg.display.prof_id}}'; document.p.submit();">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}">
 						<h3>{{msg.display.prof_name}}</h3>
-						<h4>{{msg.display.headline}}</h4>
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
