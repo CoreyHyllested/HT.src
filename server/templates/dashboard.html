@@ -29,7 +29,7 @@
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="href='/profile?hero={{proposal.display.prof_id}}'">
+					<a href="/profile?hero={{proposal.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
 					</a>
 				</div>
@@ -77,12 +77,12 @@
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardAppointment" id="appt-{{appointment.Proposal.prop_uuid}}">
 				<div class="dashboardAppointmentLeftColumn">
-					<a href="href='/profile?hero={{appointment.display.prof_id}}'">
+					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardAppointmentCenterColumn">
-					<a href="href='/profile?hero={{appointment.display.prof_id}}'">
+					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<h3>{{appointment.display.prof_name}}</h3>
 					</a>
 					<h4>{{appointment.display.headline}}</h4>
@@ -121,7 +121,7 @@
 			<div class="dashboardMessage" id="msg-{{msg.UserMessage.msg_id}}">
 				<p></p>
 				<div class="dashboardMessageLeftColumn">
-					<a href="href='/profile?hero={{msg.display.prof_id}}'">
+					<a href="/profile?hero={{msg.display.prof_id}}">
 						<div class="messageSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}"></div>
 						<div class="messageSenderName">{{msg.display.prof_name}}</div>
 					</a>
