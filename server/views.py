@@ -1388,7 +1388,7 @@ def render_inbox_page():
 		db_session.rollback()
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, messages=msg_threads))
+	return make_response(render_template('inbox.html', bp=bp, unread=msg_threads, archived=msg_threads))
 
 
 
@@ -1440,7 +1440,33 @@ def ht_api_get_message_thread(msg_thread):
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])
 def render_message_page():
-	return ht_api_get_message_thread(request.values.get('message'))
+	msg_id = request.values.get('message')
+	action = request.values.get('action')
+
+	if (action == None):
+		return ht_api_get_message_thread(msg_id)
+	elif (action == "archive"):
+		bp = Profile.get_by_uid(session['uid'])
+		try:
+			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
+			print "msg_thread ", msg_id, len(msg_thread)
+
+			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp) and (messages[0].msg_to != bp)):
+				print 'user doesn\'t have access'
+				msg_thread = []
+
+			updated_messages = 0
+			for msg in msg_thread:
+				if (msg.msg_opened == None):
+					msg.msg_opened = dt.utcnow();
+					updated_messages = updated_messages + 1
+			if (updated_messages > 0):
+				print '\"archiving\"' + str(updated_messages) + " msgs"
+				db_session.commit()
+
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
 
 
 
