@@ -652,7 +652,7 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
-		subject = request.values.get('subject', 'default subject')
+		subject = request.values.get('subject')
 		nexturl	= request.values.get('next')
 		thread	= None
 
@@ -1383,7 +1383,8 @@ def render_inbox_page():
 
 @req_authentication
 @ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
-def ht_api_get(msg_thread):
+def ht_api_get_message_thread(msg_thread):
+	print 'get msg_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
 
 	msg_from = aliased(Profile, name='msg_from')
@@ -1398,8 +1399,26 @@ def ht_api_get(msg_thread):
 		print "messages =", len(messages)
 	except Exception as e:
 		print e
+
+	if (len(messages) > 0):
+		subject = messages[0].UserMessage.msg_subject
+		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+			print 'user doesn\'t have access'
+			print 'me', bp
+			print 'to', messages[0].msg_to
+			print 'from', messages[0].msg_from
+			messages = []
+
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
-	return make_response(render_template('inbox_msg.html', bp=bp, messages=messages))
+	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+
+
+@req_authentication
+@ht_server.route("/message", methods=['GET', 'POST'])
+def render_message_page():
+	return ht_api_get_message_thread(request.values.get('message'))
+
+
 
 
 @req_authentication
@@ -1415,12 +1434,7 @@ def render_compose_page():
 
 	return make_response(render_template('compose.html', bp=bp, hp=hp))
 
-@req_authentication
-@ht_server.route("/message", methods=['GET', 'POST'])
-def render_message_page():
-	bp = Profile.get_by_uid(session['uid'])
-	message = request.values.get('message')
-	return make_response(render_template('message.html', bp=bp, message=message))
+
 
 
 @req_authentication
