@@ -20,7 +20,6 @@
 				<!--a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a-->
 				<ul class="inboxNavList">
 					<div class="inboxNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
-					<!--div class="messagesNavItem" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div-->
 					<div class="inboxNavItem" id="trashLink">ARCHIVE<i class="fa fa-archive"></i></div>
 				</ul>
 			</div>
@@ -31,28 +30,20 @@
 				<ul class="inboxWell" id="threads">
 					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
 					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
-						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
 						<div class="messageUser">{{msg.display.prof_name}}</div>
-						<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
+						<div class="messageSubjectLine">
+							{% if msg.UserMessage.msg_opened is none %}<b>{% endif %}
+							{{msg.UserMessage.msg_subject}}
+							{% if msg.UserMessage.msg_opened is none %}</b>{% endif %}
+						</div>
 						<div class="messageArchive"><i class="fa fa-archive"></i></div>
+						{% if msg.UserMessage.msg_opened is none %}
 						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
-						<!-- div class="messageContent">{{msg.UserMessage.msg_content}}</div-->
-<!-- 						<div class="composeBodyContainer">
-							<div class="composeFieldCaption">Respond</div>
-							<div class="composeMessageSend">
-								<form action="/sendmsg" method="POST">
-									<input type="hidden"	name="hp"			value="{{ msg.display.prof_id }}">
-									<input type="hidden"	name="parent"		value="{{ msg.UserMessage.msg_id }}">
-									<input type="hidden"	name="csrf_token"	value="{{ csrf_token() }}">
-									<input type="textarea"	name="msg">
-									<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
-								</form>
-							</div>
-						</div> -->
+						{% endif %}
 					</li>
 					{% endfor %}
 				</ul>  
-			</div>    
+			</div>
 	
 			<div class="inboxView inboxTrash">
 				<ul class="inboxWell" id="threads">
