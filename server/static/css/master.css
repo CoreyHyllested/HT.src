@@ -6,14 +6,20 @@
 
 * {font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;}
 
+
 html, body {
 	-webkit-font-smoothing: subpixel-antialiased;
 	color: rgba(0, 0, 0, 0.5);
-	font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
+	font-family: "Helvetica Neue", "Open Sans", "Arial", sans-serif;
 	font-size: 1em;
 	font-weight: normal;
 	height: 100%;
 	line-height: 1.5em;
+}
+
+.italic {
+	font-family: 'Noto Serif', serif;
+	font-style: italic;
 }
 
 strong {
@@ -44,6 +50,42 @@ h3 {
 	clear: both;
 }
 
+
+/* Page Wrappers */
+
+/* These aren't implemented - they are currently defined in each page's css - introduces problems when a page imports multiple stylesheets */
+
+.pageWrapperPlain {
+	background-color: white;
+	min-height: 100%;
+	padding-bottom: 50px;		
+	width: 100%;
+}
+
+.pageWrapperGradient {
+	background: #dfdfdf;
+	background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+	background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+	background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+	background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+	background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
+}
+
+.pageWrapperImage {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
 
 /* ANIMATIONS */
 
@@ -102,221 +144,221 @@ label {
 
 /* Buttons */
 
-	.blueButton {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		background-color: #29abe2;
-		border: 1px #29abe2 solid;
-	  	-webkit-border-radius: 3px;
-	  	border-radius: 3px;
-		color: white;
-		cursor: pointer;
-		display: table-cell;
-		font-size: 0.9em;
-		height: 35px;
-		text-align: center;
-		-moz-transition: 0.5s ease;
-		-o-transition: 0.5s ease;
-		-webkit-transition: 0.5 ease;
-		transition: 0.5s ease;		
-		vertical-align: middle;
-		width: 100%;
+.blueButton {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: #29abe2;
+	border: 1px #29abe2 solid;
+  	-webkit-border-radius: 3px;
+  	border-radius: 3px;
+	color: white;
+	cursor: pointer;
+	display: table-cell;
+	font-size: 0.9em;
+	height: 35px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;		
+	vertical-align: middle;
+	width: 100%;
 
-	}
+}
 
-	.blueButton:hover {
-		border: 1px solid #007cb3;
-		background-color: #007cb3;
-		text-decoration: none;
-	}
+.blueButton:hover {
+	border: 1px solid #007cb3;
+	background-color: #007cb3;
+	text-decoration: none;
+}
 
-	.messageButton {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		background-color: #29abe2;
-		border: 1px #29abe2 solid;
-	  	-webkit-border-radius: 3px;
-	  	border-radius: 3px;
-		color: white;
-		cursor: pointer;
-		display: table-cell;
-		font-size: 0.9em;
-		height: 35px;
-		margin-top: -12px;
-		text-align: center;
-		-moz-transition: 0.5s ease;
-		-o-transition: 0.5s ease;
-		-webkit-transition: 0.5 ease;
-		transition: 0.5s ease;		
-		vertical-align: middle;
-		width: 100%;
+.messageButton {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: #29abe2;
+	border: 1px #29abe2 solid;
+  	-webkit-border-radius: 3px;
+  	border-radius: 3px;
+	color: white;
+	cursor: pointer;
+	display: table-cell;
+	font-size: 0.9em;
+	height: 35px;
+	margin-top: -12px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;		
+	vertical-align: middle;
+	width: 100%;
 
-	}
+}
 
-	.messageButton:hover {
-		border: 1px solid #007cb3;
-		background-color: #007cb3;
-		text-decoration: none;
-	}
-	.redButton {
-		background-color: white;
-		border: 1px solid #e2e4e6;
-	  	border-radius: 3px;
-		color: red;
-		cursor: pointer;
-		font-size: 0.9em;
-		font-weight: 400;
-		height: 35px;
-		text-align: center;
-		-moz-transition: 0.5s ease;
-		-o-transition: 0.5s ease;
-		-webkit-transition: 0.5 ease;
-		transition: 0.5s ease;
-		vertical-align: middle;
-		width: 100%;
+.messageButton:hover {
+	border: 1px solid #007cb3;
+	background-color: #007cb3;
+	text-decoration: none;
+}
+.redButton {
+	background-color: white;
+	border: 1px solid #e2e4e6;
+  	border-radius: 3px;
+	color: red;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 400;
+	height: 35px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;
+	vertical-align: middle;
+	width: 100%;
 
-	}
+}
 
-	.redButton:hover {
-		border: 1px solid red;
-		text-decoration: none;
-	}
+.redButton:hover {
+	border: 1px solid red;
+	text-decoration: none;
+}
 
-	.whiteButton {
-		background-color: white;
-		border: 1px #e2e4e6 solid;
-	  	border-radius: 3px;
-		color: #29abe1;
-		cursor: pointer;
-		font-size: 0.9em;
-		font-weight: 400;
-		height: 35px;
-		text-align: center;
-		-moz-transition: 0.5s ease;
-		-o-transition: 0.5s ease;
-		-webkit-transition: 0.5 ease;
-		transition: 0.5s ease;
-		vertical-align: middle;
-		width: 100%;
-	}
+.whiteButton {
+	background-color: white;
+	border: 1px #e2e4e6 solid;
+  	border-radius: 3px;
+	color: #29abe1;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 400;
+	height: 35px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;
+	vertical-align: middle;
+	width: 100%;
+}
 
-	.whiteButton:hover {
-		border: 1px solid #29abe2;
-		text-decoration: none;
-	}
+.whiteButton:hover {
+	border: 1px solid #29abe2;
+	text-decoration: none;
+}
 
 
-/* Checkboxs */
+/* Checkboxes */
 
-	input[type="checkbox"] {
-		display: none;
-	}
+input[type="checkbox"] {
+	display: none;
+}
 
-	input[type="checkbox"].checkbox {
-		border: 0;
-		clip: rect(0 0 0 0); 
-		height: 1px; 
-		margin: -1px; 
-		overflow: hidden; 
-		padding: 0;
-		position: absolute;
-		width: 1px; 
-	}
+input[type="checkbox"].checkbox {
+	border: 0;
+	clip: rect(0 0 0 0); 
+	height: 1px; 
+	margin: -1px; 
+	overflow: hidden; 
+	padding: 0;
+	position: absolute;
+	width: 1px; 
+}
 
-	input[type="checkbox"].checkbox + label.checkbox-label {
-		background-position: 0 0;
-		background-repeat:no-repeat;
-		cursor: pointer;
-		display: inline-block;
-		height: 17px;
-		font-size: 0.9em;
-		line-height: 17px;
-		padding-left: 25px;
-		vertical-align: middle;
-		/* Makes the label unselectable */
-		-moz-user-select: -moz-none;
-		-webkit-user-select: none;
-		-ms-user-select: none;
-	}
+input[type="checkbox"].checkbox + label.checkbox-label {
+	background-position: 0 0;
+	background-repeat:no-repeat;
+	cursor: pointer;
+	display: inline-block;
+	height: 17px;
+	font-size: 0.9em;
+	line-height: 17px;
+	padding-left: 25px;
+	vertical-align: middle;
+	/* Makes the label unselectable */
+	-moz-user-select: -moz-none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
 
-	input[type="checkbox"].checkbox:checked + label.checkbox-label {
-		background-position: 0 -17px;
-	}
+input[type="checkbox"].checkbox:checked + label.checkbox-label {
+	background-position: 0 -17px;
+}
 
-	.checkbox-label {
-		background-image:url('../img/checkbox.svg');
-	}
+.checkbox-label {
+	background-image:url('../img/checkbox.svg');
+}
 
-	/* Input fields */
+/* Input fields */
 
-	textarea {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		border: 1px #e1e8ed solid;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		height: 120px;
-		font-size: 0.9em;
-		line-height: 1.5em;
-		outline: none;
-		padding: 0.4em 5px;
-	}
+textarea {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	border: 1px #e1e8ed solid;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	height: 120px;
+	font-size: 0.9em;
+	line-height: 1.5em;
+	outline: none;
+	padding: 0.4em 5px;
+}
 
-	input[type="text"], input[type="email"], input[type="password"] {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		border: 1px #e1e8ed solid;
-		height: 40px;
-		font-size: 0.9em;
-		line-height: 1em;
-		outline: none;
-		padding-left: 5px;
-	}
+input[type="text"], input[type="email"], input[type="password"] {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	border: 1px #e1e8ed solid;
+	height: 40px;
+	font-size: 0.9em;
+	line-height: 1em;
+	outline: none;
+	padding-left: 5px;
+}
 
-	input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		border: 1px #e1e8ed solid;
-		height: 40px;
-		outline: none;
-	}
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	border: 1px #e1e8ed solid;
+	height: 40px;
+	outline: none;
+}
 
-	input[type="submit"] {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		font-size: 0.9em;
-		text-transform: uppercase;
-	}
+input[type="submit"] {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	font-size: 0.9em;
+	text-transform: uppercase;
+}
 
-	input[type="button"], button {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		font-size: 0.9em;
-		text-transform: uppercase;		
-	}
+input[type="button"], button {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	font-size: 0.9em;
+	text-transform: uppercase;		
+}
 
-	select {
-	    -moz-appearance: none;
-		-webkit-appearance: none;
-		background: url('../img/dropdown.svg') no-repeat right white;
-		border: 1px #e1e8ed solid;
-		border-radius: 0;
-		font-size: 0.9em;
-		height: 40px;
-		line-height: 1.5em;
-		outline: none;
-		padding: 2px 0 0 5px;
-		text-indent: 1px;
-	    text-overflow: '';
-	}
+select {
+    -moz-appearance: none;
+	-webkit-appearance: none;
+	background: url('../img/dropdown.svg') no-repeat right white;
+	border: 1px #e1e8ed solid;
+	border-radius: 0;
+	font-size: 0.9em;
+	height: 40px;
+	line-height: 1.5em;
+	outline: none;
+	padding: 2px 0 0 5px;
+	text-indent: 1px;
+    text-overflow: '';
+}
 
 @-moz-document url-prefix() {
 	select {

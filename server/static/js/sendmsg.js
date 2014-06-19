@@ -50,11 +50,12 @@ $(document).ready(function() {
 					}
 
 		    	} else {
-		    		$(".composeMessageStatus").html("<span class='error'>Error - Message Not Sent.</span>").slideDown();
+		    		$(".composeMessageStatus").html("<span class='error'>Sorry, something went wrong. Message not sent.</span>").slideDown();
 		    		console.log ('Error - Valid not true');
 		    	}
 			},
 			error:function(response) {
+				$(".composeMessageStatus").html("<span class='error'>Sorry, something went wrong. Message not sent.</span>").slideDown();
 				console.log("Error - " + response.usrmsg);
 			}
 		});

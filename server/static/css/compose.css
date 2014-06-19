@@ -143,8 +143,8 @@ textarea.composeField {
 	display: none;
 	width: 100%;
 	text-align: center;
-	/*font-size: 1em;*/
-	padding: 10px 0px;
+	padding-top: 10px;
+	float: left;
 }
 
 .composeMessageStatus .success{

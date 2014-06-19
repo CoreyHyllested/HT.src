@@ -29,16 +29,16 @@
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{proposal.display.prof_id}}'; document.p.submit();">
+					<a href="href='/profile?hero={{proposal.display.prof_id}}'">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{proposal.display.prof_id}}'; document.p.submit();">
+					<a href="href='/profile?hero={{proposal.display.prof_id}}'">
 						<h3>{{proposal.display.prof_name}}</h3>
 					</a>
 					<h4>{{proposal.display.headline}}</h4>
-					<div class="dashboardOfferIntro">{{proposal.Proposal.prop_desc}}</div>
+					<div class="dashboardOfferIntro italic">{{proposal.Proposal.prop_desc}}</div>
 				</div>
 
 				<div class="dashboardOfferRightColumn">
@@ -75,33 +75,33 @@
 		<div class="dashboardAppointments">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardOffer" id="appt-{{appointment.Proposal.prop_uuid}}">
-				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{appointment.display.prof_id}}'; document.p.submit();">
+			<div class="dashboardAppointment" id="appt-{{appointment.Proposal.prop_uuid}}">
+				<div class="dashboardAppointmentLeftColumn">
+					<a href="href='/profile?hero={{appointment.display.prof_id}}'">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}">
 					</a>
 				</div>
-				<div class="dashboardOfferCenterColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{appointment.display.prof_id}}'; document.p.submit();">
+				<div class="dashboardAppointmentCenterColumn">
+					<a href="href='/profile?hero={{appointment.display.prof_id}}'">
 						<h3>{{appointment.display.prof_name}}</h3>
 					</a>
 					<h4>{{appointment.display.headline}}</h4>
-					<div class="dashboardOfferIntro">{{appointment.Proposal.prop_desc}}</div>
+					<div class="dashboardAppointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
 				</div>
-				<div class="dashboardOfferRightColumn">
-					<div class="dashboardOfferRightColumnInfo">
+				<div class="dashboardAppointmentRightColumn">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{% if appointment.buyer == True %}
-						You will play ${{appointment.Proposal.prop_cost}}.
+						You will pay ${{appointment.Proposal.prop_cost}}.
 						{% else %}
 						You will get paid ${{appointment.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
-					<div class="dashboardOfferRightColumnInfo">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{{appointment.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
 						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
 					</div>
 					<!-- CAH: Meeting address goes here. -->
-					<div class="dashboardOfferRightColumnInfo">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{{appointment.Proposal.prop_place}}
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
@@ -117,27 +117,22 @@
 
 		<div class="dashboardMessages">
 			<h1>Messages ({{messages|length}})</h1>
-			{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
-			<div class="dashboardOffer" id="msg-{{msg.UserMessage.msg_id}}">
-				<p>Sent {{msg.UserMessage.msg_created.strftime('%A, %b %d %H:%M %p')}}</p>
-				<br>
-				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{msg.display.prof_id}}'; document.p.submit();">
-						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}">
-						<h3>{{msg.display.prof_name}}</h3>
+			{% for msg in messages|sort(attribute='UserMessage.msg_created')|reverse  %}
+			<div class="dashboardMessage" id="msg-{{msg.UserMessage.msg_id}}">
+				<p></p>
+				<div class="dashboardMessageLeftColumn">
+					<a href="href='/profile?hero={{msg.display.prof_id}}'">
+						<div class="messageSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}"></div>
+						<div class="messageSenderName">{{msg.display.prof_name}}</div>
 					</a>
 				</div>
-				<div class="dashboardOfferCenterColumn">
-					<h4>{{msg.UserMessage.msg_subject}}</h4>
-					<div class="dashboardOfferIntro">{{msg.UserMessage.msg_content}}</div>
+				<div class="dashboardMessageCenterColumn">
+					<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
+					<div class="messageIntro italic">{{msg.UserMessage.msg_content}}</div>
 				</div>
-				<div class="dashboardOfferRightColumn">
-					<form action="/sendmsg" method="POST">
-						<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-						<input type="hidden" name="parent" value="{{msg.UserMessage.msg_id}}">
-						<input type="submit" class="whiteButton" id="sendMessage" data-message-id="{{msg.UserMessage.msg_id}}" value="Respond">
-						<input type="text"   name="msg" placeholder="Hi, I'd like to ask about...">
-					</form>
+				<div class="dashboardMessageRightColumn">
+					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+					<div class="messageView"><a href="/message?id={{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -167,8 +162,10 @@
 
 </div>
 
+<script src="/static/js/sendmsg.js"></script>
 <script>
-$(function () {
+
+$(document).ready(function() {
 
     $('.accept').click(function () {
         var id = this.id;
@@ -313,8 +310,6 @@ $(function () {
 	});
 
 });
-
-
 
 </script>
 

@@ -56,7 +56,7 @@
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
 		</div>
-		<div class="profileAboutMe">{{hp.prof_bio}}</div>
+		<div class="profileAboutMe italic">{{hp.prof_bio}}</div>
 
 		{% if revs|count == 0 %}
 		<h3>There are no reviews for this person yet.</h3>
@@ -258,7 +258,6 @@ $(document).ready(function() {
 		openModalWindow("/compose", ".composeWrapper", myString);	
 
 	});
-
 
 });
 

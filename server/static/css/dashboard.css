@@ -6,7 +6,10 @@ c) 1000px - ... (desktops)
 */
 
 
-/* COMMON ELEMENTS */
+/**** COMMON ELEMENTS ****/
+
+
+/* Layout */
 
 .pageWrapper {
 	background-color: white;
@@ -14,6 +17,37 @@ c) 1000px - ... (desktops)
 	padding-bottom: 50px;		
 	width: 100%;
 }
+
+.dashboardContentWrapper {
+	background-color: white;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 41px auto;
+	position: relative;
+	width: 980px;
+	z-index: 30;
+}
+
+.dashboardLeftColumn {
+	float: left;
+	width: 656px;
+}
+
+.dashboardRightColumn {
+	float: right;
+	width: 246px;
+}
+
+.dashboardLeftColumn h1 {
+	border-bottom: 1px solid #b0b4b7;
+	color: black;
+	font-size: 2em;
+	padding-bottom: 15px;
+	width: 100%;
+}
+
+/* If Empty */
 
 .dashboardEmpty {
 	margin-bottom: 40px;
@@ -37,6 +71,8 @@ c) 1000px - ... (desktops)
 	margin-bottom: 1em;
 }
 
+/* Offers */
+
 .dashboardOffers {
 	margin-bottom: 40px;
 }
@@ -46,6 +82,13 @@ c) 1000px - ... (desktops)
 	display: block;
 	margin-top: 20px;
 	padding-bottom: 20px;
+}
+
+.dashboardOfferIntro {
+	color: #6e7980;
+	font-size: 0.875em;
+	line-height: 1.5em;
+	white-space: pre-wrap;
 }
 
 .dashboardOffer img {
@@ -107,8 +150,10 @@ input[value="Accept"] {
 
 input[value="Accept"]:hover {text-decoration: underline;}
 input[value="Cancel Lesson"] {float: left;}
-input[value="Cancel Lesson"] {float: left;}
 input[value="Cancel Lesson"]:hover {text-decoration: underline;}
+
+
+/* Appointments */
 
 .dashboardAppointments {
 	margin-bottom: 40px;
@@ -122,6 +167,79 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 	padding-bottom: 15px;
 	width: 100%;
 }
+
+
+/* Messages */
+
+.dashboardMessages {
+	margin-bottom: 40px;
+}
+
+.dashboardMessage {
+	border-bottom: 1px solid #cfd7db;
+	display: block;
+	margin-top: 20px;
+	padding-bottom: 20px;
+}
+/*
+.dashboardMessageIntro {
+	color: #6e7980;
+	font-size: 0.875em;
+	line-height: 1.5em;
+	white-space: pre-wrap;
+}
+*/
+.dashboardMessage .messageSenderImage {
+	float: left;
+	padding-right: 8px;
+}
+
+.dashboardMessage .messageSenderImage img {
+	border-radius: 3px;
+	width: 100%;
+}
+
+.dashboardMessage .messageSenderName {
+	float: left;
+	font-size: .9em;
+	color: #6e7980;
+	font-weight: bold;
+}
+
+.dashboardMessage .messageDatetime {
+	float: right;
+	text-align: right;
+	color: #c4c4c4;
+	font-size: .8em;
+	width: 100%;
+}
+
+.dashboardMessage .messageView {
+	float: right;
+	width: 100%;
+}
+
+.messageViewButton {
+	width: 120px;
+	float: right;
+}
+
+.dashboardMessage .messageSubjectLine {
+	float: left;
+	color: #c4c4c4;
+	font-size: .9em;
+	width: 100%;
+}
+
+
+.dashboardMessage .messageIntro {
+	float: left;
+	font-size: 1em;
+	padding: 8px 0px;
+	width: 100%;
+}
+
+/* Right Column - Profile Info Etc */
 
 .dashboardRightColumn img {
 	border-radius: 3px;	
@@ -174,115 +292,95 @@ input[value="Edit Profile"] {
 	border-bottom: none;
 }
 
+input.dashboardActionButton {
+	font-size: 1em;
+}
+
+/* Responsive Stuff */
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
 
 	.dashboardContentWrapper {
-		background-color: white;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 41px auto;
-		position: relative;
 		width: 90%;
-		z-index: 30;
 	}
 
 	.dashboardLeftColumn {
 		width: 100%;
 	}
 
+	.dashboardRightColumn {display: none;}
+
 	.dashboardLeftColumn h1 {
-		border-bottom: 1px solid #b0b4b7;
-		color: black;
 		font-size: 1.5em;
-		padding-bottom: 15px;
-		width: 100%;
 	}
 
-	.dashboardOffer {
+	.dashboardOffer, .dashboardAppointment, .dashboardMessage {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro {
-		border-top: 1px solid #e1e8ed;;
-		color: #6e7980;
-		font-family: Garamond, Georgia, serif;
-		font-size: 0.875em;
-		font-style: italic;
-		line-height: 1.5em;
+	.dashboardOfferIntro, .dashboardAppointmentIntro, .dashboardMessageIntro {
+		border-top: 1px solid #e1e8ed;
 		padding: 10px 0;
-		white-space: pre-wrap;
 	}
 
-	.dashboardOfferCenterColumn h3 {padding-top: 10px;}
-	.dashboardOfferRightColumn {width: 100%;}
-	.dashboardOfferCenterColumn {width: 100%;}
-	.dashboardOfferLeftColumn {width: 100%;}
-	.dashboardRightColumn {display: none;}
+	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
+		width: 100%;
+	}
+	.dashboardAppointmentLeftColumn, .dashboardAppointmentCenterColumn, .dashboardAppointmentRightColumn  {
+		width: 100%;
+	}
+	.dashboardMessageLeftColumn, .dashboardMessageCenterColumn, .dashboardMessageRightColumn  {
+		width: 100%;
+	}
+
+	.dashboardOffer h3 {padding-top: 10px;}
 
 	.dashboardOfferRightColumnInfo:first-of-type {
-		border-top: 1px solid #e1e8ed;;
+		border-top: 1px solid #e1e8ed;
 		color: black;
 		font-weight: bold;
 		padding-top: 10px;
-	}
-
-	input.dashboardActionButton {
-		font-size: 1em;
 	}
 }
 
 @media only screen and (min-width: 490px) and (max-width: 999px) {
 
 	.dashboardContentWrapper {
-		background-color: white;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 41px auto;
-		position: relative;
 		width: 94%;
-		z-index: 30;
 	}
 
 	.dashboardLeftColumn {
-		float: left;
 		width: 50%;
 	}
 
 	.dashboardRightColumn {
-		float: right;
 		width: 40%;
 	}
 
 	.dashboardLeftColumn h1 {
-		border-bottom: 1px solid #b0b4b7;
-		color: black;
 		font-size: 1.5em;
-		padding-bottom: 15px;
-		width: 100%;
 	}
 
-	.dashboardOffer {
+	.dashboardOffer, .dashboardAppointment, .dashboardMessage {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro {
+	.dashboardOfferIntro, .dashboardAppointmentIntro, .dashboardMessageIntro {
 		border-top: 1px solid #e1e8ed;
-		color: #6e7980;
-		font-family: Garamond, Georgia, serif;
-		font-size: 0.875em;
-		font-style: italic;
-		line-height: 1.5em;
 		padding: 10px 0;
-		white-space: pre-wrap;
 	}
 
-	.dashboardOfferCenterColumn h3 {padding-top: 10px;}
-	.dashboardOfferRightColumn {width: 100%;}
-	.dashboardOfferCenterColumn {width: 100%;}
-	.dashboardOfferLeftColumn {width: 100%;}
+	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
+		width: 100%;
+	}
+	.dashboardAppointmentLeftColumn, .dashboardAppointmentCenterColumn, .dashboardAppointmentRightColumn  {
+		width: 100%;
+	}
+	.dashboardMessageLeftColumn, .dashboardMessageCenterColumn, .dashboardMessageRightColumn  {
+		width: 100%;
+	}
+
+	.dashboardOffer h3 {padding-top: 10px;}
 
 	.dashboardOfferRightColumnInfo:first-of-type {
 		border-top: 1px solid #e1e8ed;
@@ -291,67 +389,23 @@ input[value="Edit Profile"] {
 		padding-top: 10px;
 	}
 
-	input.dashboardActionButton {
-		font-size: 1em;
-	}
-
 }
-
 
 @media only screen and (min-width: 1000px) {
 
-	.dashboardContentWrapper {
-		background-color: white;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 41px auto;
-		position: relative;
-		width: 980px;
-		z-index: 30;
-	}
-
-	.dashboardLeftColumn {
-		float: left;
-		width: 656px;
-	}
-
-	.dashboardLeftColumn h1 {
-		border-bottom: 1px solid #b0b4b7;
-		color: black;
-		font-size: 2.5em;
-		padding-bottom: 15px;
-		width: 100%;
-	}
-
-
-	.dashboardRightColumn {
-		float: right;
-		width: 246px;
-	}	
-
-	.dashboardOfferIntro {
-		color: #6e7980;
-		font-family: Garamond, Georgia, serif;
-		font-size: 0.875em;
-		font-style: italic;
-		line-height: 1.5em;
-		white-space: pre-wrap;
-	}
-
-	.dashboardOfferLeftColumn {
+	.dashboardOfferLeftColumn, .dashboardAppointmentLeftColumn, .dashboardMessageLeftColumn {
 		float: left;
 		height: 100%;
 		margin-right: 20px;
 		width: 123px;
 	}
 
-	.dashboardOfferCenterColumn {
+	.dashboardOfferCenterColumn, .dashboardAppointmentCenterColumn, .dashboardMessageCenterColumn {
 		float: left;
 		width: 287px;
 	}
 
-	.dashboardOfferRightColumn {
+	.dashboardOfferRightColumn, .dashboardAppointmentRightColumn, .dashboardMessageRightColumn {
 		float: right;
 		font-size: 0.8em;
 		width: 206px;
