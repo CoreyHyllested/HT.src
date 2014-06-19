@@ -1415,10 +1415,23 @@ def ht_api_get_message_thread(msg_thread):
 		subject = messages[0].UserMessage.msg_subject
 		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
 			print 'user doesn\'t have access'
-			print 'me', bp
-			print 'to', messages[0].msg_to
-			print 'from', messages[0].msg_from
 			messages = []
+
+	try:
+		updated_messages = 0
+		for msg in messages:
+			if (msg.UserMessage.msg_opened == None):
+				print 'user message never opened before'
+				updated_messages = updated_messages + 1
+				msg.UserMessage.msg_opened = dt.utcnow();
+				db_session.add(msg.UserMessage)
+		if (updated_messages > 0):
+			print 'committing messages'
+			db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
