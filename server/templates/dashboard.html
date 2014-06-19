@@ -132,7 +132,7 @@
 				</div>
 				<div class="dashboardMessageRightColumn">
 					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
-					<div class="messageView"><a href="/message?id={{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
+					<div class="messageView"><a href="/inbox/message/{{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
 				</div>
 				<div class="clear"></div>
 			</div>
