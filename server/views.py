@@ -651,7 +651,7 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
-		subject = request.values.get('subject', 'default subject')
+		subject = request.values.get('subject')
 		next	= request.values.get('next')
 		foo	= request.values.get('foo')
 		thread	= None
@@ -677,7 +677,9 @@ def ht_api_send_message():
 		db_session.add(message)
 		db_session.commit()
 
-		#todo: notifying users.
+		#todo: send email.
+		hp = Profile.get_by_prof_id(msg_to)
+		email_user_to_user_message(bp, hp, subject, thread, message)
 		print "success, saved msg"
 		print
 	
@@ -1374,24 +1376,63 @@ def render_inbox_page():
 
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	messages = [] 
+	msg_threads = []
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+		msg_threads = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .filter(UserMessage.msg_parent == None)													\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "msg_threads =", len(msg_threads)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
+	return make_response(render_template('inbox.html', bp=bp, messages=msg_threads))
+
+
+
+@req_authentication
+@ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
+def ht_api_get_message_thread(msg_thread):
+	print 'get msg_thread: ', msg_thread
+	bp = Profile.get_by_uid(session['uid'])
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = []
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+							 .filter(UserMessage.msg_thread == msg_thread)					\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "messages =", len(messages)
+	except Exception as e:
+		print e
+
+	if (len(messages) > 0):
+		subject = messages[0].UserMessage.msg_subject
+		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+			print 'user doesn\'t have access'
+			print 'me', bp
+			print 'to', messages[0].msg_to
+			print 'from', messages[0].msg_from
+			messages = []
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
 
-	print "messages =", len(messages)
 
-	return make_response(render_template('inbox.html', bp=bp, messages=messages))
-	
+@req_authentication
+@ht_server.route("/message", methods=['GET', 'POST'])
+def render_message_page():
+	return ht_api_get_message_thread(request.values.get('message'))
+
+
+
 
 @req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
@@ -1409,12 +1450,7 @@ def render_compose_page():
 
 	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
 
-@req_authentication
-@ht_server.route("/message", methods=['GET', 'POST'])
-def render_message_page():
-	bp = Profile.get_by_uid(session['uid'])
-	message = request.values.get('message')
-	return make_response(render_template('message.html', bp=bp, message=message))
+
 
 
 @req_authentication
