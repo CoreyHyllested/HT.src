@@ -29,14 +29,16 @@
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
 			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{proposal.display.prof_id}}'; document.p.submit();">
+					<a href="/profile?hero={{proposal.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
 					</a>
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<h3>{{proposal.display.prof_name}}</h3>
+					<a href="/profile?hero={{proposal.display.prof_id}}">
+						<h3>{{proposal.display.prof_name}}</h3>
+					</a>
 					<h4>{{proposal.display.headline}}</h4>
-					<div class="dashboardOfferIntro">{{proposal.Proposal.prop_desc}}</div>
+					<div class="dashboardOfferIntro italic">{{proposal.Proposal.prop_desc}}</div>
 				</div>
 
 				<div class="dashboardOfferRightColumn">
@@ -58,9 +60,9 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="reject" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
+					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject">
 					{% if proposal.buyer == false %}
-					<input type="button" class="accept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
 					{% endif %}
 					<!-- -->
 				</div>
@@ -73,38 +75,64 @@
 		<div class="dashboardAppointments">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardOffer" id="appt-{{appointment.Proposal.prop_uuid}}">
-				<div class="dashboardOfferLeftColumn">
-					<a href="#" onclick="document.getElementById('h').value='{{appointment.display.prof_id}}'; document.p.submit();">
+			<div class="dashboardAppointment" id="appt-{{appointment.Proposal.prop_uuid}}">
+				<div class="dashboardAppointmentLeftColumn">
+					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}">
 					</a>
 				</div>
-				<div class="dashboardOfferCenterColumn">
-					<h3>{{appointment.display.prof_name}}</h3>
+				<div class="dashboardAppointmentCenterColumn">
+					<a href="/profile?hero={{appointment.display.prof_id}}">
+						<h3>{{appointment.display.prof_name}}</h3>
+					</a>
 					<h4>{{appointment.display.headline}}</h4>
-					<div class="dashboardOfferIntro">{{appointment.Proposal.prop_desc}}</div>
+					<div class="dashboardAppointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
 				</div>
-				<div class="dashboardOfferRightColumn">
-					<div class="dashboardOfferRightColumnInfo">
+				<div class="dashboardAppointmentRightColumn">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{% if appointment.buyer == True %}
-						You will play ${{appointment.Proposal.prop_cost}}.
+						You will pay ${{appointment.Proposal.prop_cost}}.
 						{% else %}
 						You will get paid ${{appointment.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
-					<div class="dashboardOfferRightColumnInfo">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{{appointment.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
 						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
 					</div>
 					<!-- CAH: Meeting address goes here. -->
-					<div class="dashboardOfferRightColumnInfo">
+					<div class="dashboardAppointmentRightColumnInfo">
 						{{appointment.Proposal.prop_place}}
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
 
 					<!-- CAH: The button should disappear 24 hours before the meeting. -->
-					<input type="button" class="redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+				</div>
+				<div class="clear"></div>
+			</div>
+			{% endfor %}
+		</div>
+
+		<div class="dashboardMessages">
+			<h1>Messages ({{messages|length}})</h1>
+			{% for msg in messages|sort(attribute='UserMessage.msg_created')|reverse  %}
+			<div class="dashboardMessage" id="msg-{{msg.UserMessage.msg_id}}">
+				<p></p>
+				<div class="dashboardMessageLeftColumn">
+					<a href="/profile?hero={{msg.display.prof_id}}">
+						<div class="messageSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}"></div>
+						<div class="messageSenderName">{{msg.display.prof_name}}</div>
+					</a>
+				</div>
+				<div class="dashboardMessageCenterColumn">
+					<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
+					<div class="messageIntro italic">{{msg.UserMessage.msg_content}}</div>
+				</div>
+				<div class="dashboardMessageRightColumn">
+					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+					<div class="messageView"><a href="/inbox/message/{{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -134,8 +162,11 @@
 
 </div>
 
+<script src="/static/js/sendmsg.js"></script>
 <script>
-$(function () {
+
+$(document).ready(function() {
+
     $('.accept').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
@@ -279,8 +310,6 @@ $(function () {
 	});
 
 });
-
-
 
 </script>
 

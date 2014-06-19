@@ -1,0 +1,65 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/message.css">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="messageWrapper">
+
+	<div class="messageHeader">
+		<div class="leftNavigation">
+			<a href="/inbox" title="Back to Inbox" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Inbox</a>
+		</div>
+		<div class="messageHeaderTitle">
+			<h2>Your Upcoming Dancing Lesson (2)</h2>
+		</div>
+	</div>
+
+	<div class="messageLeftColumn">
+		<div class="messageNavContainer">
+			<ul class="messageNavList">
+				<div class="messageNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+				<div class="messageNavItem" id="trashLink">ARCHIVE<i class="fa fa-archive"></i></div>
+			</ul>
+		</div>
+	</div>
+
+
+	<div class="messageRightColumn">
+		<div class="messageContainer">
+
+			<div class="messageThreadHeader">{{ msg_thread[0].UserMessage.msg_subject }}</div>
+			<div class="messageThread">
+				{% for msg in msg_thread | sort(attribute='UserMessage.msg_created')  %}
+				<div class="messageThreadItem">
+					<div class="itemSender">
+						<div class="itemSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.msg_from.prof_img}}"></div>
+						<div class="itemSenderName">{{msg.msg_from.prof_name}}</div>
+					</div>
+					<div class="itemDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %H:%M %p')}}</div>
+					<br>
+					<div class="itemBody">{{msg.UserMessage.msg_content}}</div>
+				</div>
+				{% endfor %}
+			</div>
+
+			<div class="messageReplyContainer">
+				<textarea name="msg" id="composeBody" class="messageReplyBody" placeholder="Enter message to {{msg_thread[0].display.prof_name}}"></textarea>
+				<input type="hidden" id="msg_parent" value="{{msg_thread[-1].UserMessage.msg_id}}">
+				<input type="hidden" id="composeRecipientID" value="{{msg_thread[0].display.prof_id}}">
+				<input type="hidden" id="next" value="/profile?hp={{msg_thread[0].display.prof_id}}">
+				<input type="hidden" id="csrf"	value="{{csrf_token()}}">
+				<button id="sendMessage" class="blueButton messageReplySendButton">Send Reply</button>
+			</div>
+
+		</div>
+	</div>
+
+</div>
+
+
+{% endblock %}	

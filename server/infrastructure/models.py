@@ -21,8 +21,7 @@ APPT_FLAG_RESOLVED = 8
 APPT_FLAG_USERPAID = 15		# if buyer has paid us.
 APPT_FLAG_HEROPAID = 16		# if hero has been paid.
 APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
-APPT_FLAG_CANCELED = 18		# use from to see who canceled it
-
+APPT_FLAG_CANCELED = 18		# use from to see who canceled it 
 APPT_FLAG_QUIET		= 29
 APPT_FLAG_DIGITAL	= 30
 APPT_FLAG_RUNOVER	= 31
@@ -106,7 +105,29 @@ def test_flag(state, flag): return (state & (0x1 << flag))
 ################################################################################
 # BEGIN; 
 # UPDATE appointment2 SET buyer_prof = 62e9e608-12cd-4b47-9eb4-ff6998dca89a WHERE 
+################################################################################
+
+################################################################################
+#### EXAMPLE: INSERT ROW INTO TABLE from PostgreSQL. ###########################
+################################################################################
+# begin;
+# insert into umsg (msg_id, msg_to, msg_from, msg_thread, msg_content, msg_created) VALUES ('testing-1-2-3-4-5', (select prof_id from profile where prof_name like '%Corey%'), (select prof_id from profile where prof_name like '%Frank%'), 'testing-1-2-3-4-5', 'Garbage in, garbage out', '2014-06-05 17:59:12.311562');
+# commit;
+################################################################################
  
+################################################################################
+#### EXAMPLE: FIND ALL DUPLICATE VALUES IN COLUMN. #############################
+################################################################################
+# begin;
+# select count(msg_thread), msg_thread from umsg group by msg_thread having count(msg_thread) > 1;
+# commit;
+#### RESULTS ###################################################################
+#  count |              msg_thread
+# -------+--------------------------------------
+#     3 | 1dfb5322-69c0-4a58-a768-ee66bcd1b9c6
+#     2 | 45eb702c-1e4c-4971-94dc-44b267930854
+#     5 | fd6d1310-809a-41bc-894a-da75b21aa315
+################################################################################
 
 
 class Account(Base):
@@ -119,17 +140,17 @@ class Account(Base):
 	USER_BANNED		= -2
 
 	userid  = Column(String(40), primary_key=True, index=True, unique=True)
-	email   = Column(String(120), nullable=False,  index=True, unique=True)
-	name    = Column(String(120), nullable=False)
-	pwhash	= Column(String(120), nullable=False)
+	email   = Column(String(128), nullable=False,  index=True, unique=True)
+	name    = Column(String(128), nullable=False)
+	pwhash	= Column(String(128), nullable=False)
 	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)   
 	source  = Column(Integer,		nullable=False, default=OAUTH_NONE)
 	phone	= Column(String(20))
 	dob     = Column(DateTime())
 	created = Column(DateTime())
 	updated = Column(DateTime())
-	sec_question = Column(String(120))
-	sec_answer   = Column(String(50))
+	sec_question = Column(String(128))
+	sec_answer   = Column(String(128))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -196,40 +217,61 @@ class Account(Base):
 		self.__dict__.update(new_values_dict)
 
 
+#class Email(Base):
+#	__tablename__ = "email"
+
+#	id = Column(Integer, primary_key = True)
+#	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+#	email	= Column(String(128),	nullable=False)
+#	flags	= Column(Integer,		nullable=False)
+	
+#	def __init__ (self, account, email, flags=None):
+#		self.ht_account = account
+#		self.email = email
+
+	
+
 
 class Oauth(Base):
 	__tablename__ = "oauth"
 	id      = Column(Integer, primary_key = True)
-	account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-	oa_service	= Column(String(40), nullable=False)	#LINKEDIN = 1, Google = 2
-	oa_userid	= Column(String(40), nullable=False, index=True)	#user id returned back
-	opt_token	= Column(String(200))
-	opt_email	= Column(String(120))
-										#linkedin	#Stripe		#Google
-	opt_data1	= Column(String(200))	#?			CC token
-	opt_data2	= Column(String(200))	#?			Dflt CC		
-	opt_data3	= Column(String(200))	#?			chrge key	
+	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)		#HT UserID
+	oa_account	= Column(String(64), nullable=False, index=True)		#user id returned back		#OA UserID
+	oa_service	= Column(Integer(),  nullable=False)	#LINKEDIN = 1, Google = 2					#OA Service
+	oa_flags	= Column(Integer(),  nullable=False)	# (valid?									#OA Flags
+	oa_email	= Column(String(128))									#OA Email
+	oa_token	= Column(String(256))
+	oa_secret	= Column(String(64))													#OA SECRET -- for remote call
+	oa_optdata1 = Column(String(256))
+	oa_optdata2 = Column(String(256))
+	oa_optdata3 = Column(String(256))
+	oa_created	= Column(DateTime()) 	#first login time.											#OA first
+	oa_ts_login	= Column(DateTime()) 	#last  login time.
+
 
 	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-	def __init__ (self, account, provider, userid, token=None, data1=None, data2=None, data3=None):
-		self.account = account		# account.userid
-		self.oa_service	= provider
-		self.oa_userid	= userid		# third_party user_ID 
-		self.opt_token	= token		# opt_token for accessing accounts
-		self.opt_email	= None
-		self.opt_data1	= data1		# opt_value
-		self.opt_data2	= data2		# opt_value
-		self.opt_data3	= data3		
+	def __init__ (self, account, service, userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
+		self.ht_account = account
+		self.oa_account = userid
+		self.oa_service = service
+		self.oa_flags	= 0
+		self.oa_created	= dt.utcnow()
+		self.oa_ts_login = dt.utcnow()
+
+		self.oa_token	= token
+		self.oa_secret	= secret
+		self.oa_email	= email
+
 
 	def __repr__ (self):
-		return '<oauth, %r %r %r>' % (self.account, self.oa_service, self.oa_userid)
-		
+		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
+
+
 	@staticmethod
 	def get_stripe_by_uid(uid):
-		stripe_custs = Oauth.query.filter_by(account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
+		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
 		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
 		return stripe_custs[0]
-
 
 
 class Profile(Base):
@@ -239,22 +281,22 @@ class Profile(Base):
 	__tablename__ = "profile"
 	prof_id	= Column(String(40), primary_key=True, index=True)
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
-	prof_name	= Column(String(120),							nullable=False)
-	prof_vanity	= Column(String(100))
+	prof_name	= Column(String(128), nullable=False)
+	prof_vanity	= Column(String(128))
 	#prof_skills	= relationship('skills', backref='profile', cascade='all,delete') 
 
 	rating   = Column(Float(),   nullable=False, default=-1)
 	reviews  = Column(Integer(), nullable=False, default=0)
 
-	prof_img	= Column(String(120), default="no_pic_big.svg",	nullable=False) 
-	prof_url	= Column(String(120), default='http://herotime.co')
+	prof_img	= Column(String(128), default="no_pic_big.svg",	nullable=False) 
+	prof_url	= Column(String(128), default='http://herotime.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
 
-	industry	= Column(String(50))
-	headline	= Column(String(50))
-	location	= Column(String(50), nullable=False, default="Berkeley, CA")
+	industry	= Column(String(64))
+	headline	= Column(String(128))
+	location	= Column(String(64), nullable=False, default="Berkeley, CA")
 
 	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
 	created = Column(DateTime(), nullable=False, default = dt.utcnow())
@@ -461,8 +503,7 @@ class Image(Base):
 	img_comment = Column(String(256))
 	img_created = Column(DateTime())
 	img_flags	= Column(Integer, default=0)
-	#img_x, int
-	#img_y, int
+	img_order	= Column(Integer, default=0, nullable=False)
 
 	def __init__(self, imgid, prof_id, comment=None):
 		self.img_id  = imgid
@@ -505,6 +546,52 @@ class Skills(Base):
 	def __repr__ (self):
 		return '<skill %r>' % (self.name)
 
+
+
+
+class UserMessage(Base):
+	__tablename__ = "umsg"
+	msg_id		= Column(String(40), primary_key=True, unique=True)													# NonSequential ID
+	msg_to		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	msg_thread	= Column(String(40), nullable=False, index=True)
+	msg_parent  = Column(String(40))
+	msg_content = Column(String(1024), nullable=False)
+	msg_created = Column(DateTime(), nullable=False)
+	msg_noticed = Column(DateTime())
+	msg_opened  = Column(DateTime())
+	msg_subject	= Column(String(64))
+
+
+	def __init__ (self, prof_to, prof_from, content, subject=None, thread=None, parent=None):
+		self.msg_id	= str(uuid.uuid4())
+		self.msg_to	= str(prof_to)
+		self.msg_from = str(prof_from)
+		self.msg_content = str(content)
+		self.msg_subject = subject
+		self.msg_created = dt.utcnow()
+
+		if (thread == None):
+			# First message in thread
+			thread = str(self.msg_id)
+			parent = None
+			if (self.msg_subject is None): raise Exception('first msg needs subject')
+		else:
+			if (parent == None): raise Exception('not valid threading')
+			self.msg_subject = None
+
+		self.msg_thread	= thread
+		self.msg_parent	= parent
+
+	def __repr__(self):
+		content = self.msg_content[:20]
+		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+
+	@staticmethod
+	def get_by_msg_id(uid):
+		msgs = UserMessage.query.filter_by(msg_id=uid).all()
+		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
+		return msgs[0]
 
 
 

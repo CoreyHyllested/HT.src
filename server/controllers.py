@@ -16,7 +16,7 @@ import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
 
-
+from pprint import pprint as pp
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -28,6 +28,7 @@ from server.infrastructure.tasks  import *
 from server.ht_utils import *
 from server import ht_server, linkedin
 from string import Template
+from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
@@ -56,6 +57,7 @@ def ht_browsingprofile():
 	return None
 
 
+#@deprecated use Account.get_by...
 def ht_get_account(user_id=None):
 	if (user_id == None): user_id = session.get('uid', 0)
 	accounts = Account.query.filter_by(userid=user_id).all()
@@ -74,6 +76,35 @@ def ht_authenticate_user(user_email, password):
 	if (len(accounts) > 1):
 		trace("WTF.  Account len = " + len(accounts) + ". Cannot happen " + str(user_email))
 	return None
+
+
+
+def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
+	""" Returns authenticated account.  Unless one doesn't exist -- then create it. """
+
+	print 'normalize oauth account data', oa_srvc
+	oa_data = normalize_oa_account_data(oa_srvc, oa_data_raw)
+
+	hero = None
+	oauth_account = []
+
+	try:
+		print 'search Oauth for', oa_srvc, oa_data['oa_account']
+		oauth_accounts = db_session.query(Oauth)																		\
+								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
+								   .all()
+	except Exception as e:
+		db_session.rollback()
+
+	if len(oauth_accounts) == 1:
+		print 'found oauth account for individual'
+		oa_account = oauth_accounts[0]
+		hero = Account.get_by_uid(oa_account.ht_account)
+	else:
+		print 'found ', len(oauth_accounts), 'so sign up user with this oauth account.'
+		(hero, prof) = ht_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)
+		#import_profile(prof, oa_srvc, oa_data)
+	return hero
 
 
 
@@ -107,10 +138,11 @@ def ht_password_recovery(email):
 
 
 
-def create_account(name, email, passwd):
+def ht_create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
 	try:
+		print 'create account and profile'
 		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
 		prof  = Profile(name, hero.userid)
 		db_session.add(hero)
@@ -120,21 +152,51 @@ def create_account(name, email, passwd):
 	except IntegrityError as ie:
 		print ie
 		db_session.rollback()
+		# raise --fail... user already exists
+		# is this a third-party signup-merge?
+			#-- if is is a merge.
 		return None, False
 	except Exception as e:
 		print e
 		db_session.rollback()
 		return None, False
 
-	print 'create_account: successful', hero.userid 
-	print hero
-	print prof
 	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
 	return (hero, prof)
 
 
 
+def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
+	print 'ht_create_account_with_oauth: ', name, email, oa_provider
+	(hero, prof) = ht_create_account(name, email, str(uuid.uuid4()))
+
+	if (hero is None):
+		print 'create_account failed. happens when same email address is used'
+		print 'Right, now mention an account uses this email address.'
+		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
+		return None, False
+
+	try:
+		print 'create oauth account'
+		oa_user = Oauth(str(hero.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
+		db_session.add(oa_user)
+		db_session.commit()
+	except IntegrityError as ie:
+		print ie
+		db_session.rollback()
+		return None, False
+	except Exception as e:
+		print type(e)
+		print e
+		db_session.rollback()
+		return None, False
+
+	return (hero, prof)
+
+
+
 def import_profile(bp, oauth_provider, oauth_data):
+	oa_data = normalize_oa_profile_data(oauth_provider, oauth_data)
 	try:
 		linked_id = oauth_data.get('id')
 		summary   = oauth_data.get('summary')
@@ -165,6 +227,40 @@ def import_profile(bp, oauth_provider, oauth_data):
 
 
 
+def normalize_oa_profile_data(provider, oa_data):
+	data = {}
+	if provider == OAUTH_LINKED:
+		data['summary']	= oa_data.get('summary', None)
+		data['headline'] = oa_data.get('headline', None)
+		data['industry'] = oa_data.get('industry', None)
+		data['location'] = oa_data.get('location', None)
+		#recommend = oauth_data.get('recommendationsReceived')
+	return data
+
+
+def normalize_oa_account_data(provider, oa_data):
+	data = {}
+	print 'normalizing oauth data'
+	if provider == OAUTH_LINKED:
+		data['oa_service']	= provider
+		data['oa_account']	= oa_data.get('id')
+		data['oa_email']	= oa_data.get('CAH_email', None)
+		data['oa_token']	= oa_data.get('CAH_token', None)
+		data['oa_secret']	= oa_data.get('CAH_sec', None)
+	elif provider == OAUTH_FACEBK:
+		facebook = oa_data
+
+		print 'normalize facebook data'
+		data['oa_service']	= provider
+		data['oa_account']	= facebook['id']
+		data['oa_name']		= facebook['name']
+		data['oa_email']	= facebook['email']
+		data['oa_token']	= facebook['token']
+		data['oa_secret']	= None
+		data['oa_timezone'] = facebook.get('timezone', None)
+		pp(data)
+
+	return data
 
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):

@@ -11,34 +11,16 @@
 
 <div class="searchWrapper">
 
-	<div class="searchOptions">
-
-		<h2>Search</h2>
-		<form name='q' action=/search method=POST>
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
-			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
-			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
-
-			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
-			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
-
-			<input type="submit" class="whiteButton" value="Search">
-		</form>
-	</div>
-
-
 	<div class="searchResults">
 		<div class="searchResultsHeading">
-			<div class="searchResultsHeadingH2"><h2>{{rc_heroes}} People Found</h2></div>
+			<h2>{{rc_heroes}} People Found</h2>
 			<div class="searchOptionsMenu">Filter</div>
 		</div>
 
 		{% for hero in heroes %}
 		<div class="searchListing">
 			
-			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="		background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();">
+			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="		background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;">
 				
 			</a>
 
@@ -48,7 +30,7 @@
 					
 					<tr>
 						<td colspan="2">
-							<a href="#" onclick="document.getElementById('h').value='{{hero.prof_id}}'; document.p.submit();"><h3>{{hero.prof_name}}</h3></a>
+							<a href='/profile?hero={{hero.prof_id}}'><h3>{{hero.prof_name}}</h3></a>
 							<span class="searchListingTableHeading">{{hero.headline}}</span>
 						</td>
 					</tr>
@@ -75,6 +57,22 @@
 
 		</div>
 		{% endfor %}
+	</div>
+	<div class="searchOptions">
+
+		<h2>Search</h2>
+		<form name='q' action="/search" method="POST">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
+			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
+			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
+
+			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
+			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
+
+			<input type="submit" class="whiteButton" value="Search">
+		</form>
 	</div>
 	<div class="clear"></div>
 </div>

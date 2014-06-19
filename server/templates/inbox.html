@@ -1,0 +1,114 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/message.css">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="inboxContentWrapper">
+	<div class="inboxMessagesHeader">
+		<h1>Messages ({{messages|length}})</h1>
+	</div>
+  
+  	<div class="container">
+		<div class="inboxLeftColumn">
+			<div class="inboxNavContainer">
+				<!--a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a-->
+				<ul class="inboxNavList">
+					<div class="inboxNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
+					<!--div class="messagesNavItem" id="sentLink">SENT<i class="fa fa-paper-plane-o"></i></div-->
+					<div class="inboxNavItem" id="trashLink">ARCHIVE<i class="fa fa-archive"></i></div>
+				</ul>
+			</div>
+		</div>
+
+		<div class="inboxRightColumn">
+			<div class="inboxView inboxMain">
+				<ul class="inboxWell" id="threads">
+					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
+					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
+						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
+						<div class="messageUser">{{msg.display.prof_name}}</div>
+						<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
+						<div class="messageArchive"><i class="fa fa-archive"></i></div>
+						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+						<!-- div class="messageContent">{{msg.UserMessage.msg_content}}</div-->
+<!-- 						<div class="composeBodyContainer">
+							<div class="composeFieldCaption">Respond</div>
+							<div class="composeMessageSend">
+								<form action="/sendmsg" method="POST">
+									<input type="hidden"	name="hp"			value="{{ msg.display.prof_id }}">
+									<input type="hidden"	name="parent"		value="{{ msg.UserMessage.msg_id }}">
+									<input type="hidden"	name="csrf_token"	value="{{ csrf_token() }}">
+									<input type="textarea"	name="msg">
+									<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
+								</form>
+							</div>
+						</div> -->
+					</li>
+					{% endfor %}
+				</ul>  
+			</div>    
+	
+			<div class="inboxView inboxTrash">
+				<ul class="inboxWell" id="threads">
+					<li class="message" id="thread_number">
+						<div class="messageUser">Mike Tyson</div>
+						<div class="messageSubjectLine">An old message that is in the trash</div>
+						<div class="messageArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
+						<div class="messageDate">Jun 8</div>
+					</li>
+				</ul>  
+			</div>
+		</div><!--right column-->
+	</div><!--empty, container-->
+
+</div>
+
+
+<script>
+$(document).ready(function() {
+	$(".composeBodyContainer").hide();
+
+	$('.message').click(function() {
+		var msg_id = $(this).data("id");
+		var fd = new FormData();
+		fd.append('msg', msg_id);
+		fd.append('csrf_token', "{{ csrf_token() }}");
+		console.log('msg_clicked = ' + msg_id);
+		$.ajax({ url	: "/message",
+				 type	: "POST",
+				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}' },
+				 success : function(data) {
+					var inner = $(data).find('.messageRightColumn').html();
+					//console.log('data', data);
+					//console.log('data', inner);
+					$('.inboxRightColumn').html(inner);
+					$('#sendMessage').bind('click', sendmessage_js)
+				}
+		});
+	});
+
+	$('#mainLink').click(function() {
+		if ($('.messageThread').length == 0) {
+			$('.inboxView').hide();
+			$('.inboxMain').show();
+		} else {
+			window.location.replace("/inbox");
+		}
+	});
+
+	$('#trashLink').click(function() {
+		$('.inboxView').hide();
+		$('.inboxTrash').show();
+	});
+});
+</script>
+<script src="/static/js/sendmsg.js"></script>
+
+
+{% endblock %}

@@ -25,15 +25,6 @@ from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash #rm -- should be in controllers only
 
 
-stripe_keys = {}
-stripe_keys['public'] = 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
-stripe_keys['secret'] = 'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
-#stripe.api_key = stripe_keys['secret']
-#ht_appointment_finalize.apply_async(args=[appointment.apptid])
-            
-
-
-
 
 @ht_server.route('/', methods=['GET', 'POST'])
 @ht_server.route('/index')
@@ -42,7 +33,6 @@ def homepage():
 	""" Returns the HeroTime front page for users and Heros
 		- detect HT Session info.  Provide modified info.
 	"""
-
 	bp = None
 
 	if 'uid' in session:
@@ -68,21 +58,25 @@ def render_search():
 	form = SearchForm(request.form)
 	print "keywords = ", keywords
 
-	results = db_session.query(Profile)
-	print 'there are', len(results.all()), 'profiles'
+	try:
+		results = db_session.query(Profile)
+		print 'there are', len(results.all()), 'profiles'
 
-	if (keywords is not None):
-		print "keywords = ", keywords
-		rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-		rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
-		rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-		rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
-		print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
-
-		# filter by location, use IP as a tell
-		rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
-	else:
-		rc_keys = results.all()
+		if (keywords is not None):
+			print "keywords = ", keywords
+			rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+			rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
+			rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
+			print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
+	
+			# filter by location, use IP as a tell
+			rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
+		else:
+			rc_keys = results.all()
+	except Exception as e:
+		print e
+		db_session.rollback()
 
 	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
 
@@ -122,25 +116,29 @@ def render_profile(usrmsg=None):
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
 
-	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	# alias for review searches.
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	try:
+		# complicated search queries can fail and lock up DB.
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
+								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)											\
+								.join(user, user.prof_id == Review.prof_authored)										\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+
 	print 'images in portfolio:', len(portfolio)
 	for img in portfolio:
 		print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
-
-	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
-							.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
-							.join(appt, appt.prop_uuid == Review.rev_appt)											\
-							.join(user, user.prof_id == Review.prof_authored)										\
-							.join(hero, hero.prof_id == Review.prof_reviewed).all();
 
 	for r in all_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
@@ -168,6 +166,9 @@ def render_profile(usrmsg=None):
 	for r in show_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
 
+	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	nts = NTSForm(request.form)
+	nts.hero.data = hp.prof_id
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
@@ -191,21 +192,19 @@ def display_reviews_of_hero(r, hero_is):
 @dbg_enterexit
 def render_login(usrmsg=None):
 	""" Logs user into HT system
-		Checks if user exists.  
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
 
 	if ('uid' in session):
-		# if logged in; take 'em home
+		# user already logged in; take 'em home
 		return redirect('/dashboard')
-
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
 		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
 		if (ba is not None):
-			bp = ht_get_profile(ba)
+			bp = Profile.get_by_uid(ba.userid)
 			ht_bind_session(bp)
 			return redirect('/dashboard')
 
@@ -215,50 +214,79 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
+	msg = request.values.get('messages')
+	if (msg is not None):
+		usrmsg = msg
+
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
 
 
 @ht_server.route('/login/facebook', methods=['GET'])
-def login_facebook():
+def oauth_login_facebook():
 	# redirects to facebook, which gets token and comes back to 'fb_authorized'
 	print 'login_facebook()'
+	session['oauth_facebook_signup'] = False
 	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
-@ht_server.route('/login/authorized')
+@ht_server.route('/login/linkedin', methods=['GET'])
+def oauth_login_linkedin():
+	# redirects to LinkedIn, which gets token and comes back to 'authorized'
+	print 'login_linkedin()'
+	session['oauth_linkedin_signup'] = False
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+
+
+@ht_server.route('/authorized/facebook')
 @facebook.authorized_handler
 def facebook_authorized(resp):
-	print 'reached facebook_authorized'
 	if resp is None:
-		return 'Access denied: reason=%s error=%s' % ( request.args['error_reason'], request.args['error_description'])
+		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('render_login', messages=msg))
 
-	print 'resp is not none', resp['access_token']
+	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
-	me = facebook.get('/me')
 
-	return 'Logged in as id=%s name=%s redirect=%s' % (me.data['id'], me.data['name'], request.args.get('next'))	
+	print 'facebook user is creating an account.'
+	# grab signup/login info
+	me = facebook.get('/me')
+	me.data['token']=session['oauth_token']
+
+	ba = ht_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	if (ba):
+		print ("created_account, uid = " , str(ba.userid), ', get profile')
+		bp = Profile.get_by_uid(ba.userid)
+		print 'bind session'
+		ht_bind_session(bp)
+		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
+		resp = redirect('/dashboard')
+	else:
+		print ('create account failed')
+		resp = redirect('/dbFailure')
+	return resp
+
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
 	return session.get('oauth_token')
 
-
-
-@ht_server.route('/login/linkedin', methods=['GET'])
-def login_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'authorized'
-	print 'login_linkedin()' 
-	session['oauth_signup'] = False
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
+@ht_server.route('/facebook')
+def render_facebook_stats():
+	me = facebook.get('/me')
+	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
+	
 
 
 
+@linkedin.tokengetter
+def get_linkedin_oauth_token():
+	return session.get('linkedin_token')
 
 @ht_server.route('/authorized/linkedin')
 @linkedin.authorized_handler
-def li_authorized(resp):
-	print 'authorized/linkedin (li_authorized)'
+def linkedin_authorized(resp):
+	print 'login() linkedin_authorized'
 
 	if resp is None:
 		# Needs a better error page 
@@ -266,7 +294,7 @@ def li_authorized(resp):
 		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 
 	#get Oauth Info.
-	signup = bool(session.pop('oauth_signup'))
+	signup = bool(session.pop('oauth_linkedin_signup'))
 	print('li_auth - signup', str(signup))
 	print('li_auth - login ', str(not signup))
 
@@ -279,8 +307,9 @@ def li_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
+	#(bh, bp) = ht_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
 
-	print('li_auth - find account')
+
 	# also look for linkedin-account/id number (doesn't exist today).
 	possible_accts = Account.query.filter_by(email=email.data).all()
 	if (len(possible_accts) == 1):
@@ -293,7 +322,7 @@ def li_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = create_account(user_name, email.data, 'linkedin_oauth')
+	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth')
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)
@@ -303,7 +332,7 @@ def li_authorized(resp):
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
 	else:
-		# something failed.  
+		# something failed.
 		print bh if (bh is not None) else 'None'
 		print bp if (bp is not None) else 'None'
 		print ('create account failed, using', str(email.data))
@@ -329,7 +358,7 @@ def render_signup_page(usrmsg = None):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
-			(bh, bp) = create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			(bh, bp) = ht_create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
@@ -343,17 +372,17 @@ def render_signup_page(usrmsg = None):
 
 
 
+@ht_server.route('/signup/facebook', methods=['GET'])
+def signup_facebook():
+	session['oauth_facebook_signup'] = True
+	return facebook.authorize(callback=url_for('facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+
+
 @ht_server.route('/signup/linkedin', methods=['GET'])
 def signup_linkedin():
-	# redirects to LinkedIn, which gets token and comes back to 'li_authorized'
 	print 'signup_linkedin'
-	session['oauth_signup'] = True
-	return linkedin.authorize(callback=url_for('li_authorized', _external=True))
-
-
-@linkedin.tokengetter
-def get_linkedin_oauth_token():
-	return session.get('linkedin_token')
+	session['oauth_linkedin_signup'] = True
+	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
 
 
 
@@ -390,7 +419,7 @@ def signup_verify(challengeHash):
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
 			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return render_login(usrmsg=msg)
+			return redirect(url_for('render_login', messages=msg))
 
 	try:
 		# update user's account.
@@ -426,7 +455,6 @@ def render_schedule_page():
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
-
 
 	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
 
@@ -492,32 +520,41 @@ def render_dashboard(usrmsg=None, focus=None):
 	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appts_and_props = db_session.query(Proposal, user, hero)														\
-								.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-								.join(user, user.prof_id == Proposal.prop_user)										\
-								.join(hero, hero.prof_id == Proposal.prop_hero).all();
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = [] 
+
+	try:
+		appts_and_props = db_session.query(Proposal, user, hero)														\
+									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
+									.join(user, user.prof_id == Proposal.prop_user)										\
+									.join(hero, hero.prof_id == Proposal.prop_hero).all();
+		messages = db_session.query(UserMessage, msg_from, msg_to)														\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	except Exception as e:
+		print e
+		db_session.rollback()
 	
-	
-	print 'calling map on all appts_and_props'
-	map(lambda anp: display_other_user(anp, bp.prof_id), appts_and_props)
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
 	print "proposals =", len(props), ", appts =", len(appts)
 	
 
-	for x in props:
-		print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
-
-	print 'now appts: '
-	for x in appts:
-		print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
+	#for x in props:
+	#	print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
+	#for x in appts: #print 'now appts: '
+	#	print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
 	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
 
 	
 
-def display_other_user(p, user_is):
+def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
 		#user it the hero, we should display all the 'user'
 		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
@@ -529,6 +566,20 @@ def display_other_user(p, user_is):
 		setattr(p, 'display', p.hero)
 		setattr(p, 'buyer', True) 
 		setattr(p, 'sellr', False) 
+
+
+def display_partner_message(p, user_is):
+	if (user_is == p.UserMessage.msg_to): 
+		#user it the hero, we should display all the 'user'
+		print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
+		setattr(p, 'display', p.msg_from) 
+		setattr(p, 'left', p.msg_from)
+		setattr(p, 'right', p.msg_to)
+	else:
+		print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
+		setattr(p, 'display', p.msg_to)
+		setattr(p, 'left', p.msg_to)
+		setattr(p, 'right', p.msg_from)
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -543,19 +594,24 @@ def upload():
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
 
+
 	print 'orig', orig
 	print 'prof', prof
 
 	for mydict in request.files:
+
+		comment = ""
+
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
 		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
 		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			# create Image.
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment="Portfolio Img")
+			metaImg = Image(img_hashname, bp.prof_id, comment)
 			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
@@ -575,6 +631,73 @@ def upload():
 		sml.set_contents_from_file(StringIO(image_data))
 
 	return jsonify(tmp="/uploads/" + str(img_hashname))
+
+
+
+
+@ht_server.route('/sendmsg', methods=['POST'])
+@req_authentication
+def ht_api_send_message():
+	""" Send a user message. """
+
+	uid = session['uid']
+
+	try:
+		bp = Profile.get_by_uid(session['uid'])
+
+		msg_from = bp.prof_id
+		msg_to	= request.values.get('hp')
+		content	= request.values.get('msg')
+		parent	= request.values.get('msg_parent')
+		subject = request.values.get('subject')
+		next	= request.values.get('next')
+		foo	= request.values.get('foo')
+		thread	= None
+
+		print
+		print "/sendmsg - MESSAGE DETAILS"
+		print 'message from ' + bp.prof_name
+		print 'message to ' + msg_to
+		print 'subject=', subject
+		print 'parent=', parent
+		print 'next=', next
+		print 'foo=', foo
+
+		if (parent):
+			parent_msg	= UserMessage.get_by_msg_id(parent) 
+			thread	= parent_msg.msg_thread
+			msg_to	= parent_msg.msg_from
+			
+		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
+		
+		print 'full message=', message
+		
+		db_session.add(message)
+		db_session.commit()
+
+		#todo: send email.
+		hp = Profile.get_by_prof_id(msg_to)
+		email_user_to_user_message(bp, hp, subject, thread, message)
+		print "success, saved msg"
+		print
+	
+		thisresponse = make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
+		return thisresponse
+
+	except DB_Error as dbe:
+		print dbe
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some DB problem, try again", next=next, valid="true"), 505
+	except NoResourceFound as nre:
+		print nre
+		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
+	except Exception as e:
+		print type(e)
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
+
+	
 
 
 
@@ -675,7 +798,7 @@ def sanitize_render_errors(err):
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'ht_proposal_create'
+	print 'ht_api_proposal_create'
 
 	prop_s_date = request.values.get('prop_s_date')
 	prop_s_hour = request.values.get('prop_s_hour')
@@ -684,13 +807,8 @@ def ht_api_proposal_create():
 	prop_f_hour = request.values.get('prop_f_hour')
 	prop_hero = request.values.get('prop_hero')
 
-	print 'prop_s_date = ', prop_s_date 
-	print 'prop_s_hour= ', prop_s_hour
-	print 'prop_f_date = ', prop_f_date 
-	print 'prop_f_hour= ', prop_f_hour
-	print 'prop_hero = ', prop_hero
-
-	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+	#print dt_start
 
 	try:
 		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
@@ -918,7 +1036,7 @@ def settings_verify_stripe():
 	print "verify -- use request Token to get userINFO"
 	stripeHTTP = Http()
 	postdata = {}
-	postdata['client_secret'] = stripe_keys['secret']
+	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
 
@@ -1034,7 +1152,7 @@ def render_review_page(appt_id, review_id):
 		print 'trying to access, review, author or reviewer account and fialed'
 		db_session.rollback()
 		return redirect('/dbFailure')
-		
+
 
 
 
@@ -1105,31 +1223,6 @@ def review():
 
 
 
-@ht_server.route("/email/<heroName>", methods=['GET'])
-def emailHero(heroName):
-	#ht_server.logger.debug(request.headers);
-	#if (url[:8] != "https://"):
-	#	if (url[:7] != "http://"):
-	#		url = "HTTP://" + url;
-	#uid = htLog('create', request, '{ "reqName" : "' + new + '", "url" : "' + url + '" }')
-	print "heroName = '" + heroName + "'"
-	email(heroName, "sent from HT")
-	return "Good job", 200
-
-
-@ht_server.route("/heroes/<heroName>", methods=['GET'])
-def hero_profile(heroName):
-	"""Redirect the request to the URL associated =heroName=."""
-	""" otherwise return 404 NOT FOUND"""
-
-	#split profile into a parsing Headers and a 'go get shit' part.
-	# this can call into the 'go get shit'
-	hero = Profile.query.filter_by(vanity=heroName).all()
-	if len(hero) == 1: 
-		hp = hero[0]
-
-	return pageNotFound('unknown', 404);
-
 
 @ht_server.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -1139,8 +1232,7 @@ def uploaded_file(filename):
 
 @ht_server.route('/logout', methods=['GET', 'POST'])
 def logout():
-	if (session.get('uid') is not None):
-		session.pop('uid')
+	session.clear()
 	return redirect('/')
 
 
@@ -1256,4 +1348,159 @@ def render_rake_page(buyer, sellr):
 	(proposal, msg) = ht_proposal_create(values, bp)
 	return msg
 
+
+@req_authentication
+@ht_server.route("/upload_portfolio", methods=['GET', 'POST'])
+def render_multiupload_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('upload_portfolio.html', bp=bp))
+	
+
+@req_authentication
+@ht_server.route("/edit_portfolio", methods=['GET', 'POST'])
+def render_edit_portfolio_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
+
+
+
+@req_authentication
+@ht_server.route("/inbox", methods=['GET', 'POST'])
+def render_inbox_page():
+	bp = Profile.get_by_uid(session['uid'])
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	msg_threads = []
+
+	try:
+		msg_threads = db_session.query(UserMessage, msg_from, msg_to)													\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .filter(UserMessage.msg_parent == None)													\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "msg_threads =", len(msg_threads)
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
+	return make_response(render_template('inbox.html', bp=bp, messages=msg_threads))
+
+
+
+@req_authentication
+@ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
+def ht_api_get_message_thread(msg_thread):
+	print 'get msg_thread: ', msg_thread
+	bp = Profile.get_by_uid(session['uid'])
+
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	messages = []
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+							 .filter(UserMessage.msg_thread == msg_thread)					\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "messages =", len(messages)
+	except Exception as e:
+		print e
+
+	if (len(messages) > 0):
+		subject = messages[0].UserMessage.msg_subject
+		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+			print 'user doesn\'t have access'
+			print 'me', bp
+			print 'to', messages[0].msg_to
+			print 'from', messages[0].msg_from
+			messages = []
+
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+
+
+@req_authentication
+@ht_server.route("/message", methods=['GET', 'POST'])
+def render_message_page():
+	return ht_api_get_message_thread(request.values.get('message'))
+
+
+
+
+@req_authentication
+@ht_server.route("/compose", methods=['GET', 'POST'])
+def render_compose_page():
+	hid = request.values.get('hp')
+	bp = Profile.get_by_uid(session['uid'])
+	next = request.values.get('next')
+
+	print "next: ", next
+
+	if (hid is not None):
+		hp = Profile.get_by_prof_id(hid)
+	else:
+		hp = None
+
+	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
+
+
+
+
+@req_authentication
+@ht_server.route("/portfolio/<operation>/", methods=['POST'])
+def ht_api_update_portfolio(operation):
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	print operation
+
+	try:
+		# get user's portfolio
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	if (operation == 'add'):
+		print 'adding file'
+	elif (operation == 'update'):
+		print 'usr request: update portfolio'
+		images = request.values.get('images')
+
+		try:
+			for img in portfolio:
+				update = False;
+				print img, img.img_id
+				jsn = request.values.get(img.img_id)
+				if jsn is None:
+					print img.img_id, 'doesnt exist in user-set, deleted.'
+					db_session.delete(img)
+					continue
+
+				obj = json.loads(jsn)
+				print img.img_id, obj['idx'], obj['cap']
+				if (img.img_order != obj['idx']):
+					update = True
+					print 'update img_order'
+					img.img_order = int(obj['idx'])
+				if (img.img_comment != obj['cap']):
+					update = True
+					print 'update img_cap'
+					img.img_comment = obj['cap']
+
+				if (update): db_session.add(img)
+
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+			return jsonify(usrmsg='This is embarassing.  We failed'), 500
+
+		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
+	else:
+		return jsonify(usrmsg='Unknown operation.'), 500
 

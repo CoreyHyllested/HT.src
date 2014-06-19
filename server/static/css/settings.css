@@ -150,6 +150,11 @@ b) 450px - ... (everything else)
 		text-shadow: 0 1px rgba(255, 255, 255, 0.8);
 	}
 
+	/* Privacy & Notifications */
+
+	input[type="checkbox"] {
+		display: inline;
+	}
 	/* Images */
 
 	.stripe-connect span:before, .stripe-connect.blue span:before {

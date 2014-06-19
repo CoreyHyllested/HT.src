@@ -4,14 +4,16 @@
 	<title>HeroTime {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	
-
 	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
 
 	{% block head %}
 
-	<!-- Import Open Sans from Google Fonts (may be unnecessary if we drop the font -->
+	<!-- Import Google Fonts -->
 	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+	<link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Noto+Serif:400italic'>
+
+	<!-- Import FontAwesome Icons -->
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 
 	<!-- CSS reset -->
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
@@ -20,19 +22,18 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
+
 
 	<!-- SCRIPTS -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 	<!--script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script-->
 
 	<script src="/static/js/modal_windows.js"></script>	
 
 	{% endblock %}
-
-
-	<!--<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">-->
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
 
 	{% if jsfiles %}
 	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
@@ -119,6 +120,7 @@
 	<!-- MODAL WINDOWS -->
 	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
 			
+	<!-- Alert Modal -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
 	<div class="alertWindowWrap">
@@ -130,8 +132,20 @@
 		</div>
 	</div>
 
+	<!-- Content Modal -->
+	<div class="modalOverlay" onclick="closeModalWindow();"></div>
+			
+	<div class="modalWindowWrap">
+		<div class="modalWindow">
+			<div class="modalWindowClose" onclick="closeModalWindow();">&#x2715;</div>
+			<div class="modalContent"></div>
+		</div>
+	</div>
+
+
+	<!-- This is the hidden menu that only shows up on mobile -->
 	<div class="menu">
-		<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 			<input name="search" id="menuSearch" type="text" autocomplete="off">
 		</form>
@@ -160,32 +174,46 @@
 			<div class="headerContentWrapper">
 
 				<!-- HEADER LOGO -->
-				<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-				{% if bp %}<a class="headerLogo" href="/dashboard">
-				{% else %}<a class="headerLogo" href="/">
-				{% endif %}
-				</a>
 
-				<form name="srchForm" action="search" method="POST" onsubmit="return searchBar()">
-					<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-					<input name="search" id="headerSearch" type="text" autocomplete="off">
-				</form>
+				<div class="headerLogo">
+					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
+					{% if bp %}
+						<a href="/dashboard"><img src="static/img/logo.svg" class="headerLogoImg"></a>
+
+					{% else %}
+						<a href="/"><img src="static/img/logo.svg" class="headerLogoImg"></a>
+					{% endif %}
+				</div>
+				<div class="headerSearchBar">
+					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<input name="search" id="headerSearch" type="text" autocomplete="off">
+					</form>
+					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
+				</div>
+
 
 				<!-- HEADER MENU -->
 				{% if bp %}
 				<div class="headerGraphicalMenu"></div>
 
-				<ul class="headerDropdownMenu">
-					<li class="headerDropdownMenuName">{{bp.prof_name}}
-						<ul class="headerDropdownMenuActive">
-							<a href="/dashboard"><li>Dashboard</li></a>
-							<a href="/profile"><li>Profile</li></a>
-							<a href="/settings"><li>Settings</li></a>
-							<a href="/logout"><li>Log Out</li></a>
-						</ul>
-					</li>
-				</ul>
-
+				<div>
+					<ul class="headerDropdownMenu">
+						<li class="headerDropdownMenuName">{{bp.prof_name}}
+							<ul class="headerDropdownMenuActive">
+								<a href="/dashboard"><li>Dashboard</li></a>
+								<a href="/profile"><li>Profile</li></a>
+								<a href="/inbox"><li>Messages</li></a>
+								<a href="/settings"><li>Settings</li></a>
+								<a href="/logout"><li>Log Out</li></a>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div class="headerIcons">
+					<a class="notification icon" href=""><i class="fa fa-bell-o"></i></a>
+					<a class="mailbox icon" href="/inbox"><i class="fa fa-envelope-o"></i></a>
+				</div>
 
 				{% else %}
 				<div class="headerGraphicalMenu"></div>
@@ -203,11 +231,10 @@
 		</div>
 		<!-- Header ends here -->
 
-		
 		{% block content %}
 		{% endblock %}
 
-	<div class="clear"></div>
+		<div class="clear"></div>
 	</div><!-- Page wrapper ends here -->
 
 	<!-- Footer starts here -->
@@ -233,14 +260,17 @@
 	</div><!-- Footer ends here -->
 
 	<script>
-	$(function () {
+	$(document).ready(function() {
+
+		$(".searchIcon").click(function() {
+			$("#srchForm").submit();
+		});
+
 		function rp(id) {
 			document.getElementById('h').value=id;
 			document.p.submit();
 		}
-	});
 
-	$(function () {
 		function searchBar() {
 			var x=document.forms["srchForm"]["search"].value;
 			if (x==null || x=="") { return false; }

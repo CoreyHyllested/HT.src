@@ -4,65 +4,10 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
 	<script type="text/javascript" src="/static/js/signup.js"></script>
+
 {% endblock %}
 
-
-<script type="text/javascript">
-   function isNumberKey(evt) {
-     var charCode = (evt.which) ? evt.which : event.keyCode;
-     if (charCode > 31 && (charCode < 48 || charCode > 57))
-       return false;
-     return true;
-   }
-</script>
-
 {% block content %}
-
-<script type="text/javascript">
-   function validateForm() {
-		// Fetch form elements
-		var name = document.forms["SignupNow"]["input_signup_name"];
-		var email_address = document.forms["SignupNow"]["input_signup_email"];
-		var password = document.forms["SignupNow"]["input_signup_password"];
-		var confirm = document.forms["SignupNow"]["input_signup_confirm"];
-
-		// Check for empty fields; if found, highlight them
-		var form_fields = [name, email_address, password, confirm];
-		for (var i = 0; i < form_fields.length; i++) {
-			var current_element = form_fields[i];
-			var current_value = form_fields[i].value;
-			if (current_value.match(/^\s*$/)) {
-				$(current_element).focus();
-				return false;
-			}
-		}
-
-		// Validate email address
-		var at_position = email_address.value.indexOf("@");
-		var dot_position = email_address.value.lastIndexOf(".");
-		if (at_position < 1 || dot_position < at_position + 2 || dot_position + 2 >= email_address.length) {
-  			openAlertWindow(email_address.value + ' is not a valid e-mail address.');
-  			$('#input_signup_email').css('border', '1px red solid');
-  			return false;
-  		}
-
-  		// Checks if the password is correct
-  		if (password.value !== confirm.value) {
-  			openAlertWindow("Your password and confirmation password don't match.")
-  			return false;
-  		}
-
-  		// Checks if the ToS checkbox is checked
-  		if (document.getElementById('accept_tos').checked) {return true;} else {
-  			openAlertWindow("You must agree to our Terms of Service in order to create an account.")
-  			return false;
-  		}
-  	}
-
-</script>
-
-
-
 
 <div class="signupContentWrapper">
 	
@@ -77,16 +22,21 @@
 		
 		<form id="SignupNow" onsubmit="return validateForm();" action="/signup" method="POST">
 			{{form.hidden_tag()}}
-
-			{{form.input_signup_name(placeholder="Name", id="signupEmailName", maxlength="40")}}
+<!-- 			{{form.input_signup_name(placeholder="Name", id="signupEmailName", maxlength="40")}}
 			{{form.input_signup_email(placeholder="Email")}}
 			{{form.input_signup_password(placeholder="Password")}}
-			{{form.input_signup_confirm(placeholder="Confirm password", id="signupEmailConfirm")}}
+			{{form.input_signup_confirm(placeholder="Confirm password", id="input_signup_confirm")}} -->
+
+			<input id="signupEmailName" maxlength="40" name="input_signup_name" placeholder="Name" type="text" value="">
+			<input id="input_signup_email" name="input_signup_email" placeholder="Email" type="email" value="">
+			<input id="input_signup_password" name="input_signup_password" placeholder="Password" type="password" value="">
+			<input id="input_signup_confirm" name="input_signup_confirm" placeholder="Confirm password" type="password" value="">
+			<div id="passMeter"></div>
 
 			<div class="signupAcceptTOS">
-				{{form.accept_tos(class="checkbox")}}
-
-				<label for="accept_tos" class="checkbox-label">I agree to <a href="/terms" target="_blank">Terms of Service</a></label>
+<!-- 			{{form.accept_tos(class="checkbox")}} -->
+				<input class="checkbox" id="accept_tos" name="accept_tos" type="checkbox" value="y">
+				<label for="accept_tos" class="checkbox-label">I agree to the <a href="/terms" target="_blank">Terms of Service</a></label>
 
 			</div>
 
@@ -110,14 +60,9 @@
 			<input type="submit" class="signupLinkedIn" name="signupLinkedIn" value="LinkedIn" target="_blank"> 
 		</form>
 
-		<form method="link" action="/login/facebook">
-			<input type="submit" class="signupFacebook" name="signupFacebook" value="Facebook"> 
+		<form method="link" action="/signup/facebook">
+			<input type="submit" class="signupFacebook" value="Facebook">
 		</form>
-
-		<form method="link" action="#">
-			<input type="submit" onclick="openAlertWindow('This feature is not built yet.'); return false;" class="signupTwitter" name="signupTwitter" value="Twitter"> 
-		</form>
-
 
 		<div class="signupLinkedInNotice">			
 			By clicking any of the buttons above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
@@ -128,6 +73,88 @@
 	<a class="signupLink" href="/login">Already a member?</a>
 
 </div>
+
+<!-- Scripts -->
+	<script type="text/javascript" src="/static/js/zxcvbn.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
+	<script type="text/javascript" >
+	
+	// Jquery Password Strength Plugin - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
+
+		$(function() {
+			$("#input_signup_password").keyup(function(){
+				initializeStrengthMeter();
+			});
+
+			$("#input_signup_confirm").keyup(function(){
+				initializeStrengthMeter();
+			});
+
+		});
+
+		function initializeStrengthMeter(){
+			$("#passMeter").PasswordStrengthManager({
+				password: $("#input_signup_password").val(),
+				confirm_pass : $("#input_signup_confirm").val(),
+				blackList : ["efewf"], 
+				minChars : '5',
+				maxChars : '25',
+				advancedStrength : false
+			});
+		}
+
+	</script>
+	<script type="text/javascript">
+	   function isNumberKey(evt) {
+	     var charCode = (evt.which) ? evt.which : event.keyCode;
+	     if (charCode > 31 && (charCode < 48 || charCode > 57))
+	       return false;
+	     return true;
+	   }
+	</script>
+
+	<script type="text/javascript">
+	   function validateForm() {
+			// Fetch form elements
+			var name = document.forms["SignupNow"]["input_signup_name"];
+			var email_address = document.forms["SignupNow"]["input_signup_email"];
+			var password = document.forms["SignupNow"]["input_signup_password"];
+			var confirm = document.forms["SignupNow"]["input_signup_confirm"];
+
+			// Check for empty fields; if found, highlight them
+			var form_fields = [name, email_address, password, confirm];
+			for (var i = 0; i < form_fields.length; i++) {
+				var current_element = form_fields[i];
+				var current_value = form_fields[i].value;
+				if (current_value.match(/^\s*$/)) {
+					$(current_element).focus();
+					return false;
+				}
+			}
+
+			// Validate email address
+			var at_position = email_address.value.indexOf("@");
+			var dot_position = email_address.value.lastIndexOf(".");
+			if (at_position < 1 || dot_position < at_position + 2 || dot_position + 2 >= email_address.length) {
+	  			openAlertWindow(email_address.value + ' is not a valid e-mail address.');
+	  			$('#input_signup_email').css('border', '1px red solid');
+	  			return false;
+	  		}
+
+	  		// // Checks if the password is correct
+	  		// if (password.value !== confirm.value) {
+	  		// 	openAlertWindow("Your password and confirmation password don't match.")
+	  		// 	return false;
+	  		// }
+
+	  		// Checks if the ToS checkbox is checked
+	  		if (document.getElementById('accept_tos').checked) {return true;} else {
+	  			openAlertWindow("You must agree to our Terms of Service in order to create an account.")
+	  			return false;
+	  		}
+	  	}
+
+	</script>
 
 <!-- Bottom bar -->
 

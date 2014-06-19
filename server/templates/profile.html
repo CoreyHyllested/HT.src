@@ -2,21 +2,25 @@
 
 {% block head %}
 	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
-	<!--script src="/static/js/profile.js"></script-->
-	<script src="/static/js/lightbox.min.js"></script>
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+
 
 {% endblock %}
 
 
 {% block content %}
 
-<div class="profileCover">
-	<img class="profileCoverPic" src="{{profile_img}}">
-</div>
-
 <div class="profileContentWrapper">
+	
+	<div class="profileHeaderColumn">
+		<div class="profilePicContainer">
+			<img class="profilePic" src="{{profile_img}}">
+		</div>
+	</div>
+
 
 	<div class="profileLeftColumn">
 		<div class="profileNameHeadline">
@@ -34,7 +38,7 @@
 
 			<form method="link" action="/schedule" method="POST">
 				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule Lesson">
+				<input type="submit" class="blueButton" value="Schedule meeting...">
 			</form>
 
 			{% endif %}
@@ -43,16 +47,16 @@
 				<div class="profileInfoBox">{{hp.location}}</div>
 				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
-			{% if hp.reviews == 0 %}
-				No Reviews
-			{% else %}
-				{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
-			{% endif %}
+					{% if hp.reviews == 0 %}
+						No Reviews
+					{% else %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+					{% endif %}
+				</div>
+				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
-			<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
-		</div>
-		<div class="profileAboutMe">{{hp.prof_bio}}</div>
+		<div class="profileAboutMe italic">{{hp.prof_bio}}</div>
 
 		{% if revs|count == 0 %}
 		<h3>There are no reviews for this person yet.</h3>
@@ -85,8 +89,8 @@
 						<div class="profileReviewLeftNameHeadline">
 							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
 								<h3>{{review.display.prof_name}}</h3>
+								<h4>{{review.display.headline}}</h4>
 							</a>
-							<h4>{{review.display.headline}}</h4>
 						</div>
 					</div>
 					<div class="profileReviewRight">
@@ -188,20 +192,22 @@
 			<div class="perHour">per<br>hour</div>
 		</div>
 		{% if hp is sameas bp %}
-		<form method="link" action="/edit">
-			<input type="submit" class="whiteButton" value="Edit Profile">
-		</form>
+			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
+
+		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
+
 		<form method="link" action="/schedule" method="POST">
 			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton" value="Schedule Lesson">
+			<input type="submit" class="blueButton scheduleMtgButton" value="Schedule Meeting...">
 		</form>
+
 		{% endif %}
 		<div class="profileBasicInfo">
-				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
-				<div class="profileInfoBox">{{hp.location}}</div>
-				<div class="profileInfoBox">{{hp.industry}}</div>
-				<div class="profileInfoBox">
+				<!-- <div class="profileInfoBox profileInfoFacebookSocial"><img src="/static/img/facebook_thumbnails.jpg"></div> -->
+				<div class="profileInfoBox profileInfoLocation">{{hp.location}}</div>
+				<div class="profileInfoBox profileInfoIndustry">{{hp.industry}}</div>
+				<div class="profileInfoBox profileInfoRating">
 					{% if hp.reviews == 0 %}
 						No Reviews
 					{% else %}
@@ -211,87 +217,50 @@
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
 
-		<div class="profilePortfolio">
-			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
-			{% for img in portfolio %}
-				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a>
-
-			{% endfor %}
-
-			{% if hp is sameas bp %}
-			<div class="profilePortfolioImage addImage" id="addImage"><p>Add Portfolio Image</p></div>
-			<input type="file" id="selectFile" name="selectFile" style="visibility: hidden; width: 0px; height: 0px" multiple />
+		{% if hp is sameas bp %}
+		<div class="portfolioButtons">
+			{% if portfolio|length == 0 %}	
+				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
+			{% else %}
+				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
 			{% endif %}
 		</div>
+		{% endif %}
+
+		<div class="profilePortfolio">
+			
+			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
+			{% for img in portfolio %}
+				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
+
+			{% endfor %}
+		</div>
+
 	</div>
 
 	<div class="clear"></div>
 </div>
 
-
-
+<script src="/static/js/lightbox.min.js"></script>
+<script src="/static/js/dropzone.js"></script>
+<script src="/static/js/sendmsg.js"></script>
 <script>
 
+$(document).ready(function() {
 
+	$('#sendModalMessage').click(function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.hp = "{{hp.prof_id}}";
+		dataObj.next = "modal";
 
-$(function () {
-    $('.addImage').click(function () {
-		$('#selectFile').click();
-		return false;
+		var myString = JSON.stringify(dataObj);
+		openModalWindow("/compose", ".composeWrapper", myString);	
+
 	});
 
-	$('#selectFile').change(function(e) {
-		//reloadProfImg("../static/img/loader.gif", true, false);
-		var csrf = "{{ csrf_token() }}";
-		var fd = new FormData();
+});
 
-		if (this.files[0] == undefined) {
-			console.log('no file, quit');
-			return false;
-		}
-
-		fd.append('file', this.files[0]);
-		fd.append('orig', 'profile');
-
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(e) {
-			if (4 == this.readyState) {
-				console.log(['xhr post complete, state=', this.status,  e]);
-				if (this.status == 200) {
-					console.log(xhr.responseText);
-					openAlertWindow('Success.');
-				} else if (this.status == 400) {
-					console.log(['xhr post complete, err=400 ', e]);
-					openAlertWindow('Fail.');
-				} else if (this.status == 404) {
-					console.log(['xhr post complete, err=404 ', e]);
-					openAlertWindow('Fail.');
-				} else if (this.status == 500) {
-					console.log(['xhr post complete, err=500 ', e]);
-					openAlertWindow('Fail.');
-				} else if (this.status == 501) {
-					console.log(['xhr post complete, err=501 ', e]);
-					openAlertWindow('Fail.');
-				} else {
-					console.log('xhr post complete, uncaught');
-					openAlertWindow('Failure: API point doesn\'t exist.');
-				}
-			}
-		};
-
-		if (xhr.upload) {
-			xhr.upload.onprogress = function(e) {
-				var done = e.position || e.loaded, total = e.totalSize || e.total;
-				console.log('xhr.upload progress: ' + done + ' / ' + total + ' = ' + (Math.floor(done/total*1000)/10) + '%');
-			};
-		}
-
-		xhr.open('POST', "/upload", true);
-		xhr.setRequestHeader("X-CSRFToken", csrf);
-		xhr.send(fd);
-		return false;
-	});
-});//jQuery ready
 </script>
 
 {% endblock %}

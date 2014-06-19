@@ -56,7 +56,23 @@
 			</div>
 			-->
 		</div>
-
+		
+		<div class="settingsPayout">
+		<h2>Privacy</h2>
+			<input type="checkbox" name="privacy-settings" value="password-change">I changed my password.<br>
+			<input type="checkbox" name="privacy-settings" value="email-change">I changed my email.<br>
+			<input type="checkbox" name="privacy-settings" value="search-listing">I want my profile listed in search.<br><br>
+			<input class="whiteButton" id="set-save" type="submit" value="Save Privacy Settings" />
+		</div>
+		
+		<div class="settingsPayout">
+		<h2>Notifications</h2>
+			<input type="checkbox" name="notifications" value="receive-message">I received a message from someone.<br>
+			<input type="checkbox" name="notifications" value="upcoming-appt">I have an upcoming appointment.<br>
+			<input type="checkbox" name="notifications" value="request-status">My proposal is accepted or declined.<br>
+			<input type="checkbox" name="notifications" value="new-review">I have received a new review.<br><br>
+			<input class="whiteButton" id="set-save" type="submit" value="Save Notifications" />
+		</div>
 	</form>
 	<div class="clear"></div>
 </div>
@@ -65,3 +81,4 @@
 <!-- Bottom bar -->
 
 {% endblock %}
+<br>

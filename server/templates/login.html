@@ -8,28 +8,6 @@
 
 {% block content %}
 
-<script type="text/javascript">
-	function validateForm() {
-		// Fetch form elements
-		var email = document.forms["LoginWithEmail"]["input_login_email"];
-		var password = document.forms["LoginWithEmail"]["input_login_password"];
-
-		// Check for empty fields; if found, highlight them
-		var form_fields = [email, password];
-		for (var i = 0; i < form_fields.length; i++) {
-			var current_element = form_fields[i];
-			var current_value = form_fields[i].value;
-			if (current_value.match(/^\s*$/)) {
-				$(current_element).focus();
-				return false;
-			}
-		}		
-   }
-
-</script>
-
-
-
 <div class="loginContentWrapper">
 
 	<h2>Email Login</h2>
@@ -43,9 +21,8 @@
 
 		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
 			{{form.hidden_tag()}}
-
-			{{form.input_login_email(placeholder="Email")}}
-			{{form.input_login_password(placeholder="Password")}}
+			<input type="email" id="input_login_email" name="input_login_email" placeholder="Email">
+			<input type="password" id="input_login_password" name="input_login_password" placeholder="Password">
 
 			{% if errmsg != none %}
 				<script>
@@ -70,10 +47,6 @@
 			<input type="submit" class="loginFacebook" name="loginFacebook" value="Facebook"> 
 		</form>
 
-		<form method="link" action="#">
-			<input type="submit" onclick="openAlertWindow('This feature is not implemented yet.'); return false;" class="loginTwitter" name="loginTwitter" value="Twitter"> 
-		</form>		
-			
 		<div class="loginLinkedInNotice">			
 			By clicking any of the buttons above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
@@ -83,5 +56,26 @@
 	<a class="loginLink" href="/recovery">Forgot your password?</a>
 
 </div>
+
+<!-- Scripts -->
+
+<script type="text/javascript">
+	function validateForm() {
+		// Fetch form elements
+		var email = document.forms["LoginWithEmail"]["input_login_email"];
+		var password = document.forms["LoginWithEmail"]["input_login_password"];
+
+		// Check for empty fields; if found, highlight them
+		var form_fields = [email, password];
+		for (var i = 0; i < form_fields.length; i++) {
+			var current_element = form_fields[i];
+			var current_value = form_fields[i].value;
+			if (current_value.match(/^\s*$/)) {
+				$(current_element).focus();
+				return false;
+			}
+		}		
+   }
+</script>
 
 {% endblock %}
