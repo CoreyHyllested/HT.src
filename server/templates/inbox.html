@@ -3,6 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/message.css">
 {% endblock %}
 
 
@@ -29,14 +30,13 @@
 			<div class="inboxView inboxMain">
 				<ul class="inboxWell" id="threads">
 					{% for msg in messages|sort(attribute='UserMessage.msg_thread')  %}
-					<li class="message" id="msg-{{msg.UserMessage.msg_id}}" data-parent="{{msg.UserMessage.msg_parent}}" data-thread="{{msg.UserMessage.msg_thread}}">
+					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
 						<!-- img 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(msg.display.prof_img) -->
 						<div class="messageUser">{{msg.display.prof_name}}</div>
 						<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
 						<div class="messageArchive"><i class="fa fa-archive"></i></div>
 						<div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 						<!-- div class="messageContent">{{msg.UserMessage.msg_content}}</div-->
-						 <!-- TODO div class="messageDate">{{msg.UserMessage.msg_created.strftime('%b %d %H:%M %p')}}</div -->
 <!-- 						<div class="composeBodyContainer">
 							<div class="composeFieldCaption">Respond</div>
 							<div class="composeMessageSend">
@@ -75,13 +75,30 @@ $(document).ready(function() {
 	$(".composeBodyContainer").hide();
 
 	$('.message').click(function() {
-		window.location.href = "/message";
-		//$('.inboxRightColumn').load("/message?id=1", ".messageContainer");
+		var msg_id = $(this).data("id");
+		var fd = new FormData();
+		fd.append('msg', msg_id);
+		fd.append('csrf_token', "{{ csrf_token() }}");
+		console.log('msg_clicked = ' + msg_id);
+		$.ajax({ url	: "/message",
+				 type	: "POST",
+				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}' },
+				 success : function(data) {
+					console.log('data', data);
+					var inner = $(data).find('.messageRightColumn').html();
+					console.log('data', inner);
+					$('.inboxRightColumn').html(inner);
+				}
+		});
 	});
 
 	$('#mainLink').click(function() {
-		$('.inboxView').hide();
-		$('.inboxMain').show();
+		if ($('.messageThread').length == 0) {
+			$('.inboxView').hide();
+			$('.inboxMain').show();
+		} else {
+			window.location.replace("/inbox");
+		}
 	});
 
 	$('#trashLink').click(function() {
