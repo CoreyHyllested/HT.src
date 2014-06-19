@@ -6,6 +6,8 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+
+
 {% endblock %}
 
 
@@ -241,52 +243,25 @@
 
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/dropzone.js"></script>
+<script src="/static/js/sendmsg.js"></script>
 <script>
 
-$(function () {
+$(document).ready(function() {
 
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();
 		var dataObj = new Object();
 		dataObj.hp = "{{hp.prof_id}}";
+		dataObj.next = "modal";
 
 		var myString = JSON.stringify(dataObj);
 		openModalWindow("/compose", ".composeWrapper", myString);	
 
 	});
 
-	$('#sendmessage').click(function(e) {
-		var fd = new FormData();
-		var txt = $('#sndmsg_txt').val();
-		var sub = $('#sndmsg_sub').val();
-		var csrf = "{{ csrf_token() }}";
-		fd.append('hp', '{{hp.prof_id}}');
-		fd.append('msg', txt);
-		fd.append('subject', sub);
-		fd.append('csrf_token', csrf);
 
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(e) {
-			if (4 == this.readyState) {
-				console.log(['xhr post complete, state=', this.status,  e]);
-				if (this.status == 200) {
-					console.log(xhr.responseText);
-                    msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Success: ' + msg['usrmsg']);
-				} else if (this.status > 500) {
-					console.log(['xhr post complete, err=400 ', e]);
-					openAlertWindow('Fail.');
-				} else {
-					openAlertWindow('Huh?');
-				}
-			}
-		};
-		xhr.open('POST', "/sendmsg", true);
-		xhr.send(fd);
-		return false;
-	});
+});
 
-});//jQuery ready
 </script>
 
 {% endblock %}

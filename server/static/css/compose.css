@@ -86,6 +86,16 @@
 	float: left;
 }
 
+.composeRecipient{
+	float: left;
+	color: #b4b4b4;
+	height: 40px;
+	line-height: 44px;
+	padding-left: 15px;
+	margin-bottom: 4px;
+	font-size: .9em;
+}
+
 .composeRecipientContainer {
 	width: 100%;
 	float: left;
@@ -127,6 +137,22 @@ textarea.composeField {
 .composeMessageSendButton{
 	width: 250px;
 	margin: 20px auto;
+}
+
+.composeMessageStatus{
+	display: none;
+	width: 100%;
+	text-align: center;
+	/*font-size: 1em;*/
+	padding: 10px 0px;
+}
+
+.composeMessageStatus .success{
+	color: green;
+}
+
+.composeMessageStatus .error{
+	color: red;
 }
 
 .composeMessageCancel{

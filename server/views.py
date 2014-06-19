@@ -648,15 +648,22 @@ def ht_api_send_message():
 		bp = Profile.get_by_uid(session['uid'])
 
 		msg_from = bp.prof_id
-		print 'message from ' + str(bp)
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('parent')
 		subject = request.values.get('subject', 'default subject')
-		nexturl	= request.values.get('next')
+		next	= request.values.get('next')
+		foo	= request.values.get('foo')
 		thread	= None
 
-		print 'parent=', parent, 'subject=', subject
+		print
+		print "/sendmsg - MESSAGE DETAILS"
+		print 'message from ' + bp.prof_name
+		print 'message to ' + msg_to
+		print 'subject=', subject
+		print 'parent=', parent
+		print 'next=', next
+		print 'foo=', foo
 
 		if (parent):
 			parent_msg	= UserMessage.get_by_msg_id(parent) 
@@ -664,27 +671,33 @@ def ht_api_send_message():
 			msg_to	= parent_msg.msg_from
 			
 		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
-		print message
+		
+		print 'full message=', message
 		
 		db_session.add(message)
 		db_session.commit()
 
 		#todo: notifying users.
 		print "success, saved msg"
+		print
+	
+		thisresponse = make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
+		return thisresponse
+
 	except DB_Error as dbe:
 		print dbe
 		db_session.rollback()
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+		return jsonify(usrmsg="Weird, some DB problem, try again", next=next, valid="true"), 505
 	except NoResourceFound as nre:
 		print nre
-		return jsonify(usrmsg="Weird, couldn't find something"), 505
+		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
 	except Exception as e:
 		print type(e)
 		print e
 		db_session.rollback()
-		return jsonify(usrmsg='Bizarre, something failed'), 500
+		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 
-	return jsonify(usrmsg="Message sent.", nexturl=nexturl), 200
+	
 
 
 
@@ -1372,6 +1385,7 @@ def render_inbox_page():
 		print e
 		db_session.rollback()
 
+
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 
 	print "messages =", len(messages)
@@ -1384,13 +1398,16 @@ def render_inbox_page():
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
+	next = request.values.get('next')
+
+	print "next: ", next
 
 	if (hid is not None):
 		hp = Profile.get_by_prof_id(hid)
 	else:
 		hp = None
 
-	return make_response(render_template('compose.html', bp=bp, hp=hp))
+	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
 
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])

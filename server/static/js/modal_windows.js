@@ -32,28 +32,39 @@
 
 	// Modal windows: Open
 	function openModalWindow(url, element, dataStr) {
-		console.log("dataStr: "+dataStr);
 		dataObj = JSON.parse(dataStr);
-		$.each(dataObj, function(key, value){
-		    console.log("dataObj: "+ key, value);
-		});
+		// $.each(dataObj, function(key, value){
+		//     console.log("modal_windows.js - data item passed: "+ key, value);
+		// });
 		var encodedData = $.param(dataObj);
-		console.log("encodedData: "+ encodedData);
 
-		$('.modalWindowWrap').toggleClass('modalWindowWrapOn');
-		$('.modalWindow').toggleClass('modalWindowOn');
-		$('.modalWindowClose').toggleClass('modalWindowCloseOn');		
-		$('.modalContent').load(url+"?"+encodedData + " " + element);
+		$( ".modalWindowWrap" ).animate({
+			opacity: 1,
+			top: "20%"
+		}, 600, function() {
+			showCloseWindowButton();
+		});
+
+		$('.modalContent').load(url+"?"+encodedData + " " + element, function() {
+			// must load any external js that affects the loaded document here. cannot imbed the js on the host page.
+			$.getScript("/static/js/sendmsg.js");
+		});
+
 		$('.modalOverlay').toggleClass('modalOverlayOn');
+		
 		return false;
+	}
+
+	function showCloseWindowButton() {
+		$('.modalWindowClose').show();
 	}
 
 	// Modal windows: Close
 	function closeModalWindow() {
-		$('.modalOverlay').toggleClass('modalOverlayOn');
-		$('.modalWindowWrap').toggleClass('modalWindowWrapOn');
-		$('.modalWindowClose').toggleClass('modalWindowCloseOn');		
-		$('.modalWindow').toggleClass('modalWindowOn');
+		$('.modalWindowClose').hide();
 		$('.modalContent').html('');
+		$( ".modalWindowWrap" ).css("opacity", 0);
+		$('.modalOverlay').toggleClass('modalOverlayOn');
+		
 		return false;
 	}

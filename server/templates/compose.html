@@ -18,12 +18,12 @@
 		</div>
 	</div>
 
-
 	<div class="composeMessageContainer">
 		<div class="composeRecipientContainer">
 			<div class="composeFieldCaption">To</div>
-			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" value="{{hp.prof_name}}">
-			<!-- TODO - add a temporary drop down to select current members of the site -->
+			<div class="composeRecipient">{{hp.prof_name}}</div>
+			<!-- <input type="text" id="composeRecipient" name="composeRecipient" class="composeField" value="{{hp.prof_name}}"> -->
+			
 		</div>
 		<div class="composeSubjectContainer">
 			<div class="composeFieldCaption">Subject</div>
@@ -34,13 +34,14 @@
 			<textarea id="composeBody" name="composeBody" class="composeField"></textarea>
 		</div>
 	</div>
-
+	<div class="composeMessageStatus">
+	</div>
 	<div class="composeMessageSend">
-		<form action="/sendmsg" method="POST">
-			<input type="hidden" name="hero_prof"	value="{{ hp.prof_id }}">
-			<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
-			<input type="submit" id="sendmessage" class="blueButton composeMessageSendButton" value="Send">
-		</form>
+		<input type="hidden" name="composeRecipientID" id="composeRecipientID" value="{{hp.prof_id}}">
+		<input type="hidden" name="composeRecipientName" id="composeRecipientName" value="{{hp.prof_name}}">
+		<input type="hidden" name="next" id="next" value="{{next}}">
+		<input type="hidden" name="csrf" id="csrf" value="{{csrf_token()}}">
+		<button id="sendMessage" class="blueButton composeMessageSendButton">Send</button>
 	</div>
 	<div class="composeMessageCancel">
 		<a href="/inbox">Cancel - Return to Inbox</a>
@@ -48,49 +49,7 @@
 
 </div>
 
-
-<script>
-$(document).ready(function() {
-
-	$('#sendmessage').click(function(e) {
-		var fd = new FormData();
-		var txt = $('#composeBody').val();
-		var sub = $('#composeSubject').val();
-		var csrf = "{{ csrf_token() }}";
-		fd.append('hp', '{{hp.prof_id}}');
-		fd.append('msg', txt);
-		fd.append('subject', sub);
-		fd.append('csrf_token', csrf);
-		fd.append('next', '/profile?hero={{hp.prof_id}}');
-
-		var xhr = new XMLHttpRequest();
-		xhr.onreadystatechange = function(e) {
-			if (4 == this.readyState) {
-				console.log(['xhr post complete, state=', this.status,  e]);
-				if (this.status == 200) {
-                    msg = JSON.parse(xhr.responseText);
-					console.log('nxt = ', msg['nexturl']);
-                    openAlertWindow('Success: ' + msg['usrmsg']);
-					if (msg['nexturl'] == null) {
-					//	$(document).load('/profile?hero={{hp.prof_id}}');
-					} else {
-						$.get('/');
-					}
-				} else if (this.status > 500) {
-					console.log(['xhr post complete, err=400 ', e]);
-					openAlertWindow('Fail.');
-				} else {
-					openAlertWindow('Huh?');
-				}
-			}
-		};
-		xhr.open('POST', "/sendmsg", true);
-		xhr.send(fd);
-		return false;
-	});
-
-});
-</script>
+<script src="/static/js/sendmsg.js"></script>
 
 
 {% endblock %}	
