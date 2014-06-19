@@ -74,6 +74,13 @@ IMG_STATE_PROFILE = (0x1 << IMG_FLAG_PROFILE)
 IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
 IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
 
+
+MSG_FLAG_READ	 = 0
+MSG_FLAG_ARCHIVE = 1
+
+MSG_STATE_READ		= (0x1 << MSG_FLAG_READ)
+MSG_STATE_ARCHIVE	= (0x1 << MSG_FLAG_ARCHIVE)
+
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
 
@@ -561,6 +568,7 @@ class UserMessage(Base):
 	msg_noticed = Column(DateTime())
 	msg_opened  = Column(DateTime())
 	msg_subject	= Column(String(64))
+	msg_flags	= Column(Integer, default=0)
 
 
 	def __init__ (self, prof_to, prof_from, content, subject=None, thread=None, parent=None):
