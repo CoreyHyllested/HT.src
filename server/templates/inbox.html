@@ -84,10 +84,11 @@ $(document).ready(function() {
 				 type	: "POST",
 				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}' },
 				 success : function(data) {
-					console.log('data', data);
 					var inner = $(data).find('.messageRightColumn').html();
-					console.log('data', inner);
+					//console.log('data', data);
+					//console.log('data', inner);
 					$('.inboxRightColumn').html(inner);
+					$('#sendMessage').bind('click', sendmessage_js)
 				}
 		});
 	});
@@ -107,6 +108,7 @@ $(document).ready(function() {
 	});
 });
 </script>
+<script src="/static/js/sendmsg.js"></script>
 
 
 {% endblock %}

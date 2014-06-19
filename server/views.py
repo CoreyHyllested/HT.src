@@ -635,8 +635,6 @@ def upload():
 
 
 
-# TODO this cannot be csrf exempt
-@ht_csrf.exempt
 @ht_server.route('/sendmsg', methods=['POST'])
 @req_authentication
 def ht_api_send_message():
@@ -650,7 +648,7 @@ def ht_api_send_message():
 		msg_from = bp.prof_id
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
-		parent	= request.values.get('parent')
+		parent	= request.values.get('msg_parent')
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
 		foo	= request.values.get('foo')

@@ -48,26 +48,18 @@
 			</div>
 
 			<div class="messageReplyContainer">
-				<form action="/sendmsg" method="POST">
-					<textarea id="messageReplyBody" name="msg" class="messageReplyBody" placeholder="Enter message to {{msg_thread[0].display.prof_name}}"></textarea>
-					<input type="hidden" name="hp" value="{{msg_thread[0].display.prof_id}}">
-					<input type="hidden" name="parent" value="{{msg_thread[-1].UserMessage.msg_id}}">
-					<input type="hidden" name="csrf_token"	value="{{ csrf_token() }}">
-					<input type="submit" id="sendmessage" class="blueButton messageReplySendButton" value="Send Reply">
-				</form>
+				<textarea name="msg" id="composeBody" class="messageReplyBody" placeholder="Enter message to {{msg_thread[0].display.prof_name}}"></textarea>
+				<input type="hidden" id="msg_parent" value="{{msg_thread[-1].UserMessage.msg_id}}">
+				<input type="hidden" id="composeRecipientID" value="{{msg_thread[0].display.prof_id}}">
+				<input type="hidden" id="next" value="/profile?hp={{msg_thread[0].display.prof_id}}">
+				<input type="hidden" id="csrf"	value="{{csrf_token()}}">
+				<button id="sendMessage" class="blueButton messageReplySendButton">Send Reply</button>
 			</div>
 
 		</div>
 	</div>
 
 </div>
-
-
-<script>
-$(document).ready(function() {
-
-
-</script>
 
 
 {% endblock %}	
