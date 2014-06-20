@@ -106,7 +106,7 @@ c) 1000px - ... (desktops)
 
 .dashboardOfferCenterColumn h4 {
 	color: #6e7980;
-	font-size: 0.875em;
+	font-size: 0.9em;
 	font-weight: bold;
 	line-height: 1.4em;
 	margin-bottom: 20px;
@@ -168,6 +168,33 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 	width: 100%;
 }
 
+.dashboardAppointment {
+	border-bottom: 1px solid #cfd7db;
+	display: block;
+	margin-top: 20px;
+	padding-bottom: 20px;
+}
+
+.dashboardAppointment:last-of-type{
+	border-bottom: none;
+}
+
+.dashboardAppointment .appointmentSenderImage {
+	float: left;
+	padding-right: 8px;
+}
+.dashboardAppointment .appointmentSenderImage img {
+	border-radius: 3px;
+	width: 100%;
+}
+.dashboardAppointment .dashboardAppointmentIntro {
+	float: left;
+	font-size: .9em;
+	padding: 8px 0px;
+	width: 100%;
+}
+
+
 
 /* Messages */
 
@@ -181,6 +208,10 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 	margin-top: 20px;
 	padding-bottom: 20px;
 }
+.dashboardMessage:last-of-type{
+	border-bottom: none;
+}
+
 /*
 .dashboardMessageIntro {
 	color: #6e7980;
