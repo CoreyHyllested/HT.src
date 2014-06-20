@@ -1506,12 +1506,10 @@ def render_message_page():
 		try:
 			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
 			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread)[0]
-			print "msg_thread ", msg_id, len(msg_thread)
-			print 'msg_zero', msg_zero
+			print "msg_thread ", msg_id, len(msg_thread), msg_zero
 
 			if ((len(msg_thread) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				print 'thread_len', len(msg_thread)
 				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
 				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
 				msg_thread = []
@@ -1524,10 +1522,10 @@ def render_message_page():
 				updated_messages = updated_messages + 1
 
 			if (updated_messages > 0):
-				print '\"archiving\"' + str(updated_messages) + " msgs"
+				print '\"archiving\" ' + str(updated_messages) + " msgs"
 				db_session.commit()
 
-			return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 200)
+			return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 200)
 
 		except Exception as e:
 			print type(e), e
