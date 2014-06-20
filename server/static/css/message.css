@@ -36,14 +36,6 @@
 	color: black;
 	width: 75%;
 	float: left;
-}
-
-.messageHeader h1 {	
-	width: 100%;
-	font-size: 2em;
-}
-.messageHeader h2 {	
-	width: 100%;
 	font-size: 1.8em;
 }
 
@@ -149,6 +141,7 @@
 	padding: 6px;
 	float: left;
 	min-height: 80px;
+	width: 98%;
 }
 .messageThreadItem:last-of-type {
 	border-bottom: none;
@@ -175,7 +168,18 @@
 	color: #6e7980;
 	font-weight: bold;
 }
+.itemSenderName a{
+	color: #6e7980;
+	transition: all 0.2s ease-in;
+	-moz-transition: all 0.2s ease-in;
+	-o-transition: all 0.2s ease-in;
+	-webkit-transition: all 0.2s ease-in;
+	transition: all 0.2s ease-in;
+}
 
+.itemSenderName a:hover{
+	color: #29abe1;
+}
 
 .itemDatetime {
 	float: right;
@@ -201,7 +205,7 @@ textarea.messageReplyBody {
 	resize: none;
 	float: left;
 	width: 100%;
-	margin-bottom: 20px
+	margin-bottom: 20px;
 }
 
 .messageReplySendButton {
@@ -209,66 +213,18 @@ textarea.messageReplyBody {
 	margin: 0px auto;
 }
 
-/*
-
-.composeFieldCaption{
-	font-size: 1.1em;
-	font-weight: bold;
-	text-align: right;
-	line-height: 40px;
-	height: 40px;
-	width: 100px;
-	float: left;
-}
-
-.composeRecipientContainer {
-	width: 100%;
-	float: left;
-}
-
-.composeSubjectContainer {
-	width: 100%;
-	float: left;
-}
-
-.composeBodyContainer {
-	width: 100%;
-	float: left;
-}
-
-input.composeField {
-	float: right;
-	width: 780px;
-	margin-top: -1px;
-}
-
-input.composeField:nth-of-type(1) {
-	border-radius: 3px 3px 0 0;
-}
-
-textarea.composeField {
-	resize: none;
-	float: right;
-	width: 788px;
-	margin-top: -1px;
-	border-radius: 0 0 3px 3px;
-}
-
-.composeMessageSend{
-	width: 100%;
-	float: left;
-}
-
-.composeMessageSendButton{
-	width: 250px;
-	margin: 20px auto;
-}
-
-.composeMessageCancel{
+.messageReplyStatus{
+	display: none;
 	width: 100%;
 	text-align: center;
-	font-size: .9em;
+	padding: 10px 0px;
+	float: left;
 }
 
+.messageReplyStatus .success{
+	color: green;
+}
 
-*/
+.messageReplyStatus .error{
+	color: red;
+}
