@@ -1505,10 +1505,10 @@ def render_message_page():
 		bp = Profile.get_by_uid(session['uid'])
 		try:
 			#super_parent is to identify who started thread; so we can archive appropriately (flag)
-			#msg_zero is probably a faster, better way.  (only one hit to db).
+			#msg_zero is probably a faster, better way.  (only one hit to db). 
 			msg_superp = db_session.query(UserMessage).filter(UserMessage.msg_id == msg_id).all();
 			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
-			msg_zero = filter(lambda msg(msg.msg_id == msg.msg_thread), msg_thread)
+			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread)
 			print "msg_thread ", msg_id, len(msg_thread)
 
 			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
