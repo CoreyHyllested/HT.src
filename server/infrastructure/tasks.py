@@ -221,9 +221,10 @@ def enable_reviews(the_proposal):
 	#the_proposal.set_state(APPT_STATE_OCCURRED)
 
 	try:
-		db_session.add(the_proposal)
 		db_session.add(review_hp)
 		db_session.add(review_bp)
+		db_session.commit()
+		db_session.add(the_proposal)
 		db_session.commit()
 
 		# TODO create two events to send in 1 hr after meeting completion to do review
