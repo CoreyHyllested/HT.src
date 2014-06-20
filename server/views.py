@@ -680,10 +680,12 @@ def ht_api_send_message():
 			thread	= parent_msg.msg_thread
 			msg_to	= parent_msg.msg_from
 			# get thread_leader.
-			#thread_msg = UserMessage.get_by_msg_id(thread)
-			#thread_msg.msg_flags = thread_msg.msg_flags | MSG_STATE_UPDATED
-			#thread_msg.msg_flags = thread_msg.msg_flags & ~(MSG_STATE_ARCHIVED)
-			#db_session.add(thread_msg)
+			msg_thread = UserMessage.get_by_msg_id(thread)
+			archive_flag = (msg_thread[0].msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			print 'user_archive_flag', (msg_thread[0].msg_to == bp.prof_id), archive_flag, MSG_STATE_RECV_ARCHIVE, MSG_STATE_SEND_ARCHIVE
+			msg_thread.msg_flags = msg_thread.msg_flags | MSG_STATE_THRD_UPDATED
+			msg_thread.msg_flags = msg_thread.msg_flags & ~(archive_flag)
+			db_session.add(msg_thread)
 			
 		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
 		
@@ -1426,17 +1428,17 @@ def ht_find_inbox_threads(profile_id, msg_threads):
 	archv = []
 	for msg in msg_threads:
 		if (profile_id == msg.UserMessage.msg_to):
-			setattr(msg, 'display', msg.UserMessage.msg_from
-			if (msg.msg_flags & MSG_STATE_RECV_ARCHIVE):
-				archv.push(msg)
+			setattr(msg, 'display', msg.UserMessage.msg_from)
+			if (msg.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) != 0:
+				archv.append(msg)
 			else:
-				inbox.push(msg)
+				inbox.append(msg)
 		elif (profile_id == msg.UserMessage.msg_from):
-			setattr(msg, 'display', msg.UserMessage.msg_to
-			if (msg.msg_flags & MSG_STATE_SEND_ARCHIVE):
-				archv.push(msg)
+			setattr(msg, 'display', msg.UserMessage.msg_to)
+			if (msg.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE):
+				archv.append(msg)
 			else:
-				inbox.push(msg)
+				inbox.append(msg)
 		else:
 			print 'Major error.  profile_id didn\'t match to or from'
 	return (inbox, archv)
@@ -1494,24 +1496,30 @@ def ht_api_get_message_thread(msg_thread):
 def render_message_page():
 	msg_id = request.values.get('message')
 	action = request.values.get('action')
-	print 'message() ', msg_id, action
 
 	if (action == None):
 		return ht_api_get_message_thread(msg_id)
 	elif (action == "archive"):
-		print 'archiving msg_thread' + str(msg_id)
+
+		print 'archiving msg_thread ' + str(msg_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
+			#super_parent is to identify who started thread; so we can archive appropriately (flag)
+			#msg_zero is probably a faster, better way.  (only one hit to db).
+			msg_superp = db_session.query(UserMessage).filter(UserMessage.msg_id == msg_id).all();
 			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
+			msg_zero = filter(lambda msg(msg.msg_id == msg.msg_thread), msg_thread)
 			print "msg_thread ", msg_id, len(msg_thread)
 
 			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
 				msg_thread = []
 
+			archive_flag = (msg_superp[0].msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			print 'user_archive_flag', (msg_superp[0].msg_to == bp.prof_id), archive_flag, MSG_STATE_RECV_ARCHIVE, MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
 			for msg in msg_thread:
-				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
+				msg.msg_flags = msg.msg_flags | archive_flag
 				db_session.add(msg)
 				updated_messages = updated_messages + 1
 
@@ -1525,9 +1533,13 @@ def render_message_page():
 			print type(e), e
 			db_session.rollback()
 		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+	elif (action == "reinbox"):
+		bp = Profile.get_by_uid(session['uid'])
+		msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
+
 
 	# find correct 400 response
-	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
+	return make_response(jsonify(usrmsg="These are not the message you are looking for.", next='/inbox'), 400)
 
 
 

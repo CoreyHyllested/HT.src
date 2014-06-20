@@ -80,9 +80,6 @@ MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
 MSG_FLAG_RECV_ARCHIVE = 2		#The original-message receiver archived thread
 MSG_FLAG_THRD_UPDATED = 3		#A message was responded too.
 
-MSG_STATE_READ		= (0x1 << MSG_FLAG_READ)
-MSG_STATE_ARCHIVE	= (0x1 << MSG_FLAG_ARCHIVE)
-
 MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)
 MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)
 MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)
