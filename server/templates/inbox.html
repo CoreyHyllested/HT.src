@@ -68,6 +68,9 @@
 					{% endfor %}
 				</ul>  
 			</div>
+
+			<div class="inboxView messageRightColumn">
+			</div>
 		</div><!--right column-->
 	</div><!--empty, container-->
 
@@ -79,6 +82,15 @@ $(document).ready(function() {
 
 	var numInbox = {{unread|length}};
 	var numArchived = {{archived|length}};
+
+	if(window.location.hash) {
+		var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+		console.log('hash = ' + hash);
+		if (hash == 'archive') {
+			$('#archiveLink').click();
+		}
+	};
+
 
 	$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
 
@@ -100,33 +112,36 @@ $(document).ready(function() {
 					var inner = $(data).find('.messageRightColumn').html();
 					//console.log('data', data);
 					//console.log('data', inner);
-					$('.inboxRightColumn').html(inner);
+					$('.inboxView').hide();
+					$('.messageRightColumn').html(inner);
+					$('.messageRightColumn').show();
 					$('.inboxMessagesTitle').empty();
 					$('.inboxLeftNavigation').show();
 					$('.inboxMessagesHeaderSubject').text(thisSubject);
-
+					history.pushState({}, "Message: "+thisSubject, '/inbox/message');
 					$('#sendMessage').bind('click', sendmessage_js);
 				}
 		});
 	});
 
 	$('#mainLink').click(function() {
+		$('.messageRightColumn').empty();
 		$('.inboxLeftNavigation').hide();
 		$('.inboxMessagesHeaderSubject').empty();
 		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
-		if ($('.messageThread').length == 0) {
-			$('.inboxView').hide();
-			$('.inboxMain').show();
-		} else {
-			window.location.replace("/inbox");
-		}
+		$('.inboxView').hide();
+		$('.inboxMain').show();
+		history.pushState({}, "inbox: "+numInbox, '/inbox');
 	});
 
 	$('#archiveLink').click(function() {
+		$('.messageRightColumn').empty();
+		$('.inboxView').hide();
 		$('.inboxMessagesHeaderSubject').empty();
 		$('.inboxLeftNavigation, .inboxView').hide();
 		$('.inboxMessagesTitle').html("Archive ("+numArchived+")");		
 		$('.inboxArchive').show();
+		history.pushState({}, "inbox: archive", '/inbox#archive');
 	});
 
 	$('.messageArchive').click(function() {
