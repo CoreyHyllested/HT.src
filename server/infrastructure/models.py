@@ -75,11 +75,18 @@ IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
 IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
 
 
-MSG_FLAG_READ	 = 0
-MSG_FLAG_ARCHIVE = 1
+MSG_FLAG_LASTMSG_READ = 0
+MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
+MSG_FLAG_RECV_ARCHIVE = 2		#The original-message receiver archived thread
+MSG_FLAG_THRD_UPDATED = 3		#A message was responded too.
 
 MSG_STATE_READ		= (0x1 << MSG_FLAG_READ)
 MSG_STATE_ARCHIVE	= (0x1 << MSG_FLAG_ARCHIVE)
+
+MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)
+MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)
+MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)
+MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))

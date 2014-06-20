@@ -1416,10 +1416,30 @@ def render_inbox_page():
 		print e
 		db_session.rollback()
 
-	inbox_thrds = filter(lambda t: (not t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	archive_thrds = filter(lambda t: (t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, unread=inbox_thrds, archived=archive_thrds))
+	(inbox_threads, archv_threads) = ht_find_inbox_threads(bp.prof_id, msg_threads)
+	return make_response(render_template('inbox.html', bp=bp, unread=inbox_threads, archived=archv_threads))
+
+
+
+def ht_find_inbox_threads(profile_id, msg_threads):
+	inbox = []
+	archv = []
+	for msg in msg_threads:
+		if (profile_id == msg.UserMessage.msg_to):
+			setattr(msg, 'display', msg.UserMessage.msg_from
+			if (msg.msg_flags & MSG_STATE_RECV_ARCHIVE):
+				archv.push(msg)
+			else:
+				inbox.push(msg)
+		elif (profile_id == msg.UserMessage.msg_from):
+			setattr(msg, 'display', msg.UserMessage.msg_to
+			if (msg.msg_flags & MSG_STATE_SEND_ARCHIVE):
+				archv.push(msg)
+			else:
+				inbox.push(msg)
+		else:
+			print 'Major error.  profile_id didn\'t match to or from'
+	return (inbox, archv)
 
 
 
