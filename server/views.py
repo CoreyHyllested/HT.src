@@ -1122,8 +1122,8 @@ def render_review_page(appt_id, review_id):
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
+		print review_id, ' = id of Review'
 		the_review = Review.retreive_by_id(review_id)[0] 
 		print the_review
 
@@ -1379,6 +1379,18 @@ def render_edit_portfolio_page():
 
 
 
+
+@req_authentication
+@ht_server.route("/enable_reviews", methods=['GET', 'POST'])
+def testing_enable_reviews():
+	bp = Profile.get_by_uid(session['uid'])
+	prop_uuid = request.values.get('prop');
+	proposal=Proposal.get_by_id(prop_uuid)
+	enable_reviews(proposal)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
+
+
+
 @req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
@@ -1449,6 +1461,7 @@ def ht_api_get_message_thread(msg_thread):
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+
 
 
 @req_authentication
