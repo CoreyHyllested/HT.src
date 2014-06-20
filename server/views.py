@@ -115,56 +115,22 @@ def render_profile(usrmsg=None):
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
-
-	# alias for review searches.
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-
 	try:
 		# complicated search queries can fail and lock up DB.
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
-		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
-								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)											\
-								.join(user, user.prof_id == Review.prof_authored)										\
-								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		hp_c_reviews = ht_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
 
 	print 'images in portfolio:', len(portfolio)
-	for img in portfolio:
-		print img
+	for img in portfolio: print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	for r in all_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	print ''
-	print ''
-
-	print 'flter all reviews,', len(all_reviews), 'find me -- the hero -- being reviewed.'
-	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
-	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
-
-	print ''
-	print ''
-
-	print 'mapped Hero reviews = ', len (hero_reviews)
-	for r in hero_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
-
-
-	print ''
-	print ''
-
-	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
-	print 'show reviews = ', len (show_reviews)
-	for r in show_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
 
 	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
 	nts = NTSForm(request.form)
@@ -175,13 +141,59 @@ def render_profile(usrmsg=None):
 
 
 
-def display_reviews_of_hero(r, hero_is):
-	if (hero_is == r.Review.prof_reviewed): 
-		#user it the reviewed, we should display all these reviews; image of the other bloke
-		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
-		setattr(r, 'display', r.user) 
+def ht_get_composite_reviews(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	# OBJECT
+	# OBJ.Review	# Review
+	# OBJ.hero		# Profile of seller
+	# OBJ.user		# Profile of buyer
+	# OBJ.appt 		# Proposal object
+	# OBJ.display	# <ptr> Profile of other person (not me)
+
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(user, user.prof_id == Review.prof_authored)												\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
+	#for r in all_reviews:
+	#	print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+
+	return all_reviews
+
+
+
+def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+	reviews = []
+	if (filter_by == 'REVIEWED'):
+		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
+	if (filter_by == 'AUTHORED'):
+		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
+	if (filter_by == 'VISIBLE'):
+		print 'Searching review_set for reviews marked as visible'
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+
+	if (dump):
+		print 'Original set',  len(review_set), "=>", len(reviews)
+		for r in reviews:
+			# see ht_get_composite_reviews for object
+			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+
+	return reviews
+
+
+
+def set_display_to_partner(r, prof_id):
+	#partner = if (prof_id == r.Review.prof_reviewed) r.user else r.hero
+	#setattr(r, 'display', partner)
+	if (prof_id == r.Review.prof_reviewed):
+		setattr(r, 'display', r.user)
 	else:
-		print r.Review.prof_authored, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user-x',  r.hero.prof_name
 		setattr(r, 'display', r.hero)
 
 
@@ -664,9 +676,14 @@ def ht_api_send_message():
 		print 'foo=', foo
 
 		if (parent):
-			parent_msg	= UserMessage.get_by_msg_id(parent) 
+			parent_msg	= UserMessage.get_by_msg_id(parent)
 			thread	= parent_msg.msg_thread
 			msg_to	= parent_msg.msg_from
+			# get thread_leader.
+			#thread_msg = UserMessage.get_by_msg_id(thread)
+			#thread_msg.msg_flags = thread_msg.msg_flags | MSG_STATE_UPDATED
+			#thread_msg.msg_flags = thread_msg.msg_flags & ~(MSG_STATE_ARCHIVED)
+			#db_session.add(thread_msg)
 			
 		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
 		
@@ -1110,8 +1127,8 @@ def render_review_page(appt_id, review_id):
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
+		print review_id, ' = id of Review'
 		the_review = Review.retreive_by_id(review_id)[0] 
 		print the_review
 
@@ -1367,6 +1384,18 @@ def render_edit_portfolio_page():
 
 
 
+
+@req_authentication
+@ht_server.route("/enable_reviews", methods=['GET', 'POST'])
+def testing_enable_reviews():
+	bp = Profile.get_by_uid(session['uid'])
+	prop_uuid = request.values.get('prop');
+	proposal=Proposal.get_by_id(prop_uuid)
+	enable_reviews(proposal)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
+
+
+
 @req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
 def render_inbox_page():
@@ -1437,6 +1466,7 @@ def ht_api_get_message_thread(msg_thread):
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+
 
 
 @req_authentication
@@ -1553,13 +1583,4 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
-
-@ht_server.route("/about", methods=['GET'])
-def render_about_page():
-	bp = False
-	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
-
-	return make_response(render_template('about.html', title = '- About Us', bp=bp))
 
