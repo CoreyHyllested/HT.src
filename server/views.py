@@ -571,12 +571,12 @@ def display_partner_proposal(p, user_is):
 def display_partner_message(p, user_is):
 	if (user_is == p.UserMessage.msg_to): 
 		#user it the hero, we should display all the 'user'
-		print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
+		#print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
 		setattr(p, 'display', p.msg_from) 
 		setattr(p, 'left', p.msg_from)
 		setattr(p, 'right', p.msg_to)
 	else:
-		print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
+		#print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
 		setattr(p, 'display', p.msg_to)
 		setattr(p, 'left', p.msg_to)
 		setattr(p, 'right', p.msg_from)
@@ -1387,8 +1387,10 @@ def render_inbox_page():
 		print e
 		db_session.rollback()
 
+	inbox_thrds = filter(lambda t: (not t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
+	archive_thrds = filter(lambda t: (t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, messages=msg_threads))
+	return make_response(render_template('inbox.html', bp=bp, unread=inbox_thrds, archived=archive_thrds))
 
 
 
@@ -1415,10 +1417,23 @@ def ht_api_get_message_thread(msg_thread):
 		subject = messages[0].UserMessage.msg_subject
 		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
 			print 'user doesn\'t have access'
-			print 'me', bp
-			print 'to', messages[0].msg_to
-			print 'from', messages[0].msg_from
 			messages = []
+
+	try:
+		updated_messages = 0
+		for msg in messages:
+			if (msg.UserMessage.msg_opened == None):
+				print 'user message never opened before'
+				updated_messages = updated_messages + 1
+				msg.UserMessage.msg_opened = dt.utcnow();
+				db_session.add(msg.UserMessage)
+		if (updated_messages > 0):
+			print 'committing messages'
+			db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
@@ -1427,7 +1442,42 @@ def ht_api_get_message_thread(msg_thread):
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])
 def render_message_page():
-	return ht_api_get_message_thread(request.values.get('message'))
+	msg_id = request.values.get('message')
+	action = request.values.get('action')
+	print 'message() ', msg_id, action
+
+	if (action == None):
+		return ht_api_get_message_thread(msg_id)
+	elif (action == "archive"):
+		print 'archiving msg_thread' + str(msg_id)
+		bp = Profile.get_by_uid(session['uid'])
+		try:
+			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
+			print "msg_thread ", msg_id, len(msg_thread)
+
+			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
+				print 'user doesn\'t have access'
+				msg_thread = []
+
+			updated_messages = 0
+			for msg in msg_thread:
+				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
+				db_session.add(msg)
+				updated_messages = updated_messages + 1
+
+			if (updated_messages > 0):
+				print '\"archiving\"' + str(updated_messages) + " msgs"
+				db_session.commit()
+
+			return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 200)
+
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+
+	# find correct 400 response
+	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
 
 
 
@@ -1503,4 +1553,13 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
+
+@ht_server.route("/about", methods=['GET'])
+def render_about_page():
+	bp = False
+	if 'uid' in session:
+		uid = session['uid']
+		bp  = Profile.query.filter_by(account=uid).all()[0]
+
+	return make_response(render_template('about.html', title = '- About Us', bp=bp))
 
