@@ -116,14 +116,14 @@ def render_profile(usrmsg=None):
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
 
-	# alias for review searches.
+	# aliases for review searches.
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
 
 	try:
 		# complicated search queries can fail and lock up DB.
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
 								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
 								.join(appt, appt.prop_uuid == Review.rev_appt)											\
@@ -135,31 +135,21 @@ def render_profile(usrmsg=None):
 
 
 	print 'images in portfolio:', len(portfolio)
-	for img in portfolio:
-		print img
+	for img in portfolio: print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
 	for r in all_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
 
-	print ''
-	print ''
-
 	print 'flter all reviews,', len(all_reviews), 'find me -- the hero -- being reviewed.'
 	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
 	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
-
-	print ''
-	print ''
 
 	print 'mapped Hero reviews = ', len (hero_reviews)
 	for r in hero_reviews:
 		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
 
-
-	print ''
-	print ''
 
 	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
 	print 'show reviews = ', len (show_reviews)
