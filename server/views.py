@@ -1554,3 +1554,12 @@ def ht_api_update_portfolio(operation):
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
 
+@ht_server.route("/about", methods=['GET'])
+def render_about_page():
+	bp = False
+	if 'uid' in session:
+		uid = session['uid']
+		bp  = Profile.query.filter_by(account=uid).all()[0]
+
+	return make_response(render_template('about.html', title = '- About Us', bp=bp))
+
