@@ -1504,19 +1504,19 @@ def render_message_page():
 		print 'archiving msg_thread ' + str(msg_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			#super_parent is to identify who started thread; so we can archive appropriately (flag)
-			#msg_zero is probably a faster, better way.  (only one hit to db). 
-			msg_superp = db_session.query(UserMessage).filter(UserMessage.msg_id == msg_id).all();
 			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
-			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread)
+			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread)[0]
 			print "msg_thread ", msg_id, len(msg_thread)
+			print 'msg_zero', msg_zero
 
-			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
+			if ((len(msg_thread) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
+				print 'thread_len', len(msg_thread)
+				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
+				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
 				msg_thread = []
 
-			archive_flag = (msg_superp[0].msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
-			print 'user_archive_flag', (msg_superp[0].msg_to == bp.prof_id), archive_flag, MSG_STATE_RECV_ARCHIVE, MSG_STATE_SEND_ARCHIVE
+			archive_flag = (msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
 			for msg in msg_thread:
 				msg.msg_flags = msg.msg_flags | archive_flag
