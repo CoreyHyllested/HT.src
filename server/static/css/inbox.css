@@ -25,176 +25,217 @@
 
 /* CONTENT */
 
-	.inboxContentWrapper {
-		background-color: white;
-		border-radius: 6px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 12px auto 0px;
-		padding: 41px;
-		position: relative;
-		overflow: auto;
-		width: 980px;
-		z-index: 30;
-	}
+.inboxContentWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+}
 
-	.inboxMessagesHeader {
-    	margin-bottom: 10px;
-		width: 100%;
-	}
+.inboxMessagesHeader {
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 15px;		
+	margin-bottom: 10px;
+	width: 100%;
+	color: black;
+	float: left;
+}
 
-	.inboxMessagesHeader h1 {
-		border-bottom: 1px solid #b0b4b7;
-		color: black;
-		font-size: 2em;
-		padding-bottom: 15px;
-		width: 100%;
-	}
-	
-	.inboxLeftColumn {
-	    float: left;
-	    text-align: right;
-		width: 25%;
-	}
-	
-	.inboxRightColumn {
-		float: right;
-		width: 75%;
-	}
+.inboxMessagesHeaderLeft {
+    float: left;
+	width: 25%;
+}
+.inboxMessagesHeaderRight {
+	float: right;
+	width: 75%;
+}
 
-	.inboxNavContainer {
-		padding-right: 36px;
-	}
+.inboxMessagesTitle {
+	font-size: 2em;
+}
 
-	.inboxView{
-		height: 1000px;
-		margin-top: 6px;
-	}
+.inboxMessagesHeaderSubject {
+	width: 75%;
+	float: left;
+	font-size: 1.4em;
+}
 
-	.inboxMain {
+.inboxLeftColumn {
+    float: left;
+    text-align: right;
+	width: 25%;
+}
 
-	}
-	.inboxSent {
-		display: none;
-	}
+.inboxRightColumn {
+	float: right;
+	width: 75%;
+}
 
-	.inboxTrash {
-		display: none;
-	}
+.inboxNavContainer {
+	padding-right: 36px;
+}	
 
-	/* MESSAGES*/
+.inboxView{
+	height: 1000px;
+	margin-top: 6px;
+}
 
-	.message {
-		border-bottom: 1px solid #e1e0de;
-		float:left;
-		width: 665px;
-		height: 30px;
-		line-height: 30px;
-		font-size: .9em;
-		padding: 0px 4px;
-		cursor: pointer;
-	}
-	.message:nth-of-type(2n+0) {
-		background: #fcfcfc;
-	}
-	.message:hover {
-		background: #fafafa;
-	}
-	.message .unread {
-		font-weight: bold;
-	}
+.inboxMain {
 
-	.messageUser {
-		float: left;
-		width: 25%;
-	}
+}
+.inboxSent {
+	display: none;
+}
 
-	.messageSubjectLine {
-		color: gray;
-		float: left;
-		width: 50%;
-	}
+.inboxArchive {
+	display: none;
+}
 
-	.messageDate {
-		color: gray;
-		float: right;
-		width: 20%;
-	}
+.inboxLeftNavigation {
+	display: none;
+	font-size: 1.2em;
+}
 
-	.messageArchive {
-		font-size: .8em;
-		text-align: right;
-		cursor: pointer;
-		line-height: 28px;
-		height: 25px;
-		float: right;
-		/*width: 5%;*/
-	}
-	.messageDelete:hover {
-		color: red;
-	}
-	
-	.composeButton {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		background-color: #29abe2;
-		border: 1px #29abe2 solid;
-	  	-webkit-border-radius: 3px;
-	  	border-radius: 3px;
-		color: white;
-		cursor: pointer;
-		display: table-cell;
-		font-size: 0.9em;
-		height: 24px;
-		margin-top: 9px;
-		margin-bottom: 6px;
-		text-align: center;
-		-moz-transition: 0.5s ease;
-		-o-transition: 0.5s ease;
-		-webkit-transition: 0.5 ease;
-		transition: 0.5s ease;		
-		vertical-align: middle;
-		width: 100%;
-	}
+.inboxLeftNavigation .navItem {
+	padding-right: 36px;
+}
 
-	.composeButton:hover {
-		border: 1px solid #007cb3;
-		background-color: #007cb3;
-		text-decoration: none;
-	}
-	  
+.inboxLeftNavigation i {
+	font-size: .9em;
+}
 
-	.inboxNavItem {
-	    background-size: 18px 18px;
-	    border-bottom: 1px solid #e2e4e6;
-	    color: #6e7980;
-	    font-size: 0.875em;
-	    padding: 11px 0 11px 30px;
-	    cursor: pointer;
-	}
+.inboxLeftNavigation a {
+	color: #29abe1;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+.inboxLeftNavigation a:hover {
+	color: #007cb3;
+}
 
-	.inboxNavItem:hover {
-	    color: #007cb3;
-	}
 
-	.inboxNavItem i {
-			padding-left: 6px; 
-	}
 
-	
-  #inboxSearch {
-		background: url("../img/search.svg") #f6f6f6 no-repeat 420px;
-		border-radius: 2px;
-		border-style: none;
-		color: white;
-		font-size: 0.8em;
-		height: 27px;
-		left: 135px;
-		line-height: 1.2em;
-		margin: 10px;
-		margin-right: 150px;
-		padding: 0 20px 0 5px;
-		width: 420px;
-	}
+/* MESSAGES*/
+
+.message {
+	border-bottom: 1px solid #e1e0de;
+	float:left;
+	width: 665px;
+	height: 30px;
+	line-height: 30px;
+	font-size: .9em;
+	padding: 0px 4px;
+	cursor: pointer;
+}
+.message:nth-of-type(2n+0) {
+	background: #fcfcfc;
+}
+.message:hover {
+	background: #fafafa;
+}
+.message.unread {
+	font-weight: bold;
+}
+
+.messageUser {
+	float: left;
+	width: 25%;
+}
+
+.messageSubjectLine {
+	color: gray;
+	float: left;
+	width: 50%;
+}
+
+.messageDate {
+	color: gray;
+	float: right;
+	width: 20%;
+}
+
+.messageArchive {
+	font-size: .8em;
+	text-align: right;
+	cursor: pointer;
+	line-height: 28px;
+	height: 25px;
+	float: right;
+	/*width: 5%;*/
+}
+.messageDelete:hover {
+	color: red;
+}
+
+.composeButton {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: #29abe2;
+	border: 1px #29abe2 solid;
+  	-webkit-border-radius: 3px;
+  	border-radius: 3px;
+	color: white;
+	cursor: pointer;
+	display: table-cell;
+	font-size: 0.9em;
+	height: 24px;
+	margin-top: 9px;
+	margin-bottom: 6px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;		
+	vertical-align: middle;
+	width: 100%;
+}
+
+.composeButton:hover {
+	border: 1px solid #007cb3;
+	background-color: #007cb3;
+	text-decoration: none;
+}
+  
+
+.inboxNavItem {
+    background-size: 18px 18px;
+    border-bottom: 1px solid #e2e4e6;
+    color: #6e7980;
+    font-size: 0.875em;
+    padding: 11px 0 11px 30px;
+    cursor: pointer;
+}
+
+.inboxNavItem:hover {
+    color: #007cb3;
+}
+
+.inboxNavItem i {
+		padding-left: 6px; 
+}
+
+
+#inboxSearch {
+	background: url("../img/search.svg") #f6f6f6 no-repeat 420px;
+	border-radius: 2px;
+	border-style: none;
+	color: white;
+	font-size: 0.8em;
+	height: 27px;
+	left: 135px;
+	line-height: 1.2em;
+	margin: 10px;
+	margin-right: 150px;
+	padding: 0 20px 0 5px;
+	width: 420px;
+}

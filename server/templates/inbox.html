@@ -2,8 +2,8 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/message.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/inbox.css">
 {% endblock %}
 
 
@@ -11,7 +11,16 @@
 
 <div class="inboxContentWrapper">
 	<div class="inboxMessagesHeader">
-		<h1>Messages ({{unread|length}})</h1>
+		<div class="inboxMessagesHeaderLeft">
+			<div class="inboxLeftNavigation">
+				<a href="/inbox" title="Back to Inbox" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Inbox</a>
+			</div>
+			<div class="inboxMessagesTitle">
+			</div>	
+		</div>
+		<div class="inboxMessagesHeaderRight">
+			<div class="inboxMessagesHeaderSubject"></div>	
+		</div>			
 	</div>
   
   	<div class="container">
@@ -20,7 +29,7 @@
 				<!--a href="/compose"><button type="button" class="composeButton">COMPOSE</button></a-->
 				<ul class="inboxNavList">
 					<div class="inboxNavItem" id="mainLink">INBOX<i class="fa fa-envelope-o"></i></div>
-					<div class="inboxNavItem" id="trashLink">ARCHIVE<i class="fa fa-archive"></i></div>
+					<div class="inboxNavItem" id="archiveLink">ARCHIVE<i class="fa fa-archive"></i></div>
 				</ul>
 			</div>
 		</div>
@@ -29,13 +38,11 @@
 			<div class="inboxView inboxMain">
 				<ul class="inboxWell" id="threads">
 
-					{% for msg in unread|sort(attribute='UserMessage.msg_created')  %}
-					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
+					{% for msg in unread|sort(attribute='UserMessage.msg_created')|reverse %}
+					<li class="message {% if msg.UserMessage.msg_opened is none %}unread{% endif %}" data-id="{{msg.UserMessage.msg_id}}">
 						<div class="msg messageUser">{{msg.display.prof_name}}</div>
 						<div class="msg messageSubjectLine">
-							{% if msg.UserMessage.msg_opened is none %}<b>{% endif %}
 							{{msg.UserMessage.msg_subject}}
-							{% if msg.UserMessage.msg_opened is none %}</b>{% endif %}
 						</div>
 						<div class="messageArchive"><i class="fa fa-archive"></i></div>
 						<div class="msg messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
@@ -45,7 +52,7 @@
 				</ul>  
 			</div>
 	
-			<div class="inboxView inboxTrash">
+			<div class="inboxView inboxArchive">
 				<ul class="inboxWell" id="threads">
 					{% for msg in archived|sort(attribute='UserMessage.msg_created')  %}
 					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
@@ -69,9 +76,18 @@
 
 <script>
 $(document).ready(function() {
+
+	var numInbox = {{unread|length}};
+	var numArchived = {{archived|length}};
+
+	$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
+
 	$(".composeBodyContainer").hide();
 
 	$('.msg').click(function() {
+
+		var thisSubject = $(this).parent().children(".messageSubjectLine").text();
+
 		var msg_id = $(this).parent().data("id");
 		var fd = new FormData();
 		fd.append('msg', msg_id);
@@ -85,12 +101,19 @@ $(document).ready(function() {
 					//console.log('data', data);
 					//console.log('data', inner);
 					$('.inboxRightColumn').html(inner);
-					$('#sendMessage').bind('click', sendmessage_js)
+					$('.inboxMessagesTitle').empty();
+					$('.inboxLeftNavigation').show();
+					$('.inboxMessagesHeaderSubject').text(thisSubject);
+
+					$('#sendMessage').bind('click', sendmessage_js);
 				}
 		});
 	});
 
 	$('#mainLink').click(function() {
+		$('.inboxLeftNavigation').hide();
+		$('.inboxMessagesHeaderSubject').empty();
+		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
 		if ($('.messageThread').length == 0) {
 			$('.inboxView').hide();
 			$('.inboxMain').show();
@@ -99,9 +122,11 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#trashLink').click(function() {
-		$('.inboxView').hide();
-		$('.inboxTrash').show();
+	$('#archiveLink').click(function() {
+		$('.inboxMessagesHeaderSubject').empty();
+		$('.inboxLeftNavigation, .inboxView').hide();
+		$('.inboxMessagesTitle').html("Archive ("+numArchived+")");		
+		$('.inboxArchive').show();
 	});
 
 	$('.messageArchive').click(function() {
