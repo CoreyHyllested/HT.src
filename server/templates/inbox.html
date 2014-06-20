@@ -28,6 +28,7 @@
 		<div class="inboxRightColumn">
 			<div class="inboxView inboxMain">
 				<ul class="inboxWell" id="threads">
+
 					{% for msg in unread|sort(attribute='UserMessage.msg_created')  %}
 					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
 						<div class="msg messageUser">{{msg.display.prof_name}}</div>
@@ -40,17 +41,24 @@
 						<div class="msg messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
+
 				</ul>  
 			</div>
 	
 			<div class="inboxView inboxTrash">
 				<ul class="inboxWell" id="threads">
-					<li class="message" id="thread_number">
-						<div class="messageUser">Mike Tyson</div>
-						<div class="messageSubjectLine">An old message that is in the trash</div>
+					{% for msg in archived|sort(attribute='UserMessage.msg_created')  %}
+					<li class="message" data-id="{{msg.UserMessage.msg_id}}">
+						<div class="msg messageUser">{{msg.display.prof_name}}</div>
+						<div class="msg messageSubjectLine">
+							{% if msg.UserMessage.msg_opened is none %}<b>{% endif %}
+							{{msg.UserMessage.msg_subject}}
+							{% if msg.UserMessage.msg_opened is none %}</b>{% endif %}
+						</div>
 						<div class="messageArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
-						<div class="messageDate">Jun 8</div>
+						<div class="msg messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
+					{% endfor %}
 				</ul>  
 			</div>
 		</div><!--right column-->
@@ -103,10 +111,9 @@ $(document).ready(function() {
 		fd.append('msg', msg_id);
 		fd.append('csrf_token', "{{ csrf_token() }}");
 		fd.append('action', 'archive');
-		console.log('msg_clicked = ' + msg_id);
 		$.ajax({ url	: "/message",
 				 type	: "POST",
-				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}' },
+				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}', 'action':'archive' },
 				 success : function(data) {
 					window.location.replace("/inbox");
 				}

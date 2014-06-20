@@ -571,12 +571,12 @@ def display_partner_proposal(p, user_is):
 def display_partner_message(p, user_is):
 	if (user_is == p.UserMessage.msg_to): 
 		#user it the hero, we should display all the 'user'
-		print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
+		#print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
 		setattr(p, 'display', p.msg_from) 
 		setattr(p, 'left', p.msg_from)
 		setattr(p, 'right', p.msg_to)
 	else:
-		print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
+		#print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
 		setattr(p, 'display', p.msg_to)
 		setattr(p, 'left', p.msg_to)
 		setattr(p, 'right', p.msg_from)
@@ -1387,8 +1387,10 @@ def render_inbox_page():
 		print e
 		db_session.rollback()
 
+	inbox_thrds = filter(lambda t: (not t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
+	archive_thrds = filter(lambda t: (t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, unread=msg_threads, archived=msg_threads))
+	return make_response(render_template('inbox.html', bp=bp, unread=inbox_thrds, archived=archive_thrds))
 
 
 
@@ -1442,31 +1444,40 @@ def ht_api_get_message_thread(msg_thread):
 def render_message_page():
 	msg_id = request.values.get('message')
 	action = request.values.get('action')
+	print 'message() ', msg_id, action
 
 	if (action == None):
 		return ht_api_get_message_thread(msg_id)
 	elif (action == "archive"):
+		print 'archiving msg_thread' + str(msg_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
 			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
 			print "msg_thread ", msg_id, len(msg_thread)
 
-			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp) and (messages[0].msg_to != bp)):
+			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
 				msg_thread = []
 
 			updated_messages = 0
 			for msg in msg_thread:
-				if (msg.msg_opened == None):
-					msg.msg_opened = dt.utcnow();
-					updated_messages = updated_messages + 1
+				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
+				db_session.add(msg)
+				updated_messages = updated_messages + 1
+
 			if (updated_messages > 0):
 				print '\"archiving\"' + str(updated_messages) + " msgs"
 				db_session.commit()
 
+			return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 200)
+
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
+		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+
+	# find correct 400 response
+	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
 
 
 
