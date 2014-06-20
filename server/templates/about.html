@@ -1,0 +1,24 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/tos.css">
+{% endblock %}
+
+
+<!-- Not really sure what this script does here. -->
+<!--<script type="text/javascript">
+   function isNumberKey(evt) {
+     var charCode = (evt.which) ? evt.which : event.keyCode;
+     if (charCode > 31 && (charCode < 48 || charCode > 57))
+       return false;
+     return true;
+   }
+</script>-->
+
+{% block content %}
+
+<div class="tosWrapper">
+THIS IS WORKING
+</div>
+{% endblock %}
