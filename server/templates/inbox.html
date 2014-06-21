@@ -48,15 +48,16 @@
 			<div class="inboxMain">
 				<ul class="inboxWell" id="threads">
 
-					{% for msg in unread|sort(attribute='UserMessage.msg_created')|reverse %}
-					<li class="message {% if msg.UserMessage.msg_opened is none %}unread{% endif %}" data-thread-id="{{msg.UserMessage.msg_thread}}" data-id="{{msg.UserMessage.msg_id}}">
-						<div class="msg messageUser">{{msg.display.prof_name}}</div>
-						<div class="msg messageSubjectLine">
-							{{msg.UserMessage.msg_subject}} 
+					{% for thread in inbox_threads|sort(attribute='UserMessage.msg_created')|reverse %}
+					<!-- Below add "and latest message is not from this user" -->
+					<li class="thread {% if thread.UserMessage.msg_opened is none %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-id="{{thread.UserMessage.msg_id}}">
+						<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
+						<div class="threadItem threadSubjectLine">
+							{{thread.UserMessage.msg_subject}} 
 							
 						</div>
-						<div class="messageArchive"><i class="fa fa-archive"></i></div>
-						<div class="msg messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+						<div class="threadArchive"><i class="fa fa-archive"></i></div>
+						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
 
@@ -65,17 +66,14 @@
 	
 			<div class="inboxArchive">
 				<ul class="inboxWell" id="threads">
-					{% for msg in archived|sort(attribute='UserMessage.msg_created')  %}
-					<li class="message" data-thread-id="{{msg.UserMessage.msg_thread}}" data-id="{{msg.UserMessage.msg_id}}">
-						<div class="msg messageUser">{{msg.display.prof_name}}</div>
-						<div class="msg messageSubjectLine">
-							{% if msg.UserMessage.msg_opened is none %}<b>{% endif %}
-							{{msg.UserMessage.msg_subject}}
-							{% if msg.UserMessage.msg_opened is none %}</b>{% endif %}
-							
+					{% for thread in archived_threads|sort(attribute='UserMessage.msg_created')  %}
+					<li class="thread {% if thread.UserMessage.msg_opened is none %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-id="{{thread.UserMessage.msg_id}}">
+						<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
+						<div class="threadItem threadSubjectLine">
+							{{thread.UserMessage.msg_subject}}							
 						</div>
-						<div class="messageArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
-						<div class="msg messageDate">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
+						<div class="threadArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
+						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
 				</ul>  
@@ -92,7 +90,7 @@
 <script>
 $(document).ready(function() {
 
-	var numInbox = {{unread|length}};
+	var numInbox = {{inbox|length}};
 	var numArchived = {{archived|length}};
 
 	$(document.body).on("click", "#leftNavBack", function(e) {
@@ -200,7 +198,7 @@ $(document).ready(function() {
 	}
 
 	// Executes when a user clicks on a message from the inbox/archive
-	$(document.body).on('click', '.msg', function() {
+	$(document.body).on('click', '.threadItem', function() {
 		var msg_thread_id = $(this).parent().data("thread-id");
 		console.log('msg_thread_clicked = ' + msg_thread_id);
 

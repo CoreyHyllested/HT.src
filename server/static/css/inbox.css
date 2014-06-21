@@ -161,9 +161,9 @@
 
 
 
-/* MESSAGES*/
+/* MESSAGE THREADS*/
 
-.message {
+.thread {
 	border-bottom: 1px solid #e1e0de;
 	float:left;
 	width: 665px;
@@ -173,34 +173,38 @@
 	padding: 0px 4px;
 	cursor: pointer;
 }
-.message:nth-of-type(2n+0) {
+.thread:nth-of-type(2n+0) {
 	background: #fcfcfc;
 }
-.message:hover {
+.thread:hover {
 	background: #fafafa;
 }
-.message.unread {
+.thread.unread {
 	font-weight: bold;
 }
 
-.messageUser {
+.threadPartner {
 	float: left;
 	width: 25%;
 }
 
-.messageSubjectLine {
+.threadSubjectLine {
 	color: gray;
 	float: left;
-	width: 50%;
+	/*width: 40%;*/
+	white-space: nowrap;
+ 	overflow: hidden;	
+ 	o-text-overflow: ellipsis;
+ 	text-overflow: ellipsis;
 }
 
-.messageDate {
+.threadDate {
 	color: gray;
 	float: right;
 	width: 20%;
 }
 
-.messageArchive {
+.threadArchive {
 	font-size: .8em;
 	text-align: right;
 	cursor: pointer;
@@ -209,7 +213,7 @@
 	float: right;
 	/*width: 5%;*/
 }
-.messageDelete:hover {
+.threadDelete:hover {
 	color: red;
 }
 
