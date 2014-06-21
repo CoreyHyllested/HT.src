@@ -5,11 +5,12 @@
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
   padding-top: 125px;
+  background: #29abe1;
   
 }
 
 h1 {
-	color: #29abe1;
+	color: white;
 	font-size: 3em;
 	font-weight: 400;
 	line-height: 1em;
@@ -24,6 +25,10 @@ h2 {
 	line-height: 1.2em;
 }
 
+a:link {
+  	color: rgba(0,0,0, 0.9);
+}
+
 .p test {
   text wrap: none;
 }
@@ -33,11 +38,15 @@ h2 {
   height:375px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
-  padding-top: 25px;
+  padding-top: 45px;
 }
 
 .teamIntroduction {
   margin-top: 5px;
+}
+
+.teamIntroduction h1 {
+  color: rgba(0,0,0, 0.5);
 }
 
 .teamContainer {
@@ -61,9 +70,27 @@ h2 {
   height:375px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
-  padding-top: 25px;
+  padding-top:45px;
 }
 
 .headlineExperience {
   margin-top: 5px;
+}
+
+
+.experienceContainer {
+  margin-left: 160px;
+  margin-top: 50px;
+  float: left;
+}
+
+.experienceImage {
+  border-radius: 6px;
+  margin-bottom: 1.5em;
+  width: 150px;
+  height: 150px;
+}
+
+.headlineExperience h1 {
+  color: #29abe1;
 }
