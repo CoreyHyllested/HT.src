@@ -1,0 +1,69 @@
+
+
+.aboutIntroductionHeader {
+  height:250px;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
+  padding-top: 125px;
+  
+}
+
+h1 {
+	color: #29abe1;
+	font-size: 3em;
+	font-weight: 400;
+	line-height: 1em;
+	text-align: center;
+  margin-bottom: 8px;
+}
+
+h2 {
+	color: rgba(0,0,0, 0.9);
+	font-size: 1.5em;
+	font-weight: 400;
+	line-height: 1.2em;
+}
+
+.p test {
+  text wrap: none;
+}
+
+
+.aboutTeam {
+  height:375px;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
+  padding-top: 25px;
+}
+
+.teamIntroduction {
+  margin-top: 5px;
+}
+
+.teamContainer {
+  margin-left: 160px;
+  margin-top: 50px;
+  float: left;
+}
+
+.teamPortrait {
+  border-radius: 6px;
+  margin-bottom: 1.5em;
+  width: 150px;
+  height: 150px;
+}
+
+.teamHeader {
+  font-size: 20px;
+}
+
+.aboutTeamExperience{
+  height:375px;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
+  padding-top: 25px;
+}
+
+.headlineExperience {
+  margin-top: 5px;
+}
