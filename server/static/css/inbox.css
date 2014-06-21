@@ -44,7 +44,7 @@
 	padding-bottom: 15px;		
 	margin-bottom: 10px;
 	width: 100%;
-	color: black;
+	/*color: black;*/
 	float: left;
 }
 
@@ -52,11 +52,47 @@
     float: left;
 	width: 25%;
 }
+.inboxMessagesHeaderCenter {
+	float: left;
+	padding-left: 6px;
+}
 .inboxMessagesHeaderRight {
 	float: right;
-	width: 75%;
+	width: 25%;
+}
+.inboxMessagesHeaderIcons {
+	display: none;
+	float: right;
+}
+.inboxMessagesHeaderIcons i {
+	cursor: pointer;
+}
+.inboxMessagesHeaderIcons a {
+	color: inherit;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+.inboxMessagesHeaderIcons a:hover {
+	color: #007cb3;
 }
 
+.inboxMessagesHeaderConvoTitle {
+
+}
+.inboxMessagesHeaderConvoTitle a {
+	color: inherit;
+	transition: all 0.2s ease-in;
+	-moz-transition: all 0.2s ease-in;
+	-o-transition: all 0.2s ease-in;
+	-webkit-transition: all 0.2s ease-in;
+	transition: all 0.2s ease-in;
+	
+}
+.inboxMessagesHeaderConvoTitle a:hover {
+	color: #29abe1;
+}
 .inboxMessagesTitle {
 	font-size: 2em;
 }
@@ -88,23 +124,24 @@
 }
 
 .inboxMain {
-
-}
-.inboxSent {
 	display: none;
 }
-
 .inboxArchive {
+	display: none;
+}
+.inboxMessage {
 	display: none;
 }
 
 .inboxLeftNavigation {
 	display: none;
-	font-size: 1.2em;
+	font-size: 1.1em;
+
 }
 
 .inboxLeftNavigation .navItem {
 	padding-right: 36px;
+	cursor: pointer;
 }
 
 .inboxLeftNavigation i {

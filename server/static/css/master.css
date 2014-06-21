@@ -50,6 +50,12 @@ h3 {
 	clear: both;
 }
 
+.debug {
+	font-size: .8em;
+	color: gray;
+	line-height: 1em;
+}
+
 
 /* Page Wrappers */
 

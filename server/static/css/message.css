@@ -132,19 +132,46 @@
 	width: 100%;
 }
 
-.messageThreadHeader {
+.messageThreadConvoTitle {
+	display: none;
+	width: 100%;
 }
 
-.messageThreadItem {
-	margin-bottom: 10px;
-	border-bottom: 1px dotted #dedede; 
-	padding: 6px;
+.messageThreadSubject {
+	width: 99%;
+	font-size: 1.1em;
+	font-weight: bold;
+	padding: 6px 0px 10px 6px;
+	margin-bottom: 12px;
+	border-bottom: 1px dotted #f0f0f0;
+}
+
+.messageThreadItemContainer {
 	float: left;
-	min-height: 80px;
 	width: 98%;
 }
-.messageThreadItem:last-of-type {
+.messageThreadItem {
+	margin-bottom: 10px;
+	border-bottom: 1px dotted #f0f0f0; 
+	padding: 6px;
+	float: left;
+	min-height: 70px;
+	width: 100%;
+}
+.messageThreadItem:nth-last-child(2) {
 	border-bottom: none;
+}
+.messageThreadItemLoading {
+	display: none;
+	border-top: 1px dotted #f0f0f0; 
+	padding: 6px;
+	float: left;
+	height: 70px;
+	line-height: 70px;
+	width: 100%;
+	text-align: center;
+	font-size: 2em;
+	margin-bottom: 12px;
 }
 
 .itemSender {
@@ -169,7 +196,7 @@
 	font-weight: bold;
 }
 .itemSenderName a{
-	color: #6e7980;
+	color: inherit;
 	transition: all 0.2s ease-in;
 	-moz-transition: all 0.2s ease-in;
 	-o-transition: all 0.2s ease-in;

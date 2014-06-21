@@ -585,11 +585,13 @@ class UserMessage(Base):
 			parent = None
 			if (self.msg_subject is None): raise Exception('first msg needs subject')
 		else:
-			if (parent == None): raise Exception('not valid threading')
+			if (parent == None): raise Exception('not valid threading')	
 			self.msg_subject = None
 
 		self.msg_thread	= thread
 		self.msg_parent	= parent
+
+		print "inserting message - thread is", self.msg_thread
 
 	def __repr__(self):
 		content = self.msg_content[:20]

@@ -649,10 +649,9 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('msg_parent')
+		thread	= request.values.get('msg_thread')
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
-		foo	= request.values.get('foo')
-		thread	= None
 
 		print
 		print "/sendmsg - MESSAGE DETAILS"
@@ -660,12 +659,11 @@ def ht_api_send_message():
 		print 'message to ' + msg_to
 		print 'subject=', subject
 		print 'parent=', parent
+		print 'thread=', thread
 		print 'next=', next
-		print 'foo=', foo
 
 		if (parent):
 			parent_msg	= UserMessage.get_by_msg_id(parent) 
-			thread	= parent_msg.msg_thread
 			msg_to	= parent_msg.msg_from
 			
 		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
@@ -1402,26 +1400,38 @@ def ht_api_get_message_thread(msg_thread):
 
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	messages = []
+	thread_messages = []
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
 							 .filter(UserMessage.msg_thread == msg_thread)					\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "messages =", len(messages)
+		print "thread_messages =", len(thread_messages)
 	except Exception as e:
 		print e
 
-	if (len(messages) > 0):
-		subject = messages[0].UserMessage.msg_subject
-		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+	num_thread_messages = len(thread_messages)
+
+	if (num_thread_messages > 0):
+
+		if (bp.prof_id == thread_messages[0].UserMessage.msg_from):
+			thread_partner_id = thread_messages[0].UserMessage.msg_to
+		else:
+			thread_partner_id = thread_messages[0].UserMessage.msg_from
+
+		thread_partner = Profile.get_by_prof_id(thread_partner_id)
+			
+		subject = thread_messages[0].UserMessage.msg_subject
+		print 'subject is', subject
+		
+		if ((thread_messages[0].msg_from != bp) and (thread_messages[0].msg_to != bp)):
 			print 'user doesn\'t have access'
-			messages = []
+			thread_messages = []
 
 	try:
 		updated_messages = 0
-		for msg in messages:
+		for msg in thread_messages:
 			if (msg.UserMessage.msg_opened == None):
 				print 'user message never opened before'
 				updated_messages = updated_messages + 1
@@ -1435,32 +1445,33 @@ def ht_api_get_message_thread(msg_thread):
 		db_session.rollback()
 
 
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
-	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner))
 
 
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])
 def render_message_page():
-	msg_id = request.values.get('message')
+	msg_thread_id = request.values.get('msg_thread_id')
 	action = request.values.get('action')
-	print 'message() ', msg_id, action
+	print 'message_thread() ', msg_thread_id, action
 
 	if (action == None):
-		return ht_api_get_message_thread(msg_id)
+		return ht_api_get_message_thread(msg_thread_id)
+	
 	elif (action == "archive"):
-		print 'archiving msg_thread' + str(msg_id)
+		print 'archiving msg_thread' + str(msg_thread_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
-			print "msg_thread ", msg_id, len(msg_thread)
+			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages)
 
-			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
+			if ((len(msg_thread_messages) > 0) and (msg_thread_messages[0].msg_from != bp.prof_id) and (msg_thread_messages[0].msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				msg_thread = []
+				msg_thread_messages = []
 
 			updated_messages = 0
-			for msg in msg_thread:
+			for msg in msg_thread_messages:
 				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
 				db_session.add(msg)
 				updated_messages = updated_messages + 1
@@ -1474,10 +1485,38 @@ def render_message_page():
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
-		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)	
+	
+	elif (action == "restore"):
+		print 'restoring msg_thread' + str(msg_thread_id)
+		bp = Profile.get_by_uid(session['uid'])
+		try:
+			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages)
+
+			if ((len(msg_thread_messages) > 0) and (msg_thread_messages[0].msg_from != bp.prof_id) and (msg_thread_messages[0].msg_to != bp.prof_id)):
+				print 'user doesn\'t have access'
+				msg_thread_messages = []
+
+			updated_messages = 0
+			for msg in msg_thread_messages:
+				msg.msg_flags = msg.msg_flags & ~MSG_STATE_ARCHIVE
+				db_session.add(msg)
+				updated_messages = updated_messages + 1
+
+			if (updated_messages > 0):
+				print '\"restoring\"' + str(updated_messages) + " msgs"
+				db_session.commit()
+
+			return make_response(jsonify(usrmsg="Message moved to inbox.", next='/inbox'), 200)
+
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+		return make_response(jsonify(usrmsg="Message moved to inbox.", next='/inbox'), 500)
 
 	# find correct 400 response
-	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
+	return make_response(jsonify(usrmsg="Message moved to inbox.", next='/inbox'), 400)
 
 
 

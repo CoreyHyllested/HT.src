@@ -1,3 +1,20 @@
+function loadMessageThread(msg_thread_id) {
+	var fd = {};
+	fd.msg_thread_id = msg_thread_id;
+	fd.csrf_token = "{{ csrf_token() }}";
+	$.ajax({ url : "/message",
+			 type : "POST",
+			 data : fd,
+			 success : function(data) {
+				var page_content = $(data).find('.messageThreadItemContainer').html();
+				var conversation_title = $(data).find('.messageThreadConvoTitle').html();
+				$('.messageThreadItemContainer').html(page_content);
+				$('.inboxMessagesHeaderConvoTitle').html(conversation_title);
+
+			}
+	});
+}
+
 function sendmessage_js(e) {
 	var messageData = {};
 	messageData.hp = $('#composeRecipientID').val();
@@ -34,8 +51,12 @@ function sendmessage_js(e) {
 					}
 					setTimeout(function() { closeModalWindow(); }, 2000);				
 				} else if (response.next == "thread") { 
+					$(".messageThreadItemLoading").fadeIn();
 					$(".messageReplyBody").val('');
 					$(".messageReplyStatus").html("<span class='success'>Message successfully sent to "+messageData.recipient_name+"</span>").fadeIn();
+					setTimeout(function() {
+						$('.messageReplyStatus').slideUp(1000);
+					}, 2000 );
 					$('.messageThreadContainer').load("/inbox/message/" + messageData.msg_thread + " .messageThread");	
 				} else {
 					if ($(".composeMessageStatus").length > 0) {
