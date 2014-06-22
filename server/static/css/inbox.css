@@ -204,17 +204,29 @@
 	width: 20%;
 }
 
-.threadArchive {
+.threadAction {
+	
 	font-size: .8em;
 	text-align: right;
 	cursor: pointer;
 	line-height: 28px;
 	height: 25px;
 	float: right;
-	/*width: 5%;*/
 }
-.threadDelete:hover {
-	color: red;
+.threadAction i {
+	cursor: pointer;
+}
+.threadAction a {
+	opacity: .5;
+	color: inherit;
+	-moz-transition: 0.3s ease;
+	-o-transition: 0.3s ease;
+	-webkit-transition: 0.3 ease;
+	transition: 0.3s ease;	
+}
+.threadAction a:hover {
+	opacity: 1;
+	color: #007cb3;
 }
 
 .composeButton {

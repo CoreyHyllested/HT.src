@@ -56,7 +56,7 @@
 							{{thread.UserMessage.msg_subject}} 
 							
 						</div>
-						<div class="threadArchive"><i class="fa fa-archive"></i></div>
+						<div class="threadAction threadArchive"><a title="Archive Message"><i class="fa fa-archive"></i></a></div>
 						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
@@ -66,13 +66,13 @@
 	
 			<div class="inboxArchive">
 				<ul class="inboxWell" id="threads">
-					{% for thread in archived_threads|sort(attribute='UserMessage.msg_created')  %}
+					{% for thread in archived_threads|sort(attribute='UserMessage.msg_created')|reverse  %}
 					<li class="thread {% if thread.UserMessage.msg_opened is none %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-id="{{thread.UserMessage.msg_id}}">
 						<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 						<div class="threadItem threadSubjectLine">
 							{{thread.UserMessage.msg_subject}}							
 						</div>
-						<div class="threadArchive"><a href="" name="Restore Message"><i class="fa fa-level-up"></i></a></div>
+						<div class="threadAction threadRestore"><a title="Restore Message"><i class="fa fa-level-up"></i></a></div>
 						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
@@ -90,8 +90,8 @@
 <script>
 $(document).ready(function() {
 
-	var numInbox = {{inbox|length}};
-	var numArchived = {{archived|length}};
+	var numInbox = {{inbox_threads|length}};
+	var numArchived = {{archived_threads|length}};
 
 	$(document.body).on("click", "#leftNavBack", function(e) {
 		e.preventDefault();
@@ -110,64 +110,36 @@ $(document).ready(function() {
 	    	console.log("Loading message - thread ID is "+msg_thread_id);
 
 	    	loadMessage(msg_thread_id);
-
 	    	history.replaceState({title: "Message", msg_thread_id: msg_thread_id}, "", '/inbox#thread?id='+msg_thread_id);
 
 	    } else if (hash == "archive") {
-			var page_content = $('.inboxArchive').html();
-			$('.inboxView').html(page_content);	
-			$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-			$('.inboxMessagesTitle').html("Archive ("+numArchived+")");
-			$('.inboxMessagesHeaderConvoTitle').empty();
-
+			loadArchive();
 			history.replaceState({title: "Archive"}, "", '');
 	    }
-
 	} else {
-		// Hash not found - display the inbox.
-		var page_content = $('.inboxMain').html();
-		$('.inboxView').html(page_content);	
-		$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
-		$('.inboxMessagesHeaderConvoTitle').empty();
-
+		loadInbox();
 		history.replaceState({title: "Inbox"}, "", '');
 	}
 	
 	// State management - Handles what happens when a user clicks back or forward in the browser
 	window.onpopstate = function(event) {
-		console.log("\npopstate triggered");
-		console.log("location: " + document.location + ", state: " + JSON.stringify(event.state));
+		console.log("Popstate triggered -- location: " + document.location + ", state: " + JSON.stringify(event.state));
 		if (event.state) {
 			var page_title = event.state.title;
 			var msg_thread_id = event.state.msg_thread_id;
 
 			if (page_title == "Inbox") {
-
-				var page_content = $('.inboxMain').html();
-				$('.inboxView').html(page_content);	
-				$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-				$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
-				$('.inboxMessagesHeaderConvoTitle').empty();
-
+				loadInbox();
 			} else if (page_title == "Archive") {
-				var page_content = $('.inboxArchive').html();
-				$('.inboxView').html(page_content);	
-				$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-				$('.inboxMessagesTitle').html("Archive ("+numArchived+")");
-				$('.inboxMessagesHeaderConvoTitle').empty();
-
+				loadArchive();
 			} else if (page_title == "Message") {
-
 				loadMessage(msg_thread_id);
-
 			}
 		}
 	}	
 
 	// Loads the message thread into the main view
 	function loadMessage(msg_thread_id) {
-
 		var fd = {};
 		fd.msg_thread_id = msg_thread_id;
 		fd.csrf_token = "{{ csrf_token() }}";
@@ -188,13 +160,74 @@ $(document).ready(function() {
 		});
 	}
 
-	// TODO - these...
 	function loadInbox () {
-		
+		console.log("Loading inbox...");
+
+		$('.messageRightColumn').empty();
+		$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
+		$('.inboxMessagesHeaderConvoTitle').empty();
+		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
+		var page_content = $('.inboxMain').html();
+		$('.inboxView').html(page_content);			
+
+		// $.ajax({ url: "/get_threads",
+		// 		 type: "get",
+		// 		 dataType: 'json',
+		// 		 success: function(response) {
+
+
+		// 			console.log("AJAX success");
+
+					// console.log("bp: "+response.bp.prof_name);
+					// console.log("inbox threads count: "+response.inbox_threads.length);
+	
+					// inbox_threads = response.inbox_threads;
+
+					// var page_content = "<ul class='inboxWell' id='threads'>";
+
+					// {% for thread in inbox_threads|sort(attribute='UserMessage.msg_created')|reverse %}
+					
+					// page_content += "<li class=\"thread {% if thread.UserMessage.msg_opened is none %}unread{% endif %}\" data-thread-id=\"{{thread.UserMessage.msg_thread}}\" data-id=\"{{thread.UserMessage.msg_id}}\"> \
+					// 	<div class=\"threadItem threadPartner\">{{thread.thread_partner.prof_name}}</div> \
+					// 	<div class=\"threadItem threadSubjectLine\"> \
+					// 		{{thread.UserMessage.msg_subject}} \
+					// 	</div> \
+					// 	<div class=\"threadAction threadArchive\"><a title=\"Archive Message\"><i class=\"fa fa-archive\"></i></a></div> \
+					// 	<div class=\"threadItem threadDate\">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div> \
+					// </li>";
+
+					// {% endfor %}
+
+					// page_content += "</ul>";  
+
+
+					// $('.messageRightColumn').empty();
+					// $('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
+					// $('.inboxMessagesHeaderConvoTitle').empty();
+					// $('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
+					
+					// $('.inboxView').html(page_content);					
+
+		// 		},
+		// 		error: function(response) {
+		// 			console.log("AJAX Error");
+		// 		}
+
+		// });
+
+		return false;
+
 	}
 
 	function loadArchive () {
+		console.log("Loading archive...");
 
+		$('.messageRightColumn').empty();
+		$('.inboxMessagesHeaderConvoTitle').empty();
+		$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
+		$('.inboxMessagesTitle').html("Archive ("+numArchived+")");		
+		var page_content = $('.inboxArchive').html();
+		$('.inboxView').html(page_content);	
 	}
 
 	// Executes when a user clicks on a message from the inbox/archive
@@ -203,67 +236,65 @@ $(document).ready(function() {
 		console.log('msg_thread_clicked = ' + msg_thread_id);
 
 		loadMessage(msg_thread_id);
-
 		history.pushState({title: "Message", msg_thread_id: msg_thread_id}, "", '/inbox#thread?id='+msg_thread_id);
 	});
 
-	// Executes when a user clicks on inbox left nav link
 	$('#mainLink').click(function() {
-		$('.messageRightColumn').empty();
-		$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-		$('.inboxMessagesHeaderConvoTitle').empty();
-		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
-
-		var page_content = $('.inboxMain').html();
-		$('.inboxView').html(page_content);	
-
+		loadInbox();
 		history.pushState({title: "Inbox"}, "", '/inbox');
 	});
 
-	// Executes when a user clicks on archive left nav link
 	$('#archiveLink').click(function() {
-		$('.messageRightColumn').empty();
-		$('.inboxMessagesHeaderConvoTitle').empty();
-		$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').hide();
-		$('.inboxMessagesTitle').html("Archive ("+numArchived+")");		
-
-		var page_content = $('.inboxArchive').html();
-		$('.inboxView').html(page_content);	
-
+		loadArchive();
 		history.pushState({title: "Archive"}, "", '/inbox#archive');
 	});
 
-	// TODO - make these ajax friendly
-	$('.messageArchive').click(function() {
-		var msg_id = $(this).parent().data("id");
-		var fd = new FormData();
-		console.log("clicked archive: "+msg_id);
-		fd.append('msg', msg_id);
-		fd.append('csrf_token', "{{ csrf_token() }}");
-		fd.append('action', 'archive');
+	// TODO - make these reload the message list via ajax - trying to call a loadInbox function which fetched msgs via ajax but it didn't work
+	$(document.body).on('click', '.threadArchive', function(e) {
+		e.preventDefault();
+		var msg_thread_id = $(this).parent().data("thread-id");
+		console.log("clicked archive on thread: "+msg_thread_id);
+
+		var threadData = {};
+		threadData.msg_thread_id = msg_thread_id;
+		threadData.csrf_token = "{{ csrf_token() }}";
+		threadData.action = 'archive';
+
+		// console.log("THREAD DATA:");
+		// $.each(threadData, function(index, val) {
+		//     console.log(index + ": " + val);
+		// });
+
 		$.ajax({ url	: "/message",
 				 type	: "POST",
-				 data : {'msg_id': msg_id, 'csrf_token' : '{{ csrf_token() }}', 'action':'archive' },
+				 data : threadData,
 				 success : function(data) {
-					window.location.replace("/inbox");
+					console.log("Message Successfully Archived (must reload page to see change)");
+					// loadInbox();
 				}
 		});
+		return false;
 	});
 
-	$('.messageRestore').click(function() {
-		var msg_id = $(this).parent().data("id");
-		var fd = new FormData();
-		console.log("clicked restore: "+msg_id);
-		fd.append('msg', msg_id);
-		fd.append('csrf_token', "{{ csrf_token() }}");
-		fd.append('action', 'restore');
+	$(document.body).on('click', '.threadRestore', function(e) {
+		e.preventDefault();
+		var msg_thread_id = $(this).parent().data("thread-id");
+		console.log("clicked archive on thread: "+msg_thread_id);
+
+		var threadData = {};
+		threadData.msg_thread_id = msg_thread_id;
+		threadData.csrf_token = "{{ csrf_token() }}";
+		threadData.action = 'restore';
+
 		$.ajax({ url	: "/message",
 				 type	: "POST",
-				 data : {'message': msg_id, 'csrf_token' : '{{ csrf_token() }}', 'action':'restore' },
+				 data : threadData,
 				 success : function(data) {
-					window.location.replace("/inbox");
+					console.log("Message Successfully Restored (must reload page to see change)");
 				}
 		});
+		return false;
+
 	});
 });
 </script>
