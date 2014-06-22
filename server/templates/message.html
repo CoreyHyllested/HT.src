@@ -30,37 +30,51 @@
 
 	<div class="messageRightColumn">
 		<div class="messageContainer">
-<!-- 
-			<div class="messageThreadHeader">{{ msg_thread[0].UserMessage.msg_subject }}</div> -->
+
+			
 			<div class="messageThreadContainer">
 				<div class="messageThread">
-					{% for msg in msg_thread | sort(attribute='UserMessage.msg_created')  %}
-					<div class="messageThreadItem">
-						<div class="itemSender">
-							<div class="itemSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.msg_from.prof_img}}"></div>
-							<div class="itemSenderName">
-							{% if msg.msg_from.prof_id is sameas bp.prof_id %}
-								{{msg.msg_from.prof_name}}
-							{% else %}
-								<a href="/profile?hero={{msg.msg_from.prof_id}}">{{msg.msg_from.prof_name}}</a>
-							{% endif %}
-							</div>
-						</div>
-						<div class="itemDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %H:%M %p')}}</div>
-						<br>
-						<div class="itemBody">{{msg.UserMessage.msg_content}}</div>
+					<div class="messageThreadConvoTitle">
+					Conversation with <a href="/profile?hero={{thread_partner.prof_id}}" class="partnerLink">{{thread_partner.prof_name}}</a> ({{num_thread_messages}} Message{% if num_thread_messages > 1 %}s{% endif %})
 					</div>
-					{% endfor %}
+					<div class="messageThreadSubject">{{subject}}</div>
+					<div class="messageThreadItemContainer">
+						{% for msg in msg_thread_messages | sort(attribute='UserMessage.msg_created')  %}
+
+						<div class="messageThreadItem">
+							
+							<!-- <div class="messageThreadSubject">{{msg.UserMessage.msg_subject}}</div> -->
+
+							<div class="messageItemLeftCol">
+								<div class="itemSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.msg_from.prof_img}}"></div>
+							</div>
+
+							<div class="messageItemRightCol">
+								<div class="itemSenderName">
+									<a href="/profile?hero={{msg.msg_from.prof_id}}">{{msg.msg_from.prof_name}}</a>
+								</div>
+								<div class="itemDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %H:%M %p')}}</div>
+								<br>
+								<div class="itemBody">{{msg.UserMessage.msg_content}}</div>
+							</div>
+
+						</div>
+						{% endfor %}
+						<div class="messageThreadItemLoading">
+							<i class="fa fa-spinner fa-spin"></i>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="messageReplyStatus"></div>
 			<div class="messageReplyContainer">
-				<textarea name="msg" id="composeBody" class="messageReplyBody" placeholder="Enter message to {{msg_thread[0].display.prof_name}}"></textarea>
-				<input type="hidden" id="msg_thread" value="{{msg_thread[-1].UserMessage.msg_thread}}">
-				<input type="hidden" id="msg_parent" value="{{msg_thread[-1].UserMessage.msg_id}}">
-				<input type="hidden" id="composeSubject" value="{{msg_thread[0].UserMessage.msg_subject}}">
-				<input type="hidden" id="composeRecipientID" value="{{msg_thread[0].display.prof_id}}">
-				<input type="hidden" id="composeRecipientName" value="{{msg_thread[0].display.prof_name}}">
+				<textarea name="msg" id="composeBody" class="messageReplyBody" placeholder="Enter message to {{msg_thread_messages[0].display.prof_name}}"></textarea>
+				<input type="hidden" id="msg_thread" value="{{msg_thread_messages[-1].UserMessage.msg_thread}}">
+				<input type="hidden" id="msg_parent" value="{{msg_thread_messages[-1].UserMessage.msg_id}}">
+				<input type="hidden" id="composeSubject" value="{{msg_thread_messages[0].UserMessage.msg_subject}}">
+				<!-- TODO - do these next 2 vars work when message 0 is from the current user rather than the hero? -->
+				<input type="hidden" id="composeRecipientID" value="{{msg_thread_messages[0].display.prof_id}}">
+				<input type="hidden" id="composeRecipientName" value="{{msg_thread_messages[0].display.prof_name}}">
 				<input type="hidden" id="next" value="thread">
 				<input type="hidden" id="csrf"	value="{{csrf_token()}}">
 				<button id="sendMessage" class="blueButton messageReplySendButton">Send Reply</button>

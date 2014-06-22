@@ -132,24 +132,56 @@
 	width: 100%;
 }
 
-.messageThreadHeader {
+.messageThreadConvoTitle {
+	display: none;
+	width: 100%;
 }
 
+.messageThreadSubject {
+	width: 100%;
+	font-size: 1.1em;
+	font-weight: bold;
+	padding: 6px 0px 10px 0px;
+	margin-bottom: 12px;
+	border-bottom: 1px dotted #f0f0f0;
+}
+
+.messageThreadItemContainer {
+	float: left;
+	width: 100%;
+}
 .messageThreadItem {
 	margin-bottom: 10px;
-	border-bottom: 1px dotted #dedede; 
-	padding: 6px;
+	border-bottom: 1px dotted #f0f0f0; 
+/*	padding: 6px;*/
 	float: left;
-	min-height: 80px;
-	width: 98%;
+	min-height: 70px;
+	width: 100%;
 }
-.messageThreadItem:last-of-type {
+.messageThreadItem:nth-last-child(2) {
 	border-bottom: none;
 }
-
-.itemSender {
+.messageThreadItemLoading {
+	display: none;
+	border-top: 1px dotted #f0f0f0; 
+	padding: 6px;
 	float: left;
-	width: 50%;
+	height: 70px;
+	line-height: 70px;
+	width: 100%;
+	text-align: center;
+	font-size: 2em;
+	margin-bottom: 12px;
+}
+
+.messageItemLeftCol{
+	width: 90px;
+	float: left;
+}
+
+.messageItemRightCol{
+	width: 570px;
+	float: right;
 }
 
 .itemSenderImage {
@@ -159,7 +191,7 @@
 
 .itemSenderImage img {
 	border-radius: 3px;
-	width: 40px;
+	width: 100%;
 }
 
 .itemSenderName {
@@ -169,7 +201,7 @@
 	font-weight: bold;
 }
 .itemSenderName a{
-	color: #6e7980;
+	color: #29abe1;
 	transition: all 0.2s ease-in;
 	-moz-transition: all 0.2s ease-in;
 	-o-transition: all 0.2s ease-in;
@@ -178,7 +210,7 @@
 }
 
 .itemSenderName a:hover{
-	color: #29abe1;
+	color: #007cb3;
 }
 
 .itemDatetime {

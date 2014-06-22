@@ -44,7 +44,7 @@
 	padding-bottom: 15px;		
 	margin-bottom: 10px;
 	width: 100%;
-	color: black;
+	/*color: black;*/
 	float: left;
 }
 
@@ -52,11 +52,48 @@
     float: left;
 	width: 25%;
 }
+.inboxMessagesHeaderCenter {
+	float: left;
+
+}
 .inboxMessagesHeaderRight {
 	float: right;
-	width: 75%;
+	width: 25%;
+}
+.inboxMessagesHeaderIcons {
+	display: none;
+	float: right;
+}
+.inboxMessagesHeaderIcons i {
+	cursor: pointer;
+}
+.inboxMessagesHeaderIcons a {
+	color: inherit;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+.inboxMessagesHeaderIcons a:hover {
+	color: #007cb3;
 }
 
+.inboxMessagesHeaderConvoTitle {
+	color: #b4b4b4;
+
+}
+.inboxMessagesHeaderConvoTitle a {
+	color: inherit;
+	transition: all 0.2s ease-in;
+	-moz-transition: all 0.2s ease-in;
+	-o-transition: all 0.2s ease-in;
+	-webkit-transition: all 0.2s ease-in;
+	transition: all 0.2s ease-in;
+	
+}
+.inboxMessagesHeaderConvoTitle a:hover {
+	color: #29abe1;
+}
 .inboxMessagesTitle {
 	font-size: 2em;
 }
@@ -88,23 +125,24 @@
 }
 
 .inboxMain {
-
-}
-.inboxSent {
 	display: none;
 }
-
 .inboxArchive {
+	display: none;
+}
+.inboxMessage {
 	display: none;
 }
 
 .inboxLeftNavigation {
 	display: none;
-	font-size: 1.2em;
+	font-size: 1.1em;
+
 }
 
 .inboxLeftNavigation .navItem {
 	padding-right: 36px;
+	cursor: pointer;
 }
 
 .inboxLeftNavigation i {
@@ -124,9 +162,9 @@
 
 
 
-/* MESSAGES*/
+/* MESSAGE THREADS*/
 
-.message {
+.thread {
 	border-bottom: 1px solid #e1e0de;
 	float:left;
 	width: 665px;
@@ -136,44 +174,60 @@
 	padding: 0px 4px;
 	cursor: pointer;
 }
-.message:nth-of-type(2n+0) {
+.thread:nth-of-type(2n+0) {
 	background: #fcfcfc;
 }
-.message:hover {
+.thread:hover {
 	background: #fafafa;
 }
-.message.unread {
+.thread.unread {
 	font-weight: bold;
 }
 
-.messageUser {
+.threadPartner {
 	float: left;
 	width: 25%;
 }
 
-.messageSubjectLine {
+.threadSubjectLine {
 	color: gray;
 	float: left;
-	width: 50%;
+	/*width: 40%;*/
+	white-space: nowrap;
+ 	overflow: hidden;	
+ 	o-text-overflow: ellipsis;
+ 	text-overflow: ellipsis;
 }
 
-.messageDate {
+.threadDate {
 	color: gray;
 	float: right;
 	width: 20%;
 }
 
-.messageArchive {
+.threadAction {
+	
 	font-size: .8em;
 	text-align: right;
 	cursor: pointer;
 	line-height: 28px;
 	height: 25px;
 	float: right;
-	/*width: 5%;*/
 }
-.messageDelete:hover {
-	color: red;
+.threadAction i {
+	cursor: pointer;
+}
+.threadAction a {
+	opacity: .5;
+	color: inherit;
+	-moz-transition: 0.3s ease;
+	-o-transition: 0.3s ease;
+	-webkit-transition: 0.3 ease;
+	transition: 0.3s ease;	
+}
+.threadAction a:hover {
+	opacity: 1;
+	color: #007cb3;
 }
 
 .composeButton {

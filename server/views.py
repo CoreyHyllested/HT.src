@@ -115,56 +115,22 @@ def render_profile(usrmsg=None):
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
-
-	# alias for review searches.
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-
 	try:
 		# complicated search queries can fail and lock up DB.
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
-		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
-								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)											\
-								.join(user, user.prof_id == Review.prof_authored)										\
-								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		hp_c_reviews = ht_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
 
 	print 'images in portfolio:', len(portfolio)
-	for img in portfolio:
-		print img
+	for img in portfolio: print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	for r in all_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	print ''
-	print ''
-
-	print 'flter all reviews,', len(all_reviews), 'find me -- the hero -- being reviewed.'
-	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
-	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
-
-	print ''
-	print ''
-
-	print 'mapped Hero reviews = ', len (hero_reviews)
-	for r in hero_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
-
-
-	print ''
-	print ''
-
-	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
-	print 'show reviews = ', len (show_reviews)
-	for r in show_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
 
 	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
 	nts = NTSForm(request.form)
@@ -175,13 +141,59 @@ def render_profile(usrmsg=None):
 
 
 
-def display_reviews_of_hero(r, hero_is):
-	if (hero_is == r.Review.prof_reviewed): 
-		#user it the reviewed, we should display all these reviews; image of the other bloke
-		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
-		setattr(r, 'display', r.user) 
+def ht_get_composite_reviews(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	# OBJECT
+	# OBJ.Review	# Review
+	# OBJ.hero		# Profile of seller
+	# OBJ.user		# Profile of buyer
+	# OBJ.appt 		# Proposal object
+	# OBJ.display	# <ptr> Profile of other person (not me)
+
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(user, user.prof_id == Review.prof_authored)												\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
+	#for r in all_reviews:
+	#	print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+
+	return all_reviews
+
+
+
+def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+	reviews = []
+	if (filter_by == 'REVIEWED'):
+		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
+	if (filter_by == 'AUTHORED'):
+		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
+	if (filter_by == 'VISIBLE'):
+		print 'Searching review_set for reviews marked as visible'
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+
+	if (dump):
+		print 'Original set',  len(review_set), "=>", len(reviews)
+		for r in reviews:
+			# see ht_get_composite_reviews for object
+			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+
+	return reviews
+
+
+
+def set_display_to_partner(r, prof_id):
+	#partner = if (prof_id == r.Review.prof_reviewed) r.user else r.hero
+	#setattr(r, 'display', partner)
+	if (prof_id == r.Review.prof_reviewed):
+		setattr(r, 'display', r.user)
 	else:
-		print r.Review.prof_authored, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user-x',  r.hero.prof_name
 		setattr(r, 'display', r.hero)
 
 
@@ -649,10 +661,9 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('msg_parent')
+		thread	= request.values.get('msg_thread')
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
-		foo	= request.values.get('foo')
-		thread	= None
 
 		print
 		print "/sendmsg - MESSAGE DETAILS"
@@ -660,13 +671,20 @@ def ht_api_send_message():
 		print 'message to ' + msg_to
 		print 'subject=', subject
 		print 'parent=', parent
+		print 'thread=', thread
 		print 'next=', next
-		print 'foo=', foo
 
 		if (parent):
+
 			parent_msg	= UserMessage.get_by_msg_id(parent) 
-			thread	= parent_msg.msg_thread
 			msg_to	= parent_msg.msg_from
+			# get thread_leader.
+			msg_thread_leader = UserMessage.get_by_msg_id(thread)
+			archive_flag = (msg_thread_leader.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			print 'user_archive_flag', (msg_thread_leader.msg_to == bp.prof_id), archive_flag, MSG_STATE_RECV_ARCHIVE, MSG_STATE_SEND_ARCHIVE
+			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags | MSG_STATE_THRD_UPDATED
+			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flag)
+			db_session.add(msg_thread_leader)
 			
 		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
 		
@@ -696,9 +714,6 @@ def ht_api_send_message():
 		print e
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
-
-	
-
 
 
 
@@ -1110,8 +1125,8 @@ def render_review_page(appt_id, review_id):
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
+		print review_id, ' = id of Review'
 		the_review = Review.retreive_by_id(review_id)[0] 
 		print the_review
 
@@ -1367,30 +1382,94 @@ def render_edit_portfolio_page():
 
 
 
-@req_authentication
-@ht_server.route("/inbox", methods=['GET', 'POST'])
-def render_inbox_page():
-	bp = Profile.get_by_uid(session['uid'])
 
+@req_authentication
+@ht_server.route("/enable_reviews", methods=['GET', 'POST'])
+def testing_enable_reviews():
+	bp = Profile.get_by_uid(session['uid'])
+	prop_uuid = request.values.get('prop');
+	proposal=Proposal.get_by_id(prop_uuid)
+	enable_reviews(proposal)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
+
+
+@req_authentication
+@ht_server.route("/get_threads", methods=['GET', 'POST'])
+def get_threads():
+	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	msg_threads = []
+	threads = []
 
 	try:
-		msg_threads = db_session.query(UserMessage, msg_from, msg_to)													\
+		threads = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
 							 .filter(UserMessage.msg_parent == None)													\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "msg_threads =", len(msg_threads)
+		print "threads =", len(threads)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	inbox_thrds = filter(lambda t: (not t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	archive_thrds = filter(lambda t: (t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, unread=inbox_thrds, archived=archive_thrds))
+	(inbox_threads, archived_threads) = ht_assign_threads(bp.prof_id, threads)
+
+	# Got stuck here - jsonify needs the thread data to be serialized before it can pass it along. How do we do that?
+
+	return jsonify(foo=bp.prof_id)
+
+@req_authentication
+@ht_server.route("/inbox", methods=['GET', 'POST'])
+def render_inbox_page():
+	bp = Profile.get_by_uid(session['uid'])
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+	threads = []
+
+	try:
+		threads = db_session.query(UserMessage, msg_from, msg_to)													\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
+							 .filter(UserMessage.msg_parent == None)													\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		print "threads =", len(threads)
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	(inbox_threads, archived_threads) = ht_assign_threads(bp.prof_id, threads)
+
+	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
+
+
+
+def ht_assign_threads(profile_id, threads):
+	inbox = []
+	archive = []
+	for thread in threads:
+		if (profile_id == thread.UserMessage.msg_to):
+
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
+
+			setattr(thread, 'thread_partner', thread_partner)
+			# print "thread partner is", thread_partner.prof_name
+			if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) != 0:
+				archive.append(thread)
+			else:
+				inbox.append(thread)
+		elif (profile_id == thread.UserMessage.msg_from):
+
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
+
+			setattr(thread, 'thread_partner', thread_partner)
+			# print "thread partner is", thread_partner.prof_name
+			if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE):
+				archive.append(thread)
+			else:
+				inbox.append(thread)
+		else:
+			print 'Major error.  profile_id didn\'t match to or from'
+	return (inbox, archive)
 
 
 
@@ -1402,26 +1481,38 @@ def ht_api_get_message_thread(msg_thread):
 
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	messages = []
+	thread_messages = []
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
 							 .filter(UserMessage.msg_thread == msg_thread)					\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "messages =", len(messages)
+		print "thread_messages =", len(thread_messages)
 	except Exception as e:
 		print e
 
-	if (len(messages) > 0):
-		subject = messages[0].UserMessage.msg_subject
-		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+	num_thread_messages = len(thread_messages)
+
+	if (num_thread_messages > 0):
+
+		if (bp.prof_id == thread_messages[0].UserMessage.msg_from):
+			thread_partner_id = thread_messages[0].UserMessage.msg_to
+		else:
+			thread_partner_id = thread_messages[0].UserMessage.msg_from
+
+		thread_partner = Profile.get_by_prof_id(thread_partner_id)
+			
+		subject = thread_messages[0].UserMessage.msg_subject
+		print 'subject is', subject
+		
+		if ((thread_messages[0].msg_from != bp) and (thread_messages[0].msg_to != bp)):
 			print 'user doesn\'t have access'
-			messages = []
+			thread_messages = []
 
 	try:
 		updated_messages = 0
-		for msg in messages:
+		for msg in thread_messages:
 			if (msg.UserMessage.msg_opened == None):
 				print 'user message never opened before'
 				updated_messages = updated_messages + 1
@@ -1435,52 +1526,91 @@ def ht_api_get_message_thread(msg_thread):
 		db_session.rollback()
 
 
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
-	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner))
+
 
 
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])
 def render_message_page():
-	msg_id = request.values.get('message')
+	msg_thread_id = request.values.get('msg_thread_id')
 	action = request.values.get('action')
-	print 'message() ', msg_id, action
+
+	print 'message_thread() ', msg_thread_id, action
 
 	if (action == None):
-		return ht_api_get_message_thread(msg_id)
+		return ht_api_get_message_thread(msg_thread_id)
+	
 	elif (action == "archive"):
-		print 'archiving msg_thread' + str(msg_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
-			print "msg_thread ", msg_id, len(msg_thread)
+			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
 
-			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
+			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				msg_thread = []
+				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
+				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
+				msg_thread_messages = []				
 
+			archive_flag = (msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
-			for msg in msg_thread:
-				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
+
+			for msg in msg_thread_messages:
+				msg.msg_flags = msg.msg_flags | archive_flag
 				db_session.add(msg)
 				updated_messages = updated_messages + 1
 
 			if (updated_messages > 0):
-				print '\"archiving\"' + str(updated_messages) + " msgs"
+				print '\"archiving\" ' + str(updated_messages) + " msgs"
 				db_session.commit()
 
-			return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 200)
+			return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 200)
 
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
-		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+
+		return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 500)	
+	
+	elif (action == "restore"):
+		print 'restoring msg_thread' + str(msg_thread_id)
+		bp = Profile.get_by_uid(session['uid'])
+		try:
+			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
+
+			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
+				print 'user doesn\'t have access'
+				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
+				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
+				msg_thread_messages = []				
+
+			archive_flag = (msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			updated_messages = 0
+
+			for msg in msg_thread_messages:
+				msg.msg_flags = msg.msg_flags & ~archive_flag
+				db_session.add(msg)
+				updated_messages = updated_messages + 1
+
+			if (updated_messages > 0):
+				print '\"restoring\" ' + str(updated_messages) + " msgs"
+				db_session.commit()
+
+			return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 200)
+
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+
+		return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 500)	
 
 	# find correct 400 response
-	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
-
-
-
+	return make_response(jsonify(usrmsg="These are not the message you are looking for.", next='/inbox'), 400)
 
 @req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
@@ -1553,13 +1683,4 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
-
-@ht_server.route("/about", methods=['GET'])
-def render_about_page():
-	bp = False
-	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
-
-	return make_response(render_template('about.html', title = '- About Us', bp=bp))
 
