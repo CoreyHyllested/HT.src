@@ -1414,7 +1414,7 @@ def get_threads():
 
 	(inbox_threads, archived_threads) = ht_assign_threads(bp.prof_id, threads)
 
-	# Got stuck here - jsonify needs the thread data to be serialized before it can pass it along. How to do that?
+	# Got stuck here - jsonify needs the thread data to be serialized before it can pass it along. How do we do that?
 
 	return jsonify(foo=bp.prof_id)
 

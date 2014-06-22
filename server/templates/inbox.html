@@ -24,7 +24,7 @@
 		</div>
 		<div class="inboxMessagesHeaderRight">
 			<div class="inboxMessagesHeaderIcons">
-				<a href="" title="Send Conversation to Archives"><i class="fa fa-archive"></i></a>
+				<a href="" title="Send Conversation to Archives" class="messageViewThreadArchive" data-thread-id=""><i class="fa fa-archive"></i></a>
 			</div>	
 		</div>			
 	</div>
@@ -152,6 +152,7 @@ $(document).ready(function() {
 
 					$('.inboxView').html(page_content);
 					$('.inboxMessagesTitle').empty();
+					$('.messageViewThreadArchive').attr("data-thread-id", msg_thread_id);
 					$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').show();
 					$('.inboxMessagesHeaderConvoTitle').html(conversation_title);
 					$('#sendMessage').bind('click', sendmessage_js);
@@ -296,6 +297,32 @@ $(document).ready(function() {
 		return false;
 
 	});
+
+	$(document.body).on('click', '.messageViewThreadArchive', function(e) {
+		e.preventDefault();
+		var msg_thread_id = $(this).data("threadId");
+		console.log("clicked archive on thread: "+msg_thread_id);
+
+		var threadData = {};
+		threadData.msg_thread_id = msg_thread_id;
+		threadData.csrf_token = "{{ csrf_token() }}";
+		threadData.action = 'archive';
+
+		$.ajax({ url	: "/message",
+				 type	: "POST",
+				 data : threadData,
+				 success : function(data) {
+					console.log("Message Successfully Archived (must reload page to see change)");
+					loadInbox();
+					history.pushState({title: "Inbox"}, "", '/inbox');
+				}
+		});
+		return false;
+	});
+
+
+
+
 });
 </script>
 <script src="/static/js/sendmsg.js"></script>
