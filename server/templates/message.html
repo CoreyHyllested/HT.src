@@ -45,19 +45,18 @@
 							
 							<!-- <div class="messageThreadSubject">{{msg.UserMessage.msg_subject}}</div> -->
 
-							<div class="itemSender">
+							<div class="messageItemLeftCol">
 								<div class="itemSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.msg_from.prof_img}}"></div>
-								<div class="itemSenderName">
-								{% if msg.msg_from.prof_id is sameas bp.prof_id %}
-									{{msg.msg_from.prof_name}}
-								{% else %}
-									<a href="/profile?hero={{msg.msg_from.prof_id}}">{{msg.msg_from.prof_name}}</a>
-								{% endif %}
-								</div>
 							</div>
-							<div class="itemDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %H:%M %p')}}</div>
-							<br>
-							<div class="itemBody">{{msg.UserMessage.msg_content}}</div>
+
+							<div class="messageItemRightCol">
+								<div class="itemSenderName">
+									<a href="/profile?hero={{msg.msg_from.prof_id}}">{{msg.msg_from.prof_name}}</a>
+								</div>
+								<div class="itemDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %H:%M %p')}}</div>
+								<br>
+								<div class="itemBody">{{msg.UserMessage.msg_content}}</div>
+							</div>
 
 						</div>
 						{% endfor %}

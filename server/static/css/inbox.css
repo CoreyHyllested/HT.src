@@ -54,7 +54,7 @@
 }
 .inboxMessagesHeaderCenter {
 	float: left;
-	padding-left: 6px;
+
 }
 .inboxMessagesHeaderRight {
 	float: right;
@@ -79,6 +79,7 @@
 }
 
 .inboxMessagesHeaderConvoTitle {
+	color: #b4b4b4;
 
 }
 .inboxMessagesHeaderConvoTitle a {

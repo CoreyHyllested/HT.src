@@ -138,22 +138,22 @@
 }
 
 .messageThreadSubject {
-	width: 99%;
+	width: 100%;
 	font-size: 1.1em;
 	font-weight: bold;
-	padding: 6px 0px 10px 6px;
+	padding: 6px 0px 10px 0px;
 	margin-bottom: 12px;
 	border-bottom: 1px dotted #f0f0f0;
 }
 
 .messageThreadItemContainer {
 	float: left;
-	width: 98%;
+	width: 100%;
 }
 .messageThreadItem {
 	margin-bottom: 10px;
 	border-bottom: 1px dotted #f0f0f0; 
-	padding: 6px;
+/*	padding: 6px;*/
 	float: left;
 	min-height: 70px;
 	width: 100%;
@@ -174,9 +174,14 @@
 	margin-bottom: 12px;
 }
 
-.itemSender {
+.messageItemLeftCol{
+	width: 90px;
 	float: left;
-	width: 50%;
+}
+
+.messageItemRightCol{
+	width: 570px;
+	float: right;
 }
 
 .itemSenderImage {
@@ -186,7 +191,7 @@
 
 .itemSenderImage img {
 	border-radius: 3px;
-	width: 40px;
+	width: 100%;
 }
 
 .itemSenderName {
@@ -196,7 +201,7 @@
 	font-weight: bold;
 }
 .itemSenderName a{
-	color: inherit;
+	color: #29abe1;
 	transition: all 0.2s ease-in;
 	-moz-transition: all 0.2s ease-in;
 	-o-transition: all 0.2s ease-in;
@@ -205,7 +210,7 @@
 }
 
 .itemSenderName a:hover{
-	color: #29abe1;
+	color: #007cb3;
 }
 
 .itemDatetime {
