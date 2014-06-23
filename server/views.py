@@ -1547,8 +1547,8 @@ def render_message_page():
 		bp = Profile.get_by_uid(session['uid'])
 		try:
 			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
-			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
 			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
 
 			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
