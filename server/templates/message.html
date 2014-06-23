@@ -35,9 +35,11 @@
 			<div class="messageThreadContainer">
 				<div class="messageThread">
 					<div class="messageThreadConvoTitle">
-					Conversation with <a href="/profile?hero={{thread_partner.prof_id}}" class="partnerLink">{{thread_partner.prof_name}}</a> ({{num_thread_messages}} Message{% if num_thread_messages > 1 %}s{% endif %})
+					Conversation with <a href="/profile?hero={{thread_partner.prof_id}}" class="partnerLink blend">{{thread_partner.prof_name}}</a> 
 					</div>
+					<div class="messageThreadNumMessages">({{num_thread_messages}} Message{% if num_thread_messages > 1 %}s{% endif %})</div>
 					<div class="messageThreadSubject">{{subject}}</div>
+					
 					<div class="messageThreadItemContainer">
 						{% for msg in msg_thread_messages | sort(attribute='UserMessage.msg_created')  %}
 

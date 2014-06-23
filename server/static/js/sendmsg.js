@@ -8,8 +8,10 @@ function loadMessageThread(msg_thread_id) {
 			 success : function(data) {
 				var page_content = $(data).find('.messageThreadItemContainer').html();
 				var conversation_title = $(data).find('.messageThreadConvoTitle').html();
+				var num_thread_messages = $(data).find('.messageThreadNumMessages').html();
+
 				$('.messageThreadItemContainer').html(page_content);
-				$('.inboxMessagesHeaderConvoTitle').html(conversation_title);
+				$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);
 
 			}
 	});

@@ -60,9 +60,9 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Cancel">
+					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Cancel">
 					{% if proposal.buyer == false %}
-					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
 					{% endif %}
 					<!-- -->
 				</div>
@@ -72,43 +72,49 @@
 		</div>
 
 
-		<div class="dashboardAppointments">
+		<div class="dashboardAppts">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardAppointment" id="appt-{{appointment.Proposal.prop_uuid}}">
-				<div class="dashboardAppointmentLeftColumn">
+			<div class="dashboardAppt" id="appt-{{appointment.Proposal.prop_uuid}}">
+				<div class="dashboardApptLeftColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
 					</a>					
 				</div>
-				<div class="dashboardAppointmentCenterColumn">
+				<div class="dashboardApptCenterColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<h3>{{appointment.display.prof_name}}</h3>
 					</a>
-					<h4>{{appointment.display.headline}}</h4>
 					<div class="appointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
 				</div>
-				<div class="dashboardAppointmentRightColumn">
-					<div class="dashboardAppointmentRightColumnInfo">
+				<div class="dashboardApptRightColumn">
+
+					<div class="dashboardApptRightColumnElement apptDate">
+						{{appointment.Proposal.prop_ts.strftime('%A, %b %d')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptTime">
+						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptCost">
 						{% if appointment.buyer == True %}
 						You will pay ${{appointment.Proposal.prop_cost}}.
 						{% else %}
-						You will get paid ${{appointment.Proposal.prop_cost}}.
+						You will earn ${{appointment.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
-					<div class="dashboardAppointmentRightColumnInfo">
-						{{appointment.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
-						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
-					</div>
+
 					<!-- CAH: Meeting address goes here. -->
-					<div class="dashboardAppointmentRightColumnInfo">
-						{{appointment.Proposal.prop_place}}
+					<div class="dashboardApptRightColumnElement apptLocation">
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
-						<a href="#" class="falseMap">(see map)</a>
+						<a href="#" class="falseMap blend"><i class="fa fa-map-marker"></i>
+						{{appointment.Proposal.prop_place}}
+						</a>
 					</div>
 
 					<!-- CAH: The button should disappear 24 hours before the meeting. -->
-					<input type="button" class="dashboardActionButton redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton lessonCancel" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -132,7 +138,7 @@
 				</div>
 				<div class="dashboardMessageRightColumn">
 					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
-					<div class="messageView"><a href="/inbox/message/{{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
+					<div class="messageView"><a href="/inbox#thread?id={{msg.UserMessage.msg_thread}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
 				</div>
 				<div class="clear"></div>
 			</div>

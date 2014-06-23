@@ -14,7 +14,6 @@
 		<div class="inboxMessagesHeaderLeft">
 			<div class="inboxLeftNavigation">
 				<a title="Back to Inbox" id="leftNavBack" class="leftNavBackInbox navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
-				<!-- <a title="Back to Archive" id="leftNavBack" class="leftNavBackArchive navItem"><i class="fa fa-arrow-circle-left"></i> Back to Archive</a> -->
 			</div>
 			<div class="inboxMessagesTitle">
 			</div>	
@@ -24,7 +23,7 @@
 		</div>
 		<div class="inboxMessagesHeaderRight">
 			<div class="inboxMessagesHeaderIcons">
-				<a href="" title="Send Conversation to Archives" class="messageViewThreadArchive" data-thread-id=""><i class="fa fa-archive"></i></a>
+				<a href="" title="Send Conversation to Archives" class="messageViewThreadArchive blend" data-thread-id=""><i class="fa fa-archive"></i></a>
 			</div>	
 		</div>			
 	</div>
@@ -56,7 +55,7 @@
 							{{thread.UserMessage.msg_subject}} 
 							
 						</div>
-						<div class="threadAction threadArchive"><a title="Archive Message"><i class="fa fa-archive"></i></a></div>
+						<div class="threadAction threadArchive"><a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a></div>
 						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
@@ -72,7 +71,7 @@
 						<div class="threadItem threadSubjectLine">
 							{{thread.UserMessage.msg_subject}}							
 						</div>
-						<div class="threadAction threadRestore"><a title="Restore Message"><i class="fa fa-level-up"></i></a></div>
+						<div class="threadAction threadRestore"><a title="Restore Message" class="blend"><i class="fa fa-level-up"></i></a></div>
 						<div class="threadItem threadDate">{{thread.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 					</li>
 					{% endfor %}
@@ -149,12 +148,13 @@ $(document).ready(function() {
 				 success : function(data) {
 					var page_content = $(data).find('.messageRightColumn').html();
 					var conversation_title = $(data).find('.messageThreadConvoTitle').html();
+					var num_thread_messages = $(data).find('.messageThreadNumMessages').html();
 
 					$('.inboxView').html(page_content);
 					$('.inboxMessagesTitle').empty();
 					$('.messageViewThreadArchive').attr("data-thread-id", msg_thread_id);
 					$('.inboxLeftNavigation, .inboxMessagesHeaderIcons').show();
-					$('.inboxMessagesHeaderConvoTitle').html(conversation_title);
+					$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);
 					$('#sendMessage').bind('click', sendmessage_js);
 
 				}

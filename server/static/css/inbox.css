@@ -67,32 +67,10 @@
 .inboxMessagesHeaderIcons i {
 	cursor: pointer;
 }
-.inboxMessagesHeaderIcons a {
-	color: inherit;
-	-moz-transition: 0.5s ease;
-	-o-transition: 0.5s ease;
-	-webkit-transition: 0.5 ease;
-	transition: 0.5s ease;	
-}
-.inboxMessagesHeaderIcons a:hover {
-	color: #007cb3;
-}
 
 .inboxMessagesHeaderConvoTitle {
 	color: #b4b4b4;
 
-}
-.inboxMessagesHeaderConvoTitle a {
-	color: inherit;
-	transition: all 0.2s ease-in;
-	-moz-transition: all 0.2s ease-in;
-	-o-transition: all 0.2s ease-in;
-	-webkit-transition: all 0.2s ease-in;
-	transition: all 0.2s ease-in;
-	
-}
-.inboxMessagesHeaderConvoTitle a:hover {
-	color: #29abe1;
 }
 .inboxMessagesTitle {
 	font-size: 2em;
@@ -148,19 +126,6 @@
 .inboxLeftNavigation i {
 	font-size: .9em;
 }
-
-.inboxLeftNavigation a {
-	color: #29abe1;
-	-moz-transition: 0.5s ease;
-	-o-transition: 0.5s ease;
-	-webkit-transition: 0.5 ease;
-	transition: 0.5s ease;	
-}
-.inboxLeftNavigation a:hover {
-	color: #007cb3;
-}
-
-
 
 /* MESSAGE THREADS*/
 
@@ -219,15 +184,9 @@
 }
 .threadAction a {
 	opacity: .5;
-	color: inherit;
-	-moz-transition: 0.3s ease;
-	-o-transition: 0.3s ease;
-	-webkit-transition: 0.3 ease;
-	transition: 0.3s ease;	
 }
 .threadAction a:hover {
 	opacity: 1;
-	color: #007cb3;
 }
 
 .composeButton {

@@ -39,19 +39,6 @@
 	font-size: 1.8em;
 }
 
-.messageNavItem {
-    background-size: 18px 18px;
-    border-bottom: 1px solid #e2e4e6;
-    color: #6e7980;
-    font-size: 0.875em;
-    padding: 11px 0 11px 30px;
-    cursor: pointer;
-}
-
-.messageNavItem:hover {
-    color: #007cb3;
-}
-
 .messageNavItem i {
 	padding-left: 6px; 
 }
@@ -116,18 +103,6 @@
 	font-size: .9em;
 }
 
-.navigation, .leftNavigation a {
-	color: #29abe1;
-	-moz-transition: 0.5s ease;
-	-o-transition: 0.5s ease;
-	-webkit-transition: 0.5 ease;
-	transition: 0.5s ease;	
-}
-.navigation, .leftNavigation a:hover {
-	color: #007cb3;
-}
-
-
 .messageThread {
 	width: 100%;
 }
@@ -135,6 +110,9 @@
 .messageThreadConvoTitle {
 	display: none;
 	width: 100%;
+}
+.messageThreadNumMessages {
+	display: none;
 }
 
 .messageThreadSubject {
@@ -199,18 +177,6 @@
 	font-size: .9em;
 	color: #6e7980;
 	font-weight: bold;
-}
-.itemSenderName a{
-	color: #29abe1;
-	transition: all 0.2s ease-in;
-	-moz-transition: all 0.2s ease-in;
-	-o-transition: all 0.2s ease-in;
-	-webkit-transition: all 0.2s ease-in;
-	transition: all 0.2s ease-in;
-}
-
-.itemSenderName a:hover{
-	color: #007cb3;
 }
 
 .itemDatetime {
