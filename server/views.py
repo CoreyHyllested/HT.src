@@ -675,7 +675,7 @@ def ht_api_send_message():
 		print 'next=', next
 
 		if (parent):
-			# get thread_leader.
+			# print ('get thread leader', thread)
 			msg_thread_leader = UserMessage.get_by_msg_id(thread)
 			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
 
@@ -695,9 +695,6 @@ def ht_api_send_message():
 		#todo: send email.
 		hp = Profile.get_by_prof_id(msg_to)
 		email_user_to_user_message(bp, hp, subject, thread, message)
-		print "success, saved msg"
-		print
-	
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
 	except DB_Error as dbe:
@@ -1485,7 +1482,6 @@ def ht_api_get_message_thread(msg_thread):
 	thread_messages = []
 
 	try:
-		print 'get_message_thread from DB'
 		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
 							 .filter(UserMessage.msg_thread == msg_thread)					\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
@@ -1505,8 +1501,7 @@ def ht_api_get_message_thread(msg_thread):
 
 		thread_partner = Profile.get_by_prof_id(thread_partner_id)
 			
-		subject = thread_messages[0].UserMessage.msg_subject
-		print 'subject is', subject
+		subject = msg_zero.UserMessage.msg_subject
 		
 		if ((msg_zero.msg_from != bp) and (msg_zero.msg_to != bp)):
 			print 'user doesn\'t have access'
@@ -1521,7 +1516,7 @@ def ht_api_get_message_thread(msg_thread):
 				msg.UserMessage.msg_opened = dt.utcnow();
 				db_session.add(msg.UserMessage)
 		if (updated_messages > 0):
-			print 'committing messages'
+			print 'committing ' + str(updated_messages) + ' messages'
 			db_session.commit()
 	except Exception as e:
 		print type(e), e

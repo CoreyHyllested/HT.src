@@ -13,8 +13,32 @@ import json, smtplib
 import stripe
 
 
-def email_user_to_user_message(sender_prof, receiver_prof, subject, thread, message):
-	print 'sending an actual goddamned email'
+def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, message):
+	print 'email_user_to_user_message'
+	try:
+		print 'get recvr email'
+		recv_account = Account.get_by_uid(recv_prof.account)
+		send_account = Account.get_by_uid(send_prof.account)
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	if (message.msg_flags & MSG_STATE_THRD_UPDATED):
+		msg_subject = msg_subject + " (updated)"
+
+	# create email body
+	msg_html = '<p>' + str(message.msg_content) + '</p>'
+	msg_to_recvr_html = '<p>From ' + send_prof.prof_name + ':</p>' + msg_html
+	msg_to_sendr_html = '<p>Sent to ' + recv_prof.prof_name + '</p>' + msg_html
+
+	msg_to_recvr = create_msg(msg_subject, recv_account.email, recv_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_recvr.attach(MIMEText(msg_to_recvr_html, 'html', 'UTF-8'))
+	ht_send_email(recv_account.email, msg_to_recvr)
+
+	msg_to_sendr = create_msg(msg_subject, send_account.email, send_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_sendr.attach(MIMEText(msg_to_sendr_html, 'html', 'UTF-8'))
+	ht_send_email(send_account.email, msg_to_sendr)
+
 
 
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
