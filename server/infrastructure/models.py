@@ -329,7 +329,6 @@ class Profile(Base):
 	@staticmethod
 	def get_by_prof_id(profile_id):
 		profiles = Profile.query.filter_by(prof_id=profile_id).all()
-		print "len = ", len(profiles), profile_id
 		if len(profiles) != 1: 
 			raise NoProfileFound(profile_id, 'Sorry, profile not found')
 		return profiles[0]
@@ -337,7 +336,6 @@ class Profile(Base):
 	@staticmethod
 	def get_by_uid(uid):
 		profiles = Profile.query.filter_by(account=uid).all()
-		print "len = ", len(profiles), uid
 		if len(profiles) != 1: 
 			raise NoProfileFound(uid, 'Sorry, profile not found')
 		return profiles[0]
