@@ -287,5 +287,24 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	return True, True
 
 
-def modifyProfile():
-	pass
+
+def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
+	inbox = []
+	archive = []
+
+	for thread in msg_threads:
+		if (mbox_profile_id == thread.UserMessage.msg_to):
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
+			mbox = (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) and archive or inbox
+		elif (mbox_profile_id == thread.UserMessage.msg_from):
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
+			mbox = (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) and archive or inbox
+		else:
+			print 'Major error.  profile_id didn\'t match to or from'
+			continue
+		setattr(thread, 'thread_partner', thread_partner)
+		mbox.append(thread)
+
+	return (inbox, archive)
+
+
