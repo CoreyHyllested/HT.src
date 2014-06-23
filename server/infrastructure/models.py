@@ -80,10 +80,10 @@ MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
 MSG_FLAG_RECV_ARCHIVE = 2		#The original-message receiver archived thread
 MSG_FLAG_THRD_UPDATED = 3		#A message was responded too.
 
-MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)
-MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)
-MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)
-MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)
+MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)	#1
+MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)	#2
+MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
+MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))

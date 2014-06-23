@@ -1408,11 +1408,11 @@ def get_threads():
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_threads(bp.prof_id, threads)
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
 
 	# Got stuck here - jsonify needs the thread data to be serialized before it can pass it along. How do we do that?
 
-	return jsonify(foo=bp.prof_id)
+	return jsonify(foo=bp.prof_id, inbox=inbox_threads)
 
 
 
@@ -1426,48 +1426,19 @@ def render_inbox_page():
 
 	try:
 		threads = db_session.query(UserMessage, msg_from, msg_to)													\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .filter(UserMessage.msg_parent == None)													\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
+							 .filter(UserMessage.msg_parent == None)												\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
 		print "threads =", len(threads)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_threads(bp.prof_id, threads)
-
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
 	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
 
 
-
-def ht_assign_threads(profile_id, threads):
-	inbox = []
-	archive = []
-	for thread in threads:
-		if (profile_id == thread.UserMessage.msg_to):
-
-			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
-
-			setattr(thread, 'thread_partner', thread_partner)
-			# print "thread partner is", thread_partner.prof_name
-			if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) != 0:
-				archive.append(thread)
-			else:
-				inbox.append(thread)
-		elif (profile_id == thread.UserMessage.msg_from):
-
-			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
-
-			setattr(thread, 'thread_partner', thread_partner)
-			# print "thread partner is", thread_partner.prof_name
-			if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE):
-				archive.append(thread)
-			else:
-				inbox.append(thread)
-		else:
-			print 'Major error.  profile_id didn\'t match to or from'
-	return (inbox, archive)
 
 
 
@@ -1543,23 +1514,22 @@ def render_message_page():
 	elif (action == "archive"):
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
-			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
-			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
+			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
 
-			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
+			if ((len(thread_messages) > 0) and (thread_msg_zero.msg_from != bp.prof_id) and (thread_msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
-				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
-				msg_thread_messages = []				
+				#print 'user', bp.prof_id, 'msg_from == ', thread_msg_zero.msg_from, (thread_msg_zero.msg_from != bp.prof_id)
+				#print 'user', bp.prof_id, 'msg_to   == ', thread_msg_zero.msg_to  , (thread_msg_zero.msg_to   != bp.prof_id)
+				thread_messages = []
 
-			archive_flag = (msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			archive_flag = (thread_msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
-
-			for msg in msg_thread_messages:
-				msg.msg_flags = msg.msg_flags | archive_flag
-				db_session.add(msg)
+			for msg in thread_messages:
+				msg.msg_flags = (msg.msg_flags | archive_flag)
 				updated_messages = updated_messages + 1
+				db_session.add(msg)
 
 			if (updated_messages > 0):
 				print '\"archiving\" ' + str(updated_messages) + " msgs"
@@ -1570,27 +1540,26 @@ def render_message_page():
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
-
-		return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 500)	
+		return make_response(jsonify(usrmsg="Message thread failed.", next='/inbox'), 500)
 	
 	elif (action == "restore"):
 		print 'restoring msg_thread' + str(msg_thread_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
-			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
-			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
+			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
 
-			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
+			if ((len(thread_messages) > 0) and (thread_msg_zero.msg_from != bp.prof_id) and (thread_msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				print 'user', bp.prof_id, 'msg_from == ', msg_zero.msg_from, (msg_zero.msg_from != bp.prof_id) 
-				print 'user', bp.prof_id, 'msg_to   == ', msg_zero.msg_to  , (msg_zero.msg_to   != bp.prof_id) 
-				msg_thread_messages = []				
+				print 'user', bp.prof_id, 'msg_from == ', thread_msg_zero.msg_from, (thread_msg_zero.msg_from != bp.prof_id)
+				print 'user', bp.prof_id, 'msg_to   == ', thread_msg_zero.msg_to  , (thread_msg_zero.msg_to   != bp.prof_id)
+				thread_messages = []
 
-			archive_flag = (msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			archive_flag = (thread_msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
 
-			for msg in msg_thread_messages:
+			for msg in thread_messages:
 				msg.msg_flags = msg.msg_flags & ~archive_flag
 				db_session.add(msg)
 				updated_messages = updated_messages + 1

@@ -295,15 +295,25 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 	for thread in msg_threads:
 		if (mbox_profile_id == thread.UserMessage.msg_to):
 			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
-			mbox = (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) and archive or inbox
+			if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE):
+				archive.append(thread)
+				print 'MsgThread_to_me, archived', (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE)
+			else:
+				inbox.append(thread)
+				print 'MsgThread_to_me, inboxed'
 		elif (mbox_profile_id == thread.UserMessage.msg_from):
 			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
-			mbox = (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) and archive or inbox
+			#mbox = (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) and archive or inbox
+			if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE):
+				archive.append(thread)
+				print 'MsgThread_from_me, archived', (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE)
+			else:
+				inbox.append(thread)
+				print 'MsgThread_from_me, inboxed', (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE)
 		else:
 			print 'Major error.  profile_id didn\'t match to or from'
 			continue
 		setattr(thread, 'thread_partner', thread_partner)
-		mbox.append(thread)
 
 	return (inbox, archive)
 
