@@ -1476,7 +1476,7 @@ def ht_assign_threads(profile_id, threads):
 @req_authentication
 @ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 def ht_api_get_message_thread(msg_thread):
-	print 'get msg_thread: ', msg_thread
+	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
 
 	msg_from = aliased(Profile, name='msg_from')
@@ -1484,29 +1484,30 @@ def ht_api_get_message_thread(msg_thread):
 	thread_messages = []
 
 	try:
+		print 'get_message_thread from DB'
 		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
 							 .filter(UserMessage.msg_thread == msg_thread)					\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "thread_messages =", len(thread_messages)
+		print "number of thread_messages", len(thread_messages)
 	except Exception as e:
 		print e
 
+	msg_zero = filter(lambda msg: (msg.UserMessage.msg_id == msg.UserMessage.msg_thread), thread_messages)[0]
 	num_thread_messages = len(thread_messages)
 
 	if (num_thread_messages > 0):
-
-		if (bp.prof_id == thread_messages[0].UserMessage.msg_from):
-			thread_partner_id = thread_messages[0].UserMessage.msg_to
+		if (bp.prof_id == msg_zero.UserMessage.msg_from):
+			thread_partner_id = msg_zero.UserMessage.msg_to
 		else:
-			thread_partner_id = thread_messages[0].UserMessage.msg_from
+			thread_partner_id = msg_zero.UserMessage.msg_from
 
 		thread_partner = Profile.get_by_prof_id(thread_partner_id)
 			
 		subject = thread_messages[0].UserMessage.msg_subject
 		print 'subject is', subject
 		
-		if ((thread_messages[0].msg_from != bp) and (thread_messages[0].msg_to != bp)):
+		if ((msg_zero.msg_from != bp) and (msg_zero.msg_to != bp)):
 			print 'user doesn\'t have access'
 			thread_messages = []
 
@@ -1546,8 +1547,8 @@ def render_message_page():
 		bp = Profile.get_by_uid(session['uid'])
 		try:
 			msg_thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
-			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
 			print "msg_thread id and len: ", msg_thread_id, len(msg_thread_messages), msg_zero
+			msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), msg_thread_messages)[0]
 
 			if ((len(msg_thread_messages) > 0) and (msg_zero.msg_from != bp.prof_id) and (msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
@@ -1611,6 +1612,8 @@ def render_message_page():
 
 	# find correct 400 response
 	return make_response(jsonify(usrmsg="These are not the message you are looking for.", next='/inbox'), 400)
+
+
 
 @req_authentication
 @ht_server.route("/compose", methods=['GET', 'POST'])
