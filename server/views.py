@@ -675,18 +675,17 @@ def ht_api_send_message():
 		print 'next=', next
 
 		if (parent):
-
-			parent_msg	= UserMessage.get_by_msg_id(parent) 
-			msg_to	= parent_msg.msg_from
 			# get thread_leader.
 			msg_thread_leader = UserMessage.get_by_msg_id(thread)
-			archive_flag = (msg_thread_leader.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
-			print 'user_archive_flag', (msg_thread_leader.msg_to == bp.prof_id), archive_flag, MSG_STATE_RECV_ARCHIVE, MSG_STATE_SEND_ARCHIVE
+			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
+
+			# set thread updated flag and clear archive flags for both users.
+			archive_flags = (MSG_STATE_RECV_ARCHIVE | MSG_STATE_SEND_ARCHIVE)
 			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags | MSG_STATE_THRD_UPDATED
-			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flag)
+			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flags)
 			db_session.add(msg_thread_leader)
 			
-		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
+		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
 		
 		print 'full message=', message
 		
@@ -699,8 +698,7 @@ def ht_api_send_message():
 		print "success, saved msg"
 		print
 	
-		thisresponse = make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
-		return thisresponse
+		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
 	except DB_Error as dbe:
 		print dbe
