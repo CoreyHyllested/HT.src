@@ -829,7 +829,7 @@ def ht_api_proposal_negotiate():
 @ht_server.route('/settings', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def settings():
+def render_settings():
 	""" Provides users the ability to modify their settings.
 		- detect HT Session info.  Provide modified info.
 	"""
@@ -843,8 +843,6 @@ def settings():
 	errmsg = None
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
-		print("settings form validated")
-
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
@@ -914,10 +912,15 @@ def settings():
 		errmsg = "Passwords must match."
 
 
+	email_unver = False
+	if (ba.status == Account.USER_UNVERIFIED):
+		print bp.prof_name, ' email is unverified'
+		email_unver = True
+
 	form.oauth_stripe.data     = card
 	form.set_input_email.data  = ba.email
 
-	return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
+	return make_response(render_template('settings.html', form=form, bp=bp, unverified_email=email_unver, errmsg=errmsg))
 
 
 def error_sanitize(message):
@@ -1177,9 +1180,15 @@ def serviceFailure(pg, error):
 	return render_template('500.html'), 500
 
 
-@ht_server.route("/recovery", methods=['GET', 'POST'])
-def recovery():
-	#mycssfiles = ["static/css/dashboard_lights.css", "static/css/this_is_pretty_cool.css"]
+linkedin.pre_request = change_linkedin_query
+
+
+
+
+#@ht_server.route("/portfolio/<operation>/", methods=['POST'])
+# was /recovery
+@ht_server.route("/password/recover", methods=['GET', 'POST'])
+def ht_password_recover():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
 	if request.method == 'POST':
@@ -1187,11 +1196,11 @@ def recovery():
 		usrmsg = ht_password_recovery(form.rec_input_email.data)
 	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
-linkedin.pre_request = change_linkedin_query
 
 
 
-@ht_server.route('/newpassword/<challengeHash>', methods=['GET', 'POST'])
+# was '/newpassword/<challengeHash>', methods=['GET', 'POST'])
+@ht_server.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
 def newpassword(challengeHash):
 
 	form = NewPasswordForm(request.form)
@@ -1510,15 +1519,10 @@ def render_message_page():
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
+	hp = None
 	next = request.values.get('next')
 
-	print "next: ", next
-
-	if (hid is not None):
-		hp = Profile.get_by_prof_id(hid)
-	else:
-		hp = None
-
+	if (hid is not None): hp = Profile.get_by_prof_id(hid)
 	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
 
 
