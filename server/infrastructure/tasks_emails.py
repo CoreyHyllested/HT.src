@@ -9,7 +9,7 @@ from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from pprint import pprint as pp
-import json, smtplib
+import json, smtplib, urllib
 import stripe
 
 
@@ -52,7 +52,7 @@ def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_i
 
 	msg = create_msg(msg_subject, buyer_email, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_email, msg) 
+	ht_send_email(buyer_email, msg)
 
 
 
@@ -73,26 +73,26 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 
 	msg = create_msg(msg_subject, hero_email, hero_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(hero_email, msg) 
+	ht_send_email(hero_email, msg)
 
 
 
 @mngr.task
-def send_verification_email(toEmail, uid, challenge_hash):
-	url  = 'https://herotime.co/signup/verify/' + str(challenge_hash) + "?email="+str(toEmail)
-	msg_text = "Thank you for creating a HeroTime account. Click <a href=\"" + str(url) + "\">here</a> to verify your email."
-	msg_html = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
+def send_verification_email(user_email, user_name, challenge_hash):
+	url  = 'https://herotime.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	msg_html = "Thank you for creating a HeroTime account. <a href=\"" + str(url) + "\">Verify your email address.</a>"
+	msg_text = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
 
-	msg = create_msg('Password Verification', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
+	msg = create_msg('Password Verification', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(toEmail, msg) 
+	ht_send_email(user_email, msg)
 
 
 
 @mngr.task
 def send_recovery_email(toEmail, challenge_hash):
-	url = 'https://herotime.co/newpassword/' + str(challenge_hash) + "?email=" + str(toEmail)
+	url = 'https://herotime.co/password/reset/' + str(challenge_hash) + "?email=" + str(toEmail)
 	msg_text = "Go to " + url + " to recover your HeroTime password."
 	msg_html = "Click <a href=\"" + url + "\">here</a> to recover your HeroTime password."
 
@@ -106,7 +106,7 @@ def send_recovery_email(toEmail, challenge_hash):
 @mngr.task
 def send_welcome_email(toEmail):
 	msg_text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
-	msg_html = """\n<html><head></head><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
+	msg_html = """<html><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
 
 	msg = create_msg('Welcome to HeroTime', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
