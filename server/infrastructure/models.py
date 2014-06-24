@@ -80,10 +80,10 @@ MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
 MSG_FLAG_RECV_ARCHIVE = 2		#The original-message receiver archived thread
 MSG_FLAG_THRD_UPDATED = 3		#A message was responded too.
 
-MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)
-MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)
-MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)
-MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)
+MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)	#1
+MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)	#2
+MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
+MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -320,30 +320,44 @@ class Profile(Base):
 		self.prof_name	= name
 		self.account	= acct
 
+
 	def __repr__ (self):
 		tmp_headline = self.headline
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
 		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
 
+
 	@staticmethod
 	def get_by_prof_id(profile_id):
 		profiles = Profile.query.filter_by(prof_id=profile_id).all()
-		print "len = ", len(profiles), profile_id
 		if len(profiles) != 1: 
 			raise NoProfileFound(profile_id, 'Sorry, profile not found')
 		return profiles[0]
 
+
 	@staticmethod
 	def get_by_uid(uid):
 		profiles = Profile.query.filter_by(account=uid).all()
-		print "len = ", len(profiles), uid
 		if len(profiles) != 1: 
 			raise NoProfileFound(uid, 'Sorry, profile not found')
 		return profiles[0]
 
 
-		
+	@property
+	def serialize(self):
+		return {
+			'account'	: str(self.account),
+			'prof_id'	: str(self.prof_id),
+			'prof_name'	: str(self.prof_name),
+			'prof_img'	: str(self.prof_img),
+			'prof_bio'	: str(self.prof_bio),
+			'prof_rate'	: str(self.prof_rate),
+			'headline'	: str(self.headline),
+			'industry'	: str(self.industry),
+		}
+
+
 
 class Proposal(Base):
 	__tablename__ = "proposal"
@@ -589,23 +603,37 @@ class UserMessage(Base):
 			parent = None
 			if (self.msg_subject is None): raise Exception('first msg needs subject')
 		else:
+			# thread is not None, parent must exist; set flags properly
 			if (parent == None): raise Exception('not valid threading')	
-			self.msg_subject = None
+			self.msg_flags = MSG_STATE_THRD_UPDATED
 
 		self.msg_thread	= thread
 		self.msg_parent	= parent
 
-		print "inserting message - thread is", self.msg_thread
-
 	def __repr__(self):
 		content = self.msg_content[:20]
 		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+
 
 	@staticmethod
 	def get_by_msg_id(uid):
 		msgs = UserMessage.query.filter_by(msg_id=uid).all()
 		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
 		return msgs[0]
+
+
+	@property
+	def serialize(self):
+		return {
+			'msg_id'		: str(self.msg_id),
+			'msg_to'		: self.msg_to,
+			'msg_from'		: self.msg_from,
+			'msg_flags'		: self.msg_flags,
+			'msg_subject'	: str(self.msg_subject),
+			'msg_content'	: str(self.msg_content),
+			'msg_parent'	: str(self.msg_parent),
+			'msg_thread'	: str(self.msg_thread),
+		}
 
 
 
