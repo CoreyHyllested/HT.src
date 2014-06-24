@@ -1393,26 +1393,36 @@ def testing_enable_reviews():
 @ht_server.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
-	msg_from = aliased(Profile, name='msg_from')
-	msg_to	 = aliased(Profile, name='msg_to')
 	threads = []
 
 	try:
-		threads = db_session.query(UserMessage, msg_from, msg_to)													\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .filter(UserMessage.msg_parent == None)													\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
-							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "threads =", len(threads)
+		threads = db_session.query(UserMessage).filter(UserMessage.msg_parent == None)	\
+												.filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id)).all();
+
+		json_inbox = []
+		json_archive = []
+		json_messages = [msg.serialize for msg in threads]
+		for msg in json_messages:
+			profile_to = Profile.get_by_prof_id(msg['msg_to'])
+			profile_from = Profile.get_by_prof_id(msg['msg_from'])
+			msg['msg_to'] = profile_to.serialize
+			msg['msg_from'] = profile_from.serialize
+			if ((bp == profile_to) and (msg['msg_flags'] & MSG_STATE_RECV_ARCHIVE)):
+				json_archive.append(msg)
+			else:
+				json_inbox.append(msg)
+
+			if ((bp == profile_from) and (msg['msg_flags'] & MSG_STATE_SEND_ARCHIVE)):
+				json_archive.append(msg)
+			else:
+				json_inbox.append(msg)
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
-
-	# Got stuck here - jsonify needs the thread data to be serialized before it can pass it along. How do we do that?
-
-	return jsonify(foo=bp.prof_id, inbox=inbox_threads)
+	#(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
+	return jsonify(foo=bp.prof_id, inbox=json_inbox, archive=json_archive)
 
 
 
