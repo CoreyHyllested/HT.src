@@ -30,6 +30,7 @@ from server import ht_server, linkedin
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, aliased
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
@@ -264,7 +265,7 @@ def normalize_oa_account_data(provider, oa_data):
 
 
 
-def ht_get_composite_reviews(profile):
+def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
@@ -283,6 +284,20 @@ def ht_get_composite_reviews(profile):
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
 	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
 	return all_reviews
+
+
+def set_display_to_partner(r, prof_id):
+	if (prof_id == r.Review.prof_reviewed):
+		setattr(r, 'display', r.user)
+	else:
+		setattr(r, 'display', r.hero)
+
+
+def set_display_to_partner2(r, prof_id):
+	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
+	setattr(r, 'display', display_attr)
+
+
 
 
 

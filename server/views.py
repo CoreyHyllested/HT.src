@@ -16,7 +16,7 @@ from server.infrastructure.errors import *
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
-from sqlalchemy     import distinct, or_
+from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
@@ -118,7 +118,7 @@ def render_profile(usrmsg=None):
 	try:
 		# complicated search queries can fail and lock up DB.
 		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
-		hp_c_reviews = ht_get_composite_reviews(hp)
+		hp_c_reviews = htdb_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
@@ -139,14 +139,6 @@ def render_profile(usrmsg=None):
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
 
-
-def set_display_to_partner(r, prof_id):
-	#partner = if (prof_id == r.Review.prof_reviewed) r.user else r.hero
-	#setattr(r, 'display', partner)
-	if (prof_id == r.Review.prof_reviewed):
-		setattr(r, 'display', r.user)
-	else:
-		setattr(r, 'display', r.hero)
 
 
 
@@ -478,10 +470,6 @@ def render_dashboard(usrmsg=None, focus=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	# number of appotintments (this week, next week).
-	# number of proposals (all)
-
-	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	msg_from = aliased(Profile, name='msg_from')
@@ -498,18 +486,17 @@ def render_dashboard(usrmsg=None, focus=None):
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 	
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
 	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
-	print "proposals =", len(props), ", appts =", len(appts)
 
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
 
-	
+
 
 def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
