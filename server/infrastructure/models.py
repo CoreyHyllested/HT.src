@@ -628,6 +628,7 @@ class UserMessage(Base):
 			'msg_id'		: str(self.msg_id),
 			'msg_to'		: self.msg_to,
 			'msg_from'		: self.msg_from,
+			'msg_flags'		: self.msg_flags,
 			'msg_subject'	: str(self.msg_subject),
 			'msg_content'	: str(self.msg_content),
 			'msg_parent'	: str(self.msg_parent),
