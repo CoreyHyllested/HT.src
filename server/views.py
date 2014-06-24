@@ -677,6 +677,9 @@ def ht_api_send_message():
 		if (parent):
 			# print ('get thread leader', thread)
 			msg_thread_leader = UserMessage.get_by_msg_id(thread)
+			#if (msg_thread_leader.msg_to != bp.prof_id or msg_thread_leader.msg_from != bp.prof_id):
+				# prevent active tampering.
+				#return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
 
 			# set thread updated flag and clear archive flags for both users.
@@ -684,15 +687,12 @@ def ht_api_send_message():
 			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags | MSG_STATE_THRD_UPDATED
 			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flags)
 			db_session.add(msg_thread_leader)
-			
+
 		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
-		
-		print 'full message=', message
 		
 		db_session.add(message)
 		db_session.commit()
 
-		#todo: send email.
 		hp = Profile.get_by_prof_id(msg_to)
 		email_user_to_user_message(bp, hp, subject, thread, message)
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
@@ -1491,10 +1491,11 @@ def ht_api_get_message_thread(msg_thread):
 	try:
 		updated_messages = 0
 		for msg in thread_messages:
-			if (msg.UserMessage.msg_opened == None):
+			if (bp.prof_id == msg.UserMessage.msg_to and msg.UserMessage.msg_opened == None):
 				print 'user message never opened before'
 				updated_messages = updated_messages + 1
 				msg.UserMessage.msg_opened = dt.utcnow();
+				msg.UserMessage.msg_flags = (msg.UserMessage.msg_flags | MSG_STATE_LASTMSG_READ)
 				db_session.add(msg.UserMessage)
 		if (updated_messages > 0):
 			print 'committing ' + str(updated_messages) + ' messages'
