@@ -267,8 +267,8 @@ def normalize_oa_account_data(provider, oa_data):
 
 def ht_get_unread_messages(profile):
 	all_msgs	= htdb_get_composite_messages(profile)
-	unread_msgs	= filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_FLAG_LASTMSG_READ) == 0), all_msgs)
-	toProf_msgs = filter(lambda msg:  (msg.UserMessage.msg_to == profile.prof_id), unread_msgs)
+	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD', dump=True)
+	toProf_msgs = ht_filter_composite_messages(unread_msgs, profile, filter_by='RECEIVED', dump=True)
 	return toProf_msgs
 
 
@@ -282,6 +282,27 @@ def htdb_get_composite_messages(profile):
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)												\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
 	return messages
+
+
+
+def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dump=False):
+	messages = []
+	if (filter_by == 'RECEIVED'):
+		print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
+		messages = filter(lambda msg: (msg.UserMessage.msg_to == profile.prof_id), message_set)
+	if (filter_by == 'SENT'):
+		print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
+		messages = filter(lambda msg: (msg.UserMessage.msg_from == profile.prof_id), message_set)
+	if (filter_by == 'UNREAD'):
+		print 'Searching message_set for messages marked as unread'
+		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
+
+	if (dump):
+		print 'Original set',  len(message_set), "=>", len(messages)
+		for msg in messages:
+			print msg.msg_from.prof_name, 'sent', msg.msg_to.prof_name, 'about', msg.UserMessage.msg_subject, '\t', msg.UserMessage.msg_flags, '\t', msg.UserMessage.msg_thread
+	return messages
+
 
 
 
