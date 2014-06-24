@@ -263,6 +263,51 @@ def normalize_oa_account_data(provider, oa_data):
 	return data
 
 
+
+def ht_get_composite_reviews(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	# OBJECT
+	# OBJ.Review	# Review
+	# OBJ.hero		# Profile of seller
+	# OBJ.user		# Profile of buyer
+	# OBJ.appt 		# Proposal object
+	# OBJ.display	# <ptr> Profile of other person (not me)
+
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(user, user.prof_id == Review.prof_authored)												\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
+	return all_reviews
+
+
+
+def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+	reviews = []
+	if (filter_by == 'REVIEWED'):
+		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
+	if (filter_by == 'AUTHORED'):
+		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
+	if (filter_by == 'VISIBLE'):
+		print 'Searching review_set for reviews marked as visible'
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+
+	if (dump):
+		print 'Original set',  len(review_set), "=>", len(reviews)
+		for r in reviews:
+			# see ht_get_composite_reviews for object
+			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+	return reviews
+
+
+
+
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
 	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
 	ba = Account.query.filter_by(userid=uid).all()[0]

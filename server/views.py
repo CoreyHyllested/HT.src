@@ -140,54 +140,6 @@ def render_profile(usrmsg=None):
 
 
 
-
-def ht_get_composite_reviews(profile):
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-
-	# OBJECT
-	# OBJ.Review	# Review
-	# OBJ.hero		# Profile of seller
-	# OBJ.user		# Profile of buyer
-	# OBJ.appt 		# Proposal object
-	# OBJ.display	# <ptr> Profile of other person (not me)
-
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
-								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)													\
-								.join(user, user.prof_id == Review.prof_authored)												\
-								.join(hero, hero.prof_id == Review.prof_reviewed).all();
-	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
-	#for r in all_reviews:
-	#	print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	return all_reviews
-
-
-
-def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
-	reviews = []
-	if (filter_by == 'REVIEWED'):
-		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
-		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
-	if (filter_by == 'AUTHORED'):
-		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
-		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
-	if (filter_by == 'VISIBLE'):
-		print 'Searching review_set for reviews marked as visible'
-		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
-
-	if (dump):
-		print 'Original set',  len(review_set), "=>", len(reviews)
-		for r in reviews:
-			# see ht_get_composite_reviews for object
-			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	return reviews
-
-
-
 def set_display_to_partner(r, prof_id):
 	#partner = if (prof_id == r.Review.prof_reviewed) r.user else r.hero
 	#setattr(r, 'display', partner)
@@ -554,13 +506,7 @@ def render_dashboard(usrmsg=None, focus=None):
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
 	print "proposals =", len(props), ", appts =", len(appts)
-	
 
-	#for x in props:
-	#	print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
-	#for x in appts: #print 'now appts: '
-	#	print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
-	
 	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
 
