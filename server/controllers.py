@@ -272,6 +272,12 @@ def ht_get_unread_messages(profile):
 	return toProf_msgs
 
 
+def ht_get_thread_messages(profile):
+	all_msgs	= htdb_get_composite_messages(profile)
+	msg_threads	= ht_filter_composite_messages(all_msgs, profile, filter_by='THREADS')
+	return msg_threads
+
+
 
 def htdb_get_composite_messages(profile):
 	msg_from = aliased(Profile, name='msg_from')
@@ -296,6 +302,9 @@ def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dum
 	if (filter_by == 'UNREAD'):
 		print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
+	if (filter_by == 'THREADS'):
+		print 'Searching message_set for messages marked as unread'
+		messages = filter(lambda msg: ((msg.UserMessage.msg_thread == msg.UserMessage.msg_id) == 0), message_set)
 
 	if (dump):
 		print 'Original set',  len(message_set), "=>", len(messages)

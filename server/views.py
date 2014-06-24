@@ -1324,15 +1324,14 @@ def get_threads():
 			profile_from = Profile.get_by_prof_id(msg['msg_from'])
 			msg['msg_to'] = profile_to.serialize
 			msg['msg_from'] = profile_from.serialize
-			if ((bp == profile_to) and (msg['msg_flags'] & MSG_STATE_RECV_ARCHIVE)):
-				json_archive.append(msg)
+			if (bp == profile_to):
+				mbox = json_archive if (msg['msg_flags'] & MSG_STATE_RECV_ARCHIVE) else json_inbox
+			elif (bp == profile_from):
+				mbox = json_archive if (msg['msg_flags'] & MSG_STATE_SEND_ARCHIVE) else json_inbox
 			else:
-				json_inbox.append(msg)
-
-			if ((bp == profile_from) and (msg['msg_flags'] & MSG_STATE_SEND_ARCHIVE)):
-				json_archive.append(msg)
-			else:
-				json_inbox.append(msg)
+				print 'wtf'
+				continue
+			mbox.append(msg)
 
 	except Exception as e:
 		print e
