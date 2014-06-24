@@ -102,6 +102,9 @@ $(document).ready(function() {
 				 type : "POST",
 				 data : fd,
 				 success : function(data) {
+					var dataObj = new Object();
+					dataObj.hero = "{{bp.prof_id}}";
+					openModalWindow("/email/request-response/me", ".ProfOther", JSON.stringify(dataObj));
 		/*			var page_content = $(data).find('.messageRightColumn').html();
 					$('.inboxMessagesTitle').empty();
 					$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);

@@ -1154,6 +1154,8 @@ def ht_email_operations(operation, data):
 	if (operation == 'verify'):
 		print 'verify'
 		return ht_email_verify(data)
+	elif (operation == 'request-response'):
+		return make_response(render_template('verify_email.html'))
 	elif (operation == 'request-verification') and ('uid' in session):
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
