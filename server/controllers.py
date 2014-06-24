@@ -30,6 +30,7 @@ from server import ht_server, linkedin
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, aliased
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
@@ -261,6 +262,79 @@ def normalize_oa_account_data(provider, oa_data):
 		pp(data)
 
 	return data
+
+
+
+def ht_get_unread_messages(profile):
+	all_msgs	= htdb_get_composite_messages(profile)
+	unread_msgs	= filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_FLAG_LASTMSG_READ) == 0), all_msgs)
+	toProf_msgs = filter(lambda msg:  (msg.UserMessage.msg_to == profile.prof_id), unread_msgs)
+	return toProf_msgs
+
+
+
+def htdb_get_composite_messages(profile):
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+
+	messages = db_session.query(UserMessage, msg_from, msg_to)																		\
+							 .filter(or_(UserMessage.msg_to == profile.prof_id, UserMessage.msg_from == profile.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)												\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	return messages
+
+
+
+
+def htdb_get_composite_reviews(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	# OBJECT
+	# OBJ.Review	# Review
+	# OBJ.hero		# Profile of seller
+	# OBJ.user		# Profile of buyer
+	# OBJ.appt 		# Proposal object
+	# OBJ.display	# <ptr> Profile of other person (not me)
+
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(user, user.prof_id == Review.prof_authored)												\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
+	return all_reviews
+
+
+def set_display_to_partner(r, prof_id):
+	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
+	setattr(r, 'display', display_attr)
+
+
+
+
+
+def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+	reviews = []
+	if (filter_by == 'REVIEWED'):
+		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
+	if (filter_by == 'AUTHORED'):
+		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
+	if (filter_by == 'VISIBLE'):
+		print 'Searching review_set for reviews marked as visible'
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+
+	if (dump):
+		print 'Original set',  len(review_set), "=>", len(reviews)
+		for r in reviews:
+			# see ht_get_composite_reviews for object
+			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+	return reviews
+
+
 
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):

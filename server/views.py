@@ -16,7 +16,7 @@ from server.infrastructure.errors import *
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
-from sqlalchemy     import distinct, or_
+from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
@@ -118,7 +118,7 @@ def render_profile(usrmsg=None):
 	try:
 		# complicated search queries can fail and lock up DB.
 		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
-		hp_c_reviews = ht_get_composite_reviews(hp)
+		hp_c_reviews = htdb_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
@@ -139,62 +139,6 @@ def render_profile(usrmsg=None):
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
 
-
-
-def ht_get_composite_reviews(profile):
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-
-	# OBJECT
-	# OBJ.Review	# Review
-	# OBJ.hero		# Profile of seller
-	# OBJ.user		# Profile of buyer
-	# OBJ.appt 		# Proposal object
-	# OBJ.display	# <ptr> Profile of other person (not me)
-
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
-								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)													\
-								.join(user, user.prof_id == Review.prof_authored)												\
-								.join(hero, hero.prof_id == Review.prof_reviewed).all();
-	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
-	#for r in all_reviews:
-	#	print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	return all_reviews
-
-
-
-def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
-	reviews = []
-	if (filter_by == 'REVIEWED'):
-		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
-		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
-	if (filter_by == 'AUTHORED'):
-		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
-		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
-	if (filter_by == 'VISIBLE'):
-		print 'Searching review_set for reviews marked as visible'
-		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
-
-	if (dump):
-		print 'Original set',  len(review_set), "=>", len(reviews)
-		for r in reviews:
-			# see ht_get_composite_reviews for object
-			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
-
-	return reviews
-
-
-
-def set_display_to_partner(r, prof_id):
-	#partner = if (prof_id == r.Review.prof_reviewed) r.user else r.hero
-	#setattr(r, 'display', partner)
-	if (prof_id == r.Review.prof_reviewed):
-		setattr(r, 'display', r.user)
-	else:
-		setattr(r, 'display', r.hero)
 
 
 
@@ -327,7 +271,6 @@ def linkedin_authorized(resp):
 	if (len(possible_accts) == 1):
 		# suggest they create a password if that's not done.
 		session['uid'] = possible_accts[0].userid
-		print 'calling render_dashboard'
 		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
 		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
 		return redirect('/dashboard')
@@ -516,7 +459,7 @@ def ht_api_appt_cancel():
 @ht_server.route('/dashboard', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def render_dashboard(usrmsg=None, focus=None):
+def render_dashboard(usrmsg=None):
 	""" Provides Hero their personalized homepage.
 		- Show calendar with all upcoming appointments
 		- Show any statistics.
@@ -526,45 +469,28 @@ def render_dashboard(usrmsg=None, focus=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	# number of appotintments (this week, next week).
-	# number of proposals (all)
-
-	#SQL Alchemy improve perf.
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	msg_from = aliased(Profile, name='msg_from')
-	msg_to	 = aliased(Profile, name='msg_to')
-	messages = [] 
+	unread_msgs = []
 
 	try:
 		appts_and_props = db_session.query(Proposal, user, hero)														\
 									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
 									.join(user, user.prof_id == Proposal.prop_user)										\
 									.join(hero, hero.prof_id == Proposal.prop_hero).all();
-		messages = db_session.query(UserMessage, msg_from, msg_to)														\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
-							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		unread_msgs = ht_get_unread_messages(bp)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 	
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
 	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
-	print "proposals =", len(props), ", appts =", len(appts)
-	
 
-	#for x in props:
-	#	print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
-	#for x in appts: #print 'now appts: '
-	#	print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
-	
-	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
-	
+
 
 def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
@@ -580,18 +506,10 @@ def display_partner_proposal(p, user_is):
 		setattr(p, 'sellr', False) 
 
 
-def display_partner_message(p, user_is):
-	if (user_is == p.UserMessage.msg_to): 
-		#user it the hero, we should display all the 'user'
-		#print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
-		setattr(p, 'display', p.msg_from) 
-		setattr(p, 'left', p.msg_from)
-		setattr(p, 'right', p.msg_to)
-	else:
-		#print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
-		setattr(p, 'display', p.msg_to)
-		setattr(p, 'left', p.msg_to)
-		setattr(p, 'right', p.msg_from)
+def display_partner_message(msg, prof_id):
+	display_prof = (prof_id == msg.UserMessage.msg_to) and msg.msg_from or msg.msg_to
+	setattr(msg, 'display', display_prof)
+
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -850,7 +768,6 @@ def ht_api_proposal_accept():
 		print str(e)
 		db_session.rollback()
 		jsonify(usrmsg=str(e)), 500
-	#return render_dashboard(usrmsg=msg)
 	return make_response(redirect('/dashboard'))
 
 
