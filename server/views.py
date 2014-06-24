@@ -50,8 +50,7 @@ def render_search():
 	bp = None
 
 	if 'uid' in session:
-		# get browsing profile; allows us to draw ht_header all pretty
-		bp  = Profile.query.filter_by(account=session['uid']).all()[0]
+		bp = Profile.get_by_uid(session['uid'])
 
 	# get all the search 'keywords'
 	keywords = request.values.get('search')
@@ -390,7 +389,7 @@ def signup_verify(challengeHash):
 		# db failed?... let them in anyways.
 
 	# bind session cookie to this 1) Account and/or 2) this profile 
-	bp = Profile.query.filter_by(account=hero_account.userid).all()[0]
+	bp = Profile.get_by_uid(hero_account.userid)
 	ht_bind_session(bp)
 	return make_response(redirect('/dashboard'))
 
@@ -638,7 +637,7 @@ def render_edit():
 
 	print 'enter edit'
 	uid = session['uid']
-	bp  = Profile.query.filter_by(account=uid).all()[0]
+	bp	= Profile.get_by_uid(uid)
 
 	form = ProfileForm(request.form)
 	if form.validate_on_submit():
@@ -933,8 +932,7 @@ def error_sanitize(message):
 @req_authentication
 def settings_verify_stripe():
 	uid = session['uid']
-	bp   = Profile.query.filter_by(account=uid).all()[0]
-	acct = Account.query.filter_by(userid=uid).all()[0]
+	bp = Profile.get_by_uid(uid)
 
 	print "verify -- in oauth_callback, get auth code/token"
 	error = request.args.get('error', "None")
@@ -1021,10 +1019,9 @@ def settings_verify_stripe():
 
 @ht_server.route('/terms', methods=['GET'])
 def tos():
-	bp = False
+	bp = None
 	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
+		bp = Profile.get_by_uid(session['uid'])
 
 	return make_response(render_template('tos.html', title = '- Terms and Conditions', bp=bp))
 
