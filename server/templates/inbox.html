@@ -24,6 +24,7 @@
 		<div class="inboxMessagesHeaderRight">
 			<div class="inboxMessagesHeaderIcons">
 				<a href="" title="Send Conversation to Archives" class="messageViewThreadArchive blend" data-thread-id=""><i class="fa fa-archive"></i></a>
+				<a href="" title="Restore Conversation to Inbox" class="messageViewThreadRestore blend" data-thread-id=""><i class="fa fa-level-up"></i></a>
 			</div>	
 		</div>			
 	</div>
@@ -91,6 +92,7 @@ $(document).ready(function() {
 
 	var numInbox = {{inbox_threads|length}};
 	var numArchived = {{archived_threads|length}};
+	$('.messageViewThreadRestore').hide();
 
 	$(document.body).on("click", "#leftNavBack", function(e) {
 		e.preventDefault();
@@ -160,6 +162,7 @@ $(document).ready(function() {
 				}
 		});
 	}
+
 
 	function loadInbox () {
 		console.log("Loading inbox...");
@@ -231,24 +234,38 @@ $(document).ready(function() {
 		$('.inboxView').html(page_content);	
 	}
 
+
 	// Executes when a user clicks on a message from the inbox/archive
 	$(document.body).on('click', '.threadItem', function() {
 		var msg_thread_id = $(this).parent().data("thread-id");
 		console.log('msg_thread_clicked = ' + msg_thread_id);
 
 		loadMessage(msg_thread_id);
+
+		var hash = window.location.hash.substring(1);
+		if (hash == "archive") {
+			$('.messageViewThreadArchive').hide();
+			$('.messageViewThreadRestore').show();
+		} else {
+			$('.messageViewThreadRestore').hide();
+			$('.messageViewThreadArchive').show();
+		}
+
 		history.pushState({title: "Message", msg_thread_id: msg_thread_id}, "", '/inbox#thread?id='+msg_thread_id);
 	});
+
 
 	$('#mainLink').click(function() {
 		loadInbox();
 		history.pushState({title: "Inbox"}, "", '/inbox');
 	});
 
+
 	$('#archiveLink').click(function() {
 		loadArchive();
 		history.pushState({title: "Archive"}, "", '/inbox#archive');
 	});
+
 
 	// TODO - make these reload the message list via ajax - trying to call a loadInbox function which fetched msgs via ajax but it didn't work
 	$(document.body).on('click', '.threadArchive', function(e) {
@@ -260,11 +277,6 @@ $(document).ready(function() {
 		threadData.msg_thread_id = msg_thread_id;
 		threadData.csrf_token = "{{ csrf_token() }}";
 		threadData.action = 'archive';
-
-		// console.log("THREAD DATA:");
-		// $.each(threadData, function(index, val) {
-		//     console.log(index + ": " + val);
-		// });
 
 		$.ajax({ url	: "/message",
 				 type	: "POST",
