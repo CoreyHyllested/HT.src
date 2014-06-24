@@ -352,48 +352,6 @@ def change_linkedin_query(uri, headers, body):
 	return uri, headers, body
 
 
-@ht_server.route('/signup/verify/<challengeHash>', methods=['GET'])
-@dbg_enterexit
-def signup_verify(challengeHash):
-	rc = None
-	# pass in email too... to verify
-	# grab info from request parameters
-	# 1) challengeHash
-	# 2) an email address
-	trace("Challenge hash is: " + challengeHash)
-	#trace(type(challengeHash))
-
-	#Page url, extract email 
-	url = urlparse.urlparse(request.url)
-	query = urlparse.parse_qs(url.query)
-
-	email  = query['email'][0]
-	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
-
-	if (len(accounts) != 1 or accounts[0].email != email):
-			trace('Hash and/or email didn\'t match.')
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('render_login', messages=msg))
-
-	try:
-		# update user's account.
-		hero_account = accounts[0]
-		hero_account.set_sec_question("")
-		hero_account.set_status(Account.USER_ACTIVE)
-		
-		db_session.commit()
-		send_welcome_email(email)
-	except Exception as e:
-		trace(str(e))
-		db_session.rollback()
-		# db failed?... let them in anyways.
-
-	# bind session cookie to this 1) Account and/or 2) this profile 
-	bp = Profile.get_by_uid(hero_account.userid)
-	ht_bind_session(bp)
-	return make_response(redirect('/dashboard'))
-
-
 
 
 
@@ -403,9 +361,12 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+	hp_id = request.values.get('hp', None)
 	bp = Profile.get_by_uid(session.get('uid'))
 	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	print hp
+	ba = Account.get_by_uid(session.get('uid'))
+	if (ba.status == Account.USER_UNVERIFIED):
+		return make_response(redirect(url_for('render_settings', next='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
@@ -840,6 +801,7 @@ def render_settings():
 
 	card = 'Null'
 
+
 	errmsg = None
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
@@ -905,7 +867,8 @@ def render_settings():
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
-		pass
+		msg = request.values.get('messages')
+		if (msg is not None): errmsg = msg
 	else:
 		print "form isnt' valid"
 		print form.errors
@@ -1184,9 +1147,76 @@ linkedin.pre_request = change_linkedin_query
 
 
 
+@ht_server.route("/email/<operation>/<data>", methods=['GET','POST'])
+def ht_email_operations(operation, data):
 
-#@ht_server.route("/portfolio/<operation>/", methods=['POST'])
-# was /recovery
+	print operation, data
+	if (operation == 'verify'):
+		print 'verify'
+		return ht_email_verify(data)
+	elif (operation == 'request-verification') and ('uid' in session):
+		bp = Profile.get_by_uid(session.get('uid'))
+		ba = Account.get_by_uid(session.get('uid'))
+		email_set = set([ba.email, request.values.get('email_addr')])
+		print email_set
+		ht_send_verification_to_list(ba, bp, email_set)
+		return jsonify(rc=200), 200
+	return pageNotFound('Not sure what you were looking for')
+
+
+
+
+def ht_send_verification_to_list(account, profile, email_set):
+	print 'ht_send_verification_to_list'
+	challenge_hash = str(uuid.uuid4())
+	account.set_sec_question(challenge_hash)
+
+	try:
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	for email in email_set:
+		print 'sending email to', email
+		send_verification_email(email, profile.prof_name, challenge_hash)
+
+
+
+def ht_email_verify(challengeHash):
+	#Page url, extract email
+	url = urlparse.urlparse(request.url)
+	query = urlparse.parse_qs(url.query)
+
+	email  = query['email'][0]
+	print email
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+
+	if (len(accounts) != 1 or accounts[0].email != email):
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return redirect(url_for('render_login', messages=msg))
+
+	try:
+		# update user's account.
+		hero_account = accounts[0]
+		hero_account.set_sec_question("")
+		hero_account.set_status(Account.USER_ACTIVE)
+
+		db_session.commit()
+		send_welcome_email(email)
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	bp = Profile.get_by_uid(hero_account.userid)
+	ht_bind_session(bp)
+	return make_response(redirect('/dashboard'))
+
+
+
+
 @ht_server.route("/password/recover", methods=['GET', 'POST'])
 def ht_password_recover():
 	form = RecoverPasswordForm(request.form)
@@ -1199,10 +1229,8 @@ def ht_password_recover():
 
 
 
-# was '/newpassword/<challengeHash>', methods=['GET', 'POST'])
 @ht_server.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
-def newpassword(challengeHash):
-
+def ht_password_reset(challengeHash):
 	form = NewPasswordForm(request.form)
 
 	#Page url

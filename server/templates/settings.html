@@ -9,6 +9,12 @@
 
 <div class="settingsContentWrapper">
 
+	{% if errmsg != none %}
+	<script>
+		openAlertWindow('{{errmsg}}');
+	</script>
+	{% endif %}
+
 	<form action=settings method=POST>
 
 		<div class="settingsLeftSideWrapper">
@@ -19,13 +25,15 @@
 
 				{{form.set_input_email(placeholder="Current email")}}			
 				{{form.set_input_email_pass(placeholder="Current password")}}
-
-				{% if errmsg != none %}
-					<script>
-						openAlertWindow('{{errmsg}}')
-					</script>
-				{% endif %}
+				{% if unverified_email == True %}
+				<div>
+					Your email is unverified.
+					<button class="whiteButton" id="verify-email">Verify email</button>
+				</div>
+				<br>
+				{% else %}
 				<input class="whiteButton" id="set-save" type="submit" value="Change email" />
+				{% endif %}
 			</div>
 
 			<div class="settingsPassword">
@@ -78,7 +86,30 @@
 </div>
 <div class="clear"></div>
 
-<!-- Bottom bar -->
+<script>
+$(document).ready(function() {
+	$('#verify-email').on("click", function(e) {
+		verify_email()
+		return false;
+	});
 
+	function verify_email() {
+		var fd = {};
+		fd.email_addr = $('#set_input_email').val();
+		fd.csrf_token = "{{ csrf_token() }}";
+		console.log('set_input_email ' + fd.email_addr);
+		$.ajax({ url : "/email/request-verification/me",
+				 type : "POST",
+				 data : fd,
+				 success : function(data) {
+		/*			var page_content = $(data).find('.messageRightColumn').html();
+					$('.inboxMessagesTitle').empty();
+					$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);
+					$('#sendMessage').bind('click', sendmessage_js); */
+				}
+		});
+	}
+});
+</script>
 {% endblock %}
-<br>
+
