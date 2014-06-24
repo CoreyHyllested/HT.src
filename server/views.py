@@ -271,7 +271,6 @@ def linkedin_authorized(resp):
 	if (len(possible_accts) == 1):
 		# suggest they create a password if that's not done.
 		session['uid'] = possible_accts[0].userid
-		print 'calling render_dashboard'
 		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
 		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
 		return redirect('/dashboard')
@@ -460,7 +459,7 @@ def ht_api_appt_cancel():
 @ht_server.route('/dashboard', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def render_dashboard(usrmsg=None, focus=None):
+def render_dashboard(usrmsg=None):
 	""" Provides Hero their personalized homepage.
 		- Show calendar with all upcoming appointments
 		- Show any statistics.
@@ -472,29 +471,24 @@ def render_dashboard(usrmsg=None, focus=None):
 
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	msg_from = aliased(Profile, name='msg_from')
-	msg_to	 = aliased(Profile, name='msg_to')
-	messages = [] 
+	unread_msgs = []
 
 	try:
 		appts_and_props = db_session.query(Proposal, user, hero)														\
 									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
 									.join(user, user.prof_id == Proposal.prop_user)										\
 									.join(hero, hero.prof_id == Proposal.prop_hero).all();
-		messages = db_session.query(UserMessage, msg_from, msg_to)														\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
-							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		unread_msgs = ht_get_unread_messages(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
+	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
 	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
 	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
 	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
 
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
 
@@ -512,18 +506,10 @@ def display_partner_proposal(p, user_is):
 		setattr(p, 'sellr', False) 
 
 
-def display_partner_message(p, user_is):
-	if (user_is == p.UserMessage.msg_to): 
-		#user it the hero, we should display all the 'user'
-		#print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
-		setattr(p, 'display', p.msg_from) 
-		setattr(p, 'left', p.msg_from)
-		setattr(p, 'right', p.msg_to)
-	else:
-		#print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
-		setattr(p, 'display', p.msg_to)
-		setattr(p, 'left', p.msg_to)
-		setattr(p, 'right', p.msg_from)
+def display_partner_message(msg, prof_id):
+	display_prof = (prof_id == msg.UserMessage.msg_to) and msg.msg_from or msg.msg_to
+	setattr(msg, 'display', display_prof)
+
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -787,7 +773,6 @@ def ht_api_proposal_accept():
 		print str(e)
 		db_session.rollback()
 		jsonify(usrmsg=str(e)), 500
-	#return render_dashboard(usrmsg=msg)
 	return make_response(redirect('/dashboard'))
 
 

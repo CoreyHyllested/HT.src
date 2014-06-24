@@ -265,6 +265,27 @@ def normalize_oa_account_data(provider, oa_data):
 
 
 
+def ht_get_unread_messages(profile):
+	all_msgs	= htdb_get_composite_messages(profile)
+	unread_msgs	= filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_FLAG_LASTMSG_READ) == 0), all_msgs)
+	toProf_msgs = filter(lambda msg:  (msg.UserMessage.msg_to == profile.prof_id), unread_msgs)
+	return toProf_msgs
+
+
+
+def htdb_get_composite_messages(profile):
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+
+	messages = db_session.query(UserMessage, msg_from, msg_to)																		\
+							 .filter(or_(UserMessage.msg_to == profile.prof_id, UserMessage.msg_from == profile.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)												\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	return messages
+
+
+
+
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
@@ -287,13 +308,6 @@ def htdb_get_composite_reviews(profile):
 
 
 def set_display_to_partner(r, prof_id):
-	if (prof_id == r.Review.prof_reviewed):
-		setattr(r, 'display', r.user)
-	else:
-		setattr(r, 'display', r.hero)
-
-
-def set_display_to_partner2(r, prof_id):
 	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
 	setattr(r, 'display', display_attr)
 
