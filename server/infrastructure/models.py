@@ -320,11 +320,13 @@ class Profile(Base):
 		self.prof_name	= name
 		self.account	= acct
 
+
 	def __repr__ (self):
 		tmp_headline = self.headline
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
 		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
+
 
 	@staticmethod
 	def get_by_prof_id(profile_id):
@@ -332,6 +334,7 @@ class Profile(Base):
 		if len(profiles) != 1: 
 			raise NoProfileFound(profile_id, 'Sorry, profile not found')
 		return profiles[0]
+
 
 	@staticmethod
 	def get_by_uid(uid):
@@ -341,7 +344,20 @@ class Profile(Base):
 		return profiles[0]
 
 
-		
+	@property
+	def serialize(self):
+		return {
+			'account'	: str(self.account),
+			'prof_id'	: str(self.prof_id),
+			'prof_name'	: str(self.prof_name),
+			'prof_img'	: str(self.prof_img),
+			'prof_bio'	: str(self.prof_bio),
+			'prof_rate'	: str(self.prof_rate),
+			'headline'	: str(self.headline),
+			'industry'	: str(self.industry),
+		}
+
+
 
 class Proposal(Base):
 	__tablename__ = "proposal"
@@ -598,11 +614,25 @@ class UserMessage(Base):
 		content = self.msg_content[:20]
 		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
 
+
 	@staticmethod
 	def get_by_msg_id(uid):
 		msgs = UserMessage.query.filter_by(msg_id=uid).all()
 		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
 		return msgs[0]
+
+
+	@property
+	def serialize(self):
+		return {
+			'msg_id'		: str(self.msg_id),
+			'msg_to'		: self.msg_to,
+			'msg_from'		: self.msg_from,
+			'msg_subject'	: str(self.msg_subject),
+			'msg_content'	: str(self.msg_content),
+			'msg_parent'	: str(self.msg_parent),
+			'msg_thread'	: str(self.msg_thread),
+		}
 
 
 
