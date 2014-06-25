@@ -21,32 +21,45 @@ function loadMessageThread(msg_thread_id) {
 
 function verify_email_js(e) {
 	e.preventDefault();
-	console.log('sucka');
-
-	var fd = {}
-	var email = $('#email').val();
+	var fd = {};
 	var challenge = $('#challenge').val();
-	var csrf = $('#csrf_token').val();
-	fd.email =  email;
-	fd.challenge = challenge;
-	fd.csrf = csrf;
-	console.log('email = ' + email);
+	fd.email_addr = $('#set_input_email').val();
+	fd.csrf_token = $('#csrf').val();
+	fd.next_url   = $('#nexturl').val();
 
-	/*
+	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
 	$.ajax({ url : '/email/verify/'+challenge,
 			 type : 'POST', 	
 			 data : fd,
 			 dataType: 'json',
 			 success : function(data) { 
 				 console.log ('in success');
+				 console.log(data);
+				 window.location.href = $('#nexturl').val();
 				 return false; 
-			 }
+			 },
 			 error: function(data) {
 				 console.log ('in fail');
 			 }
 	});
-	*/
 	return false;
+}
+
+
+function send_verification_email() {
+	console.log('send_verification_email()');
+	var fd = {};
+	fd.email_addr = $('#set_input_email').val();
+	fd.csrf_token = $('#csrf').val();
+
+	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
+	$.ajax({ url : '/email/request-verification/me',
+			 type : 'POST',
+			 data : fd,
+			 success : function(data) {
+				 console.log('sent verification emails');
+			}
+	});
 }
 
 
@@ -115,5 +128,6 @@ function sendmessage_js(e) {
 $(document).ready(function() {
 	console.log('page ready');
 	$('#rec_submit').on('click', verify_email_js);
+	$('#rec_verify').on('click', send_verification_email);
 	$('#sendMessage').on("click", sendmessage_js);
 });

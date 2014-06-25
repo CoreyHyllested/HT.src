@@ -80,7 +80,7 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 @mngr.task
 def send_verification_email(user_email, user_name, challenge_hash):
 	url  = 'https://herotime.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	msg_html = "Thank you for creating a HeroTime account. <a href=\"" + str(url) + "\">Verify your email address.</a>"
+	msg_html = "Thank you for creating a HeroTime account. <a href=\"" + str(url) + "\">Verify your email address.</a><br>"  + str(challenge_hash)
 	msg_text = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
 
 	msg = create_msg('Password Verification', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
@@ -104,14 +104,14 @@ def send_recovery_email(toEmail, challenge_hash):
 
 
 @mngr.task
-def send_welcome_email(toEmail):
+def send_welcome_email(user_email, user_name):
 	msg_text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
 	msg_html = """<html><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
 
-	msg = create_msg('Welcome to HeroTime', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
+	msg = create_msg('Welcome to HeroTime', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(email_addr, msg)
+	ht_send_email(user_email, msg)
 
 
 

@@ -89,27 +89,13 @@
 
 <script>
 $(document).ready(function() {
-	function send_verification_email() {
-		var fd = {};
-		fd.email_addr = $('#set_input_email').val();
-		fd.csrf_token = "{{ csrf_token() }}";
-
-		console.log('set_input_email ' + fd.email_addr);
-		$.ajax({ url : 'terms', //"/email/request-verification/me",
-				 type : 'GET', 	//"POST",
-				 data : fd,
-				 success : function(data) { 
-					 console.log('sent verification emails');
-				}
-		});
-	}
-
 	$('#verify-email').on("click", function(e) {
 		e.preventDefault();
 		var dataObj = new Object();
 		dataObj.hero = "{{bp.prof_id}}";
-		//dataObj.next = "{{ next }}";
-		send_verification_email()
+		dataObj.next = "modal";
+		dataObj.nexturl = "{{ nexturl }}";
+		$.each(dataObj, function(k, v) { console.log(k+ ": " + v); });
 		openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj));
 	});
 });

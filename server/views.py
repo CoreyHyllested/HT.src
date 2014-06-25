@@ -366,7 +366,7 @@ def render_schedule_page():
 	hp = Profile.get_by_prof_id(request.values.get('hp', None))
 	ba = Account.get_by_uid(session.get('uid'))
 	if (ba.status == Account.USER_UNVERIFIED):
-		return make_response(redirect(url_for('render_settings', next='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
+		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
@@ -882,11 +882,11 @@ def render_settings():
 
 	form.oauth_stripe.data     = card
 	form.set_input_email.data  = ba.email
-	next = "/settings"
-	if (request.values.get('next') is not None):
-		next = request.values.get('next')
+	nexturl = "/settings"
+	if (request.values.get('nexturl') is not None):
+		nexturl = request.values.get('nexturl')
 
-	return make_response(render_template('settings.html', form=form, bp=bp, next=next, unverified_email=email_unver, errmsg=errmsg))
+	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
 
 def error_sanitize(message):
@@ -1154,13 +1154,15 @@ linkedin.pre_request = change_linkedin_query
 def ht_email_operations(operation, data):
 	print operation, data
 	if (operation == 'verify'):
-		print 'verify'
-		return ht_email_verify(data)
+		email = request.values.get('email_addr')
+		nexturl = request.values.get('next_url')
+		print 'verify: data  = ', data, 'email =', email
+		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
-		urlnext = request.values.get('next')
-		print 'found urlnext =', urlnext
-		return make_response(render_template('verify_email.html'))
+		nexturl = request.values.get('nexturl')
+		return make_response(render_template('verify_email.html', nexturl=nexturl))
 	elif (operation == 'request-verification') and ('uid' in session):
+
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
 		email_set = set([ba.email, request.values.get('email_addr')])
@@ -1190,13 +1192,7 @@ def ht_send_verification_to_list(account, profile, email_set):
 
 
 
-def ht_email_verify(challengeHash):
-	#Page url, extract email
-	url = urlparse.urlparse(request.url)
-	query = urlparse.parse_qs(url.query)
-
-	email  = query['email'][0]
-	print email
+def ht_email_verify(email, challengeHash, nexturl=None):
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 
 	if (len(accounts) != 1 or accounts[0].email != email):
@@ -1204,20 +1200,26 @@ def ht_email_verify(challengeHash):
 			return redirect(url_for('render_login', messages=msg))
 
 	try:
+		print 'update user account'
 		# update user's account.
-		hero_account = accounts[0]
-		hero_account.set_sec_question("")
-		hero_account.set_status(Account.USER_ACTIVE)
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
 
+		db_session.add(account)
 		db_session.commit()
-		send_welcome_email(email)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	# bind session cookie to this user's profile
-	bp = Profile.get_by_uid(hero_account.userid)
+	bp = Profile.get_by_uid(account.userid)
+	send_welcome_email(email, bp.prof_name)
 	ht_bind_session(bp)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
 	return make_response(redirect('/dashboard'))
 
 
