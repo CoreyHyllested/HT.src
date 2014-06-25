@@ -42,7 +42,6 @@
 	</div>
 
 	<div class="scheduleRightColumn">
-		<form name="charge"   action="/proposal/create" method="POST"></form>
 		<form name="schedule" action="/schedule" method="POST">
   			{{form.hidden_tag()}}
 
@@ -131,7 +130,7 @@
 </div>
 
 <script>
-$(function() {
+$(document).ready(function() {
 	google.maps.event.addDomListener(window, 'load', initialize);
 	$('#newslot_starttime').change(function() { update_time_diff({{hp.prof_rate}}); });
 	$('#newslot_endtime').change(function() { update_time_diff({{hp.prof_rate}}); });
@@ -140,77 +139,75 @@ $(function() {
     }
 
 
-    $(document).ready(function() {
-        $('#send_proposal').click(function() {
-            $hero_acct = '{{hp.prof_id}}';
-            $hero_name = '{{hp.prof_name}}';
-            $cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
-            $time = $('#newslot-duration').html();
-            $desc = $('#newslot_description').val();
-            $area = $('#newslot_location').val();
-            $ts_d = $('#datepicker').val();
-            $ts_h = $('#newslot_starttime').val();
+	$('#send_proposal').click(function() {
+		$hero_acct = '{{hp.prof_id}}';
+		$hero_name = '{{hp.prof_name}}';
+		$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
+		$time = $('#newslot-duration').html();
+		$desc = $('#newslot_description').val();
+		$area = $('#newslot_location').val();
+		$ts_d = $('#datepicker').val();
+		$ts_h = $('#newslot_starttime').val();
 
-            $tf_d = $('#datepicker').val();
-            $tf_h = $('#newslot_endtime').val();
+		$tf_d = $('#datepicker').val();
+		$tf_h = $('#newslot_endtime').val();
 
-            $bp_name = '{{bp.prof_name}}';
-            $bp_id   = '{{bp.prof_id}}';
-            console.log('hero_acct = ' + $hero_acct + ' ;' + $hero_name);
-            console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
-            console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
-            console.log('@ cost = ' + $cost);
-            var srv_callback = function(res) {
-                console.log('time = ' + $time);
-                console.log('cost = ' + $cost);
+		$bp_name = '{{bp.prof_name}}';
+		$bp_id   = '{{bp.prof_id}}';
+		console.log('hero_acct = ' + $hero_acct + ';' + $hero_name);
+		console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
+		console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
+		console.log('@ cost = ' + $cost);
 
-                $.each(res.card, function(key, element) {
-                        console.log('res.' + key + ' = ' + element);
-                });
+		var srv_callback = function(res) {
+			$.each(res.card, function(k, v) { console.log('res.' + k + ':' + v); });
 
-                var $csrf = $('<input type=hidden name=csrf_token />').val("{{ csrf_token() }}");
-                var $stripe_tokn = $('<input type=hidden name=stripe_tokn />').val(res.id);
-                var $stripe_card = $('<input type=hidden name=stripe_card />').val(res.card.id);
-                var $stripe_name = $('<input type=hidden name=stripe_name />').val(res.card.name);
-                var $stripe_city = $('<input type=hidden name=stripe_city />').val(res.card.address_city);
-                var $stripe_stat = $('<input type=hidden name=stripe_stat />').val(res.card.address_state);
-                var $stripe_cust = $('<input type=hidden name=stripe_cust />').val(res.card.customer);
-                var $stripe_fngr = $('<input type=hidden name=stripe_fngr />').val(res.card.fingerprint);
-                var $stripe_mail = $('<input type=hidden name=stripe_mail />').val(res.email);
+			var fd = {};
+			fd.csrf_token = "{{ csrf_token() }}";
+			fd.stripe_tokn = res.id;
+			fd.stripe_card = (res.card.id);
+			fd.stripe_name = (res.card.name);
+			fd.stripe_city = (res.card.address_city);
+			fd.stripe_stat = (res.card.address_state);
+			fd.stripe_cust = (res.card.customer);
+			fd.stripe_fngr = (res.card.fingerprint);
+			fd.stripe_mail = (res.email);
+			fd.prop_hero =  ($hero_acct);
+			fd.prop_cost =  ($cost);
+			fd.prop_area =  ($area);
+			fd.prop_desc =  ($desc);
+			fd.prop_s_date = ($ts_d);
+			fd.prop_s_hour = ($ts_h);
+			fd.prop_f_date = ($tf_d);
+			fd.prop_f_hour = ($tf_h);
 
+			console.log('time = ' + $time);
+			console.log('cost = ' + $cost);
 
-                var $prop_hero =  $('<input type=hidden name=prop_hero />').val($hero_acct);
-                var $prop_cost =  $('<input type=hidden name=prop_cost />').val($cost);
-                var $prop_area =  $('<input type=hidden name=prop_area />').val($area);
-                var $prop_desc =  $('<input type=hidden name=prop_desc />').val($desc);
+			$.ajax({ url	: "/proposal/create",
+					type	: "POST",
+					data	: fd,
+					success : function(data) {
+						console.log(data);
+						console.log(data.nexturl);
+						console.log(data.usrmsg);
+						window.location.href = data.nexturl;
+					}
+			});
+		};
 
-                var $prop_s_date =  $('<input type=hidden name=prop_s_date />').val($ts_d);
-                var $prop_s_hour =  $('<input type=hidden name=prop_s_hour />').val($ts_h);
-                var $prop_f_date =  $('<input type=hidden name=prop_f_date />').val($tf_d);
-                var $prop_f_hour =  $('<input type=hidden name=prop_f_hour />').val($tf_h);
-                
-                $('form[name="charge"]').append($csrf);
-                console.log('append stripe');
-                $('form[name="charge"]').append($stripe_tokn).append($stripe_card).append($stripe_cust).append($stripe_fngr).append($stripe_mail);
-                $('form[name="charge"]').append($prop_hero).append($prop_cost).append($prop_area).append($prop_desc);
-                $('form[name="charge"]').append($prop_s_date).append($prop_s_hour);
-                $('form[name="charge"]').append($prop_f_date).append($prop_f_hour);
-                $('form[name="charge"]').submit();
-            };
-
-            StripeCheckout.open({
-                key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
-                amount:      $cost,
-                address:     true,
-                description: "We'll charge you after the meeting.", 
-                name:        $hero_name, 
-                currency:    'usd',
-                panelLabel:  'Checkout',
-                token:      srv_callback
-            });
-            return false;
-        });
-    });
+		StripeCheckout.open({
+			key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
+			amount:      $cost,
+			address:     true,
+			description: "We'll charge you after the meeting.",
+			name:        $hero_name,
+			currency:    'usd',
+			panelLabel:  'Checkout',
+			token:      srv_callback
+		});
+		return false;
+	});
 });
 </script>
 
