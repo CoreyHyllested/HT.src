@@ -201,11 +201,6 @@ def getDBCorey(x):
 
 
 
-
-
-
-
-
 def enable_reviews(the_proposal):
 	#is this submitted after stripe?  
 	hp = the_proposal.prop_hero
@@ -242,6 +237,7 @@ def disable_reviews(jsonObj):
 	#the_proposal.set_state(APPT_STATE_COMPLETE)
 	print 'disable_reviews()'
 	return None
+
 
 
 @mngr.task
@@ -366,6 +362,6 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	
 
 if __name__ != "__main__":
-	print 'CAH: load server.tasks for @mngr.task'
+	print 'loading... @mngr.task'
 else:
 	print "Whoa, this is main"

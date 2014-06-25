@@ -3,8 +3,7 @@ import stripe, boto, urlparse
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from controllers import *
-from datetime import datetime as dt
-from datetime import timedelta
+from datetime import datetime as dt, timedelta
 from flask import render_template, make_response, session, request, flash, redirect, send_from_directory
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
@@ -1334,6 +1333,16 @@ def render_edit_portfolio_page():
 	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
+
+
+
+@req_authentication
+@ht_server.route("/disable_reviews", methods=['GET', 'POST'])
+def testing_pika_celery_async():
+	bp = Profile.get_by_uid(session['uid'])
+	five_min = dt.utcnow() + timedelta(minutes=5);
+	disable_reviews.apply_async(args=[10], eta=five_min)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
 
 
 
