@@ -17,6 +17,39 @@ function loadMessageThread(msg_thread_id) {
 	});
 }
 
+
+
+function verify_email_js(e) {
+	e.preventDefault();
+	console.log('sucka');
+
+	var fd = {}
+	var email = $('#email').val();
+	var challenge = $('#challenge').val();
+	var csrf = $('#csrf_token').val();
+	fd.email =  email;
+	fd.challenge = challenge;
+	fd.csrf = csrf;
+	console.log('email = ' + email);
+
+	/*
+	$.ajax({ url : '/email/verify/'+challenge,
+			 type : 'POST', 	
+			 data : fd,
+			 dataType: 'json',
+			 success : function(data) { 
+				 console.log ('in success');
+				 return false; 
+			 }
+			 error: function(data) {
+				 console.log ('in fail');
+			 }
+	});
+	*/
+	return false;
+}
+
+
 function sendmessage_js(e) {
 	var messageData = {};
 	messageData.hp = $('#composeRecipientID').val();
@@ -80,5 +113,7 @@ function sendmessage_js(e) {
 }
 
 $(document).ready(function() {
+	console.log('page ready');
+	$('#rec_submit').on('click', verify_email_js);
 	$('#sendMessage').on("click", sendmessage_js);
 });

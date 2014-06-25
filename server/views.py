@@ -882,8 +882,11 @@ def render_settings():
 
 	form.oauth_stripe.data     = card
 	form.set_input_email.data  = ba.email
+	next = "/settings"
+	if (request.values.get('next') is not None):
+		next = request.values.get('next')
 
-	return make_response(render_template('settings.html', form=form, bp=bp, unverified_email=email_unver, errmsg=errmsg))
+	return make_response(render_template('settings.html', form=form, bp=bp, next=next, unverified_email=email_unver, errmsg=errmsg))
 
 
 def error_sanitize(message):
@@ -1149,12 +1152,13 @@ linkedin.pre_request = change_linkedin_query
 
 @ht_server.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
-
 	print operation, data
 	if (operation == 'verify'):
 		print 'verify'
 		return ht_email_verify(data)
 	elif (operation == 'request-response'):
+		urlnext = request.values.get('next')
+		print 'found urlnext =', urlnext
 		return make_response(render_template('verify_email.html'))
 	elif (operation == 'request-verification') and ('uid' in session):
 		bp = Profile.get_by_uid(session.get('uid'))

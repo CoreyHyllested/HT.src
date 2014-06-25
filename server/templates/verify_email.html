@@ -7,20 +7,12 @@
 
 
 {% block content %}
-
-
 <div class="recoveryContentWrapper">
 	<h2>Email Verification</h2>
-	<form method="post">		
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		<div class="recoveryInstructions">Enter challenge number sent via email.</div>
-		<input type="text" name="challenge" value="">
-
-		<div class="recoverySubmitWrapper">
-			<input type="submit" id="rec_submit" class="blueButton" value="Send Reset Link" onclick="this.style.visibility='hidden'">
-		</div>
-
-	</form>
+	<input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
+	<div class="recoveryInstructions">Enter challenge number sent via email.</div>
+	<input type="text" id="email" value="">
+	<input type="text" id="challenge" value="">
+	<button id="rec_submit" class="blueButton">Verify Email Address</button>
 </div>
-
 {% endblock %}

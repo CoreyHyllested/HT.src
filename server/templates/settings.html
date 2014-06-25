@@ -3,6 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/settings.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
 {% endblock %}
 
 {% block content %}
@@ -88,30 +89,29 @@
 
 <script>
 $(document).ready(function() {
-	$('#verify-email').on("click", function(e) {
-		verify_email()
-		return false;
-	});
-
-	function verify_email() {
+	function send_verification_email() {
 		var fd = {};
 		fd.email_addr = $('#set_input_email').val();
 		fd.csrf_token = "{{ csrf_token() }}";
+
 		console.log('set_input_email ' + fd.email_addr);
-		$.ajax({ url : "/email/request-verification/me",
-				 type : "POST",
+		$.ajax({ url : 'terms', //"/email/request-verification/me",
+				 type : 'GET', 	//"POST",
 				 data : fd,
-				 success : function(data) {
-					var dataObj = new Object();
-					dataObj.hero = "{{bp.prof_id}}";
-					openModalWindow("/email/request-response/me", ".ProfOther", JSON.stringify(dataObj));
-		/*			var page_content = $(data).find('.messageRightColumn').html();
-					$('.inboxMessagesTitle').empty();
-					$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);
-					$('#sendMessage').bind('click', sendmessage_js); */
+				 success : function(data) { 
+					 console.log('sent verification emails');
 				}
 		});
 	}
+
+	$('#verify-email').on("click", function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.hero = "{{bp.prof_id}}";
+		//dataObj.next = "{{ next }}";
+		send_verification_email()
+		openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj));
+	});
 });
 </script>
 {% endblock %}
