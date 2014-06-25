@@ -378,25 +378,15 @@ def render_schedule_page():
 @ht_server.route('/proposal/create', methods=['POST'])
 @req_authentication
 def ht_api_proposal_create():
-	print 'ht_api_proposal_create'
-
-	#TODO. Validate these are DateTime 
-	prop_s_date = request.values.get('prop_s_date')
-	prop_s_hour = request.values.get('prop_s_hour')
-	prop_f_date = request.values.get('prop_f_date')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_hero = request.values.get('prop_hero')
-
-	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
-	#print dt_start
+	user_message = 'Interesting'
 
 	try:
-		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
+		print 'ht_api_proposal_create'
+		proposal = ht_proposal_create(request.values, session['uid'])
+		if (proposal is not None): user_message = 'Successfully created proposal'
 	except Sanitized_Exception as se:
 		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
-	usrmsg = "success"
-	return render_dashboard(usrmsg=usrmsg)
+	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
 
 
 
