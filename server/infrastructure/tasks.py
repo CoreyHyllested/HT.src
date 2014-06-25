@@ -28,12 +28,17 @@ def ht_sanitize_errors(e, details=None):
 
 
 def ht_proposal_create(values, uid):
-	"""Method for creating a proposal
-		returns	on success: Propsoal, msg
-		returns	on failure: None, msg
+	""" Creates a Proposal
+		returns	on success: Proposal
+		returns	on failure: raised exception
 	"""
 
-	print 'ht_proposal_create'
+	print 'ht_proposal_create: validate input'
+	#	Stripe fields should be validated.
+	#	v1 - end time is reasonable (after start time)
+	#	v2 - hero exists.
+	#	v3 - place doesn't matter as much..
+	#	v4 - cost..
 	stripe_tokn = values.get('stripe_tokn')
 	stripe_card = values.get('stripe_card')
 	stripe_cust = values.get('stripe_cust')
@@ -48,26 +53,14 @@ def ht_proposal_create(values, uid):
 	prop_s_hour = values.get('prop_s_hour')
 	prop_f_date = values.get('prop_f_date')
 	prop_f_hour = values.get('prop_f_hour')
-
 	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
-
-	#TODO need to sanatize/_validate_ all of fields
-	#	Stripe fields should be validated.
-	#	v1 - end time is reasonable (after start time)
-	#	v2 - hero exists.
-	#	v3 - place doesn't matter as much..
-	#	v4 - cost..
 
 	print 'token = ', stripe_tokn 
 	print 'stripe_card = ', stripe_card 
 	print 'stripe_cust = ', stripe_cust 
 #	print 'updated_start = ', dt_start, '-', dt_finish
 
-#	(ba, bp) = get_account_and_profile(prop.prop_user)
-#	(ha, hp) = get_account_and_profile(prop.prop_hero)
-
-	committed = False
 	try:
 		# raises (No<Resrc>Found errors)
 		hp	= Profile.get_by_prof_id(prop_hero)
@@ -77,14 +70,12 @@ def ht_proposal_create(values, uid):
 		pi  = get_stripe_customer(uid=uid, cc_token=stripe_tokn, cc_card=stripe_card)
 		print "PI = ", pi
 
-		print 'create proposal' 
-		the_proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
-		db_session.add(the_proposal)
+		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
+		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
-		committed = True
 
-		email_hero_proposal_updated(the_proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-		email_user_proposal_updated(the_proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+		email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 	except NoResourceFound as npf:
 		ht_sanitize_errors(npf)
 	except IntegrityError as ie:	#TODO: add to ht_sanitize
@@ -97,7 +88,7 @@ def ht_proposal_create(values, uid):
 		db_session.rollback()
 		ht_sanitize_errors(e)
 
-	return (the_proposal, 'Successfully created proposal')
+	return proposal
 
 
 
@@ -362,6 +353,6 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	
 
 if __name__ != "__main__":
-	print 'loading... @mngr.task'
+	print '@mngr.task... loading'
 else:
 	print "Whoa, this is main"
