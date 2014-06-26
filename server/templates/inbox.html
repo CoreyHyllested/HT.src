@@ -50,7 +50,7 @@
 				<div class="inboxMain" id="inboxMain">
 					<ul class="inboxWell" id="inboxThreads">
 						{% for thread in inbox_threads|sort(attribute='lastmsg.msg_created')|reverse %}
-						<li class="thread {% if (bp.prof_id == thread.lastmsg.msg_to) and (thread.lastmsg.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.UserMessage.msg_created.strftime('%Y%m%d%H%M%S')}}">
+						<li class="thread {% if (bp.prof_id == thread.lastmsg.msg_to) and (thread.lastmsg.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.lastmsg.msg_created.strftime('%Y%m%d%H%M%S')}}">
 
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
@@ -67,7 +67,7 @@
 				<div class="inboxArchive">
 					<ul class="inboxWell" id="archiveThreads">
 						{% for thread in archived_threads|sort(attribute='lastmsg.msg_created')|reverse  %}
-						<li class="thread {% if (bp.prof_id == thread.UserMessage.msg_to and thread.UserMessage.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.UserMessage.msg_created.strftime('%Y%m%d%H%M%S')}}">
+						<li class="thread {% if (bp.prof_id == thread.UserMessage.msg_to and thread.UserMessage.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.lastmsg.msg_created.strftime('%Y%m%d%H%M%S')}}">
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
 								{{thread.UserMessage.msg_subject}}
@@ -94,6 +94,7 @@
 	var numInbox = {{inbox_threads|length}};
 	var numArchived = {{archived_threads|length}};
 </script>
+<script src="/static/js/moment.min.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 
 <script>
@@ -160,15 +161,7 @@ $(document).ready(function() {
 					var thread_partner_id = $(data).find('.messageThread').attr("data-thread-partner-id");
 					var num_thread_messages = $(data).find('.messageThread').attr("data-thread-num-messages");
 					var thread_timestamp = $(data).find('.messageThread').attr("data-thread-timestamp");
-					
-					var archived = $(data).find('.messageThread').attr("data-archive");
-					if (archived) {
-						$('.messageViewThreadArchive').hide();
-						$('.messageViewThreadRestore').show();
-					} else {
-						$('.messageViewThreadRestore').hide();
-						$('.messageViewThreadArchive').show();
-					}
+					var thread_archived = $(data).find('.messageThread').attr("data-thread-archived");
 
 					var num_thread_messages_text = "(" + num_thread_messages + " Message";
 					if (num_thread_messages > 1) {
@@ -177,12 +170,13 @@ $(document).ready(function() {
 					num_thread_messages_text += ")";
 
 					$('.inboxMain, .inboxArchive, .inboxIcon').hide();
-					var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
-					if (thisThreadElement.find('div.threadRestore').length != 0) {
+
+					if (thread_archived == "True") {
 						$('.messageViewThreadRestore').show();
 					} else {
-						$('.messageViewThreadArchive').show();		
+						$('.messageViewThreadArchive').show();
 					}
+
 					$('.threadRefresh').show();
 					$('.threadRefresh i').removeClass("fa-spin");
 					$(".iconCaption, .inboxMessagesTitle").empty();

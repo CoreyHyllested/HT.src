@@ -18,8 +18,6 @@ function loadMessageThread(msg_thread_id) {
 }
 
 
-
-
 function verify_email_js(e) {
 	e.preventDefault();
 	var fd = {};
@@ -47,7 +45,6 @@ function verify_email_js(e) {
 }
 
 
-
 function send_verification_email() {
 	console.log('send_verification_email()');
 	var fd = {};
@@ -67,10 +64,22 @@ function send_verification_email() {
 
 function replyDOMUpdate(msg_thread_id) {
 
-	var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
-	if (thisThreadElement.find('div.threadRestore').length != 0) {
+	var thread_archived = $('.messageThread').attr("data-thread-archived");
+	if (thread_archived == "True") {
+
+		var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
 		// This is a thread moving from the archive to the inbox.
 		thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
+
+		// Update timestamp of .thread
+
+		thisTimestamp = moment().format("YYYYMMDDHHmmss");
+		thisThreadElement.data("timestamp", thisTimestamp);
+
+		// Update datetime display of .threadDate
+		displayDateTime = moment().format("MMM D [at] hh:mm A");
+		thisThreadElement.children(".threadDate").text(displayDateTime);
+
 		$('.messageViewThreadRestore').hide();
 		$('.messageViewThreadArchive').show();
 		numInbox = ++numInbox;
@@ -126,8 +135,6 @@ function restoreDOMUpdate(msg_thread_id) {
 		$('ul#inboxThreads').append(thisThreadElement);
 	}
 }	
-
-
 
 
 function sendmessage_js(e) {
