@@ -147,16 +147,6 @@ $(document).ready(function() {
 	// Loads the message thread into the main view
 	function loadMessage(msg_thread_id) {
 
-		$('.inboxIcon').hide();
-		$('.threadRefresh').show();
-
-		var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
-		if (thisThreadElement.find('div.threadRestore').length != 0) {
-			$('.messageViewThreadRestore').show();
-		} else {
-			$('.messageViewThreadArchive').show();		
-		}
-
 		var fd = {};
 		fd.msg_thread_id = msg_thread_id;
 		fd.csrf_token = "{{ csrf_token() }}";
@@ -186,11 +176,18 @@ $(document).ready(function() {
 					}  
 					num_thread_messages_text += ")";
 
+					$('.inboxMain, .inboxArchive, .inboxIcon').hide();
+					var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
+					if (thisThreadElement.find('div.threadRestore').length != 0) {
+						$('.messageViewThreadRestore').show();
+					} else {
+						$('.messageViewThreadArchive').show();		
+					}
+					$('.threadRefresh').show();
 					$('.threadRefresh i').removeClass("fa-spin");
 					$(".iconCaption, .inboxMessagesTitle").empty();
-					$('.inboxMain, .inboxArchive').hide();
 					$('.inboxMessage').html(page_content).show();
-					$('.inboxLeftNavigation, .inboxHeaderIcons').show();
+					$('.inboxLeftNavigation').show();
 					$('.inboxHeaderConvoTitle').html('Conversation with <a href="/profile?hero='+thread_partner_id+'" class="partnerLink blend">'+thread_partner_name+'</a> <span class="numThreadMessages">'+num_thread_messages_text+'</span>');
 					$('#sendMessage').bind('click', sendmessage_js);
 
