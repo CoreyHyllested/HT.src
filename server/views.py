@@ -550,12 +550,12 @@ def render_dashboard(usrmsg=None):
 def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
 		#user it the hero, we should display all the 'user'
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
+		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
 		setattr(p, 'display', p.user) 
 		setattr(p, 'sellr', True) 
 		setattr(p, 'buyer', False) 
 	else:
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
+		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
 		setattr(p, 'display', p.hero)
 		setattr(p, 'buyer', True) 
 		setattr(p, 'sellr', False) 

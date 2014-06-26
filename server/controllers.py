@@ -267,8 +267,8 @@ def normalize_oa_account_data(provider, oa_data):
 
 def ht_get_unread_messages(profile):
 	all_msgs	= htdb_get_composite_messages(profile)
-	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD', dump=True)
-	toProf_msgs = ht_filter_composite_messages(unread_msgs, profile, filter_by='RECEIVED', dump=True)
+	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD')
+	toProf_msgs = ht_filter_composite_messages(unread_msgs, profile, filter_by='RECEIVED', dump=False)
 	return toProf_msgs
 
 

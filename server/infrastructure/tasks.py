@@ -94,7 +94,6 @@ def ht_proposal_create(values, uid):
 	except Exception as e:
 		db_session.rollback()
 		ht_sanitize_errors(e)
-
 	return proposal
 
 
