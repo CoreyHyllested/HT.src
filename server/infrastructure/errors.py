@@ -6,17 +6,16 @@ from datetime import datetime as dt
 #seen: we tried to index a list (from DB) that was zero
 
 class Sanitized_Exception(Exception):
-	def __init__(self, caught, httpRC=None, httpJSON=None, msg=None):
+	def __init__(self, caught, httpRC=None, httpJSON=None, msg='Oops'):
 		self.caught = caught
-		self.sanitized_msg = 'Ooops'
+		self.sanitized_msg = msg
 		self.rc = httpRC
 		self.json = httpJSON
-		if (msg): self.sanitized_msg = msg
 	
 	def orig_error(self):
 		return self.caught
 	
-	def sanitized_msg(self):
+	def get_sanitized_msg(self):
 		return self.sanitized_msg
 	
 	def httpRC(self):
