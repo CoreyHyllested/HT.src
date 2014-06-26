@@ -19,6 +19,7 @@ function loadMessageThread(msg_thread_id) {
 
 
 
+
 function verify_email_js(e) {
 	e.preventDefault();
 	var fd = {};
@@ -46,6 +47,7 @@ function verify_email_js(e) {
 }
 
 
+
 function send_verification_email() {
 	console.log('send_verification_email()');
 	var fd = {};
@@ -61,6 +63,69 @@ function send_verification_email() {
 			}
 	});
 }
+
+
+function replyDOMUpdate(msg_thread_id) {
+
+	var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
+	if (thisThreadElement.find('div.threadRestore').length != 0) {
+		// This is a thread moving from the archive to the inbox.
+		thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
+		$('.messageViewThreadRestore').hide();
+		$('.messageViewThreadArchive').show();
+	}
+	$('#inboxThreads li.thread').first().before(thisThreadElement);
+}	
+
+
+
+function archiveDOMUpdate(msg_thread_id) {
+
+	var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
+	thisThreadElement.children(".threadAction").removeClass("threadArchive").addClass("threadRestore").html('<a title="Restore Message" class="blend"><i class="fa fa-level-up"></i></a>');
+
+	// Find where in the message list this ones goes chronologically
+	var threadPlaced = 0;
+	$('ul#archiveThreads li').each(function() {
+		var thisTimestamp = parseInt($(this).data("timestamp"));
+		var targetTimestamp = parseInt(thisThreadElement.data("timestamp"));
+		if (thisTimestamp < targetTimestamp) {
+			$(this).before(thisThreadElement);
+			threadPlaced = 1;
+			return false;
+		}
+	});
+
+	// We archived the earliest message in the account
+	if (threadPlaced == 0){
+		$('ul#archiveThreads').append(thisThreadElement);
+	}
+}	
+
+function restoreDOMUpdate(msg_thread_id) {
+
+	var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
+	thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
+
+	// Find where in the message list this ones goes chronologically
+	var threadPlaced = 0;
+	$('ul#inboxThreads li').each(function() {
+		var thisTimestamp = parseInt($(this).data("timestamp"));
+		var targetTimestamp = parseInt(thisThreadElement.data("timestamp"));
+		if (thisTimestamp < targetTimestamp) {
+			$(this).before(thisThreadElement);
+			threadPlaced = 1;
+			return false;
+		}
+	});
+
+	// We archived the earliest message in the account
+	if (threadPlaced == 0){
+		$('ul#inboxThreads').append(thisThreadElement);
+	}
+}	
+
+
 
 
 function sendmessage_js(e) {
@@ -99,7 +164,18 @@ function sendmessage_js(e) {
 					}
 					setTimeout(function() { closeModalWindow(); }, 2000);				
 				} else if (response.next == "thread") { 
+					// This is a reply to an existing message thread. 
 					$(".messageThreadItemLoading").fadeIn();
+
+					// TODO - Fix this so it only happens when replied thread was in archive
+					numInbox = ++numInbox;
+					numArchived = --numArchived;
+
+					replyDOMUpdate(messageData.msg_thread);
+
+					var num_thread_messages = $(".messageThread").data("threadNumMessages") + 1;
+					$(".messageThread").data("threadNumMessages", num_thread_messages);
+					$('.numThreadMessages').text("("+ num_thread_messages + " messages)");
 					$(".messageReplyBody").val('');
 					$(".messageReplyStatus").html("<span class='success'>Message successfully sent to "+messageData.recipient_name+"</span>").fadeIn();
 					setTimeout(function() {
