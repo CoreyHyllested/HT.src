@@ -25,6 +25,8 @@ function replyDOMUpdate(msg_thread_id) {
 		thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
 		$('.messageViewThreadRestore').hide();
 		$('.messageViewThreadArchive').show();
+		numInbox = ++numInbox;
+		numArchived = --numArchived;
 	}
 	$('#inboxThreads li.thread').first().before(thisThreadElement);
 }	
@@ -114,15 +116,11 @@ function sendmessage_js(e) {
 					// This is a reply to an existing message thread. 
 					$(".messageThreadItemLoading").fadeIn();
 
-					// TODO - Fix this so it only happens when replied thread was in archive
-					numInbox = ++numInbox;
-					numArchived = --numArchived;
-
 					replyDOMUpdate(messageData.msg_thread);
 
 					var num_thread_messages = $(".messageThread").data("threadNumMessages") + 1;
 					$(".messageThread").data("threadNumMessages", num_thread_messages);
-					$('.numThreadMessages').text("("+ num_thread_messages + " messages)");
+					$('.numThreadMessages').text("("+ num_thread_messages + " Messages)");
 					$(".messageReplyBody").val('');
 					$(".messageReplyStatus").html("<span class='success'>Message successfully sent to "+messageData.recipient_name+"</span>").fadeIn();
 					setTimeout(function() {

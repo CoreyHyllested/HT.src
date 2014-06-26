@@ -63,11 +63,19 @@
 .inboxHeaderIcons {
 	float: right;
 }
-.inboxHeaderIcons i {
+.inboxIcon i {
 	cursor: pointer;
+	margin-left: 6px;
 }
-.inboxHeaderIcons .messageViewThreadArchive, .messageViewThreadRestore, .threadRefresh {
+
+.inboxIcon {
 	display: none;
+}
+
+.iconCaption {
+	font-size: .8em;
+	text-align: right;
+	float: right;
 }
 
 .inboxHeaderConvoTitle {

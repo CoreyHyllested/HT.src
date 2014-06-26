@@ -23,12 +23,13 @@
 			<div class="inboxHeaderStatus"></div>	
 		</div>
 		<div class="inboxHeaderRight">
+
 			<div class="inboxHeaderIcons">
-				<a href="" title="Refresh Inbox" class="inboxRefresh blend"><i class="fa fa-refresh"></i></a>
-				<a href="" title="Refresh Message Thread" class="threadRefresh blend"><i class="fa fa-refresh"></i></a>
-				<a href="" title="Send Conversation to Archives" class="messageViewThreadArchive blend"><i class="fa fa-archive"></i></a>
-				<a href="" title="Restore Conversation to Inbox" class="messageViewThreadRestore blend"><i class="fa fa-level-up"></i></a>
+				<a href="" title="Refresh View" class="inboxIcon threadRefresh blend"><i class="fa fa-refresh"></i></a>
+				<a href="" title="Archive Conversation" class="inboxIcon messageViewThreadArchive blend"><i class="fa fa-archive"></i></a>
+				<a href="" title="Move Conversation to Inbox" class="inboxIcon messageViewThreadRestore blend"><i class="fa fa-level-up"></i></a>
 			</div>	
+			<div class="iconCaption"></div>
 		</div>			
 	</div>
   
@@ -46,7 +47,7 @@
 		<div class="inboxRightColumn">
 			<div class="inboxView">
 
-				<div class="inboxMain">
+				<div class="inboxMain" id="inboxMain">
 					<ul class="inboxWell" id="inboxThreads">
 
 						{% for thread in inbox_threads|sort(attribute='UserMessage.msg_created')|reverse %}
@@ -147,6 +148,17 @@ $(document).ready(function() {
 
 	// Loads the message thread into the main view
 	function loadMessage(msg_thread_id) {
+
+		$('.inboxIcon').hide();
+		$('.threadRefresh').show();
+
+		var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
+		if (thisThreadElement.find('div.threadRestore').length != 0) {
+			$('.messageViewThreadRestore').show();
+		} else {
+			$('.messageViewThreadArchive').show();		
+		}
+
 		var fd = {};
 		fd.msg_thread_id = msg_thread_id;
 		fd.csrf_token = "{{ csrf_token() }}";
@@ -167,9 +179,10 @@ $(document).ready(function() {
 					}  
 					num_thread_messages_text += ")";
 
+					$('.threadRefresh i').removeClass("fa-spin");
+					$(".iconCaption, .inboxMessagesTitle").empty();
 					$('.inboxMain, .inboxArchive').hide();
 					$('.inboxMessage').html(page_content).show();
-					$('.inboxMessagesTitle').empty();
 					$('.inboxLeftNavigation, .inboxHeaderIcons').show();
 					$('.inboxHeaderConvoTitle').html('Conversation with <a href="/profile?hero='+thread_partner_id+'" class="partnerLink blend">'+thread_partner_name+'</a> <span class="numThreadMessages">'+num_thread_messages_text+'</span>');
 					$('#sendMessage').bind('click', sendmessage_js);
@@ -181,28 +194,22 @@ $(document).ready(function() {
 
 	function loadInbox () {
 		console.log("Loading inbox...");
-		$('.inboxMessage, .inboxArchive').hide();
-		$('.messageContainer').empty();
-		$('.inboxLeftNavigation, .inboxHeaderIcons').hide();
-		$('.inboxHeaderConvoTitle').empty();
+		$('.inboxMessage, .inboxArchive, .inboxIcon, .inboxLeftNavigation').hide();
+		$('.messageContainer, .inboxHeaderConvoTitle').empty();
 		$('.inboxMessagesTitle').html("Inbox ("+numInbox+")");
-		
+
 		$('.inboxMain').show();		
-		// var page_content = $('.inboxMain').html();	
-		// $('.inboxView').html(page_content);	
+
 	}
 
 	function loadArchive () {
 		console.log("Loading archive...");
-		$('.inboxMessage, .inboxMain').hide();
-		$('.messageContainer').empty();
-		$('.inboxHeaderConvoTitle').empty();
-		$('.inboxLeftNavigation, .inboxHeaderIcons').hide();
+		$('.inboxMessage, .inboxMain, .inboxLeftNavigation, .inboxIcon').hide();
+		$('.messageContainer, .inboxHeaderConvoTitle').empty();
 		$('.inboxMessagesTitle').html("Archive ("+numArchived+")");		
-		
+
 		$('.inboxArchive').show();	
-		// var page_content = $('.inboxArchive').html();
-		// $('.inboxView').html(page_content);	
+
 	}
 
 
@@ -214,21 +221,7 @@ $(document).ready(function() {
 		var msg_thread_id = $(this).data("thread-id");
 		console.log('msg_thread_clicked = ' + msg_thread_id);
 
-		$('.inboxHeaderStatus, .inboxRefresh').hide();
-		$('.threadRefresh').show();
-
 		loadMessage(msg_thread_id);
-
-		// this works here but not when user reloads a message view page
-		var hash = window.location.hash.substring(1);
-		if (hash == "archive") {
-			$('.messageViewThreadArchive').hide();
-			$('.messageViewThreadRestore').show();
-		} else {
-			$('.messageViewThreadRestore').hide();
-			$('.messageViewThreadArchive').show();
-		}
-
 		history.pushState({title: "Message", msg_thread_id: msg_thread_id}, "", '/inbox#thread?id='+msg_thread_id);
 	});
 
@@ -384,9 +377,20 @@ $(document).ready(function() {
 		return false;
 	});
 
+	$(document.body).on('hover', '.inboxIcon', function(e) {
+		$(".iconCaption").text($(this).parent().attr("title"));
+	});
+
+
 	$(document.body).on('click', '.threadRefresh', function(e) {
 		e.preventDefault();
-		// $(this).children().addClass("fa-spin");
+		$(this).children('i').addClass("fa-spin");
+		$(".iconCaption").text("Refreshing...");
+		
+		// setTimeout(function() {
+		// 	$('.threadRefresh .inboxIcon').removeClass("fa-spin");
+		// 	$(".iconCaption").empty();
+		// }, 1000 );
 
 		var msg_thread_id = $('.messageThread').data("thread-id");
 		console.log("Refreshing thread "+msg_thread_id);
@@ -395,11 +399,12 @@ $(document).ready(function() {
 
 	});
 
-	$(document.body).on('click', '.inboxRefresh', function(e) {
-		e.preventDefault();
-		// $(this).children().addClass("fa-spin");
-		console.log("This does nothing yet...");
-	});
+	// $(document.body).on('click', '.inboxRefresh', function(e) {
+	// 	e.preventDefault();
+	// 	$('.inboxView').load(document.URL +  '#inboxMain');
+	// 	// console.log("This does nothing yet...");
+	// });
+
 
 });
 </script>
