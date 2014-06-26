@@ -591,12 +591,15 @@ def ht_api_send_message():
 		print 'thread=', thread
 		print 'next=', next
 
+		domAction = None
+
 		if (parent):
 			# print ('get thread leader', thread)
 			msg_thread_leader = UserMessage.get_by_msg_id(thread)
 			#if (msg_thread_leader.msg_to != bp.prof_id or msg_thread_leader.msg_from != bp.prof_id):
 				# prevent active tampering.
 				#return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
+
 			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
 
 			# set thread updated flag and clear archive flags for both users.

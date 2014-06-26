@@ -39,7 +39,7 @@
 	z-index: 30;
 }
 
-.inboxMessagesHeader {
+.inboxHeader {
 	border-bottom: 1px solid #b0b4b7;
 	padding-bottom: 15px;		
 	margin-bottom: 10px;
@@ -48,31 +48,33 @@
 	float: left;
 }
 
-.inboxMessagesHeaderLeft {
+.inboxHeaderLeft {
     float: left;
 	width: 25%;
 }
-.inboxMessagesHeaderCenter {
+.inboxHeaderCenter {
 	float: left;
 
 }
-.inboxMessagesHeaderRight {
+.inboxHeaderRight {
 	float: right;
 	width: 25%;
 }
-.inboxMessagesHeaderIcons {
-	display: none;
+.inboxHeaderIcons {
 	float: right;
 }
-.inboxMessagesHeaderIcons i {
+.inboxHeaderIcons i {
 	cursor: pointer;
 }
+.inboxHeaderIcons .messageViewThreadArchive, .messageViewThreadRestore, .threadRefresh {
+	display: none;
+}
 
-.inboxMessagesHeaderConvoTitle {
+.inboxHeaderConvoTitle {
 	color: #b4b4b4;
 }
 
-.inboxMessagesHeaderStatus {
+.inboxHeaderStatus {
 	display: none;
 	font-weight: bold;
 	font-size: 1.2em;
@@ -82,7 +84,7 @@
 	font-size: 2em;
 }
 
-.inboxMessagesHeaderSubject {
+.inboxHeaderSubject {
 	width: 75%;
 	float: left;
 	font-size: 1.4em;
