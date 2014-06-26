@@ -385,7 +385,11 @@ def ht_api_proposal_create():
 		proposal = ht_proposal_create(request.values, session['uid'])
 		if (proposal is not None): user_message = 'Successfully created proposal'
 	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
+		user_message = se.get_sanitized_msg()
+		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+	except Exception as e:
+		print type(e), e
+		return make_response(jsonify(usrmsg='Something bad'), 500)
 	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
 
 
@@ -406,7 +410,7 @@ def ht_api_proposal_accept():
 		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
 		print rc, msg
 	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), 500
+		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
 		print str(e)
 		db_session.rollback()
@@ -436,8 +440,8 @@ def ht_api_proposal_reject():
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
 	except StateTransitionError as ste:
 		db_session.rollback()
-		print ste, ste.sanitized_msg()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
+		print ste, ste.get_sanitized_msg()
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
 	except DB_Error as ste:
 		db_session.rollback()
 		print ste
@@ -491,7 +495,7 @@ def ht_api_appt_cancel():
 	except StateTransitionError as ste:
 		print ste
 		db_session.rollback()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
 	except NoResourceFound as nre:
 		print nre
 		return jsonify(usrmsg=nre), 400

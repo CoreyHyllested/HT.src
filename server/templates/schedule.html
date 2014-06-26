@@ -192,6 +192,10 @@ $(document).ready(function() {
 						console.log(data.nexturl);
 						console.log(data.usrmsg);
 						window.location.href = data.nexturl;
+					},
+					error	: function(data) {
+						var msg = JSON.parse(data.responseText);
+						openAlertWindow(msg['usrmsg']);
 					}
 			});
 		};

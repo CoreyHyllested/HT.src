@@ -19,8 +19,10 @@ def ht_sanitize_errors(e, details=None):
 	print msg
 	if (type(e) == NoResourceFound):
 		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
+	elif (type(e) == ValueError):
+		raise Sanitized_Exception(e, httpRC=400, msg="Invalid input")
 	elif (type(e) == StateTransitionError):
-		raise Sanitized_Exception(e, httpRC=500, msg=e.sanitized_msg())
+		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
 	else:
 		raise e
 
@@ -39,22 +41,27 @@ def ht_proposal_create(values, uid):
 	#	v2 - hero exists.
 	#	v3 - place doesn't matter as much..
 	#	v4 - cost..
-	stripe_tokn = values.get('stripe_tokn')
-	stripe_card = values.get('stripe_card')
-	stripe_cust = values.get('stripe_cust')
-	stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
+	try:
+		stripe_tokn = values.get('stripe_tokn')
+		stripe_card = values.get('stripe_card')
+		stripe_cust = values.get('stripe_cust')
+		stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
 
-	prop_hero = values.get('prop_hero')
-	prop_cost = values.get('prop_cost')
-	prop_desc = values.get('prop_desc')
-	prop_place = values.get('prop_area')
+		prop_hero = values.get('prop_hero')
+		prop_cost = values.get('prop_cost')
+		prop_desc = values.get('prop_desc')
+		prop_place = values.get('prop_area')
 
-	prop_s_date = values.get('prop_s_date')
-	prop_s_hour = values.get('prop_s_hour')
-	prop_f_date = values.get('prop_f_date')
-	prop_f_hour = values.get('prop_f_hour')
-	dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
-	dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+		prop_s_date = values.get('prop_s_date')
+		prop_s_hour = values.get('prop_s_hour')
+		prop_f_date = values.get('prop_f_date')
+		prop_f_hour = values.get('prop_f_hour')
+		dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
+		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+	except Exception as e:
+		print type(e), e
+		ht_sanitize_errors(e)
+
 
 	print 'token = ', stripe_tokn 
 	print 'stripe_card = ', stripe_card 
