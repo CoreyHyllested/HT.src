@@ -638,6 +638,14 @@ class UserMessage(Base):
 		}
 
 
+	def archived(self, profile_id):
+		if (profile_id == self.msg_to):		return (self.msg_flags & MSG_STATE_RECV_ARCHIVE)
+		if (profile_id == self.msg_from):	return (self.msg_flags & MSG_STATE_SEND_ARCHIVE)
+		raise Exception('profile_id(%s) does not match msg(%s) TO or FROM' % (profile_id, self.msg_id))
+		
+
+
+
 
 class Review(Base):
 	__tablename__ = "review"
