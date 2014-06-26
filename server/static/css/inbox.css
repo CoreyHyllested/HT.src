@@ -70,8 +70,14 @@
 
 .inboxMessagesHeaderConvoTitle {
 	color: #b4b4b4;
-
 }
+
+.inboxMessagesHeaderStatus {
+	display: none;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
 .inboxMessagesTitle {
 	font-size: 2em;
 }

@@ -54,6 +54,9 @@ function sendmessage_js(e) {
 					setTimeout(function() { closeModalWindow(); }, 2000);				
 				} else if (response.next == "thread") { 
 					$(".messageThreadItemLoading").fadeIn();
+					var num_thread_messages = $(".messageThread").data("threadNumMessages") + 1;
+					$(".messageThread").data("threadNumMessages", num_thread_messages);
+					$('.numThreadMessages').text("("+ num_thread_messages + " messages)");
 					$(".messageReplyBody").val('');
 					$(".messageReplyStatus").html("<span class='success'>Message successfully sent to "+messageData.recipient_name+"</span>").fadeIn();
 					setTimeout(function() {
