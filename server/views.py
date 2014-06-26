@@ -1483,7 +1483,7 @@ def ht_api_get_message_thread(msg_thread):
 	thread_timestamp = msg_zero.UserMessage.msg_created
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
-	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp))
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp, archived=bool(thread_messages[0].UserMessage.archived(bp.prof_id))))
 
 
 

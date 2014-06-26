@@ -159,6 +159,15 @@ $(document).ready(function() {
 					var num_thread_messages = $(data).find('.messageThread').attr("data-thread-num-messages");
 					var thread_timestamp = $(data).find('.messageThread').attr("data-thread-timestamp");
 					
+					var archived = $(data).find('.messageThread').attr("data-archive");
+					if (archived) {
+						$('.messageViewThreadArchive').hide();
+						$('.messageViewThreadRestore').show();
+					} else {
+						$('.messageViewThreadRestore').hide();
+						$('.messageViewThreadArchive').show();
+					}
+
 					var num_thread_messages_text = "(" + num_thread_messages + " Message";
 					if (num_thread_messages > 1) {
 						num_thread_messages_text += "s";
