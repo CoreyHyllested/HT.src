@@ -612,7 +612,9 @@ class UserMessage(Base):
 
 	def __repr__(self):
 		content = self.msg_content[:20]
-		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+		subject = self.msg_subject[:15]
+		ts_open = self.msg_opened.strftime('%b %d %I:%M') if self.msg_opened is not None else str('Unopened')
+		return '<umsg %r|%r\t%r\t%r\t%r\t%r\t%r>' % (self.msg_id, self.msg_thread, self.msg_parent, self.msg_flags, ts_open, self.msg_from, subject)
 
 
 	@staticmethod

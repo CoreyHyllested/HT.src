@@ -1337,7 +1337,6 @@ def get_threads():
 		print e
 		db_session.rollback()
 
-	#(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
 	return jsonify(inbox=json_inbox, archive=json_archive, bp=bp.prof_id)
 
 
@@ -1348,22 +1347,36 @@ def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	threads = []
 
 	try:
-		threads = db_session.query(UserMessage, msg_from, msg_to)													\
+		messages = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
-							 .filter(UserMessage.msg_parent == None)												\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "threads =", len(threads)
+
+		# get the list of all the comp_threads
+		c_threads = filter(lambda  cmsg: (cmsg.UserMessage.msg_parent == None), messages)
+		map(lambda cmsg: display_lastmsg_timestamps(cmsg, bp.prof_id, messages), c_threads)
+		#for msg in c_threads: print 'MSG_Zero = ', msg.UserMessage
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, c_threads)
 	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
 
+
+
+def display_lastmsg_timestamps(msg, prof_id, all_messages):
+	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
+	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
+	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
+	#for msg in thread_msgs:
+	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
+	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
+	setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
 
 
 
