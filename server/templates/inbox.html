@@ -48,34 +48,32 @@
 
 				<div class="inboxMain">
 					<ul class="inboxWell" id="inboxThreads">
+						{% for thread in inbox_threads|sort(attribute='lastmsg.msg_created')|reverse %}
+						<li class="thread {% if (bp.prof_id == thread.lastmsg.msg_to) and (thread.lastmsg.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.UserMessage.msg_created.strftime('%Y%m%d%H%M%S')}}">
 
-						{% for thread in inbox_threads|sort(attribute='lastmsg_sent')|reverse %}
-
-						<li class="thread {% if (bp.prof_id == thread.UserMessage.msg_to and thread.UserMessage.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.UserMessage.msg_created.strftime('%Y%m%d%H%M%S')}}">
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
 								{{thread.UserMessage.msg_subject}} 
-								{% if thread.lastmsg_open %}<span class="debug">(opened)</span>{% endif %}
+								{% if thread.lastmsg.msg_opened %}<span class="debug">(opened)</span>{% endif %}
 							</div>
 							<div class="threadAction threadArchive"><a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a></div>
-							<div class="threadItem threadDate">{{thread.lastmsg_sent.strftime('%b %d at %I:%M %p')}}</div>
+							<div class="threadItem threadDate">{{thread.lastmsg.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 						</li>
 						{% endfor %}
-
 					</ul>  
 				</div>
 		
 				<div class="inboxArchive">
 					<ul class="inboxWell" id="archiveThreads">
-						{% for thread in archived_threads|sort(attribute='lastmsg_sent')|reverse  %}
+						{% for thread in archived_threads|sort(attribute='lastmsg.msg_created')|reverse  %}
 						<li class="thread {% if (bp.prof_id == thread.UserMessage.msg_to and thread.UserMessage.msg_opened == None) %}unread{% endif %}" data-thread-id="{{thread.UserMessage.msg_thread}}" data-timestamp="{{thread.UserMessage.msg_created.strftime('%Y%m%d%H%M%S')}}">
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
 								{{thread.UserMessage.msg_subject}}
-								{% if thread.lastmsg_open %}<span class="debug">(opened)</span>{% endif %}
+								{% if thread.lastmsg.msg_opened %}<span class="debug">(opened)</span>{% endif %}
 							</div>
 							<div class="threadAction threadRestore"><a title="Restore Message" class="blend"><i class="fa fa-level-up"></i></a></div>
-							<div class="threadItem threadDate">{{thread.lastmsg_sent.strftime('%b %d at %I:%M %p')}}</div>
+							<div class="threadItem threadDate">{{thread.lastmsg.msg_created.strftime('%b %d at %I:%M %p')}}</div>
 						</li>
 						{% endfor %}
 					</ul>  

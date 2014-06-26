@@ -1375,8 +1375,10 @@ def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#for msg in thread_msgs:
 	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
 	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
-	setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
-	setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
+	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
 
 
 
