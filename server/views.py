@@ -352,48 +352,6 @@ def change_linkedin_query(uri, headers, body):
 	return uri, headers, body
 
 
-@ht_server.route('/signup/verify/<challengeHash>', methods=['GET'])
-@dbg_enterexit
-def signup_verify(challengeHash):
-	rc = None
-	# pass in email too... to verify
-	# grab info from request parameters
-	# 1) challengeHash
-	# 2) an email address
-	trace("Challenge hash is: " + challengeHash)
-	#trace(type(challengeHash))
-
-	#Page url, extract email 
-	url = urlparse.urlparse(request.url)
-	query = urlparse.parse_qs(url.query)
-
-	email  = query['email'][0]
-	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
-
-	if (len(accounts) != 1 or accounts[0].email != email):
-			trace('Hash and/or email didn\'t match.')
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('render_login', messages=msg))
-
-	try:
-		# update user's account.
-		hero_account = accounts[0]
-		hero_account.set_sec_question("")
-		hero_account.set_status(Account.USER_ACTIVE)
-		
-		db_session.commit()
-		send_welcome_email(email)
-	except Exception as e:
-		trace(str(e))
-		db_session.rollback()
-		# db failed?... let them in anyways.
-
-	# bind session cookie to this 1) Account and/or 2) this profile 
-	bp = Profile.get_by_uid(hero_account.userid)
-	ht_bind_session(bp)
-	return make_response(redirect('/dashboard'))
-
-
 
 
 
@@ -403,9 +361,12 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+	hp_id = request.values.get('hp', None)
 	bp = Profile.get_by_uid(session.get('uid'))
 	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	print hp
+	ba = Account.get_by_uid(session.get('uid'))
+	if (ba.status == Account.USER_UNVERIFIED):
+		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
@@ -832,7 +793,7 @@ def ht_api_proposal_negotiate():
 @ht_server.route('/settings', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def settings():
+def render_settings():
 	""" Provides users the ability to modify their settings.
 		- detect HT Session info.  Provide modified info.
 	"""
@@ -843,11 +804,10 @@ def settings():
 
 	card = 'Null'
 
+
 	errmsg = None
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
-		print("settings form validated")
-
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
@@ -910,17 +870,26 @@ def settings():
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
-		pass
+		msg = request.values.get('messages')
+		if (msg is not None): errmsg = msg
 	else:
 		print "form isnt' valid"
 		print form.errors
 		errmsg = "Passwords must match."
 
 
+	email_unver = False
+	if (ba.status == Account.USER_UNVERIFIED):
+		print bp.prof_name, ' email is unverified'
+		email_unver = True
+
 	form.oauth_stripe.data     = card
 	form.set_input_email.data  = ba.email
+	nexturl = "/settings"
+	if (request.values.get('nexturl') is not None):
+		nexturl = request.values.get('nexturl')
 
-	return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
+	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
 
 def error_sanitize(message):
@@ -1180,9 +1149,87 @@ def serviceFailure(pg, error):
 	return render_template('500.html'), 500
 
 
-@ht_server.route("/recovery", methods=['GET', 'POST'])
-def recovery():
-	#mycssfiles = ["static/css/dashboard_lights.css", "static/css/this_is_pretty_cool.css"]
+linkedin.pre_request = change_linkedin_query
+
+
+
+@ht_server.route("/email/<operation>/<data>", methods=['GET','POST'])
+def ht_email_operations(operation, data):
+	print operation, data
+	if (operation == 'verify'):
+		email = request.values.get('email_addr')
+		nexturl = request.values.get('next_url')
+		print 'verify: data  = ', data, 'email =', email
+		return ht_email_verify(email, data, nexturl)
+	elif (operation == 'request-response'):
+		nexturl = request.values.get('nexturl')
+		return make_response(render_template('verify_email.html', nexturl=nexturl))
+	elif (operation == 'request-verification') and ('uid' in session):
+
+		bp = Profile.get_by_uid(session.get('uid'))
+		ba = Account.get_by_uid(session.get('uid'))
+		email_set = set([ba.email, request.values.get('email_addr')])
+		print email_set
+		ht_send_verification_to_list(ba, bp, email_set)
+		return jsonify(rc=200), 200
+	return pageNotFound('Not sure what you were looking for')
+
+
+
+
+def ht_send_verification_to_list(account, profile, email_set):
+	print 'ht_send_verification_to_list'
+	challenge_hash = str(uuid.uuid4())
+	account.set_sec_question(challenge_hash)
+
+	try:
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	for email in email_set:
+		print 'sending email to', email
+		send_verification_email(email, profile.prof_name, challenge_hash)
+
+
+
+def ht_email_verify(email, challengeHash, nexturl=None):
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+
+	if (len(accounts) != 1 or accounts[0].email != email):
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return redirect(url_for('render_login', messages=msg))
+
+	try:
+		print 'update user account'
+		# update user's account.
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
+
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	bp = Profile.get_by_uid(account.userid)
+	send_welcome_email(email, bp.prof_name)
+	ht_bind_session(bp)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
+	return make_response(redirect('/dashboard'))
+
+
+
+
+@ht_server.route("/password/recover", methods=['GET', 'POST'])
+def ht_password_recover():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
 	if request.method == 'POST':
@@ -1190,13 +1237,11 @@ def recovery():
 		usrmsg = ht_password_recovery(form.rec_input_email.data)
 	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
-linkedin.pre_request = change_linkedin_query
 
 
 
-@ht_server.route('/newpassword/<challengeHash>', methods=['GET', 'POST'])
-def newpassword(challengeHash):
-
+@ht_server.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
+def ht_password_reset(challengeHash):
 	form = NewPasswordForm(request.form)
 
 	#Page url
@@ -1337,7 +1382,6 @@ def get_threads():
 		print e
 		db_session.rollback()
 
-	#(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
 	return jsonify(inbox=json_inbox, archive=json_archive, bp=bp.prof_id)
 
 
@@ -1348,22 +1392,38 @@ def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	threads = []
 
 	try:
-		threads = db_session.query(UserMessage, msg_from, msg_to)													\
+		messages = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
-							 .filter(UserMessage.msg_parent == None)												\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "threads =", len(threads)
+
+		# get the list of all the comp_threads
+		c_threads = filter(lambda  cmsg: (cmsg.UserMessage.msg_parent == None), messages)
+		map(lambda cmsg: display_lastmsg_timestamps(cmsg, bp.prof_id, messages), c_threads)
+		#for msg in c_threads: print 'MSG_Zero = ', msg.UserMessage
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, c_threads)
 	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
 
+
+
+def display_lastmsg_timestamps(msg, prof_id, all_messages):
+	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
+	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
+	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
+	#for msg in thread_msgs:
+	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
+	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
+	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
+	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
 
 
 
@@ -1423,7 +1483,7 @@ def ht_api_get_message_thread(msg_thread):
 	thread_timestamp = msg_zero.UserMessage.msg_created
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
-	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp))
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp, archived=bool(thread_messages[0].UserMessage.archived(bp.prof_id))))
 
 
 
@@ -1514,15 +1574,10 @@ def render_message_page():
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
+	hp = None
 	next = request.values.get('next')
 
-	print "next: ", next
-
-	if (hid is not None):
-		hp = Profile.get_by_prof_id(hid)
-	else:
-		hp = None
-
+	if (hid is not None): hp = Profile.get_by_prof_id(hid)
 	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
 
 
