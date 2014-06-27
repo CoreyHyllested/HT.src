@@ -647,12 +647,15 @@ def ht_api_send_message():
 		print 'thread=', thread
 		print 'next=', next
 
+		domAction = None
+
 		if (parent):
 			# print ('get thread leader', thread)
 			msg_thread_leader = UserMessage.get_by_msg_id(thread)
 			#if (msg_thread_leader.msg_to != bp.prof_id or msg_thread_leader.msg_from != bp.prof_id):
 				# prevent active tampering.
 				#return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
+
 			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
 
 			# set thread updated flag and clear archive flags for both users.
@@ -1386,8 +1389,7 @@ def get_threads():
 		print e
 		db_session.rollback()
 
-	#(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
-	return jsonify(foo=bp.prof_id, inbox=json_inbox, archive=json_archive)
+	return jsonify(inbox=json_inbox, archive=json_archive, bp=bp.prof_id)
 
 
 
@@ -1397,22 +1399,38 @@ def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	threads = []
 
 	try:
-		threads = db_session.query(UserMessage, msg_from, msg_to)													\
+		messages = db_session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
-							 .filter(UserMessage.msg_parent == None)												\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "threads =", len(threads)
+
+		# get the list of all the comp_threads
+		c_threads = filter(lambda  cmsg: (cmsg.UserMessage.msg_parent == None), messages)
+		map(lambda cmsg: display_lastmsg_timestamps(cmsg, bp.prof_id, messages), c_threads)
+		#for msg in c_threads: print 'MSG_Zero = ', msg.UserMessage
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, threads)
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, c_threads)
 	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
 
+
+
+def display_lastmsg_timestamps(msg, prof_id, all_messages):
+	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
+	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
+	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
+	#for msg in thread_msgs:
+	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
+	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
+	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
+	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
 
 
 
@@ -1469,9 +1487,10 @@ def ht_api_get_message_thread(msg_thread):
 		print type(e), e
 		db_session.rollback()
 
+	thread_timestamp = msg_zero.UserMessage.msg_created
 
 	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
-	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner))
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp, archived=bool(thread_messages[0].UserMessage.archived(bp.prof_id))))
 
 
 
