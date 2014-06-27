@@ -127,14 +127,14 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.commit()
 
 		print 'send confirmation notices to buyer and seller'
-		chargeTime = the_proposal.prop_ts - timedelta(days=1)
-		remindTime = dt.utcnow() + timedelta(minutes=10) #the_proposal.prop_tf - timedelta(days=2)
+		remindTime = the_proposal.prop_ts - timedelta(days=2)
+		reviewTime = the_proposal.prop_tf
+		chargeTime = the_proposal.prop_tf + timedelta(days=2)
 		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
 		send_appt_emails(ha.email, ba.email, the_proposal)
 
 		print 'calling ht_capturecard -- delayed'
-		# add timestamp to ensure it hasn't been tampered with
 		rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated) #, eta=chargeTime):
 
 	except StateTransitionError as ste:
@@ -150,9 +150,10 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.rollback()
 		raise e
 
-#	in reminder, check to see if it was canceled
+	print 'Queue Events: reminder emails, enable_reviews.  Check to see if proposal was canceled.'
 	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	enable_reviews.apply_async(args=[the_proposal], eta=(reviewTime))
 
 	print 'returning from ht_appt_finalize', rc
 	return (200, str(rc))
@@ -196,6 +197,7 @@ def getDBCorey(x):
 
 
 
+@mngr.task
 def enable_reviews(the_proposal):
 	#is this submitted after stripe?  
 	hp = the_proposal.prop_hero
@@ -229,6 +231,7 @@ def enable_reviews(the_proposal):
 		db_session.rollback()
 		print e	
 	
+	#Notifiy user.  Email.  Drop an event notice on their dashboard.
 	return None
 
 
@@ -243,12 +246,18 @@ def disable_reviews(jsonObj):
 
 @mngr.task
 def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time):
+	""" HT_capture_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+		This function is delayed.
+		That is why we pass in prop_id and go get the information from the database.  We want to see if there have been any updates.
+	"""
+
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
-	print 'ht_capture_creditecard called: buyer_cust_token = ', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
+	print 'ht_capture_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
 	the_proposal = Proposal.get_by_id(prop_id)
 	print the_proposal
 
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
+		# update must set update_time. (if the_proposal.prop_updated > prev_known_update_time): corruption.
 		trace (str(the_proposal.prop_uuid) + ' state is canceled (?, ' + str(the_proposal.prop_state) +  ')')
 		print the_proposal.prop_uuid, ' state is canceled (?, ', the_proposal.prop_state ,')'
 		return 'success, but state was canceld'
@@ -283,38 +292,19 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 		the_proposal.set_state(APPT_STATE_CAPTURED)
 		db_session.add(the_proposal)
 		db_session.commit()
-		#commie
 	except StateTransitionError as ste:
 		print e
 		db_session.rollback()
+		raise e
 	except Exception as e:
 		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
-		print e
-		return 'failed with ' + str(e)
+		print type(e), e
+		raise e
 
-
-
-#	Transaction 
-	#transaction.timestamp = dt.utcnow()
-	#transaction.timestamp = charge['id']  #charge ID
-	#transaction.timestamp = charge['amount']  # same amount?
-	#transaction.timestamp = charge['captured']  #True, right?
-	#transaction.timestamp = charge['paid']  # == true, right?
-	#transaction.timestamp = charge['livemode']  # == true, right?
-	#transaction.timestamp = charge['balance_transaction']
-	#transaction.timestamp = charge['card']['id']
-	#transaction.timestamp = charge['card']['customer']
-	#transaction.timestamp = charge['card']['fingerprint']
-
-
-	#print charge['balance_transaction']
 	print 'charge[failure_code] =', charge['failure_code']
+	print 'charge[balance_transaction]', charge['balance_transaction']
 	#print charge['failure_message']
 
-	#queue two events to create review.  Need to create two addresses.
-	print 'calling enable_reviews'
-	enable_reviews(the_proposal)
-	print 'returning out of charge'
 	return 'Good -- becomes # when delayed'
 	
 
