@@ -423,9 +423,9 @@ class Proposal(Base):
 
 
 	@staticmethod
-	def get_by_id(prop_id, location=None):
-		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
-		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_id)
+	def get_by_id(prop_uuid):
+		proposals = Proposal.query.filter_by(prop_uuid=prop_uuid).all()
+		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_uuid)
 		return proposals[0]
 	
 

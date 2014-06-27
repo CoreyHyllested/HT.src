@@ -100,9 +100,6 @@ def ht_proposal_create(values, uid):
 
 
 def ht_proposal_update(p_uuid, p_from):
-	# send email to buyer.   (prop_from sent you a proposal).
-	# send email to seller.  (proposal has been sent)
-
 	prop = Proposal.get_by_id(p_uuid)
 	(ha, hp) = get_account_and_profile(prop.prop_hero)
 	(ba, bp) = get_account_and_profile(prop.prop_user)
@@ -113,12 +110,12 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 
-def ht_proposal_accept(prop_id, uid):
+def ht_proposal_accept(prop_uuid, uid):
 	try:
-		the_proposal = Proposal.get_by_id(prop_id, 'ht_appt_accept')
+		the_proposal = Proposal.get_by_id(prop_uuid)
 		stripe_card = the_proposal.charge_credit_card
 		stripe_tokn = the_proposal.charge_user_token
-		print 'ht_appointment_finailze() appt: ', prop_id, ", cust: ", the_proposal.charge_customer_id, ", card: ", stripe_card, ", token: ", stripe_tokn 
+		print 'ht_appointment_finailze() appt: ', prop_uuid, ", cust: ", the_proposal.charge_customer_id, ", card: ", stripe_card, ", token: ", stripe_tokn 
 
 		# update proposal
 		the_proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
@@ -241,7 +238,7 @@ def disable_reviews(jsonObj):
 def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time):
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
 	print 'ht_capture_creditecard called: buyer_cust_token = ', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
-	the_proposal = Proposal.get_by_id(prop_id, 'capture_cc')
+	the_proposal = Proposal.get_by_id(prop_id)
 	print the_proposal
 
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
