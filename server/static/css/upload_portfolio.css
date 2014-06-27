@@ -116,19 +116,11 @@
 	color: red;
 }
 
-/* CONTENT */
-
-
-.multipleUploadButton:disabled{
-	opacity: 0.3;
-}
-
 .dropzone .header{
 	float: right;
 	width: 100%;
 
 }
-
 
 .dropzone .header .img-delete{
 	float: right;
@@ -149,6 +141,14 @@
 	left: 0px;
 	top: 150px;
 	position: absolute;
+}
+
+
+/* CONTENT */
+
+
+.multipleUploadButton:disabled{
+	opacity: 0.3;
 }
 
 .dzContentWrapper {

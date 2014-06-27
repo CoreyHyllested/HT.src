@@ -1,0 +1,163 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/add_lesson.css">
+	<!--<script type="text/javascript" src="/static/js/add_lesson.js"></script>-->
+
+{% endblock %}
+
+{% block content %}
+"
+<div class="addLessonContentWrapper">
+<!-- 
+	<div class="addLessonTitle">
+		Share Your Passion!
+	</div> -->
+
+	<div class="addLessonHeader">
+		<div class="addLessonHeaderLeft">
+			<div class="addLessonTopLeftNavigation">
+				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
+			</div>
+		</div>
+		<div class="addLessonHeaderRight">
+			<div class="addLessonHeaderPageName"></div>
+		</div>			
+	</div>
+  
+  	<div class="addLessonContentContainer">
+		<div class="addLessonLeftColumn">
+			<div class="addLessonNavContainer">
+				<ul class="addLessonNavList">
+					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="addLessonFormOverview">Overview<i class="fa fa-sun"></i></a></div>
+					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="addLessonFormTimePlace">Time and Place<i class="fa fa-sun"></i></a></div>
+				</ul>
+			</div>
+		</div>
+
+		<div class="addLessonRightColumn">
+			<div class="addLessonFormPageContainer">
+
+				<div id="addLessonFormOverview" class="addLessonFormPage">
+					<div class="formTitle">Let's get started!</div>
+					<div class="formInstruction">What lesson or instruction do you want to offer?</div>
+
+					<input type="text" id="addLessonName" class="formField medium" placeholder="e.g. Advanced Ukulele Lessons"> 
+					<textarea id="addLessonSummary" class="formField wide" placeholder="Summary"></textarea> 
+
+					<div class="formInstruction">Choose your Industry</div>
+
+					<select id="addLessonIndustry" class="formField medium">
+						<option value="" disabled selected>Which Industry?</option>
+						<option value="addLessonIndustry_music">Music</option>
+						<option value="addLessonIndustry_finearts">Fine Arts</option>
+						<option value="addLessonIndustry_other">Other</option>
+					</select>
+
+				</div>
+
+				<div id="addLessonFormTimePlace" class="addLessonFormPage">
+					<div class="formInstruction">Where do you want to provide these lessons?</div>
+
+				</div>
+
+			</div>
+
+			<div class="addLessonFormButtonContainer">
+				<button id="addLessonFormButton" class="blueButton addLessonFormButton" data-current-page="">Continue</button>
+				<a id="addLessonFormPrevious" class="addLessonFormPrevious">Previous</a>
+			</div>
+
+		</div><!--right column-->
+	</div><!--empty, container-->
+
+</div>
+
+<!-- Scripts -->
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+	// Default to first page
+	var firstPage = "addLessonFormOverview";
+
+	$('.addLessonHeaderPageName').text($('#'+firstPage+' .formTitle').text());
+	$('#'+firstPage).show();
+	$('#addLessonFormButton').attr("data-current-page", firstPage);
+
+	$('.addLessonNavLink').click(function() {
+		$('.addLessonFormPage').hide();
+		var target = $(this).attr("data-target-page");
+		$('.addLessonHeaderPageName').text($("#"+target+' .formTitle').text());
+		$('#addLessonFormButton').attr("data-current-page", target);
+
+		if (target != firstPage) {
+			$('.addLessonFormPrevious').show();
+		} else {
+			$('.addLessonFormPrevious').hide();
+		}
+
+		$("#"+target).show();
+	});
+
+	$('#addLessonFormButton').click(function() {
+		$('.addLessonFormPage').hide();
+
+		var currentPage = $(this).attr("data-current-page");
+		var nextPage = $('#'+currentPage).next('.addLessonFormPage').attr("id");
+
+		$('.addLessonHeaderPageName').text($('#'+nextPage+' .formTitle').text());
+		$('#addLessonFormButton').attr("data-current-page", nextPage);
+		$('.addLessonFormPrevious').show();
+		$('#'+nextPage).show();
+	})
+
+	$('#addLessonFormPrevious').click(function(e) {
+		e.preventDefault();
+		$('.addLessonFormPage').hide();	
+
+		var currentPage = $(this).siblings('#addLessonFormButton').attr("data-current-page");
+		console.log("currentPage is "+ currentPage);
+
+		var prevPage = $('#'+currentPage).prev('.addLessonFormPage').attr("id");
+		console.log("prevPage is "+ prevPage);
+
+		$('.addLessonHeaderPageName').text($('#'+prevPage+' .formTitle').text());
+		$('#addLessonFormButton').attr("data-current-page", prevPage);
+		if (prevPage != firstPage) {
+			$('.addLessonFormPrevious').show();
+		} else {
+			$('.addLessonFormPrevious').hide();
+		}		
+		$('#'+prevPage).show();
+	})
+
+});
+
+function validateForm() {
+	// Fetch form elements
+	var name = document.forms["SignupNow"]["input_signup_name"];
+	var email_address = document.forms["SignupNow"]["input_signup_email"];
+	var password = document.forms["SignupNow"]["input_signup_password"];
+	var confirm = document.forms["SignupNow"]["input_signup_confirm"];
+
+	// Check for empty fields; if found, highlight them
+	var form_fields = [name, email_address, password, confirm];
+	for (var i = 0; i < form_fields.length; i++) {
+		var current_element = form_fields[i];
+		var current_value = form_fields[i].value;
+		if (current_value.match(/^\s*$/)) {
+			$(current_element).focus();
+			return false;
+		}
+	}
+}
+
+</script>
+
+<!-- Bottom bar -->
+
+{% endblock %}
+"

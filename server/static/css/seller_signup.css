@@ -1,0 +1,366 @@
+
+/* Animations */
+
+/* Signup panel slides into view */
+@-moz-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@-webkit-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@keyframes signupAppear {
+	from {opacity: 0; margin-top: 300px;}
+	to {opacity: 1; margin-top: 40px;}
+}
+
+/* Basic Layout */
+
+.pageWrapper {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
+
+.ssContentWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	min-height: 600px;
+	z-index: 30;
+}
+
+/* Header and Top Navigation */
+
+.ssTitle {
+	width: 100%;
+	font-size: 2em;
+	margin: 20px 0px;
+	text-align: center;
+}
+
+.ssHeader {
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 15px;		
+	margin-bottom: 10px;
+	width: 100%;
+	/*color: black;*/
+	float: left;
+}
+
+.ssHeaderLeft {
+    float: left;
+	width: 25%;
+}
+
+/*.ssHeaderCenter {
+	float: left;
+	width: 65%;
+}*/
+
+.ssHeaderRight {
+	float: left;
+	width: 75%;
+}
+
+.ssTopLeftNavigation {
+	font-size: 1.1em;
+}
+
+.ssTopLeftNavigation .navItem {
+	padding-right: 36px;
+
+}
+
+.ssTopLeftNavigation i {
+	font-size: .9em;
+}
+
+.ssHeaderPageName {
+	font-size: 1.5em;
+}
+
+/* Main Content Areas */
+
+.ssContentContainer {
+
+}
+
+.ssLeftColumn {
+    float: left;
+    text-align: right;
+	width: 25%;
+}
+
+.ssRightColumn {
+	float: right;
+	width: 75%;
+}
+
+/* Left Navigation */
+
+.ssNavContainer {
+	padding-right: 48px;
+}	
+
+.ssNavList {
+
+}
+
+.ssNavItem {
+	height: 50px;
+	line-height: 50px;
+	font-size: 1.1em;
+	border-bottom: 1px dotted #f0f0f0;	
+}
+
+.ssNavLink {
+	cursor: pointer;
+}
+
+/* Styles for the form container and pages */
+
+.ssFormPageContainer {
+	/*min-height: 300px;*/
+}
+
+.ssFormButtonContainer {
+	float: left;
+	text-align: left;
+	width: 100%;
+}
+.ssFormButton {
+	width: 150px;
+	margin: 0px 0 12px 0;
+}
+
+.ssFormPrevious {
+	display: none;
+	cursor: pointer;
+}
+.ssFormCancel {
+	display: none;
+	cursor: pointer;
+}
+
+.ssFormPage {
+	display: none;
+	float: left;
+/*	padding: 8px 0px 24px 0px;*/
+	width: 100%;
+	margin: 10px auto;
+	/*border-bottom: 1px dotted #f0f0f0;*/
+}
+
+.formTitle {
+	display: none;
+}
+
+.formInstruction {
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-bottom: 12px;
+}
+
+.formDescription {
+
+	margin-bottom: 12px;
+}
+
+.formField {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-bottom: 6px;
+	/*margin-bottom: -1px;*/
+}
+
+.formField.span3 {
+	width: 25%;
+}
+.formField.span6 {
+	width: 50%;
+}
+.formField.span9 {
+	width: 75%;
+}
+.formField.span12 {
+	width: 100%;
+}
+
+.ssFormPage label {
+	
+}
+
+/*
+.ssFormPage .formField:first-of-type {
+	border-radius: 5px 5px 0 0;
+}
+
+.ssFormPage .formField:last-of-type {
+	border-radius: 0 0 5px 5px;
+}
+*/
+input.formField, select.formField {
+	height: 40px;
+}
+
+input.formField:focus, select.formField:focus, textarea.formField:focus {
+	border: 1px #cccccc solid;
+}
+
+textarea.formField {
+	resize: none;
+}
+
+/* Specific Form Fields */
+
+#ssAddress1 {
+
+}
+
+/* Dropzone Overrides */
+
+.dropzone {
+	border:1px dotted gray;
+	background-color: white;
+}
+
+.dropzone .multiple-upload {
+	padding:10px;
+	background-color: lightgray;
+	border:2px solid white;
+}
+
+.dropzone .multiple-upload img {
+	margin-bottom:10px;
+}
+
+.dropzone-content-submit button {
+	width: 250px;
+	margin: 10px auto;
+}
+
+.dz-preview:hover, .dz-details:hover, .data-dz-thumbnail:hover, .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview,
+.dropzone-previews .dz-preview {
+	margin: 6px;
+	vertical-align: top;
+	border: 1px solid #b5b6b8;
+	border-radius: 3px;
+	padding: 4px;
+}
+
+.dropzone .dz-preview .dz-details,
+.dropzone-previews .dz-preview .dz-details {
+	width: 200px;
+	height: 200px;
+	position: relative;
+	background: #fff;
+	padding: 5px;
+	margin-bottom: 22px;
+	margin-top: 20px;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 200px;
+}
+
+.dropzone .dz-preview .dz-progress,
+.dropzone-previews .dz-preview .dz-progress {
+  position: absolute;
+  top: 230px;
+  left: 6px;
+  right: 6px;
+  height: 8px;
+  background: #d7d7d7;
+  display: none;
+}
+
+.dropzone .dz-filename {
+	display: none;
+}
+.dropzone .dz-size {
+	display: none;
+}
+.dropzone a.dz-remove,
+.dropzone-previews a.dz-remove {
+	display: none;
+}
+
+.dropzone-status {
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+}
+
+.dropzone-status .success{
+	color: green;
+}
+
+.dropzone-status .error{
+	color: red;
+}
+
+.dropzone .header{
+	float: right;
+	width: 100%;
+
+}
+
+.dropzone .header .img-delete{
+	float: right;
+	font-size: 1.5em;
+	text-align: right;
+	cursor: pointer;
+	line-height: 10px;
+	height: 20px;
+}
+
+.dropzoneMessage{
+	width: 100%;
+	text-align: center;
+	font-size: 2.0em;
+	color: lightgray;
+	line-height: 1.2em;
+	padding: 0px 20px;
+	left: 0px;
+	top: 150px;
+	position: absolute;
+}
+
+
+
+
+

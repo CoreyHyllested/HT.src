@@ -1,0 +1,210 @@
+
+/* Animations */
+
+/* Signup panel slides into view */
+@-moz-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@-webkit-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@keyframes signupAppear {
+	from {opacity: 0; margin-top: 300px;}
+	to {opacity: 1; margin-top: 40px;}
+}
+
+/* Basic Layout */
+
+.pageWrapper {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
+
+.addLessonContentWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	min-height: 600px;
+	z-index: 30;
+}
+
+/* Header and Top Navigation */
+
+.addLessonTitle {
+	width: 100%;
+	font-size: 2em;
+	margin: 20px 0px;
+	text-align: center;
+}
+
+.addLessonHeader {
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 15px;		
+	margin-bottom: 10px;
+	width: 100%;
+	/*color: black;*/
+	float: left;
+}
+
+.addLessonHeaderLeft {
+    float: left;
+	width: 25%;
+}
+
+.addLessonHeaderRight {
+	float: right;
+	width: 75%;
+}
+
+.addLessonTopLeftNavigation {
+	font-size: 1.1em;
+}
+
+.addLessonTopLeftNavigation .navItem {
+	padding-right: 36px;
+
+}
+
+.addLessonTopLeftNavigation i {
+	font-size: .9em;
+}
+
+.addLessonHeaderPageName {
+	font-size: 1.8em;
+}
+
+/* Main Content Areas */
+
+.addLessonContentContainer {
+
+}
+
+.addLessonLeftColumn {
+    float: left;
+    text-align: right;
+	width: 25%;
+}
+
+.addLessonRightColumn {
+	float: right;
+	width: 75%;
+}
+
+/* Left Navigation */
+
+.addLessonNavContainer {
+	padding-right: 48px;
+}	
+
+.addLessonNavList {
+
+}
+
+.addLessonNavItem {
+	height: 50px;
+	line-height: 50px;
+	font-size: 1.1em;
+	border-bottom: 1px dotted #f0f0f0;	
+}
+
+.addLessonNavLink {
+	cursor: pointer;
+}
+
+/* Styles for the form container and pages */
+
+.addLessonFormPageContainer {
+	min-height: 300px;
+}
+
+.addLessonFormButtonContainer {
+	float: left;
+	width: 100%;
+}
+.addLessonFormButton {
+	width: 150px;
+	margin-bottom: 12px;
+}
+
+.addLessonFormPrevious {
+	display: none;
+	cursor: pointer;
+}
+
+.addLessonFormPage {
+	padding-top: 8px;
+	display: none;
+}
+
+.formTitle {
+	display: none;
+}
+
+.formInstruction {
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-bottom: 12px;
+}
+
+.formField {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-bottom: 6px;
+	/*margin-bottom: -1px;*/
+	width: 100%;
+}
+
+.formField.narrow {
+	width: 33%;
+}
+.formField.medium {
+	width: 66%;
+}
+.formField.wide {
+	width: 100%;
+}
+
+/*
+.addLessonFormPage .formField:first-of-type {
+	border-radius: 5px 5px 0 0;
+}
+
+.addLessonFormPage .formField:last-of-type {
+	border-radius: 0 0 5px 5px;
+}
+*/
+input.formField, select.formField {
+	height: 40px;
+}
+
+input.formField:focus, select.formField:focus, textarea.formField:focus {
+	border: 1px #cccccc solid;
+}
+
+textarea.formField {
+	resize: none;
+}
+
+
+

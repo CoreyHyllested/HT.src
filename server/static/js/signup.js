@@ -1,24 +1,23 @@
 $(document).ready(function() {
 
-	// On load, show full content on high resolutions
-	if ($(".signupSwitch").css("display") == "none") {
-		$('.signupEmail').show();
-		$('.signupSocial').show();
-	}
+	// // On load, show full content on high resolutions
+	// if ($(".signupSwitch").css("display") == "none") {
+	// 	$('.signupEmail').show();
+	// 	$('.signupSocial').show();
+	// }
 
-	// On resize, show full content on high resolutions
-	$(window).resize(function() {	
-		if ($(".signupSwitch").css("display") == "none") {
-			$('.signupEmail').show();
-			$('.signupSocial').show();
-		}
+	// // On resize, show full content on high resolutions
+	// $(window).resize(function() {	
+	// 	if ($(".signupSwitch").css("display") == "none") {
+	// 		$('.signupEmail').show();
+	// 		$('.signupSocial').show();
+	// 	}
 
-		else if ($(".signupSwitch").css("display") !== "none") {
-			$('.signupEmail').show();
-			$('.signupSocial').hide();
-		}
-	});
-
+	// 	else if ($(".signupSwitch").css("display") !== "none") {
+	// 		$('.signupEmail').show();
+	// 		$('.signupSocial').hide();
+	// 	}
+	// });
 
 	// Switch to email signup
 	$('.signupSwitchEmail').click(function() {

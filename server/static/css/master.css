@@ -158,7 +158,7 @@ label {
 	right: 10px;
 	cursor: pointer;
 	font-size: 1.3em;
-	z-index: 99999;
+	z-index: 99990;
 }
 
 .windowClose, .windowClose a {

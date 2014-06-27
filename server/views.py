@@ -352,7 +352,147 @@ def change_linkedin_query(uri, headers, body):
 	return uri, headers, body
 
 
+@ht_server.route('/signup/verify/<challengeHash>', methods=['GET'])
+@dbg_enterexit
+def signup_verify(challengeHash):
+	rc = None
+	# pass in email too... to verify
+	# grab info from request parameters
+	# 1) challengeHash
+	# 2) an email address
+	trace("Challenge hash is: " + challengeHash)
+	#trace(type(challengeHash))
 
+	#Page url, extract email 
+	url = urlparse.urlparse(request.url)
+	query = urlparse.parse_qs(url.query)
+
+	email  = query['email'][0]
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+
+	if (len(accounts) != 1 or accounts[0].email != email):
+			trace('Hash and/or email didn\'t match.')
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return redirect(url_for('render_login', messages=msg))
+
+	try:
+		# update user's account.
+		hero_account = accounts[0]
+		hero_account.set_sec_question("")
+		hero_account.set_status(Account.USER_ACTIVE)
+		
+		db_session.commit()
+		send_welcome_email(email)
+	except Exception as e:
+		trace(str(e))
+		db_session.rollback()
+		# db failed?... let them in anyways.
+
+	# bind session cookie to this 1) Account and/or 2) this profile 
+	bp = Profile.query.filter_by(account=hero_account.userid).all()[0]
+	ht_bind_session(bp)
+	return make_response(redirect('/dashboard'))
+
+
+@ht_server.route('/seller_signup', methods=['GET', 'POST'])
+def render_seller_signup_page(usrmsg = None):
+
+	bp = Profile.get_by_uid(session.get('uid'))
+
+	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
+
+@ht_server.route('/add_lesson', methods=['GET', 'POST'])
+def render_add_lesson_page(usrmsg = None):
+
+	bp = Profile.get_by_uid(session.get('uid'))
+
+	return make_response(render_template('add_lesson.html', title='- List a Lesson', bp=bp))
+
+@ht_server.route('/add_seller_info', methods=['GET', 'POST'])
+#@dbg_enterexit
+@req_authentication
+def add_seller_info():
+	""" A regular user is signing up to be a seller.  """
+
+	print 'enter add seller'
+	uid = session['uid']
+
+	bp = Profile.get_by_uid(session.get('uid'))
+	form = ProfileForm(request.form)
+	if form.validate_on_submit():
+		try:
+			print ("form is valid")
+			bp.prof_rate = form.edit_rate.data
+			bp.headline = form.edit_headline.data 
+			bp.location = form.edit_location.data 
+			bp.industry = Industry.industries[int(form.edit_industry.data)] 
+			bp.prof_name = form.edit_name.data
+			bp.prof_bio  = form.edit_bio.data
+			bp.prof_url  = form.edit_url.data
+
+			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+			# bp.updated  = dt.utcnow()
+
+			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
+			image_data = request.files[form.edit_photo.name].read()
+			if (len(image_data) > 0):
+				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+				trace (destination_filename + ", sz = " + str(len(image_data)))
+
+				#print source_extension
+				print 's3'
+				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
+				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+				sml.set_contents_from_file(StringIO(image_data))
+				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
+				bp.prof_img = destination_filename
+
+			# ensure 'http(s)://' exists
+			if (bp.prof_url[:8] != "https://"):
+				if (bp.prof_url[:7] != "http://"):
+					bp.prof_url = "http://" + bp.prof_url;
+
+			print 'add'
+			db_session.add(bp)
+			print 'commit'
+			db_session.commit()
+			log_uevent(uid, "update profile")
+
+			return jsonify(usrmsg="profile updated"), 200
+
+		except AttributeError as ae:
+			print 'hrm. must have changed an object somehwere'
+			print ae
+			db_session.rollback()
+			return jsonify(usrmsg='We messed something up, sorry'), 500
+
+		except Exception as e:
+			print e
+			db_session.rollback()
+			return jsonify(usrmsg=e), 500
+
+	elif request.method == 'POST':
+		log_uevent(uid, "editform isnt' valid" + str(form.errors))
+		print 'shoulding this fire?'
+		return jsonify(usrmsg='Invalid Request: ' + str(form.errors)), 500
+
+	x = 0
+	for x in range(len(Industry.industries)):
+		if Industry.industries[x] == bp.industry:
+			form.edit_industry.data = str(x)
+			break
+
+	form = ProfileForm(request.form)
+	form.edit_name.data     = bp.prof_name
+	form.edit_rate.data     = bp.prof_rate
+	form.edit_headline.data = bp.headline
+	form.edit_location.data = bp.location
+	form.edit_industry.data = str(x)
+	form.edit_url.data      = bp.prof_url #replace.httpX://www.
+	form.edit_bio.data      = bp.prof_bio
+	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	return make_response(render_template('signup.html', form=form, bp=bp, photoURL=photoURL))
 
 
 @ht_server.route('/schedule', methods=['GET','POST'])
@@ -678,7 +818,6 @@ def render_edit():
 	form.edit_bio.data      = bp.prof_bio
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
-
 
 
 def sanitize_render_errors(err):
@@ -1281,16 +1420,18 @@ def ht_password_reset(challengeHash):
 
 	return render_template('newpassword.html', form=form)
 
-
-
 @ht_server.route("/dmca", methods=['GET', 'POST'])
 def render_dmca_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('dmca.html', bp=bp))
 	
-
-
+@ht_server.route("/about", methods=['GET', 'POST'])
+def render_about_page():
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('about.html', bp=bp))
+	
 
 @ht_server.route("/fakereview/<buyer>/<sellr>", methods=['GET'])
 def render_rake_page(buyer, sellr):
