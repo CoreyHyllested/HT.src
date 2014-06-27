@@ -110,12 +110,16 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 
+
 def ht_proposal_accept(prop_uuid, uid):
 	try:
 		the_proposal = Proposal.get_by_id(prop_uuid)
+		(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+		(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+
 		stripe_card = the_proposal.charge_credit_card
 		stripe_tokn = the_proposal.charge_user_token
-		print 'ht_appointment_finailze() appt: ', prop_uuid, ", cust: ", the_proposal.charge_customer_id, ", card: ", stripe_card, ", token: ", stripe_tokn 
+		print 'ht_appointment_accept:', prop_uuid, ", cust:", the_proposal.charge_customer_id, ", card:", stripe_card, ", token:", stripe_tokn 
 
 		# update proposal
 		the_proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
@@ -123,15 +127,11 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.commit()
 
 		print 'send confirmation notices to buyer and seller'
-		(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-		(ba, bp) = get_account_and_profile(the_proposal.prop_user)
-
 		chargeTime = the_proposal.prop_ts - timedelta(days=1)
-		remindTime = the_proposal.prop_tf - timedelta(days=2)
-
+		remindTime = dt.utcnow() + timedelta(minutes=10) #the_proposal.prop_tf - timedelta(days=2)
 		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-		#send_appt_emails(ha.email, ba.email, the_proposal) TODO: this did take appointment as third field
+		send_appt_emails(ha.email, ba.email, the_proposal)
 
 		print 'calling ht_capturecard -- delayed'
 		# add timestamp to ensure it hasn't been tampered with
@@ -140,18 +140,19 @@ def ht_proposal_accept(prop_uuid, uid):
 	except StateTransitionError as ste:
 		print ste
 		db_session.rollback()
-		return (500, ste.sanitized_msg())
+		raise ste
 	except NoResourceFound as nrf:
 		print nrf
-		return (400, nrf.sanitized_msg())
-	except Exception as e:
-		print e
 		db_session.rollback()
-		return (500, e)
+		raise nrf
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+		raise e
 
 #	in reminder, check to see if it was canceled
-#	enque_reminder1 = ht_send_reminder_email.apply_async(args=[sellr_a.email], eta=(remindTime))
-#	enque_reminder2 = ht_send_reminder_email.apply_async(args=[buyer_a.email], eta=(remindTime))
+	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 
 	print 'returning from ht_appt_finalize', rc
 	return (200, str(rc))
@@ -204,15 +205,21 @@ def enable_reviews(the_proposal):
 
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
+	print 'review_hp', review_hp
+	print 'review_bp', review_bp
 	
-	the_proposal.review_user = review_bp.review_id
-	the_proposal.review_hero = review_hp.review_id
-	#the_proposal.set_state(APPT_STATE_OCCURRED)
 
 	try:
+		print 'add reviews'
 		db_session.add(review_hp)
 		db_session.add(review_bp)
+		print 'commit'
 		db_session.commit()
+
+		the_proposal.review_user = review_bp.review_id
+		the_proposal.review_hero = review_hp.review_id
+		#the_proposal.set_state(APPT_STATE_OCCURRED)
+
 		db_session.add(the_proposal)
 		db_session.commit()
 
@@ -249,7 +256,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 #	print str(the_appointment.updated)
 #	print str(appointment.ts_begin)
 #	print str(appointment.ts_finish)
-	print str(the_proposal.charge_customer_id)
+#	print str(the_proposal.charge_customer_id)
 
 	try:
 		charge = stripe.Charge.create (
@@ -264,16 +271,13 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 			#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
 		)
 
-		print 'That\'s all folks, it should have worked?'
-
-
-		pp(charge)
+		#pp(charge)
 		print 'Post Charge'
 		print charge['customer']
 		print charge['captured']
 		print charge['balance_transaction']
-		if charge['captured'] != True:
-				print 'whoa'
+		if charge['captured'] == True:
+			print 'That\'s all folks, it worked!'
 
 		the_proposal.charge_transaction = charge['balance_transaction']
 		the_proposal.set_state(APPT_STATE_CAPTURED)
@@ -304,7 +308,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 
 
 	#print charge['balance_transaction']
-	print charge['failure_code']
+	print 'charge[failure_code] =', charge['failure_code']
 	#print charge['failure_message']
 
 	#queue two events to create review.  Need to create two addresses.
