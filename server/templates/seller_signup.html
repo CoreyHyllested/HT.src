@@ -36,7 +36,7 @@
 		</div>
 
 		<div class="ssRightColumn">
-			<form id="ssForm" action="/add_seller_info" >
+			
 			<div class="ssFormPageContainer">
   			
 				<div id="ssFormAddress" class="ssFormPage">
@@ -107,17 +107,22 @@
 
 				<div id="ssFormPayment" class="ssFormPage">
 					<div class="formInstruction">Payment Information</div>
-					<div class="formDescription">Insprite pays you directly for your work - to receive payment, you must provide your Stripe or Paypal account information.</div>
-						<input type="text" id="ssStripeEmail" name="ssStripeEmail" class="formField" placeholder="Stripe Account Email"> 
-						<input type="text" id="ssPaypalEmail" name="ssPaypalEmail" class="formField" placeholder="Paypal Account Email">  					
+					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
+					<br><br>
+					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+					</div>
+					
+					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
+					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="">
+
 				</div>
 
 
 				<div id="ssFormAvails" class="ssFormPage">
 					<div class="formInstruction">Your Availability</div>
 					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
-						<input type="radio" id="ssAvailOptionOpen" name="ssAvailOption" class="formField" value="open"><label for="ssAvailOptionOpen">Flexible - customer should contact me.</label><br> 
-						<input type="radio" id="ssAvailOptionSpecific" name="ssAvailOption" class="formField" value="specific"><label for="ssAvailOptionSpecific">Specific (select times below)</label><br> 						
+						<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="open"><label for="ssAvailOptionOpen">Flexible - customer should contact me.</label><br> 
+						<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="specific"><label for="ssAvailOptionSpecific">Specific (select times below)</label><br><br> 						
 						<select name="ssAvailTimes" id="ssAvailTimes" class="formField span3">
 							<option value="now">Now
 							<option value="never">Never
@@ -129,17 +134,15 @@
 					<div class="formInstruction">Upload High-Resolution Photo</div>
 					<div class="formDescription">We ask that all our Sprites provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 980 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
 
-					<div class="dropzone-status"></div>
-					<div class="dropzone-wrapper">
-						<div class="dropzone dropzone-previews" id="my-awesome-dropzone">
-							
-							<div class="fallback">
-						    	<input name="file" type="file" />
-						  	</div>
-						  	<div class="dz-message dropzoneMessage">Drag files or click here to upload</div>
-						</div>
-					</div>
-					 								
+					<div class="ssUploadPreview"><img id="ssUploadPreviewImage" class="ssUploadPreviewImage"></div>
+
+					<input type="button" class="whiteButton ssProfileImageButton" id="ssProfileImageButton" value="Choose Image...">
+					<div class="ssProfileImageInfo"></div>
+
+
+
+					<input name="ssProfileImage" id="ssProfileImage" type="file" accept="image/*">
+				
 				</div>
 			</div>
 
@@ -149,8 +152,7 @@
 				<!-- <a id="ssFormCancel" href="/profile">Cancel</a> -->
 				<a id="ssFormPrevious" class="ssFormPrevious">Previous</a>
 			</div>
-
-			</form>			
+	
 
 	</div><!--empty, container-->
 
@@ -159,7 +161,16 @@
 <!-- Scripts -->
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/seller_signup.js"></script>
+<script>
 
+
+
+$(document).ready(function(){
+
+
+});
+
+</script>
 <!-- Bottom bar -->
 
 {% endblock %}

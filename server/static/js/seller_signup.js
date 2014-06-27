@@ -26,6 +26,19 @@ $(document).ready(function(){
 
 	$('#ssFormButton').click(function(e) {
 		e.preventDefault();
+
+		// var formData = {};
+		// formData.ssAddress1 = $("#ssAddress1").val();
+		// formData.ssAddress2 = $("#ssAddress2").val();
+		// formData.ssCity = $("#ssCity").val();
+		// formData.ssState = $("#ssState").val();
+		// formData.ssZip = $("#ssZip").val();
+		// formData.oauth_stripe = $("#oauth_stripe").val();
+		// formData.ssAvailOption = $("#ssAvailOption").val();
+		// formData.ssAvailTimes = $("#ssAvailTimes").val();
+
+		// console.log(JSON.stringify(formData));
+
 		$('.ssFormPage').hide();
 
 		var currentPage = $(this).attr("data-current-page");
@@ -35,7 +48,7 @@ $(document).ready(function(){
 		$('#ssFormButton').attr("data-current-page", nextPage);
 		$('.ssFormPrevious').show();
 		$('#'+nextPage).show();
-	})
+	});
 
 	$('#ssFormPrevious').click(function(e) {
 		e.preventDefault();
@@ -57,47 +70,46 @@ $(document).ready(function(){
 		$('#'+prevPage).show();
 	})
 
+	/* When visible 'Choose File...' is clicked, activate hidden 'Browse...' */
+	$("#ssProfileImageButton").click(function() {
+   		$("#ssProfileImage").click();
+	});
 
-	// mydropzone = new Dropzone("form.dropzone", 
-	// 	{ 
-	// 		url: '/upload',
-	// 		parallelUploads: 100,
-	// 		uploadMultiple: true,
-	// 		addRemoveLinks: true,
-	// 		maxFiles: 1,
-	// 		maxFileSize: 4,
-	// 		acceptedFiles: "image/*",
-	// 		autoProcessQueue: false,
-	// 		clickable: true,
-	// 		thumbnailHeight: 400,
-	// 		previewsContainer: ".dropzone-previews"
-	// 	}
-	// );
-
-
-	// mydropzone.on("errormultiple", function(file, errorMessage) {
-	// 	$(".dropzone-status").html("<span class='error'>Error Encountered: "+errorMessage+"</span>");
-	// });
-
-	// mydropzone.on("successmultiple", function(file) {
-	// 	$(".dropzone-status").html("<span class='success'>Image successfully uploaded. </span>");
-	// });
-
-	// mydropzone.on("processing", function() {
-	// 	this.options.autoProcessQueue = true;
-	// });
-
-	// $('button.uploadButton').click(function() {
-	// 	mydropzone.processQueue();
-	// });
-
-
-	// $('button.ssFormButton').attr("disabled", true);
-	$('button.ssFormButton').click(function() {
-		validateForm();
+	$("#ssProfileImage").change(function(e) {
+		createReader(this, function(width, height) {
+			$(".ssProfileImageInfo").html("Height: "+height+"px, Width: "+width+"px");
+			// Add more size checks here if desired
+			if (height > width) {
+				$(".ssProfileImageInfo").append("<br><span class='error'>Error: Photo is not in landscape orientation.</span>");
+			}			
+			if (width < 800) {
+				$(".ssProfileImageInfo").append("<br><span class='error'>Error: Photo must be at least 800 pixels wide.</span>");
+			}
+		});		
 	});
 
 });
+
+function createReader(input, whenReady) {
+
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		    var image = new Image;
+		    image.onload = function(e) {
+	            var width = this.width;
+	            var height = this.height;
+	            var src = this.src;
+	            if (whenReady) whenReady(width, height, src);
+		    };
+		    image.src = e.target.result;
+		    $('.ssUploadPreviewImage').attr('src', e.target.result).show();
+		}
+		reader.readAsDataURL(input.files[0]);
+
+	}
+
+}
 
 function validateForm() {
 	// Fetch form elements
