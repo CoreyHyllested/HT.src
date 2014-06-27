@@ -404,7 +404,7 @@ def ht_api_proposal_accept():
 	if not form.validate_on_submit():
 		msg = "invalid form: " + str(form.errors)
 		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=msg), 503
+		return jsonify(usrmsg=msg), 400
 
 	try:
 		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])

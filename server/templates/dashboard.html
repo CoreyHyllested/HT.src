@@ -173,12 +173,10 @@
 
 $(document).ready(function() {
 
-    $('.accept').click(function () {
+    $('.offerAccept').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
         var csrf = "{{ csrf_token() }}";
-
-        console.log(['this is get started', id, ch]);
 
         var fd = new FormData();
         fd.append('proposal_id', id);
