@@ -43,8 +43,9 @@ def homepage():
 
 @ht_csrf.exempt
 @ht_server.route('/search',  methods=['GET', 'POST'])
+@ht_server.route('/search/<int:page>',  methods=['GET', 'POST'])
 @dbg_enterexit
-def render_search():
+def render_search(page = 1):
 	""" Provides ability to everyone to search for Heros.  """
 	bp = None
 
@@ -53,30 +54,57 @@ def render_search():
 
 	# get all the search 'keywords'
 	keywords = request.values.get('search')
+	industry = request.values.get('industry_field', None)
+	rateFrom = request.values.get('rate_from_field', 0)
+	rateTo =   request.values.get('rate_to_field', 9999)
+	if (rateFrom == ''): rateFrom = 0
+	if (rateTo == ''):	rateTo = 9999
+
 	form = SearchForm(request.form)
 	print "keywords = ", keywords
+	print "industry = ", industry
+
 
 	try:
-		results = db_session.query(Profile)
+		results = db_session.query(Profile) #.order_by(Profile.created)
+		results_industry = results #.all();
 		print 'there are', len(results.all()), 'profiles'
+		if (industry is not None):
+			industry_str = Industry.industries[int(industry)]
+			results_industry = results.filter(Profile.industry == industry_str)
+			print 'results for industry', len(results_industry.all())
+			for profile in results_industry.all():
+				print 'search:' + str(industry_str), profile
+			
 
+		print 'find rate from ', rateFrom, '-', rateTo
+		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
+		print 'results for cost-between', len(results_rate.all())
+				
 		if (keywords is not None):
 			print "keywords = ", keywords
-			rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-			rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			results_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+			print 'results for name', len(results_name.all())
+			results_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			print 'results for desc', len(results_desc.all())
 			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-			rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
-			print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
+			print 'results for hdln', len(rc_hdln.all())
+
+			print len(results_name.all()), len(rc_hdln.all()), len(results_desc.all())
 	
 			# filter by location, use IP as a tell
-			rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
+			rc_keys = results_desc.union(rc_hdln).union(results_name) #.all() #paginate(page, 4, False)
+			#rc_keys = results_desc.union(rc_hdln).union(results_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
 		else:
-			rc_keys = results.all()
+			print 'returning all all'
+			rc_keys = results #.all() #(page, 4, False)
+
+		q_rc = rc_keys.intersect(results_rate).intersect(results_industry).order_by(Profile.created)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(q_rc.all()), heroes=q_rc.all()))
 
 
 
