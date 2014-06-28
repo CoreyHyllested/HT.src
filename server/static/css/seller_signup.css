@@ -39,7 +39,7 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	margin: 12px auto 0px;
+	margin: 12px auto 12px;
 	padding: 41px;
 	position: relative;
 	overflow: auto;
@@ -86,8 +86,8 @@
 }
 
 .ssTopLeftNavigation .navItem {
+	cursor: pointer;
 	padding-right: 36px;
-
 }
 
 .ssTopLeftNavigation i {
@@ -136,6 +136,11 @@
 	cursor: pointer;
 }
 
+.ssNavItem i {
+	font-size: .9em;
+	margin-left: 6px;
+}
+
 /* Styles for the form container and pages */
 
 .ssFormPageContainer {
@@ -149,6 +154,11 @@
 }
 .ssFormButton {
 	width: 150px;
+	margin: 12px 0 12px 0;
+}
+.ssFormButtonSubmit {
+	display: none;
+	width: 300px;
 	margin: 12px 0 12px 0;
 }
 
@@ -234,7 +244,7 @@ textarea.formField {
 
 }
 
-#ssFormAvails label {
+#schedule label {
 	font-size: 0.8em;
 	line-height: 1.7em;
 	padding-left: 10px;	

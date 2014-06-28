@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>HeroTime {{title}}</title>
+	<title>Insprite {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
@@ -177,11 +177,11 @@
 				<div class="headerLogo">
 					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
 					{% if bp %}
-						<a href="/dashboard"><img src="/static/img/logo.svg" class="headerLogoImg"></a>
-
+						<a href="/dashboard">
 					{% else %}
-						<a href="/"><img src="/static/img/logo.svg" class="headerLogoImg"></a>
+						<a href="/">
 					{% endif %}
+					<img src="/static/img/logo.svg" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
 					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
@@ -256,7 +256,7 @@
 					<li><a href="http://www.youtube.com/channel/UCIgliSHZYHZNAdJqpjeUTVw/feed?view_as=public">YouTube</a></li>
 				</ul> -->
 			<div class="footerCopyright">
-				Copyright © 2013-<script>document.write(new Date().getFullYear())</script> HeroTime
+				Copyright © 2013-<script>document.write(new Date().getFullYear())</script> Insprite
 			</div>
 		</div>
 	</div><!-- Footer ends here -->

@@ -19,7 +19,7 @@
 		</div>
 			
 		<div class="ssHeaderRight">
-			<div class="ssHeaderPageName">Please enter some additional details about yourself</div>
+			<div class="ssHeaderPageName">Sign up to List Your Services</div>
 		</div>			
 	</div>
   
@@ -27,10 +27,10 @@
 		<div class="ssLeftColumn">
 			<div class="ssNavContainer">
 			<ul class="ssNavList">
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="ssFormAddress">Address<i class="fa fa-sun"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="ssFormPayment">Payment<i class="fa fa-sun"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="ssFormAvails">Times Available<i class="fa fa-sun"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="ssFormProfileImage">Profile Image<i class="fa fa-sun"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="address">Address<i class="fa fa-fw fa-map-marker"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="payment">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>
 			</ul>
 			</div>
 		</div>
@@ -38,8 +38,8 @@
 		<div class="ssRightColumn">
 			
 			<div class="ssFormPageContainer">
-  			
-				<div id="ssFormAddress" class="ssFormPage">
+  				<form id="ssForm" method="post" action="/add_seller_info" enctype="multipart/form-data">
+				<div id="address" class="ssFormPage">
 					
 					<div class="formInstruction">Please enter your address</div>
 					
@@ -105,7 +105,7 @@
 
 				</div>
 
-				<div id="ssFormPayment" class="ssFormPage">
+				<div id="payment" class="ssFormPage">
 					<div class="formInstruction">Payment Information</div>
 					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
 					<br><br>
@@ -118,7 +118,7 @@
 				</div>
 
 
-				<div id="ssFormAvails" class="ssFormPage">
+				<div id="schedule" class="ssFormPage">
 					<div class="formInstruction">Your Availability</div>
 					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
 						<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="open"><label for="ssAvailOptionOpen">Flexible - customer should contact me.</label><br> 
@@ -130,7 +130,7 @@
 				</div>
 
 
-				<div id="ssFormProfileImage" class="ssFormPage">
+				<div id="profile_photo" class="ssFormPage">
 					<div class="formInstruction">Upload High-Resolution Photo</div>
 					<div class="formDescription">We ask that all our Sprites provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 980 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
 
@@ -149,6 +149,7 @@
 			<div class="ssFormButtonContainer">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 				<button id="ssFormButton" class="blueButton ssFormButton" data-current-page="">Continue</button>
+				<button id="ssFormButtonSubmit" class="blueButton ssFormButtonSubmit" data-current-page="">Submit and Continue</button>
 				<!-- <a id="ssFormCancel" href="/profile">Cancel</a> -->
 				<a id="ssFormPrevious" class="ssFormPrevious">Previous</a>
 			</div>
@@ -162,8 +163,6 @@
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/seller_signup.js"></script>
 <script>
-
-
 
 $(document).ready(function(){
 

@@ -2,17 +2,52 @@ Dropzone.autoDiscover = false;
 
 $(document).ready(function(){
 
-	// Default to first page
-	var firstPage = "ssFormAddress";
+	var firstPage = "address";
+	var lastPage = "profile_photo";
 
-	// $('.ssHeaderPageName').text($('#'+firstPage+' .formTitle').text());
-	$('#'+firstPage).show();
-	$('#ssFormButton').attr("data-current-page", firstPage);
+	$(document.body).on("click", "#topLeftNavBack", function(e) {
+		e.preventDefault();
+		window.history.back();	
+	});
+
+	if (window.location.hash) {
+
+		var hash = window.location.hash.substring(1);
+		if (hash == lastPage) {
+			$('#ssFormButton').hide();
+			$('#ssFormButtonSubmit').show();
+		} else {
+			$('#ssFormButton').show();
+			$('#ssFormButtonSubmit').hide();			
+		}		
+		$('#'+hash).show();
+		$('#ssFormButton').attr("data-current-page", hash);
+		history.replaceState({title: hash}, "", '');
+
+	} else {
+
+		// Default to first page
+		
+		$('#'+firstPage).show();
+		$('#ssFormButton').attr("data-current-page", firstPage);
+		history.replaceState({title: "address"}, "", '');
+
+	}
+
+	window.onpopstate = function(event) {
+		if (event.state) {
+			var page_title = event.state.title;
+			$('.ssFormPage').hide();
+			$("#"+page_title).show();
+		}
+	};	
 
 	$('.ssNavLink').click(function() {
 		$('.ssFormPage').hide();
+
 		var target = $(this).attr("data-target-page");
-		$('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
+		
+		// $('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
 		$('#ssFormButton').attr("data-current-page", target);
 
 		if (target != firstPage) {
@@ -20,24 +55,22 @@ $(document).ready(function(){
 		} else {
 			$('.ssFormPrevious').hide();
 		}
+		if (target == lastPage) {
+			$('#ssFormButton').hide();
+			$('#ssFormButtonSubmit').show();
+		} else {
+			$('#ssFormButton').show();
+			$('#ssFormButtonSubmit').hide();			
+		}
 
 		$("#"+target).show();
+
+		history.pushState({title: target}, "", '/seller_signup#'+target);
+
 	});
 
 	$('#ssFormButton').click(function(e) {
 		e.preventDefault();
-
-		// var formData = {};
-		// formData.ssAddress1 = $("#ssAddress1").val();
-		// formData.ssAddress2 = $("#ssAddress2").val();
-		// formData.ssCity = $("#ssCity").val();
-		// formData.ssState = $("#ssState").val();
-		// formData.ssZip = $("#ssZip").val();
-		// formData.oauth_stripe = $("#oauth_stripe").val();
-		// formData.ssAvailOption = $("#ssAvailOption").val();
-		// formData.ssAvailTimes = $("#ssAvailTimes").val();
-
-		// console.log(JSON.stringify(formData));
 
 		$('.ssFormPage').hide();
 
@@ -48,17 +81,46 @@ $(document).ready(function(){
 		$('#ssFormButton').attr("data-current-page", nextPage);
 		$('.ssFormPrevious').show();
 		$('#'+nextPage).show();
+
+		if (nextPage == lastPage) {
+			$('#ssFormButton').hide();
+			$('#ssFormButtonSubmit').show();
+		}
+
+		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
+	});
+
+	$('#ssFormButtonSubmit').click(function(e) {
+		e.preventDefault();
+
+		var formData = {};
+		formData.ssAddress1 = $("#ssAddress1").val();
+		formData.ssAddress2 = $("#ssAddress2").val();
+		formData.ssCity = $("#ssCity").val();
+		formData.ssState = $("#ssState").val();
+		formData.ssZip = $("#ssZip").val();
+		formData.oauth_stripe = $("#oauth_stripe").val();
+		formData.ssAvailOption = $("#ssAvailOption").val();
+		formData.ssAvailTimes = $("#ssAvailTimes").val();
+
+		console.log(JSON.stringify(formData));		
+
+		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
+
+		// Uncomment when ready to actually do the database stuff
+		//$("#ssForm").submit();
+
+		openAlertWindow("Thanks for registering!");
+
 	});
 
 	$('#ssFormPrevious').click(function(e) {
 		e.preventDefault();
-		$('.ssFormPage').hide();	
+		$('.ssFormPage, #ssFormButtonSubmit').hide();	
+		$('#ssFormButton').show();
 
 		var currentPage = $(this).siblings('#ssFormButton').attr("data-current-page");
-		console.log("currentPage is "+ currentPage);
-
 		var prevPage = $('#'+currentPage).prev('.ssFormPage').attr("id");
-		console.log("prevPage is "+ prevPage);
 
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());
 		$('#ssFormButton').attr("data-current-page", prevPage);
@@ -66,8 +128,10 @@ $(document).ready(function(){
 			$('.ssFormPrevious').show();
 		} else {
 			$('.ssFormPrevious').hide();
-		}		
+		}
+			
 		$('#'+prevPage).show();
+		history.pushState({title: prevPage}, "", '/seller_signup#'+prevPage);
 	})
 
 	/* When visible 'Choose File...' is clicked, activate hidden 'Browse...' */
