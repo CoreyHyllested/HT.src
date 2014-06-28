@@ -3,8 +3,7 @@ import stripe, boto, urlparse
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from controllers import *
-from datetime import datetime as dt
-from datetime import timedelta
+from datetime import datetime as dt, timedelta
 from flask import render_template, make_response, session, request, flash, redirect, send_from_directory
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
@@ -131,7 +130,7 @@ def render_profile(usrmsg=None):
 	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
 	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
 
-	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
@@ -515,6 +514,102 @@ def render_schedule_page():
 
 
 
+
+@ht_server.route('/proposal/create', methods=['POST'])
+@req_authentication
+def ht_api_proposal_create():
+	user_message = 'Interesting'
+
+	try:
+		print 'ht_api_proposal_create'
+		proposal = ht_proposal_create(request.values, session['uid'])
+		if (proposal is not None): user_message = 'Successfully created proposal'
+	except Sanitized_Exception as se:
+		user_message = se.get_sanitized_msg()
+		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+	except Exception as e:
+		print type(e), e
+		return make_response(jsonify(usrmsg='Something bad'), 500)
+	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
+
+
+
+@ht_server.route('/proposal/accept', methods=['POST'])
+@req_authentication
+def ht_api_proposal_accept():
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+	if not form.validate_on_submit():
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=msg), 400
+
+	try:
+		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		print rc, msg
+	except Sanitized_Exception as se:
+		return jsonify(usrmsg=se.get_sanitized_msg()), 500
+	except Exception as e:
+		print str(e)
+		db_session.rollback()
+		jsonify(usrmsg=str(e)), 500
+	return make_response(redirect('/dashboard'))
+
+
+
+
+@ht_server.route('/proposal/reject', methods=['POST'])
+@req_authentication
+def ht_api_proposal_reject():
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+
+	if not form.validate_on_submit():
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=str(msg)), 504
+
+	try:
+		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
+	except NoProposalFound as npf:
+		print rc, msg
+		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
+	except StateTransitionError as ste:
+		db_session.rollback()
+		print ste, ste.get_sanitized_msg()
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
+	except DB_Error as ste:
+		db_session.rollback()
+		print ste
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
+	print rc, msg
+	return jsonify(usrmsg="Proposal Deleted"), 200
+
+
+
+
+
+@ht_server.route('/proposal/negotiate', methods=['POST'])
+@req_authentication
+def ht_api_proposal_negotiate():
+	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
+	#the_proposal.set_state(APPT_STATE_RESPONSE)
+	#the_proposal.prop_count = the_proposal.prop_count + 1
+	#the_proposal.prop_updated = dt.now()
+	return redirect('/notImplemented')
+
+
+	
+
+
 @ht_server.route('/appointment/cancel', methods=['POST'])
 @dbg_enterexit
 @req_authentication
@@ -540,7 +635,7 @@ def ht_api_appt_cancel():
 	except StateTransitionError as ste:
 		print ste
 		db_session.rollback()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
 	except NoResourceFound as nre:
 		print nre
 		return jsonify(usrmsg=nre), 400
@@ -595,12 +690,12 @@ def render_dashboard(usrmsg=None):
 def display_partner_proposal(p, user_is):
 	if (user_is == p.Proposal.prop_hero): 
 		#user it the hero, we should display all the 'user'
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
+		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
 		setattr(p, 'display', p.user) 
 		setattr(p, 'sellr', True) 
 		setattr(p, 'buyer', False) 
 	else:
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
+		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
 		setattr(p, 'display', p.hero)
 		setattr(p, 'buyer', True) 
 		setattr(p, 'sellr', False) 
@@ -825,105 +920,7 @@ def sanitize_render_errors(err):
 
 
 
-@ht_server.route('/proposal/create', methods=['POST'])
-@req_authentication
-def ht_api_proposal_create():
-	print 'ht_api_proposal_create'
 
-	prop_s_date = request.values.get('prop_s_date')
-	prop_s_hour = request.values.get('prop_s_hour')
-	prop_f_date = request.values.get('prop_f_date')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_hero = request.values.get('prop_hero')
-
-	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
-	#print dt_start
-
-	try:
-		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
-	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
-	usrmsg = "success"
-	return render_dashboard(usrmsg=usrmsg)
-
-
-
-@ht_server.route('/proposal/accept', methods=['POST'])
-@req_authentication
-def ht_api_proposal_accept():
-	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=msg), 503
-
-	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
-	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), 500
-	except Exception as e:
-		print str(e)
-		db_session.rollback()
-		jsonify(usrmsg=str(e)), 500
-	return make_response(redirect('/dashboard'))
-
-
-
-
-@ht_server.route('/proposal/reject', methods=['POST'])
-@req_authentication
-def ht_api_proposal_reject():
-	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
-
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=str(msg)), 504
-
-	try:
-		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
-	except NoProposalFound as npf:
-		print rc, msg
-		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except StateTransitionError as ste:
-		db_session.rollback()
-		print ste, ste.sanitized_msg()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
-	except DB_Error as ste:
-		db_session.rollback()
-		print ste
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
-	except Exception as e:
-		print e
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
-	print rc, msg
-	return jsonify(usrmsg="Proposal Deleted"), 200
-
-
-
-
-
-
-@ht_server.route('/proposal/negotiate', methods=['POST'])
-@req_authentication
-def ht_api_proposal_negotiate():
-	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
-	#the_proposal.prop_count = the_proposal.prop_count + 1
-	#the_proposal.prop_updated = dt.now()
-	return redirect('/notImplemented')
-
-
-	
 
 
 
@@ -1478,6 +1475,16 @@ def render_edit_portfolio_page():
 	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
+
+
+
+@req_authentication
+@ht_server.route("/disable_reviews", methods=['GET', 'POST'])
+def testing_pika_celery_async():
+	bp = Profile.get_by_uid(session['uid'])
+	five_min = dt.utcnow() + timedelta(minutes=5);
+	disable_reviews.apply_async(args=[10], eta=five_min)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
 
 
 

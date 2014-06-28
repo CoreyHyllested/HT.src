@@ -18,8 +18,6 @@ function loadMessageThread(msg_thread_id) {
 }
 
 
-
-
 function verify_email_js(e) {
 	e.preventDefault();
 	var fd = {};
@@ -47,7 +45,6 @@ function verify_email_js(e) {
 }
 
 
-
 function send_verification_email() {
 	console.log('send_verification_email()');
 	var fd = {};
@@ -67,12 +64,26 @@ function send_verification_email() {
 
 function replyDOMUpdate(msg_thread_id) {
 
-	var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
-	if (thisThreadElement.find('div.threadRestore').length != 0) {
+	var thread_archived = $('.messageThread').attr("data-thread-archived");
+	if (thread_archived == "True") {
+
+		var thisThreadElement = $('.thread[data-thread-id="' + msg_thread_id + '"]');
 		// This is a thread moving from the archive to the inbox.
 		thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
+
+		// Update timestamp of .thread
+
+		thisTimestamp = moment().format("YYYYMMDDHHmmss");
+		thisThreadElement.data("timestamp", thisTimestamp);
+
+		// Update datetime display of .threadDate
+		displayDateTime = moment().format("MMM D [at] hh:mm A");
+		thisThreadElement.children(".threadDate").text(displayDateTime);
+
 		$('.messageViewThreadRestore').hide();
 		$('.messageViewThreadArchive').show();
+		numInbox = ++numInbox;
+		numArchived = --numArchived;
 	}
 	$('#inboxThreads li.thread').first().before(thisThreadElement);
 }	
@@ -126,8 +137,6 @@ function restoreDOMUpdate(msg_thread_id) {
 }	
 
 
-
-
 function sendmessage_js(e) {
 	var messageData = {};
 	messageData.hp = $('#composeRecipientID').val();
@@ -167,15 +176,11 @@ function sendmessage_js(e) {
 					// This is a reply to an existing message thread. 
 					$(".messageThreadItemLoading").fadeIn();
 
-					// TODO - Fix this so it only happens when replied thread was in archive
-					numInbox = ++numInbox;
-					numArchived = --numArchived;
-
 					replyDOMUpdate(messageData.msg_thread);
 
 					var num_thread_messages = $(".messageThread").data("threadNumMessages") + 1;
 					$(".messageThread").data("threadNumMessages", num_thread_messages);
-					$('.numThreadMessages').text("("+ num_thread_messages + " messages)");
+					$('.numThreadMessages').text("("+ num_thread_messages + " Messages)");
 					$(".messageReplyBody").val('');
 					$(".messageReplyStatus").html("<span class='success'>Message successfully sent to "+messageData.recipient_name+"</span>").fadeIn();
 					setTimeout(function() {
