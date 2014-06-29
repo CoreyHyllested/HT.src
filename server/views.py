@@ -54,7 +54,7 @@ def render_search(page = 1):
 
 	# get all the search 'keywords'
 	keywords = request.values.get('search')
-	industry = request.values.get('industry_field', None)
+	industry = request.values.get('industry_field', -1)
 	rateFrom = request.values.get('rate_from_field', 0)
 	rateTo =   request.values.get('rate_to_field', 9999)
 	if (rateFrom == ''): rateFrom = 0
@@ -69,7 +69,7 @@ def render_search(page = 1):
 		results = db_session.query(Profile) #.order_by(Profile.created)
 		results_industry = results #.all();
 		print 'there are', len(results.all()), 'profiles'
-		if (industry is not None):
+		if (int(industry) != -1):
 			industry_str = Industry.industries[int(industry)]
 			results_industry = results.filter(Profile.industry == industry_str)
 			print 'results for industry', len(results_industry.all())

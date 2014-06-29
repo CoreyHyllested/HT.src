@@ -67,6 +67,18 @@
 			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
 			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
 			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
+<!--
+			<select id="searchOptionsIndustry" name="{{form.industry_field.name}}">
+				{% for option in form.industry_field %}
+					{% if loop.index0 == 0 %}
+						{{ option() }}
+						//Option(selected = True, disabled= True)
+					{% else %}
+						{{ option() }}
+					{% endif %}
+				{% endfor %}
+-->
+			</select>
 
 			{{form.rate_from_field(onkeypress="return isNumberKey(event)", placeholder="Min price (USD)", id="searchOptionsMinRate")}}
 			{{form.rate_to_field(onkeypress="return isNumberKey(event)", placeholder="Max price (USD)", id="searchOptionsMaxRate")}}
