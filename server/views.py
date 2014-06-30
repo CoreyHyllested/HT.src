@@ -1534,8 +1534,8 @@ def get_threads():
 
 
 
-@req_authentication
 @ht_server.route("/inbox", methods=['GET', 'POST'])
+@req_authentication
 def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
