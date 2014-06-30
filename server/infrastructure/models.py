@@ -8,37 +8,40 @@ import datetime
 import uuid
 
 
-APPT_FLAG_PROPOSED = 0
-APPT_FLAG_RESPONSE = 1
-APPT_FLAG_ACCEPTED = 2
-APPT_FLAG_CAPTURED = 3
-APPT_FLAG_OCCURRED = 4
-APPT_FLAG_REVIEWED = 5
-APPT_FLAG_COMPLETE = 6
-APPT_FLAG_DISPUTED = 7
-APPT_FLAG_RESOLVED = 8
 
-APPT_FLAG_USERPAID = 15		# if buyer has paid us.
-APPT_FLAG_HEROPAID = 16		# if hero has been paid.
-APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
-APPT_FLAG_CANCELED = 18		# use from to see who canceled it 
-APPT_FLAG_QUIET		= 29
-APPT_FLAG_DIGITAL	= 30
-APPT_FLAG_RUNOVER	= 31
+# Appointment States
+APPT_FLAG_PROPOSED = 0		# Proposed (tmp):  Shows up in dashboard as proposal.
+APPT_FLAG_ACCEPTED = 1		# Accepted (tmp):  Shows up in dashboard as appointment.
+APPT_FLAG_DISPUTED = 2		# disputed (tmp):  ...?
+APPT_FLAG_OCCURRED = 3		# Occurred (tmp):  Shows up in dashboard as review Opp.
+PROP_FLAG_REJECTED = 4		# Rejected (terminal)... see somewhere
+APPT_FLAG_CANCELED = 5		# Canceled (terminal)... see somewhere
+APPT_FLAG_RESOLVED = 6		# Resolved (terminal?) ...
+APPT_FLAG_COMPLETE = 7		# Completed (terminal)... see somewhere
+
+# Occurred flags.
+APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_MONEY_CAPTURED = 14		# Appointment Captured:  Money has been taken.  [2 days after appt]
+APPT_FLAG_MONEY_USERPAID = 15		# Appointment Captured money and Transferred payment to Seller.
+APPT_FLAG_BUYER_CANCELED = 16		# Appointment was canceled by buyer.
+APPT_FLAG_TIMEDOUT = 17				# Proposal was rejected by timeout. (Seller didn't respond).
+
+# Appointment / Proposal Flags.  Modify aspects of meeting.
+APPT_FLAG_RESPONSE	= 28	# Proposal went into negotiation.
+APPT_FLAG_QUIET		= 29	# Proposal was quiet
+APPT_FLAG_DIGITAL	= 30	# Proposal was digital
+#APPT_FLAG_RUNOVER	= 31
 
 
-APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#1
-APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)	#2
-APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#4
-APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)	#8
-APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#16
-APPT_STATE_REVIEWED = (0x1 << APPT_FLAG_REVIEWED)
-APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)
-APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)
-APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)
-
-APPT_STATE_REJECTED = -1
-APPT_STATE_CANCELED = -3
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_ACCEPTED)	#04
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08
+APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10
+APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20
+APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40
+APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80
 
 
 
@@ -428,6 +431,10 @@ class Proposal(Base):
 		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_uuid)
 		return proposals[0]
 	
+
+	def set_flag(self, flag):
+		if (flag <= APPT_FLAG_COMPLETE): raise Exception('Use set state to verify state change')
+		return (self.flags | (0x1 << flag))
 
 
 	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):
