@@ -395,20 +395,22 @@ def signup_verify(challengeHash):
 
 @ht_server.route('/seller_signup', methods=['GET', 'POST'])
 def render_seller_signup_page(usrmsg = None):
-
 	bp = Profile.get_by_uid(session.get('uid'))
-
 	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
 
+
+
+
 @ht_server.route('/add_lesson', methods=['GET', 'POST'])
+@req_authentication
 def render_add_lesson_page(usrmsg = None):
-
 	bp = Profile.get_by_uid(session.get('uid'))
-
 	return make_response(render_template('add_lesson.html', title='- List a Lesson', bp=bp))
 
+
+
+
 @ht_server.route('/add_seller_info', methods=['GET', 'POST'])
-#@dbg_enterexit
 @req_authentication
 def add_seller_info():
 	""" A regular user is signing up to be a seller.  """
@@ -492,6 +494,8 @@ def add_seller_info():
 	form.edit_bio.data      = bp.prof_bio
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('signup.html', form=form, bp=bp, photoURL=photoURL))
+
+
 
 
 @ht_server.route('/schedule', methods=['GET','POST'])

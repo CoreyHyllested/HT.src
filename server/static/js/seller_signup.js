@@ -90,9 +90,10 @@ $(document).ready(function(){
 		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
 	});
 
+
+
 	$('#ssFormButtonSubmit').click(function(e) {
 		e.preventDefault();
-
 		var formData = {};
 		formData.ssAddress1 = $("#ssAddress1").val();
 		formData.ssAddress2 = $("#ssAddress2").val();
@@ -108,11 +109,12 @@ $(document).ready(function(){
 		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
 		// Uncomment when ready to actually do the database stuff
-		//$("#ssForm").submit();
+		$("#ssForm").submit();
 
 		openAlertWindow("Thanks for registering!");
-
 	});
+
+
 
 	$('#ssFormPrevious').click(function(e) {
 		e.preventDefault();
