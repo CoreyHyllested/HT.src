@@ -420,80 +420,16 @@ def add_seller_info():
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	form = ProfileForm(request.form)
-	if form.validate_on_submit():
-		try:
-			print ("form is valid")
-			bp.prof_rate = form.edit_rate.data
-			bp.headline = form.edit_headline.data 
-			bp.location = form.edit_location.data 
-			bp.industry = Industry.industries[int(form.edit_industry.data)] 
-			bp.prof_name = form.edit_name.data
-			bp.prof_bio  = form.edit_bio.data
-			bp.prof_url  = form.edit_url.data
+	print 'ssAddress1', request.values.get('ssAddress1')
+	print 'ssAddress2', request.values.get('ssAddress2')
+	print 'ssCity', request.values.get('ssCity')
+	print 'ssState', request.values.get('ssState')
+	print 'ssZip', request.values.get('ssZip')
+	print 'oauth_stripe', request.values.get('oauth_stripe')
+	print 'ssAvailOption', request.values.get('ssAvailOption')
+	print 'ssAvailTimes', request.values.get('ssAvailTimes')
 
-			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-			# bp.updated  = dt.utcnow()
-
-			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
-			image_data = request.files[form.edit_photo.name].read()
-			if (len(image_data) > 0):
-				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-				trace (destination_filename + ", sz = " + str(len(image_data)))
-
-				#print source_extension
-				print 's3'
-				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-				sml.set_contents_from_file(StringIO(image_data))
-				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
-				bp.prof_img = destination_filename
-
-			# ensure 'http(s)://' exists
-			if (bp.prof_url[:8] != "https://"):
-				if (bp.prof_url[:7] != "http://"):
-					bp.prof_url = "http://" + bp.prof_url;
-
-			print 'add'
-			db_session.add(bp)
-			print 'commit'
-			db_session.commit()
-			log_uevent(uid, "update profile")
-
-			return jsonify(usrmsg="profile updated"), 200
-
-		except AttributeError as ae:
-			print 'hrm. must have changed an object somehwere'
-			print ae
-			db_session.rollback()
-			return jsonify(usrmsg='We messed something up, sorry'), 500
-
-		except Exception as e:
-			print e
-			db_session.rollback()
-			return jsonify(usrmsg=e), 500
-
-	elif request.method == 'POST':
-		log_uevent(uid, "editform isnt' valid" + str(form.errors))
-		print 'shoulding this fire?'
-		return jsonify(usrmsg='Invalid Request: ' + str(form.errors)), 500
-
-	x = 0
-	for x in range(len(Industry.industries)):
-		if Industry.industries[x] == bp.industry:
-			form.edit_industry.data = str(x)
-			break
-
-	form = ProfileForm(request.form)
-	form.edit_name.data     = bp.prof_name
-	form.edit_rate.data     = bp.prof_rate
-	form.edit_headline.data = bp.headline
-	form.edit_location.data = bp.location
-	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-	form.edit_bio.data      = bp.prof_bio
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('signup.html', form=form, bp=bp, photoURL=photoURL))
+	return make_response(redirect(url_for('render_dashboard')))
 
 
 
