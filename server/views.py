@@ -461,7 +461,7 @@ def ht_api_proposal_reject():
 @req_authentication
 def ht_api_proposal_negotiate():
 	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
+	#the_proposal.set_flag(APPT_FLAG_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
 	#the_proposal.prop_updated = dt.now()
 	return redirect('/notImplemented')

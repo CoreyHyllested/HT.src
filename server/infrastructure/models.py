@@ -443,17 +443,14 @@ class Proposal(Base):
 		valid = True
 		msg = None
 
-
-		if ((s_nxt == APPT_STATE_RESPONSE) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
-			self.prop_count = self.prop_count + 1
-		elif ((s_nxt == APPT_STATE_TIMEDOUT) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
 			s_nxt = APPT_STATE_REJECTED
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
-		elif ((s_nxt == APPT_STATE_REJECTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
-		elif ((s_nxt == APPT_STATE_ACCEPTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
 			self.appt_secured = dt.utcnow()
 		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
