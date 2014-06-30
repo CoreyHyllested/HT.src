@@ -17,6 +17,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
+from flask.ext.assets	import Environment, Bundle
 from flask.ext.mail		import Mail
 from flask_wtf.csrf		import CsrfProtect
 from flask_redis		import Redis
@@ -41,10 +42,20 @@ ht_server.logger.setLevel(logging.DEBUG)
 ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
 application = ht_server
 
+print 'initializing assets mgmt'
+assets = Environment(ht_server)
+assets.url = ht_server.static_url_path
+
+js = Bundle('js/maps.js', 'js/format.js', filters='jsmin', output='js/maps.format.js')
+assets.register('js_mapformat', js)
+
+sass = Bundle('scss/helper.sass', filters='pyscss', output='css/foo.css')
+assets.register('sass_foo', sass)
 
 print 'initializing session mgmt'
 redis_cache = Redis(ht_server)
 ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
+
 
 
 Compress(ht_server)
