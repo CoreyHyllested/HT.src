@@ -524,41 +524,19 @@ def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
 	unread_msgs = []
 
 	try:
-		appts_and_props = db_session.query(Proposal, user, hero)														\
-									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-									.join(user, user.prof_id == Proposal.prop_user)										\
-									.join(hero, hero.prof_id == Proposal.prop_hero).all();
+		(props, appts) = ht_get_active_meetings(bp)
 		unread_msgs = ht_get_unread_messages(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
-
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
-
-def display_partner_proposal(p, user_is):
-	if (user_is == p.Proposal.prop_hero): 
-		#user it the hero, we should display all the 'user'
-		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
-		setattr(p, 'display', p.user) 
-		setattr(p, 'sellr', True) 
-		setattr(p, 'buyer', False) 
-	else:
-		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
-		setattr(p, 'display', p.hero)
-		setattr(p, 'buyer', True) 
-		setattr(p, 'sellr', False) 
 
 
 def display_partner_message(msg, prof_id):
