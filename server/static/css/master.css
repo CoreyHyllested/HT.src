@@ -56,6 +56,13 @@ h3 {
 	line-height: 1em;
 }
 
+.success{
+	color: green;
+}
+
+.error{
+	color: red;
+}
 
 /* Page Wrappers */
 

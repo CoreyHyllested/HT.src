@@ -155,19 +155,34 @@ def send_proposal_reject_emails(the_proposal):
 
 
 
-@mngr.task
-def send_appt_emails(hero_email_addr, buyer_email_addr, appt):
-	print 'sending appt emails@ ' + appt.ts_begin.strftime('%A, %b %d, %Y -- %H:%M %p')
-	#TODO #CAH grab the profile names (see above, get_proposal_email_info)
-	hero_msg_html = "Hey, Hero.  You have your cape and cowl.  You have an appointment on %s. was accepted." % (appt)
-	hero_msg = create_msg('HeroTime appointment confirmation', hero_email_addr, hero_email_addr, 'noreply@herotime.co', u'HeroTime Notifications')
-	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
-	ht_send_email(hero_email_addr, hero_msg)
 
-	buyer_msg_html = "Congrats.  You have an appointment setup on %s. was accepted." % (appt)
-	buyer_msg = create_msg('HeroTime appointment confirmation', buyer_email_addr, buyer_email_addr, 'noreply@herotime.co', u'HeroTime Notifications')
+@mngr.task
+def ht_send_reminder_email(user_email, user_name, the_proposal):
+	print 'sending appointment reminder emails now for ', the_proposal
+
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + str(the_proposal) + "is about to begin.</p>"
+	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(user_email, msg)
+
+
+
+
+@mngr.task
+def send_appt_emails(hero_email_addr, buyer_email_addr, the_proposal):
+
+	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
+	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
+
+	hero_msg_html = "Hey, " + sellr_name + ". Go get your cape and cowl.  You have an appointment on %s. was accepted." % (the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p'))
+	hero_msg = create_msg('HeroTime appointment confirmation', sellr_addr, sellr_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
+	ht_send_email(sellr_addr, hero_msg)
+
+	buyer_msg_html = "Congrats.  You have an appointment setup on %s. was accepted." % (the_proposal)
+	buyer_msg = create_msg('HeroTime appointment confirmation', buyer_addr, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
-	ht_send_email(buyer_email_addr, buyer_msg)
+	ht_send_email(buyer_addr, buyer_msg)
 
 
 

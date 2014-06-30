@@ -213,16 +213,10 @@ textarea.messageReplyBody {
 
 .messageReplyStatus{
 	display: none;
+	font-weight: bold;
+	font-size: 1.2em;
 	width: 100%;
 	text-align: center;
 	padding: 10px 0px;
 	float: left;
-}
-
-.messageReplyStatus .success{
-	color: green;
-}
-
-.messageReplyStatus .error{
-	color: red;
 }

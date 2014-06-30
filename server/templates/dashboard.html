@@ -177,8 +177,6 @@ $(document).ready(function() {
         var ch = $(this).attr("ch");
         var csrf = "{{ csrf_token() }}";
 
-        console.log(['this is get started', id, ch]);
-
         var fd = new FormData();
         fd.append('proposal_id', id);
         fd.append('proposal_stat', 'accept');

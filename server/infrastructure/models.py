@@ -423,9 +423,9 @@ class Proposal(Base):
 
 
 	@staticmethod
-	def get_by_id(prop_id, location=None):
-		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
-		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_id)
+	def get_by_id(prop_uuid):
+		proposals = Proposal.query.filter_by(prop_uuid=prop_uuid).all()
+		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_uuid)
 		return proposals[0]
 	
 
@@ -612,7 +612,9 @@ class UserMessage(Base):
 
 	def __repr__(self):
 		content = self.msg_content[:20]
-		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+		subject = self.msg_subject[:15]
+		ts_open = self.msg_opened.strftime('%b %d %I:%M') if self.msg_opened is not None else str('Unopened')
+		return '<umsg %r|%r\t%r\t%r\t%r\t%r\t%r>' % (self.msg_id, self.msg_thread, self.msg_parent, self.msg_flags, ts_open, self.msg_from, subject)
 
 
 	@staticmethod
@@ -634,6 +636,14 @@ class UserMessage(Base):
 			'msg_parent'	: str(self.msg_parent),
 			'msg_thread'	: str(self.msg_thread),
 		}
+
+
+	def archived(self, profile_id):
+		if (profile_id == self.msg_to):		return (self.msg_flags & MSG_STATE_RECV_ARCHIVE)
+		if (profile_id == self.msg_from):	return (self.msg_flags & MSG_STATE_SEND_ARCHIVE)
+		raise Exception('profile_id(%s) does not match msg(%s) TO or FROM' % (profile_id, self.msg_id))
+		
+
 
 
 
