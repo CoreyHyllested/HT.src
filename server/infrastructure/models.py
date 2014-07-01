@@ -14,7 +14,7 @@ APPT_FLAG_PROPOSED = 0		# Proposed (tmp):  Shows up in dashboard as proposal.
 APPT_FLAG_ACCEPTED = 1		# Accepted (tmp):  Shows up in dashboard as appointment.
 APPT_FLAG_DISPUTED = 2		# disputed (tmp):  ...?
 APPT_FLAG_OCCURRED = 3		# Occurred (tmp):  Shows up in dashboard as review Opp.
-PROP_FLAG_REJECTED = 4		# Rejected (terminal)... see somewhere
+APPT_FLAG_REJECTED = 4		# Rejected (terminal)... see somewhere
 APPT_FLAG_CANCELED = 5		# Canceled (terminal)... see somewhere
 APPT_FLAG_RESOLVED = 6		# Resolved (terminal?) ...
 APPT_FLAG_COMPLETE = 7		# Completed (terminal)... see somewhere
@@ -464,7 +464,7 @@ class Proposal(Base):
 		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
 			pass
 		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
-			#TODO disable / do not fire reviews.
+			pass
 		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
 			pass
 		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
