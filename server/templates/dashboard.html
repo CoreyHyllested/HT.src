@@ -19,7 +19,6 @@
 			<h2>This is your personal dashboard.</h2>
 			<p>Once you start making bookings, your offers and lessons will be displayed on this page.</p>
 
-			<!-- CAH: Tine needs to come up with text that goes here, too. -->
 			<p>Aenean tincidunt augue vitae eleifend pretium. Aliquam suscipit quis ipsum quis cursus. Vivamus tempus odio ac turpis ultrices porttitor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam et malesuada libero, vel blandit mi. Duis vulputate, urna eget venenatis feugiat, massa ipsum sodales purus, vitae dictum diam odio id libero. In scelerisque iaculis tellus. Duis sed eros nec enim molestie fermentum.</p>
 		</div>
 
@@ -168,9 +167,9 @@
 
 </div>
 
+
 <script src="/static/js/sendmsg.js"></script>
 <script>
-
 $(document).ready(function() {
 
     $('.offerAccept').click(function () {
@@ -195,7 +194,7 @@ $(document).ready(function() {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
                     openAlertWindow('Success.');
-					document.write(xhr.responseText);
+					window.location.href="/dashboard";
                 } else if (this.status == 400) {
                     msg = JSON.parse(xhr.responseText);
                     console.log(['xhr post complete, err=400 ', e]);
@@ -220,7 +219,7 @@ $(document).ready(function() {
     });
 
 
-   $('.redButton').click(function () {
+   $('.offerCancel').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
         var csrf = "{{ csrf_token() }}";
