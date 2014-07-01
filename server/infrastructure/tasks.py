@@ -217,7 +217,7 @@ def enable_reviews(the_proposal):
 
 		the_proposal.review_user = review_bp.review_id
 		the_proposal.review_hero = review_hp.review_id
-		#the_proposal.set_state(APPT_STATE_OCCURRED)
+		the_proposal.set_state(APPT_STATE_OCCURRED)
 
 		db_session.add(the_proposal)
 		db_session.commit()

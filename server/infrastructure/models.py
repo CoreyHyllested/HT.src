@@ -38,14 +38,14 @@ APPT_FLAG_DIGITAL	= 30	# Proposal was digital
 #APPT_FLAG_RUNOVER	= 31
 
 
-APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01
-APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02
-APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)	#04
-APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08
-APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10
-APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20
-APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40
-APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01		from {}  					to {accepted, rejected}		visible { dashboard-proposal }
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02		from {proposed}				to {occurred, canceled}		visible { dashboard-appointment }
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)	#04		from {occurred}				to {resolved, completed}	visible { ? }
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08		from {accepted}				to {completed, disputed}	visible { }
+APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10		from {proposed}				to {}						visible {}
+APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20		from {accepted}				to {}						visible { history? }
+APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40		from {disputed}				to {?}						visible {}
+APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80		from {disputed, occurred}	to {}						visible {}
 # Fake States.  Replaced with above.
 APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)	#180
 
@@ -461,10 +461,10 @@ class Proposal(Base):
 #			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
 #			flags = set_flag(flags, APPT_FLAG_USERPAID)
 #			self.appt_charged = dt.now()
-#		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_CAPTURED)):
-#			pass
-		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
+		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
 			pass
+#		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
+#			pass
 		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
 			#TODO disable / do not fire reviews.
 		elif ((s_nxt == APPT_STATE_COMPLETE) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_OCCURRED))):

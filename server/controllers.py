@@ -288,7 +288,7 @@ def ht_get_active_meetings(profile):
 	meetings = htdb_get_composite_meetings(profile)
 
 	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
