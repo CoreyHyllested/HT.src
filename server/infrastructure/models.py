@@ -10,24 +10,24 @@ import uuid
 
 
 # Appointment States
-APPT_FLAG_PROPOSED = 0		# Proposed (tmp):  Shows up in dashboard as proposal.
-APPT_FLAG_ACCEPTED = 1		# Accepted (tmp):  Shows up in dashboard as appointment.
-APPT_FLAG_DISPUTED = 2		# disputed (tmp):  ...?
-APPT_FLAG_OCCURRED = 3		# Occurred (tmp):  Shows up in dashboard as review Opp.
-APPT_FLAG_REJECTED = 4		# Rejected (terminal)... see somewhere
-APPT_FLAG_CANCELED = 5		# Canceled (terminal)... see somewhere
-APPT_FLAG_RESOLVED = 6		# Resolved (terminal?) ...
-APPT_FLAG_COMPLETE = 7		# Completed (terminal)... see somewhere
+APPT_FLAG_PROPOSED = 0		# (0001) Proposed (tmp):  Shows up in dashboard as proposal.
+APPT_FLAG_ACCEPTED = 1		# (0002) Accepted (tmp):  Shows up in dashboard as appointment.
+APPT_FLAG_DISPUTED = 2		# (0004) disputed (tmp):  ...?
+APPT_FLAG_OCCURRED = 3		# (0008) Occurred (tmp):  Shows up in dashboard as review Opp.
+APPT_FLAG_REJECTED = 4		# (0010) Rejected (terminal)... see somewhere
+APPT_FLAG_CANCELED = 5		# (0020) Canceled (terminal)... see somewhere
+APPT_FLAG_RESOLVED = 6		# (0040) Resolved (terminal?) ...
+APPT_FLAG_COMPLETE = 7		# (0080) Completed (terminal)... see somewhere
 
 # Fake States.
-APPT_FLAG_TIMEDOUT = 8		# Proposal was rejected by timeout. (Seller didn't respond).
+APPT_FLAG_TIMEDOUT = 8		# (0100) Proposal was rejected by timeout. (Seller didn't respond).
 
 # Occurred flags.
-APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-APPT_FLAG_MONEY_CAPTURED = 14		# Appointment Captured:  Money has taken from user, 2 days after appt.
-APPT_FLAG_MONEY_USERPAID = 15		# Appointment Captured money and Transferred payment to Seller.
-APPT_FLAG_BUYER_CANCELED = 16		# Appointment was canceled by buyer.
+APPT_FLAG_BUYER_REVIEWED = 12	# (00001000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_SELLR_REVIEWED = 13	# (00002000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_MONEY_CAPTURED = 14	# (00004000)	# Appointment Captured:  Money has taken from user, 2 days after appt.
+APPT_FLAG_MONEY_USERPAID = 15	# (00008000)	# Appointment Captured money and Transferred payment to Seller.
+APPT_FLAG_BUYER_CANCELED = 16	# (00010000)	# Appointment was canceled by buyer.
 
 
 
