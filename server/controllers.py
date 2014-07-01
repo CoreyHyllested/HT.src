@@ -394,6 +394,7 @@ def display_review_partner(r, prof_id):
 def display_partner_proposal(meeting, profile):
 	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
 	setattr(meeting, 'display', display_partner)
+	setattr(meeting, 'seller', (profile == meeting.hero))
 
 
 
