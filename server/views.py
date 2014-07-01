@@ -360,10 +360,14 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
-	hp_id = request.values.get('hp', None)
-	bp = Profile.get_by_uid(session.get('uid'))
-	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	ba = Account.get_by_uid(session.get('uid'))
+	try:
+		hp_id = request.values.get('hp', None)
+		bp = Profile.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		ba = Account.get_by_uid(session.get('uid'))
+	except Exception as e:
+		db_session.rollback()
+
 	if (ba.status == Account.USER_UNVERIFIED):
 		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
@@ -407,8 +411,8 @@ def ht_api_proposal_accept():
 		return jsonify(usrmsg=msg), 400
 
 	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
+		rc = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		print rc
 	except Sanitized_Exception as se:
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
