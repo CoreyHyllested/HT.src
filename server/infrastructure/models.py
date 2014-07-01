@@ -289,9 +289,32 @@ class Oauth(Base):
 
 	@staticmethod
 	def get_stripe_by_uid(uid):
-		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoResourceFound('Oauth-Stripe', uid)
-		return stripe_custs[0]
+		try:
+			stripe_cust = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: found multiple Stripe customers for UID', uid
+			stripe_cust = None
+		except NoResultFound as none:
+			stripe_cust = None
+		return stripe_cust
+
+
+	@property
+	def serialize(self):
+		return {
+			'ht_account'	: self.ht_account,
+			'oa_account'	: self.oa_account,
+			'oa_service'	: self.oa_service,
+			'oa_flags'	: self.oa_flags,
+			'oa_email'	: self.oa_email,
+			'oa_token'	: self.oa_token,
+			'oa_secret'	: self.oa_secret,
+			'oa_optdata1'	: self.oa_optdata1,
+			'oa_optdata2'	: self.oa_optdata2,
+			'oa_optdata3'	: self.oa_optdata3,
+		}
+
+
 
 
 class Profile(Base):
