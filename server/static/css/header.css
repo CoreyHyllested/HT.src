@@ -11,13 +11,17 @@ c) 1000px - ... (desktop)
 
 .headerLogo {
 	height: 40px;
-	line-height: 40px;
+	line-height: 48px;
 	float: left;
 	width: 97px;
 }
 
 .headerLogoImg {
+	width: 90px;
 
+}
+
+a.headerLogoLink {
 }
 
 /* Header Icons */

@@ -177,11 +177,11 @@
 				<div class="headerLogo">
 					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
 					{% if bp %}
-						<a href="/dashboard">
+						<a href="/dashboard" class="headerLogoLink">
 					{% else %}
-						<a href="/">
+						<a href="/" class="headerLogoLink">
 					{% endif %}
-					<img src="/static/img/logo.svg" class="headerLogoImg"></a>
+					<img src="/static/img/insprite-small.png" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
 					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">

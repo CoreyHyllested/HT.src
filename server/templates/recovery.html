@@ -13,7 +13,7 @@
 	<h2>Password Recovery</h2>
 	<form method="post">		
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		<div class="recoveryInstructions">Enter the email registered with your HeroTime account and we will send you the reset link.</div>
+		<div class="recoveryInstructions">Enter the email registered with your Insprite account and we will send you the reset link.</div>
 		{{form.rec_input_email(type="email", placeholder="Email", autocomplete="off")}}
 
 		{% if errmsg != none %}
