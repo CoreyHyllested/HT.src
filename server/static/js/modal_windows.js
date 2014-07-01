@@ -46,7 +46,7 @@
 		});
 
 		$('.modalContent').load(url+"?"+encodedData + " " + element, function() {
-			// must load any external js that affects the loaded document here. cannot imbed the js on the host page.
+			// must load any external js that affects the loaded document here. cannot embed the js on the host page.
 			$.getScript("/static/js/sendmsg.js");
 		});
 

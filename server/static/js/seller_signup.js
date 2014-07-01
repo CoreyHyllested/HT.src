@@ -2,8 +2,10 @@ Dropzone.autoDiscover = false;
 
 $(document).ready(function(){
 
-	var firstPage = "address";
-	var lastPage = "profile_photo";
+	// Form Navigation and State Management
+
+	var firstPage = "profile_photo";
+	var lastPage = "schedule";
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
 		e.preventDefault();
@@ -11,7 +13,6 @@ $(document).ready(function(){
 	});
 
 	if (window.location.hash) {
-
 		var hash = window.location.hash.substring(1);
 		if (hash == lastPage) {
 			$('#ssFormButton').hide();
@@ -23,15 +24,11 @@ $(document).ready(function(){
 		$('#'+hash).show();
 		$('#ssFormButton').attr("data-current-page", hash);
 		history.replaceState({title: hash}, "", '');
-
 	} else {
-
 		// Default to first page
-		
 		$('#'+firstPage).show();
 		$('#ssFormButton').attr("data-current-page", firstPage);
-		history.replaceState({title: "address"}, "", '');
-
+		history.replaceState({title: firstPage}, "", '');
 	}
 
 	window.onpopstate = function(event) {
@@ -44,9 +41,7 @@ $(document).ready(function(){
 
 	$('.ssNavLink').click(function() {
 		$('.ssFormPage').hide();
-
 		var target = $(this).attr("data-target-page");
-		
 		// $('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
 		$('#ssFormButton').attr("data-current-page", target);
 
@@ -64,19 +59,14 @@ $(document).ready(function(){
 		}
 
 		$("#"+target).show();
-
 		history.pushState({title: target}, "", '/seller_signup#'+target);
-
 	});
 
 	$('#ssFormButton').click(function(e) {
 		e.preventDefault();
-
 		$('.ssFormPage').hide();
-
 		var currentPage = $(this).attr("data-current-page");
 		var nextPage = $('#'+currentPage).next('.ssFormPage').attr("id");
-
 		// $('.ssHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#ssFormButton').attr("data-current-page", nextPage);
 		$('.ssFormPrevious').show();
@@ -94,22 +84,14 @@ $(document).ready(function(){
 		e.preventDefault();
 
 		var formData = {};
-		formData.ssAddress1 = $("#ssAddress1").val();
-		formData.ssAddress2 = $("#ssAddress2").val();
-		formData.ssCity = $("#ssCity").val();
-		formData.ssState = $("#ssState").val();
-		formData.ssZip = $("#ssZip").val();
 		formData.oauth_stripe = $("#oauth_stripe").val();
 		formData.ssAvailOption = $("#ssAvailOption").val();
 		formData.ssAvailTimes = $("#ssAvailTimes").val();
-
 		console.log(JSON.stringify(formData));		
-
 		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
 		// Uncomment when ready to actually do the database stuff
 		//$("#ssForm").submit();
-
 		openAlertWindow("Thanks for registering!");
 
 	});
@@ -133,6 +115,8 @@ $(document).ready(function(){
 		$('#'+prevPage).show();
 		history.pushState({title: prevPage}, "", '/seller_signup#'+prevPage);
 	})
+
+	// Image Upload
 
 	/* When visible 'Choose File...' is clicked, activate hidden 'Browse...' */
 	$("#ssProfileImageButton").click(function() {

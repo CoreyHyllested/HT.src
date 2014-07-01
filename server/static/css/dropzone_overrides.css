@@ -1,0 +1,130 @@
+
+/* Dropzone Overrides */
+
+.dropzone {
+	border:1px dotted gray;
+	background-color: white;
+
+}
+
+.dropzone-box img.preview {
+	height:180px;
+	width:180px;
+}
+
+.dropzone .multiple-upload {
+	padding:10px;
+	background-color: lightgray;
+	border:2px solid white;
+}
+
+.dropzone .multiple-upload img {
+	margin-bottom:10px;
+}
+
+.dropzone-content-submit button {
+	width: 250px;
+	margin: 10px auto;
+}
+
+.dz-preview:hover, .dz-details:hover, .data-dz-thumbnail:hover, .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+	cursor: move;
+}
+
+.dropzone .dz-preview,
+.dropzone-previews .dz-preview {
+	margin: 6px;
+	vertical-align: top;
+	border: 1px solid #b5b6b8;
+	border-radius: 3px;
+	padding: 4px;
+}
+
+.dropzone .dz-preview .dz-details,
+.dropzone-previews .dz-preview .dz-details {
+	width: 180px;
+	height: 180px;
+	position: relative;
+	background: #fff;
+	padding: 5px;
+	margin-bottom: 22px;
+	margin-top: 20px;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 180px;
+  height: 180px;
+}
+
+.dropzone .dz-preview .dz-progress,
+.dropzone-previews .dz-preview .dz-progress {
+  position: absolute;
+  top: 213px;
+  left: 6px;
+  right: 6px;
+  height: 8px;
+  background: #d7d7d7;
+  display: none;
+}
+
+.dropzone .dz-filename {
+	display: none;
+}
+.dropzone .dz-size {
+	display: none;
+}
+.dropzone a.dz-remove,
+.dropzone-previews a.dz-remove {
+	display: none;
+}
+
+.dropzone-status {
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+}
+
+.dropzone-status .success{
+	color: green;
+}
+
+.dropzone-status .error{
+	color: red;
+}
+
+.dropzone .header{
+	float: right;
+	width: 100%;
+
+}
+
+.dropzone .header .img-delete{
+	float: right;
+	font-size: 1.5em;
+	text-align: right;
+	cursor: pointer;
+	line-height: 10px;
+	height: 20px;
+}
+
+.dropzoneMessage{
+	width: 100%;
+	text-align: center;
+	font-size: 2.0em;
+	color: lightgray;
+	line-height: 1.2em;
+	padding: 0px 20px;
+	left: 0px;
+	top: 150px;
+	position: absolute;
+}
+

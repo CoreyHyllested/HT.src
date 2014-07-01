@@ -134,21 +134,29 @@
 /* Styles for the form container and pages */
 
 .addLessonFormPageContainer {
-	min-height: 300px;
 }
 
 .addLessonFormButtonContainer {
 	float: left;
 	width: 100%;
 }
+
 .addLessonFormButton {
 	width: 150px;
-	margin-bottom: 12px;
+	margin: 12px 0 12px 0;
+}
+.addLessonFormButtonSubmit {
+	margin: 12px 0 12px 0;
+}
+
+.multipleUploadButton {
+	margin: 12px 0 12px 0;
 }
 
 .addLessonFormPrevious {
-	display: none;
 	cursor: pointer;
+	width: 100%;
+	float: left;
 }
 
 .addLessonFormPage {
@@ -165,39 +173,56 @@
 	font-size: 1.2em;
 	margin-bottom: 12px;
 }
+.formDescription {
+	margin-bottom: 12px;
+}
+
 
 .formField {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	margin-bottom: 6px;
-	/*margin-bottom: -1px;*/
+}
+
+.formChoice {
+	float: left;
+}
+
+.formChoice input {
+	float: left;
+}
+
+.formChoice label {
+	float: left;
+	font-size: .9em;
+	line-height: 36px;
+	height: 30px;
+	padding-left: 10px;	
+}
+
+.span3 {
+	width: 25%;
+}
+.span6 {
+	width: 50%;
+}
+.span9 {
+	width: 75%;
+}
+.span12 {
 	width: 100%;
 }
 
-.formField.narrow {
-	width: 33%;
-}
-.formField.medium {
-	width: 66%;
-}
-.formField.wide {
-	width: 100%;
-}
-
-/*
-.addLessonFormPage .formField:first-of-type {
-	border-radius: 5px 5px 0 0;
-}
-
-.addLessonFormPage .formField:last-of-type {
-	border-radius: 0 0 5px 5px;
-}
-*/
-input.formField, select.formField {
+input[type="text"].formField, select.formField {
 	height: 40px;
 }
-
+input[type="checkbox"], input[type="radio"] {
+	height: 30px;
+}
+input[type="checkbox"] {
+	display: inline-block;
+}
 input.formField:focus, select.formField:focus, textarea.formField:focus {
 	border: 1px #cccccc solid;
 }
@@ -206,5 +231,74 @@ textarea.formField {
 	resize: none;
 }
 
+/* Form Element Styles */
 
+.rateUnitCaption {
+	font-size: .9em;
+	margin-left: 8px;
+}
+
+.addLessonFormButton {
+	float: left;
+}
+.multipleUploadButton {
+	opacity: .4;
+}
+.addLessonEditPhotosContainer {
+	max-height: 600px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	margin-bottom: 20px;
+}
+
+.addLessonFormButtonSubmit {
+	float: left;
+	padding-left: 14px;
+	width: 40%;
+
+}
+
+.addLessonFormButtonOptions {
+	float: left;
+	padding-left: 14px;
+	width: 40%;
+	margin: 12px 0;	
+}
+
+.addLessonFormButtonOptions input[type="checkbox"] {
+	float: left;
+}
+
+.addLessonFormButtonOptions label {
+	float: left;
+	font-size: 1em;
+	padding-left: 6px;
+	font-weight: 600;
+	height: 30px;
+	line-height: 40px;
+}
+
+
+li.editPortfolioListItem {
+	display: inline;
+	float: left;
+	margin-bottom: 10px;
+	width: 50%
+}
+
+/* Dropzone Styles (Overrides) */
+
+.dropzone-content-submit {
+	float: left;
+
+}
+
+.dz-preview:hover, .dz-details:hover, .data-dz-thumbnail:hover, .dz-details img {
+	cursor: pointer;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+	cursor: pointer;
+}
 
