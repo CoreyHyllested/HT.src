@@ -80,9 +80,10 @@ $(document).ready(function(){
 		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
 	});
 
+
+
 	$('#ssFormButtonSubmit').click(function(e) {
 		e.preventDefault();
-
 		var formData = {};
 		formData.oauth_stripe = $("#oauth_stripe").val();
 		formData.ssAvailOption = $("#ssAvailOption").val();
@@ -91,10 +92,12 @@ $(document).ready(function(){
 		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
 		// Uncomment when ready to actually do the database stuff
-		//$("#ssForm").submit();
-		openAlertWindow("Thanks for registering!");
+		$("#ssForm").submit();
 
+		openAlertWindow("Thanks for registering!");
 	});
+
+
 
 	$('#ssFormPrevious').click(function(e) {
 		e.preventDefault();
