@@ -286,7 +286,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 			print 'That\'s all folks, it worked!'
 
 		the_proposal.charge_transaction = charge['balance_transaction']
-		the_proposal.set_state(APPT_STATE_CAPTURED)
+		the_proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
 		db_session.add(the_proposal)
 		db_session.commit()
 	except StateTransitionError as ste:
