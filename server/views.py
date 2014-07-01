@@ -254,7 +254,7 @@ def get_facebook_oauth_token():
 	return session.get('oauth_token')
 
 @ht_server.route('/facebook')
-def render_facebook_stats():
+def testing_facebook_stats():
 	me = facebook.get('/me')
 	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
 	
@@ -319,6 +319,99 @@ def linkedin_authorized(resp):
 		print ('create account failed, using', str(email.data))
 		resp = redirect('/dbFailure')
 	return resp
+
+
+
+
+@ht_server.route('/authorize/stripe', methods=['GET', 'POST'])
+@req_authentication
+def settings_verify_stripe():
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+
+	print "authorize/stripe"
+	error = request.args.get('error', "None")
+	edesc = request.args.get('error_description', "None")
+	scope = request.args.get('scope', "None")
+	state = request.args.get('state', "None")  #I think state is a CSRF, passed in/passed back
+	authr = request.args.get('code',  "None")
+	print "scope", scope
+	print "auth", authr
+	print "error", error
+	print "edesc", edesc
+	print "state", state
+
+	# possible error codes:
+	#	access_denied, 	User denied authorization.
+	#	invalid_scope,	Invalid scope parameter provided.... ex. too late / token timeout
+	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
+	#	invalid_request, 	Missing response_type parameter.
+	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
+
+
+	if (authr == "None" and error != "None"):
+		print "verify - auth Failed", edesc
+		return "auth failed %s" % edesc, 500
+
+
+	print "verify -- use request Token to get userINFO"
+	stripeHTTP = Http()
+	postdata = {}
+	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
+	postdata['grant_type']    = 'authorization_code'
+	postdata['code']          = authr
+
+	print "verify -- post Token to stripe"
+	resp, content = Http().request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
+	rc = json.loads(content)
+	print "verify -- got response\n", rc
+#	print "error", rc['error']
+#	print "edesc", rc['error_description']
+#	print "livemode", rc['livemode']
+#	print "token", rc['access_token']
+#	print "stripe id", rc['stripe_user_id']
+
+	error = rc.get('error',       			 'None')
+	edesc = rc.get('error_description', 	 'None')
+	token = rc.get('access_token',			 'None')	# Used like Secret Key
+	mode  = rc.get('livemode',				 'None')
+	pkey  = rc.get('stripe_publishable_key', 'None')
+	user  = rc.get('stripe_user_id',		 'None')
+	rfrsh = rc.get('stripe_refresh_token',	 'None')
+
+	if error != 'None':
+		print "getToken Failed", edesc
+		return "auth failed %s" % edesc, 500
+
+	oauth_stripe = Oauth.get_stripe_by_uid(uid)
+	if (oauth_stripe is not None):
+		if (oauth_stripe.oa_account != rc['stripe_user_id']):
+			oauth_stripe.oa_account  = rc['stripe_user_id']
+			print 'updating stripe ID'
+
+		if (oauth_stripe.oa_secret != rc['access_token']):
+			oauth_stripe.oa_secret  = rc['access_token']
+			print 'updating user-access token, used to deposit into their account'
+
+		if (oauth_stripe.oa_token != pkey):
+			oauth_stripe.oa_token  = pkey
+			print 'updating stripe pubkey'
+
+		if (oauth_stripe.oa_optdata1 != rfrsh):
+			oauth_stripe.oa_optdata1  = rfrsh
+			print 'updating stripe refresh key'
+	else:
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
+
+	try:
+		db_session.add(oauth_stripe)
+		db_session.commit()
+		return make_response(redirect('/settings'))
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+	return "good - but must've failed on create", 200
+
 
 
 
@@ -812,6 +905,9 @@ def render_settings():
 	card = 'Null'
 	if (pi is not None):
 		pp(pi.serialize)
+		# Not a Customer.  Customers exist in Accounts.
+		# This is the Stripe Connect ID.  Own business.
+		# We use the pub & secret keys to charge users
 		card = pi.oa_account
 
 	errmsg = None
@@ -906,98 +1002,6 @@ def error_sanitize(message):
 
 	return message
 
-
-@ht_server.route('/settings/verify', methods=['GET', 'POST'])
-@dbg_enterexit
-@req_authentication
-def settings_verify_stripe():
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-
-	print "verify -- in oauth_callback, get auth code/token"
-	error = request.args.get('error', "None")
-	edesc = request.args.get('error_description', "None")
-	scope = request.args.get('scope', "None")
-	state = request.args.get('state', "None")  #I think state is a CSRF, passed in/passed back
-	authr = request.args.get('code',  "None")
-	print "scope", scope
-	print "auth", authr
-	print "error", error
-	print "edesc", edesc
-
-	# possible error codes: 
-	#	access_denied, 	User denied authorization.
-	#	invalid_scope,	Invalid scope parameter provided.... ex. too late / token timeout
-	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
-	#	invalid_request, 	Missing response_type parameter.
-	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
-
-
-	if (authr == "None" and error != "None"):
-		print "verify - auth Failed", edesc
-		return "auth failed %s" % edesc, 500
-
-
-	print "verify -- use request Token to get userINFO"
-	stripeHTTP = Http()
-	postdata = {}
-	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
-	postdata['grant_type']    = 'authorization_code'
-	postdata['code']          = authr
-
-	print "verify -- post Token to stripe"
-	resp, content = stripeHTTP.request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
-	rc = json.loads(content)
-	print "verify -- got response\n", rc
-#	print "error", rc['error']
-#	print "edesc", rc['error_description']
-#	print "livemode", rc['livemode']
-#	print "token", rc['access_token']
-#	print "stripe id", rc['stripe_user_id']
-
-	error = rc.get('error',       			 'None') 
-	edesc = rc.get('error_description', 	 'None') 
-	token = rc.get('access_token',			 'None')	# Used like Secret Key
-	mode  = rc.get('livemode',				 'None')
-	pkey  = rc.get('stripe_publishable_key', 'None')
-	user  = rc.get('stripe_user_id',		 'None')
-	rfrsh = rc.get('stripe_refresh_token',	 'None')
-
-	if error != 'None':
-		print "getToken Failed", edesc
-		return "auth failed %s" % edesc, 500
-
-	oauth_accounts = Oauth.query.filter_by(ht_account=uid).all()
-	if len(oauth_accounts) == 1:
-		oauth_stripe = oauth_accounts[0]
-		if (oauth_stripe.oa_account != rc['stripe_user_id']):
-			oauth_stripe.oa_account  = rc['stripe_user_id']
-			print 'changing stripe ID'
-
-		if (oauth_stripe.oa_secret != rc['access_token']):
-			oauth_stripe.oa_secret  = rc['access_token']
-			print 'changing user-access token, used to deposit into their account'
-
-		if (oauth_stripe.oa_token != pkey):
-			oauth_stripe.oa_token  = pkey
-			print 'changing stripe pubkey'
-
-#		if (oauth_stripe.oa_refresh != rfrsh):
-#			oauth_stripe.oa_refresh  = rfrsh
-#			print 'changing stripe refresh key'
-	else:
-		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
-
-	try:
-		print "try creating oauth_row"
-		db_session.add(oauth_stripe)
-		db_session.commit()
-		return make_response(redirect('/settings'))
-	except Exception as e:
-		print "had an exception with oauth_row" + str(e)
-		db_session.rollback()
-
-	return "good - but must've failed on create", 200
 
 
 
