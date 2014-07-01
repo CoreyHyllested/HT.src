@@ -163,16 +163,13 @@ def ht_proposal_accept(prop_uuid, uid):
 
 def ht_proposal_reject(p_uuid, uid):
 	print 'received proposal uuid: ', p_uuid 
-	committed = False
 	bp = Profile.get_by_uid(uid)
 	the_proposal = Proposal.get_by_id(p_uuid) 
 	the_proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
 
-	try: # delete proposal 
-		#TODO save these somewhere.
+	try:
 		db_session.add(the_proposal)
 		db_session.commit()
-		committed = True
 	except Exception as e:
 		db_session.rollback()
 		print 'DB error:', e

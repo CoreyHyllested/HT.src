@@ -19,13 +19,17 @@ APPT_FLAG_CANCELED = 5		# Canceled (terminal)... see somewhere
 APPT_FLAG_RESOLVED = 6		# Resolved (terminal?) ...
 APPT_FLAG_COMPLETE = 7		# Completed (terminal)... see somewhere
 
+# Fake States.
+APPT_FLAG_TIMEDOUT = 8		# Proposal was rejected by timeout. (Seller didn't respond).
+
 # Occurred flags.
 APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
 APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
 APPT_FLAG_MONEY_CAPTURED = 14		# Appointment Captured:  Money has been taken.  [2 days after appt]
 APPT_FLAG_MONEY_USERPAID = 15		# Appointment Captured money and Transferred payment to Seller.
 APPT_FLAG_BUYER_CANCELED = 16		# Appointment was canceled by buyer.
-APPT_FLAG_TIMEDOUT = 17				# Proposal was rejected by timeout. (Seller didn't respond).
+
+
 
 # Appointment / Proposal Flags.  Modify aspects of meeting.
 APPT_FLAG_RESPONSE	= 28	# Proposal went into negotiation.
@@ -42,6 +46,8 @@ APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10
 APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20
 APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40
 APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80
+# Fake States.  Replaced with above.
+APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)	#180
 
 
 
@@ -445,11 +451,10 @@ class Proposal(Base):
 
 		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
 			s_nxt = APPT_STATE_REJECTED
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
+
 		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
 			self.appt_secured = dt.utcnow()
