@@ -466,10 +466,9 @@ class Proposal(Base):
 		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
 			#TODO disable / do not fire reviews.
 		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+			pass
 		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
 			flags = set_flag(flags, APPT_FLAG_DISPUTED)
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 		else:
 			valid = False
 			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'

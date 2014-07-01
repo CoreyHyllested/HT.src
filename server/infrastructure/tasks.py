@@ -223,7 +223,8 @@ def enable_reviews(the_proposal):
 		db_session.commit()
 
 		# TODO create two events to send in 1 hr after meeting completion to do review
-		# TODO send one event to disable the reviews in 1 month
+		finishTime = the_proposal.prop_tf + timedelta(days=30)
+		post_reviews.apply_async(args=[the_proposal, review_hp.review_id, review_bp.review_id], eta=(finishTime))
 	except Exception as e:
 		db_session.rollback()
 		print e	
@@ -233,10 +234,12 @@ def enable_reviews(the_proposal):
 
 
 @mngr.task
-def disable_reviews(jsonObj):
+def post_reviews(the_proposal):
 	#30 days after enable, shut it down!
-	#the_proposal.set_state(APPT_STATE_COMPLETE)
-	print 'disable_reviews()'
+	the_proposal.set_state(APPT_STATE_COMPLETE)
+	# get reviews.
+	# mark incomplete reviews as incomplete.
+	print 'post_reviews()'
 	return None
 
 

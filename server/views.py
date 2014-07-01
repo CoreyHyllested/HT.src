@@ -979,6 +979,9 @@ def tos():
 def render_review_page(appt_id, review_id):
 	uid = session['uid']
 
+	# if its been 30 days since review creation.  Return an error.
+	# if review already exists, return a kind message.
+
 	try:
 		bp = Profile.get_by_uid(session['uid'])
 		print appt_id, ' = id of Appt'
@@ -1044,6 +1047,8 @@ def review():
 	print review_form.review_id.data
 	print review_form.score_comm.data
 	print review_form.score_time.data
+
+	# if this has been 30 days since proposal / review creation. Return an  error.
 
 	if review_form.validate_on_submit():
 		print 'form is valid'
