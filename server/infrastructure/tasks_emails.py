@@ -169,19 +169,43 @@ def ht_send_reminder_email(user_email, user_name, the_proposal):
 
 
 @mngr.task
-def send_appt_emails(hero_email_addr, buyer_email_addr, the_proposal):
+def send_appt_emails(the_proposal):
 
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
 	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
 
-	hero_msg_html = "Hey, " + sellr_name + ". Go get your cape and cowl.  You have an appointment on %s. was accepted." % (the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p'))
-	hero_msg = create_msg('HeroTime appointment confirmation', sellr_addr, sellr_name, 'noreply@herotime.co', u'HeroTime Notifications')
-	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
-	ht_send_email(sellr_addr, hero_msg)
+	sellr_html = "<p>IMG_LOGO</p><br>"																					\
+				+"<p>Fantastic!<br>You accepted " + sellr_name + "'s proposal.</p>"										\
+				+"<p>Here are the details:<br>"																			\
+				+"Location: " + the_proposal.prop_place + "<br>"														\
+				+"Description: " + the_proposal.prop_desc + "<br>"														\
+				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
+				+"</p>"																									\
+				+"<p>We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
+				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"			\
+				+"</p>"																									\
+				+"<p>FOOTER.  Sent by Insprite. - California, USA</p>"
 
-	buyer_msg_html = "Congrats.  You have an appointment setup on %s. was accepted." % (the_proposal)
-	buyer_msg = create_msg('HeroTime appointment confirmation', buyer_addr, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
-	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
+	sellr_msg = create_msg('You accepted a proposal', sellr_addr, sellr_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+	ht_send_email(sellr_addr, sellr_msg)
+
+	buyer_html = "<p>IMG_LOGO</p><br>"	\
+				+"<p>Ain't Life Grand?<br>Meeting's on! " + sellr_name + " accepted your proposal.</p>"	\
+				+"<p>Check out the details:<br>"	\
+				+"Location: " + the_proposal.prop_place + "<br>"	\
+				+"Description: " + the_proposal.prop_desc + "<br>"	\
+				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
+				+"</p>"	\
+				+"<p>Need to edit, manage, or *gasp* cancel your appointment?  Head to your <a href=\'https://127.0.0.1:5000/dashboard\'>dashboard</a>"	\
+				+"We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
+				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"	\
+				+"</p>"	\
+				+"<p>FOOTER.  Sent by Insprite. - California, USA</p>"	\
+				+"<p>UNSUBSCRIBE.  SOCIAL PLUGINS.</p>"
+
+	buyer_msg = create_msg(str(sellr_name) + ' Accepted Your Proposal', buyer_addr, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	buyer_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 	ht_send_email(buyer_addr, buyer_msg)
 
 
