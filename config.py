@@ -35,8 +35,8 @@ S3_SECRET = 'fmrj4VzPRcLlkXs1/BuWGZ6nFlVIydP9FPf09Ua1'
 S3_SERVER = 'htfileupload.s3-website-us-west-1.amazonaws.com'	
 S3_DIRECTORY = '/htfileupload/'
 
-STRIPE_PUBLIC =	'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
-STRIPE_SECRET =	'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
+STRIPE_PUBLIC =	'pk_test_d3gRvdhkXhLBS3ABhRPhOort'
+STRIPE_SECRET =	'sk_test_wNvqK0VIg7EqgmeXxiOC62md'
 
 LINKEDIN_KEY="ri7ghzey680z"
 LINKEDIN_SEC="LcHMnsf9vVqUg8rE"

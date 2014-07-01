@@ -133,10 +133,6 @@ def ht_proposal_accept(prop_uuid, uid):
 		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
-		send_appt_emails(the_proposal)
-
-		print 'calling ht_capturecard -- delayed'
-		rc = ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated], eta=chargeTime)
 
 	except StateTransitionError as ste:
 		print ste
@@ -151,29 +147,28 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.rollback()
 		raise e
 
+	send_appt_emails(the_proposal)
 	print 'Queue Events: reminder emails, enable_reviews.  Check to see if proposal was canceled.'
+	ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
 	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	enable_reviews.apply_async(args=[the_proposal], eta=(reviewTime))
+	enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
 
-	print 'returning from ht_appt_finalize', rc
-	return (200, str(rc))
+	print 'returning from ht_appt_finalize'
+	return 200
 
 
 
 
 def ht_proposal_reject(p_uuid, uid):
 	print 'received proposal uuid: ', p_uuid 
-	committed = False
 	bp = Profile.get_by_uid(uid)
 	the_proposal = Proposal.get_by_id(p_uuid) 
 	the_proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
 
-	try: # delete proposal 
-		#TODO save these somewhere.
+	try:
 		db_session.add(the_proposal)
 		db_session.commit()
-		committed = True
 	except Exception as e:
 		db_session.rollback()
 		print 'DB error:', e
@@ -199,13 +194,16 @@ def getDBCorey(x):
 
 
 @mngr.task
-def enable_reviews(the_proposal):
+def enable_reviews(prop_uuid):
+	the_proposal = Proposal.get_by_id(prop_uuid)
+
 	#is this submitted after stripe?  
 	hp = the_proposal.prop_hero
 	bp = the_proposal.prop_user
 
 	print 'enable_reviews()'
 
+	# if -- canceled --- do not create reviews.
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	print 'review_hp', review_hp
@@ -221,13 +219,14 @@ def enable_reviews(the_proposal):
 
 		the_proposal.review_user = review_bp.review_id
 		the_proposal.review_hero = review_hp.review_id
-		#the_proposal.set_state(APPT_STATE_OCCURRED)
+		the_proposal.set_state(APPT_STATE_OCCURRED)
 
 		db_session.add(the_proposal)
 		db_session.commit()
 
 		# TODO create two events to send in 1 hr after meeting completion to do review
-		# TODO send one event to disable the reviews in 1 month
+		finishTime = the_proposal.prop_tf + timedelta(days=30)
+		post_reviews.apply_async(args=[the_proposal, review_hp.review_id, review_bp.review_id], eta=(finishTime))
 	except Exception as e:
 		db_session.rollback()
 		print e	
@@ -237,20 +236,24 @@ def enable_reviews(the_proposal):
 
 
 @mngr.task
-def disable_reviews(jsonObj):
+def post_reviews(the_proposal):
 	#30 days after enable, shut it down!
-	#the_proposal.set_state(APPT_STATE_COMPLETE)
-	print 'disable_reviews()'
+	the_proposal.set_state(APPT_STATE_COMPLETE)
+	# get reviews.
+	# mark incomplete reviews as incomplete.
+	print 'post_reviews()'
 	return None
 
 
 
 @mngr.task
-def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time):
+def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
 	""" HT_capture_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
 		This function is delayed.
 		That is why we pass in prop_id and go get the information from the database.  We want to see if there have been any updates.
 	"""
+
+	#TODO if prop_id is canceled, return back.
 
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
 	print 'ht_capture_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
@@ -289,8 +292,9 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 		if charge['captured'] == True:
 			print 'That\'s all folks, it worked!'
 
+		the_proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		the_proposal.appt_charged = dt.now()
 		the_proposal.charge_transaction = charge['balance_transaction']
-		the_proposal.set_state(APPT_STATE_CAPTURED)
 		db_session.add(the_proposal)
 		db_session.commit()
 	except StateTransitionError as ste:

@@ -14,7 +14,7 @@ from server.infrastructure.models import *
 from server.infrastructure.errors import * 
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
-from pprint import pprint
+from pprint import pprint as pp
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
@@ -388,10 +388,14 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
-	hp_id = request.values.get('hp', None)
-	bp = Profile.get_by_uid(session.get('uid'))
-	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	ba = Account.get_by_uid(session.get('uid'))
+	try:
+		hp_id = request.values.get('hp', None)
+		bp = Profile.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		ba = Account.get_by_uid(session.get('uid'))
+	except Exception as e:
+		db_session.rollback()
+
 	if (ba.status == Account.USER_UNVERIFIED):
 		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
@@ -435,8 +439,8 @@ def ht_api_proposal_accept():
 		return jsonify(usrmsg=msg), 400
 
 	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
+		rc = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		print rc
 	except Sanitized_Exception as se:
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
@@ -489,7 +493,7 @@ def ht_api_proposal_reject():
 @req_authentication
 def ht_api_proposal_negotiate():
 	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
+	#the_proposal.set_flag(APPT_FLAG_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
 	#the_proposal.prop_updated = dt.now()
 	return redirect('/notImplemented')
@@ -803,10 +807,12 @@ def render_settings():
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	#pi	= Oauth.get_stripe_by_uid(uid)
+	pi	= Oauth.get_stripe_by_uid(uid)
 
 	card = 'Null'
-
+	if (pi is not None):
+		pp(pi.serialize)
+		card = pi.oa_account
 
 	errmsg = None
 	form = SettingsForm(request.form)
@@ -846,7 +852,6 @@ def render_settings():
 				form.set_input_newpass.data = ''
 				form.set_input_verpass.data = ''
 				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-#				return redirect('/settings')
 			else:
 				print "Update should be complete"
 
@@ -952,10 +957,11 @@ def settings_verify_stripe():
 
 	error = rc.get('error',       			 'None') 
 	edesc = rc.get('error_description', 	 'None') 
-	token = rc.get('access_token',			 'None') 
+	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
 	pkey  = rc.get('stripe_publishable_key', 'None')
 	user  = rc.get('stripe_user_id',		 'None')
+	rfrsh = rc.get('stripe_refresh_token',	 'None')
 
 	if error != 'None':
 		print "getToken Failed", edesc
@@ -968,15 +974,19 @@ def settings_verify_stripe():
 			oauth_stripe.oa_account  = rc['stripe_user_id']
 			print 'changing stripe ID'
 
-		if (oauth_stripe.oa_token != rc['access_token']):
-			oauth_stripe.oa_token  = rc['access_token']
-			print 'changing user-access token, used to deposite into their account'
+		if (oauth_stripe.oa_secret != rc['access_token']):
+			oauth_stripe.oa_secret  = rc['access_token']
+			print 'changing user-access token, used to deposit into their account'
 
-		if (oauth_stripe.oa_optdata1 != pkey):
-			oauth_stripe.oa_optdata1  = pkey
+		if (oauth_stripe.oa_token != pkey):
+			oauth_stripe.oa_token  = pkey
 			print 'changing stripe pubkey'
+
+#		if (oauth_stripe.oa_refresh != rfrsh):
+#			oauth_stripe.oa_refresh  = rfrsh
+#			print 'changing stripe refresh key'
 	else:
-		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
 
 	try:
 		print "try creating oauth_row"
@@ -1006,6 +1016,9 @@ def tos():
 @req_authentication
 def render_review_page(appt_id, review_id):
 	uid = session['uid']
+
+	# if its been 30 days since review creation.  Return an error.
+	# if review already exists, return a kind message.
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
@@ -1073,6 +1086,8 @@ def review():
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
+	# if this has been 30 days since proposal / review creation. Return an  error.
+
 	if review_form.validate_on_submit():
 		print 'form is valid'
 		try:
@@ -1104,7 +1119,12 @@ def review():
 			db_session.commit()
 			print 'data has been posted'
 
-			# flash review will be posted at end of daysleft
+			# GET PROPOSAL / APPOINTMENT.
+			# proposal.set_flag(
+				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+			# db_session.add(proposal)
+
 			# email alt user to know review was captured
 			return make_response(redirect('/dashboard'))
 		except Exception as e:

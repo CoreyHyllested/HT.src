@@ -287,8 +287,10 @@ def ht_get_active_meetings(profile):
 
 	meetings = htdb_get_composite_meetings(profile)
 
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), meetings)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
+	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
+
+	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
 	#for meeting in meetings:
 	#	if (profile.prof_id == thread.UserMessage.msg_to):
@@ -392,6 +394,7 @@ def display_review_partner(r, prof_id):
 def display_partner_proposal(meeting, profile):
 	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
 	setattr(meeting, 'display', display_partner)
+	setattr(meeting, 'seller', (profile == meeting.hero))
 
 
 
