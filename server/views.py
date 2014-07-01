@@ -955,26 +955,26 @@ def settings_verify_stripe():
 		print "getToken Failed", edesc
 		return "auth failed %s" % edesc, 500
 
-	stripeAccount = Oauth.query.filter_by(account=uid).all()
-	if len(stripeAccount) == 1:
-		stripeAccount = stripeAccount[0]
-		if (stripeAccount.stripe != rc['stripe_user_id']):
-			stripeAccount.stripe  = rc['stripe_user_id']			# stripe ID.
+	oauth_accounts = Oauth.query.filter_by(ht_account=uid).all()
+	if len(oauth_accounts) == 1:
+		oauth_stripe = oauth_accounts[0]
+		if (oauth_stripe.oa_account != rc['stripe_user_id']):
+			oauth_stripe.oa_account  = rc['stripe_user_id']
 			print 'changing stripe ID'
 
-		if (stripeAccount.token  != rc['access_token']):
-			stripeAccount.token   = rc['access_token']
+		if (oauth_stripe.oa_token != rc['access_token']):
+			oauth_stripe.oa_token  = rc['access_token']
 			print 'changing user-access token, used to deposite into their account'
 
-		if (stripeAccount.pubkey != pkey):
-			stripeAccount.pubkey  = pkey
+		if (oauth_stripe.oa_optdata1 != pkey):
+			oauth_stripe.oa_optdata1  = pkey
 			print 'changing stripe pubkey'
 	else:
-		stripeAccount = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
 
 	try:
 		print "try creating oauth_row"
-		db_session.add(stripeAccount)
+		db_session.add(oauth_stripe)
 		db_session.commit()
 		return make_response(redirect('/settings'))
 	except Exception as e:
