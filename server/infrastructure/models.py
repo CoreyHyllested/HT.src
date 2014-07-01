@@ -3,6 +3,7 @@ from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from datetime import datetime as dt
 import datetime
 import uuid
@@ -171,6 +172,7 @@ class Account(Base):
 	updated = Column(DateTime())
 	sec_question = Column(String(128))
 	sec_answer   = Column(String(128))
+#	stripe_cust	 = Column(String(64))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -186,11 +188,6 @@ class Account(Base):
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
-#	@staticmethod
-#	def get_by_prof_id(profile_id):
-#		accounts = Account.query.filter_by(profiles.prof_id=profile_id).all()
-#		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
-#		return accounts[0]
 
 	@staticmethod
 	def get_by_uid(uid):

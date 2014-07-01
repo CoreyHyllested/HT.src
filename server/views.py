@@ -354,8 +354,6 @@ def settings_verify_stripe():
 		return "auth failed %s" % edesc, 500
 
 
-	print "verify -- use request Token to get userINFO"
-	stripeHTTP = Http()
 	postdata = {}
 	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
 	postdata['grant_type']    = 'authorization_code'
@@ -367,9 +365,6 @@ def settings_verify_stripe():
 	print "verify -- got response\n", rc
 #	print "error", rc['error']
 #	print "edesc", rc['error_description']
-#	print "livemode", rc['livemode']
-#	print "token", rc['access_token']
-#	print "stripe id", rc['stripe_user_id']
 
 	error = rc.get('error',       			 'None')
 	edesc = rc.get('error_description', 	 'None')
@@ -377,7 +372,7 @@ def settings_verify_stripe():
 	mode  = rc.get('livemode',				 'None')
 	pkey  = rc.get('stripe_publishable_key', 'None')
 	user  = rc.get('stripe_user_id',		 'None')
-	rfrsh = rc.get('stripe_refresh_token',	 'None')
+	rfrsh = rc.get('refresh_token')
 
 	if error != 'None':
 		print "getToken Failed", edesc
@@ -904,7 +899,7 @@ def render_settings():
 
 	card = 'Null'
 	if (pi is not None):
-		pp(pi.serialize)
+		#pp(pi.serialize)
 		# Not a Customer.  Customers exist in Accounts.
 		# This is the Stripe Connect ID.  Own business.
 		# We use the pub & secret keys to charge users

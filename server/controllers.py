@@ -95,6 +95,7 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
 								   .all()
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
 
 	if len(oauth_accounts) == 1:
