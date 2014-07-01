@@ -281,7 +281,7 @@ class Oauth(Base):
 	@staticmethod
 	def get_stripe_by_uid(uid):
 		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		if (len(stripe_custs) != 1): raise NoResourceFound('Oauth-Stripe', uid)
 		return stripe_custs[0]
 
 
