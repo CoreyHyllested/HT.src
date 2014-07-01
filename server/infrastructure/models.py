@@ -484,6 +484,17 @@ class Proposal(Base):
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
+	@property
+	def serialize(self):
+		return {
+			'prop_uuid'		: self.prop_uuid,
+			'prop_sellr'	: self.prop_hero,
+			'prop_buyer'	: self.prop_user,
+			'prop_state'	: self.prop_state,
+			'prop_flags'	: self.prop_flags,
+			'prop_cost'		: self.prop_cost,
+			'prop_updated'	: self.prop_updated.strftime('%A, %b %d, %Y %H:%M %p')
+		}
 
 
 
