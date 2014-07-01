@@ -40,7 +40,7 @@ APPT_FLAG_DIGITAL	= 30	# Proposal was digital
 
 APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01
 APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02
-APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_ACCEPTED)	#04
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)	#04
 APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08
 APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10
 APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20
@@ -452,7 +452,6 @@ class Proposal(Base):
 		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
 			s_nxt = APPT_STATE_REJECTED
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
-
 		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
