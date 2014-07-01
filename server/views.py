@@ -1076,7 +1076,12 @@ def review():
 			db_session.commit()
 			print 'data has been posted'
 
-			# flash review will be posted at end of daysleft
+			# GET PROPOSAL / APPOINTMENT.
+			# proposal.set_flag(
+				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+			# db_session.add(proposal)
+
 			# email alt user to know review was captured
 			return make_response(redirect('/dashboard'))
 		except Exception as e:

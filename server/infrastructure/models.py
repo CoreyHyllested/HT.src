@@ -463,13 +463,11 @@ class Proposal(Base):
 #			self.appt_charged = dt.now()
 		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
 			pass
-#		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
-#			pass
 		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
 			#TODO disable / do not fire reviews.
-		elif ((s_nxt == APPT_STATE_COMPLETE) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_OCCURRED))):
+		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
-		elif ((s_nxt == APPT_STATE_DISPUTED) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_COMPLETE))):
+		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
 			flags = set_flag(flags, APPT_FLAG_DISPUTED)
 			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 		else:
