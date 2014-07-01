@@ -14,7 +14,7 @@ from server.infrastructure.models import *
 from server.infrastructure.errors import * 
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
-from pprint import pprint
+from pprint import pprint as pp
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
@@ -779,10 +779,12 @@ def render_settings():
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	#pi	= Oauth.get_stripe_by_uid(uid)
+	pi	= Oauth.get_stripe_by_uid(uid)
 
 	card = 'Null'
-
+	if (pi is not None):
+		pp(pi.serialize)
+		card = pi.oa_account
 
 	errmsg = None
 	form = SettingsForm(request.form)
@@ -822,7 +824,6 @@ def render_settings():
 				form.set_input_newpass.data = ''
 				form.set_input_verpass.data = ''
 				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-#				return redirect('/settings')
 			else:
 				print "Update should be complete"
 
@@ -928,10 +929,11 @@ def settings_verify_stripe():
 
 	error = rc.get('error',       			 'None') 
 	edesc = rc.get('error_description', 	 'None') 
-	token = rc.get('access_token',			 'None') 
+	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
 	pkey  = rc.get('stripe_publishable_key', 'None')
 	user  = rc.get('stripe_user_id',		 'None')
+	rfrsh = rc.get('stripe_refresh_token',	 'None')
 
 	if error != 'None':
 		print "getToken Failed", edesc
@@ -944,15 +946,19 @@ def settings_verify_stripe():
 			oauth_stripe.oa_account  = rc['stripe_user_id']
 			print 'changing stripe ID'
 
-		if (oauth_stripe.oa_token != rc['access_token']):
-			oauth_stripe.oa_token  = rc['access_token']
-			print 'changing user-access token, used to deposite into their account'
+		if (oauth_stripe.oa_secret != rc['access_token']):
+			oauth_stripe.oa_secret  = rc['access_token']
+			print 'changing user-access token, used to deposit into their account'
 
-		if (oauth_stripe.oa_optdata1 != pkey):
-			oauth_stripe.oa_optdata1  = pkey
+		if (oauth_stripe.oa_token != pkey):
+			oauth_stripe.oa_token  = pkey
 			print 'changing stripe pubkey'
+
+#		if (oauth_stripe.oa_refresh != rfrsh):
+#			oauth_stripe.oa_refresh  = rfrsh
+#			print 'changing stripe refresh key'
 	else:
-		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
 
 	try:
 		print "try creating oauth_row"
