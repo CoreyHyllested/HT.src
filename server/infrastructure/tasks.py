@@ -202,6 +202,7 @@ def enable_reviews(the_proposal):
 
 	print 'enable_reviews()'
 
+	# if -- canceled --- do not create reviews.
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	print 'review_hp', review_hp
@@ -250,6 +251,8 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 		This function is delayed.
 		That is why we pass in prop_id and go get the information from the database.  We want to see if there have been any updates.
 	"""
+
+	#TODO if prop_id is canceled, return back.
 
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
 	print 'ht_capture_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
