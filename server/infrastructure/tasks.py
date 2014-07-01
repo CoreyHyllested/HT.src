@@ -128,8 +128,8 @@ def ht_proposal_accept(prop_uuid, uid):
 
 		print 'send confirmation notices to buyer and seller'
 		remindTime = the_proposal.prop_ts - timedelta(days=2)
+		chargeTime = the_proposal.prop_ts - timedelta(days=2)
 		reviewTime = the_proposal.prop_tf
-		chargeTime = the_proposal.prop_tf + timedelta(days=2)
 		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
@@ -149,13 +149,20 @@ def ht_proposal_accept(prop_uuid, uid):
 
 	send_appt_emails(the_proposal)
 	print 'Queue Events: reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
+	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
 	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
 
 	print 'returning from ht_appt_finalize'
 	return 200
+
+
+
+
+@mngr.task
+def ht_capture_creditcard(x):
+	print 'must be filled out'
 
 
 
@@ -247,8 +254,8 @@ def post_reviews(the_proposal):
 
 
 @mngr.task
-def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
-	""" HT_capture_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
+	""" HT_charge_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
 		This function is delayed.
 		That is why we pass in prop_id and go get the information from the database.  We want to see if there have been any updates.
 	"""
@@ -256,7 +263,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 	#TODO if prop_id is canceled, return back.
 
 	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
-	print 'ht_capture_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
+	print 'ht_charge_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
 	the_proposal = Proposal.get_by_id(prop_id)
 	print the_proposal
 
@@ -274,6 +281,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 	try:
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token, 	#		customer.id is the second one passed in
+			capture=False,
 			#stripe_cust = Oauth(uid, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
 			amount=(the_proposal.prop_cost * 100),
 			currency='usd',
@@ -289,6 +297,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 		print charge['customer']
 		print charge['captured']
 		print charge['balance_transaction']
+
 		if charge['captured'] == True:
 			print 'That\'s all folks, it worked!'
 
@@ -297,6 +306,7 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 		the_proposal.charge_transaction = charge['balance_transaction']
 		db_session.add(the_proposal)
 		db_session.commit()
+		# create event to capture later. (in 4 days).
 	except StateTransitionError as ste:
 		print e
 		db_session.rollback()
