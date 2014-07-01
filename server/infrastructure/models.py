@@ -468,7 +468,7 @@ class Proposal(Base):
 		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
 			pass
 		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
-			flags = set_flag(flags, APPT_FLAG_DISPUTED)
+			pass
 		else:
 			valid = False
 			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
