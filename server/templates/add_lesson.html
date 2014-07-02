@@ -241,6 +241,7 @@
 					</div>
 
 					<div class="addLessonFormButtonContainer">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 						<button class="blueButton addLessonFormButton addLessonFormButtonSubmit" data-current-page="edit_photos">Save and Return</button>
 						<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True"><label for="addLessonMakeLive">Make this lesson live and public</label></div>
 						<a class="addLessonFormPrevious">Previous</a>

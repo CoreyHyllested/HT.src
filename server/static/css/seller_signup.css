@@ -157,15 +157,16 @@
 	margin: 12px 0 12px 0;
 }
 .ssFormButtonSubmit {
-	display: none;
 	width: 300px;
 	margin: 12px 0 12px 0;
 }
 
 .ssFormPrevious {
-	display: none;
 	cursor: pointer;
+	width: 100%;
+	float: left;
 }
+
 .ssFormCancel {
 	display: none;
 	cursor: pointer;

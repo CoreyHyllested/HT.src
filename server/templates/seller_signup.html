@@ -27,10 +27,9 @@
 		<div class="ssLeftColumn">
 			<div class="ssNavContainer">
 			<ul class="ssNavList">
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="address">Address<i class="fa fa-fw fa-map-marker"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="payment">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>			
 				<div class="ssNavItem"><a class="ssNavLink" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>
+				<div class="ssNavItem"><a class="ssNavLink" data-target-page="payment">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
 			</ul>
 			</div>
 		</div>
@@ -49,10 +48,28 @@
 					<input type="button" class="whiteButton ssProfileImageButton" id="ssProfileImageButton" value="Choose Image...">
 					<div class="ssProfileImageInfo"></div>
 
-
-
 					<input name="ssProfileImage" id="ssProfileImage" type="file" accept="image/*">
+
+					<div class="ssFormButtonContainer">
+						<button id="ssFormButton" class="blueButton ssFormButton" data-current-page="profile_photo">Continue</button>
+					</div>					
 				
+				</div>
+
+				<div id="schedule" class="ssFormPage">
+					<div class="formInstruction">Your Availability</div>
+					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
+					<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="open"><label for="ssAvailOptionOpen">Flexible - customer should contact me.</label><br> 
+					<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="specific"><label for="ssAvailOptionSpecific">Specific (select times below)</label><br><br> 						
+					<select name="ssAvailTimes" id="ssAvailTimes" class="formField span3">
+						<option value="now">Now
+						<option value="never">Never
+					</select>  	
+
+					<div class="ssFormButtonContainer">
+						<button id="ssFormButton" class="blueButton ssFormButton" data-current-page="schedule">Continue</button>
+						<a id="ssFormPrevious" class="ssFormPrevious">Previous</a>
+					</div>				
 				</div>
 
 				<div id="payment" class="ssFormPage">
@@ -65,31 +82,15 @@
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
 					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="">
 
+
+					<div class="ssFormButtonContainer">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<button id="ssFormButtonSubmit" class="blueButton ssFormButtonSubmit" data-current-page="payment">Submit and Continue</button>
+						<a id="ssFormPrevious" class="ssFormPrevious">Previous</a>
+					</div>	
+
 				</div>
-
-
-				<div id="schedule" class="ssFormPage">
-					<div class="formInstruction">Your Availability</div>
-					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
-						<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="open"><label for="ssAvailOptionOpen">Flexible - customer should contact me.</label><br> 
-						<input type="radio" id="ssAvailOption" name="ssAvailOption" class="formField" value="specific"><label for="ssAvailOptionSpecific">Specific (select times below)</label><br><br> 						
-						<select name="ssAvailTimes" id="ssAvailTimes" class="formField span3">
-							<option value="now">Now
-							<option value="never">Never
-						</select>  					
-				</div>
-
-
-			</div>
-
-			<div class="ssFormButtonContainer">
-				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-				<button id="ssFormButton" class="blueButton ssFormButton" data-current-page="">Continue</button>
-				<button id="ssFormButtonSubmit" class="blueButton ssFormButtonSubmit" data-current-page="">Submit and Continue</button>
-				<!-- <a id="ssFormCancel" href="/profile">Cancel</a> -->
-				<a id="ssFormPrevious" class="ssFormPrevious">Previous</a>
-			</div>
-	
+			</div>	
 
 	</div><!--empty, container-->
 

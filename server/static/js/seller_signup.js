@@ -5,7 +5,7 @@ $(document).ready(function(){
 	// Form Navigation and State Management
 
 	var firstPage = "profile_photo";
-	var lastPage = "schedule";
+	var lastPage = "payment";
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
 		e.preventDefault();
@@ -13,21 +13,12 @@ $(document).ready(function(){
 	});
 
 	if (window.location.hash) {
-		var hash = window.location.hash.substring(1);
-		if (hash == lastPage) {
-			$('#ssFormButton').hide();
-			$('#ssFormButtonSubmit').show();
-		} else {
-			$('#ssFormButton').show();
-			$('#ssFormButtonSubmit').hide();			
-		}		
+		var hash = window.location.hash.substring(1);	
 		$('#'+hash).show();
-		$('#ssFormButton').attr("data-current-page", hash);
 		history.replaceState({title: hash}, "", '');
 	} else {
 		// Default to first page
 		$('#'+firstPage).show();
-		$('#ssFormButton').attr("data-current-page", firstPage);
 		history.replaceState({title: firstPage}, "", '');
 	}
 
@@ -43,21 +34,6 @@ $(document).ready(function(){
 		$('.ssFormPage').hide();
 		var target = $(this).attr("data-target-page");
 		// $('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
-		$('#ssFormButton').attr("data-current-page", target);
-
-		if (target != firstPage) {
-			$('.ssFormPrevious').show();
-		} else {
-			$('.ssFormPrevious').hide();
-		}
-		if (target == lastPage) {
-			$('#ssFormButton').hide();
-			$('#ssFormButtonSubmit').show();
-		} else {
-			$('#ssFormButton').show();
-			$('#ssFormButtonSubmit').hide();			
-		}
-
 		$("#"+target).show();
 		history.pushState({title: target}, "", '/seller_signup#'+target);
 	});
@@ -68,19 +44,9 @@ $(document).ready(function(){
 		var currentPage = $(this).attr("data-current-page");
 		var nextPage = $('#'+currentPage).next('.ssFormPage').attr("id");
 		// $('.ssHeaderPageName').text($('#'+nextPage+' .formTitle').text());
-		$('#ssFormButton').attr("data-current-page", nextPage);
-		$('.ssFormPrevious').show();
 		$('#'+nextPage).show();
-
-		if (nextPage == lastPage) {
-			$('#ssFormButton').hide();
-			$('#ssFormButtonSubmit').show();
-		}
-
 		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
 	});
-
-
 
 	$('#ssFormButtonSubmit').click(function(e) {
 		e.preventDefault();
@@ -92,29 +58,18 @@ $(document).ready(function(){
 		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
 		// Uncomment when ready to actually do the database stuff
-		$("#ssForm").submit();
+		// $("#ssForm").submit();
 
 		openAlertWindow("Thanks for registering!");
 	});
 
-
-
 	$('#ssFormPrevious').click(function(e) {
 		e.preventDefault();
-		$('.ssFormPage, #ssFormButtonSubmit').hide();	
-		$('#ssFormButton').show();
+		$('.ssFormPage').hide();	
 
 		var currentPage = $(this).siblings('#ssFormButton').attr("data-current-page");
 		var prevPage = $('#'+currentPage).prev('.ssFormPage').attr("id");
-
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());
-		$('#ssFormButton').attr("data-current-page", prevPage);
-		if (prevPage != firstPage) {
-			$('.ssFormPrevious').show();
-		} else {
-			$('.ssFormPrevious').hide();
-		}
-			
 		$('#'+prevPage).show();
 		history.pushState({title: prevPage}, "", '/seller_signup#'+prevPage);
 	})
