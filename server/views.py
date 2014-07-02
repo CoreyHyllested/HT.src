@@ -43,8 +43,9 @@ def homepage():
 
 @ht_csrf.exempt
 @ht_server.route('/search',  methods=['GET', 'POST'])
+@ht_server.route('/search/<int:page>',  methods=['GET', 'POST'])
 @dbg_enterexit
-def render_search():
+def render_search(page = 1):
 	""" Provides ability to everyone to search for Heros.  """
 	bp = None
 
@@ -53,30 +54,57 @@ def render_search():
 
 	# get all the search 'keywords'
 	keywords = request.values.get('search')
+	industry = request.values.get('industry_field', -1)
+	rateFrom = request.values.get('rate_from_field', 0)
+	rateTo =   request.values.get('rate_to_field', 9999)
+	if (rateFrom == ''): rateFrom = 0
+	if (rateTo == ''):	rateTo = 9999
+
 	form = SearchForm(request.form)
 	print "keywords = ", keywords
+	print "industry = ", industry
+
 
 	try:
-		results = db_session.query(Profile)
+		results = db_session.query(Profile) #.order_by(Profile.created)
+		results_industry = results #.all();
 		print 'there are', len(results.all()), 'profiles'
+		if (int(industry) != -1):
+			industry_str = Industry.industries[int(industry)]
+			results_industry = results.filter(Profile.industry == industry_str)
+			print 'results for industry', len(results_industry.all())
+			for profile in results_industry.all():
+				print 'search:' + str(industry_str), profile
+			
 
+		print 'find rate from ', rateFrom, '-', rateTo
+		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
+		print 'results for cost-between', len(results_rate.all())
+				
 		if (keywords is not None):
 			print "keywords = ", keywords
-			rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-			rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			results_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+			print 'results for name', len(results_name.all())
+			results_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			print 'results for desc', len(results_desc.all())
 			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-			rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
-			print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
+			print 'results for hdln', len(rc_hdln.all())
+
+			print len(results_name.all()), len(rc_hdln.all()), len(results_desc.all())
 	
 			# filter by location, use IP as a tell
-			rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
+			rc_keys = results_desc.union(rc_hdln).union(results_name) #.all() #paginate(page, 4, False)
+			#rc_keys = results_desc.union(rc_hdln).union(results_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
 		else:
-			rc_keys = results.all()
+			print 'returning all all'
+			rc_keys = results #.all() #(page, 4, False)
+
+		q_rc = rc_keys.intersect(results_rate).intersect(results_industry).order_by(Profile.created)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(q_rc.all()), heroes=q_rc.all()))
 
 
 
@@ -604,41 +632,19 @@ def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
 	unread_msgs = []
 
 	try:
-		appts_and_props = db_session.query(Proposal, user, hero)														\
-									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-									.join(user, user.prof_id == Proposal.prop_user)										\
-									.join(hero, hero.prof_id == Proposal.prop_hero).all();
+		(props, appts) = ht_get_active_meetings(bp)
 		unread_msgs = ht_get_unread_messages(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
-
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
-
-def display_partner_proposal(p, user_is):
-	if (user_is == p.Proposal.prop_hero): 
-		#user it the hero, we should display all the 'user'
-		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
-		setattr(p, 'display', p.user) 
-		setattr(p, 'sellr', True) 
-		setattr(p, 'buyer', False) 
-	else:
-		#print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
-		setattr(p, 'display', p.hero)
-		setattr(p, 'buyer', True) 
-		setattr(p, 'sellr', False) 
 
 
 def display_partner_message(msg, prof_id):
@@ -1034,26 +1040,26 @@ def settings_verify_stripe():
 		print "getToken Failed", edesc
 		return "auth failed %s" % edesc, 500
 
-	stripeAccount = Oauth.query.filter_by(account=uid).all()
-	if len(stripeAccount) == 1:
-		stripeAccount = stripeAccount[0]
-		if (stripeAccount.stripe != rc['stripe_user_id']):
-			stripeAccount.stripe  = rc['stripe_user_id']			# stripe ID.
+	oauth_accounts = Oauth.query.filter_by(ht_account=uid).all()
+	if len(oauth_accounts) == 1:
+		oauth_stripe = oauth_accounts[0]
+		if (oauth_stripe.oa_account != rc['stripe_user_id']):
+			oauth_stripe.oa_account  = rc['stripe_user_id']
 			print 'changing stripe ID'
 
-		if (stripeAccount.token  != rc['access_token']):
-			stripeAccount.token   = rc['access_token']
+		if (oauth_stripe.oa_token != rc['access_token']):
+			oauth_stripe.oa_token  = rc['access_token']
 			print 'changing user-access token, used to deposite into their account'
 
-		if (stripeAccount.pubkey != pkey):
-			stripeAccount.pubkey  = pkey
+		if (oauth_stripe.oa_optdata1 != pkey):
+			oauth_stripe.oa_optdata1  = pkey
 			print 'changing stripe pubkey'
 	else:
-		stripeAccount = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
 
 	try:
 		print "try creating oauth_row"
-		db_session.add(stripeAccount)
+		db_session.add(oauth_stripe)
 		db_session.commit()
 		return make_response(redirect('/settings'))
 	except Exception as e:

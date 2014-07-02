@@ -42,10 +42,6 @@
 	</div>
 
 	<div class="scheduleRightColumn">
-		<form name="schedule" action="/schedule" method="POST">
-  			{{form.hidden_tag()}}
-
-
 		<div class="scheduleIntro">
 			<h3>Introduction</h3>
 			<textarea id="newslot_description" placeholder="Tell {{hp.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
@@ -118,8 +114,6 @@
 		
 		<!-- Buttons -->
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
-		</form>
-
 		<form method="post" action="/profile">
 			<input type="hidden" name="hero" value="{{hp.prof_id}}">
 			<input type="submit" class="whiteButton scheduleCancelButton" value="Cancel">
@@ -139,7 +133,8 @@ $(document).ready(function() {
     }
 
 
-	$('#send_proposal').click(function() {
+	$('#send_proposal').click(function(e) {
+		e.preventDefault();
 		$hero_acct = '{{hp.prof_id}}';
 		$hero_name = '{{hp.prof_name}}';
 		$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
@@ -201,10 +196,10 @@ $(document).ready(function() {
 		};
 
 		StripeCheckout.open({
-			key: 'pk_test_ga4TT1XbUNDQ3cYo5moSP66n',
+			key: 'pk_test_d3gRvdhkXhLBS3ABhRPhOort',
 			amount:      $cost,
 			address:     true,
-			description: "We'll charge you after the meeting.",
+			description: "You'll be charged after the meeting.",
 			name:        $hero_name,
 			currency:    'usd',
 			panelLabel:  'Checkout',

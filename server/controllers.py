@@ -265,6 +265,52 @@ def normalize_oa_account_data(provider, oa_data):
 
 
 
+
+def htdb_get_composite_meetings(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+
+	meetings	= db_session.query(Proposal, user, hero)																\
+							.filter(or_(Proposal.prop_user == profile.prof_id, Proposal.prop_hero == profile.prof_id))	\
+							.join(user, user.prof_id == Proposal.prop_user)												\
+							.join(hero, hero.prof_id == Proposal.prop_hero).all();
+
+	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
+	return meetings
+
+
+
+
+def ht_get_active_meetings(profile):
+	props = []
+	appts = []
+
+	meetings = htdb_get_composite_meetings(profile)
+
+	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), meetings)
+	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+
+	#for meeting in meetings:
+	#	if (profile.prof_id == thread.UserMessage.msg_to):
+	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
+	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) else inbox
+	#	elif (profile.prof_id == thread.UserMessage.msg_from):
+	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
+	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) else inbox
+	#	else:
+	#		print 'Major error.  profile_id didn\'t match to or from'
+	#		continue
+	#	setattr(thread, 'thread_partner', thread_partner)
+	#	mbox.append(thread)
+
+	return (props, appts)
+
+
+
+
+
+
+
 def ht_get_unread_messages(profile):
 	all_msgs	= htdb_get_composite_messages(profile)
 	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD')
@@ -333,14 +379,19 @@ def htdb_get_composite_reviews(profile):
 								.join(appt, appt.prop_uuid == Review.rev_appt)													\
 								.join(user, user.prof_id == Review.prof_authored)												\
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
-	map(lambda review: set_display_to_partner(review, profile.prof_id), all_reviews)
+	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
 	return all_reviews
 
 
-def set_display_to_partner(r, prof_id):
+def display_review_partner(r, prof_id):
 	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
 	setattr(r, 'display', display_attr)
 
+
+
+def display_partner_proposal(meeting, profile):
+	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
+	setattr(meeting, 'display', display_partner)
 
 
 

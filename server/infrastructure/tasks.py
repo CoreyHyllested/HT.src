@@ -130,12 +130,13 @@ def ht_proposal_accept(prop_uuid, uid):
 		remindTime = the_proposal.prop_ts - timedelta(days=2)
 		reviewTime = the_proposal.prop_tf
 		chargeTime = the_proposal.prop_tf + timedelta(days=2)
-		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-		send_appt_emails(ha.email, ba.email, the_proposal)
+		print 'reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
+		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
+		send_appt_emails(the_proposal)
 
 		print 'calling ht_capturecard -- delayed'
-		rc = ht_capture_creditcard(the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated) #, eta=chargeTime):
+		rc = ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated], eta=chargeTime)
 
 	except StateTransitionError as ste:
 		print ste

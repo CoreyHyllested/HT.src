@@ -281,7 +281,7 @@ class Oauth(Base):
 	@staticmethod
 	def get_stripe_by_uid(uid):
 		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		if (len(stripe_custs) != 1): raise NoResourceFound('Oauth-Stripe', uid)
 		return stripe_custs[0]
 
 
@@ -545,6 +545,7 @@ class Industry(Base):
 	__tablename__ = "industry"
 	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
+	enumInd.insert(0, (-1, 'All Industries'))
 
 	id   = Column(Integer, primary_key = True)
 	name = Column(String(80), nullable = False, unique=True)
