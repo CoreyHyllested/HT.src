@@ -172,7 +172,7 @@ class Account(Base):
 	updated = Column(DateTime())
 	sec_question = Column(String(128))
 	sec_answer   = Column(String(128))
-#	stripe_cust	 = Column(String(64))
+	stripe_cust	 = Column(String(64))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -191,9 +191,14 @@ class Account(Base):
 
 	@staticmethod
 	def get_by_uid(uid):
-		accounts = Account.query.filter_by(userid=uid).all()
-		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
-		return accounts[0]
+		try:
+			account = Account.query.filter_by(userid=uid).one()
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: caught exception looking for Account UID', uid
+			account = None
+		except NoResultFound as none:
+			account = None
+		return account
 
 	def set_email(self, e):
 		self.email = e
@@ -287,13 +292,13 @@ class Oauth(Base):
 	@staticmethod
 	def get_stripe_by_uid(uid):
 		try:
-			stripe_cust = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
+			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
 		except MultipleResultsFound as multiple:
 			print 'Never Happen Error: found multiple Stripe customers for UID', uid
-			stripe_cust = None
+			stripe_user = None
 		except NoResultFound as none:
-			stripe_cust = None
-		return stripe_cust
+			stripe_user = None
+		return stripe_user
 
 
 	@property
