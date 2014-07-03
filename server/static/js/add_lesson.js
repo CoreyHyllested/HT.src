@@ -82,14 +82,12 @@ $(document).ready(function(){
 		e.preventDefault();
 		$('.addLessonFormPage').hide();	
 
-		var currentPage = $(this).siblings('.addLessonFormButton').attr("data-current-page");
-		var prevPage = $('#'+currentPage).prev('.addLessonFormPage').attr("id");
-
+		var currentPage = $(this).closest(".addLessonFormPage").attr("id");
+		var prevPage = $(".addLessonNavLink[data-target-page=" + currentPage + "]").parent().prev(".addLessonNavItem").children().attr("data-target-page");
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());			
 		$('#'+prevPage).show();
 		history.pushState({title: prevPage}, "", '/add_lesson#'+prevPage);
 	})
-
 
 	// Form element Behavior
 

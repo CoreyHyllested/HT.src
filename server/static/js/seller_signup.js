@@ -38,7 +38,7 @@ $(document).ready(function(){
 		history.pushState({title: target}, "", '/seller_signup#'+target);
 	});
 
-	$('#ssFormButton').click(function(e) {
+	$('.ssFormButton').click(function(e) {
 		e.preventDefault();
 		$('.ssFormPage').hide();
 		var currentPage = $(this).attr("data-current-page");
@@ -48,7 +48,7 @@ $(document).ready(function(){
 		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
 	});
 
-	$('#ssFormButtonSubmit').click(function(e) {
+	$('.ssFormButtonSubmit').click(function(e) {
 		e.preventDefault();
 		var formData = {};
 		formData.oauth_stripe = $("#oauth_stripe").val();
@@ -63,12 +63,13 @@ $(document).ready(function(){
 		openAlertWindow("Thanks for registering!");
 	});
 
-	$('#ssFormPrevious').click(function(e) {
+	$('.ssFormPrevious').click(function(e) {
 		e.preventDefault();
-		$('.ssFormPage').hide();	
-
-		var currentPage = $(this).siblings('#ssFormButton').attr("data-current-page");
+		$('.ssFormPage').hide();	 
+ 
+		var currentPage = $(this).closest(".ssFormPage").attr("id");
 		var prevPage = $('#'+currentPage).prev('.ssFormPage').attr("id");
+		console.log("current page is "+currentPage);
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());
 		$('#'+prevPage).show();
 		history.pushState({title: prevPage}, "", '/seller_signup#'+prevPage);

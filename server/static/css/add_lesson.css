@@ -137,6 +137,7 @@
 }
 
 .addLessonFormButtonContainer {
+	text-align: left;
 	float: left;
 	width: 100%;
 }
@@ -145,7 +146,15 @@
 	width: 150px;
 	margin: 12px 0 12px 0;
 }
+
+.addLessonFormButtonSubmitContainer {
+	width: 100%;
+	float: left;
+}
+
 .addLessonFormButtonSubmit {
+	float: left;
+	width: 300px;
 	margin: 12px 0 12px 0;
 }
 
@@ -155,7 +164,6 @@
 
 .addLessonFormPrevious {
 	cursor: pointer;
-	width: 100%;
 	float: left;
 }
 
@@ -238,9 +246,6 @@ textarea.formField {
 	margin-left: 8px;
 }
 
-.addLessonFormButton {
-	float: left;
-}
 .multipleUploadButton {
 	opacity: .4;
 }
@@ -251,12 +256,7 @@ textarea.formField {
 	margin-bottom: 20px;
 }
 
-.addLessonFormButtonSubmit {
-	float: left;
-	padding-left: 14px;
-	width: 40%;
 
-}
 
 .addLessonFormButtonOptions {
 	float: left;
