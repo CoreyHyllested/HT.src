@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from datetime import datetime as dt, timedelta
 from server import ht_server
+from pytz import timezone
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks_emails	 import *
@@ -60,6 +61,10 @@ def ht_proposal_create(values, uid):
 		prop_f_hour = values.get('prop_f_hour')
 		dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+
+		# convert to user's local TimeZone.
+		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
+		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
 	except Exception as e:
 		print type(e), e
 		ht_sanitize_errors(e)
@@ -76,7 +81,7 @@ def ht_proposal_create(values, uid):
 		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
 		print "ht_proposal_create:", bp.prof_name, ':', stripe_cust
 
-		proposal = Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
+		proposal = Proposal(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
 		print "ht_proposal_create: successfully created proposal"
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError

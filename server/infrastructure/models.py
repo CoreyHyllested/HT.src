@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeB
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from datetime import datetime as dt
+from pytz import timezone
 import datetime
 import uuid
 
@@ -403,8 +404,8 @@ class Proposal(Base):
 	prop_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	prop_cost	= Column(Integer, nullable=False, default=0)											# Cost.
 	prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# LastProfile to Touch proposal. 
-	prop_ts		= Column(DateTime(timezone=True),   nullable = False)
-	prop_tf		= Column(DateTime(timezone=True),   nullable = False)
+	prop_ts		= Column(DateTime(timezone=True),   nullable = False)									# Stored in UTC time
+	prop_tf		= Column(DateTime(timezone=True),   nullable = False)									# Stored in UTC time
 	prop_tz		= Column(String(20))
 	prop_desc	= Column(String(3000))
 	prop_place	= Column(String(1000),	nullable = False)	
@@ -433,6 +434,7 @@ class Proposal(Base):
 
 		self.prop_ts	= datetime_s
 		self.prop_tf	= datetime_f
+		self.prop_tz	= 'US/Pacific'
 		self.prop_place	= location 
 		self.prop_desc	= description
 		self.challengeID = str(uuid.uuid4())
@@ -506,6 +508,16 @@ class Proposal(Base):
 		self.prop_state = s_nxt
 		self.prop_flags = flags
 		self.prop_updated = dt.utcnow()
+
+
+	def get_prop_ts(self, tz=None):
+		zone = self.prop_tz or 'US/Pacific'
+		return self.prop_ts.astimezone(timezone(zone))
+
+
+	def get_prop_tf(self, tz=None):
+		zone = self.prop_tz or 'US/Pacific'
+		return self.prop_tf.astimezone(timezone(zone))
 			
 
 	def __repr__(self):

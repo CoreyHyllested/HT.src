@@ -50,8 +50,8 @@
 					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
-						{{proposal.Proposal.prop_ts.strftime('%H:%M %p')}} - {{proposal.Proposal.prop_tf.strftime('%H:%M %p')}}
+						{{proposal.Proposal.get_prop_ts().strftime('%A, %b %d %Y')}}<br>
+						{{proposal.Proposal.get_prop_ts().strftime('%H:%M %p')}} - {{proposal.Proposal.get_prop_tf().strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardOfferRightColumnInfo">

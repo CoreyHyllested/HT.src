@@ -44,7 +44,7 @@ def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, messag
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
 	url = 'https://herotime.co/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
-	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + "The request was for " + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + hero_name
@@ -65,7 +65,7 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 	msg_html = msg_html + "<a href=\"" + url + "\">" 
 	msg_html = msg_html + buyer_name 
 	msg_html = msg_html + " </a> wants to buy your time.<br>"
-	msg_html = msg_html + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + buyer_name  
@@ -172,14 +172,14 @@ def ht_send_reminder_email(user_email, user_name, prop_uuid):
 def send_appt_emails(the_proposal):
 
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
-	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
+	print 'sending proposal-accepted emails @ ' + the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
 
 	sellr_html = "<p>IMG_LOGO</p><br>"																					\
 				+"<p>Fantastic!<br>You accepted " + sellr_name + "'s proposal.</p>"										\
 				+"<p>Here are the details:<br>"																			\
 				+"Location: " + the_proposal.prop_place + "<br>"														\
 				+"Description: " + the_proposal.prop_desc + "<br>"														\
-				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
+				+"Time: " + str(the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
 				+"</p>"																									\
 				+"<p>We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
 				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"			\
@@ -195,7 +195,7 @@ def send_appt_emails(the_proposal):
 				+"<p>Check out the details:<br>"	\
 				+"Location: " + the_proposal.prop_place + "<br>"	\
 				+"Description: " + the_proposal.prop_desc + "<br>"	\
-				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
+				+"Time: " + str(the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
 				+"</p>"	\
 				+"<p>Need to edit, manage, or *gasp* cancel your appointment?  Head to your <a href=\'https://127.0.0.1:5000/dashboard\'>dashboard</a>"	\
 				+"We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
