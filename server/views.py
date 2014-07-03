@@ -151,7 +151,7 @@ def render_profile(usrmsg=None):
 
 
 	print 'render_profile()  images in portfolio:', len(portfolio)
-	for img in portfolio: print 'render_profile()  ' + str(img) 
+	for img in portfolio: print 'render_profile()  ' + str(img)
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 

@@ -26,7 +26,7 @@
 			<h1>Pending Offers ({{proposals|length}})</h1>
 
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
+			<div class="dashboardOffer" id="{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
 					<a href="/profile?hero={{proposal.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
@@ -62,7 +62,7 @@
 					{% if proposal.seller == true %}
 					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
 					{% endif %}
-					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
+					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
 					<!-- -->
 				</div>
 				<div class="clear"></div>
@@ -260,45 +260,41 @@ $(document).ready(function() {
                 }
             }
         };
-
         return false;
     });
 
 
-   $('.reject').click(function () {
-        var id = this.id;
+   $('.offerReject').click(function () {
+        var id = $(this).data('id');
         var ch = $(this).attr("ch");
-        var csrf = "{{ csrf_token() }}";
-        var sid = "#prop-" + id;
 
         var fd = new FormData();
         fd.append('proposal_id', id);
-        fd.append('proposal_stat', 'reject');
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/proposal/reject", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
         xhr.send(fd);
 
-        //catch response.  make any modificaitons.
+        // catch response.  make modificaitons
         xhr.onreadystatechange = function(e) {
             if (4 == this.readyState) {
                 msg = JSON.parse(xhr.responseText);
                 if (this.status == 200) {
-                    console.log(['xhr post complete ', e]);
+                    console.log(['xhr post complete', e]);
                     console.log(xhr.responseText);
                     openAlertWindow('Success.\n' + msg['usrmsg']);
-                    $(sid).remove();
+                    $('#'+id).remove();
                 } else if (this.status == 500) {
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=500', e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 } else if (this.status == 501) {
-                    console.log(['xhr post complete, err=501 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=501', e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 } else {
-                    console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=??', this.status,  e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 }
             }
         };
