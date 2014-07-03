@@ -139,7 +139,7 @@ def ht_proposal_accept(prop_uuid, uid):
 		print 'ht_proposal_accept: send confirmation notices'
 		remindTime = the_proposal.prop_ts - timedelta(days=2)
 		chargeTime = the_proposal.prop_ts - timedelta(days=2)
-		reviewTime = the_proposal.prop_tf
+		reviewTime = the_proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
 		print 'ht_proposal_accept: reminder emails @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'ht_proposal_accept: charge the buyr @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
@@ -222,6 +222,7 @@ def ht_enable_reviews(prop_uuid):
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
 		#TODO turn this into a Proposal method!
 		print 'ht_enable_reviews(): ',  the_proposal.prop_uuid, ' is not in ACCEPTED state =', the_proposal.prop_state
+		# check to see if reviews_enabled already [If it lost a race]
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	print 'ht_enable_reviews()  review_hp' + str(review_hp.review_id)
@@ -245,7 +246,7 @@ def ht_enable_reviews(prop_uuid):
 		# TODO create two events to send in 1 hr after meeting completion to do review
 		finishTime = the_proposal.prop_tf + timedelta(days=30)
 		print 'ht_enable_reviews()  succefully created reviews, updated profile.  Disable in 30 + days.'
-		post_reviews.apply_async(args=[the_proposal, review_hp.review_id, review_bp.review_id], eta=(finishTime))
+		post_reviews.apply_async(args=[the_proposal.prop_uuid, review_hp.review_id, review_bp.review_id], eta=(finishTime))
 	except Exception as e:
 		db_session.rollback()
 		print e	
@@ -256,8 +257,9 @@ def ht_enable_reviews(prop_uuid):
 
 
 @mngr.task
-def post_reviews(the_proposal):
+def post_reviews(prop_uuid, hp_review_id, bp_review_id):
 	#30 days after enable, shut it down!
+	the_proposal = Proposal.get_by_id(prop_uuid)
 	the_proposal.set_state(APPT_STATE_COMPLETE)
 	# get reviews.
 	# mark incomplete reviews as incomplete.

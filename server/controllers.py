@@ -15,9 +15,10 @@ import os, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
+import pytz
 
 from pprint import pprint as pp
-from datetime import timedelta
+from datetime import timedelta, datetime as dt
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask.ext.mail import Message
@@ -276,8 +277,47 @@ def htdb_get_composite_meetings(profile):
 							.join(user, user.prof_id == Proposal.prop_user)												\
 							.join(hero, hero.prof_id == Proposal.prop_hero).all();
 
+	map(lambda meeting: meeting_timedout(meeting), meetings)
 	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
 	return meetings
+
+
+
+
+def meeting_timedout(meeting):
+	proposal = meeting.Proposal
+
+	if (proposal.prop_state != APPT_STATE_PROPOSED and proposal.prop_state != APPT_STATE_ACCEPTED):
+		return
+
+	utc_now = dt.now(timezone('UTC'))
+	utcsoon = utc_now - timedelta(hours=20)
+	ystrday = utc_now - timedelta(days=1)
+
+	try:
+		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
+		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
+		print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+		print 'meeting\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + proposal.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+
+		if (proposal.prop_state == APPT_STATE_PROPOSED):
+			if (prop_ts <= utcsoon):
+				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
+				proposal.set_state(APPT_STATE_TIMEDOUT)
+				db_session.add(proposal)
+				db_session.commit()
+			else:
+				print '\t\t\t\tSafe!'
+				pass
+		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
+			print '\t\t\t\tACCEPTED...'
+			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
+				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				ht_enable_reviews(proposal.prop_uuid)
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
 
 
 
@@ -286,7 +326,9 @@ def ht_get_active_meetings(profile):
 	props = []
 	appts = []
 
+	print 'ht_get_active_meetings()  Get composite meetings'
 	meetings = htdb_get_composite_meetings(profile)
+	print 'ht_get_active_meetings()  Got composite meetings'
 
 	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
 	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
