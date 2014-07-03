@@ -119,12 +119,12 @@ def render_profile(usrmsg=None):
 	bp = None 
 	if (session.get('uid') is not None):
 		bp = Profile.get_by_uid(session.get('uid'))
-		print "BP = ", bp.prof_name, bp.prof_id, bp.account
+		print "render_profile()  browser is ", bp.prof_name, bp.prof_id, bp.account
 
 	try:
 		hp = request.values.get('hero')
 		if (hp is not None):
-			print "hero profile requested,", hp
+			print "render_profile()  hero requested,", hp
 			hp = Profile.get_by_prof_id(hp)
 		else:
 			if (bp == None): 
@@ -133,7 +133,7 @@ def render_profile(usrmsg=None):
 			hp = bp
 
 		# replace 'hp' with the actual Hero's Profile.
-		print "HP = ", hp.prof_name, hp.prof_id, hp.account
+		print "render_profile()  hero is ", hp.prof_name, hp.prof_id, hp.account
 	except NoProfileFound as nf:
 		print nf
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
@@ -150,13 +150,13 @@ def render_profile(usrmsg=None):
 		db_session.rollback()
 
 
-	print 'images in portfolio:', len(portfolio)
-	for img in portfolio: print img
+	print 'render_profile()  images in portfolio:', len(portfolio)
+	for img in portfolio: print 'render_profile()  ' + str(img) 
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
-	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, dump=False)
 
 	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
@@ -517,9 +517,11 @@ def ht_api_proposal_create():
 @ht_server.route('/proposal/accept', methods=['POST'])
 @req_authentication
 def ht_api_proposal_accept():
+	print "ht_api_proposal_accept: enter"
 	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
+#	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+#	log_uevent(session['uid'], pstr)
+
 
 	if not form.validate_on_submit():
 		msg = "invalid form: " + str(form.errors)
@@ -527,14 +529,16 @@ def ht_api_proposal_accept():
 		return jsonify(usrmsg=msg), 400
 
 	try:
-		rc = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc
+		print "ht_api_proposal_accept: validated form. Accept proposal."
+		ht_proposal_accept(form.proposal_id.data, session['uid'])
 	except Sanitized_Exception as se:
+		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
-		print str(e)
+		print "ht_api_proposal_accept: exception", type(e), e
 		db_session.rollback()
-		jsonify(usrmsg=str(e)), 500
+		return jsonify(usrmsg=str(e)), 500
+	print "ht_api_proposal_accept: success"
 	return make_response(redirect('/dashboard'))
 
 
@@ -642,7 +646,7 @@ def render_dashboard(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
-	print 'profile.account = ', uid, bp
+	print 'render_dashboard: uid=', uid, ' Profile =', bp.prof_name, bp.prof_id
 
 	unread_msgs = []
 

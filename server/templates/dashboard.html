@@ -59,10 +59,10 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
 					{% if proposal.seller == true %}
 					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
 					{% endif %}
+					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
 					<!-- -->
 				</div>
 				<div class="clear"></div>

@@ -157,10 +157,10 @@ def send_proposal_reject_emails(the_proposal):
 
 
 @mngr.task
-def ht_send_reminder_email(user_email, user_name, the_proposal):
-	print 'sending appointment reminder emails now for ', the_proposal
+def ht_send_reminder_email(user_email, user_name, prop_uuid):
+	print 'ht_send_reminder_email()  sending appointment reminder emails now for ' + prop_uuid
 
-	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + str(the_proposal) + "is about to begin.</p>"
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + prop_uuid + "is about to begin.</p>"
 	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)

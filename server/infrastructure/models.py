@@ -422,7 +422,7 @@ class Proposal(Base):
 	review_hero	= Column(String(40), ForeignKey('review.review_id'))
 	review_user = Column(String(40), ForeignKey('review.review_id'))
 
-	#Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (prop_cost), location=prop_place, description=prop_desc, token=stripe_tokn, cust=pi, card=stripe_card)
+
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
 		self.prop_uuid	= str(uuid.uuid4())
 		self.prop_hero	= str(hero)
@@ -440,6 +440,8 @@ class Proposal(Base):
 		self.charge_customer_id = customer
 		self.charge_credit_card = card
 		self.charge_user_token = token
+		print 'Proposal(p_uid=%s, cost=%s, location=%s)' % (self.prop_uuid, cost, location)
+		print 'Proposal(token=%s, cust=%s, card=%s)' % (token, customer, card)
 
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
@@ -577,7 +579,8 @@ class Image(Base):
 		self.img_created = dt.utcnow()
 
 	def __repr__ (self):
-		return '<image %s %s>' % (self.img_id, self.img_profile)
+		comment = self.img_comment[:20]
+		return '<image %s %s>' % (self.img_id, comment)
 
 
 

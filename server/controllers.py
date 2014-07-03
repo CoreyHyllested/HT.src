@@ -343,20 +343,20 @@ def htdb_get_composite_messages(profile):
 def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dump=False):
 	messages = []
 	if (filter_by == 'RECEIVED'):
-		print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_to == profile.prof_id), message_set)
 	if (filter_by == 'SENT'):
-		print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_from == profile.prof_id), message_set)
 	if (filter_by == 'UNREAD'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
 	if (filter_by == 'THREADS'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_thread == msg.UserMessage.msg_id) == 0), message_set)
 
 	if (dump):
-		print 'Original set',  len(message_set), "=>", len(messages)
+		#print 'Original set',  len(message_set), "=>", len(messages)
 		for msg in messages:
 			print msg.msg_from.prof_name, 'sent', msg.msg_to.prof_name, 'about', msg.UserMessage.msg_subject, '\t', msg.UserMessage.msg_flags, '\t', msg.UserMessage.msg_thread
 	return messages
@@ -403,13 +403,13 @@ def display_partner_proposal(meeting, profile):
 def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
 	reviews = []
 	if (filter_by == 'REVIEWED'):
-		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+	#	print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
 	if (filter_by == 'AUTHORED'):
-		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+	#	print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
 	if (filter_by == 'VISIBLE'):
-		print 'Searching review_set for reviews marked as visible'
+	#	print 'Searching review_set for reviews marked as visible'
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
 
 	if (dump):
