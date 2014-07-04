@@ -19,7 +19,6 @@
 			<h2>This is your personal dashboard.</h2>
 			<p>Once you start making bookings, your offers and lessons will be displayed on this page.</p>
 
-			<!-- CAH: Tine needs to come up with text that goes here, too. -->
 			<p>Aenean tincidunt augue vitae eleifend pretium. Aliquam suscipit quis ipsum quis cursus. Vivamus tempus odio ac turpis ultrices porttitor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam et malesuada libero, vel blandit mi. Duis vulputate, urna eget venenatis feugiat, massa ipsum sodales purus, vitae dictum diam odio id libero. In scelerisque iaculis tellus. Duis sed eros nec enim molestie fermentum.</p>
 		</div>
 
@@ -60,9 +59,9 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Cancel">
+					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Cancel">
 					{% if proposal.buyer == false %}
-					<input type="button" class="dashboardActionButton" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
 					{% endif %}
 					<!-- -->
 				</div>
@@ -72,43 +71,49 @@
 		</div>
 
 
-		<div class="dashboardAppointments">
+		<div class="dashboardAppts">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
 			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardAppointment" id="appt-{{appointment.Proposal.prop_uuid}}">
-				<div class="dashboardAppointmentLeftColumn">
+			<div class="dashboardAppt" id="appt-{{appointment.Proposal.prop_uuid}}">
+				<div class="dashboardApptLeftColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
-						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}">
-					</a>
+						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
+					</a>					
 				</div>
-				<div class="dashboardAppointmentCenterColumn">
+				<div class="dashboardApptCenterColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<h3>{{appointment.display.prof_name}}</h3>
 					</a>
-					<h4>{{appointment.display.headline}}</h4>
-					<div class="dashboardAppointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
+					<div class="appointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
 				</div>
-				<div class="dashboardAppointmentRightColumn">
-					<div class="dashboardAppointmentRightColumnInfo">
+				<div class="dashboardApptRightColumn">
+
+					<div class="dashboardApptRightColumnElement apptDate">
+						{{appointment.Proposal.prop_ts.strftime('%A, %b %d')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptTime">
+						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptCost">
 						{% if appointment.buyer == True %}
 						You will pay ${{appointment.Proposal.prop_cost}}.
 						{% else %}
-						You will get paid ${{appointment.Proposal.prop_cost}}.
+						You will earn ${{appointment.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
-					<div class="dashboardAppointmentRightColumnInfo">
-						{{appointment.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
-						{{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}}
-					</div>
+
 					<!-- CAH: Meeting address goes here. -->
-					<div class="dashboardAppointmentRightColumnInfo">
-						{{appointment.Proposal.prop_place}}
+					<div class="dashboardApptRightColumnElement apptLocation">
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
-						<a href="#" class="falseMap">(see map)</a>
+						<a href="#" class="falseMap blend"><i class="fa fa-map-marker"></i>
+						{{appointment.Proposal.prop_place}}
+						</a>
 					</div>
 
 					<!-- CAH: The button should disappear 24 hours before the meeting. -->
-					<input type="button" class="dashboardActionButton redButton" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton lessonCancel" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -132,7 +137,7 @@
 				</div>
 				<div class="dashboardMessageRightColumn">
 					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
-					<div class="messageView"><a href="/inbox/message/{{msg.UserMessage.msg_id}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
+					<div class="messageView"><a href="/inbox#thread?id={{msg.UserMessage.msg_thread}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -141,7 +146,7 @@
 	</div>
 
 	<div class="dashboardRightColumn">
-		<a href="/profile"><img src="{{profile_img}}"></a>
+		<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
 		<a href="/profile"><h3>{{bp.prof_name}}</h3></a>
 		<h4>{{bp.headline}}</h4>
 		<div class="dashboardBasicInfo">
@@ -162,17 +167,15 @@
 
 </div>
 
+
 <script src="/static/js/sendmsg.js"></script>
 <script>
-
 $(document).ready(function() {
 
-    $('.accept').click(function () {
+    $('.offerAccept').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
         var csrf = "{{ csrf_token() }}";
-
-        console.log(['this is get started', id, ch]);
 
         var fd = new FormData();
         fd.append('proposal_id', id);
@@ -191,7 +194,7 @@ $(document).ready(function() {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
                     openAlertWindow('Success.');
-					document.write(xhr.responseText);
+					window.location.href="/dashboard";
                 } else if (this.status == 400) {
                     msg = JSON.parse(xhr.responseText);
                     console.log(['xhr post complete, err=400 ', e]);
@@ -216,7 +219,7 @@ $(document).ready(function() {
     });
 
 
-   $('.redButton').click(function () {
+   $('.offerCancel').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
         var csrf = "{{ csrf_token() }}";

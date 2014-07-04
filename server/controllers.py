@@ -30,6 +30,7 @@ from server import ht_server, linkedin
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, aliased
 from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
@@ -161,7 +162,7 @@ def ht_create_account(name, email, passwd):
 		db_session.rollback()
 		return None, False
 
-	send_verification_email(email, uid=hero.userid, challenge_hash=challenge_hash)
+	send_verification_email(email, name, challenge_hash=challenge_hash)
 	return (hero, prof)
 
 
@@ -263,6 +264,160 @@ def normalize_oa_account_data(provider, oa_data):
 	return data
 
 
+
+
+def htdb_get_composite_meetings(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+
+	meetings	= db_session.query(Proposal, user, hero)																\
+							.filter(or_(Proposal.prop_user == profile.prof_id, Proposal.prop_hero == profile.prof_id))	\
+							.join(user, user.prof_id == Proposal.prop_user)												\
+							.join(hero, hero.prof_id == Proposal.prop_hero).all();
+
+	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
+	return meetings
+
+
+
+
+def ht_get_active_meetings(profile):
+	props = []
+	appts = []
+
+	meetings = htdb_get_composite_meetings(profile)
+
+	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), meetings)
+	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+
+	#for meeting in meetings:
+	#	if (profile.prof_id == thread.UserMessage.msg_to):
+	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
+	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) else inbox
+	#	elif (profile.prof_id == thread.UserMessage.msg_from):
+	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
+	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) else inbox
+	#	else:
+	#		print 'Major error.  profile_id didn\'t match to or from'
+	#		continue
+	#	setattr(thread, 'thread_partner', thread_partner)
+	#	mbox.append(thread)
+
+	return (props, appts)
+
+
+
+
+
+
+
+def ht_get_unread_messages(profile):
+	all_msgs	= htdb_get_composite_messages(profile)
+	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD')
+	toProf_msgs = ht_filter_composite_messages(unread_msgs, profile, filter_by='RECEIVED', dump=False)
+	return toProf_msgs
+
+
+def ht_get_thread_messages(profile):
+	all_msgs	= htdb_get_composite_messages(profile)
+	msg_threads	= ht_filter_composite_messages(all_msgs, profile, filter_by='THREADS')
+	return msg_threads
+
+
+
+def htdb_get_composite_messages(profile):
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+
+	messages = db_session.query(UserMessage, msg_from, msg_to)																		\
+							 .filter(or_(UserMessage.msg_to == profile.prof_id, UserMessage.msg_from == profile.prof_id))			\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)												\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+	return messages
+
+
+
+def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dump=False):
+	messages = []
+	if (filter_by == 'RECEIVED'):
+		print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
+		messages = filter(lambda msg: (msg.UserMessage.msg_to == profile.prof_id), message_set)
+	if (filter_by == 'SENT'):
+		print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
+		messages = filter(lambda msg: (msg.UserMessage.msg_from == profile.prof_id), message_set)
+	if (filter_by == 'UNREAD'):
+		print 'Searching message_set for messages marked as unread'
+		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
+	if (filter_by == 'THREADS'):
+		print 'Searching message_set for messages marked as unread'
+		messages = filter(lambda msg: ((msg.UserMessage.msg_thread == msg.UserMessage.msg_id) == 0), message_set)
+
+	if (dump):
+		print 'Original set',  len(message_set), "=>", len(messages)
+		for msg in messages:
+			print msg.msg_from.prof_name, 'sent', msg.msg_to.prof_name, 'about', msg.UserMessage.msg_subject, '\t', msg.UserMessage.msg_flags, '\t', msg.UserMessage.msg_thread
+	return messages
+
+
+
+
+
+def htdb_get_composite_reviews(profile):
+	hero = aliased(Profile, name='hero')
+	user = aliased(Profile, name='user')
+	appt = aliased(Proposal, name='appt')
+
+	# OBJECT
+	# OBJ.Review	# Review
+	# OBJ.hero		# Profile of seller
+	# OBJ.user		# Profile of buyer
+	# OBJ.appt 		# Proposal object
+	# OBJ.display	# <ptr> Profile of other person (not me)
+
+	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
+								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(user, user.prof_id == Review.prof_authored)												\
+								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
+	return all_reviews
+
+
+def display_review_partner(r, prof_id):
+	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
+	setattr(r, 'display', display_attr)
+
+
+
+def display_partner_proposal(meeting, profile):
+	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
+	setattr(meeting, 'display', display_partner)
+
+
+
+
+def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+	reviews = []
+	if (filter_by == 'REVIEWED'):
+		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
+	if (filter_by == 'AUTHORED'):
+		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
+	if (filter_by == 'VISIBLE'):
+		print 'Searching review_set for reviews marked as visible'
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+
+	if (dump):
+		print 'Original set',  len(review_set), "=>", len(reviews)
+		for r in reviews:
+			# see ht_get_composite_reviews for object
+			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+	return reviews
+
+
+
+
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
 	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
 	ba = Account.query.filter_by(userid=uid).all()[0]
@@ -287,5 +442,24 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	return True, True
 
 
-def modifyProfile():
-	pass
+
+def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
+	inbox = []
+	archive = []
+
+	for thread in msg_threads:
+		if (mbox_profile_id == thread.UserMessage.msg_to):
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
+			mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) else inbox
+		elif (mbox_profile_id == thread.UserMessage.msg_from):
+			thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
+			mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) else inbox
+		else:
+			print 'Major error.  profile_id didn\'t match to or from'
+			continue
+		setattr(thread, 'thread_partner', thread_partner)
+		mbox.append(thread)
+
+	return (inbox, archive)
+
+

@@ -36,28 +36,7 @@
 	color: black;
 	width: 75%;
 	float: left;
-}
-
-.messageHeader h1 {	
-	width: 100%;
-	font-size: 2em;
-}
-.messageHeader h2 {	
-	width: 100%;
 	font-size: 1.8em;
-}
-
-.messageNavItem {
-    background-size: 18px 18px;
-    border-bottom: 1px solid #e2e4e6;
-    color: #6e7980;
-    font-size: 0.875em;
-    padding: 11px 0 11px 30px;
-    cursor: pointer;
-}
-
-.messageNavItem:hover {
-    color: #007cb3;
 }
 
 .messageNavItem i {
@@ -124,39 +103,63 @@
 	font-size: .9em;
 }
 
-.navigation, .leftNavigation a {
-	color: #29abe1;
-	-moz-transition: 0.5s ease;
-	-o-transition: 0.5s ease;
-	-webkit-transition: 0.5 ease;
-	transition: 0.5s ease;	
-}
-.navigation, .leftNavigation a:hover {
-	color: #007cb3;
-}
-
-
 .messageThread {
 	width: 100%;
 }
 
-.messageThreadHeader {
+.messageThreadConvoTitle {
+	display: none;
+	width: 100%;
+}
+.messageThreadNumMessages {
+	display: none;
 }
 
+.messageThreadSubject {
+	width: 100%;
+	font-size: 1.1em;
+	font-weight: bold;
+	padding: 6px 0px 10px 0px;
+	margin-bottom: 12px;
+	border-bottom: 1px dotted #f0f0f0;
+}
+
+.messageThreadItemContainer {
+	float: left;
+	width: 100%;
+}
 .messageThreadItem {
 	margin-bottom: 10px;
-	border-bottom: 1px dotted #dedede; 
-	padding: 6px;
+	border-bottom: 1px dotted #f0f0f0; 
+/*	padding: 6px;*/
 	float: left;
-	min-height: 80px;
+	min-height: 70px;
+	width: 100%;
 }
-.messageThreadItem:last-of-type {
+.messageThreadItem:nth-last-child(2) {
 	border-bottom: none;
 }
-
-.itemSender {
+.messageThreadItemLoading {
+	display: none;
+	border-top: 1px dotted #f0f0f0; 
+	padding: 6px;
 	float: left;
-	width: 50%;
+	height: 70px;
+	line-height: 70px;
+	width: 100%;
+	text-align: center;
+	font-size: 2em;
+	margin-bottom: 12px;
+}
+
+.messageItemLeftCol{
+	width: 90px;
+	float: left;
+}
+
+.messageItemRightCol{
+	width: 570px;
+	float: right;
 }
 
 .itemSenderImage {
@@ -166,7 +169,7 @@
 
 .itemSenderImage img {
 	border-radius: 3px;
-	width: 40px;
+	width: 100%;
 }
 
 .itemSenderName {
@@ -175,7 +178,6 @@
 	color: #6e7980;
 	font-weight: bold;
 }
-
 
 .itemDatetime {
 	float: right;
@@ -201,7 +203,7 @@ textarea.messageReplyBody {
 	resize: none;
 	float: left;
 	width: 100%;
-	margin-bottom: 20px
+	margin-bottom: 20px;
 }
 
 .messageReplySendButton {
@@ -209,66 +211,12 @@ textarea.messageReplyBody {
 	margin: 0px auto;
 }
 
-/*
-
-.composeFieldCaption{
-	font-size: 1.1em;
+.messageReplyStatus{
+	display: none;
 	font-weight: bold;
-	text-align: right;
-	line-height: 40px;
-	height: 40px;
-	width: 100px;
-	float: left;
-}
-
-.composeRecipientContainer {
-	width: 100%;
-	float: left;
-}
-
-.composeSubjectContainer {
-	width: 100%;
-	float: left;
-}
-
-.composeBodyContainer {
-	width: 100%;
-	float: left;
-}
-
-input.composeField {
-	float: right;
-	width: 780px;
-	margin-top: -1px;
-}
-
-input.composeField:nth-of-type(1) {
-	border-radius: 3px 3px 0 0;
-}
-
-textarea.composeField {
-	resize: none;
-	float: right;
-	width: 788px;
-	margin-top: -1px;
-	border-radius: 0 0 3px 3px;
-}
-
-.composeMessageSend{
-	width: 100%;
-	float: left;
-}
-
-.composeMessageSendButton{
-	width: 250px;
-	margin: 20px auto;
-}
-
-.composeMessageCancel{
+	font-size: 1.2em;
 	width: 100%;
 	text-align: center;
-	font-size: .9em;
+	padding: 10px 0px;
+	float: left;
 }
-
-
-*/

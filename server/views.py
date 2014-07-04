@@ -3,8 +3,7 @@ import stripe, boto, urlparse
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from controllers import *
-from datetime import datetime as dt
-from datetime import timedelta
+from datetime import datetime as dt, timedelta
 from flask import render_template, make_response, session, request, flash, redirect, send_from_directory
 from forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
@@ -16,7 +15,7 @@ from server.infrastructure.errors import *
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
 from pprint import pprint
-from sqlalchemy     import distinct, or_
+from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
 from StringIO import StringIO
@@ -44,41 +43,68 @@ def homepage():
 
 @ht_csrf.exempt
 @ht_server.route('/search',  methods=['GET', 'POST'])
+@ht_server.route('/search/<int:page>',  methods=['GET', 'POST'])
 @dbg_enterexit
-def render_search():
+def render_search(page = 1):
 	""" Provides ability to everyone to search for Heros.  """
 	bp = None
 
 	if 'uid' in session:
-		# get browsing profile; allows us to draw ht_header all pretty
-		bp  = Profile.query.filter_by(account=session['uid']).all()[0]
+		bp = Profile.get_by_uid(session['uid'])
 
 	# get all the search 'keywords'
 	keywords = request.values.get('search')
+	industry = request.values.get('industry_field', -1)
+	rateFrom = request.values.get('rate_from_field', 0)
+	rateTo =   request.values.get('rate_to_field', 9999)
+	if (rateFrom == ''): rateFrom = 0
+	if (rateTo == ''):	rateTo = 9999
+
 	form = SearchForm(request.form)
 	print "keywords = ", keywords
+	print "industry = ", industry
+
 
 	try:
-		results = db_session.query(Profile)
+		results = db_session.query(Profile) #.order_by(Profile.created)
+		results_industry = results #.all();
 		print 'there are', len(results.all()), 'profiles'
+		if (int(industry) != -1):
+			industry_str = Industry.industries[int(industry)]
+			results_industry = results.filter(Profile.industry == industry_str)
+			print 'results for industry', len(results_industry.all())
+			for profile in results_industry.all():
+				print 'search:' + str(industry_str), profile
+			
 
+		print 'find rate from ', rateFrom, '-', rateTo
+		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
+		print 'results for cost-between', len(results_rate.all())
+				
 		if (keywords is not None):
 			print "keywords = ", keywords
-			rc_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-			rc_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			results_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
+			print 'results for name', len(results_name.all())
+			results_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
+			print 'results for desc', len(results_desc.all())
 			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-			rc_inds = results.filter(Profile.industry.ilike("%"+keywords+"%"))
-			print len(rc_name.all()), len(rc_hdln.all()), len(rc_desc.all()), len(rc_inds.all())
+			print 'results for hdln', len(rc_hdln.all())
+
+			print len(results_name.all()), len(rc_hdln.all()), len(results_desc.all())
 	
 			# filter by location, use IP as a tell
-			rc_keys = rc_desc.union(rc_hdln).union(rc_name).union(rc_inds).all()
+			rc_keys = results_desc.union(rc_hdln).union(results_name) #.all() #paginate(page, 4, False)
+			#rc_keys = results_desc.union(rc_hdln).union(results_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
 		else:
-			rc_keys = results.all()
+			print 'returning all all'
+			rc_keys = results #.all() #(page, 4, False)
+
+		q_rc = rc_keys.intersect(results_rate).intersect(results_industry).order_by(Profile.created)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(rc_keys), heroes=rc_keys))
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(q_rc.all()), heroes=q_rc.all()))
 
 
 
@@ -115,74 +141,30 @@ def render_profile(usrmsg=None):
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
 
-
-	# alias for review searches.
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
-
 	try:
 		# complicated search queries can fail and lock up DB.
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
-		all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)								\
-								.filter(or_(Review.prof_reviewed == hp.prof_id, Review.prof_authored == hp.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)											\
-								.join(user, user.prof_id == Review.prof_authored)										\
-								.join(hero, hero.prof_id == Review.prof_reviewed).all();
+		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		hp_c_reviews = htdb_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
 
 	print 'images in portfolio:', len(portfolio)
-	for img in portfolio:
-		print img
+	for img in portfolio: print img
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	for r in all_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
 
-	print ''
-	print ''
-
-	print 'flter all reviews,', len(all_reviews), 'find me -- the hero -- being reviewed.'
-	hero_reviews = filter(lambda r: (r.Review.prof_reviewed == hp.prof_id), all_reviews)
-	map(lambda ar: display_reviews_of_hero(ar, hp.prof_id), hero_reviews)
-
-	print ''
-	print ''
-
-	print 'mapped Hero reviews = ', len (hero_reviews)
-	for r in hero_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
-
-
-	print ''
-	print ''
-
-	show_reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), hero_reviews)
-	print 'show reviews = ', len (show_reviews)
-	for r in show_reviews:
-		print r.user.prof_name, 'bought', r.hero.prof_name, ' on ', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score, '\t', r.Review.score_attr_time, '\t', r.Review.score_attr_comm
-
-	# TODO: rename NTS => proposal form; hardly used form this.  Used in ht_api_prop 
+	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
 	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
 
 
-
-
-def display_reviews_of_hero(r, hero_is):
-	if (hero_is == r.Review.prof_reviewed): 
-		#user it the reviewed, we should display all these reviews; image of the other bloke
-		print r.Review.prof_reviewed, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user',  r.user.prof_name
-		setattr(r, 'display', r.user) 
-	else:
-		print r.Review.prof_authored, 'matches hero (', r.hero.prof_id, ',', r.hero.prof_name ,') set display to user-x',  r.hero.prof_name
-		setattr(r, 'display', r.hero)
 
 
 
@@ -315,7 +297,6 @@ def linkedin_authorized(resp):
 	if (len(possible_accts) == 1):
 		# suggest they create a password if that's not done.
 		session['uid'] = possible_accts[0].userid
-		print 'calling render_dashboard'
 		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
 		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
 		return redirect('/dashboard')
@@ -398,48 +379,6 @@ def change_linkedin_query(uri, headers, body):
 	return uri, headers, body
 
 
-@ht_server.route('/signup/verify/<challengeHash>', methods=['GET'])
-@dbg_enterexit
-def signup_verify(challengeHash):
-	rc = None
-	# pass in email too... to verify
-	# grab info from request parameters
-	# 1) challengeHash
-	# 2) an email address
-	trace("Challenge hash is: " + challengeHash)
-	#trace(type(challengeHash))
-
-	#Page url, extract email 
-	url = urlparse.urlparse(request.url)
-	query = urlparse.parse_qs(url.query)
-
-	email  = query['email'][0]
-	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
-
-	if (len(accounts) != 1 or accounts[0].email != email):
-			trace('Hash and/or email didn\'t match.')
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('render_login', messages=msg))
-
-	try:
-		# update user's account.
-		hero_account = accounts[0]
-		hero_account.set_sec_question("")
-		hero_account.set_status(Account.USER_ACTIVE)
-		
-		db_session.commit()
-		send_welcome_email(email)
-	except Exception as e:
-		trace(str(e))
-		db_session.rollback()
-		# db failed?... let them in anyways.
-
-	# bind session cookie to this 1) Account and/or 2) this profile 
-	bp = Profile.query.filter_by(account=hero_account.userid).all()[0]
-	ht_bind_session(bp)
-	return make_response(redirect('/dashboard'))
-
-
 
 
 
@@ -449,15 +388,114 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+	hp_id = request.values.get('hp', None)
 	bp = Profile.get_by_uid(session.get('uid'))
 	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	print hp
+	ba = Account.get_by_uid(session.get('uid'))
+	if (ba.status == Account.USER_UNVERIFIED):
+		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
 	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
 
+
+
+
+@ht_server.route('/proposal/create', methods=['POST'])
+@req_authentication
+def ht_api_proposal_create():
+	user_message = 'Interesting'
+
+	try:
+		print 'ht_api_proposal_create'
+		proposal = ht_proposal_create(request.values, session['uid'])
+		if (proposal is not None): user_message = 'Successfully created proposal'
+	except Sanitized_Exception as se:
+		user_message = se.get_sanitized_msg()
+		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+	except Exception as e:
+		print type(e), e
+		return make_response(jsonify(usrmsg='Something bad'), 500)
+	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
+
+
+
+@ht_server.route('/proposal/accept', methods=['POST'])
+@req_authentication
+def ht_api_proposal_accept():
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+	if not form.validate_on_submit():
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=msg), 400
+
+	try:
+		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
+		print rc, msg
+	except Sanitized_Exception as se:
+		return jsonify(usrmsg=se.get_sanitized_msg()), 500
+	except Exception as e:
+		print str(e)
+		db_session.rollback()
+		jsonify(usrmsg=str(e)), 500
+	return make_response(redirect('/dashboard'))
+
+
+
+
+@ht_server.route('/proposal/reject', methods=['POST'])
+@req_authentication
+def ht_api_proposal_reject():
+	form = ProposalActionForm(request.form)
+	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	log_uevent(session['uid'], pstr)
+
+
+	if not form.validate_on_submit():
+		msg = "invalid form: " + str(form.errors)
+		log_uevent(session['uid'], msg) 
+		return jsonify(usrmsg=str(msg)), 504
+
+	try:
+		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
+	except NoProposalFound as npf:
+		print rc, msg
+		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
+	except StateTransitionError as ste:
+		db_session.rollback()
+		print ste, ste.get_sanitized_msg()
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
+	except DB_Error as ste:
+		db_session.rollback()
+		print ste
+		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
+	print rc, msg
+	return jsonify(usrmsg="Proposal Deleted"), 200
+
+
+
+
+
+@ht_server.route('/proposal/negotiate', methods=['POST'])
+@req_authentication
+def ht_api_proposal_negotiate():
+	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
+	#the_proposal.set_state(APPT_STATE_RESPONSE)
+	#the_proposal.prop_count = the_proposal.prop_count + 1
+	#the_proposal.prop_updated = dt.now()
+	return redirect('/notImplemented')
+
+
+	
 
 
 @ht_server.route('/appointment/cancel', methods=['POST'])
@@ -485,7 +523,7 @@ def ht_api_appt_cancel():
 	except StateTransitionError as ste:
 		print ste
 		db_session.rollback()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
+		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
 	except NoResourceFound as nre:
 		print nre
 		return jsonify(usrmsg=nre), 400
@@ -504,7 +542,7 @@ def ht_api_appt_cancel():
 @ht_server.route('/dashboard', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def render_dashboard(usrmsg=None, focus=None):
+def render_dashboard(usrmsg=None):
 	""" Provides Hero their personalized homepage.
 		- Show calendar with all upcoming appointments
 		- Show any statistics.
@@ -514,72 +552,25 @@ def render_dashboard(usrmsg=None, focus=None):
 	bp = Profile.get_by_uid(uid)
 	print 'profile.account = ', uid, bp
 
-	# number of appotintments (this week, next week).
-	# number of proposals (all)
-
-	#SQL Alchemy improve perf.
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	msg_from = aliased(Profile, name='msg_from')
-	msg_to	 = aliased(Profile, name='msg_to')
-	messages = [] 
+	unread_msgs = []
 
 	try:
-		appts_and_props = db_session.query(Proposal, user, hero)														\
-									.filter(or_(Proposal.prop_user == bp.prof_id, Proposal.prop_hero == bp.prof_id))	\
-									.join(user, user.prof_id == Proposal.prop_user)										\
-									.join(hero, hero.prof_id == Proposal.prop_hero).all();
-		messages = db_session.query(UserMessage, msg_from, msg_to)														\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
-							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+		(props, appts) = ht_get_active_meetings(bp)
+		unread_msgs = ht_get_unread_messages(bp)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 	
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
-	map(lambda anp: display_partner_proposal(anp, bp.prof_id), appts_and_props)
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), appts_and_props)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), appts_and_props)
-	print "proposals =", len(props), ", appts =", len(appts)
-	
-
-	#for x in props:
-	#	print 'prop: id=', x.Proposal.prop_uuid, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name
-	#for x in appts: #print 'now appts: '
-	#	print 'appt: id=', x.Proposal.prop_uuid, x.Proposal.prop_state, 'hero/sellr (', x.hero.prof_id, x.hero.prof_name, '); buyer = ', x.user.prof_name, '  ', 
-	
-	img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, profile_img=img, proposals=props, appointments=appts, messages=messages, errmsg=usrmsg))
-
-	
-
-def display_partner_proposal(p, user_is):
-	if (user_is == p.Proposal.prop_hero): 
-		#user it the hero, we should display all the 'user'
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_hero, ',', p.hero.prof_name ,') set display to user',  p.user.prof_name
-		setattr(p, 'display', p.user) 
-		setattr(p, 'sellr', True) 
-		setattr(p, 'buyer', False) 
-	else:
-		print p.Proposal.prop_uuid, 'matches hero (', p.Proposal.prop_user, ',', p.user.prof_name ,') set display to hero',  p.hero.prof_name
-		setattr(p, 'display', p.hero)
-		setattr(p, 'buyer', True) 
-		setattr(p, 'sellr', False) 
+	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
-def display_partner_message(p, user_is):
-	if (user_is == p.UserMessage.msg_to): 
-		#user it the hero, we should display all the 'user'
-		#print p.UserMessage.msg_id, 'matches recvr (', p.UserMessage.msg_to, ',', p.msg_to.prof_name ,') set display to sender ',  p.msg_from.prof_name
-		setattr(p, 'display', p.msg_from) 
-		setattr(p, 'left', p.msg_from)
-		setattr(p, 'right', p.msg_to)
-	else:
-		#print p.UserMessage.msg_id, 'matches sender (', p.UserMessage.msg_from, ',', p.msg_from.prof_name ,') set display to recvr ',  p.msg_to.prof_name
-		setattr(p, 'display', p.msg_to)
-		setattr(p, 'left', p.msg_to)
-		setattr(p, 'right', p.msg_from)
+
+
+def display_partner_message(msg, prof_id):
+	display_prof = (prof_id == msg.UserMessage.msg_to) and msg.msg_from or msg.msg_to
+	setattr(msg, 'display', display_prof)
+
 
 
 @ht_server.route('/upload', methods=['POST'])
@@ -649,10 +640,9 @@ def ht_api_send_message():
 		msg_to	= request.values.get('hp')
 		content	= request.values.get('msg')
 		parent	= request.values.get('msg_parent')
+		thread	= request.values.get('msg_thread')
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
-		foo	= request.values.get('foo')
-		thread	= None
 
 		print
 		print "/sendmsg - MESSAGE DETAILS"
@@ -660,29 +650,34 @@ def ht_api_send_message():
 		print 'message to ' + msg_to
 		print 'subject=', subject
 		print 'parent=', parent
+		print 'thread=', thread
 		print 'next=', next
-		print 'foo=', foo
+
+		domAction = None
 
 		if (parent):
-			parent_msg	= UserMessage.get_by_msg_id(parent) 
-			thread	= parent_msg.msg_thread
-			msg_to	= parent_msg.msg_from
-			
-		message = UserMessage(msg_to, msg_from, content, subject=subject, thread=thread, parent=parent)
-		
-		print 'full message=', message
+			# print ('get thread leader', thread)
+			msg_thread_leader = UserMessage.get_by_msg_id(thread)
+			#if (msg_thread_leader.msg_to != bp.prof_id or msg_thread_leader.msg_from != bp.prof_id):
+				# prevent active tampering.
+				#return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
+
+			msg_to = (msg_thread_leader.msg_to != bp.prof_id) and msg_thread_leader.msg_to or msg_thread_leader.msg_from
+
+			# set thread updated flag and clear archive flags for both users.
+			archive_flags = (MSG_STATE_RECV_ARCHIVE | MSG_STATE_SEND_ARCHIVE)
+			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags | MSG_STATE_THRD_UPDATED
+			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flags)
+			db_session.add(msg_thread_leader)
+
+		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
 		
 		db_session.add(message)
 		db_session.commit()
 
-		#todo: send email.
 		hp = Profile.get_by_prof_id(msg_to)
 		email_user_to_user_message(bp, hp, subject, thread, message)
-		print "success, saved msg"
-		print
-	
-		thisresponse = make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
-		return thisresponse
+		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
 	except DB_Error as dbe:
 		print dbe
@@ -697,9 +692,6 @@ def ht_api_send_message():
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 
-	
-
-
 
 
 @ht_server.route('/edit', methods=['GET', 'POST'])
@@ -710,7 +702,7 @@ def render_edit():
 
 	print 'enter edit'
 	uid = session['uid']
-	bp  = Profile.query.filter_by(account=uid).all()[0]
+	bp	= Profile.get_by_uid(uid)
 
 	form = ProfileForm(request.form)
 	if form.validate_on_submit():
@@ -795,106 +787,7 @@ def sanitize_render_errors(err):
 
 
 
-@ht_server.route('/proposal/create', methods=['POST'])
-@req_authentication
-def ht_api_proposal_create():
-	print 'ht_api_proposal_create'
 
-	prop_s_date = request.values.get('prop_s_date')
-	prop_s_hour = request.values.get('prop_s_hour')
-	prop_f_date = request.values.get('prop_f_date')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_f_hour = request.values.get('prop_f_hour')
-	prop_hero = request.values.get('prop_hero')
-
-	#dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
-	#print dt_start
-
-	try:
-		(proposal, msg) = ht_proposal_create(request.values, session['uid'])
-	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), se.httpRC
-	usrmsg = "success"
-	return render_dashboard(usrmsg=usrmsg)
-
-
-
-@ht_server.route('/proposal/accept', methods=['POST'])
-@req_authentication
-def ht_api_proposal_accept():
-	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=msg), 503
-
-	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
-	except Sanitized_Exception as se:
-		return jsonify(usrmsg=se.sanitized_msg()), 500
-	except Exception as e:
-		print str(e)
-		db_session.rollback()
-		jsonify(usrmsg=str(e)), 500
-	#return render_dashboard(usrmsg=msg)
-	return make_response(redirect('/dashboard'))
-
-
-
-
-@ht_server.route('/proposal/reject', methods=['POST'])
-@req_authentication
-def ht_api_proposal_reject():
-	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
-
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=str(msg)), 504
-
-	try:
-		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
-	except NoProposalFound as npf:
-		print rc, msg
-		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except StateTransitionError as ste:
-		db_session.rollback()
-		print ste, ste.sanitized_msg()
-		return jsonify(usrmsg=ste.sanitized_msg()), 500
-	except DB_Error as ste:
-		db_session.rollback()
-		print ste
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
-	except Exception as e:
-		print e
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
-	print rc, msg
-	return jsonify(usrmsg="Proposal Deleted"), 200
-
-
-
-
-
-
-@ht_server.route('/proposal/negotiate', methods=['POST'])
-@req_authentication
-def ht_api_proposal_negotiate():
-	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
-	#the_proposal.prop_count = the_proposal.prop_count + 1
-	#the_proposal.prop_updated = dt.now()
-	return redirect('/notImplemented')
-
-
-	
 
 
 
@@ -903,7 +796,7 @@ def ht_api_proposal_negotiate():
 @ht_server.route('/settings', methods=['GET', 'POST'])
 @dbg_enterexit
 @req_authentication
-def settings():
+def render_settings():
 	""" Provides users the ability to modify their settings.
 		- detect HT Session info.  Provide modified info.
 	"""
@@ -914,11 +807,10 @@ def settings():
 
 	card = 'Null'
 
+
 	errmsg = None
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
-		print("settings form validated")
-
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
@@ -981,17 +873,26 @@ def settings():
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
-		pass
+		msg = request.values.get('messages')
+		if (msg is not None): errmsg = msg
 	else:
 		print "form isnt' valid"
 		print form.errors
 		errmsg = "Passwords must match."
 
 
+	email_unver = False
+	if (ba.status == Account.USER_UNVERIFIED):
+		print bp.prof_name, ' email is unverified'
+		email_unver = True
+
 	form.oauth_stripe.data     = card
 	form.set_input_email.data  = ba.email
+	nexturl = "/settings"
+	if (request.values.get('nexturl') is not None):
+		nexturl = request.values.get('nexturl')
 
-	return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
+	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
 
 def error_sanitize(message):
@@ -1006,8 +907,7 @@ def error_sanitize(message):
 @req_authentication
 def settings_verify_stripe():
 	uid = session['uid']
-	bp   = Profile.query.filter_by(account=uid).all()[0]
-	acct = Account.query.filter_by(userid=uid).all()[0]
+	bp = Profile.get_by_uid(uid)
 
 	print "verify -- in oauth_callback, get auth code/token"
 	error = request.args.get('error', "None")
@@ -1061,26 +961,26 @@ def settings_verify_stripe():
 		print "getToken Failed", edesc
 		return "auth failed %s" % edesc, 500
 
-	stripeAccount = Oauth.query.filter_by(account=uid).all()
-	if len(stripeAccount) == 1:
-		stripeAccount = stripeAccount[0]
-		if (stripeAccount.stripe != rc['stripe_user_id']):
-			stripeAccount.stripe  = rc['stripe_user_id']			# stripe ID.
+	oauth_accounts = Oauth.query.filter_by(ht_account=uid).all()
+	if len(oauth_accounts) == 1:
+		oauth_stripe = oauth_accounts[0]
+		if (oauth_stripe.oa_account != rc['stripe_user_id']):
+			oauth_stripe.oa_account  = rc['stripe_user_id']
 			print 'changing stripe ID'
 
-		if (stripeAccount.token  != rc['access_token']):
-			stripeAccount.token   = rc['access_token']
+		if (oauth_stripe.oa_token != rc['access_token']):
+			oauth_stripe.oa_token  = rc['access_token']
 			print 'changing user-access token, used to deposite into their account'
 
-		if (stripeAccount.pubkey != pkey):
-			stripeAccount.pubkey  = pkey
+		if (oauth_stripe.oa_optdata1 != pkey):
+			oauth_stripe.oa_optdata1  = pkey
 			print 'changing stripe pubkey'
 	else:
-		stripeAccount = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data3=rc['stripe_publishable_key'])
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
 
 	try:
 		print "try creating oauth_row"
-		db_session.add(stripeAccount)
+		db_session.add(oauth_stripe)
 		db_session.commit()
 		return make_response(redirect('/settings'))
 	except Exception as e:
@@ -1094,10 +994,9 @@ def settings_verify_stripe():
 
 @ht_server.route('/terms', methods=['GET'])
 def tos():
-	bp = False
+	bp = None
 	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
+		bp = Profile.get_by_uid(session['uid'])
 
 	return make_response(render_template('tos.html', title = '- Terms and Conditions', bp=bp))
 
@@ -1110,8 +1009,8 @@ def render_review_page(appt_id, review_id):
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		print review_id, ' = id of Review'
 		print appt_id, ' = id of Appt'
+		print review_id, ' = id of Review'
 		the_review = Review.retreive_by_id(review_id)[0] 
 		print the_review
 
@@ -1253,9 +1152,87 @@ def serviceFailure(pg, error):
 	return render_template('500.html'), 500
 
 
-@ht_server.route("/recovery", methods=['GET', 'POST'])
-def recovery():
-	#mycssfiles = ["static/css/dashboard_lights.css", "static/css/this_is_pretty_cool.css"]
+linkedin.pre_request = change_linkedin_query
+
+
+
+@ht_server.route("/email/<operation>/<data>", methods=['GET','POST'])
+def ht_email_operations(operation, data):
+	print operation, data
+	if (operation == 'verify'):
+		email = request.values.get('email_addr')
+		nexturl = request.values.get('next_url')
+		print 'verify: data  = ', data, 'email =', email
+		return ht_email_verify(email, data, nexturl)
+	elif (operation == 'request-response'):
+		nexturl = request.values.get('nexturl')
+		return make_response(render_template('verify_email.html', nexturl=nexturl))
+	elif (operation == 'request-verification') and ('uid' in session):
+
+		bp = Profile.get_by_uid(session.get('uid'))
+		ba = Account.get_by_uid(session.get('uid'))
+		email_set = set([ba.email, request.values.get('email_addr')])
+		print email_set
+		ht_send_verification_to_list(ba, bp, email_set)
+		return jsonify(rc=200), 200
+	return pageNotFound('Not sure what you were looking for')
+
+
+
+
+def ht_send_verification_to_list(account, profile, email_set):
+	print 'ht_send_verification_to_list'
+	challenge_hash = str(uuid.uuid4())
+	account.set_sec_question(challenge_hash)
+
+	try:
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	for email in email_set:
+		print 'sending email to', email
+		send_verification_email(email, profile.prof_name, challenge_hash)
+
+
+
+def ht_email_verify(email, challengeHash, nexturl=None):
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+
+	if (len(accounts) != 1 or accounts[0].email != email):
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return redirect(url_for('render_login', messages=msg))
+
+	try:
+		print 'update user account'
+		# update user's account.
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
+
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	bp = Profile.get_by_uid(account.userid)
+	send_welcome_email(email, bp.prof_name)
+	ht_bind_session(bp)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
+	return make_response(redirect('/dashboard'))
+
+
+
+
+@ht_server.route("/password/recover", methods=['GET', 'POST'])
+def ht_password_recover():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
 	if request.method == 'POST':
@@ -1263,13 +1240,11 @@ def recovery():
 		usrmsg = ht_password_recovery(form.rec_input_email.data)
 	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
-linkedin.pre_request = change_linkedin_query
 
 
 
-@ht_server.route('/newpassword/<challengeHash>', methods=['GET', 'POST'])
-def newpassword(challengeHash):
-
+@ht_server.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
+def ht_password_reset(challengeHash):
 	form = NewPasswordForm(request.form)
 
 	#Page url
@@ -1367,118 +1342,243 @@ def render_edit_portfolio_page():
 
 
 
-@req_authentication
-@ht_server.route("/inbox", methods=['GET', 'POST'])
-def render_inbox_page():
-	bp = Profile.get_by_uid(session['uid'])
 
-	msg_from = aliased(Profile, name='msg_from')
-	msg_to	 = aliased(Profile, name='msg_to')
-	msg_threads = []
+@req_authentication
+@ht_server.route("/disable_reviews", methods=['GET', 'POST'])
+def testing_pika_celery_async():
+	bp = Profile.get_by_uid(session['uid'])
+	five_min = dt.utcnow() + timedelta(minutes=5);
+	disable_reviews.apply_async(args=[10], eta=five_min)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
+
+
+
+@req_authentication
+@ht_server.route("/enable_reviews", methods=['GET', 'POST'])
+def testing_enable_reviews():
+	bp = Profile.get_by_uid(session['uid'])
+	prop_uuid = request.values.get('prop');
+	proposal=Proposal.get_by_id(prop_uuid)
+	enable_reviews(proposal)
+	return make_response(jsonify(usrmsg="I'll try."), 200)
+
+
+
+@req_authentication
+@ht_server.route("/get_threads", methods=['GET', 'POST'])
+def get_threads():
+	bp = Profile.get_by_uid(session['uid'])
+	threads = []
 
 	try:
-		msg_threads = db_session.query(UserMessage, msg_from, msg_to)													\
-							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))			\
-							 .filter(UserMessage.msg_parent == None)													\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)									\
-							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "msg_threads =", len(msg_threads)
+		threads = db_session.query(UserMessage).filter(UserMessage.msg_parent == None)	\
+												.filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id)).all();
+
+		json_inbox = []
+		json_archive = []
+		json_messages = [msg.serialize for msg in threads]
+		for msg in json_messages:
+			profile_to = Profile.get_by_prof_id(msg['msg_to'])
+			profile_from = Profile.get_by_prof_id(msg['msg_from'])
+			msg['msg_to'] = profile_to.serialize
+			msg['msg_from'] = profile_from.serialize
+			if (bp == profile_to):
+				mbox = json_archive if (msg['msg_flags'] & MSG_STATE_RECV_ARCHIVE) else json_inbox
+			elif (bp == profile_from):
+				mbox = json_archive if (msg['msg_flags'] & MSG_STATE_SEND_ARCHIVE) else json_inbox
+			else:
+				print 'wtf'
+				continue
+			mbox.append(msg)
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	inbox_thrds = filter(lambda t: (not t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	archive_thrds = filter(lambda t: (t.UserMessage.msg_flags & MSG_STATE_ARCHIVE), msg_threads)
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), msg_threads)
-	return make_response(render_template('inbox.html', bp=bp, unread=inbox_thrds, archived=archive_thrds))
+	return jsonify(inbox=json_inbox, archive=json_archive, bp=bp.prof_id)
+
+
+
+@ht_server.route("/inbox", methods=['GET', 'POST'])
+@req_authentication
+def render_inbox_page():
+	bp = Profile.get_by_uid(session['uid'])
+	msg_from = aliased(Profile, name='msg_from')
+	msg_to	 = aliased(Profile, name='msg_to')
+
+	try:
+		messages = db_session.query(UserMessage, msg_from, msg_to)													\
+							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
+							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
+
+		# get the list of all the comp_threads
+		c_threads = filter(lambda  cmsg: (cmsg.UserMessage.msg_parent == None), messages)
+		map(lambda cmsg: display_lastmsg_timestamps(cmsg, bp.prof_id, messages), c_threads)
+		#for msg in c_threads: print 'MSG_Zero = ', msg.UserMessage
+
+	except Exception as e:
+		print e
+		db_session.rollback()
+
+	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, c_threads)
+	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
+
+
+
+def display_lastmsg_timestamps(msg, prof_id, all_messages):
+	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
+	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
+	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
+	#for msg in thread_msgs:
+	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
+	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
+	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
+	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
+
 
 
 
 @req_authentication
 @ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 def ht_api_get_message_thread(msg_thread):
-	print 'get msg_thread: ', msg_thread
+	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
 
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
-	messages = []
+	thread_messages = []
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)							\
+		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
 							 .filter(UserMessage.msg_thread == msg_thread)					\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
-		print "messages =", len(messages)
+		print "number of thread_messages", len(thread_messages)
 	except Exception as e:
 		print e
 
-	if (len(messages) > 0):
-		subject = messages[0].UserMessage.msg_subject
-		if ((messages[0].msg_from != bp) and (messages[0].msg_to != bp)):
+	msg_zero = filter(lambda msg: (msg.UserMessage.msg_id == msg.UserMessage.msg_thread), thread_messages)[0]
+	num_thread_messages = len(thread_messages)
+
+	if (num_thread_messages > 0):
+		if (bp.prof_id == msg_zero.UserMessage.msg_from):
+			thread_partner_id = msg_zero.UserMessage.msg_to
+		else:
+			thread_partner_id = msg_zero.UserMessage.msg_from
+
+		thread_partner = Profile.get_by_prof_id(thread_partner_id)
+			
+		subject = msg_zero.UserMessage.msg_subject
+		
+		if ((msg_zero.msg_from != bp) and (msg_zero.msg_to != bp)):
 			print 'user doesn\'t have access'
-			messages = []
+			thread_messages = []
 
 	try:
 		updated_messages = 0
-		for msg in messages:
-			if (msg.UserMessage.msg_opened == None):
+		for msg in thread_messages:
+			if (bp.prof_id == msg.UserMessage.msg_to and msg.UserMessage.msg_opened == None):
 				print 'user message never opened before'
 				updated_messages = updated_messages + 1
 				msg.UserMessage.msg_opened = dt.utcnow();
+				msg.UserMessage.msg_flags = (msg.UserMessage.msg_flags | MSG_STATE_LASTMSG_READ)
 				db_session.add(msg.UserMessage)
 		if (updated_messages > 0):
-			print 'committing messages'
+			print 'committing ' + str(updated_messages) + ' messages'
 			db_session.commit()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
+	thread_timestamp = msg_zero.UserMessage.msg_created
 
-	map(lambda ptr: display_partner_message(ptr, bp.prof_id), messages)
-	return make_response(render_template('message.html', bp=bp, msg_thread=messages, subject=subject))
+	map(lambda ptr: display_partner_message(ptr, bp.prof_id), thread_messages)
+	return make_response(render_template('message.html', bp=bp, num_thread_messages=num_thread_messages, msg_thread_messages=thread_messages, msg_thread=msg_thread, subject=subject, thread_partner=thread_partner, thread_timestamp=thread_timestamp, archived=bool(thread_messages[0].UserMessage.archived(bp.prof_id))))
+
+
 
 
 @req_authentication
 @ht_server.route("/message", methods=['GET', 'POST'])
 def render_message_page():
-	msg_id = request.values.get('message')
+	msg_thread_id = request.values.get('msg_thread_id')
 	action = request.values.get('action')
-	print 'message() ', msg_id, action
+
+	print 'message_thread() ', msg_thread_id, action
 
 	if (action == None):
-		return ht_api_get_message_thread(msg_id)
+		return ht_api_get_message_thread(msg_thread_id)
+	
 	elif (action == "archive"):
-		print 'archiving msg_thread' + str(msg_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			msg_thread = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_id).all();
-			print "msg_thread ", msg_id, len(msg_thread)
+			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
 
-			if ((len(msg_thread) > 0) and (msg_thread[0].msg_from != bp.prof_id) and (msg_thread[0].msg_to != bp.prof_id)):
+			if ((len(thread_messages) > 0) and (thread_msg_zero.msg_from != bp.prof_id) and (thread_msg_zero.msg_to != bp.prof_id)):
 				print 'user doesn\'t have access'
-				msg_thread = []
+				#print 'user', bp.prof_id, 'msg_from == ', thread_msg_zero.msg_from, (thread_msg_zero.msg_from != bp.prof_id)
+				#print 'user', bp.prof_id, 'msg_to   == ', thread_msg_zero.msg_to  , (thread_msg_zero.msg_to   != bp.prof_id)
+				thread_messages = []
 
+			archive_flag = (thread_msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
 			updated_messages = 0
-			for msg in msg_thread:
-				msg.msg_flags = msg.msg_flags | MSG_STATE_ARCHIVE
-				db_session.add(msg)
+			for msg in thread_messages:
+				msg.msg_flags = (msg.msg_flags | archive_flag)
 				updated_messages = updated_messages + 1
+				db_session.add(msg)
 
 			if (updated_messages > 0):
-				print '\"archiving\"' + str(updated_messages) + " msgs"
+				print '\"archiving\" ' + str(updated_messages) + " msgs"
 				db_session.commit()
 
-			return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 200)
+			return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 200)
 
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
-		return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 500)
+		return make_response(jsonify(usrmsg="Message thread failed.", next='/inbox'), 500)
+	
+	elif (action == "restore"):
+		print 'restoring msg_thread' + str(msg_thread_id)
+		bp = Profile.get_by_uid(session['uid'])
+		try:
+			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
+			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
+
+			if ((len(thread_messages) > 0) and (thread_msg_zero.msg_from != bp.prof_id) and (thread_msg_zero.msg_to != bp.prof_id)):
+				print 'user doesn\'t have access'
+				print 'user', bp.prof_id, 'msg_from == ', thread_msg_zero.msg_from, (thread_msg_zero.msg_from != bp.prof_id)
+				print 'user', bp.prof_id, 'msg_to   == ', thread_msg_zero.msg_to  , (thread_msg_zero.msg_to   != bp.prof_id)
+				thread_messages = []
+
+			archive_flag = (thread_msg_zero.msg_to == bp.prof_id) and MSG_STATE_RECV_ARCHIVE or MSG_STATE_SEND_ARCHIVE
+			updated_messages = 0
+
+			for msg in thread_messages:
+				msg.msg_flags = msg.msg_flags & ~archive_flag
+				db_session.add(msg)
+				updated_messages = updated_messages + 1
+
+			if (updated_messages > 0):
+				print '\"restoring\" ' + str(updated_messages) + " msgs"
+				db_session.commit()
+
+			return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 200)
+
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+
+		return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 500)	
 
 	# find correct 400 response
-	return make_response(jsonify(usrmsg="Message archived.", next='/inbox'), 400)
-
+	return make_response(jsonify(usrmsg="These are not the message you are looking for.", next='/inbox'), 400)
 
 
 
@@ -1487,15 +1587,10 @@ def render_message_page():
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
+	hp = None
 	next = request.values.get('next')
 
-	print "next: ", next
-
-	if (hid is not None):
-		hp = Profile.get_by_prof_id(hid)
-	else:
-		hp = None
-
+	if (hid is not None): hp = Profile.get_by_prof_id(hid)
 	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
 
 
@@ -1553,13 +1648,4 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
-
-@ht_server.route("/about", methods=['GET'])
-def render_about_page():
-	bp = False
-	if 'uid' in session:
-		uid = session['uid']
-		bp  = Profile.query.filter_by(account=uid).all()[0]
-
-	return make_response(render_template('about.html', title = '- About Us', bp=bp))
 

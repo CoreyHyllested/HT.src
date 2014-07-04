@@ -75,11 +75,15 @@ IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
 IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
 
 
-MSG_FLAG_READ	 = 0
-MSG_FLAG_ARCHIVE = 1
+MSG_FLAG_LASTMSG_READ = 0
+MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
+MSG_FLAG_RECV_ARCHIVE = 2		#The original-message receiver archived thread
+MSG_FLAG_THRD_UPDATED = 3		#A message was responded too.
 
-MSG_STATE_READ		= (0x1 << MSG_FLAG_READ)
-MSG_STATE_ARCHIVE	= (0x1 << MSG_FLAG_ARCHIVE)
+MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)	#1
+MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)	#2
+MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
+MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -277,7 +281,7 @@ class Oauth(Base):
 	@staticmethod
 	def get_stripe_by_uid(uid):
 		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoOauthFound(uid, OAUTH_STRIPE)
+		if (len(stripe_custs) != 1): raise NoResourceFound('Oauth-Stripe', uid)
 		return stripe_custs[0]
 
 
@@ -316,30 +320,44 @@ class Profile(Base):
 		self.prof_name	= name
 		self.account	= acct
 
+
 	def __repr__ (self):
 		tmp_headline = self.headline
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
 		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
 
+
 	@staticmethod
 	def get_by_prof_id(profile_id):
 		profiles = Profile.query.filter_by(prof_id=profile_id).all()
-		print "len = ", len(profiles), profile_id
 		if len(profiles) != 1: 
 			raise NoProfileFound(profile_id, 'Sorry, profile not found')
 		return profiles[0]
 
+
 	@staticmethod
 	def get_by_uid(uid):
 		profiles = Profile.query.filter_by(account=uid).all()
-		print "len = ", len(profiles), uid
 		if len(profiles) != 1: 
 			raise NoProfileFound(uid, 'Sorry, profile not found')
 		return profiles[0]
 
 
-		
+	@property
+	def serialize(self):
+		return {
+			'account'	: str(self.account),
+			'prof_id'	: str(self.prof_id),
+			'prof_name'	: str(self.prof_name),
+			'prof_img'	: str(self.prof_img),
+			'prof_bio'	: str(self.prof_bio),
+			'prof_rate'	: str(self.prof_rate),
+			'headline'	: str(self.headline),
+			'industry'	: str(self.industry),
+		}
+
+
 
 class Proposal(Base):
 	__tablename__ = "proposal"
@@ -405,9 +423,9 @@ class Proposal(Base):
 
 
 	@staticmethod
-	def get_by_id(prop_id, location=None):
-		proposals = Proposal.query.filter_by(prop_uuid=prop_id).all()
-		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_id)
+	def get_by_id(prop_uuid):
+		proposals = Proposal.query.filter_by(prop_uuid=prop_uuid).all()
+		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_uuid)
 		return proposals[0]
 	
 
@@ -527,6 +545,7 @@ class Industry(Base):
 	__tablename__ = "industry"
 	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
+	enumInd.insert(0, (-1, 'All Industries'))
 
 	id   = Column(Integer, primary_key = True)
 	name = Column(String(80), nullable = False, unique=True)
@@ -585,21 +604,47 @@ class UserMessage(Base):
 			parent = None
 			if (self.msg_subject is None): raise Exception('first msg needs subject')
 		else:
-			if (parent == None): raise Exception('not valid threading')
-			self.msg_subject = None
+			# thread is not None, parent must exist; set flags properly
+			if (parent == None): raise Exception('not valid threading')	
+			self.msg_flags = MSG_STATE_THRD_UPDATED
 
 		self.msg_thread	= thread
 		self.msg_parent	= parent
 
 	def __repr__(self):
 		content = self.msg_content[:20]
-		return '<umsg: %r %r<=>%r [%r]>' % (self.msg_id, self.msg_to, self.msg_from, content) 
+		subject = self.msg_subject[:15]
+		ts_open = self.msg_opened.strftime('%b %d %I:%M') if self.msg_opened is not None else str('Unopened')
+		return '<umsg %r|%r\t%r\t%r\t%r\t%r\t%r>' % (self.msg_id, self.msg_thread, self.msg_parent, self.msg_flags, ts_open, self.msg_from, subject)
+
 
 	@staticmethod
 	def get_by_msg_id(uid):
 		msgs = UserMessage.query.filter_by(msg_id=uid).all()
 		if len(msgs) != 1: raise NoResourceFound('UserMessage', uid)
 		return msgs[0]
+
+
+	@property
+	def serialize(self):
+		return {
+			'msg_id'		: str(self.msg_id),
+			'msg_to'		: self.msg_to,
+			'msg_from'		: self.msg_from,
+			'msg_flags'		: self.msg_flags,
+			'msg_subject'	: str(self.msg_subject),
+			'msg_content'	: str(self.msg_content),
+			'msg_parent'	: str(self.msg_parent),
+			'msg_thread'	: str(self.msg_thread),
+		}
+
+
+	def archived(self, profile_id):
+		if (profile_id == self.msg_to):		return (self.msg_flags & MSG_STATE_RECV_ARCHIVE)
+		if (profile_id == self.msg_from):	return (self.msg_flags & MSG_STATE_SEND_ARCHIVE)
+		raise Exception('profile_id(%s) does not match msg(%s) TO or FROM' % (profile_id, self.msg_id))
+		
+
 
 
 

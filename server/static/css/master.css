@@ -50,6 +50,19 @@ h3 {
 	clear: both;
 }
 
+.debug {
+	font-size: .8em;
+	color: gray;
+	line-height: 1em;
+}
+
+.success{
+	color: green;
+}
+
+.error{
+	color: red;
+}
 
 /* Page Wrappers */
 
@@ -103,10 +116,24 @@ h3 {
 
 /* LINKS */
 
-a:active {color: #29abe1;}
-a:link {color: #29abe1; text-decoration: none}
-a:visited {color: #29abe1;}
+a {
+	color: #29abe1; 
+	text-decoration: none;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;	
+}
+a:hover {
+	color: #007cb3;
+}
 
+a.blend {
+	color: inherit; 
+}
+a.blend:hover {
+	color: #007cb3;
+}
 
 /* FORMS */
 

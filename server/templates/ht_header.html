@@ -174,14 +174,13 @@
 			<div class="headerContentWrapper">
 
 				<!-- HEADER LOGO -->
-
 				<div class="headerLogo">
 					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
 					{% if bp %}
-						<a href="/dashboard"><img src="static/img/logo.svg" class="headerLogoImg"></a>
+						<a href="/dashboard"><img src="/static/img/logo.svg" class="headerLogoImg"></a>
 
 					{% else %}
-						<a href="/"><img src="static/img/logo.svg" class="headerLogoImg"></a>
+						<a href="/"><img src="/static/img/logo.svg" class="headerLogoImg"></a>
 					{% endif %}
 				</div>
 				<div class="headerSearchBar">
@@ -242,6 +241,7 @@
 		<div class="footerContentWrapper">
 			<div class="footerMenu">
 				<ul>
+					<li><a href="/about">About</a> |</li>
 					<li><a href="/terms">Terms &amp; Privacy</a> |</li>
 					<li><a href="mailto:team@herotime.co">Contact</a></li>
 				</ul>

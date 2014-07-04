@@ -9,12 +9,36 @@ from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from pprint import pprint as pp
-import json, smtplib
+import json, smtplib, urllib
 import stripe
 
 
-def email_user_to_user_message(sender_prof, receiver_prof, subject, thread, message):
-	print 'sending an actual goddamned email'
+def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, message):
+	print 'email_user_to_user_message'
+	try:
+		print 'get recvr email'
+		recv_account = Account.get_by_uid(recv_prof.account)
+		send_account = Account.get_by_uid(send_prof.account)
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	if (message.msg_flags & MSG_STATE_THRD_UPDATED):
+		msg_subject = msg_subject + " (updated)"
+
+	# create email body
+	msg_html = '<p>' + str(message.msg_content) + '</p>'
+	msg_to_recvr_html = '<p>From ' + send_prof.prof_name + ':</p>' + msg_html
+	msg_to_sendr_html = '<p>Sent to ' + recv_prof.prof_name + '</p>' + msg_html
+
+	msg_to_recvr = create_msg(msg_subject, recv_account.email, recv_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_recvr.attach(MIMEText(msg_to_recvr_html, 'html', 'UTF-8'))
+	ht_send_email(recv_account.email, msg_to_recvr)
+
+	msg_to_sendr = create_msg(msg_subject, send_account.email, send_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_sendr.attach(MIMEText(msg_to_sendr_html, 'html', 'UTF-8'))
+	ht_send_email(send_account.email, msg_to_sendr)
+
 
 
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
@@ -28,7 +52,7 @@ def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_i
 
 	msg = create_msg(msg_subject, buyer_email, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_email, msg) 
+	ht_send_email(buyer_email, msg)
 
 
 
@@ -49,26 +73,26 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 
 	msg = create_msg(msg_subject, hero_email, hero_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(hero_email, msg) 
+	ht_send_email(hero_email, msg)
 
 
 
 @mngr.task
-def send_verification_email(toEmail, uid, challenge_hash):
-	url  = 'https://herotime.co/signup/verify/' + str(challenge_hash) + "?email="+str(toEmail)
-	msg_text = "Thank you for creating a HeroTime account. Click <a href=\"" + str(url) + "\">here</a> to verify your email."
-	msg_html = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
+def send_verification_email(user_email, user_name, challenge_hash):
+	url  = 'https://herotime.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	msg_html = "Thank you for creating a HeroTime account. <a href=\"" + str(url) + "\">Verify your email address.</a><br>"  + str(challenge_hash)
+	msg_text = "Thank you for creating a HeroTime account. Go to " + str(url) + " to verify your email."
 
-	msg = create_msg('Password Verification', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
+	msg = create_msg('Password Verification', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(toEmail, msg) 
+	ht_send_email(user_email, msg)
 
 
 
 @mngr.task
 def send_recovery_email(toEmail, challenge_hash):
-	url = 'https://herotime.co/newpassword/' + str(challenge_hash) + "?email=" + str(toEmail)
+	url = 'https://herotime.co/password/reset/' + str(challenge_hash) + "?email=" + str(toEmail)
 	msg_text = "Go to " + url + " to recover your HeroTime password."
 	msg_html = "Click <a href=\"" + url + "\">here</a> to recover your HeroTime password."
 
@@ -80,14 +104,14 @@ def send_recovery_email(toEmail, challenge_hash):
 
 
 @mngr.task
-def send_welcome_email(toEmail):
+def send_welcome_email(user_email, user_name):
 	msg_text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
-	msg_html = """\n<html><head></head><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
+	msg_html = """<html><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
 
-	msg = create_msg('Welcome to HeroTime', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
+	msg = create_msg('Welcome to HeroTime', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(email_addr, msg)
+	ht_send_email(user_email, msg)
 
 
 
@@ -131,19 +155,58 @@ def send_proposal_reject_emails(the_proposal):
 
 
 
-@mngr.task
-def send_appt_emails(hero_email_addr, buyer_email_addr, appt):
-	print 'sending appt emails@ ' + appt.ts_begin.strftime('%A, %b %d, %Y -- %H:%M %p')
-	#TODO #CAH grab the profile names (see above, get_proposal_email_info)
-	hero_msg_html = "Hey, Hero.  You have your cape and cowl.  You have an appointment on %s. was accepted." % (appt)
-	hero_msg = create_msg('HeroTime appointment confirmation', hero_email_addr, hero_email_addr, 'noreply@herotime.co', u'HeroTime Notifications')
-	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
-	ht_send_email(hero_email_addr, hero_msg)
 
-	buyer_msg_html = "Congrats.  You have an appointment setup on %s. was accepted." % (appt)
-	buyer_msg = create_msg('HeroTime appointment confirmation', buyer_email_addr, buyer_email_addr, 'noreply@herotime.co', u'HeroTime Notifications')
-	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
-	ht_send_email(buyer_email_addr, buyer_msg)
+@mngr.task
+def ht_send_reminder_email(user_email, user_name, the_proposal):
+	print 'sending appointment reminder emails now for ', the_proposal
+
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + str(the_proposal) + "is about to begin.</p>"
+	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(user_email, msg)
+
+
+
+
+@mngr.task
+def send_appt_emails(the_proposal):
+
+	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
+	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
+
+	sellr_html = "<p>IMG_LOGO</p><br>"																					\
+				+"<p>Fantastic!<br>You accepted " + sellr_name + "'s proposal.</p>"										\
+				+"<p>Here are the details:<br>"																			\
+				+"Location: " + the_proposal.prop_place + "<br>"														\
+				+"Description: " + the_proposal.prop_desc + "<br>"														\
+				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
+				+"</p>"																									\
+				+"<p>We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
+				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"			\
+				+"</p>"																									\
+				+"<p>FOOTER.  Sent by Insprite. - California, USA</p>"
+
+	sellr_msg = create_msg('You accepted a proposal', sellr_addr, sellr_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+	ht_send_email(sellr_addr, sellr_msg)
+
+	buyer_html = "<p>IMG_LOGO</p><br>"	\
+				+"<p>Ain't Life Grand?<br>Meeting's on! " + sellr_name + " accepted your proposal.</p>"	\
+				+"<p>Check out the details:<br>"	\
+				+"Location: " + the_proposal.prop_place + "<br>"	\
+				+"Description: " + the_proposal.prop_desc + "<br>"	\
+				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
+				+"</p>"	\
+				+"<p>Need to edit, manage, or *gasp* cancel your appointment?  Head to your <a href=\'https://127.0.0.1:5000/dashboard\'>dashboard</a>"	\
+				+"We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
+				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"	\
+				+"</p>"	\
+				+"<p>FOOTER.  Sent by Insprite. - California, USA</p>"	\
+				+"<p>UNSUBSCRIBE.  SOCIAL PLUGINS.</p>"
+
+	buyer_msg = create_msg(str(sellr_name) + ' Accepted Your Proposal', buyer_addr, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
+	buyer_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+	ht_send_email(buyer_addr, buyer_msg)
 
 
 

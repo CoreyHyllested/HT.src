@@ -74,7 +74,7 @@ c) 1000px - ... (desktops)
 /* Offers */
 
 .dashboardOffers {
-	margin-bottom: 40px;
+	min-height: 80px;
 }
 
 .dashboardOffer {
@@ -86,7 +86,7 @@ c) 1000px - ... (desktops)
 
 .dashboardOfferIntro {
 	color: #6e7980;
-	font-size: 0.875em;
+	font-size: 0.9em;
 	line-height: 1.5em;
 	white-space: pre-wrap;
 }
@@ -106,7 +106,7 @@ c) 1000px - ... (desktops)
 
 .dashboardOfferCenterColumn h4 {
 	color: #6e7980;
-	font-size: 0.875em;
+	font-size: 0.9em;
 	font-weight: bold;
 	line-height: 1.4em;
 	margin-bottom: 20px;
@@ -136,30 +136,38 @@ c) 1000px - ... (desktops)
 	padding: 0;
 }
 
-input[value="Reject"] {
+input.offerCancel {
 	color: red;
 	float: left;
 }
 
-input[value="Reject"]:hover {text-decoration: underline;}
+input.offerCancel:hover {
+	text-decoration: underline;
+}
 
-input[value="Accept"] {
+input.offerAccept {
 	color: #29abe2;
 	float: right;
 }
 
-input[value="Accept"]:hover {text-decoration: underline;}
-input[value="Cancel Lesson"] {float: left;}
-input[value="Cancel Lesson"]:hover {text-decoration: underline;}
+input.offerAccept:hover {
+	text-decoration: underline;
+}
+input.lessonCancel {
+	float: left;
+}
+input.lessonCancel:hover {
+	text-decoration: underline;
+}
 
 
 /* Appointments */
 
-.dashboardAppointments {
-	margin-bottom: 40px;
+.dashboardAppts {
+	min-height: 80px;
 }
 
-.dashboardAppointments h2 {
+.dashboardAppts h2 {
 	border-bottom: 1px solid #b0b4b7;
 	color: black;
 	font-size: 1.188em;
@@ -168,11 +176,73 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 	width: 100%;
 }
 
+.dashboardAppt {
+	border-bottom: 1px solid #cfd7db;
+	display: block;
+	margin-top: 20px;
+	padding-bottom: 20px;
+}
+
+.dashboardAppt:last-of-type{
+	border-bottom: none;
+}
+
+.dashboardAppt .appointmentSenderImage {
+	float: left;
+	padding-right: 8px;
+}
+.dashboardAppt .appointmentSenderImage img {
+	border-radius: 3px;
+	width: 100%;
+}
+.dashboardAppt .dashboardApptIntro {
+	float: left;
+	font-size: .9em;
+	padding: 8px 0px;
+	width: 100%;
+}
+.dashboardAppt .appointmentSubjectLine {
+	float: left;
+	color: #c4c4c4;
+	font-size: .9em;
+	width: 100%;
+}
+
+.dashboardAppt .appointmentIntro {
+	float: left;
+	font-size: .9em;
+	padding: 8px 0px;
+	width: 100%;
+}
+
+.dashboardApptRightColumn {
+	float: right;
+}
+.dashboardApptRightColumnElement {
+	text-align: right;
+}
+
+
+.apptDate {
+	font-size: 1.1em;
+	font-weight: bold;
+}
+.apptTime {
+
+}
+.apptCost {
+
+}
+.apptLocation {
+
+}
+
+
 
 /* Messages */
 
 .dashboardMessages {
-	margin-bottom: 40px;
+	min-height: 80px;
 }
 
 .dashboardMessage {
@@ -181,14 +251,10 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 	margin-top: 20px;
 	padding-bottom: 20px;
 }
-/*
-.dashboardMessageIntro {
-	color: #6e7980;
-	font-size: 0.875em;
-	line-height: 1.5em;
-	white-space: pre-wrap;
+.dashboardMessage:last-of-type{
+	border-bottom: none;
 }
-*/
+
 .dashboardMessage .messageSenderImage {
 	float: left;
 	padding-right: 8px;
@@ -202,7 +268,6 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 .dashboardMessage .messageSenderName {
 	float: left;
 	font-size: .9em;
-	color: #6e7980;
 	font-weight: bold;
 }
 
@@ -226,17 +291,18 @@ input[value="Cancel Lesson"]:hover {text-decoration: underline;}
 
 .dashboardMessage .messageSubjectLine {
 	float: left;
-	color: #c4c4c4;
-	font-size: .9em;
 	width: 100%;
+	font-weight: bold;
 }
 
 
 .dashboardMessage .messageIntro {
 	float: left;
-	font-size: 1em;
+	font-size: .9em;
 	padding: 8px 0px;
 	width: 100%;
+	overflow: scroll;
+	max-height: 60px;
 }
 
 /* Right Column - Profile Info Etc */
@@ -293,7 +359,10 @@ input[value="Edit Profile"] {
 }
 
 input.dashboardActionButton {
-	font-size: 1em;
+	font-size: .9em;
+	width: 120px;
+	float: right;
+	margin-top: 10px;
 }
 
 /* Responsive Stuff */
@@ -314,11 +383,11 @@ input.dashboardActionButton {
 		font-size: 1.5em;
 	}
 
-	.dashboardOffer, .dashboardAppointment, .dashboardMessage {
+	.dashboardOffer, .dashboardAppt, .dashboardMessage {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro, .dashboardAppointmentIntro, .dashboardMessageIntro {
+	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
 		border-top: 1px solid #e1e8ed;
 		padding: 10px 0;
 	}
@@ -326,7 +395,7 @@ input.dashboardActionButton {
 	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
 		width: 100%;
 	}
-	.dashboardAppointmentLeftColumn, .dashboardAppointmentCenterColumn, .dashboardAppointmentRightColumn  {
+	.dashboardApptLeftColumn, .dashboardApptCenterColumn, .dashboardApptRightColumn  {
 		width: 100%;
 	}
 	.dashboardMessageLeftColumn, .dashboardMessageCenterColumn, .dashboardMessageRightColumn  {
@@ -361,11 +430,11 @@ input.dashboardActionButton {
 		font-size: 1.5em;
 	}
 
-	.dashboardOffer, .dashboardAppointment, .dashboardMessage {
+	.dashboardOffer, .dashboardAppt, .dashboardMessage {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro, .dashboardAppointmentIntro, .dashboardMessageIntro {
+	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
 		border-top: 1px solid #e1e8ed;
 		padding: 10px 0;
 	}
@@ -373,7 +442,7 @@ input.dashboardActionButton {
 	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
 		width: 100%;
 	}
-	.dashboardAppointmentLeftColumn, .dashboardAppointmentCenterColumn, .dashboardAppointmentRightColumn  {
+	.dashboardApptLeftColumn, .dashboardApptCenterColumn, .dashboardApptRightColumn  {
 		width: 100%;
 	}
 	.dashboardMessageLeftColumn, .dashboardMessageCenterColumn, .dashboardMessageRightColumn  {
@@ -393,22 +462,22 @@ input.dashboardActionButton {
 
 @media only screen and (min-width: 1000px) {
 
-	.dashboardOfferLeftColumn, .dashboardAppointmentLeftColumn, .dashboardMessageLeftColumn {
+	.dashboardOfferLeftColumn, .dashboardApptLeftColumn, .dashboardMessageLeftColumn {
 		float: left;
 		height: 100%;
 		margin-right: 20px;
 		width: 123px;
 	}
 
-	.dashboardOfferCenterColumn, .dashboardAppointmentCenterColumn, .dashboardMessageCenterColumn {
+	.dashboardOfferCenterColumn, .dashboardApptCenterColumn, .dashboardMessageCenterColumn {
 		float: left;
-		width: 287px;
+		width: 370px;
 	}
 
-	.dashboardOfferRightColumn, .dashboardAppointmentRightColumn, .dashboardMessageRightColumn {
+	.dashboardOfferRightColumn, .dashboardApptRightColumn, .dashboardMessageRightColumn {
 		float: right;
 		font-size: 0.8em;
-		width: 206px;
+		width: 120px;
 	}
 
 }
