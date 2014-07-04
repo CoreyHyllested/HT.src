@@ -302,11 +302,9 @@ def meeting_timedout(meeting):
 				db_session.commit()
 			else:
 				to = prop_ts - utcsoon
-				print '\t\t\t\t\t is before utcsoon timeout!= ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+				print '\t\t\t\t\t is before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
 				print '\t\t\t\t\t Safe! until ' +  str(to.seconds/3600) + ' hours'
-				setAttr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
-
-				pass
+				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
 		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
 			print '\t\t\t\tACCEPTED...'
 			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):

@@ -161,16 +161,12 @@ def ht_proposal_accept(prop_uuid, uid):
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
 	enque_reminder1 = ht_email_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enque_reminder2 = ht_email_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+
+	# perhaps we should create a change_state event; ht_proposal_occrred.  which would check if it was canceled.  If not canceled; charge (+ queue capture) and enable Reviews
 	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
 	print 'ht_proposal_accept: returning successfully'
 
-
-
-
-@mngr.task
-def ht_capture_creditcard(x):
-	print 'must be filled out', x
 
 
 
@@ -296,34 +292,31 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 		print 'ht_charge_creditcard: on behalf of ' +  s_prof.prof_name + ',' + o_auth.oa_secret
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token,					# customer.id is the second one passed in
-			capture=True,								# Do Not Capture now.  Capture later.
+			capture=False,								# Do Not Capture now.  Capture later.
 			amount=(the_proposal.prop_cost * 100),		# charged in pennies.
 			currency='usd',
 			description=the_proposal.prop_desc,
 			application_fee=int((the_proposal.prop_cost * 7.1)-30),
-			api_key=o_auth.oa_secret
+			api_key=o_auth.oa_secret,
+			receipt_email=ha.email
 		)
 
 		print 'ht_charge_creditcard: Post Charge'
 		pp(charge)
 		#print charge['customer']
 		#print charge['captured']
-		#print charge['balance_transaction']
 
 		if charge['captured'] == True:
-			print 'ht_charge_creditcard: That\'s all folks, it worked!'
+			print 'ht_charge_creditcard: Neeto -- but that shouldnt have happened'
 
-		#the_proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
-		#the_proposal.appt_charged = dt.now()
-		#the_proposal.charge_transaction = charge['balance_transaction']
 		print 'ht_charge_creditcard: adding modified proposal'
+		#the_proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		the_proposal.appt_charged = dt.now(timezone('UTC'))
+		the_proposal.charge_transaction = charge['id']		 #once upon a time, this was the idea::the_proposal.charge_transaction = charge['balance_transaction']
 		db_session.add(the_proposal)
 		db_session.commit()
 		print 'ht_charge_creditcard: successfully committed proposal'
-		print 'ht_charge_creditcard: TODO... create mngr.event to capture in 4+days'
 
-		captureTime = the_proposal.prop_tf + timedelta(days=2)
-		ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid], eta=(captureTime))
 	except StateTransitionError as ste:
 		print 'ht_charge_creditcard: StateTransitionError', e
 		db_session.rollback()
@@ -333,10 +326,71 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 		print 'ht_charge_creditcard: Exception', type(e), e
 		raise e
 
+	captureTime = dt.now(timezone('UTC')) + timedelta(minutes=30)
+	print 'ht_charge_creditcard: TODO... create mngr.event to capture in 4+days'
+#	captureTime = the_proposal.prop_tf + timedelta(days=2)
+	ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid], eta=(captureTime))
+
 	print 'ht_charge_creditcard: charge[failure_code] =' + str(charge['failure_code'])
 	print 'ht_charge_creditcard: charge[balance_transaction]' + str(charge['balance_transaction'])
 	print 'ht_charge_creditcard: charge[failure_message]' + str(charge['failure_message'])
 	print 'ht_charge_creditcard: returning successful.'
+
+
+
+
+@mngr.task
+def ht_capture_creditcard(prop_id):
+	""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+		ht_capture_cc() is delayed. That is why we must pass in prop_id, and get info from DB rather than pass in proposal.
+	"""
+#(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
+
+	print 'ht_capture_cc: enter()'
+	proposal = Proposal.get_by_id(prop_id)
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)	# hack, remove me...
+
+	print 'ht_capture_cc: prop_id = ' + str(prop_id) + ' for charge_id=' + str(proposal.charge_transaction)
+
+
+	if (proposal.prop_state != APPT_STATE_OCCURRED): # and (proposal.test_flag(APPT_FLAG_MONEY_CAPTURED))):
+		# update must set update_time. (if proposal.prop_updated > prev_known_update_time): corruption.
+		print 'ht_capture_cc: proposal (' + proposal.prop_uuid + ') is not in OCCURRED state(' + str(APPT_STATE_OCCURRED) + '), in state ' + str(proposal.prop_state)
+		#print 'ht_capture_cc: proposal (' + proposal.prop_uuid + ') didnt charge? funds yet'
+		return proposal.prop_state
+
+	try:
+		stripe_charge = stripe.Charge.retrieve(proposal.charge_transaction)
+		charge = stripe_charge.capture()
+
+		print 'ht_capture_cc: Post Charge'
+		pp(charge)
+
+		if charge['captured'] == True:
+			print 'ht_capture_cc: That\'s all folks, it worked!'
+
+		#proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		proposal.appt_charged = dt.now(timezone('UTC'))
+		print 'ht_capture_cc: keep the balance transaction? ' + str(charge['balance_transaction'])
+		print 'ht_capture_cc: adding modified proposal'
+		db_session.add(proposal)
+		db_session.commit()
+		print 'ht_capture_cc: successfully committed proposal'
+
+	except StateTransitionError as ste:
+		print 'ht_capture_cc: StateTransitionError', e
+		db_session.rollback()
+		raise e
+	except Exception as e:
+		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
+		print 'ht_charge_creditcard: Exception', type(e), e
+		raise e
+
+	print 'ht_charge_creditcard: charge[failure_code] = ' + str(charge['failure_code'])
+	print 'ht_charge_creditcard: charge[balance_transaction] ' + str(charge['balance_transaction'])
+	print 'ht_charge_creditcard: charge[failure_message] ' + str(charge['failure_message'])
+	print 'ht_charge_creditcard: returning successful.'
+
 
 
 

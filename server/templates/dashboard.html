@@ -48,9 +48,12 @@
 						You were offered ${{proposal.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
+					<div class="dashboardOfferRightColumnInfo">
+					{% if proposal.timeout is defined %}Expires in {{proposal.timeout }}{% endif %}
+					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Proposal.get_prop_ts().strftime('%A, %b %d %Y')}}<br>
+						{{proposal.Proposal.get_prop_ts().strftime('%A, %b %d')}}<br>
 						{{proposal.Proposal.get_prop_ts().strftime('%H:%M %p')}} - {{proposal.Proposal.get_prop_tf().strftime('%H:%M %p')}}
 					</div>
 
@@ -63,12 +66,13 @@
 					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
 					{% endif %}
 					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
-					<!-- -->
+					<!-- expires in {{proposal.timeout }} -->
 				</div>
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
 		</div>
+		<br>
 
 
 		<div class="dashboardAppts">
