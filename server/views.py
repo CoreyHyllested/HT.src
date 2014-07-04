@@ -1730,3 +1730,107 @@ def ht_api_update_portfolio(operation):
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
 
+
+
+@ht_server.route('/lesson/create', methods=['GET', 'POST'])
+@req_authentication
+def ht_api_lesson_create():
+	user_message = 'Initializing Lesson...'
+
+	try:
+		print 'ht_api_lesson_create'
+		lesson = ht_create_lesson(session['uid'])
+		if (lesson is not None): user_message = 'Successfully initialized lesson'
+	except Sanitized_Exception as se:
+		user_message = se.get_sanitized_msg()
+		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+	except Exception as e:
+		print type(e), e
+		return make_response(jsonify(usrmsg='Something bad'), 500)
+
+	return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id))
+
+
+@ht_server.route('/create_lesson', methods=['POST'])
+#@dbg_enterexit
+@req_authentication
+def render_create_lesson():
+	""" We have initialized a lesson already in /lesson/create - we will now add the details """
+
+	print 'enter create lesson'
+	uid = session['uid']
+	bp	= Profile.get_by_uid(uid)
+	lesson = None
+	form = request.form
+	# if form.validate_on_submit():
+	try:
+		print ("form is valid")
+		lesson.lesson_id = form.lesson_id.data
+		lesson.lesson_profile = bp.prof_id
+		lesson.lesson_title = form.lesson_title.data 
+		lesson.lesson_description = form.lesson_description.data 
+		# TODO - make this pull from Industry and make the form element dynamically generated
+		# lesson.lesson_industry = Industry.industries[int(form.lesson_industry.data)] 
+		lesson.lesson_industry = form.lesson_industry.data 
+		lesson.lesson_hourly_rate = form.lesson_industry.data
+		lesson.lesson_lesson_rate = form.lesson_industry.data
+		
+		# lesson_avail = Column(Integer, nullable=False, default=LESSON_AVAIL_DEFAULT)
+		lesson.lesson_duration	= form.lesson_duration.data
+
+		# lesson_loc_option = Column(Integer, nullable=False, default=LESSON_LOC_ANY)
+		
+		lesson.lesson_address_1 = form.lesson_address_1.data
+		lesson.lesson_address_2 = form.lesson_address_2.data
+		lesson.lesson_city = form.lesson_city.data
+		lesson.lesson_state = form.lesson_state.data
+		lesson.lesson_zip = form.lesson_zip.data
+		lesson.lesson_country = form.lesson_country.data
+		lesson.lesson_address_details = form.lesson_address_details.data
+
+		# This maybe doesn't work? Leaving out for now
+		# lesson.lesson_updated = dt.utcnow()
+
+		# Set the state
+		# LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
+		# LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#2
+		# LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#4
+		# lesson.set_state(LESSON_STATE_ACTIVE)
+
+		print 'add'
+		db_session.add(lesson)
+		print 'commit'
+		db_session.commit()
+		log_uevent(uid, "create lesson")
+
+		return render_dashboard(usrmsg='Lesson Successfully Created! How about that...')
+
+		# return jsonify(usrmsg="lesson created"), 200
+
+	except AttributeError as ae:
+		print 'Attribute Error'
+		print ae
+		db_session.rollback()
+		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg="We messed something up"))
+
+	except Exception as e:
+		print 'Exception Error'
+		print e
+		db_session.rollback()
+		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg=e))
+
+	# form = ProfileForm(request.form)
+	# form.edit_name.data     = bp.prof_name
+	# form.edit_rate.data     = bp.prof_rate
+	# form.edit_headline.data = bp.headline
+	# form.edit_location.data = bp.location
+	# form.edit_industry.data = str(x)
+	# form.edit_url.data      = bp.prof_url #replace.httpX://www.
+	# form.edit_bio.data      = bp.prof_bio
+	# photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	# return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
+
+
+
+
+

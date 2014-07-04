@@ -309,8 +309,6 @@ def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buye
 	return 'Good -- becomes # when delayed'
 	
 
-
-
 def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	stripe.api_key = ht_server.config['STRIPE_SECRET']
 	stripe_cust = None
@@ -348,7 +346,7 @@ def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
 	print 'return get_stripe_cust (', stripe_cust_userid, ')'
 	return stripe_cust_userid
 
-	
+
 
 if __name__ != "__main__":
 	print '@mngr.task... loading'

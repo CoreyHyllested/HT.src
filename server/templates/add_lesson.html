@@ -54,10 +54,11 @@
 					<input type="text" id="addLessonName" class="formField span12" placeholder="e.g. Advanced Ukulele Lessons"> 
 					<textarea id="addLessonSummary" class="formField span12" placeholder="Please describe what the student should expect - e.g. a general lesson plan, what you'll cover, etc."></textarea> 
 
-					<div class="formInstruction">Which category best describes your lesson?</div>
+					<div class="formInstruction">Which industry best describes your lesson?</div>
 
-					<select id="addLessonCategory" class="formField span3">
-						<option value="" selected>Which Category?</option>
+					<!-- TODO - this needs to pull in from Industry select -->
+					<select id="addLessonIndustry" class="formField span3">
+						<option value="" selected>Choose Industry</option>
 						<option value="music">Music</option>
 						<option value="finearts">Fine Arts</option>
 						<option value="other">Other</option>
@@ -72,13 +73,13 @@
 					<div class="formInstruction">Where do you want to provide these lessons?</div>
 					
 					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value="Negotiable"><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
+						<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value="LESSON_LOC_ANY"><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
 					</div>
 					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value="Student"><label for="addLessonPlaceStudent">Student's Place</label>
+						<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value="LESSON_LOC_BUYER"><label for="addLessonPlaceStudent">Student's Place</label>
 					</div>
 					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value="Teacher"><label for="addLessonPlaceTeacher">My Place:</label>
+						<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value="LESSON_LOC_SELLER"><label for="addLessonPlaceTeacher">My Place:</label>
 					</div>
 					<br><br>
 					<fieldset id="addressFields">		
@@ -155,10 +156,10 @@
 					<div class="formInstruction">When are you available for these lessons?</div>
 					
 					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value="Default"><label for="addLessonAvailDefault">Same as availability set in my profile</label>
+						<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value="LESSON_AVAIL_DEFAULT"><label for="addLessonAvailDefault">Same as availability set in my profile</label>
 					</div>
 					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value="Specific"><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
+						<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value="LESSON_AVAIL_SPECIFIC"><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
 					</div>
 
 					<div class="formInstruction">How long will each lesson last?</div>
@@ -199,14 +200,25 @@
 					</select>
 					<span class="rateUnitCaption span3"></span>
 
-					<div class="addLessonFormButtonContainer">
+<!-- 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="rate">Continue</button>
 						<a class="addLessonFormPrevious">Previous</a>
-					</div>					
+					</div>		 -->		
+
+					<div class="addLessonFormButtonContainer">
+						<div class="addLessonFormButtonContainer">
+							<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+							<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
+							<button class="blueButton addLessonFormButton addLessonFormButtonSubmit" data-current-page="rate">Save and Return</button>
+							<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True" checked><label for="addLessonMakeLive">Make this lesson live and public</label></div>
+						</div>
+						<a class="addLessonFormPrevious">Previous</a>
+					</div>	
+
 				</div>
 
 				<!-- </form> -->
-
+<!-- 
 				<div id="add_photos" class="addLessonFormPage">
 					<div class="formInstruction">Please upload some photos for your lesson portfolio</div>
 
@@ -243,6 +255,7 @@
 					<div class="addLessonFormButtonContainer">
 						<div class="addLessonFormButtonContainer">
 							<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+							<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
 							<button class="blueButton addLessonFormButton addLessonFormButtonSubmit" data-current-page="edit_photos">Save and Return</button>
 							<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True" checked><label for="addLessonMakeLive">Make this lesson live and public</label></div>
 						</div>
@@ -250,7 +263,7 @@
 					</div>
 					
 				</div>
-
+ -->
 			</div>
 
 			</form>

@@ -85,6 +85,15 @@ MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)	#2
 MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
 MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
 
+LESSON_FLAG_STARTED = 0 		# User started to create a lesson
+LESSON_FLAG_PRIVATE = 1 		# User completed making the lesson but left it private
+LESSON_FLAG_ACTIVE = 2 		# User completed making the lesson and made it active
+
+LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
+LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#4
+
+
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
 
@@ -707,4 +716,62 @@ class Review(Base):
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
+
+
+class Lesson(Base):
+
+	__tablename__ = "lesson"
+
+	LESSON_LOC_ANY = 0
+	LESSON_LOC_BUYER = 1
+	LESSON_LOC_SELLER = 2
+
+	LESSON_AVAIL_DEFAULT = 0
+	LESSON_AVAIL_SPECIFIC = 1
+
+	lesson_id	= Column(String(40), primary_key=True, index=True)
+	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	lesson_title = Column(String(128), nullable=False)
+	lesson_description	= Column(String(5000))
+	lesson_industry	= Column(String(64), nullable=False)
+
+	lesson_hourly_rate	= Column(Integer)
+	lesson_lesson_rate	= Column(Integer)
+
+	lesson_avail = Column(Integer, nullable=False, default=LESSON_AVAIL_DEFAULT)
+	lesson_duration	= Column(Integer)
+
+	lesson_loc_option = Column(Integer, nullable=False, default=LESSON_LOC_ANY)
+	lesson_address_1 = Column(String(64))
+	lesson_address_2 = Column(String(64))
+	lesson_city = Column(String(64))
+	lesson_state = Column(String(10))
+	lesson_zip = Column(String(10))
+	lesson_country = Column(String(64))
+	lesson_address_details = Column(String(256))
+
+	lesson_updated = Column(DateTime(), nullable=False, default = dt.utcnow())
+	lesson_created = Column(DateTime(), nullable=False, default = dt.utcnow())
+	lesson_flags	= Column(Integer, default=0)
+
+	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
+	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
+
+	def __init__ (self, profile_id):
+		self.lesson_id	= str(uuid.uuid4())
+		self.lesson_profile	= profile_id
+
+
+	def __repr__ (self):
+
+		return '<Lesson: %r, %r, %r>' % (self.lesson_id, self.lesson_profile, self.lesson_title)
+
+
+	@staticmethod
+	def get_by_lesson_id(lesson_id):
+		lessons = Lesson.query.filter_by(lesson_id=lesson_id).all()
+		if len(lessons) != 1: 
+			raise NoLessonFound(lesson_id, 'Sorry, lesson not found')
+		return lessons[0]
+
 

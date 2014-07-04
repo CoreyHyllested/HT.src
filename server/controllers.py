@@ -463,3 +463,23 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 	return (inbox, archive)
 
 
+
+def ht_create_lesson(uid):
+	bp = Profile.get_by_uid(uid)
+	try:
+		print 'create lesson'
+		lesson = Lesson(profile_id)
+		db_session.add(lesson)
+		db_session.commit()
+
+	except IntegrityError as ie:
+		print ie
+		db_session.rollback()
+		return None
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return None
+
+	return (lesson)
+

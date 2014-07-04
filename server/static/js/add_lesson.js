@@ -2,7 +2,8 @@
 $(document).ready(function(){
 
 	var firstPage = "overview";
-	var lastPage = "edit_photos";
+	var lastPage = "rate";
+	// var lastPage = "edit_photos";
 
 	// Form Navigation and State Management
 
