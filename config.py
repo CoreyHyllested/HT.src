@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+# 
+# All information contained is the property of Insprite, LLC.  Any intellectual 
+# property about the design, implementation, processes, and interactions with 
+# services may be protected by U.S. and Foreign Patents.  All intellectual 
+# property contained within is covered by trade secret and copyright law.   
+# 
+# Dissemination or reproduction is strictly forbidden unless prior written 
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 import os
 
 print 'configuring environment'
@@ -33,8 +47,8 @@ class Config:
 	FACEBOOK_APP_ID='243739575814575'
 	FACEBOOK_APP_SEC='c08f6c6f920b6cac0a3743822483f7bf'
 
-	@static
-	def init_app(app)
+	@staticmethod
+	def init_app(app):
 		print 'SQLALCHEMY_DB: ' + str(SQLALCHEMY_DATABASE_URI)
 		pass
 
@@ -66,10 +80,10 @@ class TestingConfig(Config):
 
 
 
-config = {
-	'default'		: DevelopmentConfig
+server_configuration = {
+	'default'		: DevelopmentConfig,
 
-	'development'	: DevelopmentConfig
-	'production'	: ProductionConfig
+	'development'	: DevelopmentConfig,
+	'production'	: ProductionConfig,
 	'testing'		: TestingConfig
 }

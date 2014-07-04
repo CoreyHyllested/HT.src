@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
 # 
-# All information contained is the property of HeroTime, Inc.  Any intellectual 
+# All information contained is the property of Insprite, LLC.  Any intellectual 
 # property about the design, implementation, processes, and interactions with 
 # services may be protected by U.S. and Foreign Patents.  All intellectual 
 # property contained within is covered by trade secret and copyright law.   
 # 
 # Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+# consent has been obtained from Insprite, LLC.
 #################################################################################
 
 
@@ -22,6 +22,7 @@ from flask_wtf.csrf		import CsrfProtect
 from flask_redis		import Redis
 from server.infrastructure.initialize_ht	import *
 from server.infrastructure.srvc_sessions	import RedisSessionInterface
+from config import server_configuration
 
 
 print 'initializing server'
@@ -34,8 +35,8 @@ create_dir('/tmp/ht_upload/')
 
 print 'configuring server'
 ht_server = Flask(__name__)
+ht_server.config.from_object(server_configuration['development'])
 ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
-ht_server.config.from_object('config')
 ht_server.debug = True
 ht_server.logger.setLevel(logging.DEBUG)
 ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
