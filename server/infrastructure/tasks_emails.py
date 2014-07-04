@@ -44,7 +44,7 @@ def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, messag
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
 	url = 'https://herotime.co/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
-	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + "The request was for " + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + hero_name
@@ -65,7 +65,7 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 	msg_html = msg_html + "<a href=\"" + url + "\">" 
 	msg_html = msg_html + buyer_name 
 	msg_html = msg_html + " </a> wants to buy your time.<br>"
-	msg_html = msg_html + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + buyer_name  
@@ -157,10 +157,10 @@ def send_proposal_reject_emails(the_proposal):
 
 
 @mngr.task
-def ht_send_reminder_email(user_email, user_name, the_proposal):
-	print 'sending appointment reminder emails now for ', the_proposal
+def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
+	print 'ht_email_meeting_reminder()  sending appointment reminder emails now for ' + prop_uuid
 
-	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + str(the_proposal) + "is about to begin.</p>"
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment " + prop_uuid + " is about to begin.</p>"
 	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
@@ -169,17 +169,37 @@ def ht_send_reminder_email(user_email, user_name, the_proposal):
 
 
 @mngr.task
-def send_appt_emails(the_proposal):
+def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
+	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
+	proposal = Proposal.get_by_id(prop_uuid)
+	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
+	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
+	partner_prof = sellr_prof
+	if (sellr_acct.email == user_email):
+		partner_prof = buyer_prof
+
+	msg_html = "<p>Hey, " + user_name + ",</p>"
+	msg_html = msg_html + "<p>Your meeting is over.<br>" + "When you have a few minutes, <a href=\"http://127.0.0.1:5000/review/"+prop_uuid+"/"+review_id+"\"> review your meeting.</a> "
+	msg_html = msg_html + " with " + partner_prof.prof_name + " going over " + proposal.prop_desc + "</p>"
+	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@herotime.co', u'Insprite Notifications')
+	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(user_email, msg)
+
+
+
+
+@mngr.task
+def ht_email_meeting_accepted(the_proposal):
 
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
-	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
+	print 'sending proposal-accepted emails @ ' + the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
 
 	sellr_html = "<p>IMG_LOGO</p><br>"																					\
 				+"<p>Fantastic!<br>You accepted " + sellr_name + "'s proposal.</p>"										\
 				+"<p>Here are the details:<br>"																			\
 				+"Location: " + the_proposal.prop_place + "<br>"														\
 				+"Description: " + the_proposal.prop_desc + "<br>"														\
-				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
+				+"Time: " + str(the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')) 							\
 				+"</p>"																									\
 				+"<p>We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\
 				+"Questions? Drop us a line at <a href=\"mailto:thegang@insprite.co\">thegang@insprite.co<a>"			\
@@ -195,7 +215,7 @@ def send_appt_emails(the_proposal):
 				+"<p>Check out the details:<br>"	\
 				+"Location: " + the_proposal.prop_place + "<br>"	\
 				+"Description: " + the_proposal.prop_desc + "<br>"	\
-				+"Time: " + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
+				+"Time: " + str(the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')) + "<br>"	\
 				+"</p>"	\
 				+"<p>Need to edit, manage, or *gasp* cancel your appointment?  Head to your <a href=\'https://127.0.0.1:5000/dashboard\'>dashboard</a>"	\
 				+"We know life can be busy, so we'll send you a reminder 48 hours before the meeting starts.<br>"	\

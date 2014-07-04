@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from datetime import datetime as dt, timedelta
 from server import ht_server
+from pytz import timezone
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks_emails	 import *
@@ -32,41 +33,43 @@ def ht_sanitize_errors(e, details=None):
 def ht_proposal_create(values, uid):
 	""" Creates a Proposal
 		returns	on success: Proposal
-		returns	on failure: raised exception
+		returns	on failure: Exception
 	"""
 
-	print 'ht_proposal_create: validate input'
+	print 'ht_proposal_create: enter()'
 	#	Stripe fields should be validated.
 	#	v1 - end time is reasonable (after start time)
 	#	v2 - hero exists.
 	#	v3 - place doesn't matter as much..
 	#	v4 - cost..
 	try:
-		stripe_tokn = values.get('stripe_tokn')
-		stripe_card = values.get('stripe_card')
+		print 'ht_proposal_create: validate input'
+		stripe_tokn = values.get('stripe_tokn')		# used to charge
+		stripe_card = values.get('stripe_card')		# card to add to insprite_customer.
 		stripe_cust = values.get('stripe_cust')
-		stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
+		#stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
 
 		prop_hero = values.get('prop_hero')
 		prop_cost = values.get('prop_cost')
 		prop_desc = values.get('prop_desc')
 		prop_place = values.get('prop_area')
 
+		# validate start/end times via conversion.
 		prop_s_date = values.get('prop_s_date')
 		prop_s_hour = values.get('prop_s_hour')
 		prop_f_date = values.get('prop_f_date')
 		prop_f_hour = values.get('prop_f_hour')
 		dt_start = dt.strptime(prop_s_date  + " " + prop_s_hour, '%A, %b %d, %Y %H:%M %p')
 		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_hour, '%A, %b %d, %Y %H:%M %p')
+
+		# convert to user's local TimeZone.
+		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
+		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
 	except Exception as e:
 		print type(e), e
 		ht_sanitize_errors(e)
 
-
-	print 'token = ', stripe_tokn 
-	print 'stripe_card = ', stripe_card 
-	print 'stripe_cust = ', stripe_cust 
-#	print 'updated_start = ', dt_start, '-', dt_finish
+	print 'ht_proposal_create: (from stripe) token =', stripe_tokn, 'card =', stripe_card, 'cust =', stripe_cust
 
 	try:
 		# raises (No<Resrc>Found errors)
@@ -74,15 +77,19 @@ def ht_proposal_create(values, uid):
 		bp	= Profile.get_by_uid(uid)
 		ba  = Account.get_by_uid(uid)
 		ha  = Account.get_by_uid(hp.account)
-		pi  = get_stripe_customer(uid=uid, cc_token=stripe_tokn, cc_card=stripe_card)
-		print "PI = ", pi
+		print 'ht_proposal_create: lookup buyer\'s stripe customer id'
+		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
+		print "ht_proposal_create:", bp.prof_name, ':', stripe_cust
 
-		proposal = Proposal(str(hp.prof_id), str(bp.prof_id), dt_start, dt_finsh, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=pi, card=stripe_card)
+		proposal = Proposal(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
+		print "ht_proposal_create: successfully created proposal"
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
+		print "ht_proposal_create: successfully committed proposal"
 
 		email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
 		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+		print "ht_proposal_create: successfully emailed proposal information"
 	except NoResourceFound as npf:
 		ht_sanitize_errors(npf)
 	except IntegrityError as ie:	#TODO: add to ht_sanitize
@@ -94,6 +101,7 @@ def ht_proposal_create(values, uid):
 	except Exception as e:
 		db_session.rollback()
 		ht_sanitize_errors(e)
+		print "ht_proposal_create: returning proposal"
 	return proposal
 
 
@@ -112,31 +120,29 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 def ht_proposal_accept(prop_uuid, uid):
+	print 'ht_proposal_accept()  enter; uuid :', prop_uuid
 	try:
 		the_proposal = Proposal.get_by_id(prop_uuid)
+		stripe_card = the_proposal.charge_credit_card
+		stripe_tokn = the_proposal.charge_user_token
+		print 'ht_proposal_accept()  cust:', the_proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn 
+
 		(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
 		(ba, bp) = get_account_and_profile(the_proposal.prop_user)
 
-		stripe_card = the_proposal.charge_credit_card
-		stripe_tokn = the_proposal.charge_user_token
-		print 'ht_appointment_accept:', prop_uuid, ", cust:", the_proposal.charge_customer_id, ", card:", stripe_card, ", token:", stripe_tokn 
-
 		# update proposal
+		print 'ht_proposal_accept: change state to accepted'
 		the_proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
 		db_session.add(the_proposal)
 		db_session.commit()
 
-		print 'send confirmation notices to buyer and seller'
+		print 'ht_proposal_accept: send confirmation notices'
 		remindTime = the_proposal.prop_ts - timedelta(days=2)
-		reviewTime = the_proposal.prop_tf
-		chargeTime = the_proposal.prop_tf + timedelta(days=2)
-		print 'remind buyer @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-		print 'reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
-		print 'charge buyer @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
-		send_appt_emails(the_proposal)
-
-		print 'calling ht_capturecard -- delayed'
-		rc = ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost, the_proposal.prop_updated], eta=chargeTime)
+		chargeTime = the_proposal.prop_ts - timedelta(days=2)
+		reviewTime = the_proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
+		print 'ht_proposal_accept: reminder emails @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
+		print 'ht_proposal_accept: charge the buyr @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
+		print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
 
 	except StateTransitionError as ste:
 		print ste
@@ -151,29 +157,29 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.rollback()
 		raise e
 
-	print 'Queue Events: reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	enable_reviews.apply_async(args=[the_proposal], eta=(reviewTime))
+	ht_email_meeting_accepted(the_proposal)
+	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
+	enque_reminder1 = ht_email_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	enque_reminder2 = ht_email_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 
-	print 'returning from ht_appt_finalize', rc
-	return (200, str(rc))
+	# perhaps we should create a change_state event; ht_proposal_occrred.  which would check if it was canceled.  If not canceled; charge (+ queue capture) and enable Reviews
+	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
+	ht_enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
+	print 'ht_proposal_accept: returning successfully'
+
 
 
 
 
 def ht_proposal_reject(p_uuid, uid):
 	print 'received proposal uuid: ', p_uuid 
-	committed = False
 	bp = Profile.get_by_uid(uid)
 	the_proposal = Proposal.get_by_id(p_uuid) 
 	the_proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
 
-	try: # delete proposal 
-		#TODO save these somewhere.
+	try:
 		db_session.add(the_proposal)
 		db_session.commit()
-		committed = True
 	except Exception as e:
 		db_session.rollback()
 		print 'DB error:', e
@@ -199,152 +205,236 @@ def getDBCorey(x):
 
 
 @mngr.task
-def enable_reviews(the_proposal):
-	#is this submitted after stripe?  
-	hp = the_proposal.prop_hero
-	bp = the_proposal.prop_user
+def ht_enable_reviews(prop_uuid):
+	print 'ht_enable_reviews()  enter'
+	the_proposal = Proposal.get_by_id(prop_uuid)
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
 
-	print 'enable_reviews()'
-
-	review_hp = Review(the_proposal.prop_uuid, hp, bp)
-	review_bp = Review(the_proposal.prop_uuid, bp, hp)
-	print 'review_hp', review_hp
-	print 'review_bp', review_bp
-	
+	# if -- canceled --- do not create reviews.
+	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
+		#TODO turn this into a Proposal method!
+		print 'ht_enable_reviews(): ' +  the_proposal.prop_uuid + ' is not in ACCEPTED state =' + the_proposal.prop_state
+		print 'ht_enable_reviews(): continuing; we might want to stop... depends on if we lost a race; prop implemnt OCCURRED_event'
+		# check to see if reviews_enabled already [If it lost a race]
+		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
+	review_hp = Review(the_proposal.prop_uuid, hp.prof_id, bp.prof_id)
+	review_bp = Review(the_proposal.prop_uuid, bp.prof_id, hp.prof_id)
+	print 'ht_enable_reviews()  review_hp: ' + str(review_hp.review_id)
+	print 'ht_enable_reviews()  review_bp: ' + str(review_bp.review_id)
 
 	try:
-		print 'add reviews'
+		print 'ht_enable_reviews()  add and commit reviews.'
 		db_session.add(review_hp)
 		db_session.add(review_bp)
-		print 'commit'
 		db_session.commit()
+		print 'ht_enable_reviews()  successfully committed.'
 
+		print 'ht_enable_reviews()  modify Proposal. Set state to OCCURRED.'
 		the_proposal.review_user = review_bp.review_id
 		the_proposal.review_hero = review_hp.review_id
-		#the_proposal.set_state(APPT_STATE_OCCURRED)
-
+		the_proposal.set_state(APPT_STATE_OCCURRED)
 		db_session.add(the_proposal)
 		db_session.commit()
+		print 'ht_enable_reviews()  successfully committed proposal.'
 
 		# TODO create two events to send in 1 hr after meeting completion to do review
-		# TODO send one event to disable the reviews in 1 month
+		finishTime = the_proposal.prop_tf + timedelta(days=30)
+		print 'ht_enable_reviews()  succefully created reviews, updated profile.  Disable in 30 + days.'
+		post_reviews.apply_async(args=[the_proposal.prop_uuid, review_hp.review_id, review_bp.review_id], eta=(finishTime))
 	except Exception as e:
 		db_session.rollback()
 		print e	
 	
-	#Notifiy user.  Email.  Drop an event notice on their dashboard.
+	# Notifiy users.  Send email and TODO: Drop an event notice on each users' dashboard.
+	ht_email_review_notice(ha.email, hp.prof_name, the_proposal.prop_uuid, review_bp.review_id)
+	ht_email_review_notice(ba.email, bp.prof_name, the_proposal.prop_uuid, review_hp.review_id)
 	return None
 
 
 @mngr.task
-def disable_reviews(jsonObj):
+def post_reviews(prop_uuid, hp_review_id, bp_review_id):
 	#30 days after enable, shut it down!
-	#the_proposal.set_state(APPT_STATE_COMPLETE)
-	print 'disable_reviews()'
+	the_proposal = Proposal.get_by_id(prop_uuid)
+	the_proposal.set_state(APPT_STATE_COMPLETE)
+	# get reviews.
+	# mark incomplete reviews as incomplete.
+	print 'post_reviews() -enter/exit'
 	return None
 
 
 
 @mngr.task
-def ht_capture_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time):
-	""" HT_capture_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
-		This function is delayed.
-		That is why we pass in prop_id and go get the information from the database.  We want to see if there have been any updates.
+def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
+	""" HT_charge_creditcard() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+		ht_charge_creditcard() is delayed. That is why we must pass in prop_id, and get info from DB rather than pass in proposal.
 	"""
 
-	#CAH TODO may want to add the Oauth_id to search and verify the cust_token isn't different
-	print 'ht_capture_creditcard: buyer_cust_token =', buyer_cust_token, ", buyer_cc_token=", buyer_cc_token
+	print 'ht_charge_creditcard: enter()'
 	the_proposal = Proposal.get_by_id(prop_id)
-	print the_proposal
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)	# hack, remove me...
+
+	print 'ht_charge_creditcard: prop_id = ' + str(prop_id) + " buyer =" + buyer_name + ',' + str(buyer_email) + " for $" + str(proposal_cost)
+	print 'ht_charge_creditcard: ' + str(the_proposal)
+
 
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
 		# update must set update_time. (if the_proposal.prop_updated > prev_known_update_time): corruption.
-		trace (str(the_proposal.prop_uuid) + ' state is canceled (?, ' + str(the_proposal.prop_state) +  ')')
-		print the_proposal.prop_uuid, ' state is canceled (?, ', the_proposal.prop_state ,')'
-		return 'success, but state was canceld'
+		print 'ht_charge_creditcard: proposal (' + the_proposal.prop_uuid + ') is not in ACCEPTED state(' + str(APPT_STATE_ACCEPTED) + '), in state ' + str(the_proposal.prop_state)
+		return the_proposal.prop_state
 
-#	print str(the_appointment.updated)
-#	print str(appointment.ts_begin)
-#	print str(appointment.ts_finish)
-#	print str(the_proposal.charge_customer_id)
+	print 'ht_charge_creditcard:  proposal is reasonable, charge customer ' + the_proposal.charge_customer_id
+	if (buyer_cust_token != the_proposal.charge_customer_id): print 'ht_charge_creditcard: WTF1.'
 
 	try:
+		s_prof = Profile.get_by_prof_id(the_proposal.prop_hero)
+		o_auth = Oauth.get_stripe_by_uid(s_prof.account)
+		if (o_auth is None): raise Exception ('user,' + str(ha.email) + ' doesnt have Stripe Connect Oauth')
+		print 'ht_charge_creditcard: on behalf of ' +  s_prof.prof_name + ',' + o_auth.oa_secret
 		charge = stripe.Charge.create (
-			customer=buyer_cust_token, 	#		customer.id is the second one passed in
-			#stripe_cust = Oauth(uid, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-			amount=(the_proposal.prop_cost * 100),
+			customer=buyer_cust_token,					# customer.id is the second one passed in
+			capture=False,								# Do Not Capture now.  Capture later.
+			amount=(the_proposal.prop_cost * 100),		# charged in pennies.
 			currency='usd',
 			description=the_proposal.prop_desc,
-			#application_fee=int((the_appointment.cost * 7.1)-30),
-			api_key="sk_test_nUrDwRPeXMJH6nEUA9NYdEJX"
-					#if this key is an api_key -- i.e. someone's customer key -- e.g. the heros' customer key
-			#-- subtracted stripe's fee?  -(30 +(ts.cost * 2.9)  
+			application_fee=int((the_proposal.prop_cost * 7.1)-30),
+			api_key=o_auth.oa_secret,
+			receipt_email=ha.email
 		)
 
-		#pp(charge)
-		print 'Post Charge'
-		print charge['customer']
-		print charge['captured']
-		print charge['balance_transaction']
-		if charge['captured'] == True:
-			print 'That\'s all folks, it worked!'
+		print 'ht_charge_creditcard: Post Charge'
+		pp(charge)
+		#print charge['customer']
+		#print charge['captured']
 
-		the_proposal.charge_transaction = charge['balance_transaction']
-		the_proposal.set_state(APPT_STATE_CAPTURED)
+		if charge['captured'] == True:
+			print 'ht_charge_creditcard: Neeto -- but that shouldnt have happened'
+
+		print 'ht_charge_creditcard: adding modified proposal'
+		the_proposal.set_state(APPT_STATE_OCCURRED)				# TODO.  You should create the occurred_api. that charges first, then sets up reviews.  TOTAL HACK, REMOVE
+		the_proposal.appt_charged = dt.now(timezone('UTC'))
+		the_proposal.charge_transaction = charge['id']		 #once upon a time, this was the idea::the_proposal.charge_transaction = charge['balance_transaction']
 		db_session.add(the_proposal)
 		db_session.commit()
+		print 'ht_charge_creditcard: successfully committed proposal'
+
 	except StateTransitionError as ste:
-		print e
+		print 'ht_charge_creditcard: StateTransitionError', e
 		db_session.rollback()
 		raise e
 	except Exception as e:
 		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
-		print type(e), e
+		print 'ht_charge_creditcard: Exception', type(e), e
 		raise e
 
-	print 'charge[failure_code] =', charge['failure_code']
-	print 'charge[balance_transaction]', charge['balance_transaction']
-	#print charge['failure_message']
+	captureTime = the_proposal.prop_tf + timedelta(days=2)
+	captureTime = dt.now(timezone('UTC')) + timedelta(minutes=15)	#remove when done testing
+	print 'ht_charge_creditcard: TODO... create mngr.event to capture in 4+days'
+	ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid], eta=(captureTime))
 
-	return 'Good -- becomes # when delayed'
-	
+	print 'ht_charge_creditcard: charge[failure_code] ' + str(charge['failure_code'])
+	print 'ht_charge_creditcard: charge[balance_transaction] ' + str(charge['balance_transaction'])
+	print 'ht_charge_creditcard: charge[failure_message] ' + str(charge['failure_message'])
+	print 'ht_charge_creditcard: returning successful.'
 
-def get_stripe_customer(uid=None, cc_token=None, cc_card=None):
-	stripe.api_key = ht_server.config['STRIPE_SECRET']
-	stripe_cust = None
+
+
+
+@mngr.task
+def ht_capture_creditcard(prop_id):
+	""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+		ht_capture_cc() is delayed. That is why we must pass in prop_id, and get info from DB rather than pass in proposal.
+	"""
+	print 'ht_capture_cc: enter()'
+	proposal = Proposal.get_by_id(prop_id)
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)	# hack, remove me...
+
+	print 'ht_capture_cc: prop_id = ' + str(prop_id) + ' for charge_id=' + str(proposal.charge_transaction)
+
+
+	if (proposal.prop_state != APPT_STATE_OCCURRED): # and (proposal.test_flag(APPT_FLAG_MONEY_CAPTURED))):
+		# update must set update_time. (if proposal.prop_updated > prev_known_update_time): corruption.
+		print 'ht_capture_cc: proposal (' + proposal.prop_uuid + ') is not in OCCURRED state(' + str(APPT_STATE_OCCURRED) + '), in state ' + str(proposal.prop_state)
+		#print 'ht_capture_cc: proposal (' + proposal.prop_uuid + ') didnt charge? funds yet'
+		return proposal.prop_state
 
 	try:
-		print 'check oauth for stripe account'
-		stripe_cust = Oauth.get_stripe_by_uid(uid)
-		print 'returned from oauth check'
-		return stripe_cust.oa_account
-	except NoOauthFound as nof:
-		print 'customer does not exist, create'
+		print 'ht_capture_cc: initialize stripe with their Key() -- get o_auth'
+		o_auth = Oauth.get_stripe_by_uid(hp.account)
+		print 'ht_capture_cc: initialize stripe with their Key() -- o_auth.' + o_auth.oa_secret
+		stripe.api_key = o_auth.oa_secret
+
+		print 'ht_capture_cc: go get the charge'
+		stripe_charge = stripe.Charge.retrieve(proposal.charge_transaction)
+
+		print 'ht_capture_cc: initialize stripe with our Key() -- ready, set, capture'
+		charge = stripe_charge.capture()
+
+		print 'ht_capture_cc: Post Charge'
+		pp(charge)
+
+		if charge['captured'] == True:
+			print 'ht_capture_cc: That\'s all folks, it worked!'
+
+		proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		proposal.appt_charged = dt.utcnow()  #appt_charged has no timezone, dumb, dumb, dumb
+		print 'ht_capture_cc: keep the balance transaction? ' + str(charge['balance_transaction'])
+		print 'ht_capture_cc: adding modified proposal'
+		db_session.add(proposal)
+		db_session.commit()
+		print 'ht_capture_cc: successfully committed proposal'
+
+	except StateTransitionError as ste:
+		print 'ht_capture_cc: StateTransitionError', e
+		db_session.rollback()
+		raise e
+	except Exception as e:
+		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
+		print 'ht_capture_cc: Exception', type(e), e
+		raise e
+
+	print 'ht_capture_cc: charge[failure_code] = ' + str(charge['failure_code'])
+	print 'ht_capture_cc: charge[balance_transaction] ' + str(charge['balance_transaction'])
+	print 'ht_capture_cc: charge[failure_message] ' + str(charge['failure_message'])
+	print 'ht_capture_cc: returning successful.'
+
+
+
+
+
+def ht_get_stripe_customer(account, cc_token=None, cc_card=None, cust=None):
+
+	print 'ht_get_stripe_customer_id(): enter'
+	if (account.stripe_cust is not None):
+		print 'ht_get_stripe_customer_id(): found!'
+		return account.stripe_cust
 		
 
+	print 'ht_get_stripe_customer_id: customer does not exist, create'
 	try:
-		print 'create Customer w/ cc = ' + str(cc_token)
-		stripe_cust_resp	= stripe.Customer.create(card=cc_token, description=str(uid))
-		stripe_cust_userid	= stripe_cust_resp['id']
-		stripe_card_dflt	= stripe_cust_resp['default_card']
-		print stripe_cust_resp
+		stripe.api_key = ht_server.config['STRIPE_SECRET']
 
-		stripe_cust = Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-		print stripe_cust
-		db_session.add(stripe_cust)
+		ht_metadata = {}
+		ht_metadata['ht_account'] = account.userid
+
+		print 'ht_get_stripe_customer_id: customer info cc_token: ' + str(cc_token) + ' cc_card: ' + str(cc_card)
+		stripe_customer = stripe.Customer.create(card=cc_token, description=str(account.userid), metadata=ht_metadata, email=account.email)
+		stripe_cust	= stripe_customer['id']
+		stripe_card	= stripe_customer['default_card']
+		print 'ht_get_stripe_customer_id: New Customer (%s, %s)' % (stripe_cust, stripe_card)
+		pp(stripe_cust)
+
+		print 'ht_get_stripe_customer_id: Update Account'
+		account.stripe_cust = stripe_cust
+		db_session.add(account)
 		db_session.commit()
-		print 'and ... saved HT/stripe cust to db'
-	except UnboundLocalError as ule:
-		print str(e)
-		# raise ThisWasAlreadySubmitted (check back with RC. 
-		# will need to grab asynch_submit RC -- stuff it in the appointment.
 	except Exception as e:
-		#problems with customer create
-		print str(e)
+		# problems with customer create
+		print type(e), e
 		db_session.rollback()
 
-	print 'return get_stripe_cust (', stripe_cust_userid, ')'
-	return stripe_cust_userid
+	print 'ht_get_stripe_customer_id:', stripe_cust
+	return stripe_cust
 
 
 

@@ -14,7 +14,7 @@ from server.infrastructure.models import *
 from server.infrastructure.errors import * 
 from server.infrastructure.tasks  import * 
 from server.ht_utils import *
-from pprint import pprint
+from pprint import pprint as pp
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.exc import IntegrityError
@@ -119,12 +119,12 @@ def render_profile(usrmsg=None):
 	bp = None 
 	if (session.get('uid') is not None):
 		bp = Profile.get_by_uid(session.get('uid'))
-		print "BP = ", bp.prof_name, bp.prof_id, bp.account
+		print "render_profile()  browser is ", bp.prof_name, bp.prof_id, bp.account
 
 	try:
 		hp = request.values.get('hero')
 		if (hp is not None):
-			print "hero profile requested,", hp
+			print "render_profile()  hero requested,", hp
 			hp = Profile.get_by_prof_id(hp)
 		else:
 			if (bp == None): 
@@ -133,7 +133,7 @@ def render_profile(usrmsg=None):
 			hp = bp
 
 		# replace 'hp' with the actual Hero's Profile.
-		print "HP = ", hp.prof_name, hp.prof_id, hp.account
+		print "render_profile()  hero is ", hp.prof_name, hp.prof_id, hp.account
 	except NoProfileFound as nf:
 		print nf
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
@@ -150,13 +150,13 @@ def render_profile(usrmsg=None):
 		db_session.rollback()
 
 
-	print 'images in portfolio:', len(portfolio)
-	for img in portfolio: print img
+	print 'render_profile()  images in portfolio:', len(portfolio)
+	for img in portfolio: print 'render_profile()  ' + str(img)
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
-	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, dump=False)
 
 	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
@@ -254,7 +254,7 @@ def get_facebook_oauth_token():
 	return session.get('oauth_token')
 
 @ht_server.route('/facebook')
-def render_facebook_stats():
+def testing_facebook_stats():
 	me = facebook.get('/me')
 	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
 	
@@ -319,6 +319,94 @@ def linkedin_authorized(resp):
 		print ('create account failed, using', str(email.data))
 		resp = redirect('/dbFailure')
 	return resp
+
+
+
+
+@ht_server.route('/authorize/stripe', methods=['GET', 'POST'])
+@req_authentication
+def settings_verify_stripe():
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+
+	print "authorize/stripe"
+	error = request.args.get('error', "None")
+	edesc = request.args.get('error_description', "None")
+	scope = request.args.get('scope', "None")
+	state = request.args.get('state', "None")  #I think state is a CSRF, passed in/passed back
+	authr = request.args.get('code',  "None")
+	print "scope", scope
+	print "auth", authr
+	print "error", error
+	print "edesc", edesc
+	print "state", state
+
+	# possible error codes:
+	#	access_denied, 	User denied authorization.
+	#	invalid_scope,	Invalid scope parameter provided.... ex. too late / token timeout
+	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
+	#	invalid_request, 	Missing response_type parameter.
+	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
+
+
+	if (authr == "None" and error != "None"):
+		print "verify - auth Failed", edesc
+		return "auth failed %s" % edesc, 500
+
+
+	postdata = {}
+	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
+	postdata['grant_type']    = 'authorization_code'
+	postdata['code']          = authr
+
+	print "verify -- post Token to stripe"
+	resp, content = Http().request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
+	rc = json.loads(content)
+	print "verify -- got response\n", rc
+#	print "error", rc['error']
+#	print "edesc", rc['error_description']
+
+	error = rc.get('error',       			 'None')
+	edesc = rc.get('error_description', 	 'None')
+	token = rc.get('access_token',			 'None')	# Used like Secret Key
+	mode  = rc.get('livemode',				 'None')
+	pkey  = rc.get('stripe_publishable_key', 'None')
+	user  = rc.get('stripe_user_id',		 'None')
+	rfrsh = rc.get('refresh_token')
+
+	if error != 'None':
+		print "getToken Failed", edesc
+		return "auth failed %s" % edesc, 500
+
+	oauth_stripe = Oauth.get_stripe_by_uid(uid)
+	if (oauth_stripe is not None):
+		if (oauth_stripe.oa_account != rc['stripe_user_id']):
+			oauth_stripe.oa_account  = rc['stripe_user_id']
+			print 'updating stripe ID'
+
+		if (oauth_stripe.oa_secret != rc['access_token']):
+			oauth_stripe.oa_secret  = rc['access_token']
+			print 'updating user-access token, used to deposit into their account'
+
+		if (oauth_stripe.oa_token != pkey):
+			oauth_stripe.oa_token  = pkey
+			print 'updating stripe pubkey'
+
+		if (oauth_stripe.oa_optdata1 != rfrsh):
+			oauth_stripe.oa_optdata1  = rfrsh
+			print 'updating stripe refresh key'
+	else:
+		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
+
+	try:
+		db_session.add(oauth_stripe)
+		db_session.commit()
+		return make_response(redirect('/settings'))
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+	return "good - but must've failed on create", 200
+
 
 
 
@@ -468,10 +556,14 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
-	hp_id = request.values.get('hp', None)
-	bp = Profile.get_by_uid(session.get('uid'))
-	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	ba = Account.get_by_uid(session.get('uid'))
+	try:
+		hp_id = request.values.get('hp', None)
+		bp = Profile.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		ba = Account.get_by_uid(session.get('uid'))
+	except Exception as e:
+		db_session.rollback()
+
 	if (ba.status == Account.USER_UNVERIFIED):
 		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
@@ -505,9 +597,11 @@ def ht_api_proposal_create():
 @ht_server.route('/proposal/accept', methods=['POST'])
 @req_authentication
 def ht_api_proposal_accept():
+	print "ht_api_proposal_accept: enter"
 	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
+#	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+#	log_uevent(session['uid'], pstr)
+
 
 	if not form.validate_on_submit():
 		msg = "invalid form: " + str(form.errors)
@@ -515,14 +609,16 @@ def ht_api_proposal_accept():
 		return jsonify(usrmsg=msg), 400
 
 	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
+		print "ht_api_proposal_accept: validated form. Accept proposal."
+		ht_proposal_accept(form.proposal_id.data, session['uid'])
 	except Sanitized_Exception as se:
+		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
-		print str(e)
+		print "ht_api_proposal_accept: exception", type(e), e
 		db_session.rollback()
-		jsonify(usrmsg=str(e)), 500
+		return jsonify(usrmsg=str(e)), 500
+	print "ht_api_proposal_accept: success"
 	return make_response(redirect('/dashboard'))
 
 
@@ -569,7 +665,7 @@ def ht_api_proposal_reject():
 @req_authentication
 def ht_api_proposal_negotiate():
 	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
+	#the_proposal.set_flag(APPT_FLAG_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
 	#the_proposal.prop_updated = dt.now()
 	return redirect('/notImplemented')
@@ -630,7 +726,7 @@ def render_dashboard(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
-	print 'profile.account = ', uid, bp
+	print 'render_dashboard: uid=', uid, ' Profile =', bp.prof_name, bp.prof_id
 
 	unread_msgs = []
 
@@ -882,10 +978,15 @@ def render_settings():
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	#pi	= Oauth.get_stripe_by_uid(uid)
+	pi	= Oauth.get_stripe_by_uid(uid)
 
 	card = 'Null'
-
+	if (pi is not None):
+		#pp(pi.serialize)
+		# Not a Customer.  Customers exist in Accounts.
+		# This is the Stripe Connect ID.  Own business.
+		# We use the pub & secret keys to charge users
+		card = pi.oa_account
 
 	errmsg = None
 	form = SettingsForm(request.form)
@@ -925,7 +1026,6 @@ def render_settings():
 				form.set_input_newpass.data = ''
 				form.set_input_verpass.data = ''
 				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-#				return redirect('/settings')
 			else:
 				print "Update should be complete"
 
@@ -981,93 +1081,6 @@ def error_sanitize(message):
 	return message
 
 
-@ht_server.route('/settings/verify', methods=['GET', 'POST'])
-@dbg_enterexit
-@req_authentication
-def settings_verify_stripe():
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-
-	print "verify -- in oauth_callback, get auth code/token"
-	error = request.args.get('error', "None")
-	edesc = request.args.get('error_description', "None")
-	scope = request.args.get('scope', "None")
-	state = request.args.get('state', "None")  #I think state is a CSRF, passed in/passed back
-	authr = request.args.get('code',  "None")
-	print "scope", scope
-	print "auth", authr
-	print "error", error
-	print "edesc", edesc
-
-	# possible error codes: 
-	#	access_denied, 	User denied authorization.
-	#	invalid_scope,	Invalid scope parameter provided.... ex. too late / token timeout
-	#	invalid_redirect_uri, 	Provided redirect_uri parameter is either an invalid URL or is not allowed by your application settings.
-	#	invalid_request, 	Missing response_type parameter.
-	# 	unsupported_response_type, 	Unsupported response_type parameter. Currently the only supported response_type is code.
-
-
-	if (authr == "None" and error != "None"):
-		print "verify - auth Failed", edesc
-		return "auth failed %s" % edesc, 500
-
-
-	print "verify -- use request Token to get userINFO"
-	stripeHTTP = Http()
-	postdata = {}
-	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
-	postdata['grant_type']    = 'authorization_code'
-	postdata['code']          = authr
-
-	print "verify -- post Token to stripe"
-	resp, content = stripeHTTP.request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
-	rc = json.loads(content)
-	print "verify -- got response\n", rc
-#	print "error", rc['error']
-#	print "edesc", rc['error_description']
-#	print "livemode", rc['livemode']
-#	print "token", rc['access_token']
-#	print "stripe id", rc['stripe_user_id']
-
-	error = rc.get('error',       			 'None') 
-	edesc = rc.get('error_description', 	 'None') 
-	token = rc.get('access_token',			 'None') 
-	mode  = rc.get('livemode',				 'None')
-	pkey  = rc.get('stripe_publishable_key', 'None')
-	user  = rc.get('stripe_user_id',		 'None')
-
-	if error != 'None':
-		print "getToken Failed", edesc
-		return "auth failed %s" % edesc, 500
-
-	oauth_accounts = Oauth.query.filter_by(ht_account=uid).all()
-	if len(oauth_accounts) == 1:
-		oauth_stripe = oauth_accounts[0]
-		if (oauth_stripe.oa_account != rc['stripe_user_id']):
-			oauth_stripe.oa_account  = rc['stripe_user_id']
-			print 'changing stripe ID'
-
-		if (oauth_stripe.oa_token != rc['access_token']):
-			oauth_stripe.oa_token  = rc['access_token']
-			print 'changing user-access token, used to deposite into their account'
-
-		if (oauth_stripe.oa_optdata1 != pkey):
-			oauth_stripe.oa_optdata1  = pkey
-			print 'changing stripe pubkey'
-	else:
-		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], token=rc['access_token'], data1=rc['stripe_publishable_key'])
-
-	try:
-		print "try creating oauth_row"
-		db_session.add(oauth_stripe)
-		db_session.commit()
-		return make_response(redirect('/settings'))
-	except Exception as e:
-		print "had an exception with oauth_row" + str(e)
-		db_session.rollback()
-
-	return "good - but must've failed on create", 200
-
 
 
 
@@ -1081,32 +1094,37 @@ def tos():
 
 
 
-@ht_server.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
+@ht_server.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_page(appt_id, review_id):
+def render_review_page(meet_id, review_id):
 	uid = session['uid']
 
+	print 'render_review()\tenter'
+	# if its been 30 days since review creation.  Return an error.
+	# if review already exists, return a kind message.
+
 	try:
+		print 'render_review()\t', 'meeting =', meet_id, '\treview_id =', review_id
+		review = Review.get_by_id(review_id)
 		bp = Profile.get_by_uid(session['uid'])
-		print appt_id, ' = id of Appt'
-		print review_id, ' = id of Review'
-		the_review = Review.retreive_by_id(review_id)[0] 
-		print the_review
+		ba = Account.get_by_uid(bp.account)
+		rp = Profile.get_by_prof_id(review.prof_reviewed)	# reviewed  profile
+		print 'render_review()\t, author =', bp.prof_id, bp.prof_name, ba.email
+		print 'render_review()\t, review author =', review.prof_authored
+		print 'render_review()\t, review revied =', review.prof_reviewed
+		print review
 
-
-		the_review.validate(bp.prof_id)
+		review.validate(bp.prof_id)
 		print 'we\'re the intended audience'
 
-		print the_review.prof_authored
+		print review.prof_authored
 		print uid
 		print dt.utcnow()
 
-		bp = Profile.get_by_uid(session['uid'])					# authoring profile
-		rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 
 
-		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
+		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
+		#appt = Appointment.query.filter_by(apptid=_review.meet_id).all()[0]
 		#show the -cost, -time, -description, -location
 		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
@@ -1152,11 +1170,13 @@ def review():
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
+	# if this has been 30 days since proposal / review creation. Return an  error.
+
 	if review_form.validate_on_submit():
 		print 'form is valid'
 		try:
 			# add review to database
-			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
+			the_review = Review.get_by_id(review_form.review_id.data)
 			the_review.appt_score = int(review_form.input_rating.data)
 			the_review.generalcomments = review_form.input_review.data
 			the_review.score_attr_comm = int(review_form.score_comm.data)
@@ -1183,7 +1203,12 @@ def review():
 			db_session.commit()
 			print 'data has been posted'
 
-			# flash review will be posted at end of daysleft
+			# GET PROPOSAL / APPOINTMENT.
+			# proposal.set_flag(
+				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+			# db_session.add(proposal)
+
 			# email alt user to know review was captured
 			return make_response(redirect('/dashboard'))
 		except Exception as e:

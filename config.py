@@ -7,7 +7,7 @@ LOCAL_MODE	= os.environ.get("LOCAL", None)
 CSRF_ENABLED = True
 SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta3.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
+SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@htdb.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
 SQLALCHEMY_MIGRATE_REPO = HT_BASEDIR + '/database/'
 DATABASE_QUERY_TIMEOUT = 1.0 
 
@@ -35,8 +35,8 @@ S3_SECRET = 'fmrj4VzPRcLlkXs1/BuWGZ6nFlVIydP9FPf09Ua1'
 S3_SERVER = 'htfileupload.s3-website-us-west-1.amazonaws.com'	
 S3_DIRECTORY = '/htfileupload/'
 
-STRIPE_PUBLIC =	'pk_test_ga4TT1XbUNDQ3cYo5moSP66n'
-STRIPE_SECRET =	'sk_test_nUrDwRPeXMJH6nEUA9NYdEJX'
+STRIPE_PUBLIC =	'pk_test_d3gRvdhkXhLBS3ABhRPhOort'
+STRIPE_SECRET =	'sk_test_wNvqK0VIg7EqgmeXxiOC62md'
 
 LINKEDIN_KEY="ri7ghzey680z"
 LINKEDIN_SEC="LcHMnsf9vVqUg8rE"
