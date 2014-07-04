@@ -59,13 +59,6 @@ def ht_browsingprofile():
 	return None
 
 
-#@deprecated use Account.get_by...
-def ht_get_account(user_id=None):
-	if (user_id == None): user_id = session.get('uid', 0)
-	accounts = Account.query.filter_by(userid=user_id).all()
-	if (len(accounts) == 1): return accounts[0]
-	return None
-
 
 def ht_authenticate_user(user_email, password):
 	""" Returns authenticated account """
@@ -297,23 +290,27 @@ def meeting_timedout(meeting):
 	try:
 		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
 		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
-		print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
-		print 'meeting\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + proposal.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+		print '\t\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + proposal.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p %Z%z')
 
 		if (proposal.prop_state == APPT_STATE_PROPOSED):
+			print '\t\t\t\tPROPOSED...'
 			if (prop_ts <= utcsoon):
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
 				proposal.set_state(APPT_STATE_TIMEDOUT)
 				db_session.add(proposal)
 				db_session.commit()
 			else:
-				print '\t\t\t\tSafe!'
+				print '\t\t\t\t\t is before utcsoon timeout!= ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+				print '\t\t\t\t\t Safe!'
 				pass
 		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
 			print '\t\t\t\tACCEPTED...'
 			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
 				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				proposal.set_state(APPT_STATE_OCCURRED)
 				ht_enable_reviews(proposal.prop_uuid)
+			else:
+				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
 
 	except Exception as e:
 		print type(e), e

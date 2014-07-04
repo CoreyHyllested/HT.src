@@ -726,11 +726,11 @@ class Review(Base):
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
 
-	def __init__ (self, prop_id, usr_reviewed, usr_author):
+	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
-		self.prof_reviewed = usr_reviewed
-		self.prof_authored = usr_author
+		self.prof_reviewed = prof_reviewed
+		self.prof_authored = prof_author
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
@@ -748,10 +748,15 @@ class Review(Base):
 
 
 	@staticmethod
-	def retreive_by_id(find_id):
-		reviews = Review.query.filter_by(review_id=find_id).all()
-		if len(reviews) != 1: raise NoReviewFound(find_id, 'Sorry, review not found')
-		return reviews
+	def get_by_id(rev_id):
+		try:
+			review = Review.query.filter_by(review_id=rev_id).one()
+		except MultipleResultsFound as mrf:
+			print 'Never Happen Error: caught exception looking for Account UID', rev_id
+			review = None
+		except NoResultsFound as nrf:
+			review = None
+		return review
 
 
 	def validate (self, session_prof_id):

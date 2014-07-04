@@ -210,14 +210,10 @@ def getDBCorey(x):
 
 @mngr.task
 def ht_enable_reviews(prop_uuid):
-	the_proposal = Proposal.get_by_id(prop_uuid)
-
-	hp = the_proposal.prop_hero
-	bp = the_proposal.prop_user
-	ha = Account.get_by_prof_id(the_proposal.prop_hero)
-	ba = Account.get_by_prof_id(the_proposal.prop_user)
-
 	print 'ht_enable_reviews()  enter'
+	the_proposal = Proposal.get_by_id(prop_uuid)
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
 
 	# if -- canceled --- do not create reviews.
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
@@ -225,10 +221,10 @@ def ht_enable_reviews(prop_uuid):
 		print 'ht_enable_reviews(): ',  the_proposal.prop_uuid, ' is not in ACCEPTED state =', the_proposal.prop_state
 		# check to see if reviews_enabled already [If it lost a race]
 		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
-	review_hp = Review(the_proposal.prop_uuid, hp, bp)
-	review_bp = Review(the_proposal.prop_uuid, bp, hp)
-	print 'ht_enable_reviews()  review_hp' + str(review_hp.review_id)
-	print 'ht_enable_reviews()  review_bp' + str(review_bp.review_id)
+	review_hp = Review(the_proposal.prop_uuid, hp.prof_id, bp.prof_id)
+	review_bp = Review(the_proposal.prop_uuid, bp.prof_id, hp.prof_id)
+	print 'ht_enable_reviews()  review_hp: ' + str(review_hp.review_id)
+	print 'ht_enable_reviews()  review_bp: ' + str(review_bp.review_id)
 
 	try:
 		print 'ht_enable_reviews()  add and commit reviews.'
@@ -254,9 +250,8 @@ def ht_enable_reviews(prop_uuid):
 		print e	
 	
 	# Notifiy users.  Send email and TODO: Drop an event notice on each users' dashboard.
-	ht_email_review_notice(ha.email, hp.prof_name, the_proposal.prop_uuid, review_hp.review_id)
-	ht_email_review_notice(ba.email, bp.prof_name, the_proposal.prop_uuid, review_bp.review_id)
-
+	ht_email_review_notice(ha.email, hp.prof_name, the_proposal.prop_uuid, review_bp.review_id)
+	ht_email_review_notice(ba.email, bp.prof_name, the_proposal.prop_uuid, review_hp.review_id)
 	return None
 
 
@@ -279,24 +274,25 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 	"""
 
 	print 'ht_charge_creditcard: enter()'
-
 	the_proposal = Proposal.get_by_id(prop_id)
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)	# hack, remove me... 
+
 	print 'ht_charge_creditcard: prop_id = ' + str(prop_id) + " buyer =" + buyer_name + ',' + str(buyer_email) + " for $" + str(proposal_cost)
 	print 'ht_charge_creditcard: ' + str(the_proposal)
 
 
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
 		# update must set update_time. (if the_proposal.prop_updated > prev_known_update_time): corruption.
-		print 'ht_charge_creditcard: ',  the_proposal.prop_uuid, ' is not in ACCEPTED state =', the_proposal.prop_state
+		print 'ht_charge_creditcard: proposal (' + the_proposal.prop_uuid + ') is not in ACCEPTED state(' + str(APPT_STATE_ACCEPTED) + '), in state ' + str(the_proposal.prop_state)
 		return the_proposal.prop_state
 
-	print 'ht_charge_creditcard:  proposal is reasonable, charge customer' + the_proposal.charge_customer_id
+	print 'ht_charge_creditcard:  proposal is reasonable, charge customer ' + the_proposal.charge_customer_id
 	if (buyer_cust_token != the_proposal.charge_customer_id): print 'ht_charge_creditcard: WTF1.'
 
 	try:
 		s_prof = Profile.get_by_prof_id(the_proposal.prop_hero)
 		o_auth = Oauth.get_stripe_by_uid(s_prof.account)
-		if (o_auth is None): raise Exception ('user doesnt have stripe Oauth')
+		if (o_auth is None): raise Exception ('user,' + str(ha.email) + ' doesnt have Stripe Connect Oauth')
 		print 'ht_charge_creditcard: on behalf of ' +  s_prof.prof_name + ',' + o_auth.oa_secret
 		charge = stripe.Charge.create (
 			customer=buyer_cust_token,					# customer.id is the second one passed in

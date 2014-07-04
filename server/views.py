@@ -1015,35 +1015,37 @@ def tos():
 
 
 
-@ht_server.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
+@ht_server.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_page(appt_id, review_id):
+def render_review_page(meet_id, review_id):
 	uid = session['uid']
 
+	print 'render_review()\tenter'
 	# if its been 30 days since review creation.  Return an error.
 	# if review already exists, return a kind message.
 
 	try:
+		print 'render_review()\t', 'meeting =', meet_id, '\treview_id =', review_id
+		review = Review.get_by_id(review_id)
 		bp = Profile.get_by_uid(session['uid'])
-		print appt_id, ' = id of Appt'
-		print review_id, ' = id of Review'
-		the_review = Review.retreive_by_id(review_id)[0] 
-		print the_review
+		ba = Account.get_by_uid(bp.account)
+		rp = Profile.get_by_prof_id(review.prof_reviewed)	# reviewed  profile
+		print 'render_review()\t, author =', bp.prof_id, bp.prof_name, ba.email
+		print 'render_review()\t, review author =', review.prof_authored
+		print 'render_review()\t, review revied =', review.prof_reviewed
+		print review
 
-
-		the_review.validate(bp.prof_id)
+		review.validate(bp.prof_id)
 		print 'we\'re the intended audience'
 
-		print the_review.prof_authored
+		print review.prof_authored
 		print uid
 		print dt.utcnow()
 
-		bp = Profile.get_by_uid(session['uid'])					# authoring profile
-		rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 
 
-		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
+		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
+		#appt = Appointment.query.filter_by(apptid=_review.meet_id).all()[0]
 		#show the -cost, -time, -description, -location
 		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
@@ -1095,7 +1097,7 @@ def review():
 		print 'form is valid'
 		try:
 			# add review to database
-			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
+			the_review = Review.get_by_id(review_form.review_id.data)
 			the_review.appt_score = int(review_form.input_rating.data)
 			the_review.generalcomments = review_form.input_review.data
 			the_review.score_attr_comm = int(review_form.score_comm.data)
