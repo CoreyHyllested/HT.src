@@ -183,6 +183,7 @@ class Account(Base):
 	sec_question = Column(String(128))
 	sec_answer   = Column(String(128))
 	stripe_cust	 = Column(String(64))
+	role		 = Column(Integer, default = 0)
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
