@@ -750,8 +750,8 @@ class Lesson(Base):
 	lesson_country = Column(String(64))
 	lesson_address_details = Column(String(256))
 
-	lesson_updated = Column(DateTime(), nullable=False, default = dt.utcnow())
-	lesson_created = Column(DateTime(), nullable=False, default = dt.utcnow())
+	lesson_updated = Column(DateTime(), nullable=False)
+	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
 
 	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
@@ -760,10 +760,11 @@ class Lesson(Base):
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
 		self.lesson_profile	= profile_id
+		self.lesson_updated = dt.utcnow()
+		self.lesson_created = dt.utcnow()
 
 
 	def __repr__ (self):
-
 		return '<Lesson: %r, %r, %r>' % (self.lesson_id, self.lesson_profile, self.lesson_title)
 
 
