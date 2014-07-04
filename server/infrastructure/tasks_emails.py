@@ -183,7 +183,7 @@ def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
 
 
 @mngr.task
-def send_appt_emails(the_proposal):
+def ht_email_meeting_accepted(the_proposal):
 
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
 	print 'sending proposal-accepted emails @ ' + the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
