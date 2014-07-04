@@ -159,8 +159,8 @@ def ht_proposal_accept(prop_uuid, uid):
 
 	send_appt_emails(the_proposal)
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	enque_reminder1 = ht_send_reminder_email.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	enque_reminder2 = ht_send_reminder_email.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	enque_reminder1 = ht_email_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	enque_reminder2 = ht_email_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
 	print 'ht_proposal_accept: returning successfully'
@@ -212,9 +212,10 @@ def getDBCorey(x):
 def ht_enable_reviews(prop_uuid):
 	the_proposal = Proposal.get_by_id(prop_uuid)
 
-	#is this submitted after stripe?  
 	hp = the_proposal.prop_hero
 	bp = the_proposal.prop_user
+	ha = Account.get_by_prof_id(the_proposal.prop_hero)
+	ba = Account.get_by_prof_id(the_proposal.prop_user)
 
 	print 'ht_enable_reviews()  enter'
 
@@ -223,6 +224,7 @@ def ht_enable_reviews(prop_uuid):
 		#TODO turn this into a Proposal method!
 		print 'ht_enable_reviews(): ',  the_proposal.prop_uuid, ' is not in ACCEPTED state =', the_proposal.prop_state
 		# check to see if reviews_enabled already [If it lost a race]
+		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
 	review_hp = Review(the_proposal.prop_uuid, hp, bp)
 	review_bp = Review(the_proposal.prop_uuid, bp, hp)
 	print 'ht_enable_reviews()  review_hp' + str(review_hp.review_id)
@@ -251,8 +253,10 @@ def ht_enable_reviews(prop_uuid):
 		db_session.rollback()
 		print e	
 	
-	#Notifiy user.  Email.  Drop an event notice on their dashboard.
-	print 'ht_enable_reviews()  send emails + reminders(?).'
+	# Notifiy users.  Send email and TODO: Drop an event notice on each users' dashboard.
+	ht_email_review_notice(ha.email, hp.prof_name, the_proposal.prop_uuid, review_hp.review_id)
+	ht_email_review_notice(ba.email, bp.prof_name, the_proposal.prop_uuid, review_bp.review_id)
+
 	return None
 
 
