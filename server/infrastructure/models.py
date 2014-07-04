@@ -469,7 +469,7 @@ class Proposal(Base):
 
 	def set_flag(self, flag):
 		if (flag <= APPT_FLAG_COMPLETE): raise Exception('Use set state to verify state change')
-		return (self.flags | (0x1 << flag))
+		self.prop_flags = (self.prop_flags | (0x1 << flag))
 
 
 	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):

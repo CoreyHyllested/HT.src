@@ -311,7 +311,6 @@ def meeting_timedout(meeting):
 				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\t\tFILTER Event out manually.  The events are working!!!'
 				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
-				#ht_enable_reviews(proposal.prop_uuid)
 			else:
 				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
 

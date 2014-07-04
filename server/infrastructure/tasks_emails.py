@@ -160,7 +160,7 @@ def send_proposal_reject_emails(the_proposal):
 def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
 	print 'ht_email_meeting_reminder()  sending appointment reminder emails now for ' + prop_uuid
 
-	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + prop_uuid + "is about to begin.</p>"
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment " + prop_uuid + " is about to begin.</p>"
 	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
@@ -171,11 +171,17 @@ def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
 @mngr.task
 def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
 	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
+	proposal = Proposal.get_by_id(prop_uuid)
+	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
+	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
+	partner_prof = sellr_prof
+	if (sellr_acct.email == user_email):
+		partner_prof = buyer_prof
 
 	msg_html = "<p>Hey, " + user_name + ",</p>"
 	msg_html = msg_html + "<p>Your meeting is over.<br>" + "When you have a few minutes, <a href=\"http://127.0.0.1:5000/review/"+prop_uuid+"/"+review_id+"\"> review your meeting.</a> "
-	msg_html = msg_html + " with USER_NAME/link.</p>"
-	msg = create_msg('Review Insprite Meeting', user_email, user_name, 'noreply@herotime.co', u'Insprite Notifications')
+	msg_html = msg_html + " with " + partner_prof.prof_name + " going over " + proposal.prop_desc + "</p>"
+	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@herotime.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
 

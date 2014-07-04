@@ -214,7 +214,8 @@ def ht_enable_reviews(prop_uuid):
 	# if -- canceled --- do not create reviews.
 	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
 		#TODO turn this into a Proposal method!
-		print 'ht_enable_reviews(): ',  the_proposal.prop_uuid, ' is not in ACCEPTED state =', the_proposal.prop_state
+		print 'ht_enable_reviews(): ' +  the_proposal.prop_uuid + ' is not in ACCEPTED state =' + the_proposal.prop_state
+		print 'ht_enable_reviews(): continuing; we might want to stop... depends on if we lost a race; prop implemnt OCCURRED_event'
 		# check to see if reviews_enabled already [If it lost a race]
 		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
 	review_hp = Review(the_proposal.prop_uuid, hp.prof_id, bp.prof_id)
@@ -271,7 +272,7 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 
 	print 'ht_charge_creditcard: enter()'
 	the_proposal = Proposal.get_by_id(prop_id)
-	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)	# hack, remove me... 
+	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)	# hack, remove me...
 
 	print 'ht_charge_creditcard: prop_id = ' + str(prop_id) + " buyer =" + buyer_name + ',' + str(buyer_email) + " for $" + str(proposal_cost)
 	print 'ht_charge_creditcard: ' + str(the_proposal)
@@ -310,7 +311,7 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 			print 'ht_charge_creditcard: Neeto -- but that shouldnt have happened'
 
 		print 'ht_charge_creditcard: adding modified proposal'
-		#the_proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		the_proposal.set_state(APPT_STATE_OCCURRED)				# TODO.  You should create the occurred_api. that charges first, then sets up reviews.  TOTAL HACK, REMOVE
 		the_proposal.appt_charged = dt.now(timezone('UTC'))
 		the_proposal.charge_transaction = charge['id']		 #once upon a time, this was the idea::the_proposal.charge_transaction = charge['balance_transaction']
 		db_session.add(the_proposal)
@@ -326,14 +327,14 @@ def ht_charge_creditcard(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer
 		print 'ht_charge_creditcard: Exception', type(e), e
 		raise e
 
-	captureTime = dt.now(timezone('UTC')) + timedelta(minutes=30)
+	captureTime = the_proposal.prop_tf + timedelta(days=2)
+	captureTime = dt.now(timezone('UTC')) + timedelta(minutes=15)	#remove when done testing
 	print 'ht_charge_creditcard: TODO... create mngr.event to capture in 4+days'
-#	captureTime = the_proposal.prop_tf + timedelta(days=2)
 	ht_capture_creditcard.apply_async(args=[the_proposal.prop_uuid], eta=(captureTime))
 
-	print 'ht_charge_creditcard: charge[failure_code] =' + str(charge['failure_code'])
-	print 'ht_charge_creditcard: charge[balance_transaction]' + str(charge['balance_transaction'])
-	print 'ht_charge_creditcard: charge[failure_message]' + str(charge['failure_message'])
+	print 'ht_charge_creditcard: charge[failure_code] ' + str(charge['failure_code'])
+	print 'ht_charge_creditcard: charge[balance_transaction] ' + str(charge['balance_transaction'])
+	print 'ht_charge_creditcard: charge[failure_message] ' + str(charge['failure_message'])
 	print 'ht_charge_creditcard: returning successful.'
 
 
@@ -344,8 +345,6 @@ def ht_capture_creditcard(prop_id):
 	""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
 		ht_capture_cc() is delayed. That is why we must pass in prop_id, and get info from DB rather than pass in proposal.
 	"""
-#(prop_id, buyer_email, buyer_name, buyer_cc_token, buyer_cust_token, proposal_cost, prev_known_update_time=None):
-
 	print 'ht_capture_cc: enter()'
 	proposal = Proposal.get_by_id(prop_id)
 	(ha, hp) = get_account_and_profile(proposal.prop_hero)	# hack, remove me...
@@ -360,7 +359,15 @@ def ht_capture_creditcard(prop_id):
 		return proposal.prop_state
 
 	try:
+		print 'ht_capture_cc: initialize stripe with their Key() -- get o_auth'
+		o_auth = Oauth.get_stripe_by_uid(hp.account)
+		print 'ht_capture_cc: initialize stripe with their Key() -- o_auth.' + o_auth.oa_secret
+		stripe.api_key = o_auth.oa_secret
+
+		print 'ht_capture_cc: go get the charge'
 		stripe_charge = stripe.Charge.retrieve(proposal.charge_transaction)
+
+		print 'ht_capture_cc: initialize stripe with our Key() -- ready, set, capture'
 		charge = stripe_charge.capture()
 
 		print 'ht_capture_cc: Post Charge'
@@ -369,8 +376,8 @@ def ht_capture_creditcard(prop_id):
 		if charge['captured'] == True:
 			print 'ht_capture_cc: That\'s all folks, it worked!'
 
-		#proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
-		proposal.appt_charged = dt.now(timezone('UTC'))
+		proposal.set_flag(APPT_FLAG_MONEY_CAPTURED)
+		proposal.appt_charged = dt.utcnow()  #appt_charged has no timezone, dumb, dumb, dumb
 		print 'ht_capture_cc: keep the balance transaction? ' + str(charge['balance_transaction'])
 		print 'ht_capture_cc: adding modified proposal'
 		db_session.add(proposal)
@@ -383,13 +390,13 @@ def ht_capture_creditcard(prop_id):
 		raise e
 	except Exception as e:
 		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
-		print 'ht_charge_creditcard: Exception', type(e), e
+		print 'ht_capture_cc: Exception', type(e), e
 		raise e
 
-	print 'ht_charge_creditcard: charge[failure_code] = ' + str(charge['failure_code'])
-	print 'ht_charge_creditcard: charge[balance_transaction] ' + str(charge['balance_transaction'])
-	print 'ht_charge_creditcard: charge[failure_message] ' + str(charge['failure_message'])
-	print 'ht_charge_creditcard: returning successful.'
+	print 'ht_capture_cc: charge[failure_code] = ' + str(charge['failure_code'])
+	print 'ht_capture_cc: charge[balance_transaction] ' + str(charge['balance_transaction'])
+	print 'ht_capture_cc: charge[failure_message] ' + str(charge['failure_message'])
+	print 'ht_capture_cc: returning successful.'
 
 
 
