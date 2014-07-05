@@ -1135,21 +1135,12 @@ def logout():
 	return redirect('/')
 
 
-@ht_server.errorhandler(404)
-def pageNotFound(error):
-	return render_template('404.html'), 404
 
 
-def pageNotFound(pg, error):
-	return render_template('404.html'), 404
+@ht_server.route('/notathing')
+def servicefailure():
+	return render_template('404.html')
 
-
-@ht_server.errorhandler(500)
-def servicefailure(pg):
-	return render_template('500.html'), 500
-
-def serviceFailure(pg, error):
-	return render_template('500.html'), 500
 
 
 linkedin.pre_request = change_linkedin_query
@@ -1175,7 +1166,7 @@ def ht_email_operations(operation, data):
 		print email_set
 		ht_send_verification_to_list(ba, bp, email_set)
 		return jsonify(rc=200), 200
-	return pageNotFound('Not sure what you were looking for')
+	return jsonify(bug=404) #pageNotFound('Not sure what you were looking for')
 
 
 
