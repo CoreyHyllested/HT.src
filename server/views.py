@@ -25,6 +25,12 @@ from werkzeug.security import generate_password_hash #rm -- should be in control
 
 
 
+@ht_server.route('/email_template', methods=['GET', 'POST'])
+def render_email_template():
+	send_recovery_email('corey@insprite.co', 'blah blah')
+	return make_response(render_template('generic_email_template.html'))
+
+
 @ht_server.route('/', methods=['GET', 'POST'])
 @ht_server.route('/index')
 @dbg_enterexit

@@ -94,13 +94,73 @@ def send_verification_email(user_email, user_name, challenge_hash):
 def send_recovery_email(toEmail, challenge_hash):
 	url = 'https://herotime.co/password/reset/' + str(challenge_hash) + "?email=" + str(toEmail)
 	msg_text = "Go to " + url + " to recover your HeroTime password."
-	msg_html = "Click <a href=\"" + url + "\">here</a> to recover your HeroTime password."
+	msg_html = gen_recovery_msg(url)
+	#"Click <a href=\"" + url + "\">here</a> to recover your HeroTime password."
 
 	msg = create_msg('HeroTime password recovery requested.', toEmail, toEmail, 'noreply@herotime.co', u'HeroTime')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(toEmail, msg)
 
+
+def gen_recovery_msg(url):
+	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
+	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr>'
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="10" width="600">'
+	msg = msg + '<tbody>'
+
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #000000; text-align: center; height: 50px;" align="center">'
+	msg = msg + '\t\t<span style="font-size: 10px; color: #575757; line-height: 200%; font-family: Helvetica Neue; text-decoration: none;">Having trouble viewing this email? <a style="font-size: 10px; color: #575757; line-height: 200%; font-family: Helvetica Neue; text-decoration: none; font-weight: bold;" href="#">View it in your browser.</a></span>'
+	msg = msg + '\t</td></tr>'
+
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</tbody>'
+	msg = msg + '</table>'
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-1.png">'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="110" width="600" height="350">'
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:16px;">We get it&mdash;passwords can be tough to remember.<br><br>'
+	msg = msg + '\t\t\t No biggie, simply follow the instructions to change it at <a href="' + url  + '">' + url + '</a> and you\'ll be good to go.<br><br>'
+	msg = msg + '\t\t\tDidn\'t request for a password reset?  <a href="mailto@thegang@insprite.co" style="color:#29abe1">Give us a holler ASAP</a>.</font>'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/facebookIcon.png">'
+	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/twitterIcon.png">'
+	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
+	msg = msg + '\t\t| Sent by Insprite.co, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+
+	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\t<tr> <td style="border-top: 0px solid #333333; border-bottom: 0px solid #FFFFFF;">'
+	msg = msg + '\t\t<img width="596px" src="http://ryanfbaker.com/insprite/footerImage.png">'
+	msg = msg + '\t</td></tr>'
+	msg = msg + '</table>'
+	return msg
 
 
 @mngr.task
