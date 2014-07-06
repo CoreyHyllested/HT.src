@@ -517,11 +517,11 @@ def render_seller_signup_page(usrmsg = None):
 
 
 
-@ht_server.route('/add_lesson', methods=['GET', 'POST'])
-@req_authentication
-def render_add_lesson_page(usrmsg = None):
-	bp = Profile.get_by_uid(session.get('uid'))
-	return make_response(render_template('add_lesson.html', title='- List a Lesson', bp=bp))
+# @ht_server.route('/add_lesson', methods=['GET', 'POST'])
+# @req_authentication
+# def render_add_lesson_page(usrmsg = None):
+# 	bp = Profile.get_by_uid(session.get('uid'))
+# 	return make_response(render_template('add_lesson.html', title='- List a Lesson', bp=bp))
 
 
 
@@ -733,12 +733,13 @@ def render_dashboard(usrmsg=None):
 	try:
 		(props, appts) = ht_get_active_meetings(bp)
 		unread_msgs = ht_get_unread_messages(bp)
+		lessons = ht_get_lessons(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
 
@@ -755,41 +756,40 @@ def display_partner_message(msg, prof_id):
 def upload():
 	log_uevent(session['uid'], " uploading file")
 	#trace(request.files)
-	print 'enter'
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
+	lesson_id = request.values.get('lesson_id')
 
-
-	print 'orig', orig
-	print 'prof', prof
+	print 'upload: orig', orig
+	print 'upload: prof', prof
+	print 'upload: lesson_id', lesson_id
 
 	for mydict in request.files:
 
 		comment = ""
 
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("upload: reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
-		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		print ("upload: img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			# create Image.
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment)
+			metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
 			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
 			try:
-				print 'adding metaimg to db'
+				print 'upload: adding metaimg to db'
 				db_session.add(metaImg)
 				db_session.commit()
 			except Exception as e:
-				print e
+				print 'upload: exception',e
 				db_session.rollback()
-
 
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
@@ -1443,7 +1443,17 @@ def render_multiupload_page():
 def render_edit_portfolio_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	lesson_id = request.values.get('lesson_id')
+
+	print "render_edit_portfolio_page(): Lesson ID:", lesson_id
+
+	if (lesson_id != None):
+		print "Lesson is set - ",lesson_id
+		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()	
+	else:
+		print "Lesson Not Set"
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
 
@@ -1707,29 +1717,44 @@ def render_compose_page():
 def ht_api_update_portfolio(operation):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	print operation
+	lesson_id = request.values.get('lesson_id')
+	
+	
+	print "-"*24
+	print "ht_api_update_portfolio(): operation:", operation
+	print "ht_api_update_portfolio(): lesson_id:", lesson_id
+	
 
 	try:
 		# get user's portfolio
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		# portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+
+		# get portfolio images for this lesson
+		if (lesson_id is not None):
+			portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		else:
+			portfolio = None
+			print "ht_api_update_portfolio(): Couldn't find Lesson."
+	
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	if (operation == 'add'):
-		print 'adding file'
+		print 'ht_api_update_portfolio(): adding file'
 	elif (operation == 'update'):
-		print 'usr request: update portfolio'
+		print 'ht_api_update_portfolio(): usr request: update portfolio'
 		images = request.values.get('images')
-
+		print "ht_api_update_portfolio(): images:", str(images)
 		try:
 			for img in portfolio:
 				update = False;
-				print img, img.img_id
+				print "-"*12
+				print "Portfolio Image:", img, img.img_id
 				jsn = request.values.get(img.img_id)
 				if jsn is None:
 					print img.img_id, 'doesnt exist in user-set, deleted.'
-					db_session.delete(img)
+					# db_session.delete(img)
 					continue
 
 				obj = json.loads(jsn)
@@ -1761,74 +1786,93 @@ def ht_api_update_portfolio(operation):
 @req_authentication
 def ht_api_lesson_create():
 	user_message = 'Initializing Lesson...'
+	bp = Profile.get_by_uid(session['uid'])
+	print "ht_api_lesson_create: bp is",bp
+	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
 
 	try:
-		print 'ht_api_lesson_create'
-		lesson = ht_create_lesson(session['uid'])
-		if (lesson is not None): user_message = 'Successfully initialized lesson'
+		lesson = ht_create_lesson()
+		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
+		if (lesson is not None): 
+			print 'ht_api_lesson_create: Successfully initialized lesson'
+		else:
+			print 'ht_api_lesson_create: Error initializing lesson'
+
 	except Sanitized_Exception as se:
 		user_message = se.get_sanitized_msg()
+		print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
+		print 		
 		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+
 	except Exception as e:
-		print type(e), e
+		print 'ht_api_lesson_create: exception:', type(e), e
+		print 
 		return make_response(jsonify(usrmsg='Something bad'), 500)
 
-	return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id))
+	return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, bp=bp))
 
 
 @ht_server.route('/create_lesson', methods=['POST'])
+
 #@dbg_enterexit
 @req_authentication
-def render_create_lesson():
+def create_lesson():
 	""" We have initialized a lesson already in /lesson/create - we will now add the details """
 
-	print 'enter create lesson'
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
-	lesson = None
 	form = request.form
+
+	print "\nHere's the form data:", str(form)
+	print "\nThe Lesson ID: ",form["addLessonID"]
+
 	# if form.validate_on_submit():
 	try:
-		print ("form is valid")
-		lesson.lesson_id = form.lesson_id.data
-		lesson.lesson_profile = bp.prof_id
-		lesson.lesson_title = form.lesson_title.data 
-		lesson.lesson_description = form.lesson_description.data 
-		# TODO - make this pull from Industry and make the form element dynamically generated
-		# lesson.lesson_industry = Industry.industries[int(form.lesson_industry.data)] 
-		lesson.lesson_industry = form.lesson_industry.data 
-		lesson.lesson_hourly_rate = form.lesson_industry.data
-		lesson.lesson_lesson_rate = form.lesson_industry.data
-		
-		# lesson_avail = Column(Integer, nullable=False, default=LESSON_AVAIL_DEFAULT)
-		lesson.lesson_duration	= form.lesson_duration.data
+		lesson = Lesson.get_by_lesson_id(form["addLessonID"])
 
-		# lesson_loc_option = Column(Integer, nullable=False, default=LESSON_LOC_ANY)
-		
-		lesson.lesson_address_1 = form.lesson_address_1.data
-		lesson.lesson_address_2 = form.lesson_address_2.data
-		lesson.lesson_city = form.lesson_city.data
-		lesson.lesson_state = form.lesson_state.data
-		lesson.lesson_zip = form.lesson_zip.data
-		lesson.lesson_country = form.lesson_country.data
-		lesson.lesson_address_details = form.lesson_address_details.data
+		print "\nHere's the lesson from the database: ", str(lesson)
+
+		lesson.lesson_title = request.form.get('addLessonTitle')
+		lesson.lesson_description = request.form.get('addLessonDescription')
+
+		lesson.lesson_industry = request.form.get('addLessonIndustry')
+		lesson.lesson_unit = request.form.get('addLessonRateUnit')
+
+		if (lesson.lesson_unit == "perHour"):
+			lesson.lesson_hourly_rate = request.form.get('addLessonRate')
+		else:
+			lesson.lesson_lesson_rate = request.form.get('addLessonRate')
+
+		lesson.lesson_avail = request.form.get('addLessonAvail')
+		lesson.lesson_duration	= request.form.get('addLessonDuration')
+
+		lesson.lesson_loc_option = request.form.get('addLessonPlace')
+
+		lesson.lesson_address_1 = request.form.get('addLessonAddress1')
+		lesson.lesson_address_2 = request.form.get('addLessonAddress2')
+		lesson.lesson_city = request.form.get('addLessonCity')
+		lesson.lesson_state = request.form.get('addLessonState')
+		lesson.lesson_zip = request.form.get('addLessonZip')
+		lesson.lesson_country = request.form.get('addLessonCountry')
+		lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
 
 		# This maybe doesn't work? Leaving out for now
 		# lesson.lesson_updated = dt.utcnow()
 
-		# Set the state
-		# LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
-		# LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#2
-		# LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#4
-		# lesson.set_state(LESSON_STATE_ACTIVE)
+		if (request.form.get('addLessonSave') == "True"):
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_SAVED
+		elif (request.form.get('addLessonMakeLive') == "True"):
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_ACTIVE
+		else:
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_PRIVATE
 
-		print 'add'
+		print 'adding lesson: ', lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
 		db_session.add(lesson)
-		print 'commit'
+		print 'committing...'
 		db_session.commit()
 		log_uevent(uid, "create lesson")
 
-		return render_dashboard(usrmsg='Lesson Successfully Created! How about that...')
+		return make_response(redirect(url_for('render_dashboard')))
 
 		# return jsonify(usrmsg="lesson created"), 200
 

@@ -4,7 +4,8 @@ $(document).ready(function(){
 	var firstPage = "overview";
 	var lastPage = "rate";
 	// var lastPage = "edit_photos";
-
+	var lessonID = $("#addLessonForm").attr("data-lesson-id");
+	
 	// Form Navigation and State Management
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
@@ -15,7 +16,7 @@ $(document).ready(function(){
 	if (window.location.hash) {
 		var hash = window.location.hash.substring(1);	
 		if (hash == "edit_photos") {
-			loadPortfolioImages();
+			loadPortfolioImages(lessonID);
 		}	
 		$('#'+hash).show();			
 		history.replaceState({title: hash}, "", '');
@@ -30,7 +31,7 @@ $(document).ready(function(){
 			var page_title = event.state.title;
 			$('.addLessonFormPage').hide();
 			if (page_title == "edit_photos") {
-				loadPortfolioImages();
+				loadPortfolioImages(lessonID);
 			}			
 			$("#"+page_title).show();
 		}
@@ -41,10 +42,10 @@ $(document).ready(function(){
 		var target = $(this).attr("data-target-page");
 		// $('.addLessonHeaderPageName').text($("#"+target+' .formTitle').text());
 		if (target == "edit_photos") {
-			loadPortfolioImages();
+			loadPortfolioImages(lessonID);
 		}
 		$("#"+target).show();
-		history.pushState({title: target}, "", '/add_lesson#'+target);
+		history.pushState({title: target}, "", '/lesson/create#'+target);
 	});
 
 	$(document.body).on("click", ".addLessonFormButton", function(e) {
@@ -52,21 +53,23 @@ $(document).ready(function(){
 		$('.addLessonFormPage').hide();
 		var currentPage = $(this).attr("data-current-page");
 		var nextPage = $('#'+currentPage).next('.addLessonFormPage').attr("id");
+		
 
 		if (nextPage == "edit_photos") {
-			loadPortfolioImages();
+			loadPortfolioImages(lessonID);
 		}
 
 		// $('.addLessonHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#'+nextPage).show();
 
-		history.pushState({title: nextPage}, "", '/add_lesson#'+nextPage);
+		history.pushState({title: nextPage}, "", '/lesson/create#'+nextPage);
 	});
 
 	$('.addLessonFormButtonSubmit').click(function(e) {
 		e.preventDefault();
 
 		var formData = {};
+
 		// formData.oauth_stripe = $("#oauth_stripe").val();
 		// formData.ssAvailOption = $("#ssAvailOption").val();
 		// formData.ssAvailTimes = $("#ssAvailTimes").val();
@@ -74,8 +77,8 @@ $(document).ready(function(){
 		// console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
 		// Uncomment when ready to actually do the database stuff
-		//$("#addLessonForm").submit();
-		openAlertWindow("Thanks for registering!");
+		$("#addLessonForm").submit();
+		
 
 	});
 
@@ -87,7 +90,7 @@ $(document).ready(function(){
 		var prevPage = $(".addLessonNavLink[data-target-page=" + currentPage + "]").parent().prev(".addLessonNavItem").children().attr("data-target-page");
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());			
 		$('#'+prevPage).show();
-		history.pushState({title: prevPage}, "", '/add_lesson#'+prevPage);
+		history.pushState({title: prevPage}, "", '/lesson/create#'+prevPage);
 	})
 
 	// Form element Behavior
@@ -95,7 +98,7 @@ $(document).ready(function(){
 	$("#addressFields").css("opacity", .4).attr("disabled", "disabled");
 
 	$('input[name="addLessonPlace"]').click(function() {
-		if ($(this).val() == 'Teacher') {
+		if ($(this).val() == 2) {
 		  $("#addressFields").css("opacity", 1).removeAttr("disabled");
 		} else {
 		  $("#addressFields").css("opacity", .4).attr("disabled", "disabled");
@@ -111,11 +114,10 @@ $(document).ready(function(){
 });
 
 
-function loadPortfolioImages() {
+function loadPortfolioImages(lesson_id) {
 
 	var fd = {};
-	// fd.lesson_id = "{{ lesson_id }}";
-	fd.csrf_token = "{{ csrf_token() }}";
+	fd.lesson_id = lesson_id;
 	$.ajax({ url : "/edit_portfolio",
 			type : "GET",
 			data : fd,

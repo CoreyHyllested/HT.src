@@ -51,7 +51,7 @@ h3 {
 }
 
 .debug {
-	font-size: .8em;
+	font-size: .8em !important;
 	color: gray;
 	line-height: 1em;
 }

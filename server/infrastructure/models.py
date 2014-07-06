@@ -80,11 +80,12 @@ REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
 IMG_FLAG_PROFILE = 0	# A Profile Image
 IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
 IMG_FLAG_VISIBLE = 2	# Image is visible or shown.  Maybe flagged, deleted, or not ready yet.
+IMG_FLAG_SELLERPROF = 3	# Image is a Seller's Profile Image.
 
 IMG_STATE_PROFILE = (0x1 << IMG_FLAG_PROFILE)
 IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
 IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
-
+IMG_STATE_SELLERPROF = (0x1 << IMG_FLAG_VISIBLE)
 
 MSG_FLAG_LASTMSG_READ = 0
 MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
@@ -97,12 +98,14 @@ MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
 MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
 
 LESSON_FLAG_STARTED = 0 		# User started to create a lesson
-LESSON_FLAG_PRIVATE = 1 		# User completed making the lesson but left it private
-LESSON_FLAG_ACTIVE = 2 		# User completed making the lesson and made it active
+LESSON_FLAG_SAVED = 1 		# User completed making the lesson but saved it before finished
+LESSON_FLAG_PRIVATE = 2 		# User completed making the lesson but left it private
+LESSON_FLAG_ACTIVE = 3 		# User completed making the lesson and made it active
 
 LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
-LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#2
-LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#4
+LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
+LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
 
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
@@ -593,11 +596,13 @@ class Image(Base):
 	img_created = Column(DateTime())
 	img_flags	= Column(Integer, default=0)
 	img_order	= Column(Integer, default=0, nullable=False)
+	img_lesson	= Column(String(256))
 
-	def __init__(self, imgid, prof_id, comment=None):
+	def __init__(self, imgid, prof_id, comment=None, lesson=None):
 		self.img_id  = imgid
 		self.img_profile = str(prof_id)
 		self.img_comment = comment
+		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
 
 	def __repr__ (self):
@@ -792,17 +797,17 @@ class Lesson(Base):
 
 	lesson_id	= Column(String(40), primary_key=True, index=True)
 	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
-	lesson_title = Column(String(128), nullable=False)
+	lesson_title = Column(String(128))
 	lesson_description	= Column(String(5000))
-	lesson_industry	= Column(String(64), nullable=False)
+	lesson_industry	= Column(String(64))
 
 	lesson_hourly_rate	= Column(Integer)
 	lesson_lesson_rate	= Column(Integer)
 
-	lesson_avail = Column(Integer, nullable=False, default=LESSON_AVAIL_DEFAULT)
+	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
 	lesson_duration	= Column(Integer)
 
-	lesson_loc_option = Column(Integer, nullable=False, default=LESSON_LOC_ANY)
+	lesson_loc_option = Column(Integer, default=LESSON_LOC_ANY)
 	lesson_address_1 = Column(String(64))
 	lesson_address_2 = Column(String(64))
 	lesson_city = Column(String(64))
@@ -811,7 +816,7 @@ class Lesson(Base):
 	lesson_country = Column(String(64))
 	lesson_address_details = Column(String(256))
 
-	lesson_updated = Column(DateTime(), nullable=False)
+	lesson_updated = Column(DateTime())
 	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
 
@@ -821,7 +826,6 @@ class Lesson(Base):
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
 		self.lesson_profile	= profile_id
-		self.lesson_updated = dt.utcnow()
 		self.lesson_created = dt.utcnow()
 
 

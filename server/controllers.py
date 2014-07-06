@@ -509,22 +509,28 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 
 
 
-def ht_create_lesson(uid):
-	bp = Profile.get_by_uid(uid)
+def ht_create_lesson():
+	bp = Profile.get_by_uid(session["uid"])
 	try:
-		print 'create lesson'
-		lesson = Lesson(profile_id)
+		lesson = Lesson(bp.prof_id)
+		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
+		# lesson.set_state(LESSON_STATE_STARTED)
 		db_session.add(lesson)
 		db_session.commit()
 
 	except IntegrityError as ie:
-		print ie
+		print 'ht_create_lesson: ERROR ie:', ie
 		db_session.rollback()
 		return None
 	except Exception as e:
-		print e
+		print 'ht_create_lesson: ERROR e:', e
 		db_session.rollback()
 		return None
 
-	return (lesson)
+	return lesson
+
+def ht_get_lessons(profile):
+	
+	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
+	return lessons
 

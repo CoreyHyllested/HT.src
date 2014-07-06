@@ -23,6 +23,29 @@
 		</div>
 
 		<div class="dashboardOffers">
+			<h1>My Lessons</h1>
+			{% for lesson in lessons %}
+				{% if lesson.lesson_title != None %}
+				<div class="dashboardApptLeftColumn">
+					{% if lesson.lesson_flags == 0 %}
+						Incomplete			
+					{% elif lesson.lesson_flags == 1 %}
+						Inactive
+					{% else %}
+						Active
+					{% endif %}
+				</div>
+				<div class="dashboardApptCenterColumn">
+					<h3>{{lesson.lesson_title}}</h3>
+				</div>
+				<div class="dashboardApptRightColumn">
+				</div>
+				<div class="clear"></div>	
+				{% endif %}			
+			{% endfor %}
+
+		</div>
+		<div class="dashboardOffers">
 			<h1>Pending Offers ({{proposals|length}})</h1>
 
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
