@@ -35,14 +35,12 @@ create_dir('/tmp/ht_upload/')
 
 def initialize_server(config_name):
 	print 'initializing server'
-	from views import insprite_views
 	ht_server = Flask(__name__)
 	ht_server.config.from_object(server_configuration['development'])
 	ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	ht_server.debug = True
 	ht_server.logger.setLevel(logging.DEBUG)
 	ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
-	ht_server.register_blueprint(insprite_views)
 
 	print 'configuring server'
 	return ht_server
@@ -88,3 +86,6 @@ linkedin = ht_oauth.remote_app(  'linkedin',
 
 from server.infrastructure import srvc_database
 from server import views, controllers 
+from routes import authentication, everyone, users, api, errors
+from routes import insprite_views as main_blueprint
+ht_server.register_blueprint(main_blueprint)

@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2012 - 2013 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
-# 
-# All information contained is the property of HeroTime, Inc.  Any intellectual 
-# property about the design, implementation, processes, and interactions with 
-# services may be protected by U.S. and Foreign Patents.  All intellectual 
-# property contained within is covered by trade secret and copyright law.   
-# 
-# Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
 #################################################################################
 
 
