@@ -31,6 +31,8 @@ class Config:
 	HT_UPLOAD_DIR='/tmp/ht_upload/'
 	HT_IMAGES_EXT=set(['png', 'jpg', 'jpeg', 'bmp'])
 
+	JSFILTER=None
+
 	S3_KEY = 'AKIAIVMHLA4ZZXB5NIRQ'
 	S3_BUCKET = 'htfileupload'
 	S3_SECRET = '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'
@@ -68,6 +70,7 @@ class ProductionConfig(Config):
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@htdb.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
 	REDIS_URL='redis://ht-redis.h6fyv6.0001.use1.cache.amazonaws.com:6379/'
+	JSFILTER='jsmin'
 
 
 

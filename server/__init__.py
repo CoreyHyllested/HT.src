@@ -17,6 +17,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
+from flask.ext.assets	import Environment, Bundle
 from flask.ext.mail		import Mail
 from flask_wtf.csrf		import CsrfProtect
 from flask_redis		import Redis
@@ -49,8 +50,18 @@ def initialize_server(config_name):
 
 	ht_csrf.init_app(ht_server)
 	ht_oauth.init_app(ht_server)
+	assets = Environment(ht_server)
+	assets.url = ht_server.static_url_path
 
-	print 'configuring server'
+
+	jsfilter = ht_server.config['JSFILTER']
+	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
+	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
+	css_example = Bundle('scss/helper.sass', filters='pyscss', output='css/foo.css')
+
+	assets.register('js_mapformat', js_dashboard_maps_format)
+	assets.register('sass_foo', css_example)
+
 	print 'initializing session mgmt'
 	redis_cache = Redis(ht_server)
 	ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
