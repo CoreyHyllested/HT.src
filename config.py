@@ -72,12 +72,15 @@ class ProductionConfig(Config):
 
 
 class TestingConfig(Config):
+	TESTING = True
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
 	# maybe we don't use this
 	if (LOCAL_MODE == True):
 		SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/ht.db'
 
+	def __init__ (self):
+		print 'creating testing config'
 
 
 server_configuration = {

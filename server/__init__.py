@@ -41,7 +41,7 @@ def initialize_server(config_name):
 	print 'initializing server'
 	global ht_server
 	ht_server = Flask(__name__)
-	ht_server.config.from_object(server_configuration['development'])
+	ht_server.config.from_object(server_configuration[config_name])
 	ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	ht_server.debug = True
 	ht_server.logger.setLevel(logging.DEBUG)
@@ -56,7 +56,6 @@ def initialize_server(config_name):
 	ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 
 	Compress(ht_server)
-
 
 	from server.infrastructure import srvc_database
 	from routes import authentication, everyone, users, api, errors

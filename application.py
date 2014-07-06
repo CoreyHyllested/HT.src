@@ -6,14 +6,12 @@ from OpenSSL import SSL
 
 
 application = initialize_server(os.getenv('INSPRITE_CONFIG') or 'default')
-
+manager = Manager(application)
 
 
 def run_manager():
 	def mk_insprite_shell_ctx():
 		return dict(app=application)
-
-	manager = Manager(application)
 	manager.add_command("shell", Shell(make_context=mk_insprite_shell_ctx))
 	manager.run()
 
@@ -25,6 +23,12 @@ def main():
 	context.use_certificate_file('security/herotime.crt')
 	application.run(debug = True, ssl_context=context)
 
+@manager.command
+def test():
+	"""Run unit tests"""
+	import unittest
+	all_tests = unittest.TestLoader().discover('tests')
+	unittest.TextTestRunner(verbosity=2).run(all_tests)
 
 
 
