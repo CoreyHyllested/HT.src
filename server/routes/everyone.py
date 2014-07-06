@@ -123,32 +123,33 @@ def render_search(page = 1):
 		bp = Profile.get_by_uid(session['uid'])
 
 	# get all the search 'keywords'
-	keywords = request.values.get('search')
-	industry = request.values.get('industry_field', -1)
-	rateFrom = request.values.get('rate_from_field', 0)
-	rateTo =   request.values.get('rate_to_field', 9999)
-	if (rateFrom == ''): rateFrom = 0
-	if (rateTo == ''):	rateTo = 9999
+	#for key in request.values:
+	#	print key, '=', request.values.get(key)
 
+	keywords = request.values.get('keywords_field')
+	industry = request.values.get('industry_field', -1, type=int)
+	rateFrom = request.values.get('rate_from_field', 0, type=int)
+	rateTo =   request.values.get('rate_to_field', 9999, type=int)
 	form = SearchForm(request.form)
-	print "keywords = ", keywords
-	print "industry = ", industry
+
+	if (rateTo < rateFrom):
+		rate_temp	= rateTo
+		rateTo		= rateFrom
+		rateFrom	= rate_temp
 
 	try:
 		results = db_session.query(Profile) #.order_by(Profile.created)
 		results_industry = results #.all();
 		print 'there are', len(results.all()), 'profiles'
-		if (int(industry) != -1):
-			industry_str = Industry.industries[int(industry)]
+		if (industry != -1):
+			industry_str = Industry.industries[industry]
 			results_industry = results.filter(Profile.industry == industry_str)
-			print 'results for industry', len(results_industry.all())
+			print 'results for the ', Industry.industries[industry], 'industry =', len(results_industry.all())
 			for profile in results_industry.all():
 				print 'search:' + str(industry_str), profile
 			
-
-		print 'find rate from ', rateFrom, '-', rateTo
 		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
-		print 'results for cost-between', len(results_rate.all())
+		print 'Rates from $' + str(rateFrom) + ' -  $' + str(rateTo) + ' have', len(results_rate.all()), 'results'
 				
 		if (keywords is not None):
 			print "keywords = ", keywords
