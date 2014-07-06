@@ -1,3 +1,4 @@
+print break me 
 import os, json, random, hashlib
 import stripe, boto, urlparse
 from boto.s3.connection import S3Connection
@@ -27,8 +28,11 @@ from werkzeug.security import generate_password_hash #rm -- should be in control
 
 @ht_server.route('/email_template', methods=['GET', 'POST'])
 def render_email_template():
-	send_recovery_email('christine@insprite.co', 'blah blah')
-	return make_response(render_template('generic_email_template.html'))
+  print "I am here 1"
+  send_recovery_email('christine@insprite.co', 'blah blah')
+  print "I am here 2"
+  return make_response(render_template('generic_email_template.html'))
+  print "I am here 3"
 
 @ht_server.route('/', methods=['GET', 'POST'])
 @ht_server.route('/index')
