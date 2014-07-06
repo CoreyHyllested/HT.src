@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
-# 
-# All information contained is the property of HeroTime, Inc.  Any intellectual 
-# property about the design, implementation, processes, and interactions with 
-# services may be protected by U.S. and Foreign Patents.  All intellectual 
-# property contained within is covered by trade secret and copyright law.   
-# 
-# Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
 #################################################################################
 
 import os, json, pickle, requests
@@ -26,7 +26,7 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
 from server.ht_utils import *
-from server import ht_server, linkedin
+from server import ht_server
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
