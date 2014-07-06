@@ -325,66 +325,6 @@ def send_proposal_reject_emails(the_proposal):
 # 	hero_msg = create_msg("You rejected " + user_name + "'s proposal", hero_addr, hero_name, 'noreply@insprite.co', u'Insprite')
 # 	hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
 # 	ht_send_email(hero_addr, hero_msg)
-	
-#HTML proposal rejection email to the seller.
-def send_proposal_reject_emails_seller(url):	
-  msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-  msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-  msg = msg + '<tbody>'
-
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #000000; text-align: center; height: 25px;" align="center">'
-  msg = msg + '\t\t<span style="font-size: 10px; color: #575757; line-height: 200%; font-family: Helvetica Neue; text-decoration: none;">Having trouble viewing this email? <a style="font-size: 10px; color: #575757; line-height: 200%; font-family: Helvetica Neue; text-decoration: none; font-weight: bold;" href="#">View it in your browser.</a></span>'
-  msg = msg + '\t</td></tr>'
-
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-  msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</tbody>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-1.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"><a href="#" style="color:#29abe1">' + hero_name '"</a> didn\'t accept your proposal this time around.<br><br>'
-  msg = msg + '\t\t\t Why, you ask? There could be many reasons, but trust us, don’t take it personally. <br><br>
-  msg = msg + '\t\t\t Need to edit, manage or update the appointment? Go for it, or follow up with <a href="#" style="color:#29abe1">' + hero_name '</a><br><br></font>'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-  msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr> <td style="border-top: 0px solid #333333; border-bottom: 0px solid #FFFFFF;">'
-  msg = msg + '\t\t<img width="596px" src="http://ryanfbaker.com/insprite/footerImage.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-  return msg
 
 
 #Emails sends the proposal rejection email to the buyer.
@@ -418,9 +358,9 @@ def send_proposal_reject_emails_buyer(url):
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"><a href="#" style="color:#29abe1">' + hero_name '"</a> didn\'t accept your proposal this time around.<br><br>'
-  msg = msg + '\t\t\t Why, you ask? There could be many reasons, but trust us, don’t take it personally. <br><br>
-  msg = msg + '\t\t\t Need to edit, manage or update the appointment? Go for it, or follow up with <a href="#" style="color:#29abe1">' + hero_name '</a><br><br></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> {insert hero_name} didn\'t accept your proposal this time around.<br><br>'
+  msg = msg + '\t\t\t Why, you ask? There could be many reasons, but trust us, don\'t take it personally. <br><br>'
+  msg = msg + '\t\t\t Need to edit, manage or update the appointment? Go for it, or follow up with {insert hero_name} </font><br><br>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -454,7 +394,7 @@ def send_proposal_reject_emails_buyer(url):
   return msg
  
 
-#Email sends the message 15 minutes beforehand.
+#Email sends the message...?
 @mngr.task
 def ht_send_reminder_email(user_email, user_name, the_proposal):
 	print 'sending appointment reminder emails now for ', the_proposal
@@ -479,8 +419,8 @@ def send_appt_emails(the_proposal):
 	ht_send_email(sellr_addr, sellr_msg)
 
 	#HTML for seller after accepting the proposal.
-	def sellr_receives_accepted_proposal(url):
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
+def sellr_receives_accepted_proposal(url):
+  msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
   msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
   msg = msg + '<tbody>'
@@ -503,9 +443,9 @@ def send_appt_emails(the_proposal):
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="#" style="color:#29abe1">"' + buyer_name + '"'s proposal.</a><br><br>'
-  msg = msg + '\t\t\t Check out the details:<br> Location: "' + the_proposal.prop_place + '"<br> Description: "' + the_proposal.prop_desc + '"<br> Time: "' + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + '<br>
-  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="#" style="color:#29abe1">Go for it</a>, or send <a href="#" style="color:#29abe1">"' + buyer_name + '" a message.</a><br><br>We know life can be busy, so we’ll send you a reminder 24 hours in advance, too.</font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="#" style="color:#29abe1"> {buyer name} proposal.</a><br><br>'
+  msg = msg + '\t\t\t Check out the details:<br> {Corey insert details} <br>'
+  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="#" style="color:#29abe1">Go for it</a>, or send <a href="#" style="color:#29abe1"> {insert buyer name} a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance, too.</font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -553,14 +493,14 @@ def send_appt_emails(the_proposal):
 
 
 	#Email for buyer after seller accepts the proposal.
-	buyer_html = buyer_receives_accepted_proposal(url)
-	buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
-	buyer_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_addr, buyer_msg)
+  buyer_html = buyer_receives_accepted_proposal(url)
+  buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+  buyer_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+  ht_send_email(buyer_addr, buyer_msg)
 
 #HTML email for buyer after seller accepts the proposal.	
 def buyer_receives_accepted_proposal(url):
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
+  msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
   msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
   msg = msg + '<tbody>'
@@ -584,7 +524,7 @@ def buyer_receives_accepted_proposal(url):
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
   msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="#" style="color:#29abe1">"' + sellr_name + '" accepted your proposal.</a><br><br>'
-  msg = msg + '\t\t\t Check out the details:<br> Location: "' + the_proposal.prop_place + '"<br> Description: "' + the_proposal.prop_desc + '"<br> Time: "' + str(the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')) + '<br>
+  msg = msg + '\t\t\t Check out the details: {Corey insert details} <br>'
   msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="#" style="color:#29abe1">Go for it</a>, or send <a href="#" style="color:#29abe1">"' + sellr_name + '" a message.</a><br><br></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
