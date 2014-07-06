@@ -13,13 +13,35 @@
 
 from . import insprite_views
 from flask import render_template
-from server import facebook, linkedin, ht_csrf
+from server import ht_csrf, ht_oauth
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.ht_utils	import *
 from server.forms import LoginForm, NewAccountForm
+
+facebook = ht_oauth.remote_app( 'facebook',
+		base_url='https://graph.facebook.com',
+		request_token_url=None,
+		access_token_url='/oauth/access_token',
+		authorize_url='https://www.facebook.com/dialog/oauth',
+		consumer_key=ht_server.config['FACEBOOK_APP_ID'],
+		consumer_secret=ht_server.config['FACEBOOK_APP_SEC'],
+		request_token_params={ 'scope': 'email' }
+)
+
+
+linkedin = ht_oauth.remote_app(  'linkedin',
+					consumer_key=ht_server.config['LINKEDIN_KEY'],
+					consumer_secret=ht_server.config['LINKEDIN_SEC'],
+					request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+					base_url='https://api.linkedin.com/v1/',
+					request_token_url=None,
+					access_token_method='POST',
+					access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
+					authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+)
 
 
 @insprite_views.route('/signup', methods=['GET', 'POST'])
@@ -313,28 +335,6 @@ def settings_verify_stripe():
 	return "good - but must've failed on create", 200
 
 
-
-
-@insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
-def ht_email_operations(operation, data):
-	print operation, data
-	if (operation == 'verify'):
-		email = request.values.get('email_addr')
-		nexturl = request.values.get('next_url')
-		print 'verify: data  = ', data, 'email =', email
-		return ht_email_verify(email, data, nexturl)
-	elif (operation == 'request-response'):
-		nexturl = request.values.get('nexturl')
-		return make_response(render_template('verify_email.html', nexturl=nexturl))
-	elif (operation == 'request-verification') and ('uid' in session):
-
-		bp = Profile.get_by_uid(session.get('uid'))
-		ba = Account.get_by_uid(session.get('uid'))
-		email_set = set([ba.email, request.values.get('email_addr')])
-		print email_set
-		ht_send_verification_to_list(ba, bp, email_set)
-		return jsonify(rc=200), 200
-	return jsonify(bug=404) #pageNotFound('Not sure what you were looking for')
 
 
 
