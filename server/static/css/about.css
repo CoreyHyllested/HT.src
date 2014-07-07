@@ -1,16 +1,23 @@
 
 
 .aboutIntroductionHeader {
-  height:250px;
+  max-height:375px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
-  padding-top: 125px;
-  background: #29abe1;
+  padding-top: 150px;
+  padding-bottom: 150px;
+  background: url('../img/background-blurred.jpg') no-repeat center right;
+  background-size: cover;
+  overflow-x: hidden;
+  -moz-transition: 0.15s ease;
+  -o-transition: 0.15s ease;
+  -webkit-transition: 0.15s ease;
+	}
   
 }
 
 h1 {
-	color: white;
+	color: #e55e62;
 	font-size: 3em;
 	font-weight: 400;
 	line-height: 1em;
@@ -29,17 +36,35 @@ a:link {
   	color: rgba(0,0,0, 0.9);
 }
 
-.p test {
+.headlineDeck {
   text wrap: none;
+  color: black;
+  font-family: Garamond, EB Garamond, Georgia, serif;
+  font-size: 18px;
+  padding-top: 5px;
 }
 
 
 .aboutTeam {
-  height:375px;
+  height:425px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
   padding-top: 45px;
+  -moz-transition: 0.15s ease;
+  -o-transition: 0.15s ease;
+  -webkit-transition: 0.15s ease;
 }
+
+.missionStatement {
+  text wrap: none;
+  color: black;
+  font-family: Garamond, EB Garamond, Georgia, serif;
+  font-size: 18px;
+  padding-top: 10px;
+  padding-left: 75px;
+  padding-right: 75px;
+}
+
 
 .teamIntroduction {
   margin-top: 5px;
@@ -50,9 +75,14 @@ a:link {
 }
 
 .teamContainer {
-  margin-left: 160px;
-  margin-top: 50px;
-  float: left;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0px;
+}
+
+.teamMember {
+  display:inline-block;
+  padding: 40px;
 }
 
 .teamPortrait {
@@ -71,6 +101,11 @@ a:link {
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
   padding-top:45px;
+  width: 100%;
+  -moz-transition: 0.15s ease;
+  -o-transition: 0.15s ease;
+  -webkit-transition: 0.15s ease;
+  background: #e6e6e6;
 }
 
 .headlineExperience {
@@ -79,9 +114,15 @@ a:link {
 
 
 .experienceContainer {
-  margin-left: 50px;
-  margin-top: 25px;
-  float: left;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0px;
+}
+
+.experienceCompany {
+  display:inline-block;
+  padding: 67px;
+
 }
 
 .experienceImage {
@@ -89,8 +130,9 @@ a:link {
   margin-bottom: 1.5em;
   width: 150px;
   height: 150px;
+  float:left;
 }
 
 .headlineExperience h1 {
-  color: #29abe1;
+  color: white;
 }
