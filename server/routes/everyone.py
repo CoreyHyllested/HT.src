@@ -14,6 +14,7 @@
 
 from . import insprite_views
 from flask import render_template, make_response, session, request, redirect
+from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.controllers import *
@@ -140,16 +141,15 @@ def render_search(page = 1):
 	try:
 		results = db_session.query(Profile) #.order_by(Profile.created)
 		results_industry = results #.all();
-		print 'there are', len(results.all()), 'profiles'
+		print 'Total Profiles:', len(results.all())
 		if (industry != -1):
 			industry_str = Industry.industries[industry]
 			results_industry = results.filter(Profile.industry == industry_str)
-			print 'results for the ', Industry.industries[industry], 'industry =', len(results_industry.all())
-			for profile in results_industry.all():
-				print 'search:' + str(industry_str), profile
+			print '\tProfiles in ', Industry.industries[industry], 'industry =', len(results_industry.all())
+			for profile in results_industry.all(): print '\t\t' + str(profile)
 			
 		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
-		print 'Rates from $' + str(rateFrom) + ' -  $' + str(rateTo) + ' have', len(results_rate.all()), 'results'
+		print '\tProfiles w rates between $' + str(rateFrom) + ' - $' + str(rateTo) + ':', len(results_rate.all())
 				
 		if (keywords is not None):
 			print "keywords = ", keywords
@@ -174,7 +174,23 @@ def render_search(page = 1):
 		print e
 		db_session.rollback()
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(q_rc.all()), heroes=q_rc.all()))
+	page_items = []
+	page_total = []
+	total_results = q_rc.all();
+	per_page = 3
+	trc_start_pg = (page - 1) * per_page
+	trc_end_pg = (page * per_page)
+	if (trc_start_pg) > (len(total_results)):
+		trc_start_pg = len(total_results) - per_page
+	if (trc_end_pg > (len(total_results))):
+		trc_end_pg = len(total_results)
+	new_results = total_results[trc_start_pg:trc_end_pg]
+	paginate = Pagination(q_rc, page, per_page=3, total=page_total, items=q_rc.all())
+	print 'page_items', page_items
+	print 'page_total', page_total
+	print 'page_heros', paginate.items
+
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(new_results), heroes=new_results))
 
 
 
