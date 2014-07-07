@@ -22,3 +22,10 @@ from StringIO import StringIO
 from urllib import urlencode
 from werkzeug          import secure_filename
 from werkzeug.security import generate_password_hash #rm -- should be in controllers only
+
+
+@ht_server.route('/email_template', methods=['GET', 'POST'])
+def render_email_template():
+  send_recovery_email('christine@insprite.co', 'blah blah')
+  return make_response(render_template('generic_email_template.html'))
+
