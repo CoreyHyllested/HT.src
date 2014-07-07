@@ -609,7 +609,31 @@ class Image(Base):
 		comment = self.img_comment[:20]
 		return '<image %s %s>' % (self.img_id, comment)
 
+	@staticmethod
+	def get_by_lesson_id(lesson_id):
+		print "get_by_lesson_id: lesson_id is", lesson_id
+		images = Image.query.filter_by(img_lesson=lesson_id).all()
+		# if len(images) != 1: raise NoResourceFound('Lesson', lesson_id)
+		print "get_by_lesson_id: images length is", len(images)
 
+		return images
+
+	@staticmethod
+	def get_lesson_sample_img(lesson_id):
+		sample_img = Image.query.filter_by(lesson_id=lesson_id).first()
+		return sample_img
+
+	@property
+	def serialize(self):
+		return {
+			'img_id'		: self.img_id,
+			'img_profile'	: self.img_profile,
+			'img_comment'	: self.img_comment,
+			'img_created'	: self.img_created,
+			'img_flags'		: self.img_flags,
+			'img_order'		: self.img_order,
+			'img_lesson'	: self.img_lesson
+		}
 
 class Industry(Base):
 	__tablename__ = "industry"

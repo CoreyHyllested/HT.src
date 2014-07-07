@@ -515,17 +515,6 @@ def render_seller_signup_page(usrmsg = None):
 	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
 
 
-
-
-# @ht_server.route('/add_lesson', methods=['GET', 'POST'])
-# @req_authentication
-# def render_add_lesson_page(usrmsg = None):
-# 	bp = Profile.get_by_uid(session.get('uid'))
-# 	return make_response(render_template('add_lesson.html', title='- List a Lesson', bp=bp))
-
-
-
-
 @ht_server.route('/add_seller_info', methods=['GET', 'POST'])
 @req_authentication
 def add_seller_info():
@@ -1456,7 +1445,22 @@ def render_edit_portfolio_page():
 
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
+@req_authentication
+@ht_server.route("/get_lesson_images", methods=['GET', 'POST'])
+def get_lesson_images():
+	lesson_id = request.values.get('lesson_id')
+	images = []
 
+	try:
+		print "get_lesson_images: lesson_id is", lesson_id
+		images = db_session.query(Image).filter(Image.img_lesson == lesson_id).all();
+		json_images = [img.serialize for img in images]
+
+	except Exception as e:
+		print "get_lesson_images: exception:", e
+		json_images = None
+
+	return jsonify(images=json_images)
 
 
 @req_authentication
@@ -1719,12 +1723,10 @@ def ht_api_update_portfolio(operation):
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
 	
-	
 	print "-"*24
 	print "ht_api_update_portfolio(): operation:", operation
 	print "ht_api_update_portfolio(): lesson_id:", lesson_id
 	
-
 	try:
 		# get user's portfolio
 		# portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
@@ -1754,7 +1756,7 @@ def ht_api_update_portfolio(operation):
 				jsn = request.values.get(img.img_id)
 				if jsn is None:
 					print img.img_id, 'doesnt exist in user-set, deleted.'
-					# db_session.delete(img)
+					db_session.delete(img)
 					continue
 
 				obj = json.loads(jsn)
@@ -1787,13 +1789,15 @@ def ht_api_update_portfolio(operation):
 def ht_api_lesson_create():
 	user_message = 'Initializing Lesson...'
 	bp = Profile.get_by_uid(session['uid'])
+
 	print "ht_api_lesson_create: bp is",bp
 	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
 
 	try:
 		lesson = ht_create_lesson()
 		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
-		if (lesson is not None): 
+		if (lesson is not None):
+			lesson_id = lesson.lesson_id 
 			print 'ht_api_lesson_create: Successfully initialized lesson'
 		else:
 			print 'ht_api_lesson_create: Error initializing lesson'
@@ -1809,45 +1813,64 @@ def ht_api_lesson_create():
 		print 
 		return make_response(jsonify(usrmsg='Something bad'), 500)
 
-	return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, bp=bp))
+	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+	
+	# return make_response(render_add_lesson_page(lesson.lesson_id))
 
+	# return make_response(redirect(url_for('render_add_lesson_page')))
 
-@ht_server.route('/create_lesson', methods=['POST'])
-
-#@dbg_enterexit
+@ht_server.route('/create_lesson', methods=['GET'])
 @req_authentication
-def create_lesson():
+def render_add_lesson_page(lesson_id):
+
+	print "render_add_lesson_page: lesson_id:", lesson_id
+
+	bp = Profile.get_by_uid(session['uid'])
+	# lesson_id = request.values.get('lesson_id')
+
+	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+
+@ht_server.route('/create_lesson/<lesson_id>', methods=['POST'])
+@req_authentication
+def create_lesson(lesson_id):
 	""" We have initialized a lesson already in /lesson/create - we will now add the details """
 
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	form = request.form
-
-	print "\nHere's the form data:", str(form)
-	print "\nThe Lesson ID: ",form["addLessonID"]
+	
+	print "-"*32
+	print "Creating Lesson...\n"
+	print "Here's the form data:", str(form)
+	print "The Lesson ID: ",lesson_id
 
 	# if form.validate_on_submit():
 	try:
-		lesson = Lesson.get_by_lesson_id(form["addLessonID"])
-
-		print "\nHere's the lesson from the database: ", str(lesson)
-
+		lesson = Lesson.get_by_lesson_id(lesson_id)
 		lesson.lesson_title = request.form.get('addLessonTitle')
 		lesson.lesson_description = request.form.get('addLessonDescription')
-
 		lesson.lesson_industry = request.form.get('addLessonIndustry')
 		lesson.lesson_unit = request.form.get('addLessonRateUnit')
 
 		if (lesson.lesson_unit == "perHour"):
-			lesson.lesson_hourly_rate = request.form.get('addLessonRate')
+			try:
+			   lesson.lesson_hourly_rate = int(request.form.get('addLessonRate'))
+			except ValueError:
+			   pass
 		else:
-			lesson.lesson_lesson_rate = request.form.get('addLessonRate')
+			try:
+			   lesson.lesson_lesson_rate = int(request.form.get('addLessonRate'))
+			except ValueError:
+			   pass
 
 		lesson.lesson_avail = request.form.get('addLessonAvail')
-		lesson.lesson_duration	= request.form.get('addLessonDuration')
-
+		
+		try:
+		   lesson.lesson_duration	= int(request.form.get('addLessonDuration'))
+		except ValueError:
+		   pass
+		
 		lesson.lesson_loc_option = request.form.get('addLessonPlace')
-
 		lesson.lesson_address_1 = request.form.get('addLessonAddress1')
 		lesson.lesson_address_2 = request.form.get('addLessonAddress2')
 		lesson.lesson_city = request.form.get('addLessonCity')
@@ -1872,9 +1895,7 @@ def create_lesson():
 		db_session.commit()
 		log_uevent(uid, "create lesson")
 
-		return make_response(redirect(url_for('render_dashboard')))
-
-		# return jsonify(usrmsg="lesson created"), 200
+		return make_response(render_lesson_page(lesson_id))
 
 	except AttributeError as ae:
 		print 'Attribute Error'
@@ -1900,6 +1921,31 @@ def create_lesson():
 	# return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
 
 
+@req_authentication
+@ht_server.route("/lesson", methods=['GET', 'POST'])
+def render_lesson_page(lesson_id=None):
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+	
+	if (lesson_id == None):
+		lesson_id = request.values.get('lesson_id')
 
+	print "-"*36
+	print "render_lesson_page(): Lesson ID:", lesson_id
+
+	try:
+
+		lesson = Lesson.get_by_lesson_id(lesson_id)	
+		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		
+		print "render_lesson_page(): Lesson String:", str(lesson)
+		print "render_lesson_page(): Images:", str(portfolio)
+
+		return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
+	
+	except Exception as e:
+		print 'render_lesson_page(): Exception Error:', e
+		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+		# return make_response(redirect(url_for('render_dashboard')))
 
 

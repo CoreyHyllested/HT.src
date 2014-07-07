@@ -29,8 +29,8 @@ mydropzone.on("error", function(file, errorMessage) {
 mydropzone.on("successmultiple", function(file) {
 	$(".dropzone-wrapper").find("div.img-delete").hide();
 	$(".dropzone-status").html("<span class='success'>Images successfully uploaded!</span>");
-	$(".addLessonFormButtonContainer").children(".multipleUploadButton").toggleClass("multipleUploadButton addLessonFormButton").text("Continue");
-
+	$("#multipleUploadContinueButton").show();
+	$("#multipleUploadButton").hide();
 });
 
 $('button.multipleUploadButton').attr("disabled", true);
@@ -39,7 +39,8 @@ mydropzone.on("addedfile", function(file) {
 	this.options.autoProcessQueue = false;
 	$(".dropzone-status").empty();
 	$('button.multipleUploadButton').attr("disabled", false).css("opacity", 1);
-	$(".addLessonFormButtonContainer").children(".addLessonFormButton").removeClass("addLessonFormButton").addClass("multipleUploadButton").text("Upload");
+	$("#multipleUploadContinueButton").hide();
+	$("#multipleUploadButton").show();	
 });
 
 mydropzone.on("processing", function() {

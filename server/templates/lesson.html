@@ -1,0 +1,70 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/lesson.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="lessonContentWrapper">
+	
+	<div class="lessonHeader">
+		<div class="lessonHeaderLeft">
+			<div class="lessonTopLeftNavigation">
+				<a title="Back" id="topLeftNavBack" class="topLeftNavBack navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
+			</div>
+		</div>
+		<div class="lessonHeaderCenter">
+			<div class="lessonTitle">{{lesson.lesson_title}}</div>
+		</div>
+<!-- 		<div class="lessonHeaderRight">
+		</div>	 -->		
+	</div>	
+
+	<div class="lessonLeftColumn">
+	Left Column Stuff
+	</div>
+
+	<div class="lessonCenterColumn">
+		<h3>Lesson Description</h3>
+		{{lesson.lesson_description}}
+	</div>
+
+	<div class="lessonRightColumn">
+	Right Column Stuff
+	</div>
+
+	<div class="lessonFooter">
+		{% for img in portfolio %}
+			<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" data-lightbox="portfolio" data-title="{{img.img_comment}}">
+			<div class='portfolioImageWrapper'><img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}' class='portfolioImage' data-lightbox="portfolio">
+			</a>
+			<div class='portfolioImageCaption'>{{img.img_comment}}</div>
+			</div>			
+		{% endfor %}
+	</div>
+
+	<div class="clear"></div>
+</div>
+
+<script src="/static/js/lightbox.min.js"></script>
+<script src="/static/js/sendmsg.js"></script>
+<script>
+
+$(document).ready(function() {
+
+	$(document.body).on("click", "#topLeftNavBack", function(e) {
+		e.preventDefault();
+		window.history.back();	
+	});
+
+});
+
+</script>
+
+{% endblock %}

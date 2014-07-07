@@ -41,13 +41,14 @@
 					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="rate">Rate</a></div>
 					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="add_photos">Add Photos</a></div>
 					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="edit_photos">Edit Photos</a></div>
+					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="review">Review</a></div>
 				</ul>
 			</div>
 		</div>
 
 		<div class="addLessonRightColumn">
 			<div class="addLessonFormPageContainer">
-				<form id="addLessonForm" method="post" action="/create_lesson" data-lesson-id="{{lesson_id}}">
+				<form id="addLessonForm" method="post" action="/create_lesson/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 
 				<div id="overview" class="addLessonFormPage">
@@ -149,7 +150,9 @@
 
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="where">Continue</button>
-						<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>
 				</div>
 
@@ -187,7 +190,9 @@
 
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="when">Continue</button>
-						<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>					
 				</div>
 
@@ -205,7 +210,9 @@
 
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="rate">Continue</button>
-						<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>				
 
 				</div>
@@ -230,10 +237,13 @@
 					</div>
 
 					<div class="addLessonFormButtonContainer">
-						<button type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
+						<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
 							Upload
 						</button>
-						<a class="addLessonFormPrevious">Previous</a>
+						<button type="button" id="multipleUploadContinueButton" class="blueButton addLessonFormButton" data-current-page="add_photos">Continue</button>						
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>
 				
 				</div>
@@ -251,9 +261,12 @@
 						<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 
 						<button type="button" id="editPortfolioDoneButton" class="blueButton editPortfolioDoneButton span6" data-current-page="edit_photos">
-							Save and Continue
+							Save Changes
 						</button>
-						<a class="addLessonFormPrevious">Previous</a>
+						<button type="button" id="editPortfolioDoneContinueButton" class="blueButton addLessonFormButton" data-current-page="edit_photos">Continue</button>
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>
 					
 				</div>
@@ -264,21 +277,62 @@
 					<div class="formDescription">If anything's wrong, click the links on the left to go back and make fixes.</div>
 
 					<div class="addLessonReviewContainer">
-					Details here...<br>
-					Details here...<br>
-					Details here...<br>
-					Details here...<br>
-					Details here...<br>
+
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Title</div>
+							<div class="addLessonReviewData addLessonReviewTitle"></div>
+						</div>
+
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Description</div>
+							<div class="addLessonReviewData addLessonReviewDescription"></div>
+						</div>
+
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Industry</div>
+							<div class="addLessonReviewData addLessonReviewIndustry"></div>
+						</div>
+						
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Location</div>
+							<div class="addLessonReviewData addLessonReviewLocation">
+
+							</div>
+							<div class="addLessonReviewDataDetails addLessonReviewAddress">
+							</div>
+						</div>						
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Schedule</div>
+							<div class="addLessonReviewData addLessonReviewAvail">
+							</div>
+						</div>							
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Duration</div>
+							<div class="addLessonReviewData addLessonReviewDuration">
+							</div>
+						</div>					
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Rate</div>
+							<div class="addLessonReviewData addLessonReviewRate"></div>
+						</div>						
+
+						<div class="addLessonReviewField">
+							<div class="addLessonReviewFieldName">Portfolio Images</div>
+							<div class="addLessonReviewData addLessonReviewPortfolio">
+							</div>
+						</div>
 					</div>
 
 					<div class="addLessonFormButtonContainer">
 						<div class="addLessonFormButtonContainer">
 							<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 							<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
-							<button class="blueButton addLessonFormButton addLessonFormButtonSubmit" data-current-page="review">Save and Return</button>
-							<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True" checked><label for="addLessonMakeLive">Make this lesson live and public</label></div>
+							<button class="blueButton addLessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
+							<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True" checked><label for="addLessonMakeLive">Make this lesson live and public!</label></div>
 						</div>
-						<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormPreviousContainer">
+							<a class="addLessonFormPrevious">Previous</a>
+						</div>
 					</div>
 					
 				</div>

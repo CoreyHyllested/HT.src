@@ -20,12 +20,6 @@ function savePortfolio() {
 		console.log("fd[img_id] is "+fd[img_id]);
 	});
 
-	// fd.images = JSON.stringify(images);
-
-	
-
-	
-
 	// console.log("savePortfolio : Images: "+JSON.stringify(images));
 
 	console.log("savePortfolio : FD: "+JSON.stringify(fd));
@@ -38,16 +32,30 @@ function savePortfolio() {
 			dataType: 'json',
 			success : function(response) {
 				console.log("AJAX success");
-				$(".addLessonEditPhotosStatus").html("<span class='success'>Images successfully updated!</span>");
+				$(".addLessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
+				// $(".addLessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton addLessonFormButton").attr("id", "").on().text("Continue");
+				
+				setTimeout(function() { 
+					$('.addLessonFormPage').hide();
+					$('#review').show();
+					var lessonID = $('#addLessonForm').attr("data-lesson-id");
+					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
+					$(".addLessonEditPhotosStatus").empty();
+					history.pushState({title: "review"}, "", '/lesson/create#review');
+				}, 2000);
+
+				// Uncomment this and comment the setTimeout function if we want user to manually continue.
+				// $("#editPortfolioDoneContinueButton").show();
+				// $("#editPortfolioDoneButton").hide();				
 			},
 			error : function(response) {
 				console.log("AJAX error");
 				$(".addLessonEditPhotosStatus").html("<span class='error'>Whoops! Error updating images.</span>");
+				// $(".addLessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton addLessonFormButton").attr("id", "").on().text("Continue");
+				$("#editPortfolioDoneContinueButton").show();
+				$("#editPortfolioDoneButton").hide();			
 			}
 	});
-
-
-
 
 	// var xhr = new XMLHttpRequest();
 	// xhr.onreadystatechange = function(e) {
@@ -71,7 +79,6 @@ function savePortfolio() {
 	// xhr.open('POST', "/portfolio/update/", true);
 	// xhr.send(fd);
 
-
 	return false;
 }
 
@@ -82,7 +89,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.editPortfolioWrapper',
-	    tolerance: 'pointer',
+	    tolerance: 'intersect',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -92,7 +99,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.addLessonEditPhotosContainer',
-	    tolerance: 'pointer',
+	    tolerance: 'intersect',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -101,6 +108,8 @@ $(document).ready(function(){
 	$(".img-delete").click(function() {
 		var img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
 		$(this).parent().parent().parent().parent().remove();
+		$("#editPortfolioDoneContinueButton").hide();
+		$("#editPortfolioDoneButton").show();
 		//console.log("deleted: " + img_id);
 	});
 
@@ -111,12 +120,14 @@ $(document).ready(function(){
 	});
 
 	$(".editPortfolioImageCaption").keyup(function(){
+		$("#editPortfolioDoneContinueButton").hide();
+		$("#editPortfolioDoneButton").show();
 		$(this).parent().siblings(".save-button").fadeIn();
 	});
 
 	$("#editPortfolioDoneButton").off().on('click', function(e) {
 		e.preventDefault();
 		savePortfolio();
-		$(".addLessonFormButtonContainer").children(".addLessonFormButton").toggleClass("addLessonFormButton addLessonFormButton").text("Continue");
+		
 	});
 });

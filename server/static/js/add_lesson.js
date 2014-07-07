@@ -2,10 +2,9 @@
 $(document).ready(function(){
 
 	var firstPage = "overview";
-	var lastPage = "rate";
-	// var lastPage = "edit_photos";
+	var lastPage = "review";
 	var lessonID = $("#addLessonForm").attr("data-lesson-id");
-	
+
 	// Form Navigation and State Management
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
@@ -16,8 +15,10 @@ $(document).ready(function(){
 	if (window.location.hash) {
 		var hash = window.location.hash.substring(1);	
 		if (hash == "edit_photos") {
-			loadPortfolioImages(lessonID);
-		}	
+			editPortfolioImages(lessonID);
+		} else if (hash == "review") {
+			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
+		}
 		$('#'+hash).show();			
 		history.replaceState({title: hash}, "", '');
 	} else {
@@ -31,8 +32,11 @@ $(document).ready(function(){
 			var page_title = event.state.title;
 			$('.addLessonFormPage').hide();
 			if (page_title == "edit_photos") {
-				loadPortfolioImages(lessonID);
-			}			
+				editPortfolioImages(lessonID);
+			} else if (page_title == "review") {
+				$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
+			}
+			
 			$("#"+page_title).show();
 		}
 	};	
@@ -42,7 +46,9 @@ $(document).ready(function(){
 		var target = $(this).attr("data-target-page");
 		// $('.addLessonHeaderPageName').text($("#"+target+' .formTitle').text());
 		if (target == "edit_photos") {
-			loadPortfolioImages(lessonID);
+			editPortfolioImages(lessonID);
+		} else if (target == "review") {
+			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 		}
 		$("#"+target).show();
 		history.pushState({title: target}, "", '/lesson/create#'+target);
@@ -52,11 +58,12 @@ $(document).ready(function(){
 		e.preventDefault();
 		$('.addLessonFormPage').hide();
 		var currentPage = $(this).attr("data-current-page");
-		var nextPage = $('#'+currentPage).next('.addLessonFormPage').attr("id");
-		
+		var nextPage = $(".addLessonNavLink[data-target-page=" + currentPage + "]").parent().next(".addLessonNavItem").children().attr("data-target-page");
 
 		if (nextPage == "edit_photos") {
-			loadPortfolioImages(lessonID);
+			editPortfolioImages(lessonID);
+		} else if (nextPage == "review") {
+			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 		}
 
 		// $('.addLessonHeaderPageName').text($('#'+nextPage+' .formTitle').text());
@@ -65,21 +72,14 @@ $(document).ready(function(){
 		history.pushState({title: nextPage}, "", '/lesson/create#'+nextPage);
 	});
 
+
 	$('.addLessonFormButtonSubmit').click(function(e) {
 		e.preventDefault();
 
-		var formData = {};
+		console.log("---------");
+		console.log("Lesson Form was submitted");
 
-		// formData.oauth_stripe = $("#oauth_stripe").val();
-		// formData.ssAvailOption = $("#ssAvailOption").val();
-		// formData.ssAvailTimes = $("#ssAvailTimes").val();
-		// console.log(JSON.stringify(formData));		
-		// console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
-
-		// Uncomment when ready to actually do the database stuff
 		$("#addLessonForm").submit();
-		
-
 	});
 
 	$('.addLessonFormPrevious').click(function(e) {
@@ -110,11 +110,10 @@ $(document).ready(function(){
 		$(".rateUnitCaption").text("Lesson Duration: "+choiceText);
 	});
 
-
 });
 
 
-function loadPortfolioImages(lesson_id) {
+function editPortfolioImages(lesson_id) {
 
 	var fd = {};
 	fd.lesson_id = lesson_id;
@@ -126,6 +125,8 @@ function loadPortfolioImages(lesson_id) {
 				var page_content = $(response).find('.editPortfolioListContainer').html();
 				$(".addLessonEditPhotosContainer").html(page_content);
 				$.getScript("/static/js/edit_portfolio.js");
+				$("#editPortfolioDoneContinueButton").hide();
+				$("#editPortfolioDoneButton").show();					
 				// $('#sendMessage').bind('click', savePortfolio);
 			},
 			error : function(response) {
@@ -133,6 +134,86 @@ function loadPortfolioImages(lesson_id) {
 			}
 	});
 
+	return false;
+
+}
+
+function getLessonData(lesson_id) {
+
+	console.log("---------------");
+	console.log("getLessonData: Populating lesson data - lesson id: "+lesson_id);
+
+	// $(".addLessonReviewData, .addLessonReviewDataDetails").empty();
+
+	$(".addLessonReviewTitle").text($("#addLessonTitle").val());
+	$(".addLessonReviewDescription").text($("#addLessonDescription").val());
+	$(".addLessonReviewIndustry").text($("#addLessonIndustry").val());
+	$(".addLessonReviewSchedule").text($("#addLessonAvail").val());
+	$(".addLessonReviewDuration").text($("#addLessonDuration").val());
+	$(".addLessonReviewRate").text($("#addLessonRate").val() + " " + $("#addLessonRateUnit").val());
+
+	var placeOptVal = $("input[name='addLessonPlace']:checked").val();
+
+	console.log("getLessonData: placeOptVal: "+placeOptVal);
+
+	switch (placeOptVal) {
+		case "0":
+			$(".addLessonReviewLocation").text("Flexible - I will arrange with student");
+			break;		
+		case "1":
+			$(".addLessonReviewLocation").text("Student's Place");
+			break;		
+		case "2":
+			console.log("getLessonData: OK, assembling address");
+			$(".addLessonReviewLocation").text("My Place:");
+			var address1 = $("#addLessonAddress1").val();
+			var address2 = $("#addLessonAddress2").val();
+			var city = $("#addLessonCity").val();
+			var state = $("#addLessonState").val();
+			var zip = $("#addLessonZip").val();
+			var details = $("#addLessonAddressDetails").val();
+
+			var addressString = address1+"<br>";
+			if (address2 != ""){
+				addressString += address2+"<br>";
+			}
+			addressString += city+", "+state+"  "+zip+"<br>";
+			if (details != ""){
+				addressString += details+"<br>";
+			}
+
+			console.log("getLessonData: AddressString: "+addressString);
+			$(".addLessonReviewAddress").html(addressString);
+			break;
+	}
+
+}
+
+
+function getLessonImages(lesson_id) {
+	// $(".addLessonReviewPortfolio").empty();
+	var fd = {};
+	fd.lesson_id = lesson_id;
+
+	$.ajax({ url : "/get_lesson_images",
+			type : "GET",
+			data : fd,
+			success : function(response) {
+				console.log("getLessonImages - AJAX success");
+				console.log("getLessonImages - Response: "+JSON.stringify(response));
+				$(".addLessonReviewPortfolio").empty();
+				$.each(response.images, function() {
+					console.log("IMAGE: "+this.img_id);
+					$(".addLessonReviewPortfolio").append("<div class='portfolioImageWrapper'><img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/"+this.img_id+"' class='portfolioImage'><div class='portfolioImageCaption'>"+this.img_comment+"</div></div>");
+				});
+		
+			},
+			error : function(response) {
+				console.log("AJAX error");
+			}
+	});
+
+	return false;
 }
 
 // Form Validation

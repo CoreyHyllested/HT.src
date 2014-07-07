@@ -81,6 +81,7 @@
 }
 
 .addLessonTopLeftNavigation .navItem {
+	cursor: pointer;
 	padding-right: 36px;
 
 }
@@ -140,6 +141,12 @@
 	text-align: left;
 	float: left;
 	width: 100%;
+}
+
+.addLessonFormPreviousContainer {
+	text-align: left;
+	float: left;
+	width: 100%;	
 }
 
 .addLessonFormButton {
@@ -256,8 +263,6 @@ textarea.formField {
 	margin-bottom: 20px;
 }
 
-
-
 .addLessonFormButtonOptions {
 	float: left;
 	padding-left: 14px;
@@ -278,13 +283,93 @@ textarea.formField {
 	line-height: 40px;
 }
 
-
 li.editPortfolioListItem {
 	display: inline;
 	float: left;
 	margin-bottom: 10px;
 	width: 50%
 }
+
+#editPortfolioDoneContinueButton, #multipleUploadContinueButton {
+	display: none;
+}
+
+.editPortfolioDoneButton {
+	margin: 12px 0 12px 0;
+}
+
+.addLessonReviewContainer {
+	margin-top: 12px;
+	float: left;
+}
+
+.addLessonReviewField {
+	float: left;
+	width: 100%;
+	min-height: 30px;
+	padding-top: 8px;
+	border-bottom: 1px dotted #f0f0f0;
+}
+
+.addLessonReviewFieldName {
+	float: left;
+	width: 20%;
+	font-weight: bold;
+}
+
+.addLessonReviewData {
+	float: right;
+	width: 80%;
+	padding-bottom: 8px;
+}
+
+
+.addLessonReviewDataDetails {
+	float: right;
+	width: 80%;
+	margin-top: 8px;	
+}
+
+.addLessonReviewPortfolio {
+	float: left;
+	margin-top: 8px;
+	width: 100%;
+}
+
+.addLessonReviewPortfolio .portfolioImageWrapper {
+	float: left;
+	padding: 4px;
+	background: rgb(255, 255, 255);
+	border: 1px solid rgb(181, 182, 184);
+	border-radius: 3px;
+	-webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.16);
+	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.16);
+	margin: 6px;
+	width: 45%;
+}
+
+.addLessonReviewPortfolio .portfolioImage {
+	border: 1px solid rgb(226, 228, 230);
+	border-radius: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	/* height: 200px; */
+	/* margin-right: 11px; */
+	margin-bottom: 11px;
+	width: 100%;
+}
+
+.addLessonReviewPortfolio .portfolioImageCaption {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-size: .8em;
+}
+
+
 
 /* Dropzone Styles (Overrides) */
 
