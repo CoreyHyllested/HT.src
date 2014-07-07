@@ -76,6 +76,7 @@ class ProductionConfig(Config):
 
 class TestingConfig(Config):
 	TESTING = True
+	WTF_CSRF_ENABLED = False	# Boo. Hiss.  But means we don't have to parse the page much.
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
 	# maybe we don't use this

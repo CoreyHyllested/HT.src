@@ -62,7 +62,7 @@ def initialize_server(config_name):
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('sass_foo', css_example)
 
-	print 'initializing session mgmt'
+	# print('initializing session mgmt')
 	redis_cache = Redis(ht_server)
 	ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 
