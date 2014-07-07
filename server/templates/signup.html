@@ -11,7 +11,7 @@
 
 <div class="signupContentWrapper">
 	
-	<h2>Email Signup</h2>
+	<h2>Register for Insprite</h2>
 <!-- 
 	<div class="signupSwitch">
 		<div class="signupSwitchEmail signupSwitchActive">Email Signup</div>
@@ -22,17 +22,13 @@
 		
 		<form id="SignupNow" onsubmit="return validateForm();" action="/signup" method="POST">
 			{{form.hidden_tag()}}
-<!-- 			{{form.input_signup_name(placeholder="Name", id="signupEmailName", maxlength="40")}}
-			{{form.input_signup_email(placeholder="Email")}}
-			{{form.input_signup_password(placeholder="Password")}}
-			{{form.input_signup_confirm(placeholder="Confirm password", id="input_signup_confirm")}} -->
 
 			<input id="signupEmailName" maxlength="40" name="input_signup_name" placeholder="Name" type="text" value="">
 			<input id="input_signup_email" name="input_signup_email" placeholder="Email" type="email" value="">
 			
 			<select id="input_signup_location" name="input_signup_location">
 				<option value="" disabled selected>Your Location</option>
-				<option value="location_sfbay">SF Bay Area</option>
+				<option value="location_berkeley">Berkeley, CA</option>
 				<option value="location_other">Other</option>
 			</select>
 			
@@ -41,7 +37,6 @@
 			<div id="passMeter"></div>
 
 			<div class="signupAcceptTOS">
-<!-- 			{{form.accept_tos(class="checkbox")}} -->
 				<input class="checkbox" id="accept_tos" name="accept_tos" type="checkbox" value="y">
 				<label for="accept_tos" class="checkbox-label">I agree to the <a href="/terms" target="_blank">Terms of Service</a></label>
 
@@ -60,7 +55,7 @@
 		</script>
 	{% endif %}
 
-	<h2>Social Signup</h2>
+	<h2>Or use these</h2>
 
 	<div class="signupSocial">
 		<form method="link" action="/signup/linkedin">
@@ -72,7 +67,7 @@
 		</form>
 
 		<div class="signupLinkedInNotice">			
-			By clicking any of the buttons above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
+			By clicking any of the buttons above, you confirm that you have read the <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
 
 	</div>

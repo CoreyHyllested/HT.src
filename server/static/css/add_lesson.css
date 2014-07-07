@@ -1,3 +1,6 @@
+.debug {
+	display: none;
+}
 
 /* Animations */
 
@@ -91,7 +94,8 @@
 }
 
 .addLessonHeaderPageName {
-	font-size: 1.8em;
+	font-size: 1.6em;
+	font-weight: bold;
 }
 
 /* Main Content Areas */
@@ -126,10 +130,22 @@
 	line-height: 50px;
 	font-size: 1.1em;
 	border-bottom: 1px dotted #f0f0f0;	
+	cursor: pointer;
+	-moz-transition: 0.2s ease;
+	-o-transition: 0.2s ease;
+	-webkit-transition: 0.2 ease;
+	transition: 0.2s ease;		
+}
+.addLessonNavItem:hover {
+	background-color: #fcfcfc;
+}
+.addLessonNavItem.active {
+	background-color: #f7faff;
 }
 
 .addLessonNavLink {
-	cursor: pointer;
+	padding-right: 6px;
+	
 }
 
 /* Styles for the form container and pages */
@@ -179,6 +195,12 @@
 	display: none;
 }
 
+.formElement {
+	float: left;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
 .formTitle {
 	display: none;
 }
@@ -188,6 +210,7 @@
 	font-size: 1.2em;
 	margin-bottom: 12px;
 }
+
 .formDescription {
 	margin-bottom: 12px;
 }

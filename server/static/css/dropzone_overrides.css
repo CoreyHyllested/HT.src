@@ -90,7 +90,7 @@
 .dropzone-status {
 	height: 40px;
 	line-height: 40px;
-	text-align: center;
+	text-align: left;
 }
 
 .dropzone-status .success{

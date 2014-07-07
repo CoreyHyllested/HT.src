@@ -26,8 +26,10 @@
 			</div>
 		</div>
 		<div class="addLessonHeaderRight">
-			<div class="addLessonHeaderPageName"><span class="debug">{{lesson_id}}</span>
+			<div class="addLessonHeaderPageName">
+			Create Lesson
 			</div>
+			<span class="debug">{{lesson_id}}</span>
 		</div>			
 	</div>
   
@@ -35,13 +37,13 @@
 		<div class="addLessonLeftColumn">
 			<div class="addLessonNavContainer">
 				<ul class="addLessonNavList">
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="overview">Overview</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="where">Where</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="when">When</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="rate">Rate</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="add_photos">Add Photos</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="edit_photos">Edit Photos</a></div>
-					<div class="addLessonNavItem"><a class="addLessonNavLink" data-target-page="review">Review</a></div>
+					<div class="addLessonNavItem" data-target-page="overview"><a class="addLessonNavLink">Overview</a></div>
+					<div class="addLessonNavItem" data-target-page="where"><a class="addLessonNavLink">Where</a></div>
+					<div class="addLessonNavItem" data-target-page="when"><a class="addLessonNavLink">When</a></div>
+					<div class="addLessonNavItem" data-target-page="rate"><a class="addLessonNavLink">Rate</a></div>
+					<div class="addLessonNavItem" data-target-page="add_photos"><a class="addLessonNavLink">Add Photos</a></div>
+					<div class="addLessonNavItem" data-target-page="edit_photos"><a class="addLessonNavLink">Edit Photos</a></div>
+					<div class="addLessonNavItem" data-target-page="review"><a class="addLessonNavLink">Review</a></div>
 				</ul>
 			</div>
 		</div>
@@ -53,20 +55,23 @@
 
 				<div id="overview" class="addLessonFormPage">
 					<div class="formTitle">Let's get started!</div>
-					<div class="formInstruction">What lesson or instruction do you want to offer?</div>
+					<div class="formElement">
+						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
 
-					<input type="text" id="addLessonTitle" name="addLessonTitle" class="formField span12" placeholder="e.g. Advanced Ukulele Lessons"> 
-					<textarea id="addLessonDescription" name="addLessonDescription" class="formField span12" placeholder="Please describe what the student should expect - e.g. a general lesson plan, what you'll cover, etc."></textarea> 
+						<input type="text" id="addLessonTitle" name="addLessonTitle" class="formField span12" placeholder="e.g. Advanced Ukulele Lessons"> 
+						<textarea id="addLessonDescription" name="addLessonDescription" class="formField span12" placeholder="Please describe what the student should expect - e.g. a general lesson plan, what you'll cover, etc."></textarea> 
+					</div>
+					<div class="formElement">
+						<div class="formInstruction">Which industry best describes your lesson?</div>
 
-					<div class="formInstruction">Which industry best describes your lesson?</div>
-
-					<!-- TODO - this needs to pull in from Industry select -->
-					<select id="addLessonIndustry" name="addLessonIndustry" class="formField span3">
-						<option value="" selected>Choose Industry</option>
-						<option value="music">Music</option>
-						<option value="finearts">Fine Arts</option>
-						<option value="other">Other</option>
-					</select>
+						<!-- TODO - this needs to pull in from Industry select -->
+						<select id="addLessonIndustry" name="addLessonIndustry" class="formField span3">
+							<option value="" selected>Choose Industry</option>
+							<option value="music">Music</option>
+							<option value="finearts">Fine Arts</option>
+							<option value="other">Other</option>
+						</select>
+					</div>
 
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="overview">Continue</button>
@@ -74,80 +79,81 @@
 				</div>
 
 				<div id="where" class="addLessonFormPage">
-					<div class="formInstruction">Where do you want to provide these lessons?</div>
-					
-					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value=0><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
+					<div class="formElement">
+						<div class="formInstruction">Where do you want to provide these lessons?</div>
+						
+						<div class="formField formChoice span12">
+							<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value=0><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
+						</div>
+						<div class="formField formChoice span12">
+							<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value=1><label for="addLessonPlaceStudent">Student's Place</label>
+						</div>
+						<div class="formField formChoice span12">
+							<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value=2><label for="addLessonPlaceTeacher">My Place:</label>
+						</div>
+						<br><br>
+						<fieldset id="addressFields">		
+						<input type="text" id="addLessonAddress1" name="addLessonAddress1" class="formField span9" placeholder="Address Line 1"> 
+						<input type="text" id="addLessonAddress2" name="addLessonAddress2" class="formField span9" placeholder="Address Line 2"> 
+						<input type="text" id="addLessonCity" name="addLessonCity" class="formField span3" placeholder="City"> 
+						<select name="addLessonState" id="addLessonState" class="formField span3">
+							<option value="">State</option>
+							<option value="AL">Alabama</option>
+							<option value="AK">Alaska</option>
+							<option value="AZ">Arizona</option>
+							<option value="AR">Arkansas</option>
+							<option value="CA">California</option>
+							<option value="CO">Colorado</option>
+							<option value="CT">Connecticut</option>
+							<option value="DE">Delaware</option>
+							<option value="DC">District of Columbia</option>
+							<option value="FL">Florida</option>
+							<option value="GA">Georgia</option>
+							<option value="HI">Hawaii</option>
+							<option value="ID">Idaho</option>
+							<option value="IL">Illinois</option>
+							<option value="IN">Indiana</option>
+							<option value="IA">Iowa</option>
+							<option value="KS">Kansas</option>
+							<option value="KY">Kentucky</option>
+							<option value="LA">Louisiana</option>
+							<option value="ME">Maine</option>
+							<option value="MD">Maryland</option>
+							<option value="MA">Massachusetts</option>
+							<option value="MI">Michigan</option>
+							<option value="MN">Minnesota</option>
+							<option value="MS">Mississippi</option>
+							<option value="MO">Missouri</option>
+							<option value="MT">Montana</option>
+							<option value="NE">Nebraska</option>
+							<option value="NV">Nevada</option>
+							<option value="NH">New Hampshire</option>
+							<option value="NJ">New Jersey</option>
+							<option value="NM">New Mexico</option>
+							<option value="NY">New York</option>
+							<option value="NC">North Carolina</option>
+							<option value="ND">North Dakota</option>
+							<option value="OH">Ohio</option>
+							<option value="OK">Oklahoma</option>
+							<option value="OR">Oregon</option>
+							<option value="PA">Pennsylvania</option>
+							<option value="RI">Rhode Island</option>
+							<option value="SC">South Carolina</option>
+							<option value="SD">South Dakota</option>
+							<option value="TN">Tennessee</option>
+							<option value="TX">Texas</option>
+							<option value="UT">Utah</option>
+							<option value="VT">Vermont</option>
+							<option value="VA">Virginia</option>
+							<option value="WA">Washington</option>
+							<option value="WV">West Virginia</option>
+							<option value="WI">Wisconsin</option>
+							<option value="WY">Wyoming</option>
+						</select>
+						<input type="text" id="addLessonZip" name="addLessonZip" class="formField span3" placeholder="Zip Code">
+						<input type="text" id="addLessonAddressDetails" name="addLessonAddressDetails" class="formField span9" placeholder="Address Details (e.g. Back Door off Patio)">
+						</fieldset>
 					</div>
-					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value=1><label for="addLessonPlaceStudent">Student's Place</label>
-					</div>
-					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value=2><label for="addLessonPlaceTeacher">My Place:</label>
-					</div>
-					<br><br>
-					<fieldset id="addressFields">		
-					<input type="text" id="addLessonAddress1" name="addLessonAddress1" class="formField span9" placeholder="Address Line 1"> 
-					<input type="text" id="addLessonAddress2" name="addLessonAddress2" class="formField span9" placeholder="Address Line 2"> 
-					<input type="text" id="addLessonCity" name="addLessonCity" class="formField span3" placeholder="City"> 
-					<select name="addLessonState" id="addLessonState" class="formField span3">
-						<option value="">State</option>
-						<option value="AL">Alabama</option>
-						<option value="AK">Alaska</option>
-						<option value="AZ">Arizona</option>
-						<option value="AR">Arkansas</option>
-						<option value="CA">California</option>
-						<option value="CO">Colorado</option>
-						<option value="CT">Connecticut</option>
-						<option value="DE">Delaware</option>
-						<option value="DC">District of Columbia</option>
-						<option value="FL">Florida</option>
-						<option value="GA">Georgia</option>
-						<option value="HI">Hawaii</option>
-						<option value="ID">Idaho</option>
-						<option value="IL">Illinois</option>
-						<option value="IN">Indiana</option>
-						<option value="IA">Iowa</option>
-						<option value="KS">Kansas</option>
-						<option value="KY">Kentucky</option>
-						<option value="LA">Louisiana</option>
-						<option value="ME">Maine</option>
-						<option value="MD">Maryland</option>
-						<option value="MA">Massachusetts</option>
-						<option value="MI">Michigan</option>
-						<option value="MN">Minnesota</option>
-						<option value="MS">Mississippi</option>
-						<option value="MO">Missouri</option>
-						<option value="MT">Montana</option>
-						<option value="NE">Nebraska</option>
-						<option value="NV">Nevada</option>
-						<option value="NH">New Hampshire</option>
-						<option value="NJ">New Jersey</option>
-						<option value="NM">New Mexico</option>
-						<option value="NY">New York</option>
-						<option value="NC">North Carolina</option>
-						<option value="ND">North Dakota</option>
-						<option value="OH">Ohio</option>
-						<option value="OK">Oklahoma</option>
-						<option value="OR">Oregon</option>
-						<option value="PA">Pennsylvania</option>
-						<option value="RI">Rhode Island</option>
-						<option value="SC">South Carolina</option>
-						<option value="SD">South Dakota</option>
-						<option value="TN">Tennessee</option>
-						<option value="TX">Texas</option>
-						<option value="UT">Utah</option>
-						<option value="VT">Vermont</option>
-						<option value="VA">Virginia</option>
-						<option value="WA">Washington</option>
-						<option value="WV">West Virginia</option>
-						<option value="WI">Wisconsin</option>
-						<option value="WY">Wyoming</option>
-					</select>
-					<input type="text" id="addLessonZip" name="addLessonZip" class="formField span3" placeholder="Zip Code">
-					<input type="text" id="addLessonAddressDetails" name="addLessonAddressDetails" class="formField span9" placeholder="Address Details (e.g. Back Door off Patio)">
-					</fieldset>
-
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="where">Continue</button>
 						<div class="addLessonFormPreviousContainer">
@@ -159,35 +165,37 @@
 
 
 				<div id="when" class="addLessonFormPage">
-					<div class="formInstruction">When are you available for these lessons?</div>
-					
-					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value=0><label for="addLessonAvailDefault">Same as availability set in my profile</label>
+					<div class="formElement">
+						<div class="formInstruction">When are you available for these lessons?</div>
+						
+						<div class="formField formChoice span12">
+							<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value=0><label for="addLessonAvailDefault">Same as availability set in my profile</label>
+						</div>
+						<div class="formField formChoice span12">
+							<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
+						</div>
 					</div>
-					<div class="formField formChoice span12">
-						<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
+					<div class="formElement">
+						<div class="formInstruction">How long will each lesson last?</div>
+
+						<select name="addLessonDuration" id="addLessonDuration" class="formField span3">
+							<option value="">Choose duration</option>
+							<option value="none">No set duration</option>
+							<option value="30">30 minutes</option>
+							<option value="45">45 minutes</option>
+							<option value="60">1 hour</option>
+							<option value="75">1 hour 15 minutes</option>
+							<option value="90">1 hour 30 minutes</option>
+							<option value="105">1 hour 45 minutes</option>
+							<option value="120">2 hours</option>
+							<option value="135">2 hours 15 minutes</option>
+							<option value="150">2 hours 30 minutes</option>
+							<option value="165">2 hours 45 minutes</option>
+							<option value="180">3 hours</option>
+							<option value="210">3 hours 30 minutes</option>						
+							<option value="240">4 hours</option>						
+						</select>  
 					</div>
-
-					<div class="formInstruction">How long will each lesson last?</div>
-
-					<select name="addLessonDuration" id="addLessonDuration" class="formField span3">
-						<option value="">Choose duration
-						<option value="none">No set duration
-						<option value="30">30 minutes</option>
-						<option value="45">45 minutes</option>
-						<option value="60">1 hour</option>
-						<option value="75">1 hour 15 minutes</option>
-						<option value="90">1 hour 30 minutes</option>
-						<option value="105">1 hour 45 minutes</option>
-						<option value="120">2 hours</option>
-						<option value="135">2 hours 15 minutes</option>
-						<option value="150">2 hours 30 minutes</option>
-						<option value="165">2 hours 45 minutes</option>
-						<option value="180">3 hours</option>
-						<option value="210">3 hours 30 minutes</option>						
-						<option value="240">4 hours</option>						
-					</select>  
-
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="when">Continue</button>
 						<div class="addLessonFormPreviousContainer">
@@ -197,78 +205,85 @@
 				</div>
 
 				<div id="rate" class="addLessonFormPage">
-					<div class="formInstruction">How much will you charge?</div>
+					<div class="formElement">
+						<div class="formInstruction">How much will you charge?</div>
 
-					<div class="formDescription">You may enter an hourly rate, or a per-lesson rate.</div>
+						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate.</div>
 
-					<input type="text" id="addLessonRate" name="addLessonRate" class="formField span3" placeholder="Amount"> 
-					<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
-						<option value="perHour">Per Hour</option> 
-						<option value="perLesson">Per Lesson</option> 
-					</select>
-					<span class="rateUnitCaption span3"></span>
+						<input type="text" id="addLessonRate" name="addLessonRate" class="formField span3" placeholder="Amount"> 
+						<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
+							<option value="perHour">Per Hour</option> 
+							<option value="perLesson">Per Lesson</option> 
+						</select>
+						<span class="rateUnitCaption span3"></span>
 
-					<div class="addLessonFormButtonContainer">
-						<button class="blueButton addLessonFormButton" data-current-page="rate">Continue</button>
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormButtonContainer">
+							<button class="blueButton addLessonFormButton" data-current-page="rate">Continue</button>
+							<div class="addLessonFormPreviousContainer">
+								<a class="addLessonFormPrevious">Previous</a>
+							</div>
 						</div>
-					</div>				
+					</div>		
 
 				</div>
 
 				</form>
 
 				<div id="add_photos" class="addLessonFormPage">
-					<div class="formInstruction">Please upload some photos for your lesson portfolio</div>
+					<div class="formElement">
+						<div class="formInstruction">Please upload some photos for your lesson portfolio</div>
 
-					<div class="formDescription">Students are more likely to enlist your services if they can see high-quality photos of you doing your work, or photos of the stuff you or other students have made. Please make sure they are well-lit, tasteful, and would make someone want to hire you!</div>
+						<div class="formDescription">Students are more likely to enlist your services if they can see high-quality photos of you doing your work, or photos of the stuff you or other students have made. Please make sure they are well-lit, tasteful, and would make someone want to hire you!</div>
 
-					<div class="dropzone-status"></div>
-					<div class="dropzone-wrapper">
-						<form action="/upload" method="post" class="dropzone dz-clickable square" id="upload-form">
-							<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
-							<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-							<div class="fallback">
-						    	<input name="file" type="file" multiple />
-						  	</div>
-						  	<div class="dz-message dropzoneMessage">Drag files or click here to upload</div>
-						</form>
-					</div>
-
-					<div class="addLessonFormButtonContainer">
-						<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
-							Upload
-						</button>
-						<button type="button" id="multipleUploadContinueButton" class="blueButton addLessonFormButton" data-current-page="add_photos">Continue</button>						
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+						
+						<div class="dropzone-wrapper">
+							<form action="/upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+								<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
+								<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+								<div class="fallback">
+							    	<input name="file" type="file" multiple />
+							  	</div>
+							  	<div class="dz-message dropzoneMessage">Drag files or click here to upload</div>
+							</form>
 						</div>
-					</div>
-				
-				</div>
+						<div class="dropzone-status italic"></div>
 
-				<div id="edit_photos" class="addLessonFormPage">
-					<div class="formInstruction">Add some descriptions, re-order, and remove photos</div>
-
-					<div class="formDescription">Give the folks an idea what's going on in your photos, or put them in the order you want (just drag and drop). You may need to scroll to see all the photos in your portfolio. Note that the photos displayed are just thumbnails - we have stored your photos at original size and dimensions.</div>
-
-					<div class="addLessonEditPhotosStatus"></div>
-					<div class="addLessonEditPhotosContainer">
-					</div>
-
-					<div class="addLessonFormButtonContainer">
-						<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-
-						<button type="button" id="editPortfolioDoneButton" class="blueButton editPortfolioDoneButton span6" data-current-page="edit_photos">
-							Save Changes
-						</button>
-						<button type="button" id="editPortfolioDoneContinueButton" class="blueButton addLessonFormButton" data-current-page="edit_photos">Continue</button>
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+						<div class="addLessonFormButtonContainer">
+							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
+								Upload
+							</button>
+							<button type="button" id="multipleUploadContinueButton" class="blueButton addLessonFormButton" data-current-page="add_photos">Continue</button>						
+							<div class="addLessonFormPreviousContainer">
+								<a class="addLessonFormPrevious">Previous</a>
+							</div>
 						</div>
 					</div>
 					
+				</div>
+
+				<div id="edit_photos" class="addLessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">Add some descriptions, re-order, and remove photos</div>
+
+						<div class="formDescription">Give the folks an idea what's going on in your photos, or put them in the order you want (just drag and drop). You may need to scroll to see all the photos in your portfolio. Note that the photos displayed are just thumbnails - we have stored your photos at original size and dimensions.</div>
+
+						
+						<div class="addLessonEditPhotosContainer">
+						</div>
+						<div class="addLessonEditPhotosStatus italic"></div>
+
+						<div class="addLessonFormButtonContainer">
+							<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+
+							<button type="button" id="editPortfolioDoneButton" class="blueButton editPortfolioDoneButton span6" data-current-page="edit_photos">
+								Save Changes
+							</button>
+							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton addLessonFormButton" data-current-page="edit_photos">Continue</button>
+							<div class="addLessonFormPreviousContainer">
+								<a class="addLessonFormPrevious">Previous</a>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<div id="review" class="addLessonFormPage">

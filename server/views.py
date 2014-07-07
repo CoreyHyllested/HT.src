@@ -515,28 +515,61 @@ def render_seller_signup_page(usrmsg = None):
 	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
 
 
-@ht_server.route('/add_seller_info', methods=['GET', 'POST'])
+@ht_server.route('/activate_seller', methods=['GET', 'POST'])
 @req_authentication
-def add_seller_info():
+def activate_seller():
 	""" A regular user is signing up to be a seller.  """
 
-	print 'enter add seller'
+	print "-"*32
+	print 'activate_seller(): begin'
 	uid = session['uid']
-
 	bp = Profile.get_by_uid(session.get('uid'))
+	ba = Account.get_by_uid(session.get('uid'))
 	form = ProfileForm(request.form)
-	print 'ssAddress1', request.values.get('ssAddress1')
-	print 'ssAddress2', request.values.get('ssAddress2')
-	print 'ssCity', request.values.get('ssCity')
-	print 'ssState', request.values.get('ssState')
-	print 'ssZip', request.values.get('ssZip')
-	print 'oauth_stripe', request.values.get('oauth_stripe')
-	print 'ssAvailOption', request.values.get('ssAvailOption')
-	print 'ssAvailTimes', request.values.get('ssAvailTimes')
 
-	return make_response(redirect(url_for('render_dashboard')))
+	# TODO - put this back in
+	# if form.validate_on_submit():
 
+	try:
+		bp.avail = int(form.ssAvailOption.data)
+		bp.stripe_cust = form.oauth_stripe.data 
+		ba.role = 1
 
+		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+		# bp.updated  = dt.utcnow()
+
+		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
+		# TODO: what happens if someone wants to just keep their old one?
+		image_data = request.files[form.ssProfileImage.name].read()
+		if (len(image_data) > 0):
+			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(image_data)))
+			print 'activate_seller(): s3'
+			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
+			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+			sml.set_contents_from_file(StringIO(image_data))
+			bp.prof_img = destination_filename
+
+		print 'activate_seller(): add'
+		db_session.add(bp)
+		db_session.add(ba)
+		print 'activate_seller(): commit'
+		db_session.commit()
+		log_uevent(uid, "activate seller profile")
+
+		return make_response(redirect(url_for('render_dashboard')))
+
+	except AttributeError as ae:
+		print 'activate_seller(): hrm. must have changed an object somehwere'
+		print ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500
 
 
 @ht_server.route('/schedule', methods=['GET','POST'])

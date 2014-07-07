@@ -37,10 +37,12 @@ function savePortfolio() {
 				
 				setTimeout(function() { 
 					$('.addLessonFormPage').hide();
+					$(".addLessonNavItem").removeClass("active");
 					$('#review').show();
 					var lessonID = $('#addLessonForm').attr("data-lesson-id");
 					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 					$(".addLessonEditPhotosStatus").empty();
+					$(".addLessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
 					history.pushState({title: "review"}, "", '/lesson/create#review');
 				}, 2000);
 

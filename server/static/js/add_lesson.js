@@ -19,11 +19,13 @@ $(document).ready(function(){
 		} else if (hash == "review") {
 			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 		}
-		$('#'+hash).show();			
+		$('#'+hash).show();	
+		$(".addLessonNavItem[data-target-page=" + hash + "]").addClass("active");		
 		history.replaceState({title: hash}, "", '');
 	} else {
 		// Default to first page
 		$('#'+firstPage).show();
+		$(".addLessonNavItem[data-target-page=" + firstPage + "]").addClass("active");
 		history.replaceState({title: firstPage}, "", '');
 	}
 
@@ -31,6 +33,7 @@ $(document).ready(function(){
 		if (event.state) {
 			var page_title = event.state.title;
 			$('.addLessonFormPage').hide();
+			$(".addLessonNavItem").removeClass("active");
 			if (page_title == "edit_photos") {
 				editPortfolioImages(lessonID);
 			} else if (page_title == "review") {
@@ -38,11 +41,13 @@ $(document).ready(function(){
 			}
 			
 			$("#"+page_title).show();
+			$(".addLessonNavItem[data-target-page=" + page_title + "]").addClass("active");
 		}
 	};	
 
-	$('.addLessonNavLink').click(function() {
+	$('.addLessonNavItem').click(function() {
 		$('.addLessonFormPage').hide();
+		$(".addLessonNavItem").removeClass("active");
 		var target = $(this).attr("data-target-page");
 		// $('.addLessonHeaderPageName').text($("#"+target+' .formTitle').text());
 		if (target == "edit_photos") {
@@ -51,14 +56,16 @@ $(document).ready(function(){
 			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 		}
 		$("#"+target).show();
+		$(this).addClass("active");
 		history.pushState({title: target}, "", '/lesson/create#'+target);
 	});
 
 	$(document.body).on("click", ".addLessonFormButton", function(e) {
 		e.preventDefault();
 		$('.addLessonFormPage').hide();
+		$(".addLessonNavItem").removeClass("active");
 		var currentPage = $(this).attr("data-current-page");
-		var nextPage = $(".addLessonNavLink[data-target-page=" + currentPage + "]").parent().next(".addLessonNavItem").children().attr("data-target-page");
+		var nextPage = $(".addLessonNavItem[data-target-page=" + currentPage + "]").next(".addLessonNavItem").attr("data-target-page");
 
 		if (nextPage == "edit_photos") {
 			editPortfolioImages(lessonID);
@@ -68,7 +75,7 @@ $(document).ready(function(){
 
 		// $('.addLessonHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#'+nextPage).show();
-
+		$(".addLessonNavItem[data-target-page=" + nextPage + "]").addClass("active");
 		history.pushState({title: nextPage}, "", '/lesson/create#'+nextPage);
 	});
 
@@ -85,11 +92,12 @@ $(document).ready(function(){
 	$('.addLessonFormPrevious').click(function(e) {
 		e.preventDefault();
 		$('.addLessonFormPage').hide();	
-
+		$(".addLessonNavItem").removeClass("active");
 		var currentPage = $(this).closest(".addLessonFormPage").attr("id");
-		var prevPage = $(".addLessonNavLink[data-target-page=" + currentPage + "]").parent().prev(".addLessonNavItem").children().attr("data-target-page");
+		var prevPage = $(".addLessonNavItem[data-target-page=" + currentPage + "]").prev(".addLessonNavItem").children().attr("data-target-page");
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());			
 		$('#'+prevPage).show();
+		$(".addLessonNavItem[data-target-page=" + prevPage + "]").addClass("active");
 		history.pushState({title: prevPage}, "", '/lesson/create#'+prevPage);
 	})
 
