@@ -184,7 +184,7 @@ def ht_proposal_reject(p_uuid, uid):
 		db_session.rollback()
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
-	send_proposal_reject_emails(the_proposal)
+	ht_email_notice_of_proposal_rejection(the_proposal)
 	return (200, 'success')
 
 
@@ -200,7 +200,6 @@ def getDBCorey(x):
 		print str(accounts[0].userid) + ' ' + str(accounts[0].name) + ' ' + str(accounts[0].email)
 	print 'exit getDBCorey'
 	return str(accounts[0].userid) + ' ' + str(accounts[0].name) + ' ' + str(accounts[0].email)
-
 
 
 
