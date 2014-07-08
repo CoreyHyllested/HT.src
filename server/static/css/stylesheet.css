@@ -184,7 +184,7 @@ a:active {color: #0087cf;}
 	background-color: #333333;
 	height: 65px;
 	width: 100%;
-	border-bottom-color: #29abe2;
+	border-bottom-color: #1488CC;
 	border-bottom-width: 3px;
 	border-bottom-style: solid;
 	position: absolute;
@@ -223,7 +223,7 @@ a:active {color: #0087cf;}
 }
 
 #top-search {
-	background: url("../img/search.svg") #29abe2 no-repeat 10px 50%;
+	background: url("../img/search.svg") #1488CC no-repeat 10px 50%;
 	width: 350px;
 	height: 30px;
 	margin: auto;
@@ -255,7 +255,7 @@ a:active {color: #0087cf;}
 	display: block;
 	height: 140px;
 	width: 100%;
-	border-top-color: #29abe2;
+	border-top-color: #1488CC;
 	border-top-width: 3px;
 	border-top-style: solid;
 	bottom: -20px;
@@ -286,7 +286,7 @@ a:active {color: #0087cf;}
 }
 
 #footer-menu ul li a:hover, a:active {
-	color: #29abe2;
+	color: #1488CC;
 }
 
 #footer-copyright {
@@ -448,12 +448,12 @@ a:active {color: #0087cf;}
 	background-color: white;
 	margin-left: 10px;
 	vertical-align: -5px;
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	font-weight: 300;
 }
 
 #tabs ul li.active-tab {
-	background-color: #29abe2;
+	background-color: #1488CC;
 	color: white;	
 }
 
@@ -487,7 +487,7 @@ a:active {color: #0087cf;}
 	background-color: white;
 	position: relative;
 	border: 1px #cccccc solid;
-	border-top: 15px #29abe2 solid;
+	border-top: 15px #1488CC solid;
 	padding-bottom: 35px;
 	margin-bottom: 30px;
 }
@@ -557,7 +557,7 @@ a:active {color: #0087cf;}
 }
 
 #active-cell {
-	background-color:#29abe2;
+	background-color:#1488CC;
 	color: white;
 }
 

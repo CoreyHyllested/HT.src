@@ -97,7 +97,7 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardOfferCenterColumn h3 {
-	color: #29abe1;
+	color: #1488CC;
 	cursor: pointer;
 	display: inline-block;
 	font-weight: bold;
@@ -146,7 +146,7 @@ input.offerCancel:hover {
 }
 
 input.offerAccept {
-	color: #29abe2;
+	color: #1488CC;
 	float: right;
 }
 
@@ -313,7 +313,7 @@ input.lessonCancel:hover {
 }
 
 .dashboardRightColumn h3 {
-	color: #29abe1;
+	color: #1488CC;
 	display: inline-block; 
 	font-weight: bold;
 	margin: 20px 0 5px;

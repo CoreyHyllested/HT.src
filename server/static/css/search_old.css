@@ -51,7 +51,7 @@ h3 {
 
 #top-bar {
 	background-color: #333333;
-	border-bottom: 3px #29abe2 solid;
+	border-bottom: 3px #1488CC solid;
 	position: relative;
 	height: 65px;
 	width: 100%;
@@ -90,11 +90,11 @@ h3 {
 }
 
 #top-menu ul li a:hover {
-	color: #29abe2;
+	color: #1488CC;
 }
 
 #top-search {
-	background: url("../img/search.svg") #29abe2 no-repeat 10px;
+	background: url("../img/search.svg") #1488CC no-repeat 10px;
 	height: 30px;
 	left: 300px;
 	position: absolute;
@@ -351,7 +351,7 @@ body > #container {
 	bottom: 0;
 	height: 140px;
 	margin-top: -140px;
-	border-top-color: #29abe2;
+	border-top-color: #1488CC;
 	border-top-width: 3px;
 	border-top-style: solid;
 	width: 100%;
@@ -398,7 +398,7 @@ body > #container {
 }
 
 #footer-menu ul li a:hover, a:active {
-	color: #29abe2;
+	color: #1488CC;
 }
 
 #footer-copyright {
