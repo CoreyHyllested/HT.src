@@ -28,7 +28,7 @@ MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
 #def shutdown_session(exception=None):
 #    db_session.remove()
 
-print 'init::db -- create engine and scoped connection'
+#print 'init::db -- create engine and scoped connection'
 db_engine	= create_engine(DATABASE_URI) #, echo=True)
 db_session	= scoped_session(sessionmaker(bind=db_engine))
 
@@ -38,9 +38,3 @@ Base.query = db_session.query_property()
 
 # models uses (Base)
 from server.infrastructure import models
-
-def init_db():
-	# import and create metadata models
-	print 'init::db -- import database models'
-	#Base.metadata.create_all(bind=engine)
-	print 'init::db -- done'
