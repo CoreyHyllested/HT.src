@@ -15,9 +15,10 @@ import os, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
+import pytz
 
 from pprint import pprint as pp
-from datetime import timedelta
+from datetime import timedelta, datetime as dt
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from flask.ext.mail import Message
@@ -58,13 +59,6 @@ def ht_browsingprofile():
 	return None
 
 
-#@deprecated use Account.get_by...
-def ht_get_account(user_id=None):
-	if (user_id == None): user_id = session.get('uid', 0)
-	accounts = Account.query.filter_by(userid=user_id).all()
-	if (len(accounts) == 1): return accounts[0]
-	return None
-
 
 def ht_authenticate_user(user_email, password):
 	""" Returns authenticated account """
@@ -95,6 +89,7 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
 								   .all()
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
 
 	if len(oauth_accounts) == 1:
@@ -134,7 +129,7 @@ def ht_password_recovery(email):
 		db_session.rollback()
 		return (str(e))
 
-	send_recovery_email(email, challenge_hash)
+	ht_email_password_recovery_link(email, challenge_hash)
 	return usrmsg
 
 
@@ -275,8 +270,53 @@ def htdb_get_composite_meetings(profile):
 							.join(user, user.prof_id == Proposal.prop_user)												\
 							.join(hero, hero.prof_id == Proposal.prop_hero).all();
 
+	map(lambda meeting: meeting_timedout(meeting), meetings)
 	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
 	return meetings
+
+
+
+
+def meeting_timedout(meeting):
+	proposal = meeting.Proposal
+
+	if (proposal.prop_state != APPT_STATE_PROPOSED and proposal.prop_state != APPT_STATE_ACCEPTED):
+		return
+
+	utc_now = dt.now(timezone('UTC'))
+	utcsoon = utc_now - timedelta(hours=20)
+	ystrday = utc_now - timedelta(days=1)
+
+	try:
+		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
+		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
+		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
+		print '\t\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
+
+		if (proposal.prop_state == APPT_STATE_PROPOSED):
+			print '\t\t\t\tPROPOSED...'
+			if (prop_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
+				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
+				proposal.set_state(APPT_STATE_TIMEDOUT)
+				db_session.add(proposal)
+				db_session.commit()
+			else:
+				to = prop_ts - utcsoon
+				print '\t\t\t\t\t is before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+				print '\t\t\t\t\t Safe! until ' +  str(to.seconds/3600) + ' hours'
+				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
+		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
+			print '\t\t\t\tACCEPTED...'
+			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
+				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				print '\t\t\t\tFILTER Event out manually.  The events are working!!!'
+				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
+			else:
+				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
 
 
 
@@ -285,10 +325,14 @@ def ht_get_active_meetings(profile):
 	props = []
 	appts = []
 
+	print 'ht_get_active_meetings()  Get composite meetings'
 	meetings = htdb_get_composite_meetings(profile)
+	print 'ht_get_active_meetings()  Got composite meetings'
 
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), meetings)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
+	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
+
+	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
 	#for meeting in meetings:
 	#	if (profile.prof_id == thread.UserMessage.msg_to):
@@ -340,20 +384,20 @@ def htdb_get_composite_messages(profile):
 def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dump=False):
 	messages = []
 	if (filter_by == 'RECEIVED'):
-		print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_to == profile.prof_id), message_set)
 	if (filter_by == 'SENT'):
-		print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_from == profile.prof_id), message_set)
 	if (filter_by == 'UNREAD'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
 	if (filter_by == 'THREADS'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_thread == msg.UserMessage.msg_id) == 0), message_set)
 
 	if (dump):
-		print 'Original set',  len(message_set), "=>", len(messages)
+		#print 'Original set',  len(message_set), "=>", len(messages)
 		for msg in messages:
 			print msg.msg_from.prof_name, 'sent', msg.msg_to.prof_name, 'about', msg.UserMessage.msg_subject, '\t', msg.UserMessage.msg_flags, '\t', msg.UserMessage.msg_thread
 	return messages
@@ -392,6 +436,7 @@ def display_review_partner(r, prof_id):
 def display_partner_proposal(meeting, profile):
 	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
 	setattr(meeting, 'display', display_partner)
+	setattr(meeting, 'seller', (profile == meeting.hero))
 
 
 
@@ -399,13 +444,13 @@ def display_partner_proposal(meeting, profile):
 def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
 	reviews = []
 	if (filter_by == 'REVIEWED'):
-		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+	#	print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
 	if (filter_by == 'AUTHORED'):
-		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+	#	print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
 	if (filter_by == 'VISIBLE'):
-		print 'Searching review_set for reviews marked as visible'
+	#	print 'Searching review_set for reviews marked as visible'
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
 
 	if (dump):
@@ -462,4 +507,32 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 
 	return (inbox, archive)
 
+
+
+
+def ht_create_lesson():
+	bp = Profile.get_by_uid(session["uid"])
+	try:
+		lesson = Lesson(bp.prof_id)
+		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
+		# lesson.set_state(LESSON_STATE_STARTED)
+		db_session.add(lesson)
+		db_session.commit()
+
+	except IntegrityError as ie:
+		print 'ht_create_lesson: ERROR ie:', ie
+		db_session.rollback()
+		return None
+	except Exception as e:
+		print 'ht_create_lesson: ERROR e:', e
+		db_session.rollback()
+		return None
+	return lesson
+
+
+
+
+def ht_get_lessons(profile):
+	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
+	return lessons
 

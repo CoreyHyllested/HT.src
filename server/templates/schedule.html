@@ -189,6 +189,7 @@ $(document).ready(function() {
 						window.location.href = data.nexturl;
 					},
 					error	: function(data) {
+						console.log(data.responseText);
 						var msg = JSON.parse(data.responseText);
 						openAlertWindow(msg['usrmsg']);
 					}

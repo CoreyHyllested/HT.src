@@ -34,12 +34,13 @@ def render_dashboard(usrmsg=None):
 	try:
 		(props, appts) = ht_get_active_meetings(bp)
 		unread_msgs = ht_get_unread_messages(bp)
+		lessons = ht_get_lessons(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
 
 
 
@@ -71,6 +72,7 @@ def render_inbox_page():
 
 
 
+
 @req_authentication
 @insprite_views.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
@@ -81,6 +83,7 @@ def render_compose_page():
 
 	if (hid is not None): hp = Profile.get_by_prof_id(hid)
 	return make_response(render_template('compose.html', bp=bp, hp=hp, next=next))
+
 
 
 
@@ -288,12 +291,15 @@ def render_edit():
 
 
 
+
 @req_authentication
 @insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
+
+
 	
 
 @req_authentication
@@ -301,8 +307,238 @@ def render_multiupload_page():
 def render_edit_portfolio_page():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	lesson_id = request.values.get('lesson_id')
+
+	if (lesson_id is not None):
+		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
+		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+	else:
+		print "render_edit_portfolio_page(): get all images for profile:"
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
+
+
+
+
+@ht_server.route('/activate_seller', methods=['GET', 'POST'])
+@req_authentication
+def activate_seller():
+	""" A regular user is signing up to be a seller.  """
+
+	print "-"*32
+	print 'activate_seller(): begin'
+	uid = session['uid']
+	bp = Profile.get_by_uid(session.get('uid'))
+	ba = Account.get_by_uid(session.get('uid'))
+	form = ProfileForm(request.form)
+
+	# TODO - put this back in
+	# if form.validate_on_submit():
+
+	try:
+		bp.avail = int(form.ssAvailOption.data)
+		bp.stripe_cust = form.oauth_stripe.data
+		ba.role = 1
+
+		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+		# bp.updated  = dt.utcnow()
+
+		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
+		# TODO: what happens if someone wants to just keep their old one?
+		image_data = request.files[form.ssProfileImage.name].read()
+		if (len(image_data) > 0):
+			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(image_data)))
+			print 'activate_seller(): s3'
+			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+			sml.set_contents_from_file(StringIO(image_data))
+			bp.prof_img = destination_filename
+
+		print 'activate_seller(): add'
+		db_session.add(bp)
+		db_session.add(ba)
+		print 'activate_seller(): commit'
+		db_session.commit()
+		log_uevent(uid, "activate seller profile")
+
+		return make_response(redirect(url_for('render_dashboard')))
+
+	except AttributeError as ae:
+		print 'activate_seller(): hrm. must have changed an object somehwere'
+		print ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+
+	except Exception as e:
+		print e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500
+
+
+
+
+@ht_server.route('/lesson/create', methods=['GET', 'POST'])
+@req_authentication
+def ht_api_lesson_create():
+	user_message = 'Initializing Lesson...'
+	bp = Profile.get_by_uid(session['uid'])
+
+	print "ht_api_lesson_create: bp is",bp
+	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
+
+	try:
+		lesson = ht_create_lesson()
+		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
+		if (lesson is not None):
+			lesson_id = lesson.lesson_id
+			print 'ht_api_lesson_create: Successfully initialized lesson'
+		else:
+			print 'ht_api_lesson_create: Error initializing lesson'
+
+	except Sanitized_Exception as se:
+		user_message = se.get_sanitized_msg()
+		print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
+		print
+		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+
+	except Exception as e:
+		print 'ht_api_lesson_create: exception:', type(e), e
+		print
+		return make_response(jsonify(usrmsg='Something bad'), 500)
+
+	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+
+
+
+
+@ht_server.route('/create_lesson/<lesson_id>', methods=['POST'])
+@req_authentication
+def create_lesson(lesson_id):
+	""" We have initialized a lesson already in /lesson/create - we will now add the details """
+
+	uid = session['uid']
+	bp	= Profile.get_by_uid(uid)
+	form = request.form
+
+	print "-"*32
+	print "Creating Lesson...\n"
+	print "Here's the form data:", str(form)
+	print "The Lesson ID: ",lesson_id
+
+	# if form.validate_on_submit():
+	try:
+		lesson = Lesson.get_by_lesson_id(lesson_id)
+		lesson.lesson_title = request.form.get('addLessonTitle')
+		lesson.lesson_description = request.form.get('addLessonDescription')
+		lesson.lesson_industry = request.form.get('addLessonIndustry')
+		lesson.lesson_unit = request.form.get('addLessonRateUnit')
+
+		if (lesson.lesson_unit == "perHour"):
+			try:
+			   lesson.lesson_hourly_rate = int(request.form.get('addLessonRate'))
+			except ValueError:
+			   pass
+		else:
+			try:
+			   lesson.lesson_lesson_rate = int(request.form.get('addLessonRate'))
+			except ValueError:
+			   pass
+
+		lesson.lesson_avail = request.form.get('addLessonAvail')
+
+		try:
+		   lesson.lesson_duration	= int(request.form.get('addLessonDuration'))
+		except ValueError:
+		   pass
+
+		lesson.lesson_loc_option = request.form.get('addLessonPlace')
+		lesson.lesson_address_1 = request.form.get('addLessonAddress1')
+		lesson.lesson_address_2 = request.form.get('addLessonAddress2')
+		lesson.lesson_city = request.form.get('addLessonCity')
+		lesson.lesson_state = request.form.get('addLessonState')
+		lesson.lesson_zip = request.form.get('addLessonZip')
+		lesson.lesson_country = request.form.get('addLessonCountry')
+		lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
+
+		# This maybe doesn't work? Leaving out for now
+		# lesson.lesson_updated = dt.utcnow()
+
+		if (request.form.get('addLessonSave') == "True"):
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_SAVED
+		elif (request.form.get('addLessonMakeLive') == "True"):
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_ACTIVE
+		else:
+			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_PRIVATE
+
+		print 'adding lesson: ', lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
+		db_session.add(lesson)
+		print 'committing...'
+		db_session.commit()
+		log_uevent(uid, "create lesson")
+
+		return make_response(render_lesson_page(lesson_id))
+
+	except AttributeError as ae:
+		print 'Attribute Error'
+		print ae
+		db_session.rollback()
+		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg="We messed something up"))
+
+	except Exception as e:
+		print 'Exception Error'
+		print e
+		db_session.rollback()
+		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg=e))
+
+
+
+
+@req_authentication
+@ht_server.route("/lesson", methods=['GET', 'POST'])
+def render_lesson_page(lesson_id=None):
+	uid = session['uid']
+	bp = Profile.get_by_uid(session['uid'])
+
+	if (lesson_id == None):
+		lesson_id = request.values.get('lesson_id')
+
+	print "-"*36
+	print "render_lesson_page(): Lesson ID:", lesson_id
+
+	try:
+		lesson = Lesson.get_by_lesson_id(lesson_id)
+		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+
+		print "render_lesson_page(): Lesson String:", str(lesson)
+		print "render_lesson_page(): Images:", str(portfolio)
+
+		return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
+
+	except Exception as e:
+		print 'render_lesson_page(): Exception Error:', e
+		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+
+
+
+
+@req_authentication
+@insprite_views.route("/get_lesson_images", methods=['GET', 'POST'])
+def get_lesson_images():
+	# move this to API.
+	lesson_id = request.values.get('lesson_id')
+	images = []
+
+	try:
+		print "get_lesson_images: lesson_id is", lesson_id
+		images = db_session.query(Image).filter(Image.img_lesson == lesson_id).all();
+		json_images = [img.serialize for img in images]
+	except Exception as e:
+		print "get_lesson_images: exception:", e
+		json_images = None
+	return jsonify(images=json_images)
+
 
 
 
@@ -311,25 +547,38 @@ def render_edit_portfolio_page():
 def ht_api_update_portfolio(operation):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	print operation
+	lesson_id = request.values.get('lesson_id')
+
+	print "-"*24
+	print "ht_api_update_portfolio(): operation:", operation
+	print "ht_api_update_portfolio(): lesson_id:", lesson_id
 
 	try:
-		# get user's portfolio
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		# get portfolio.
+		portfolio = None
+		# PRE-LESSONS # portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+
+		# get lesson-portfolio imgs
+		if (lesson_id is not None):
+			portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		else:
+			print "ht_api_update_portfolio(): Couldn't find Lesson."
+			#
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	if (operation == 'add'):
-		print 'adding file'
+		print 'ht_api_update_portfolio(): adding file'
 	elif (operation == 'update'):
-		print 'usr request: update portfolio'
+		print 'ht_api_update_portfolio(): usr request: update portfolio'
 		images = request.values.get('images')
+		print "ht_api_update_portfolio(): images:", str(images)
 
 		try:
 			for img in portfolio:
 				update = False;
-				print img, img.img_id
+				print "\tPortfolio Image:", img, img.img_id
 				jsn = request.values.get(img.img_id)
 				if jsn is None:
 					print img.img_id, 'doesnt exist in user-set, deleted.'
@@ -368,12 +617,16 @@ def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
-	hp_id = request.values.get('hp', None)
-	bp = Profile.get_by_uid(session.get('uid'))
-	hp = Profile.get_by_prof_id(request.values.get('hp', None))
-	ba = Account.get_by_uid(session.get('uid'))
+	try:
+		hp_id = request.values.get('hp', None)
+		bp = Profile.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		ba = Account.get_by_uid(session.get('uid'))
+	except Exception as e:
+		db_session.rollback()
+
 	if (ba.status == Account.USER_UNVERIFIED):
-		return make_response(redirect(url_for('render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
@@ -385,30 +638,34 @@ def render_schedule_page():
 
 @insprite_views.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_meeting_page(appt_id, review_id):
+def render_review_meeting_page(meet_id, review_id):
 	uid = session['uid']
 
+	print 'render_review()\tenter'
+	# if its been 30 days since review creation.  Return an error.
+	# if review already exists, return a kind message.
+
 	try:
+		print 'render_review()\t', 'meeting =', meet_id, '\treview_id =', review_id
+		review = Review.get_by_id(review_id)
 		bp = Profile.get_by_uid(session['uid'])
-		print appt_id, ' = id of Appt'
-		print review_id, ' = id of Review'
-		the_review = Review.retreive_by_id(review_id)[0] 
-		print the_review
+		ba = Account.get_by_uid(bp.account)
+		rp = Profile.get_by_prof_id(review.prof_reviewed)	# reviewed  profile
+		print 'render_review()\t, author =', bp.prof_id, bp.prof_name, ba.email
+		print 'render_review()\t, review author =', review.prof_authored
+		print 'render_review()\t, review revied =', review.prof_reviewed
+		print review
 
-
-		the_review.validate(bp.prof_id)
+		review.validate(bp.prof_id)
 		print 'we\'re the intended audience'
 
-		print the_review.prof_authored
+		print review.prof_authored
 		print uid
 		print dt.utcnow()
 
-		bp = Profile.get_by_uid(session['uid'])					# authoring profile
-		rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
 
-
-		days_since_created = timedelta(days=30) # + the_review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#appt = Appointment.query.filter_by(apptid=the_review.appt_id).all()[0]
+		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
+		#appt = Appointment.query.filter_by(apptid=review.appt_id).all()[0]
 		#show the -cost, -time, -description, -location
 		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
@@ -436,7 +693,6 @@ def render_review_meeting_page(appt_id, review_id):
 
 
 @insprite_views.route('/settings', methods=['GET', 'POST'])
-@dbg_enterexit
 @req_authentication
 def render_settings():
 	""" Provides users the ability to modify their settings.
@@ -445,10 +701,15 @@ def render_settings():
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	#pi	= Oauth.get_stripe_by_uid(uid)
+	pi	= Oauth.get_stripe_by_uid(uid)
 
 	card = 'Null'
-
+	if (pi is not None):
+		#pp(pi.serialize)
+		# Not a Customer.  Customers exist in Accounts.
+		# This is the Stripe Connect ID.  Own business.
+		# We use the pub & secret keys to charge users
+		card = pi.oa_account
 
 	errmsg = None
 	form = SettingsForm(request.form)
@@ -504,7 +765,7 @@ def render_settings():
 
 		#change email; send email to both.
 		if (update_mail):
-			send_email_change_email(ba.email, form.set_input_email.data)
+			ht_email_confirmation_of_changed_email_address(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
 
 		#change pass send email
@@ -543,41 +804,40 @@ def render_settings():
 def upload():
 	log_uevent(session['uid'], " uploading file")
 	#trace(request.files)
-	print 'enter'
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
+	lesson_id = request.values.get('lesson_id')
 
-
-	print 'orig', orig
-	print 'prof', prof
+	print 'upload: orig', orig
+	print 'upload: prof', prof
+	print 'upload: lesson_id', lesson_id
 
 	for mydict in request.files:
 
 		comment = ""
 
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		print("reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("upload: reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
-		print ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		print ("upload: img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			# create Image.
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment)
+			metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
 			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
 			f.write(image_data)
 			f.close()
 			try:
-				print 'adding metaimg to db'
+				print 'upload: adding metaimg to db'
 				db_session.add(metaImg)
 				db_session.commit()
 			except Exception as e:
-				print e
+				print 'upload: exception', type(e), e
 				db_session.rollback()
-
 
 		# upload to S3.
 		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 

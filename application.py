@@ -17,7 +17,7 @@ def run_manager():
 
 
 def main():
-	print 'Run with SSH'
+	# print 'Run with SSH'
 	context = SSL.Context(SSL.SSLv23_METHOD)
 	context.use_privatekey_file('security/herotime-pk.pem')
 	context.use_certificate_file('security/herotime.crt')

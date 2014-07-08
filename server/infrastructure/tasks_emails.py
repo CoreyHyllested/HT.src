@@ -73,7 +73,7 @@ def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, messag
 def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
 	url = 'https://herotime.co/profile?hero=' + str(hero_id)
 	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
-	msg_html = msg_html + "The request was for " + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + "The request was for " + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + hero_name
@@ -94,7 +94,7 @@ def email_hero_proposal_updated(prop, hero_email, hero_name, buyer_name, buyer_i
 	msg_html = msg_html + "<a href=\"" + url + "\">" 
 	msg_html = msg_html + buyer_name 
 	msg_html = msg_html + " </a> wants to buy your time.<br>"
-	msg_html = msg_html + str(prop.prop_ts.strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.prop_tf.strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
+	msg_html = msg_html + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
 	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
 
 	msg_subject = "Proposal to meet " + buyer_name  
@@ -123,8 +123,7 @@ def send_verification_email(user_email, user_name, challenge_hash):
 
 
 @mngr.task
-def send_recovery_email(user_email, challenge_hash):
-	# TODO RENAME: send_passwd_recovery_link
+def ht_email_password_recovery_link(user_email, challenge_hash):
 	""" Emails the password recovery link to a user """
 	url = 'https://herotime.co/password/reset/' + str(challenge_hash) + "?email=" + str(user_email)
 	msg_text = "Go to " + url + " to recover your HeroTime password."
@@ -139,8 +138,7 @@ def send_recovery_email(user_email, challenge_hash):
 
 
 @mngr.task
-def send_passwd_change_email(user_email):
-	# TODO RENAME: send_confirmation_user_changed_password 
+def ht_email_confirmation_of_changed_password(user_email):
 	""" email user 'password changed' confirmation notice. """
 	msg_html = email_body_updated_password_confirmation('url')
 	msg_text = None	# TODO
@@ -154,9 +152,8 @@ def send_passwd_change_email(user_email):
 
 
 @mngr.task
-def send_email_change_email(user_email, new_email):
+def ht_email_confirmation_of_changed_email_address(user_email, new_email):
 	""" email user 'email address changed' confirmation noticed. """
-	# TODO RENAME: send_confirmation_user_changed_email_address
 	msg_html = email_body_updated_email_confirmation('url', new_email)
 	msg_text = None
 
@@ -168,8 +165,8 @@ def send_email_change_email(user_email, new_email):
 
 
 
-def send_proposal_reject_emails(the_proposal):
-	""" email buyer (and seller) the current proposal was rejected. """
+def ht_email_notice_of_proposal_rejection(the_proposal):
+	""" email buyer (and seller?) the current proposal was rejected. """
 	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(the_proposal)
 
 	# we need to create a different notification if a user rejects another user's proposal.
@@ -189,10 +186,10 @@ def send_proposal_reject_emails(the_proposal):
 
 
 @mngr.task
-def ht_send_reminder_email(user_email, user_name, the_proposal):
-	print 'sending appointment reminder emails now for ', the_proposal
+def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
+	print 'ht_email_meeting_reminder()  sending appointment reminder emails now for ' + prop_uuid
 
-	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment" + str(the_proposal) + "is about to begin.</p>"
+	msg_html = "<p>Hey, " + user_name + ".</p><p>Your appointment " + prop_uuid + " is about to begin.</p>"
 	msg = create_msg('HeroTime Appointment Reminder', user_email, user_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
@@ -201,11 +198,30 @@ def ht_send_reminder_email(user_email, user_name, the_proposal):
 
 
 @mngr.task
-def send_appt_emails(the_proposal):
-	""" email proposal accepted emails."""
+def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
+	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
+	proposal = Proposal.get_by_id(prop_uuid)
+	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
+	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
+	partner_prof = sellr_prof
+	if (sellr_acct.email == user_email):
+		partner_prof = buyer_prof
 
+	msg_html = "<p>Hey, " + user_name + ",</p>"
+	msg_html = msg_html + "<p>Your meeting is over.<br>" + "When you have a few minutes, <a href=\"http://127.0.0.1:5000/review/"+prop_uuid+"/"+review_id+"\"> review your meeting.</a> "
+	msg_html = msg_html + " with " + partner_prof.prof_name + " going over " + proposal.prop_desc + "</p>"
+	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@herotime.co', u'Insprite Notifications')
+	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(user_email, msg)
+
+
+
+
+@mngr.task
+def ht_email_meeting_accepted(the_proposal):
+	""" email proposal accepted emails."""
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(the_proposal)
-	print 'sending proposal-accepted emails @ ' + the_proposal.prop_ts.strftime('%A, %b %d, %Y -- %H:%M %p')
+	print 'sending proposal-accepted emails @ ' + the_proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
 
 	sellr_html = email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name)
 	sellr_msg = create_msg('You accepted "' + user_name + 's proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
@@ -230,6 +246,7 @@ def create_msg(subject, email_to, name_to, email_from, name_from):
 	msg['To']	= "\"%s\" <%s>" % (Header(name_to,	 'utf-8'), email_to)
 	msg['From'] = "\"%s\" <%s>" % (Header(name_from, 'utf-8'), email_from)
 	return msg
+
 
 
 

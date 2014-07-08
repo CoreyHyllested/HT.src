@@ -114,7 +114,7 @@
 }	
 
 .inboxView{
-	height: 1000px;
+	min-height: 500px;
 	margin-top: 6px;
 }
 

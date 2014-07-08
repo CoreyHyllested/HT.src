@@ -175,7 +175,7 @@ class NewPasswordForm(Form):
 
 class ProposalActionForm(Form):
 	proposal_id   = TextField('id', [validators.Required()])
-	proposal_stat = TextField('status', [validators.Required()])
+	proposal_stat = TextField('status')
 	proposal_challenge = TextField('ch', [validators.Required()])
 
 

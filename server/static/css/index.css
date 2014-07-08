@@ -64,7 +64,7 @@ c) 1000px - ... (desktops)
 		-moz-animation: coverSlideshow 12s linear infinite alternate;
 		-webkit-animation: coverSlideshow 12s linear infinite alternate;
 		animation: coverSlideshow 12s linear infinite alternate;
-		background: black url('../img/farmer.jpg') no-repeat center top;
+		background: black url('../img/farmer2.jpg') no-repeat center top;
 		background-size: cover;
 		display: block;
 		height: 0;
@@ -83,8 +83,7 @@ c) 1000px - ... (desktops)
 	}
 
 	.indexCoverHeading h2 {
-		font-family: Garamond, Georgia, serif;
-		font-style: italic;
+
 	}
 
 	.indexFeature h2 {

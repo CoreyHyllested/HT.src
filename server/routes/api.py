@@ -31,9 +31,11 @@ def ht_api_proposal_create():
 @insprite_views.route('/proposal/accept', methods=['POST'])
 @req_authentication
 def ht_api_proposal_accept():
+	print "ht_api_proposal_accept: enter"
 	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
+#	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+#	log_uevent(session['uid'], pstr)
+
 
 	if not form.validate_on_submit():
 		msg = "invalid form: " + str(form.errors)
@@ -41,14 +43,16 @@ def ht_api_proposal_accept():
 		return jsonify(usrmsg=msg), 400
 
 	try:
-		rc, msg = ht_proposal_accept(form.proposal_id.data, session['uid'])
-		print rc, msg
+		print "ht_api_proposal_accept: validated form. Accept proposal."
+		ht_proposal_accept(form.proposal_id.data, session['uid'])
 	except Sanitized_Exception as se:
+		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
-		print str(e)
+		print "ht_api_proposal_accept: exception", type(e), e
 		db_session.rollback()
-		jsonify(usrmsg=str(e)), 500
+		return jsonify(usrmsg=str(e)), 500
+	print "ht_api_proposal_accept: success"
 	return make_response(redirect('/dashboard'))
 
 
@@ -61,7 +65,7 @@ def ht_api_proposal_negotiate():
 	#the_proposal.set_state(APPT_STATE_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
 	#the_proposal.prop_updated = dt.now()
-	return jsonify('nooope'), 403 #notimplemented? 
+	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
 
 
@@ -289,11 +293,13 @@ def ht_api_review():
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
+	# if this has been 30 days since proposal / review creation. Return an  error.
+
 	if review_form.validate_on_submit():
 		print 'form is valid'
 		try:
 			# add review to database
-			the_review = Review.retreive_by_id(review_form.review_id.data)[0]
+			the_review = Review.get_by_id(review_form.review_id.data)
 			the_review.appt_score = int(review_form.input_rating.data)
 			the_review.generalcomments = review_form.input_review.data
 			the_review.score_attr_comm = int(review_form.score_comm.data)
@@ -320,7 +326,12 @@ def ht_api_review():
 			db_session.commit()
 			print 'data has been posted'
 
-			# flash review will be posted at end of daysleft
+			# GET PROPOSAL / APPOINTMENT.
+			# proposal.set_flag(
+				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+			# db_session.add(proposal)
+
 			# email alt user to know review was captured
 			return make_response(redirect('/dashboard'))
 		except Exception as e:

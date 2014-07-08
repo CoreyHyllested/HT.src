@@ -18,9 +18,8 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import * 
 from server.controllers import *
+from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
-from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
-from ..forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
 
 
 @insprite_views.route('/index')
@@ -77,12 +76,12 @@ def render_profile(usrmsg=None):
 		print e
 		db_session.rollback()
 
-	#for img in portfolio: print img
+	#for img in portfolio: print 'render_profile()  ' + str(img)
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, True)
-	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, False)
+	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, dump=False)
 
 	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
@@ -109,7 +108,17 @@ def render_dmca():
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('dmca.html', bp=bp))
-	
+
+
+
+
+@insprite_views.route("/about", methods=['GET', 'POST'])
+def render_about_page():
+	bp = None
+	if 'uid' in session:
+		bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('about.html', bp=bp))
+
 
 
 
@@ -234,9 +243,7 @@ def render_password_reset_page(challengeHash):
 		try:
 			db_session.add(hero_account)
 			db_session.commit()
-			trace("Commited.")
-			# Password change email
-			send_passwd_change_email(email)
+			ht_email_confirmation_of_changed_password(email)
 		except Exception as e:
 			trace(str(e))
 			db_session.rollback()
@@ -269,7 +276,15 @@ def ht_email_operations(operation, data):
 		print email_set
 		ht_send_verification_to_list(ba, bp, email_set)
 		return jsonify(rc=200), 200
-	return jsonify(bug=404) #pageNotFound('Not sure what you were looking for')
+	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
+
+
+
+
+@ht_server.route('/seller_signup', methods=['GET', 'POST'])
+def render_seller_signup_page(usrmsg = None):
+	bp = Profile.get_by_uid(session.get('uid'))
+	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
 
 
 
@@ -298,7 +313,7 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 	if (len(accounts) != 1 or accounts[0].email != email):
 			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('render_login', messages=msg))
+			return redirect(url_for('insprite.render_login', messages=msg))
 
 	try:
 		print 'update user account'
@@ -322,6 +337,16 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 		# POSTED from jquery in /settings:verify_email not direct GET
 		return make_response(jsonify(usrmsg="Account Updated."), 200)
 	return make_response(redirect('/dashboard'))
+
+
+
+
+
+
+
+
+
+
 
 
 

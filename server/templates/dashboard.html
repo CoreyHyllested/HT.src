@@ -17,7 +17,7 @@
 	<div class="dashboardLeftColumn">
 
 		<div class="dashboardEmpty">
-			<h1>Welcome to HeroTime!</h1>
+			<h1>Welcome to Insprite!</h1>
 			<h2>This is your personal dashboard.</h2>
 			<p>Once you start making bookings, your offers and lessons will be displayed on this page.</p>
 
@@ -25,10 +25,34 @@
 		</div>
 
 		<div class="dashboardOffers">
+			<h1>My Lessons</h1>
+			{% for lesson in lessons %}
+				{% if lesson.lesson_flags > 0 %}
+				<div class="dashboardApptLeftColumn">
+					{% if lesson.lesson_flags == 0 %}
+						Incomplete			
+					{% elif lesson.lesson_flags == 1 %}
+						Inactive
+					{% else %}
+						Active
+					{% endif %}
+				</div>
+				<div class="dashboardApptCenterColumn">
+					<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+				</div>
+				<div class="dashboardApptRightColumn">
+
+				</div>
+				<div class="clear"></div>	
+				{% endif %}			
+			{% endfor %}
+
+		</div>
+		<div class="dashboardOffers">
 			<h1>Pending Offers ({{proposals|length}})</h1>
 
 			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardOffer" id="prop-{{proposal.Proposal.prop_uuid}}">
+			<div class="dashboardOffer" id="{{proposal.Proposal.prop_uuid}}">
 				<div class="dashboardOfferLeftColumn">
 					<a href="/profile?hero={{proposal.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
@@ -50,10 +74,13 @@
 						You were offered ${{proposal.Proposal.prop_cost}}.
 						{% endif %}
 					</div>
+					<div class="dashboardOfferRightColumnInfo">
+					{% if proposal.timeout is defined %}Expires in {{proposal.timeout }}{% endif %}
+					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Proposal.prop_ts.strftime('%A, %b %d %Y')}}<br>
-						{{proposal.Proposal.prop_ts.strftime('%H:%M %p')}} - {{proposal.Proposal.prop_tf.strftime('%H:%M %p')}}
+						{{proposal.Proposal.get_prop_ts().strftime('%A, %b %d')}}<br>
+						{{proposal.Proposal.get_prop_ts().strftime('%H:%M %p')}} - {{proposal.Proposal.get_prop_tf().strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
@@ -61,16 +88,17 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap">(see map)</a>
 					</div>
-					<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Cancel">
-					{% if proposal.buyer == false %}
-					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept">
+					{% if proposal.seller == true %}
+					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
 					{% endif %}
-					<!-- -->
+					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
+					<!-- expires in {{proposal.timeout }} -->
 				</div>
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
 		</div>
+		<br>
 
 
 		<div class="dashboardAppts">
@@ -262,45 +290,41 @@ $(document).ready(function() {
                 }
             }
         };
-
         return false;
     });
 
 
-   $('.reject').click(function () {
-        var id = this.id;
+   $('.offerReject').click(function () {
+        var id = $(this).data('id');
         var ch = $(this).attr("ch");
-        var csrf = "{{ csrf_token() }}";
-        var sid = "#prop-" + id;
 
         var fd = new FormData();
         fd.append('proposal_id', id);
-        fd.append('proposal_stat', 'reject');
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/proposal/reject", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
         xhr.send(fd);
 
-        //catch response.  make any modificaitons.
+        // catch response.  make modificaitons
         xhr.onreadystatechange = function(e) {
             if (4 == this.readyState) {
                 msg = JSON.parse(xhr.responseText);
                 if (this.status == 200) {
-                    console.log(['xhr post complete ', e]);
+                    console.log(['xhr post complete', e]);
                     console.log(xhr.responseText);
                     openAlertWindow('Success.\n' + msg['usrmsg']);
-                    $(sid).remove();
+                    $('#'+id).remove();
                 } else if (this.status == 500) {
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=500', e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 } else if (this.status == 501) {
-                    console.log(['xhr post complete, err=501 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=501', e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 } else {
-                    console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=??', this.status,  e]);
+                    openAlertWindow('Failure:' + msg['usrmsg']);
                 }
             }
         };

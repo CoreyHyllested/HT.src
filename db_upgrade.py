@@ -1,9 +1,10 @@
 #!/opt/HeroTime/dev/bin/python
 
 from migrate.versioning import api
-from server.infrastructure.srvc_database import SQLALCHEMY_DATABASE_URI
-from server.infrastructure.srvc_database import SQLALCHEMY_MIGRATE_REPO
-from server.infrastructure.srvc_database import Base, init_db
+from migrate.exceptions import *
+from server.infrastructure.srvc_database import DATABASE_URI
+from server.infrastructure.srvc_database import MIGRATE_REPO
+from server.infrastructure.srvc_database import Base
 
-api.upgrade(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO)
-print 'Current database version: ' + str(api.db_version(SQLALCHEMY_DATABASE_URI, SQLALCHEMY_MIGRATE_REPO))
+api.upgrade(DATABASE_URI, MIGRATE_REPO)
+print 'Current database version: ' + str(api.db_version(DATABASE_URI, MIGRATE_REPO))

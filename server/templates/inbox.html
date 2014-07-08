@@ -13,7 +13,7 @@
 	<div class="inboxHeader">
 		<div class="inboxHeaderLeft">
 			<div class="inboxLeftNavigation">
-				<a title="Back to Inbox" id="leftNavBack" class="leftNavBackInbox navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
+				<a title="Back" id="leftNavBack" class="leftNavBackInbox navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
 			</div>
 			<div class="inboxMessagesTitle">
 			</div>	
@@ -55,7 +55,6 @@
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
 								{{thread.UserMessage.msg_subject}} 
-								{% if thread.lastmsg.msg_opened %}<span class="debug">(opened)</span>{% endif %}
 							</div>
 							<div class="threadAction threadArchive"><a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a></div>
 							<div class="threadItem threadDate">{{thread.lastmsg.msg_created.strftime('%b %d at %I:%M %p')}}</div>
@@ -71,7 +70,6 @@
 							<div class="threadItem threadPartner">{{thread.thread_partner.prof_name}}</div>
 							<div class="threadItem threadSubjectLine">
 								{{thread.UserMessage.msg_subject}}
-								{% if thread.lastmsg.msg_opened %}<span class="debug">(opened)</span>{% endif %}
 							</div>
 							<div class="threadAction threadRestore"><a title="Restore Message" class="blend"><i class="fa fa-level-up"></i></a></div>
 							<div class="threadItem threadDate">{{thread.lastmsg.msg_created.strftime('%b %d at %I:%M %p')}}</div>

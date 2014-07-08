@@ -87,6 +87,7 @@ class TestingConfig(Config):
 		print 'creating testing config'
 
 
+
 server_configuration = {
 	'default'		: DevelopmentConfig,
 

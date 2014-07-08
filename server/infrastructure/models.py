@@ -3,42 +3,53 @@ from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from datetime import datetime as dt
+from pytz import timezone
 import datetime
 import uuid
 
 
-APPT_FLAG_PROPOSED = 0
-APPT_FLAG_RESPONSE = 1
-APPT_FLAG_ACCEPTED = 2
-APPT_FLAG_CAPTURED = 3
-APPT_FLAG_OCCURRED = 4
-APPT_FLAG_REVIEWED = 5
-APPT_FLAG_COMPLETE = 6
-APPT_FLAG_DISPUTED = 7
-APPT_FLAG_RESOLVED = 8
 
-APPT_FLAG_USERPAID = 15		# if buyer has paid us.
-APPT_FLAG_HEROPAID = 16		# if hero has been paid.
-APPT_FLAG_TIMEDOUT = 17		# why proposal was rejected
-APPT_FLAG_CANCELED = 18		# use from to see who canceled it 
-APPT_FLAG_QUIET		= 29
-APPT_FLAG_DIGITAL	= 30
-APPT_FLAG_RUNOVER	= 31
+# Appointment States
+APPT_FLAG_PROPOSED = 0		# (0001) Proposed (tmp):  Shows up in dashboard as proposal.
+APPT_FLAG_ACCEPTED = 1		# (0002) Accepted (tmp):  Shows up in dashboard as appointment.
+APPT_FLAG_DISPUTED = 2		# (0004) disputed (tmp):  ...?
+APPT_FLAG_OCCURRED = 3		# (0008) Occurred (tmp):  Shows up in dashboard as review Opp.
+APPT_FLAG_REJECTED = 4		# (0010) Rejected (terminal)... see somewhere
+APPT_FLAG_CANCELED = 5		# (0020) Canceled (terminal)... see somewhere
+APPT_FLAG_RESOLVED = 6		# (0040) Resolved (terminal?) ...
+APPT_FLAG_COMPLETE = 7		# (0080) Completed (terminal)... see somewhere
+
+# Fake States.
+APPT_FLAG_TIMEDOUT = 8		# (0100) Proposal was rejected by timeout. (Seller didn't respond).
+
+# Occurred flags.
+APPT_FLAG_BUYER_REVIEWED = 12	# (00001000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_SELLR_REVIEWED = 13	# (00002000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+APPT_FLAG_MONEY_CAPTURED = 14	# (00004000)	# Appointment Captured:  Money has taken from user, 2 days after appt.
+APPT_FLAG_MONEY_USERPAID = 15	# (00008000)	# Appointment Captured money and Transferred payment to Seller.
+APPT_FLAG_BUYER_CANCELED = 16	# (00010000)	# Appointment was canceled by buyer.
 
 
-APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#1
-APPT_STATE_RESPONSE = (0x1 << APPT_FLAG_RESPONSE)	#2
-APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#4
-APPT_STATE_CAPTURED = (0x1 << APPT_FLAG_CAPTURED)	#8
-APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#16
-APPT_STATE_REVIEWED = (0x1 << APPT_FLAG_REVIEWED)
-APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)
-APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)
-APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)
 
-APPT_STATE_REJECTED = -1
-APPT_STATE_CANCELED = -3
+# Appointment / Proposal Flags.  Modify aspects of meeting.
+APPT_FLAG_RESPONSE	= 28	# Proposal went into negotiation.
+APPT_FLAG_QUIET		= 29	# Proposal was quiet
+APPT_FLAG_DIGITAL	= 30	# Proposal was digital
+#APPT_FLAG_RUNOVER	= 31
+
+
+APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01		from {}  					to {accepted, rejected}		visible { dashboard-proposal }
+APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02		from {proposed}				to {occurred, canceled}		visible { dashboard-appointment }
+APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)	#04		from {occurred}				to {resolved, completed}	visible { ? }
+APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08		from {accepted}				to {completed, disputed}	visible { }
+APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10		from {proposed}				to {}						visible {}
+APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20		from {accepted}				to {}						visible { history? }
+APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40		from {disputed}				to {?}						visible {}
+APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80		from {disputed, occurred}	to {}						visible {}
+# Fake States.  Replaced with above.
+APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)	#180
 
 
 
@@ -69,11 +80,12 @@ REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
 IMG_FLAG_PROFILE = 0	# A Profile Image
 IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
 IMG_FLAG_VISIBLE = 2	# Image is visible or shown.  Maybe flagged, deleted, or not ready yet.
+IMG_FLAG_SELLERPROF = 3	# Image is a Seller's Profile Image.
 
 IMG_STATE_PROFILE = (0x1 << IMG_FLAG_PROFILE)
 IMG_STATE_FLAGGED = (0x1 << IMG_FLAG_FLAGGED)
 IMG_STATE_VISIBLE = (0x1 << IMG_FLAG_VISIBLE)
-
+IMG_STATE_SELLERPROF = (0x1 << IMG_FLAG_VISIBLE)
 
 MSG_FLAG_LASTMSG_READ = 0
 MSG_FLAG_SEND_ARCHIVE = 1		#The original-message sender archived thread
@@ -84,6 +96,17 @@ MSG_STATE_LASTMSG_READ	= (0x1 << MSG_FLAG_LASTMSG_READ)	#1
 MSG_STATE_SEND_ARCHIVE	= (0x1 << MSG_FLAG_SEND_ARCHIVE)	#2
 MSG_STATE_RECV_ARCHIVE	= (0x1 << MSG_FLAG_RECV_ARCHIVE)	#4
 MSG_STATE_THRD_UPDATED	= (0x1 << MSG_FLAG_THRD_UPDATED)	#8
+
+LESSON_FLAG_STARTED = 0 		# User started to create a lesson
+LESSON_FLAG_SAVED = 1 		# User completed making the lesson but saved it before finished
+LESSON_FLAG_PRIVATE = 2 		# User completed making the lesson but left it private
+LESSON_FLAG_ACTIVE = 3 		# User completed making the lesson and made it active
+
+LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
+LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
+LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
+
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -162,6 +185,8 @@ class Account(Base):
 	updated = Column(DateTime())
 	sec_question = Column(String(128))
 	sec_answer   = Column(String(128))
+	stripe_cust	 = Column(String(64))
+	role		 = Column(Integer, default = 0)
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -177,17 +202,17 @@ class Account(Base):
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
-#	@staticmethod
-#	def get_by_prof_id(profile_id):
-#		accounts = Account.query.filter_by(profiles.prof_id=profile_id).all()
-#		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
-#		return accounts[0]
 
 	@staticmethod
 	def get_by_uid(uid):
-		accounts = Account.query.filter_by(userid=uid).all()
-		if len(accounts) != 1: raise NoAccountFound(uid, 'Sorry, no account found')
-		return accounts[0]
+		try:
+			account = Account.query.filter_by(userid=uid).one()
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: caught exception looking for Account UID', uid
+			account = None
+		except NoResultFound as none:
+			account = None
+		return account
 
 	def set_email(self, e):
 		self.email = e
@@ -280,9 +305,32 @@ class Oauth(Base):
 
 	@staticmethod
 	def get_stripe_by_uid(uid):
-		stripe_custs = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).all()
-		if (len(stripe_custs) != 1): raise NoResourceFound('Oauth-Stripe', uid)
-		return stripe_custs[0]
+		try:
+			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: found multiple Stripe customers for UID', uid
+			stripe_user = None
+		except NoResultFound as none:
+			stripe_user = None
+		return stripe_user
+
+
+	@property
+	def serialize(self):
+		return {
+			'ht_account'	: self.ht_account,
+			'oa_account'	: self.oa_account,
+			'oa_service'	: self.oa_service,
+			'oa_flags'	: self.oa_flags,
+			'oa_email'	: self.oa_email,
+			'oa_token'	: self.oa_token,
+			'oa_secret'	: self.oa_secret,
+			'oa_optdata1'	: self.oa_optdata1,
+			'oa_optdata2'	: self.oa_optdata2,
+			'oa_optdata3'	: self.oa_optdata3,
+		}
+
+
 
 
 class Profile(Base):
@@ -369,8 +417,8 @@ class Proposal(Base):
 	prop_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	prop_cost	= Column(Integer, nullable=False, default=0)											# Cost.
 	prop_from	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# LastProfile to Touch proposal. 
-	prop_ts		= Column(DateTime(timezone=True),   nullable = False)
-	prop_tf		= Column(DateTime(timezone=True),   nullable = False)
+	prop_ts		= Column(DateTime(timezone=True),   nullable = False)									# Stored in UTC time
+	prop_tf		= Column(DateTime(timezone=True),   nullable = False)									# Stored in UTC time
 	prop_tz		= Column(String(20))
 	prop_desc	= Column(String(3000))
 	prop_place	= Column(String(1000),	nullable = False)	
@@ -388,7 +436,7 @@ class Proposal(Base):
 	review_hero	= Column(String(40), ForeignKey('review.review_id'))
 	review_user = Column(String(40), ForeignKey('review.review_id'))
 
-	#Proposal(hp.prof_id, bp.prof_id, dt_start, dt_finsh, (prop_cost), location=prop_place, description=prop_desc, token=stripe_tokn, cust=pi, card=stripe_card)
+
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
 		self.prop_uuid	= str(uuid.uuid4())
 		self.prop_hero	= str(hero)
@@ -399,6 +447,7 @@ class Proposal(Base):
 
 		self.prop_ts	= datetime_s
 		self.prop_tf	= datetime_f
+		self.prop_tz	= 'US/Pacific'
 		self.prop_place	= location 
 		self.prop_desc	= description
 		self.challengeID = str(uuid.uuid4())
@@ -406,6 +455,8 @@ class Proposal(Base):
 		self.charge_customer_id = customer
 		self.charge_credit_card = card
 		self.charge_user_token = token
+		print 'Proposal(p_uid=%s, cost=%s, location=%s)' % (self.prop_uuid, cost, location)
+		print 'Proposal(token=%s, cust=%s, card=%s)' % (token, customer, card)
 
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
@@ -429,6 +480,10 @@ class Proposal(Base):
 		return proposals[0]
 	
 
+	def set_flag(self, flag):
+		if (flag <= APPT_FLAG_COMPLETE): raise Exception('Use set state to verify state change')
+		self.prop_flags = (self.prop_flags | (0x1 << flag))
+
 
 	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):
 		s_cur = self.prop_state 
@@ -436,35 +491,26 @@ class Proposal(Base):
 		valid = True
 		msg = None
 
-
-		if ((s_nxt == APPT_STATE_RESPONSE) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
-			self.prop_count = self.prop_count + 1
-		elif ((s_nxt == APPT_STATE_TIMEDOUT) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
 			s_nxt = APPT_STATE_REJECTED
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
-		elif ((s_nxt == APPT_STATE_REJECTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
-		elif ((s_nxt == APPT_STATE_ACCEPTED) and ((s_cur == APPT_STATE_PROPOSED) or (s_cur == APPT_STATE_RESPONSE))):
+		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
 			if (self.prop_from == uid): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
 			self.appt_secured = dt.utcnow()
-		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
-			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
-			flags = set_flag(flags, APPT_FLAG_USERPAID)
-			self.appt_charged = dt.now()
-		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_CAPTURED)):
+#		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
+#			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
+#			flags = set_flag(flags, APPT_FLAG_USERPAID)
+#			self.appt_charged = dt.now()
+		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
 			pass
-		elif ((s_nxt == APPT_STATE_REVIEWED) and (s_cur == APPT_STATE_OCCURRED)):
+		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
 			pass
-		elif ((s_nxt == APPT_STATE_CANCELED) and ((s_cur == APPT_STATE_ACCEPTED) or (s_cur == APPT_STATE_CAPTURED))):
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
-			#TODO disable / do not fire reviews.
-		elif ((s_nxt == APPT_STATE_COMPLETE) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_OCCURRED))):
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
-		elif ((s_nxt == APPT_STATE_DISPUTED) and ((s_cur == APPT_STATE_REVIEWED) or (s_cur == APPT_STATE_COMPLETE))):
-			flags = set_flag(flags, APPT_FLAG_DISPUTED)
-			flags = set_flag(flags, APPT_FLAG_COMPLETE)
+		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
+			pass
+		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
+			pass
 		else:
 			valid = False
 			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
@@ -475,11 +521,32 @@ class Proposal(Base):
 		self.prop_state = s_nxt
 		self.prop_flags = flags
 		self.prop_updated = dt.utcnow()
+
+
+	def get_prop_ts(self, tz=None):
+		zone = self.prop_tz or 'US/Pacific'
+		return self.prop_ts.astimezone(timezone(zone))
+
+
+	def get_prop_tf(self, tz=None):
+		zone = self.prop_tz or 'US/Pacific'
+		return self.prop_tf.astimezone(timezone(zone))
 			
 
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
+	@property
+	def serialize(self):
+		return {
+			'prop_uuid'		: self.prop_uuid,
+			'prop_sellr'	: self.prop_hero,
+			'prop_buyer'	: self.prop_user,
+			'prop_state'	: self.prop_state,
+			'prop_flags'	: self.prop_flags,
+			'prop_cost'		: self.prop_cost,
+			'prop_updated'	: self.prop_updated.strftime('%A, %b %d, %Y %H:%M %p')
+		}
 
 
 
@@ -529,17 +596,44 @@ class Image(Base):
 	img_created = Column(DateTime())
 	img_flags	= Column(Integer, default=0)
 	img_order	= Column(Integer, default=0, nullable=False)
+	img_lesson	= Column(String(256))
 
-	def __init__(self, imgid, prof_id, comment=None):
+	def __init__(self, imgid, prof_id, comment=None, lesson=None):
 		self.img_id  = imgid
 		self.img_profile = str(prof_id)
 		self.img_comment = comment
+		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
 
 	def __repr__ (self):
-		return '<image %s %s>' % (self.img_id, self.img_profile)
+		comment = self.img_comment[:20]
+		return '<image %s %s>' % (self.img_id, comment)
 
+	@staticmethod
+	def get_by_lesson_id(lesson_id):
+		print "get_by_lesson_id: lesson_id is", lesson_id
+		images = Image.query.filter_by(img_lesson=lesson_id).all()
+		# if len(images) != 1: raise NoResourceFound('Lesson', lesson_id)
+		print "get_by_lesson_id: images length is", len(images)
 
+		return images
+
+	@staticmethod
+	def get_lesson_sample_img(lesson_id):
+		sample_img = Image.query.filter_by(lesson_id=lesson_id).first()
+		return sample_img
+
+	@property
+	def serialize(self):
+		return {
+			'img_id'		: self.img_id,
+			'img_profile'	: self.img_profile,
+			'img_comment'	: self.img_comment,
+			'img_created'	: self.img_created,
+			'img_flags'		: self.img_flags,
+			'img_order'		: self.img_order,
+			'img_lesson'	: self.img_lesson
+		}
 
 class Industry(Base):
 	__tablename__ = "industry"
@@ -671,11 +765,11 @@ class Review(Base):
 	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
 
-	def __init__ (self, prop_id, usr_reviewed, usr_author):
+	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
-		self.prof_reviewed = usr_reviewed
-		self.prof_authored = usr_author
+		self.prof_reviewed = prof_reviewed
+		self.prof_authored = prof_author
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
@@ -693,10 +787,15 @@ class Review(Base):
 
 
 	@staticmethod
-	def retreive_by_id(find_id):
-		reviews = Review.query.filter_by(review_id=find_id).all()
-		if len(reviews) != 1: raise NoReviewFound(find_id, 'Sorry, review not found')
-		return reviews
+	def get_by_id(rev_id):
+		try:
+			review = Review.query.filter_by(review_id=rev_id).one()
+		except MultipleResultsFound as mrf:
+			print 'Never Happen Error: caught exception looking for Account UID', rev_id
+			review = None
+		except NoResultsFound as nrf:
+			review = None
+		return review
 
 
 	def validate (self, session_prof_id):
@@ -707,4 +806,62 @@ class Review(Base):
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
+
+
+class Lesson(Base):
+
+	__tablename__ = "lesson"
+
+	LESSON_LOC_ANY = 0
+	LESSON_LOC_BUYER = 1
+	LESSON_LOC_SELLER = 2
+
+	LESSON_AVAIL_DEFAULT = 0
+	LESSON_AVAIL_SPECIFIC = 1
+
+	lesson_id	= Column(String(40), primary_key=True, index=True)
+	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	lesson_title = Column(String(128))
+	lesson_description	= Column(String(5000))
+	lesson_industry	= Column(String(64))
+
+	lesson_hourly_rate	= Column(Integer)
+	lesson_lesson_rate	= Column(Integer)
+
+	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
+	lesson_duration	= Column(Integer)
+
+	lesson_loc_option = Column(Integer, default=LESSON_LOC_ANY)
+	lesson_address_1 = Column(String(64))
+	lesson_address_2 = Column(String(64))
+	lesson_city = Column(String(64))
+	lesson_state = Column(String(10))
+	lesson_zip = Column(String(10))
+	lesson_country = Column(String(64))
+	lesson_address_details = Column(String(256))
+
+	lesson_updated = Column(DateTime())
+	lesson_created = Column(DateTime(), nullable=False)
+	lesson_flags	= Column(Integer, default=0)
+
+	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
+	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
+
+	def __init__ (self, profile_id):
+		self.lesson_id	= str(uuid.uuid4())
+		self.lesson_profile	= profile_id
+		self.lesson_created = dt.utcnow()
+
+
+	def __repr__ (self):
+		return '<Lesson: %r, %r, %r>' % (self.lesson_id, self.lesson_profile, self.lesson_title)
+
+
+	@staticmethod
+	def get_by_lesson_id(lesson_id):
+		lessons = Lesson.query.filter_by(lesson_id=lesson_id).all()
+		if len(lessons) != 1: 
+			raise NoLessonFound(lesson_id, 'Sorry, lesson not found')
+		return lessons[0]
+
 
