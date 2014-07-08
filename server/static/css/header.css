@@ -147,7 +147,7 @@ New muted blues for links:
 }
 
 .headerTextMenu a:hover {
-	color: #7dc7f2;
+	color: #1488CC;
 }
 
 /* Header Dropdown Menu */
@@ -171,7 +171,7 @@ New muted blues for links:
 	user-select: none;
 }
 
-.headerDropdownMenu .headerDropdownMenuName {
+.headerDropdownMenuName {
 	display: inline-block;
 	position: relative;
 	color: rgba(0, 0, 0, 0.5);
@@ -188,12 +188,8 @@ New muted blues for links:
 	white-space: nowrap;
 }
 
-.headerDropdownMenu .headerDropdownMenuName:hover {
+.headerDropdownMenuName:hover {
 	overflow: visible;
-}
-
-.headerDropdownMenu li:hover {
-	color: #1488CC;
 }
 
 .headerDropdownMenuActive {
@@ -211,6 +207,10 @@ New muted blues for links:
 	transition: all 0.4s;
 	width: 100%;
 	z-index: 9999;
+}
+
+.headerDropdownMenu li:hover {
+	color: #1488CC;
 }
 
 .headerDropdownMenu li:hover ul {
@@ -263,7 +263,7 @@ a.headerLogoLink {
 }
 
 .headerIcons a{
-	color: #fff;
+	color: rgba(0, 0, 0, 0.5);
 	transition: all 0.2s ease-in;
 	-moz-transition: all 0.2s ease-in;
 	-o-transition: all 0.2s ease-in;
