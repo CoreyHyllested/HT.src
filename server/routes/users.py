@@ -295,7 +295,6 @@ def render_edit():
 @req_authentication
 @insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 
@@ -305,7 +304,6 @@ def render_multiupload_page():
 @req_authentication
 @insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
 
@@ -316,6 +314,23 @@ def render_edit_portfolio_page():
 		print "render_edit_portfolio_page(): get all images for profile:"
 		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
+
+
+
+
+@ht_server.route('/seller_signup', methods=['GET', 'POST'])
+@req_authentication
+def render_seller_signup_page(usrmsg = None):
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	pi = Oauth.get_stripe_by_uid(uid)
+
+	stripe = 'None'
+	# Stripe Connect ID, req'd to take payments
+	if (pi is not None): stripe = pi.oa_account
+
+	session['next_url']='/seller_signup#payment'
+	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
 
 
 

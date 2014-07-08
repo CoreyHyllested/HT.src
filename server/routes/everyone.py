@@ -281,14 +281,6 @@ def ht_email_operations(operation, data):
 
 
 
-@ht_server.route('/seller_signup', methods=['GET', 'POST'])
-def render_seller_signup_page(usrmsg = None):
-	bp = Profile.get_by_uid(session.get('uid'))
-	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
-
-
-
-
 def ht_send_verification_to_list(account, profile, email_set):
 	print 'ht_send_verification_to_list'
 	challenge_hash = str(uuid.uuid4())

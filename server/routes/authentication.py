@@ -21,6 +21,10 @@ from server.controllers	import *
 from server.ht_utils	import *
 from server.forms import LoginForm, NewAccountForm
 
+from httplib2 import Http
+from urllib import urlencode
+
+
 facebook = ht_oauth.remote_app( 'facebook',
 		base_url='https://graph.facebook.com',
 		request_token_url=None,
@@ -324,7 +328,8 @@ def settings_verify_stripe():
 	try:
 		db_session.add(oauth_stripe)
 		db_session.commit()
-		return make_response(redirect('/settings'))
+		next_url = session.pop('next_url', '/settings')
+		return make_response(redirect(next_url))
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
