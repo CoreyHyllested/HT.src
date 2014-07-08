@@ -104,20 +104,20 @@ h3 {
 
 /* Blue Button Pulse */
 
-	@-moz-keyframes bluePulse {
-	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
-	  100% {background-color: #007cb3; border: 1px #007cb3 solid;}
-	}
+@-moz-keyframes bluePulse {
+  0% {background-color: #1488CC; border: 1px #1488CC solid;}
+  100% {background-color: #04304A; border: 1px #04304A solid;}
+}
 
-	@-webkit-keyframes bluePulse {
-	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
-	  100% {background-color: #007cb3; border: 1px #007cb3 solid;}
-	}
+@-webkit-keyframes bluePulse {
+  0% {background-color: #1488CC; border: 1px #1488CC solid;}
+  100% {background-color: #04304A; border: 1px #04304A solid;}
+}
 
 /* LINKS */
 
 a {
-	color: #29abe1; 
+	color: #1488CC; 
 	text-decoration: none;
 	-moz-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
@@ -125,14 +125,13 @@ a {
 	transition: 0.5s ease;	
 }
 a:hover {
-	color: #007cb3;
+	color: #7dc7f2;
 }
-
 a.blend {
 	color: inherit; 
 }
 a.blend:hover {
-	color: #007cb3;
+	color: #1488CC;
 }
 
 /* FORMS */
@@ -175,8 +174,8 @@ label {
 	-moz-appearance: none;
 	-o-appearance: none;
 	-webkit-appearance: none;
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;
+	background-color: #1488CC;
+	border: 1px #1488CC solid;
   	-webkit-border-radius: 3px;
   	border-radius: 3px;
 	color: white;
@@ -195,8 +194,8 @@ label {
 }
 
 .blueButton:hover {
-	border: 1px solid #007cb3;
-	background-color: #007cb3;
+	border: 1px solid #7dc7f2;
+	background-color: #7dc7f2;
 	text-decoration: none;
 }
 
@@ -204,8 +203,8 @@ label {
 	-moz-appearance: none;
 	-o-appearance: none;
 	-webkit-appearance: none;
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;
+	background-color: #1488CC;
+	border: 1px #1488CC solid;
   	-webkit-border-radius: 3px;
   	border-radius: 3px;
 	color: white;
@@ -225,8 +224,8 @@ label {
 }
 
 .messageButton:hover {
-	border: 1px solid #007cb3;
-	background-color: #007cb3;
+	border: 1px solid #7dc7f2;
+	background-color: #7dc7f2;
 	text-decoration: none;
 }
 .redButton {
@@ -257,7 +256,7 @@ label {
 	background-color: white;
 	border: 1px #e2e4e6 solid;
   	border-radius: 3px;
-	color: #29abe1;
+	color: #1488CC;
 	cursor: pointer;
 	font-size: 0.9em;
 	font-weight: 400;
@@ -272,7 +271,7 @@ label {
 }
 
 .whiteButton:hover {
-	border: 1px solid #29abe2;
+	border: 1px solid #1488CC;
 	text-decoration: none;
 }
 
@@ -546,7 +545,7 @@ select {
 .alertButton {
 	background: none;
 	border-top: 1px solid rgba(0,0,0, 0.2);	
-	color: #29abe2;
+	color: #1488CC;
 	cursor: pointer;
 	margin: auto;
 	padding-top: 10px;
