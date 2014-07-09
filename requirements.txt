@@ -27,7 +27,6 @@ celery==3.1.11
 colorama==0.2.5
 decorator==3.4.0
 gunicorn==18.0
-flask-sass==0.1
 httplib2==0.9
 itsdangerous==0.24
 jsmin==2.0.11
