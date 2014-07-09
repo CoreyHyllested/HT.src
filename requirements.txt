@@ -40,7 +40,6 @@ prettyprint==0.1.5
 psycopg2==2.5.3
 pyOpenSSL==0.14
 pyScss==1.2.0.post3
-
 pycparser==2.10
 python-dateutil==2.2
 python-oauth2==0.7.0
