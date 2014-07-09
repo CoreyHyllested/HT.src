@@ -21,7 +21,6 @@ from flask.ext.assets	import Environment, Bundle
 from flask.ext.mail		import Mail
 from flask_wtf.csrf		import CsrfProtect
 from flask_redis		import Redis
-from server.infrastructure.initialize_ht	import *
 from server.infrastructure.srvc_sessions	import RedisSessionInterface
 from config import server_configuration
 
