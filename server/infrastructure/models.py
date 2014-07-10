@@ -107,6 +107,28 @@ LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
 LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
 LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
 
+# Flags and States for Registered Users (Preview Site)
+
+REG_FLAG_ROLE_NONE = 0
+REG_FLAG_ROLE_LEARN = 1
+REG_FLAG_ROLE_TEACH = 2
+REG_FLAG_ROLE_BOTH = 3
+
+REG_STATE_ROLE_NONE = (0x1 << REG_FLAG_ROLE_NONE)
+REG_STATE_ROLE_LEARN = (0x1 << REG_FLAG_ROLE_LEARN)
+REG_STATE_ROLE_TEACH = (0x1 << REG_FLAG_ROLE_TEACH)
+REG_STATE_ROLE_BOTH = (0x1 << REG_FLAG_ROLE_BOTH)
+
+# Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
+
+PROF_FLAG_AVAIL_NONE = 0
+PROF_FLAG_AVAIL_FLEX = 1
+PROF_FLAG_AVAIL_SPEC = 2
+
+PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
+PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
+PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
+
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -357,8 +379,10 @@ class Profile(Base):
 	headline	= Column(String(128))
 	location	= Column(String(64), nullable=False, default="Berkeley, CA")
 
-	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
-	created = Column(DateTime(), nullable=False, default = dt.utcnow())
+	updated = Column(DateTime(), nullable=False, default = "")
+	created = Column(DateTime(), nullable=False, default = "")
+
+	availability = Column(Integer, default=0)	
 
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
@@ -863,5 +887,43 @@ class Lesson(Base):
 		if len(lessons) != 1: 
 			raise NoLessonFound(lesson_id, 'Sorry, lesson not found')
 		return lessons[0]
+
+
+class Registrant(Base):
+	"""Account for interested parties signing up through the preview site."""
+	__tablename__ = "registrant"
+
+	reg_userid  = Column(String(40), primary_key=True, index=True, unique=True)
+	reg_email   = Column(String(128), index=True, unique=True)
+	reg_location = Column(String(128))
+	reg_ip = Column(String(20))
+	reg_name    = Column(String(128))
+	reg_org    = Column(String(128))	
+	reg_referrer = Column(String(128))
+	reg_flags = Column(Integer, default=0)
+	reg_created = Column(DateTime())
+	reg_updated = Column(DateTime())
+	reg_comment = Column(String(1024))
+
+	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment):
+		self.reg_userid = str(uuid.uuid4())
+		self.reg_email  = reg_email
+		self.reg_location  = reg_location
+		self.reg_ip  = reg_ip
+		self.reg_org  = reg_org
+		self.reg_referrer  = reg_referrer
+		self.reg_flags  = reg_flags
+		self.reg_comment = reg_comment
+		self.reg_created = dt.utcnow()
+		self.reg_updated = dt.utcnow()
+
+	def __repr___ (self):
+		return '<Registrant %r, %r, %r, %r>'% (self.reg_userid, self.reg_email, self.reg_location, self.reg_flags)
+
+	@staticmethod
+	def get_by_regid(regid):
+		registrants = Registrant.query.filter_by(reg_userid=regid).all()
+		if len(registrants) != 1: raise NoAccountFound(regid, 'Sorry, no account found')
+		return registrants[0]
 
 
