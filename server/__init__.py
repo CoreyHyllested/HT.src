@@ -13,6 +13,7 @@
 
 
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from logging import StreamHandler
 from flask import Flask
@@ -41,8 +42,13 @@ def create_upload_directory(ht_server):
 	try:
 		dir_upload = ht_server.config['HT_UPLOAD_DIR']
 		os.makedirs(dir_upload)
+	except OSError as oe:
+		if (oe.errno != 17):
+			print oe
+			raise oe
 	except Exception as e:
-		assert('Could not make directory: ' + str(dir_upload))
+		print type(e), e
+		raise e
 
 
 def initialize_server(config_name):
