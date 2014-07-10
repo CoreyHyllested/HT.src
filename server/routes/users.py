@@ -400,30 +400,18 @@ def ht_api_lesson_create():
 	user_message = 'Initializing Lesson...'
 	bp = Profile.get_by_uid(session['uid'])
 
-	print "ht_api_lesson_create: bp is",bp
-	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
+	print "ht_api_lesson_create: bp.prof_id is", bp.prof_name, bp.prof_id
 
 	try:
-		lesson = ht_create_lesson()
-		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
-		if (lesson is not None):
-			lesson_id = lesson.lesson_id
-			print 'ht_api_lesson_create: Successfully initialized lesson'
-		else:
-			print 'ht_api_lesson_create: Error initializing lesson'
-
-	except Sanitized_Exception as se:
-		user_message = se.get_sanitized_msg()
-		print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
-		print
-		return make_response(jsonify(usrmsg=user_message), se.httpRC())
-
+		lesson = ht_create_lesson(bp)
+		if (lesson is None):
+			return make_response(jsonify(usrmsg='Something bad'), 500)
 	except Exception as e:
 		print 'ht_api_lesson_create: exception:', type(e), e
-		print
 		return make_response(jsonify(usrmsg='Something bad'), 500)
 
-	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+	print 'ht_api_lesson_create: initialized lesson', lesson.lesson_id
+	return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, bp=bp))
 
 
 
