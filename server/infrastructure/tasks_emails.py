@@ -739,8 +739,8 @@ def email_body_msg_to():
   msg = msg + '</table>'
   return msg
   
-def email_body_msg_from():
-  """ generate email body (HTML).  Notification when user receives a msg."""
+def email_body_msg_received():
+  """ generate email body (HTML).  Notification when seller receives a new proposal."""
   msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
   msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
@@ -752,10 +752,14 @@ def email_body_msg_from():
   msg = msg + '</tbody>'
   msg = msg + '</table>'
 
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">You\'ve got mail. <a href="#" style="color:#29abe1">{insert user name}</a> sent you a message.<br><br>'
-  msg = msg + '\t\t\t {insert contents of messsage} </font> <br><br>'
+  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
+  msg = msg + '\t\t<<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">You\'ve got mail. It\'s from <a href="#" style="color:#29abe1">{user’s name}</a>.<br>'
+  msg = msg + '\t\t\t <i>{insert messaged}</i></font><br>'
+  msg = msg + '</td></tr>'
+  
+  msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:200px" align="left" valign="top">'
+  msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Reply</a>'
   msg = msg + '</td></tr>'
   msg = msg + '</table>'
 
