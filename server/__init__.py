@@ -14,6 +14,7 @@
 
 import logging
 from logging.handlers import RotatingFileHandler
+from logging import StreamHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
@@ -27,7 +28,7 @@ from config import server_configuration
 
 
 log_frmtr = logging.Formatter('%(asctime)s %(levelname)s %(message)s')	#[in %(pathname)s:%(lineno)d]'))
-log_hndlr = RotatingFileHandler('/tmp/ht.log', 'a', 1024*1024, 10) 
+log_hndlr = StreamHandler() #logs to stderr? #RotatingFileHandler('/tmp/ht.log', 'a', 1024*1024, 10) 
 log_hndlr.setFormatter(log_frmtr)
 log_hndlr.setLevel(logging.INFO)
 

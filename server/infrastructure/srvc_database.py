@@ -12,13 +12,16 @@
 #################################################################################
 
 
-from server import ht_server
+from flask	import Flask
+from config	import server_configuration
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-DATABASE_URI = ht_server.config['SQLALCHEMY_DATABASE_URI']
-MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
+db_config = Flask(__name__)
+db_config.config.from_object(server_configuration['default'])
+DATABASE_URI = db_config.config['SQLALCHEMY_DATABASE_URI']
+MIGRATE_REPO = db_config.config['SQLALCHEMY_MIGRATE_REPO']
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)
 # gotten from http://flask.pocoo.org/docs/patterns/sqlalchemy/ ... under Declaritive
