@@ -150,6 +150,13 @@ New muted blues for links:
 	color: #1488CC;
 }
 
+.teacherSignupLink {
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: .8em;
+	margin-right: 12px;
+}
+
 /* Header Dropdown Menu */
 
 .headerDropdownMenu {
@@ -207,6 +214,9 @@ New muted blues for links:
 	transition: all 0.4s;
 	width: 100%;
 	z-index: 9999;
+/*	-webkit-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);
+	box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);	*/
 }
 
 .headerDropdownMenu li:hover {
@@ -325,7 +335,7 @@ a.headerLogoLink {
 		width: 95%;
 	}
 
-	.headerSearchBar, .headerTextMenu, .headerDropdownMenu, #headerSearch {display: none;}
+	.headerSearchBar, .headerTextMenu, .headerDropdownMenu, #headerSearch, .teacherSignupLink {display: none;}
 	#headerSearch:focus {outline: none;}
 
 	.headerIcons {
@@ -408,6 +418,10 @@ a.headerLogoLink {
 
 /* Phablets (550px - 999px) */
 @media only screen and (min-width: 550px) and (max-width: 999px) {
+
+	.teacherSignupLink {
+		display: none;
+	}
 
 	.headerContentWrapper {
 		width: 94%;

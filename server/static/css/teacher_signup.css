@@ -130,6 +130,18 @@
 	line-height: 50px;
 	font-size: 1.1em;
 	border-bottom: 1px dotted #f0f0f0;	
+	cursor: pointer;
+	-moz-transition: 0.2s ease;
+	-o-transition: 0.2s ease;
+	-webkit-transition: 0.2 ease;
+	transition: 0.2s ease;	
+}
+
+.ssNavItem:hover {
+	background-color: #fcfcfc;
+}
+.ssNavItem.active {
+	background-color: #f7faff;
 }
 
 .ssNavLink {
@@ -140,6 +152,8 @@
 	font-size: .9em;
 	margin-left: 6px;
 }
+
+
 
 /* Styles for the form container and pages */
 
@@ -180,6 +194,8 @@
 	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
+
+
 .formTitle {
 	display: none;
 }
@@ -193,6 +209,14 @@
 .formDescription {
 
 	margin-bottom: 12px;
+}
+
+.formDescription ul {
+	list-style: disc;
+	margin: 12px 0px 12px 24px;
+}
+.formDescription li {
+	margin-bottom: 8px;
 }
 
 .formField {
