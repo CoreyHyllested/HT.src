@@ -151,6 +151,8 @@ class LessonForm(Form):
 	addLessonCountry	= TextField('Country', None)
 	addLessonAddressDetails = TextField('Details', None)
 	addLessonRate		= IntegerField('Lesson Rate', None)
+	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+
 #		lesson.lesson_avail			= request.form.get('addLessonAvail')
 #		lesson.lesson_duration		= request.form.get('addLessonDuration', None, type=int)
 #		rate_lesson					= request.values.get('perHour',			None, type=int)

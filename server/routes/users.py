@@ -429,7 +429,7 @@ def ht_api_lesson_create():
 
 			if (lesson.lesson_description != form.addLessonDescription.data):
 				print '\tUpdate lesson desc (' + str(lesson.lesson_description) + ') => ' + str(form.addLessonDescription.data)
-				lesson.lesson_title = form.addLessonDescription.data
+				lesson.lesson_description = form.addLessonDescription.data
 				
 			if (lesson.lesson_address_1 != form.addLessonAddress1.data):
 				print '\tUpdate lesson addr1(' + str(lesson.lesson_address_1) + ') => ' + str(form.addLessonAddress1.data)
@@ -440,27 +440,36 @@ def ht_api_lesson_create():
 				lesson.lesson_address_2 = form.addLessonAddress2.data
 				
 			if (lesson.lesson_city	!= form.addLessonCity.data):
-				print '\tUpdate lesson (' + str(lesson.lesson_city) + ') => ' + str(form.addLessonCity.data)
+				print '\tUpdate lesson city(' + str(lesson.lesson_city) + ') => ' + str(form.addLessonCity.data)
 				lesson.lesson_city	= form.addLessonCity.data
 				
+			if (lesson.lesson_zip != form.addLessonZip.data):
+				print '\tUpdate lesson zip(' + str(lesson.lesson_zip) + ') => ' + str(form.addLessonZip.data)
+				lesson.lesson_zip = form.addLessonZip.data
+
+			if (lesson.lesson_address_details != form.addLessonAddressDetails.data):
+				print '\tUpdate lesson zip(' + str(lesson.lesson_address_details) + ') => ' + str(form.addLessonAddressDetails.data)
+				lesson.lesson_address_details = form.addLessonAddressDetails.data
+
+			if (lesson.lesson_rate_perhour != form.addLessonRate.data):
+				print '\tUpdate lesson zip(' + str(lesson.lesson_rate_perhour) + ') => ' + str(form.addLessonRate.data)
+				lesson.lesson_rate_perhour = form.addLessonRate.data
+
 #			lesson.lesson_industry		= request.values.get('addLessonIndustry')
 #			lesson.lesson_unit			= request.values.get('addLessonRateUnit')
 #			lesson.lesson_loc_option	= request.values.get('addLessonPlace')
 			lesson.lesson_state			= request.values.get('addLessonState')
-			lesson.lesson_zip			= request.values.get('addLessonZip')
-			lesson.lesson_country		= request.values.get('addLessonCountry')
-			lesson.lesson_address_details = request.values.get('addLessonAddressDetails')
+			#lesson.lesson_country		= request.values.get('addLessonCountry')
 			lesson.lesson_avail			= request.values.get('addLessonAvail')
 			lesson.lesson_duration		= request.values.get('addLessonDuration', None, type=int)
 			rate_lesson					= request.values.get('perHour',			None, type=int)
-			rate_perhour				= request.values.get('addLessonRate',	None, type=int)
 			bool_save_lesson			= request.values.get('addLessonSave',		None, type=bool)
 
 
-			print 'adding lesson: ', lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
+			print 'ht_api_lesson_create: adding lesson' #lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
 			db_session.add(lesson)
-			print 'committing...'
 			db_session.commit()
+			print 'commited'
 		except Exception as e:
 			print type(e), e
 			db_session.rollback()
