@@ -127,19 +127,24 @@ class LessonForm(Form):
 	#lesson.lesson_title			= request.form.get('addLessonTitle')
 	#lesson.lesson_description	= request.form.get('addLessonDescription')
 
-#		lesson.lesson_address_1		= request.form.get('addLessonAddress1')
-#		lesson.lesson_address_2		= request.form.get('addLessonAddress2')
-#		lesson.lesson_city			= request.form.get('addLessonCity')
-#		lesson.lesson_state			= request.form.get('addLessonState')
-#		lesson.lesson_zip			= request.form.get('addLessonZip')
-#		lesson.lesson_country		= request.form.get('addLessonCountry')
-#		lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
+	#lesson.lesson_industry		= request.form.get('addLessonIndustry')
+	#lesson.lesson_address_1		= request.form.get('addLessonAddress1')
+	#lesson.lesson_address_2		= request.form.get('addLessonAddress2')
+	#lesson.lesson_city			= request.form.get('addLessonCity')
+	#lesson.lesson_zip			= request.form.get('addLessonZip')
+	#lesson.lesson_country		= request.form.get('addLessonCountry')
+	#lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
+
+#lesson.lesson_state			= request.form.get('addLessonState')
 
 #		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
+	duration = ['No Set duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
+	duratime = [None, 30, 45, 60, 90 ]
+	enumDura = zip(duratime, duration)
+
 	lesson_id = HiddenField('Lesson ID', None)
 	addLessonTitle			= TextField('Lesson Title', None)
 	addLessonDescription	= TextAreaField('Lesson Description', None)
-#		lesson.lesson_industry		= request.form.get('addLessonIndustry')
 #		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
 #		lesson.lesson_loc_option	= request.form.get('addLessonPlace')
 	addLessonAddress1	= TextField('Address Line 1', None)
@@ -152,9 +157,10 @@ class LessonForm(Form):
 	addLessonAddressDetails = TextField('Details', None)
 	addLessonRate		= IntegerField('Lesson Rate', None)
 	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
+	addLessonDuration	= SelectField('Lesson Duration', choices=(enumDura))
 
 #		lesson.lesson_avail			= request.form.get('addLessonAvail')
-#		lesson.lesson_duration		= request.form.get('addLessonDuration', None, type=int)
 #		rate_lesson					= request.values.get('perHour',			None, type=int)
 #		bool_save_lesson			= request.form.get('addLessonSave',		None, type=bool)
 

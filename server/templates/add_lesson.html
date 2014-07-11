@@ -61,18 +61,11 @@
 						{{form.hidden_tag()}}
 						{{form.lesson_id}}
 						{{form.addLessonTitle(id="addLessonTitle", class='formField span12', placeholder='e.g. Advanced Ukulele Lessons')}}
-						{{form.addLessonDescription(id="addLessonDescription", class="formField span12", placeholder="Please describe what the student should expect<br>e.g. general lesson plan, what you'll cover, etc.")}}
+						{{form.addLessonDescription(id="addLessonDescription", class="formField span12", placeholder="Please describe what the student should expect -- e.g. general lesson plan, what you'll cover, etc.")}}
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">Which industry best describes your lesson?</div>
-
-						<!-- TODO - this needs to pull in from Industry select -->
-						<select id="addLessonIndustry" name="addLessonIndustry" class="formField span3">
-							<option value="" selected>Choose Industry</option>
-							<option value="music">Music</option>
-							<option value="finearts">Fine Arts</option>
-							<option value="other">Other</option>
-						</select>
+						{{form.addLessonIndustry(class="formfield span3")}}
 					</div>
 
 					<div class="addLessonFormButtonContainer">
@@ -177,24 +170,7 @@
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">How long will each lesson last?</div>
-
-						<select name="addLessonDuration" id="addLessonDuration" class="formField span3">
-							<option value="">Choose duration</option>
-							<option value="none">No set duration</option>
-							<option value="30">30 minutes</option>
-							<option value="45">45 minutes</option>
-							<option value="60">1 hour</option>
-							<option value="75">1 hour 15 minutes</option>
-							<option value="90">1 hour 30 minutes</option>
-							<option value="105">1 hour 45 minutes</option>
-							<option value="120">2 hours</option>
-							<option value="135">2 hours 15 minutes</option>
-							<option value="150">2 hours 30 minutes</option>
-							<option value="165">2 hours 45 minutes</option>
-							<option value="180">3 hours</option>
-							<option value="210">3 hours 30 minutes</option>						
-							<option value="240">4 hours</option>						
-						</select>  
+						{{form.addLessonDuration(class="formField span3")}}
 					</div>
 					<div class="addLessonFormButtonContainer">
 						<button class="blueButton addLessonFormButton" data-current-page="when">Continue</button>

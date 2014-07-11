@@ -448,21 +448,25 @@ def ht_api_lesson_create():
 				lesson.lesson_zip = form.addLessonZip.data
 
 			if (lesson.lesson_address_details != form.addLessonAddressDetails.data):
-				print '\tUpdate lesson zip(' + str(lesson.lesson_address_details) + ') => ' + str(form.addLessonAddressDetails.data)
+				print '\tUpdate lesson address details (' + str(lesson.lesson_address_details) + ') => ' + str(form.addLessonAddressDetails.data)
 				lesson.lesson_address_details = form.addLessonAddressDetails.data
 
-			if (lesson.lesson_rate_perhour != form.addLessonRate.data):
-				print '\tUpdate lesson zip(' + str(lesson.lesson_rate_perhour) + ') => ' + str(form.addLessonRate.data)
-				lesson.lesson_rate_perhour = form.addLessonRate.data
+			if (lesson.lesson_hourly_rate != form.addLessonRate.data):
+				print '\tUpdate lesson per hour(' + str(lesson.lesson_hourly_rate) + ') => ' + str(form.addLessonRate.data)
+				lesson.lesson_hourly_rate = form.addLessonRate.data
 
-#			lesson.lesson_industry		= request.values.get('addLessonIndustry')
+			if (lesson.lesson_industry != form.addLessonIndustry.data):
+				print '\tUpdate lesson industry (' + str(lesson.lesson_industry) + ') => ' + str(form.addLessonIndustry.data)
+				lesson.lesson_industry = form.addLessonIndustry.data
+
+			if (lesson.lesson_duration != form.addLessonDuration.data):
+				print '\tUpdate lesson duration (' + str(lesson.lesson_duration) + ') => ' + str(form.addLessonDuration.data)
+				lesson.lesson_duration = form.addLessonDuration.data
+
 #			lesson.lesson_unit			= request.values.get('addLessonRateUnit')
 #			lesson.lesson_loc_option	= request.values.get('addLessonPlace')
-			lesson.lesson_state			= request.values.get('addLessonState')
 			#lesson.lesson_country		= request.values.get('addLessonCountry')
 			lesson.lesson_avail			= request.values.get('addLessonAvail')
-			lesson.lesson_duration		= request.values.get('addLessonDuration', None, type=int)
-			rate_lesson					= request.values.get('perHour',			None, type=int)
 			bool_save_lesson			= request.values.get('addLessonSave',		None, type=bool)
 
 
@@ -489,7 +493,6 @@ def create_lesson(lesson_id):
 	bp	= Profile.get_by_uid(uid)
 	form = LessonForm(request.form)
 
-	print "-"*32
 	print "create_lesson() enter...", str(lesson_id)
 	for key in request.values:
 		print '\t', key, request.values.get(key)
