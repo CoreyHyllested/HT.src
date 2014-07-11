@@ -31,9 +31,10 @@
 		<div class="ssLeftColumn">
 			<div class="ssNavContainer">
 			<ul class="ssNavList">
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>			
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="payment">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
+				<div class="ssNavItem active" data-target-page="intro"><a class="ssNavLink">Welcome!<i class="fa fa-fw fa-beer"></i></a></div>			
+				<div class="ssNavItem" data-target-page="profile_photo"><a class="ssNavLink">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>			
+				<div class="ssNavItem" data-target-page="schedule"><a class="ssNavLink">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
+				<div class="ssNavItem" data-target-page="payment"><a class="ssNavLink">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
 			</ul>
 			</div>
 		</div>
@@ -43,9 +44,26 @@
 			<div class="ssFormPageContainer">
   				<form id="ssForm" method="post" action="/teacher/activate" enctype="multipart/form-data">
 
+				<div id="intro" class="ssFormPage">
+					<div class="formInstruction">Awesome! We are ecstatic that you want to teach.</div>
+					<div class="formDescription">Cheers. You have worked hard at your craft, skill, or hobby, and you can't wait to make the world a happier, more creative place by sharing your talent with others. You deserve to be rewarded with some cash for your efforts. You also deserve a commendation and a trophy! That said, we have a few "guidelines": 
+					<ul>
+						<li>Be cool. Don't claim you can teach something that you can't.</li>
+						<li>Maintain an attractive profile and lesson descriptions - this means keeping it filled out with complete info, and using high-quality images.</li>
+						<li>We are serious about the photo quality - so serious that we'll send a professional to take photos of you or your work if you don't think you can do it yourself.</li>
+						<li>That's all we can think of for now.</li>
+					</ul>
+					OK with all that? Great. Let's get started.
+					</div>
+					<div class="ssFormButtonContainer">
+						<button class="blueButton ssFormButton" data-current-page="intro">Continue</button>
+					</div>					
+				
+				</div>
+
 				<div id="profile_photo" class="ssFormPage">
 					<div class="formInstruction">Upload High-Resolution Photo</div>
-					<div class="formDescription">We ask that all our Sprites provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 980 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
+					<div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
 
 					<div class="ssUploadPreview"><img id="ssUploadPreviewImage" class="ssUploadPreviewImage"></div>
 
@@ -56,6 +74,7 @@
 
 					<div class="ssFormButtonContainer">
 						<button class="blueButton ssFormButton" data-current-page="profile_photo">Continue</button>
+						<a class="ssFormPrevious">Previous</a>
 					</div>					
 				
 				</div>

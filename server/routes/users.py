@@ -334,7 +334,7 @@ def render_teacher_signup_page(usrmsg = None):
 		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
 		return make_response(render_template('teacher_signup.html', title='- Edit Your Info', bp=bp, oa_stripe=stripe, edit="true"))
 
-	session['next_url']='/teacher_signup#payment'
+	session['next_url']='/teacher/signup#payment'
 	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
 
 

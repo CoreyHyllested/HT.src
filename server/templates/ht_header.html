@@ -151,14 +151,21 @@
 
 			{% if bp %}
 			<li id="menuUserName">{{bp.prof_name}}</li>
+
+			{% if bp.availability > 0 %}
+				<li><a href="/lesson/create">Create Lesson</a></li>
+			{% else %}
+				<li><a href="/teacher/signup">Sign Up to Teach</a></li>
+			{% endif %}
 			<li><a href="/dashboard">Dashboard</a></li>
 			<li><a href="/profile">Profile</a></li>
+			<li><a href="/edit">Edit Profile</a></li>
 			<li><a href="/settings">Settings</a></li>
 			<li><a href="/logout">Log Out</a></li>
 
 			{% else %}
-			<li><a href="/signup">Signup</a></li>
-			<li><a href="/login">Login</a></li>
+			<li><a href="/signup">Sign Up</a></li>
+			<li><a href="/login">Log In</a></li>
 			{% endif %}
 		</ul>
 	</div>
@@ -202,7 +209,7 @@
 									<a href="/teacher/signup"><li>Edit Teaching Info</li></a>
 									<a href="/lesson/create"><li>Create Lesson</li></a>
 								{% else %}
-									<a href="/teacher/signup"><li>Signup to Teach</li></a>
+									<a href="/teacher/signup"><li>Sign Up to Teach</li></a>
 								{% endif %}
 								<a href="/dashboard"><li>Dashboard</li></a>
 								<a href="/profile"><li>Profile</li></a>
@@ -214,6 +221,9 @@
 					</ul>
 				</div>
 				<div class="headerIcons">
+					{% if bp.availability == 0 %}
+						<a class="teacherSignupLink blend" href="/teacher/signup">Sign up to teach</a>
+					{% endif %}
 					<a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a>
 					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"></i></a>
 				</div>
@@ -221,8 +231,8 @@
 				{% else %}
 				<div class="headerGraphicalMenu"></div>
 				<ul class="headerTextMenu">
-					<li><a href="/signup">Signup</a></li>
-					<li><a href="/login">Login</a></li>
+					<li><a href="/signup">Sign Up</a></li>
+					<li><a href="/login">Log In</a></li>
 				</ul>
 
 				{% endif %}

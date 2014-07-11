@@ -4,7 +4,7 @@ $(document).ready(function(){
 
 	// Form Navigation and State Management
 
-	var firstPage = "profile_photo";
+	var firstPage = "intro";
 	var lastPage = "payment";
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
@@ -30,22 +30,26 @@ $(document).ready(function(){
 		}
 	};	
 
-	$('.ssNavLink').click(function() {
+	$('.ssNavItem').click(function() {
 		$('.ssFormPage').hide();
+		$(".ssNavItem").removeClass("active");
 		var target = $(this).attr("data-target-page");
 		// $('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
 		$("#"+target).show();
-		history.pushState({title: target}, "", '/teacher_signup#'+target);
+		$(this).addClass("active");
+		history.pushState({title: target}, "", '/teacher/signup#'+target);
 	});
 
 	$('.ssFormButton').click(function(e) {
 		e.preventDefault();
 		$('.ssFormPage').hide();
+		$(".ssNavItem").removeClass("active");
 		var currentPage = $(this).attr("data-current-page");
 		var nextPage = $('#'+currentPage).next('.ssFormPage').attr("id");
 		// $('.ssHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#'+nextPage).show();
-		history.pushState({title: nextPage}, "", '/teacher_signup#'+nextPage);
+		$(".ssNavItem[data-target-page=" + nextPage + "]").addClass("active");
+		history.pushState({title: nextPage}, "", '/teacher/signup#'+nextPage);
 	});
 
 	$('.ssFormButtonSubmit').click(function(e) {
@@ -71,13 +75,14 @@ $(document).ready(function(){
 	$('.ssFormPrevious').click(function(e) {
 		e.preventDefault();
 		$('.ssFormPage').hide();	 
- 
+ 		$(".ssNavItem").removeClass("active");
 		var currentPage = $(this).closest(".ssFormPage").attr("id");
 		var prevPage = $('#'+currentPage).prev('.ssFormPage').attr("id");
 		console.log("current page is "+currentPage);
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());
 		$('#'+prevPage).show();
-		history.pushState({title: prevPage}, "", '/teacher_signup#'+prevPage);
+		$(".ssNavItem[data-target-page=" + prevPage + "]").addClass("active");
+		history.pushState({title: prevPage}, "", '/teacher/signup#'+prevPage);
 	})
 
 	// Image Upload
@@ -94,8 +99,8 @@ $(document).ready(function(){
 			if (height > width) {
 				$(".ssProfileImageInfo").append("<br><span class='error'>Error: Photo is not in landscape orientation.</span>");
 			}			
-			if (width < 800) {
-				$(".ssProfileImageInfo").append("<br><span class='error'>Error: Photo must be at least 800 pixels wide.</span>");
+			if (width < 720) {
+				$(".ssProfileImageInfo").append("<br><span class='error'>Error: Photo must be at least 720 pixels wide.</span>");
 			}
 		});		
 	});
