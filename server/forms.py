@@ -139,7 +139,7 @@ class LessonForm(Form):
 
 #		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
 	duration = ['No Set duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
-	duratime = [None, 30, 45, 60, 90 ]
+	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
 	lesson_id = HiddenField('Lesson ID', None)
@@ -155,10 +155,10 @@ class LessonForm(Form):
 	addLessonZip		= TextField('Zip', None)
 	addLessonCountry	= TextField('Country', None)
 	addLessonAddressDetails = TextField('Details', None)
-	addLessonRate		= IntegerField('Lesson Rate', None)
-	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+	addLessonRate		= IntegerField('Lesson Rate', None, default=0)
+	#addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
 	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
-	addLessonDuration	= SelectField('Lesson Duration', choices=(enumDura))
+	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
 
 #		lesson.lesson_avail			= request.form.get('addLessonAvail')
 #		rate_lesson					= request.values.get('perHour',			None, type=int)

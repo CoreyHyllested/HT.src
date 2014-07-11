@@ -50,7 +50,7 @@
 
 		<div class="addLessonRightColumn">
 			<div class="addLessonFormPageContainer">
-				<form id="addLessonForm" method="post" action="/lesson/create" data-lesson-id="{{lesson_id}}">
+				<form id="addLessonForm" method="post" action="/lesson/create/{{form.lesson_id.data}}" data-lesson-id="{{form.lesson_id.data}}">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 
 				<div id="overview" class="addLessonFormPage">
