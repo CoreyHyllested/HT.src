@@ -130,7 +130,6 @@ class ProfileForm(Form):
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
 
-
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
 	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])

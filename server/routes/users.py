@@ -317,25 +317,29 @@ def render_edit_portfolio_page():
 
 
 
-
-@ht_server.route('/seller_signup', methods=['GET', 'POST'])
+# TODO - change name
+@ht_server.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
-def render_seller_signup_page(usrmsg = None):
+def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
+	ba = Account.get_by_uid(uid)
 	pi = Oauth.get_stripe_by_uid(uid)
 
 	stripe = 'None'
 	# Stripe Connect ID, req'd to take payments
 	if (pi is not None): stripe = pi.oa_account
 
-	session['next_url']='/seller_signup#payment'
-	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
+	if (ba.role == 1):
+		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
+		return make_response(render_template('teacher_signup.html', title='- Edit Your Info', bp=bp, oa_stripe=stripe, edit="true"))
+
+	session['next_url']='/teacher_signup#payment'
+	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
 
 
-
-
-@ht_server.route('/activate_seller', methods=['GET', 'POST'])
+# TODO - change name
+@ht_server.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
 	""" A regular user is signing up to be a seller.  """
@@ -345,30 +349,42 @@ def activate_seller():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session.get('uid'))
 	ba = Account.get_by_uid(session.get('uid'))
-	form = ProfileForm(request.form)
+	form = request.form
 
 	# TODO - put this back in
 	# if form.validate_on_submit():
 
 	try:
-		bp.avail = int(form.ssAvailOption.data)
-		bp.stripe_cust = form.oauth_stripe.data
+		bp.availability = form.get('ssAvailOption')
+		bp.stripe_cust = form.get('oauth_stripe')
 		ba.role = 1
+
+		print "activate_seller(): availability:", bp.availability
+		print "activate_seller(): stripe_cust:", bp.stripe_cust
+
+		# Not used yet:
+		# bp.avail_times = int(form.ssAvailTimes.data)
 
 		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
 		# bp.updated  = dt.utcnow()
 
 		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
 		# TODO: what happens if someone wants to just keep their old one?
-		image_data = request.files[form.ssProfileImage.name].read()
-		if (len(image_data) > 0):
-			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			trace (destination_filename + ", sz = " + str(len(image_data)))
+
+		this_image = request.files['ssProfileImage']
+		this_image_data = this_image.read()
+
+		print "activate_seller(): this_image:", str(this_image)
+		print "activate_seller(): this_image_data Len:", len(this_image_data)
+		
+		if (len(this_image_data) > 0):
+			destination_filename = str(hashlib.sha1(this_image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(this_image_data)))
 			print 'activate_seller(): s3'
 			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
 			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
 			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-			sml.set_contents_from_file(StringIO(image_data))
+			sml.set_contents_from_file(StringIO(this_image_data))
 			bp.prof_img = destination_filename
 
 		print 'activate_seller(): add'
@@ -377,19 +393,19 @@ def activate_seller():
 		print 'activate_seller(): commit'
 		db_session.commit()
 		log_uevent(uid, "activate seller profile")
-
-		return make_response(redirect(url_for('render_dashboard')))
+		print 'activate_seller(): SUCCESS! Seller activated.'
+		
+		return redirect(url_for('ht_api_lesson_create', activated="true"))
 
 	except AttributeError as ae:
-		print 'activate_seller(): hrm. must have changed an object somehwere'
-		print ae
+		print 'activate_seller(): hrm. must have changed an object somewhere:', ae
 		db_session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
 
 	except Exception as e:
-		print e
+		print 'activate_seller(): Exception:', e
 		db_session.rollback()
-		return jsonify(usrmsg=e), 500
+		return jsonify(usrmsg="Something else screwed up."), 500
 
 
 
@@ -399,33 +415,38 @@ def activate_seller():
 def ht_api_lesson_create():
 	user_message = 'Initializing Lesson...'
 	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session.get('uid'))
+	activated = request.values.get("activated")
 
+	print "ht_api_lesson_create: activated is",activated
 	print "ht_api_lesson_create: bp is",bp
 	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
 
-	try:
-		lesson = ht_create_lesson()
-		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
-		if (lesson is not None):
-			lesson_id = lesson.lesson_id
-			print 'ht_api_lesson_create: Successfully initialized lesson'
-		else:
-			print 'ht_api_lesson_create: Error initializing lesson'
+	if (ba.role > 0):
+		try:
+			lesson = ht_create_lesson()
+			print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
+			if (lesson is not None):
+				lesson_id = lesson.lesson_id
+				print 'ht_api_lesson_create: Successfully initialized lesson'
+			else:
+				print 'ht_api_lesson_create: Error initializing lesson'
 
-	except Sanitized_Exception as se:
-		user_message = se.get_sanitized_msg()
-		print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
-		print
-		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+		except Sanitized_Exception as se:
+			user_message = se.get_sanitized_msg()
+			print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
+			print
+			return make_response(jsonify(usrmsg=user_message), se.httpRC())
 
-	except Exception as e:
-		print 'ht_api_lesson_create: exception:', type(e), e
-		print
-		return make_response(jsonify(usrmsg='Something bad'), 500)
+		except Exception as e:
+			print 'ht_api_lesson_create: exception:', type(e), e
+			print
+			return make_response(jsonify(usrmsg='Something bad'), 500)
 
-	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+		return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp, activated=activated))
 
-
+	else:
+		return redirect('/dashboard')
 
 
 @ht_server.route('/create_lesson/<lesson_id>', methods=['POST'])

@@ -27,9 +27,15 @@
 		</div>
 		<div class="addLessonHeaderRight">
 			<div class="addLessonHeaderPageName">
-			Create Lesson
+			{% if activated == "true" %}
+			Let's create your first lesson!
+			{% else %}
+			Create a Lesson
+			{% endif %}
 			</div>
-			<span class="debug">{{lesson_id}}</span>
+<!-- 			<div class="addLessonHeaderPageSubtitle">
+			<a href="/profile">No thanks, return to profile</a>
+			</div> -->
 		</div>			
 	</div>
   

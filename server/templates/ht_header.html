@@ -198,8 +198,12 @@
 					<ul class="headerDropdownMenu">
 						<li class="headerDropdownMenuName">{{bp.prof_name}}
 							<ul class="headerDropdownMenuActive">
-								<a href="/seller_signup"><li>Seller Signup</li></a>
-								<a href="/lesson/create"><li>Create Lesson</li></a>
+								{% if bp.availability > 0 %}
+									<a href="/teacher/signup"><li>Edit Teaching Info</li></a>
+									<a href="/lesson/create"><li>Create Lesson</li></a>
+								{% else %}
+									<a href="/teacher/signup"><li>Signup to Teach</li></a>
+								{% endif %}
 								<a href="/dashboard"><li>Dashboard</li></a>
 								<a href="/profile"><li>Profile</li></a>
 								<a href="/inbox"><li>Messages</li></a>

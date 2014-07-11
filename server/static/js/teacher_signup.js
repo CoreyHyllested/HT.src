@@ -35,7 +35,7 @@ $(document).ready(function(){
 		var target = $(this).attr("data-target-page");
 		// $('.ssHeaderPageName').text($("#"+target+' .formTitle').text());
 		$("#"+target).show();
-		history.pushState({title: target}, "", '/seller_signup#'+target);
+		history.pushState({title: target}, "", '/teacher_signup#'+target);
 	});
 
 	$('.ssFormButton').click(function(e) {
@@ -45,22 +45,27 @@ $(document).ready(function(){
 		var nextPage = $('#'+currentPage).next('.ssFormPage').attr("id");
 		// $('.ssHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#'+nextPage).show();
-		history.pushState({title: nextPage}, "", '/seller_signup#'+nextPage);
+		history.pushState({title: nextPage}, "", '/teacher_signup#'+nextPage);
 	});
 
 	$('.ssFormButtonSubmit').click(function(e) {
 		e.preventDefault();
 		var formData = {};
 		formData.oauth_stripe = $("#oauth_stripe").val();
-		formData.ssAvailOption = $("#ssAvailOption").val();
-		formData.ssAvailTimes = $("#ssAvailTimes").val();
+		if ($("#ssAvailOptionFlex").is(":checked")) {
+			formData.ssAvailOption = 0;
+		} else if ($("#ssAvailOptionSpec").is(":checked")) {
+			formData.ssAvailOption = 1;
+		}
+		formData.ssAvailTimes = "all the time"; // TODO - Change when it matters
 		console.log(JSON.stringify(formData));		
 		console.log("Photo details: 'ssProfileImage' - "+ JSON.stringify($("#ssProfileImage")[0].files[0]));
 
-		// Uncomment when ready to actually do the database stuff
-		// $("#ssForm").submit();
 
-		openAlertWindow("Thanks for registering!");
+
+
+		$("#ssForm").submit();
+
 	});
 
 	$('.ssFormPrevious').click(function(e) {
@@ -72,7 +77,7 @@ $(document).ready(function(){
 		console.log("current page is "+currentPage);
 		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());
 		$('#'+prevPage).show();
-		history.pushState({title: prevPage}, "", '/seller_signup#'+prevPage);
+		history.pushState({title: prevPage}, "", '/teacher_signup#'+prevPage);
 	})
 
 	// Image Upload
