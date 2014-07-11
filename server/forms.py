@@ -120,6 +120,46 @@ class LoginForm(Form):
 	input_login_password = PasswordField('Password', [validators.Required()])
 
 
+
+
+class LessonForm(Form):
+	#lesson = Lesson.get_by_lesson_id(lesson_id)
+	#lesson.lesson_title			= request.form.get('addLessonTitle')
+	#lesson.lesson_description	= request.form.get('addLessonDescription')
+
+#		lesson.lesson_address_1		= request.form.get('addLessonAddress1')
+#		lesson.lesson_address_2		= request.form.get('addLessonAddress2')
+#		lesson.lesson_city			= request.form.get('addLessonCity')
+#		lesson.lesson_state			= request.form.get('addLessonState')
+#		lesson.lesson_zip			= request.form.get('addLessonZip')
+#		lesson.lesson_country		= request.form.get('addLessonCountry')
+#		lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
+
+#		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
+	lesson_id = HiddenField('Lesson ID', None)
+	addLessonTitle			= TextField('Lesson Title', None)
+	addLessonDescription	= TextAreaField('Lesson Description', None)
+#		lesson.lesson_industry		= request.form.get('addLessonIndustry')
+#		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
+#		lesson.lesson_loc_option	= request.form.get('addLessonPlace')
+	addLessonAddress1	= TextField('Address Line 1', None)
+	addLessonAddress2	= TextField('Address Line 1', None)
+	addLessonCity		= TextField('City',	None)
+	addLessonState		= TextField('State', None)
+	#addLessonZip		= TextField('Zip', None)
+	addLessonZip		= TextField('Zip', None)
+	addLessonCountry	= TextField('Country', None)
+	addLessonAddressDetails = TextField('Details', None)
+	addLessonRate		= IntegerField('Lesson Rate', None)
+#		lesson.lesson_avail			= request.form.get('addLessonAvail')
+#		lesson.lesson_duration		= request.form.get('addLessonDuration', None, type=int)
+#		rate_lesson					= request.values.get('perHour',			None, type=int)
+#		bool_save_lesson			= request.form.get('addLessonSave',		None, type=bool)
+
+
+
+
+
 class ProfileForm(Form):
 	edit_name     = TextField('Name',     [validators.Required(), validators.length(min=1, max=40)])
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])

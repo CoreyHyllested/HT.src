@@ -50,7 +50,7 @@
 
 		<div class="addLessonRightColumn">
 			<div class="addLessonFormPageContainer">
-				<form id="addLessonForm" method="post" action="/create_lesson/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
+				<form id="addLessonForm" method="post" action="/lesson/create" data-lesson-id="{{lesson_id}}">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 
 				<div id="overview" class="addLessonFormPage">
@@ -58,8 +58,10 @@
 					<div class="formElement">
 						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
 
-						<input type="text" id="addLessonTitle" name="addLessonTitle" class="formField span12" placeholder="e.g. Advanced Ukulele Lessons"> 
-						<textarea id="addLessonDescription" name="addLessonDescription" class="formField span12" placeholder="Please describe what the student should expect - e.g. a general lesson plan, what you'll cover, etc."></textarea> 
+						{{form.hidden_tag()}}
+						{{form.lesson_id}}
+						{{form.addLessonTitle(id="addLessonTitle", class='formField span12', placeholder='e.g. Advanced Ukulele Lessons')}}
+						{{form.addLessonDescription(id="addLessonDescription", class="formField span12", placeholder="Please describe what the student should expect<br>e.g. general lesson plan, what you'll cover, etc.")}}
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">Which industry best describes your lesson?</div>
@@ -92,10 +94,10 @@
 							<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value=2><label for="addLessonPlaceTeacher">My Place:</label>
 						</div>
 						<br><br>
-						<fieldset id="addressFields">		
-						<input type="text" id="addLessonAddress1" name="addLessonAddress1" class="formField span9" placeholder="Address Line 1"> 
-						<input type="text" id="addLessonAddress2" name="addLessonAddress2" class="formField span9" placeholder="Address Line 2"> 
-						<input type="text" id="addLessonCity" name="addLessonCity" class="formField span3" placeholder="City"> 
+						<fieldset id="addressFields">
+						{{form.addLessonAddress1(id="addLessonAddress1", class='formField span9', placeholder='Address Line 1')}}
+						{{form.addLessonAddress2(id="addLessonAddress2", class='formField span9', placeholder='Address Line 2')}}
+						{{form.addLessonCity(id="addLessonCity", class='formField span3', placeholder='City')}}
 						<select name="addLessonState" id="addLessonState" class="formField span3">
 							<option value="">State</option>
 							<option value="AL">Alabama</option>
@@ -150,8 +152,8 @@
 							<option value="WI">Wisconsin</option>
 							<option value="WY">Wyoming</option>
 						</select>
-						<input type="text" id="addLessonZip" name="addLessonZip" class="formField span3" placeholder="Zip Code">
-						<input type="text" id="addLessonAddressDetails" name="addLessonAddressDetails" class="formField span9" placeholder="Address Details (e.g. Back Door off Patio)">
+						{{form.addLessonZip(id="addLessonZip", class='formField span3', placeholder='Zip Code')}}
+						{{form.addLessonAddressDetails(id="addLessonAddressDetails", class='formField span9', placeholder='Additional Details (e.g. Studio is in garage, not house')}}
 						</fieldset>
 					</div>
 					<div class="addLessonFormButtonContainer">
@@ -167,12 +169,11 @@
 				<div id="when" class="addLessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">When are you available for these lessons?</div>
-						
 						<div class="formField formChoice span12">
 							<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value=0><label for="addLessonAvailDefault">Same as availability set in my profile</label>
 						</div>
 						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
+							<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">Specific times (not available yet)</label>
 						</div>
 					</div>
 					<div class="formElement">
@@ -207,10 +208,9 @@
 				<div id="rate" class="addLessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">How much will you charge?</div>
-
 						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate.</div>
 
-						<input type="text" id="addLessonRate" name="addLessonRate" class="formField span3" placeholder="Amount"> 
+						{{form.addLessonRate(id="addLessonRate", class='formField span3', placeholder='Amount')}}
 						<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
 							<option value="perHour">Per Hour</option> 
 							<option value="perLesson">Per Lesson</option> 
@@ -361,7 +361,6 @@
 </div>
 
 <!-- Scripts -->
-
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/lightbox.min.js"></script>	
 <script type="text/javascript" src="/static/js/add_lesson.js"></script>
@@ -371,13 +370,9 @@
 
 $(document).ready(function() {
 
-
-
 });
 
 </script>
-
-<!-- Bottom bar -->
 
 {% endblock %}
 "
