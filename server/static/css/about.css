@@ -57,30 +57,38 @@ a:link {
 }
 
 .howWeWorkHeader {
+  border-bottom-width: 10px;
   font-family: Garamond, EB Garamond, Georgia, serif;
   font-size: 24px;
   color: #e55e62;
-  text-align:center;
+  text-align: center;
   margin-top: 25px;
+  padding-bottom: 15px;
+  padding-top:  15px;
+  border-bottom: 2px solid #e6e6e6;
+  width: 150px;
+  margin-left: 425px;
 }
 
 
 .learnerHeader {
+  background: url('../img/about-page-icon-1.png') no-repeat left;
   font-family: Garamond, EB Garamond, Georgia, serif;
   font-size: 24px;
-  font-style: bold;
-  margin-bottom: 5px;
+  font-weight: bold;
+  padding-top: 50px;
+  text-align: left;
+  padding-left: 65px;
+  padding-bottom: 20px;
 
 }
 
 .learnerContainer {
-width: 300px;
-height: 155px;
-float: left;
-display: inline-block;
-margin-top: 100px;
-margin-left: 110px;
-background: #29abe1;
+  width: 300px;
+  float: left;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 145px;
 }
 
 .learnerContainer p {
@@ -92,6 +100,7 @@ background: #29abe1;
 .mentorHeader {
   font-family: Garamond, EB Garamond, Georgia, serif;
   font-size: 24px;
+  font-weight: bold;
   margin-bottom: 5px;
 }
   
@@ -99,7 +108,7 @@ background: #29abe1;
 .mentorContainer {
 width: 300px;
 height: 155px;
-margin-top: 100px;
+margin-top: 10px;
 background: #29abe1;
 float: right;
 margin-right: 110px;
@@ -111,6 +120,7 @@ margin-right: 110px;
   text-align: left;
 }
 
+/* 
 .missionStatement {
   text wrap: none;
   color: black;
@@ -190,5 +200,78 @@ margin-right: 110px;
 }
 
 .headlineExperience h1 {
-  color: white;
+  co
+ */lor: white;
+}
+
+/* Team and Mission */
+
+.aboutTeam {
+	margin: 0px auto;
+	width: 1000px;	
+	height:425px;
+	text-align: center;
+	border-bottom: 1px solid #e6e6e6;
+	padding-top: 44px;
+	padding-bottom: 24px;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+}
+
+.aboutMissionStatement {
+  text wrap: none;
+  color: black;
+  font-size: 18px;
+  padding-top: 10px;
+  padding-left: 75px;
+  padding-right: 75px;
+}
+
+.aboutTeamIntroduction {
+  margin-top: 5px;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 3em;
+  margin-bottom: 36px;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.aboutTeamContainer {
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 400px;
+  text-align: center;
+  background: rgb(41, 171, 225);
+  background-color: rgba(41, 171, 225, 0.1);
+}
+
+.teamHeader {
+  font-size: 60px;
+  color: #808080;
+  padding-top: 50px;
+  padding-bottom: 25px;
+}
+
+.teamMember {
+  display:inline-block;
+  padding: 40px;
+}
+
+.teamPortrait {
+  margin-bottom: 6px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  padding: 2px;
+  border: 1px solid #ebebeb;
+  -moz-box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+  -webkit-box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+  box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+}
+
+.teamCaption {
+  font-family: Garamond, EB Garamond, Georgia, serif;
+  font-size: 24px;
 }
