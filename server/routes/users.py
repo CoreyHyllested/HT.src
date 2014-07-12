@@ -5,7 +5,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm
+from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm
 
 # more this into controllers / tasks.
 import boto
@@ -41,7 +41,7 @@ def render_dashboard(usrmsg=None):
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 
@@ -652,7 +652,7 @@ def render_schedule_page():
 
 
 
-@insprite_views.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
+@insprite_views.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
 def render_review_meeting_page(meet_id, review_id):
 	uid = session['uid']

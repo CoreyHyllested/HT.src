@@ -776,14 +776,8 @@ class Review(Base):
 
 		if (tmp_comments is not None):
 			tmp_comments = tmp_comments[:20]
-			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.appt_score, tmp_comments)
 
-
-	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
-		self.appt_score = appt_score
-		self.appt_value = appt_value
-		self.generalcomments = appt_comments
 
 
 	@staticmethod
@@ -798,14 +792,30 @@ class Review(Base):
 		return review
 
 
+
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
+
+
+
 	def validate (self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
 
+
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
+
+
+
+	def get_review_url(self):
+		return '/review/' + str(self.rev_appt) + '/' + str(self.review_id)
+
+
 
 
 class Lesson(Base):

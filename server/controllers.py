@@ -469,8 +469,6 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 	#	print 'Searching review_set for reviews marked as visible'
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
 	elif (filter_by == 'ACTIVE'):
-		for r in review_set:
-			print '\t\t', r.Review.review_id, r.Review.prof_authored, 'STATUS: ', r.Review.rev_status, 'FLAGS:', r.Review.rev_flags
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_CREATED), review_set)
 	else:
 		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
