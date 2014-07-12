@@ -27,12 +27,13 @@ def render_dashboard(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
-	print 'profile.account = ', uid, bp
+	print 'render_dashboard() profile.account = ', bp.prof_name, uid
 
 	unread_msgs = []
 
 	try:
-		(props, appts) = ht_get_active_meetings(bp)
+		(props, appts, rview) = ht_get_active_meetings(bp)
+		active_reviews = ht_get_active_author_reviews(bp)
 		unread_msgs = ht_get_unread_messages(bp)
 		lessons = ht_get_lessons(bp)
 	except Exception as e:

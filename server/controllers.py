@@ -191,6 +191,7 @@ def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 
 
 
+
 def import_profile(bp, oauth_provider, oauth_data):
 	oa_data = normalize_oa_profile_data(oauth_provider, oauth_data)
 	try:
@@ -220,6 +221,7 @@ def import_profile(bp, oauth_provider, oauth_data):
 	except Exception as e:
 		print 'ah fuck, it failed other place', e
 		db_session.rollback()
+
 
 
 
@@ -324,13 +326,16 @@ def meeting_timedout(meeting):
 def ht_get_active_meetings(profile):
 	props = []
 	appts = []
+	rview = []
 
 	print 'ht_get_active_meetings()  Get composite meetings'
 	meetings = htdb_get_composite_meetings(profile)
-	print 'ht_get_active_meetings()  Got composite meetings'
+	print 'ht_get_active_meetings()  Got composite meetings', len(meetings)
 
 	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
 	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
+	rview = filter(lambda r: (r.Proposal.prop_state  & APPT_STATE_OCCURRED), meetings)
+	print 'ht_get_active_meetings()  total:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
@@ -347,7 +352,7 @@ def ht_get_active_meetings(profile):
 	#	setattr(thread, 'thread_partner', thread_partner)
 	#	mbox.append(thread)
 
-	return (props, appts)
+	return (props, appts, rview)
 
 
 
@@ -405,13 +410,23 @@ def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dum
 
 
 
+def ht_get_active_author_reviews(profile):
+	print 'ht_get_active_reviews() enter'
+	prof_reviews = htdb_get_composite_reviews(profile)
+	active_reviews = ht_filter_composite_reviews(prof_reviews,	 filter_by='ACTIVE', profile=profile, dump=False)
+	author_reviews = ht_filter_composite_reviews(active_reviews, filter_by='AUTHORED', profile=profile, dump=False)
+	print 'ht_get_active_reviews()  total:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
+
+	return author_reviews
+
+
 
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
 
-	# OBJECT
+	# COMPOSITE REVIEW OBJECT
 	# OBJ.Review	# Review
 	# OBJ.hero		# Profile of seller
 	# OBJ.user		# Profile of buyer
@@ -425,6 +440,7 @@ def htdb_get_composite_reviews(profile):
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
 	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
 	return all_reviews
+
 
 
 def display_review_partner(r, prof_id):
@@ -441,23 +457,29 @@ def display_partner_proposal(meeting, profile):
 
 
 
-def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
 	reviews = []
 	if (filter_by == 'REVIEWED'):
 	#	print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
-	if (filter_by == 'AUTHORED'):
+	elif (filter_by == 'AUTHORED'):
 	#	print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
-	if (filter_by == 'VISIBLE'):
+	elif (filter_by == 'VISIBLE'):
 	#	print 'Searching review_set for reviews marked as visible'
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+	elif (filter_by == 'ACTIVE'):
+		for r in review_set:
+			print '\t\t', r.Review.review_id, r.Review.prof_authored, 'STATUS: ', r.Review.rev_status, 'FLAGS:', r.Review.rev_flags
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_CREATED), review_set)
+	else:
+		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
 
 	if (dump):
-		print 'Original set',  len(review_set), "=>", len(reviews)
+		print '\t\tfilter review_set by %s, by %s [%s]' % (filter_by, profile.prof_name, str(profile.prof_id)), '\tREVIEW SET: ', len(review_set), "=>", len(reviews)
 		for r in reviews:
-			# see ht_get_composite_reviews for object
-			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+			# see htdb_get_composite_reviews() for object description.
+			print '\t\t', r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
 	return reviews
 
 
