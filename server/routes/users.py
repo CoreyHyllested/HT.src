@@ -675,25 +675,25 @@ def render_review_meeting_page(meet_id, review_id):
 
 	try:
 		review = Review.get_by_id(review_id)
+		review_days_left = review.time_until_review_disabled()
+		if (review_days_left < 0):
+			print 'Review timed out'
+			return
+
 		bp = Profile.get_by_uid(session['uid'])
 		ba = Account.get_by_uid(bp.account)
 
 		author = bp
+		review.validate_author(author.prof_id)
+
 		reviewed = Profile.get_by_prof_id(review.prof_reviewed)
 		print 'render_review()\t, author =', author.prof_id, author.prof_name, ba.email
 		print 'render_review()\t, review author =', review.prof_authored
 		print 'render_review()\t, review revied =', review.prof_reviewed
-		print review
-
-		review.validate_author(author.prof_id)
-
-		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#show the -cost, -time, -description, -location
-		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
 		review_form = ReviewForm(request.form)
 		review_form.review_id.data = str(review_id)
-		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, daysleft=str(days_since_created.days), form=review_form))
+		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
 	except NoReviewFound as rnf:
 		print rnf 
@@ -704,13 +704,13 @@ def render_review_meeting_page(meet_id, review_id):
 		db_session.rollback()
 		return jsonify(usrmsg=re.msg)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return redirect('/failure')
+		raise e
 	except IndexError as ie:
-		print 'trying to access, review, author or reviewer account and fialed'
+		print 'trying to access, review, author or reviewer account and failed'
 		db_session.rollback()
-		return redirect('/dbFailure')
+		raise ie
 
 
 

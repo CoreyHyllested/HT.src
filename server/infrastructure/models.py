@@ -829,6 +829,12 @@ class Review(Base):
 		print 'we\'re the intended audience'
 
 
+	def time_until_review_disabled(self):
+		# (utcnow - updated) is a timedelta object.
+		#print 'Right now the time is\t' + str(dt.utcnow().strftime('%A, %b %d %H:%M %p'))
+		#print 'The review updated_ts\t' + str(review.rev_updated.strftime('%A, %b %d %H:%M %p'))
+		return (dt.utcnow() - self.rev_updated).days
+
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
