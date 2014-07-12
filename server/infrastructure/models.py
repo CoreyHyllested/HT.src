@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from server.infrastructure.srvc_database import Base
 from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
@@ -547,6 +561,11 @@ class Proposal(Base):
 		self.prop_updated = dt.utcnow()
 
 
+	def accepted(self): return (self.prop_state == APPT_STATE_ACCEPTED)
+	def canceled(self): return (self.prop_state == APPT_STATE_CANCELED)
+	def occurred(self): return (self.prop_state == APPT_STATE_OCCURRED)
+
+
 	def get_prop_ts(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_ts.astimezone(timezone(zone))
@@ -785,29 +804,26 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
-	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
-	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	#rev_created = Column(DateTime(), nullable = False) # needed?
+	rev_updated	= Column(DateTime(), nullable = False)
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
+
 
 	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
 		self.prof_reviewed = prof_reviewed
 		self.prof_authored = prof_author
+		self.rev_updated = dt.utcnow()
+
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
 
 		if (tmp_comments is not None):
 			tmp_comments = tmp_comments[:20]
-			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.appt_score, tmp_comments)
 
-
-	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
-		self.appt_score = appt_score
-		self.appt_value = appt_value
-		self.generalcomments = appt_comments
 
 
 	@staticmethod
@@ -822,14 +838,31 @@ class Review(Base):
 		return review
 
 
-	def validate (self, session_prof_id):
+
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
+
+
+
+	def validate_author(self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
+		print 'we\'re the intended audience'
+
 
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
+
+
+
+	def get_review_url(self):
+		return '/review/' + str(self.rev_appt) + '/' + str(self.review_id)
+
+
 
 
 class Lesson(Base):

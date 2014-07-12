@@ -80,8 +80,8 @@ def render_profile(usrmsg=None):
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
-	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, dump=False)
+	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
 
 	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
