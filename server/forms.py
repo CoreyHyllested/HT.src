@@ -156,9 +156,10 @@ class LessonForm(Form):
 	addLessonCountry	= TextField('Country', None)
 	addLessonAddressDetails = TextField('Details', None)
 	addLessonRate		= IntegerField('Lesson Rate', None, default=0)
-	#addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arrange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
 	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
 	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
+	addLessonAvail = RadioField('Availability', choices=[('addLessonAvailDefault','Same as availability set in my profile'), ('addLessonAvailSpecific','Specific times (not available yet)')])
 
 #		lesson.lesson_avail			= request.form.get('addLessonAvail')
 #		rate_lesson					= request.values.get('perHour',			None, type=int)

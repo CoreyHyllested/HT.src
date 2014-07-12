@@ -12,6 +12,7 @@ $(document).ready(function() {
 	});
 
 	if (window.location.hash) {
+		$(".addLessonNavItem").removeClass("active");
 		var hash = window.location.hash.substring(1);	
 		if (hash == "edit_photos") {
 			editPortfolioImages(lessonID);
@@ -48,7 +49,6 @@ $(document).ready(function() {
 		$('.addLessonFormPage').hide();
 		$(".addLessonNavItem").removeClass("active");
 		var target = $(this).attr("data-target-page");
-		// $('.addLessonHeaderPageName').text($("#"+target+' .formTitle').text());
 		if (target == "edit_photos") {
 			editPortfolioImages(lessonID);
 		} else if (target == "review") {
@@ -56,7 +56,7 @@ $(document).ready(function() {
 		}
 		$("#"+target).show();
 		$(this).addClass("active");
-		history.pushState({title: target}, "", '/lesson/create#'+target);
+		history.pushState({title: target}, "", '/lesson/create/'+lessonID+'#'+target);
 	});
 
 	$(document.body).on("click", ".addLessonFormButton", function(e) {
@@ -72,10 +72,9 @@ $(document).ready(function() {
 			$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 		}
 
-		// $('.addLessonHeaderPageName').text($('#'+nextPage+' .formTitle').text());
 		$('#'+nextPage).show();
 		$(".addLessonNavItem[data-target-page=" + nextPage + "]").addClass("active");
-		history.pushState({title: nextPage}, "", '/lesson/create#'+nextPage);
+		history.pushState({title: nextPage}, "", '/lesson/create/'+lessonID+'#'+nextPage);
 	});
 
 
@@ -93,19 +92,23 @@ $(document).ready(function() {
 		$('.addLessonFormPage').hide();	
 		$(".addLessonNavItem").removeClass("active");
 		var currentPage = $(this).closest(".addLessonFormPage").attr("id");
-		var prevPage = $(".addLessonNavItem[data-target-page=" + currentPage + "]").prev(".addLessonNavItem").children().attr("data-target-page");
-		// $('.ssHeaderPageName').text($('#'+prevPage+' .formTitle').text());			
+		var prevPage = $(".addLessonNavItem[data-target-page=" + currentPage + "]").prev(".addLessonNavItem").attr("data-target-page");
 		$('#'+prevPage).show();
 		$(".addLessonNavItem[data-target-page=" + prevPage + "]").addClass("active");
-		history.pushState({title: prevPage}, "", '/lesson/create#'+prevPage);
+		history.pushState({title: prevPage}, "", '/lesson/create/'+lessonID+'#'+prevPage);
 	})
 
 	// Form element Behavior
 
 	$("#addressFields").css("opacity", .4).attr("disabled", "disabled");
 
+	if ($('#addLessonPlace-2').is(":checked")) {
+		$("#addressFields").css("opacity", 1).removeAttr("disabled");
+	}
+
+
 	$('input[name="addLessonPlace"]').click(function() {
-		if ($(this).val() == 2) {
+		if ($(this).val() == "addLessonPlaceTeacher") {
 		  $("#addressFields").css("opacity", 1).removeAttr("disabled");
 		} else {
 		  $("#addressFields").css("opacity", .4).attr("disabled", "disabled");
@@ -154,44 +157,49 @@ function getLessonData(lesson_id) {
 
 	$(".addLessonReviewTitle").text($("#addLessonTitle").val());
 	$(".addLessonReviewDescription").text($("#addLessonDescription").val());
-	$(".addLessonReviewIndustry").text($("#addLessonIndustry").val());
+	$(".addLessonReviewIndustry").text($("#addLessonIndustry option:selected").text());
 	$(".addLessonReviewSchedule").text($("#addLessonAvail").val());
-	$(".addLessonReviewDuration").text($("#addLessonDuration").val());
-	$(".addLessonReviewRate").text($("#addLessonRate").val() + " " + $("#addLessonRateUnit").val());
+	$(".addLessonReviewDuration").text($("#addLessonDuration option:selected").text());
+	$(".addLessonReviewRate").text($("#addLessonRate").val());
+	if ($("#addLessonRateUnit").val() == "perHour") {
+		$(".addLessonReviewRate").append(" per hour")
+	} else {
+		$(".addLessonReviewRate").append(" per lesson")
+	}
+	
 
-	var placeOptVal = $("input[name='addLessonPlace']:checked").val();
+	var placeOptID = $("input[name='addLessonPlace']:checked").attr("id");
+	var placeOptText = $("label[for='"+placeOptID+"']").html();
 
-	console.log("getLessonData: placeOptVal: "+placeOptVal);
+	console.log("getLessonData: placeOptID: "+placeOptID);
+	console.log("getLessonData: placeOptText: "+placeOptText);
 
-	switch (placeOptVal) {
-		case "0":
-			$(".addLessonReviewLocation").text("Flexible - I will arrange with student");
-			break;		
-		case "1":
-			$(".addLessonReviewLocation").text("Student's Place");
-			break;		
-		case "2":
-			console.log("getLessonData: OK, assembling address");
-			$(".addLessonReviewLocation").text("My Place:");
-			var address1 = $("#addLessonAddress1").val();
-			var address2 = $("#addLessonAddress2").val();
-			var city = $("#addLessonCity").val();
-			var state = $("#addLessonState").val();
-			var zip = $("#addLessonZip").val();
-			var details = $("#addLessonAddressDetails").val();
+	$(".addLessonReviewPlace").text(placeOptText);
 
-			var addressString = address1+"<br>";
-			if (address2 != ""){
-				addressString += address2+"<br>";
-			}
-			addressString += city+", "+state+"  "+zip+"<br>";
-			if (details != ""){
-				addressString += details+"<br>";
-			}
+	var availOptID = $("input[name='addLessonAvail']:checked").attr("id");
+	var availOptText = $("label[for='"+availOptID+"']").html();
 
-			console.log("getLessonData: AddressString: "+addressString);
-			$(".addLessonReviewAddress").html(addressString);
-			break;
+	$(".addLessonReviewAvail").text(availOptText);
+
+	if (placeOptID == "addLessonPlace-2") {
+		console.log("getLessonData: Assembling teacher address");
+		var address1 = $("#addLessonAddress1").val();
+		var address2 = $("#addLessonAddress2").val();
+		var city = $("#addLessonCity").val();
+		var state = $("#addLessonState").val();
+		var zip = $("#addLessonZip").val();
+		var details = $("#addLessonAddressDetails").val();
+
+		var addressString = address1+"<br>";
+		if (address2 != ""){
+			addressString += address2+"<br>";
+		}
+		addressString += city+", "+state+"  "+zip+"<br>";
+		if (details != ""){
+			addressString += details+"<br>";
+		}
+		console.log("getLessonData: AddressString: "+addressString);
+		$(".addLessonReviewAddress").html(addressString);
 	}
 
 }
@@ -201,6 +209,9 @@ function getLessonImages(lesson_id) {
 	// $(".addLessonReviewPortfolio").empty();
 	var fd = {};
 	fd.lesson_id = lesson_id;
+	if (!lesson_id) {
+		console.log('getLessonImages: ERROR - lesson_id is null');
+	}
 
 	$.ajax({ url : "/get_lesson_images",
 			type : "GET",
@@ -221,25 +232,4 @@ function getLessonImages(lesson_id) {
 	});
 
 	return false;
-}
-
-// Form Validation
-
-function validateForm() {
-	// Fetch form elements
-	var name = document.forms["SignupNow"]["input_signup_name"];
-	var email_address = document.forms["SignupNow"]["input_signup_email"];
-	var password = document.forms["SignupNow"]["input_signup_password"];
-	var confirm = document.forms["SignupNow"]["input_signup_confirm"];
-
-	// Check for empty fields; if found, highlight them
-	var form_fields = [name, email_address, password, confirm];
-	for (var i = 0; i < form_fields.length; i++) {
-		var current_element = form_fields[i];
-		var current_value = form_fields[i].value;
-		if (current_value.match(/^\s*$/)) {
-			$(current_element).focus();
-			return false;
-		}
-	}
 }

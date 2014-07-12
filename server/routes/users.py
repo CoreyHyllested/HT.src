@@ -317,7 +317,6 @@ def render_edit_portfolio_page():
 
 
 
-# TODO - change name
 @ht_server.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
@@ -338,7 +337,6 @@ def render_teacher_signup_page(usrmsg = None):
 	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
 
 
-# TODO - change name
 @ht_server.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
@@ -434,7 +432,7 @@ def ht_api_lesson_create(lesson_id):
 	lesson.lesson_description	= request.values.get('addLessonDescription')
 	lesson.lesson_industry		= request.values.get('addLessonIndustry')
 	lesson.lesson_unit			= request.values.get('addLessonRateUnit')
-	lesson.lesson_loc_option	= request.values.get('addLessonPlace')
+	
 	lesson.lesson_address_1		= request.values.get('addLessonAddress1')
 	lesson.lesson_address_2		= request.values.get('addLessonAddress2')
 	lesson.lesson_city			= request.values.get('addLessonCity')
@@ -442,14 +440,28 @@ def ht_api_lesson_create(lesson_id):
 	lesson.lesson_zip			= request.values.get('addLessonZip')
 	lesson.lesson_country		= request.values.get('addLessonCountry')
 	lesson.lesson_address_details = request.values.get('addLessonAddressDetails')
-	lesson.lesson_avail			= request.values.get('addLessonAvail')
 	lesson.lesson_duration		= request.values.get('addLessonDuration', None, type=int)
+	
+	lesson_loc_option_text		= request.values.get('addLessonPlace')
+	lesson_avail_text			= request.values.get('addLessonAvail')
+
 	rate_lesson					= request.values.get('perHour',			None, type=int)
 	rate_perhour				= request.values.get('addLessonRate',	None, type=int)
+
 	bool_save_lesson			= request.values.get('addLessonSave',		None, type=bool)
 	bool_live_lesson			= request.values.get('addLessonMakeLive', None, type=bool)
 
+	if lesson_avail_text == "addLessonAvailSpecific":
+		lesson.lesson_avail = 1
+	else:
+		lesson.lesson_avail = 0
 
+	if lesson_loc_option_text == "addLessonPlaceStudent":
+		lesson.lesson_loc_option = 1
+	elif lesson_loc_option_text == "addLessonPlaceTeacher":
+		lesson.lesson_loc_option = 2
+	else:
+		lesson.lesson_loc_option = 0
 
 	form = LessonForm(request.form)
 	if form.validate_on_submit():
@@ -476,7 +488,7 @@ def ht_api_lesson_create(lesson_id):
 		print 'ht_api_lesson_create: invalid POST', form.errors
 
 	print 'ht_api_lesson_create: initialized lesson', lesson_id
-	return make_response(render_template('add_lesson.html', bp=bp, form=form))
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id))
 
 
 
