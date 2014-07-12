@@ -537,6 +537,11 @@ class Proposal(Base):
 		self.prop_updated = dt.utcnow()
 
 
+	def accepted(self): return (self.prop_state == APPT_STATE_ACCEPTED)
+	def canceled(self): return (self.prop_state == APPT_STATE_CANCELED)
+	def occurred(self): return (self.prop_state == APPT_STATE_OCCURRED)
+
+
 	def get_prop_ts(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_ts.astimezone(timezone(zone))
@@ -775,15 +780,18 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
-	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
-	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	#rev_created = Column(DateTime(), nullable = False) # needed?
+	rev_updated	= Column(DateTime(), nullable = False)
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
+
 
 	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
 		self.prof_reviewed = prof_reviewed
 		self.prof_authored = prof_author
+		self.rev_updated = dt.utcnow()
+
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
@@ -814,10 +822,11 @@ class Review(Base):
 
 
 
-	def validate (self, session_prof_id):
+	def validate_author(self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
+		print 'we\'re the intended audience'
 
 
 		
