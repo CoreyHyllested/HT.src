@@ -418,15 +418,14 @@ def ht_api_lesson_create(lesson_id):
 	if (ba.role == 0): return redirect('/dashboard')
 	print "ht_api_lesson_create: ", bp.prof_name, 'activated?', activated
 	#print "ht_api_lesson_create: profile", bp.prof_name, bp.prof_id
-	user_message = 'ht_api_lesson_create():	Initializing Lesson...'
+	user_message = 'ht_api_lesson_create:	Initializing Lesson...'
 
 	if (ba.role > 0 and lesson_id == 'new'):
-		print "ht_api_lesson_create: create_lesson"
+		print "ht_api_lesson_create: lesson_id not set - creating brand new lesson"
 		lesson = ht_create_lesson(bp)
 		if (lesson is None): return make_response(jsonify(usrmsg='Something bad'), 500)
 		return make_response(redirect('/lesson/create/'+str(lesson.lesson_id)))
 
-	user_message = 'ht_api_lesson_create():	Initializing Lesson...'
 	lesson = Lesson.get_by_lesson_id(lesson_id)
 	lesson.lesson_title			= request.values.get('addLessonTitle')
 	lesson.lesson_description	= request.values.get('addLessonDescription')
@@ -487,7 +486,7 @@ def ht_api_lesson_create(lesson_id):
 	else:
 		print 'ht_api_lesson_create: invalid POST', form.errors
 
-	print 'ht_api_lesson_create: initialized lesson', lesson_id
+	print 'ht_api_lesson_create: Lesson loaded:', lesson_id
 	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id))
 
 

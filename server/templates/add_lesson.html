@@ -190,11 +190,8 @@
 						<div class="formInstruction">How much will you charge?</div>
 						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
 
-						${{form.addLessonRate(id="addLessonRate", class='formField span3', placeholder='Amount')}}
-						<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
-							<option value="perHour">Per Hour</option> 
-							<option value="perLesson">Per Lesson</option> 
-						</select>
+						${{form.addLessonRate(id="addLessonRate", class='formField span3', placeholder='Amount')}} {{form.addLessonRateUnit(id="addLessonRateUnit", class='formField span3')}}
+
 						<span class="rateUnitCaption span3"></span>
 
 						<div class="addLessonFormButtonContainer">

@@ -138,30 +138,29 @@ class LessonForm(Form):
 #lesson.lesson_state			= request.form.get('addLessonState')
 
 #		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
-	duration = ['No Set duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
+	duration = ['No Set Duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
 	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
 	lesson_id = HiddenField('Lesson ID', None)
 	addLessonTitle			= TextField('Lesson Title', None)
 	addLessonDescription	= TextAreaField('Lesson Description', None)
-#		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
-#		lesson.lesson_loc_option	= request.form.get('addLessonPlace')
 	addLessonAddress1	= TextField('Address Line 1', None)
 	addLessonAddress2	= TextField('Address Line 1', None)
 	addLessonCity		= TextField('City',	None)
 	addLessonState		= TextField('State', None)
-	#addLessonZip		= TextField('Zip', None)
 	addLessonZip		= TextField('Zip', None)
 	addLessonCountry	= TextField('Country', None)
 	addLessonAddressDetails = TextField('Details', None)
-	addLessonRate		= IntegerField('Lesson Rate', None, default=0)
+	addLessonRate		= IntegerField('Rate Amount', None, default=0)
+	addLessonRateUnit	= SelectField('Rate Unit', coerce=str, choices=[('perHour','Per Hour'),('perLesson','Per Lesson')])
 	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arrange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
 	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
 	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
 	addLessonAvail = RadioField('Availability', choices=[('addLessonAvailDefault','Same as availability set in my profile'), ('addLessonAvailSpecific','Specific times (not available yet)')])
 
-#		lesson.lesson_avail			= request.form.get('addLessonAvail')
+#		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
+
 #		rate_lesson					= request.values.get('perHour',			None, type=int)
 #		bool_save_lesson			= request.form.get('addLessonSave',		None, type=bool)
 

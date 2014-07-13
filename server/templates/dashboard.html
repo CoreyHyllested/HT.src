@@ -28,7 +28,6 @@
 			<div class="dashboardOffers">
 				<h1>My Lessons</h1>
 				{% for lesson in lessons %}
-					{% if lesson.lesson_flags > 0 %}
 					<div class="dashboardApptLeftColumn">
 						{% if lesson.lesson_flags == 0 %}
 							Incomplete			
@@ -42,10 +41,9 @@
 						<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
 					</div>
 					<div class="dashboardApptRightColumn">
-
+						<a href="/lesson/create/{{lesson.lesson_id}}">EDIT</a>
 					</div>
 					<div class="clear"></div>	
-					{% endif %}			
 				{% endfor %}
 			</div>
 		{% endif %}
