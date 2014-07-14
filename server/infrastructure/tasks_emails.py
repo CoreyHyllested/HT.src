@@ -201,6 +201,10 @@ def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
 def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
 	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
 	proposal = Proposal.get_by_id(prop_uuid)
+	if (proposal.canceled()):
+		print 'ht_email_review_notice()  meeting was canceled.  Do not send reviews. ' + prop_uuid
+		return
+
 	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
 	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
 	partner_prof = sellr_prof

@@ -108,7 +108,7 @@
 				<div class="dashboardApptLeftColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
-					</a>					
+					</a>
 				</div>
 				<div class="dashboardApptCenterColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
@@ -117,7 +117,6 @@
 					<div class="appointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
-
 					<div class="dashboardApptRightColumnElement apptDate">
 						{{appointment.Proposal.prop_ts.strftime('%A, %b %d')}}
 					</div>
@@ -148,6 +147,40 @@
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
+		</div>
+
+		<div class="dashboardAppts">
+			<h1>Reviews ({{reviews|length}})</h1>
+			{% for review in reviews|sort(attribute='Review.review_id')|reverse  %}
+			<div class="dashboardAppt" id="review-{{review.Review.review_id}}">
+				<p><a href='{{review.Review.get_review_url()}}'>Review Appointment</a></p>
+				<div class="dashboardApptLeftColumn">
+					<a href="/profile?hero={{review.display.prof_id}}">
+						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}"></div>
+					</a>
+				</div>
+				<div class="dashboardApptCenterColumn">
+					<a href="/profile?hero={{review.display.prof_id}}">
+						<h3>{{review.display.prof_name}}</h3>
+					</a>
+					<div class="appointmentIntro italic">{{review.appt.prop_desc}}</div>
+				</div>
+				<div class="dashboardApptRightColumn">
+					<div class="dashboardApptRightColumnElement apptDate">
+						{{review.appt.prop_ts.strftime('%A, %b %d')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptTime">
+						{{review.appt.prop_ts.strftime('%H:%M %p')}} - {{review.appt.prop_tf.strftime('%H:%M %p')}}
+					</div>
+
+					<div class="dashboardApptRightColumnElement apptCost"> </div>
+				</div>
+			</div>
+			<div class="clear"></div>
+			{% endfor %}
+
+			<div class="clear"></div>
 		</div>
 
 		<div class="dashboardMessages">

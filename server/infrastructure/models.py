@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from server.infrastructure.srvc_database import Base
 from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
@@ -129,6 +143,8 @@ PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
 PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
 PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
 
+LESSON_RATE_PERHOUR = 0
+LESSON_RATE_PERLESSON = 1
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -547,6 +563,11 @@ class Proposal(Base):
 		self.prop_updated = dt.utcnow()
 
 
+	def accepted(self): return (self.prop_state == APPT_STATE_ACCEPTED)
+	def canceled(self): return (self.prop_state == APPT_STATE_CANCELED)
+	def occurred(self): return (self.prop_state == APPT_STATE_OCCURRED)
+
+
 	def get_prop_ts(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_ts.astimezone(timezone(zone))
@@ -785,29 +806,26 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
-	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
-	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	#rev_created = Column(DateTime(), nullable = False) # needed?
+	rev_updated	= Column(DateTime(), nullable = False)
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
+
 
 	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
 		self.prof_reviewed = prof_reviewed
 		self.prof_authored = prof_author
+		self.rev_updated = dt.utcnow()
+
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
 
 		if (tmp_comments is not None):
 			tmp_comments = tmp_comments[:20]
-			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.appt_score, tmp_comments)
 
-
-	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
-		self.appt_score = appt_score
-		self.appt_value = appt_value
-		self.generalcomments = appt_comments
 
 
 	@staticmethod
@@ -822,14 +840,37 @@ class Review(Base):
 		return review
 
 
-	def validate (self, session_prof_id):
+
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
+
+
+
+	def validate_author(self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
+		print 'we\'re the intended audience'
+
+
+	def time_until_review_disabled(self):
+		# (utcnow - updated) is a timedelta object.
+		#print 'Right now the time is\t' + str(dt.utcnow().strftime('%A, %b %d %H:%M %p'))
+		#print 'The review updated_ts\t' + str(review.rev_updated.strftime('%A, %b %d %H:%M %p'))
+		return (dt.utcnow() - self.rev_updated).days
 
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
+
+
+
+	def get_review_url(self):
+		return '/review/' + str(self.rev_appt) + '/' + str(self.review_id)
+
+
 
 
 class Lesson(Base):
@@ -843,14 +884,13 @@ class Lesson(Base):
 	LESSON_AVAIL_DEFAULT = 0
 	LESSON_AVAIL_SPECIFIC = 1
 
+
+
 	lesson_id	= Column(String(40), primary_key=True, index=True)
 	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	lesson_title = Column(String(128))
 	lesson_description	= Column(String(5000))
 	lesson_industry	= Column(String(64))
-
-	lesson_hourly_rate	= Column(Integer)
-	lesson_lesson_rate	= Column(Integer)
 
 	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
 	lesson_duration	= Column(Integer)
@@ -867,6 +907,9 @@ class Lesson(Base):
 	lesson_updated = Column(DateTime())
 	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
+
+	lesson_rate = Column(Integer)
+	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
 	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
 	# lesson_reviews  = Column(Integer(), nullable=False, default=0)

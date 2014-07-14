@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
@@ -5,7 +19,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, LessonForm, SettingsForm, NTSForm
+from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm
 
 # more this into controllers / tasks.
 import boto
@@ -27,12 +41,13 @@ def render_dashboard(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
-	print 'profile.account = ', uid, bp
+	print 'render_dashboard() profile.account = ', bp.prof_name, uid
 
 	unread_msgs = []
 
 	try:
-		(props, appts) = ht_get_active_meetings(bp)
+		(props, appts, rview) = ht_get_active_meetings(bp)
+		active_reviews = ht_get_active_author_reviews(bp)
 		unread_msgs = ht_get_unread_messages(bp)
 		lessons = ht_get_lessons(bp)
 	except Exception as e:
@@ -40,7 +55,7 @@ def render_dashboard(usrmsg=None):
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 
@@ -707,42 +722,34 @@ def render_schedule_page():
 
 
 
-@insprite_views.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
+@insprite_views.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
 @req_authentication
 def render_review_meeting_page(meet_id, review_id):
-	uid = session['uid']
-
-	print 'render_review()\tenter'
+	print 'render_review_meeting()\t', 'meeting =', meet_id, '\treview_id =', review_id
 	# if its been 30 days since review creation.  Return an error.
 	# if review already exists, return a kind message.
 
 	try:
-		print 'render_review()\t', 'meeting =', meet_id, '\treview_id =', review_id
 		review = Review.get_by_id(review_id)
+		review_days_left = review.time_until_review_disabled()
+		if (review_days_left < 0):
+			print 'Review timed out'
+			return
+
 		bp = Profile.get_by_uid(session['uid'])
 		ba = Account.get_by_uid(bp.account)
-		rp = Profile.get_by_prof_id(review.prof_reviewed)	# reviewed  profile
-		print 'render_review()\t, author =', bp.prof_id, bp.prof_name, ba.email
+
+		author = bp
+		review.validate_author(author.prof_id)
+
+		reviewed = Profile.get_by_prof_id(review.prof_reviewed)
+		print 'render_review()\t, author =', author.prof_id, author.prof_name, ba.email
 		print 'render_review()\t, review author =', review.prof_authored
 		print 'render_review()\t, review revied =', review.prof_reviewed
-		print review
-
-		review.validate(bp.prof_id)
-		print 'we\'re the intended audience'
-
-		print review.prof_authored
-		print uid
-		print dt.utcnow()
-
-
-		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#appt = Appointment.query.filter_by(apptid=review.appt_id).all()[0]
-		#show the -cost, -time, -description, -location
-		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
 		review_form = ReviewForm(request.form)
 		review_form.review_id.data = str(review_id)
-		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=str(days_since_created.days), form=review_form))
+		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
 	except NoReviewFound as rnf:
 		print rnf 
@@ -753,13 +760,13 @@ def render_review_meeting_page(meet_id, review_id):
 		db_session.rollback()
 		return jsonify(usrmsg=re.msg)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return redirect('/failure')
+		raise e
 	except IndexError as ie:
-		print 'trying to access, review, author or reviewer account and fialed'
+		print 'trying to access, review, author or reviewer account and failed'
 		db_session.rollback()
-		return redirect('/dbFailure')
+		raise ie
 
 
 

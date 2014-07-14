@@ -206,56 +206,57 @@ def getDBCorey(x):
 @mngr.task
 def ht_enable_reviews(prop_uuid):
 	print 'ht_enable_reviews()  enter'
-	the_proposal = Proposal.get_by_id(prop_uuid)
-	(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+	proposal = Proposal.get_by_id(prop_uuid)
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(proposal.prop_user)
 
 	# if -- canceled --- do not create reviews.
-	if (the_proposal.prop_state != APPT_STATE_ACCEPTED):
+	if (not proposal.accepted()):
 		#TODO turn this into a Proposal method!
-		print 'ht_enable_reviews(): ' +  the_proposal.prop_uuid + ' is not in ACCEPTED state =' + the_proposal.prop_state
+		print 'ht_enable_reviews(): ' +  proposal.prop_uuid + ' is not in ACCEPTED state =' + proposal.prop_state
 		print 'ht_enable_reviews(): continuing; we might want to stop... depends on if we lost a race; prop implemnt OCCURRED_event'
 		# check to see if reviews_enabled already [If it lost a race]
 		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
-	review_hp = Review(the_proposal.prop_uuid, hp.prof_id, bp.prof_id)
-	review_bp = Review(the_proposal.prop_uuid, bp.prof_id, hp.prof_id)
+		return
+
+	review_hp = Review(proposal.prop_uuid, hp.prof_id, bp.prof_id)
+	review_bp = Review(proposal.prop_uuid, bp.prof_id, hp.prof_id)
 	print 'ht_enable_reviews()  review_hp: ' + str(review_hp.review_id)
 	print 'ht_enable_reviews()  review_bp: ' + str(review_bp.review_id)
 
 	try:
-		print 'ht_enable_reviews()  add and commit reviews.'
 		db_session.add(review_hp)
 		db_session.add(review_bp)
 		db_session.commit()
-		print 'ht_enable_reviews()  successfully committed.'
 
 		print 'ht_enable_reviews()  modify Proposal. Set state to OCCURRED.'
-		the_proposal.review_user = review_bp.review_id
-		the_proposal.review_hero = review_hp.review_id
-		the_proposal.set_state(APPT_STATE_OCCURRED)
-		db_session.add(the_proposal)
+		proposal.review_user = review_bp.review_id
+		proposal.review_hero = review_hp.review_id
+		proposal.set_state(APPT_STATE_OCCURRED)
+		db_session.add(proposal)
 		db_session.commit()
-		print 'ht_enable_reviews()  successfully committed proposal.'
 
-		# TODO create two events to send in 1 hr after meeting completion to do review
-		finishTime = the_proposal.prop_tf + timedelta(days=30)
-		print 'ht_enable_reviews()  succefully created reviews, updated profile.  Disable in 30 + days.'
-		post_reviews.apply_async(args=[the_proposal.prop_uuid, review_hp.review_id, review_bp.review_id], eta=(finishTime))
+		print 'ht_enable_reviews()  successfully created reviews, updated profile.  Disable in 30 + days.'
+		review_start = proposal.prop_tf + timedelta(hours = 1)
+		review_finsh = proposal.prop_tf + timedelta(days = 30)
+
+		# Notifiy users.  Enqueue delayed review email.  TODO YET: Add an event notice on each users' dashboard.
+		ht_email_review_notice.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, review_bp.review_id], eta=review_start)
+		ht_email_review_notice.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid, review_hp.review_id], eta=review_start)
+		post_reviews.apply_async(args=[proposal.prop_uuid, review_hp.review_id, review_bp.review_id], eta=review_finsh)
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
-		print e	
-	
-	# Notifiy users.  Send email and TODO: Drop an event notice on each users' dashboard.
-	ht_email_review_notice(ha.email, hp.prof_name, the_proposal.prop_uuid, review_bp.review_id)
-	ht_email_review_notice(ba.email, bp.prof_name, the_proposal.prop_uuid, review_hp.review_id)
 	return None
+
+
 
 
 @mngr.task
 def post_reviews(prop_uuid, hp_review_id, bp_review_id):
 	#30 days after enable, shut it down!
-	the_proposal = Proposal.get_by_id(prop_uuid)
-	the_proposal.set_state(APPT_STATE_COMPLETE)
+	proposal = Proposal.get_by_id(prop_uuid)
+	proposal.set_state(APPT_STATE_COMPLETE)
 	# get reviews.
 	# mark incomplete reviews as incomplete.
 	print 'post_reviews() -enter/exit'
