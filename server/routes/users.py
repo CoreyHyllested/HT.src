@@ -490,61 +490,51 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_description = form.addLessonDescription.data
 		update = True
 
-	print 'here3 '
 	if (lesson.lesson_address_1 != form.addLessonAddress1.data):
 		print '\tUpdate lesson addr1(' + str(lesson.lesson_address_1) + ') => ' + str(form.addLessonAddress1.data)
 		lesson.lesson_address_1 = form.addLessonAddress1.data
 		update = True
 
-	print 'here4 '
 	if (lesson.lesson_address_2 != form.addLessonAddress2.data):
 		print '\tUpdate lesson addr2(' + str(lesson.lesson_address_2) + ') => ' + str(form.addLessonAddress2.data)
 		lesson.lesson_address_2 = form.addLessonAddress2.data
 		update = True
 
-	print 'here5 '
 	if (lesson.lesson_city	!= form.addLessonCity.data):
 		print '\tUpdate lesson city(' + str(lesson.lesson_city) + ') => ' + str(form.addLessonCity.data)
 		lesson.lesson_city	= form.addLessonCity.data
 		update = True
 
-	print 'here6 '
 	if (lesson.lesson_zip != form.addLessonZip.data):
 		print '\tUpdate lesson zip(' + str(lesson.lesson_zip) + ') => ' + str(form.addLessonZip.data)
 		lesson.lesson_zip = form.addLessonZip.data
 		update = True
 
-	print 'here7 '
 	if (lesson.lesson_address_details != form.addLessonAddressDetails.data):
 		print '\tUpdate lesson address details (' + str(lesson.lesson_address_details) + ') => ' + str(form.addLessonAddressDetails.data)
 		lesson.lesson_address_details = form.addLessonAddressDetails.data
 		update = True
 
-	print 'here8 '
 	if (lesson.lesson_rate != form.addLessonRate.data):
 		print '\tUpdate lesson rate(' + str(lesson.lesson_rate) + ') => ' + str(form.addLessonRate.data)
 		lesson.lesson_rate = form.addLessonRate.data
 		update = True
 
-	print 'here9 '
 	if (lesson.lesson_rate_unit != form.addLessonRateUnit.data):
 		print '\tUpdate lesson rate unit (' + str(lesson.lesson_rate_unit) + ') => ' + str(form.addLessonRateUnit.data)
 		lesson.lesson_rate_unit = form.addLessonRateUnit.data
 		update = True
 
-	print 'herea '
 	if (lesson.lesson_industry != form.addLessonIndustry.data):
 		print '\tUpdate lesson industry (' + str(lesson.lesson_industry) + ') => ' + str(form.addLessonIndustry.data)
 		lesson.lesson_industry = form.addLessonIndustry.data
 		update = True
-	print 'hereb '
 
 	if (lesson.lesson_duration != form.addLessonDuration.data):
 		print '\tUpdate lesson duration (' + str(lesson.lesson_duration) + ') => ' + str(form.addLessonDuration.data)
 		lesson.lesson_duration = form.addLessonDuration.data
 		update = True
 
-	print '\treturn should we write to DB? (' + str(update) + ')'
 	return update
 
 
