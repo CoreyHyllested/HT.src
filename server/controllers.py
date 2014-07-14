@@ -552,6 +552,9 @@ def ht_create_lesson(profile):
 
 
 def ht_get_lessons(profile):
+	print "ht_get_lessons: profile_id:", profile.prof_id
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
+	print "ht_get_lessons: lessons count:", len(lessons)
+
 	return lessons
 
