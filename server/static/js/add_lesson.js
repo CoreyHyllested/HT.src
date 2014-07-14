@@ -108,7 +108,7 @@ $(document).ready(function() {
 
 
 	$('input[name="addLessonPlace"]').click(function() {
-		if ($(this).val() == "addLessonPlaceTeacher") {
+		if ($(this).val() == "2") {
 		  $("#addressFields").css("opacity", 1).removeAttr("disabled");
 		} else {
 		  $("#addressFields").css("opacity", .4).attr("disabled", "disabled");
@@ -153,7 +153,7 @@ function getLessonData(lesson_id) {
 	console.log("---------------");
 	console.log("getLessonData: Populating lesson data - lesson id: "+lesson_id);
 
-	// $(".addLessonReviewData, .addLessonReviewDataDetails").empty();
+	$(".addLessonReviewData, .addLessonReviewDataDetails").empty();
 
 	$(".addLessonReviewTitle").text($("#addLessonTitle").val());
 	$(".addLessonReviewDescription").text($("#addLessonDescription").val());
@@ -161,7 +161,7 @@ function getLessonData(lesson_id) {
 	$(".addLessonReviewSchedule").text($("#addLessonAvail").val());
 	$(".addLessonReviewDuration").text($("#addLessonDuration option:selected").text());
 	$(".addLessonReviewRate").text($("#addLessonRate").val());
-	if ($("#addLessonRateUnit").val() == "perHour") {
+	if ($("#addLessonRateUnit").val() == 0) {
 		$(".addLessonReviewRate").append(" per hour")
 	} else {
 		$(".addLessonReviewRate").append(" per lesson")

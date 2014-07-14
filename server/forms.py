@@ -153,11 +153,11 @@ class LessonForm(Form):
 	addLessonCountry	= TextField('Country', None)
 	addLessonAddressDetails = TextField('Details', None)
 	addLessonRate		= IntegerField('Rate Amount', None, default=0)
-	addLessonRateUnit	= SelectField('Rate Unit', coerce=str, choices=[('perHour','Per Hour'),('perLesson','Per Lesson')])
-	addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arrange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+	addLessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
+	addLessonPlace		= RadioField('Lesson Location', coerce=int, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
 	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
 	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
-	addLessonAvail = RadioField('Availability', choices=[('addLessonAvailDefault','Same as availability set in my profile'), ('addLessonAvailSpecific','Specific times (not available yet)')])
+	addLessonAvail = RadioField('Availability', coerce=int, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 
 #		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
 

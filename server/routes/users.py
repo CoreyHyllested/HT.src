@@ -456,26 +456,14 @@ def ht_api_lesson_create(lesson_id):
 	lesson.lesson_address_details = request.values.get('addLessonAddressDetails')
 	lesson.lesson_duration		= request.values.get('addLessonDuration', None, type=int)
 	
-	lesson_loc_option_text		= request.values.get('addLessonPlace')
-	lesson_avail_text			= request.values.get('addLessonAvail')
+	lesson.lesson_loc_option	= request.values.get('addLessonPlace')
+	lesson.lesson_avail			= request.values.get('addLessonAvail')
 
-	rate_lesson					= request.values.get('perHour',			None, type=int)
-	rate_perhour				= request.values.get('addLessonRate',	None, type=int)
+	lesson.lesson_rate			= request.values.get('addLessonRate', None, type=int)
+	lesson.lesson_rate_unit		= request.values.get('addLessonRateUnit', None, type=int)
 
-	bool_save_lesson			= request.values.get('addLessonSave',		None, type=bool)
+	bool_save_lesson			= request.values.get('addLessonSave', None, type=bool)
 	bool_live_lesson			= request.values.get('addLessonMakeLive', None, type=bool)
-
-	if lesson_avail_text == "addLessonAvailSpecific":
-		lesson.lesson_avail = 1
-	else:
-		lesson.lesson_avail = 0
-
-	if lesson_loc_option_text == "addLessonPlaceStudent":
-		lesson.lesson_loc_option = 1
-	elif lesson_loc_option_text == "addLessonPlaceTeacher":
-		lesson.lesson_loc_option = 2
-	else:
-		lesson.lesson_loc_option = 0
 
 	form = LessonForm(request.form)
 	if form.validate_on_submit():
@@ -549,9 +537,14 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_address_details = form.addLessonAddressDetails.data
 		update = True
 
-	if (lesson.lesson_hourly_rate != form.addLessonRate.data):
-		print '\tUpdate lesson per hour(' + str(lesson.lesson_hourly_rate) + ') => ' + str(form.addLessonRate.data)
-		lesson.lesson_hourly_rate = form.addLessonRate.data
+	if (lesson.lesson_rate != form.addLessonRate.data):
+		print '\tUpdate lesson rate(' + str(lesson.lesson_rate) + ') => ' + str(form.addLessonRate.data)
+		lesson.lesson_rate = form.addLessonRate.data
+		update = True
+
+	if (lesson.lesson_rate_unit != form.addLessonRateUnit.data):
+		print '\tUpdate lesson rate unit (' + str(lesson.lesson_rate_unit) + ') => ' + str(form.addLessonRateUnit.data)
+		lesson.lesson_rate_unit = form.addLessonRateUnit.data
 		update = True
 
 	if (lesson.lesson_industry != form.addLessonIndustry.data):
