@@ -549,10 +549,10 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_address_details = form.addLessonAddressDetails.data
 		update = True
 
-	if (lesson.lesson_hourly_rate != form.addLessonRate.data):
-		print '\tUpdate lesson per hour(' + str(lesson.lesson_hourly_rate) + ') => ' + str(form.addLessonRate.data)
-		lesson.lesson_hourly_rate = form.addLessonRate.data
-		update = True
+#	if (lesson.lesson_hourly_rate != form.addLessonRate.data):
+#		print '\tUpdate lesson per hour(' + str(lesson.lesson_hourly_rate) + ') => ' + str(form.addLessonRate.data)
+#		lesson.lesson_hourly_rate = form.addLessonRate.data
+#		update = True
 
 	if (lesson.lesson_industry != form.addLessonIndustry.data):
 		print '\tUpdate lesson industry (' + str(lesson.lesson_industry) + ') => ' + str(form.addLessonIndustry.data)
@@ -722,10 +722,11 @@ def render_schedule_page():
 
 
 
-@insprite_views.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
+@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_meeting_page(meet_id, review_id):
-	print 'render_review_meeting()\t', 'meeting =', meet_id, '\treview_id =', review_id
+def render_review_meeting_page(review_id):
+	"""renders review page.  Results posted to ht_api_review"""
+	print 'render_review_meeting()\treview_id =', review_id
 	# if its been 30 days since review creation.  Return an error.
 	# if review already exists, return a kind message.
 

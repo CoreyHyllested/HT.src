@@ -868,7 +868,7 @@ class Review(Base):
 
 
 	def get_review_url(self):
-		return '/review/' + str(self.rev_appt) + '/' + str(self.review_id)
+		return '/review/new/' + str(self.review_id)
 
 
 

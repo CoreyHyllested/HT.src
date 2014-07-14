@@ -278,72 +278,86 @@ def ht_api_send_message():
 
 @insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
 @req_authentication
-def ht_api_review(review_id):
+def ht_api_review_create(review_id):
+	msg = None
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	print 'enter postreview'
 
 	review_form = ReviewForm(request.form)
-	print 'got form'
-
-	print review_form
-	print review_form.input_rating.data
-	print review_form.input_review.data
 	print review_form.review_id.data
+	print review_form.input_review.data
+	print review_form.input_rating.data  #score_meet.data
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
 	# if this has been 30 days since proposal / review creation. Return an  error.
-
 	if review_form.validate_on_submit():
-		print 'form is valid'
+		print 'ht_api_review_create() form is valid'
 		try:
 			# add review to database
-			the_review = Review.get_by_id(review_form.review_id.data)
-			the_review.appt_score = int(review_form.input_rating.data)
-			the_review.generalcomments = review_form.input_review.data
-			the_review.score_attr_comm = int(review_form.score_comm.data)
-			the_review.score_attr_time = int(review_form.score_time.data)
-			the_review.rev_status = the_review.rev_status | REV_STATE_VISIBLE
-			rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
-			print 'form is updated'
+			review = Review.get_by_id(review_form.review_id.data)
+			review.appt_score = int(review_form.input_rating.data)
+			review.generalcomments = review_form.input_review.data
+			review.score_attr_comm = int(review_form.score_comm.data)
+			review.score_attr_time = int(review_form.score_time.data)
+			review.rev_status = review.rev_status | REV_STATE_VISIBLE
+			reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+			print 'ht_api_review_create() form is updated'
 
-			db_session.add(the_review)
-			log_uevent(uid, "posting " + str(the_review))
-
-			# update the reviewed profile's ratings, in the future, delay this
-			# kick this out to another function.  
-			reviews = Review.query.filter_by(prof_reviewed = rp.prof_id).all()
-			sum_ratings = the_review.appt_score
-			for old_review in reviews:
-				sum_ratings += old_review.appt_score
-
-			rp.updated = dt.now()
-			rp.reviews = len(reviews) + 1
-			rp.rating  = float(sum_ratings) / (len(reviews) + 1)
-			log_uevent(rp.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
-			db_session.add(rp)
+			db_session.add(review)
 			db_session.commit()
-			print 'data has been posted'
+			#log_uevent(uid, "posting " + str(review))
 
-			# GET PROPOSAL / APPOINTMENT.
-			# proposal.set_flag(
-				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-			# db_session.add(proposal)
+			print 'ht_api_review_create() data has been posted'
+			ht_posting_review_update_profile(reviewed, review)
+			ht_posting_review_update_proposal(review)
 
-			# email alt user to know review was captured
-			return make_response(redirect('/dashboard'))
+			# thank user for submitting review & making the world a better place
+			return jsonify(usrmsg='Thanks for submitting review. It will be posted shortly'), 200
 		except Exception as e:
-			print "had an exception with Review" + str(e)
+			print "ht_api_review_create().  Exception...\n", type(e), e
 			db_session.rollback()
-			log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
 			return jsonify(usrmsg='Data invalid')
 	elif request.method == 'POST':
-		print "POST New password isn't valid " + str(review_form.errors)
-		return jsonify(usrmsg=str(review_form.errors))
+		print "ht_api_review_create()  POST isn't valid " + str(review_form.errors)
+		msg = str(review_form.errors)
+		return jsonify(usrmsg=msg)
 	else:
-		print "form wasn't posted"
+		print "ht_api_review_create()  form wasn't posted"
 		
-	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
+	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form, usrmsg=msg))
+
+
+
+
+
+################################################################################
+### API HELPER FUNCTIONS. ######################################################
+################################################################################
+
+def ht_posting_review_update_profile(profile, review):
+	try:
+		reviews = Review.query.filter_by(prof_reviewed = reviewed.prof_id).all()
+		sum_ratings = review.appt_score
+		for old_review in reviews:
+			sum_ratings += old_review.appt_score
+
+		reviewed.updated = dt.now()
+		reviewed.reviews = len(reviews) + 1
+		reviewed.rating  = float(sum_ratings) / (len(reviews) + 1)
+
+		log_uevent(reviewed.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(reviewed.rating))
+		db_session.add(reviewed)
+		db_session.commit()
+	except Exception as e:
+		print 'updating profile,', profile.prof_id, '...\n', type(e), e
+		db_session.rollback()
+		raise e
+
+
+def ht_posting_review_update_proposal(review):
+	pass  # GET PROPOSAL / APPOINTMENT.
+	# proposal.set_flag(
+		#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
+		#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
 
