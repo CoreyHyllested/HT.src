@@ -143,6 +143,8 @@ PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
 PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
 PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
 
+LESSON_RATE_PERHOUR = 0
+LESSON_RATE_PERLESSON = 1
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -882,14 +884,13 @@ class Lesson(Base):
 	LESSON_AVAIL_DEFAULT = 0
 	LESSON_AVAIL_SPECIFIC = 1
 
+
+
 	lesson_id	= Column(String(40), primary_key=True, index=True)
 	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	lesson_title = Column(String(128))
 	lesson_description	= Column(String(5000))
 	lesson_industry	= Column(String(64))
-
-	lesson_hourly_rate	= Column(Integer)
-	lesson_lesson_rate	= Column(Integer)
 
 	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
 	lesson_duration	= Column(Integer)
@@ -906,6 +907,9 @@ class Lesson(Base):
 	lesson_updated = Column(DateTime())
 	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
+
+	lesson_rate = Column(Integer)
+	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
 	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
 	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
