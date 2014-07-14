@@ -82,15 +82,13 @@
 				<div id="where" class="addLessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">Where do you want to provide these lessons?</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value=0><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value=1><label for="addLessonPlaceStudent">Student's Place</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value=2><label for="addLessonPlaceTeacher">My Place:</label>
-						</div>
+
+						{% for subfield in form.addLessonPlace %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}
+					
 						<br><br>
 						<fieldset id="addressFields">
 						{{form.addLessonAddress1(id="addLessonAddress1", class='formField span9', placeholder='Address Line 1')}}
@@ -151,7 +149,7 @@
 							<option value="WY">Wyoming</option>
 						</select>
 						{{form.addLessonZip(id="addLessonZip", class='formField span3', placeholder='Zip Code')}}
-						{{form.addLessonAddressDetails(id="addLessonAddressDetails", class='formField span9', placeholder='Additional Details (e.g. Studio is in garage, not house')}}
+						{{form.addLessonAddressDetails(id="addLessonAddressDetails", class='formField span9', placeholder='Additional Details - e.g. Studio is in garage, not house')}}
 						</fieldset>
 					</div>
 					<div class="addLessonFormButtonContainer">
@@ -167,12 +165,13 @@
 				<div id="when" class="addLessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">When are you available for these lessons?</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value=0><label for="addLessonAvailDefault">Same as availability set in my profile</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">Specific times (not available yet)</label>
-						</div>
+						
+						{% for subfield in form.addLessonAvail %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}						
+
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">How long will each lesson last?</div>
@@ -189,13 +188,10 @@
 				<div id="rate" class="addLessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">How much will you charge?</div>
-						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate.</div>
+						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
 
-						{{form.addLessonRate(id="addLessonRate", class='formField span3', placeholder='Amount')}}
-						<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
-							<option value="perHour">Per Hour</option> 
-							<option value="perLesson">Per Lesson</option> 
-						</select>
+						${{form.addLessonRate(id="addLessonRate", class='formField span3', placeholder='Amount')}} {{form.addLessonRateUnit(id="addLessonRateUnit", class='formField span3')}}
+
 						<span class="rateUnitCaption span3"></span>
 
 						<div class="addLessonFormButtonContainer">
@@ -291,7 +287,7 @@
 						
 						<div class="addLessonReviewField">
 							<div class="addLessonReviewFieldName">Location</div>
-							<div class="addLessonReviewData addLessonReviewLocation">
+							<div class="addLessonReviewData addLessonReviewPlace">
 
 							</div>
 							<div class="addLessonReviewDataDetails addLessonReviewAddress">
