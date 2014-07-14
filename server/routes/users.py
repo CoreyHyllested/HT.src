@@ -408,7 +408,7 @@ def activate_seller():
 		log_uevent(uid, "activate seller profile")
 		print 'activate_seller(): SUCCESS! Seller activated.'
 		
-		return redirect(url_for('ht_api_lesson_create', activated="true"))
+		return redirect(url_for('insprite.ht_api_lesson_create', activated="true"))
 
 	except AttributeError as ae:
 		print 'activate_seller(): hrm. must have changed an object somewhere:', ae
@@ -441,30 +441,6 @@ def ht_api_lesson_create(lesson_id):
 		if (lesson is None): return make_response(jsonify(usrmsg='Something bad'), 500)
 		return make_response(redirect('/lesson/create/'+str(lesson.lesson_id)))
 
-	lesson = Lesson.get_by_lesson_id(lesson_id)
-	lesson.lesson_title			= request.values.get('addLessonTitle')
-	lesson.lesson_description	= request.values.get('addLessonDescription')
-	lesson.lesson_industry		= request.values.get('addLessonIndustry')
-	lesson.lesson_unit			= request.values.get('addLessonRateUnit')
-	
-	lesson.lesson_address_1		= request.values.get('addLessonAddress1')
-	lesson.lesson_address_2		= request.values.get('addLessonAddress2')
-	lesson.lesson_city			= request.values.get('addLessonCity')
-	lesson.lesson_state			= request.values.get('addLessonState')
-	lesson.lesson_zip			= request.values.get('addLessonZip')
-	lesson.lesson_country		= request.values.get('addLessonCountry')
-	lesson.lesson_address_details = request.values.get('addLessonAddressDetails')
-	lesson.lesson_duration		= request.values.get('addLessonDuration', None, type=int)
-	
-	lesson.lesson_loc_option	= request.values.get('addLessonPlace')
-	lesson.lesson_avail			= request.values.get('addLessonAvail')
-
-	lesson.lesson_rate			= request.values.get('addLessonRate', None, type=int)
-	lesson.lesson_rate_unit		= request.values.get('addLessonRateUnit', None, type=int)
-
-	bool_save_lesson			= request.values.get('addLessonSave', None, type=bool)
-	bool_live_lesson			= request.values.get('addLessonMakeLive', None, type=bool)
-
 	form = LessonForm(request.form)
 	if form.validate_on_submit():
 		print 'ht_api_lesson_create: valid POST'
@@ -472,6 +448,7 @@ def ht_api_lesson_create(lesson_id):
 		print 'ht_api_lesson_create: look for updates.'
 		try:
 			update_lesson = ht_update_lesson(lesson, form)
+			print 'ht_api_lesson_create: adding lesson?', update_lesson
 			if (update_lesson):
 				print 'ht_api_lesson_create: adding lesson' #lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
 				db_session.add(lesson)
@@ -484,6 +461,7 @@ def ht_api_lesson_create(lesson_id):
 		print 'ht_api_lesson_create: GET', lesson_id
 		lesson = Lesson.get_by_lesson_id(lesson_id)
 		form.lesson_id.data = lesson_id
+		form.addLessonTitle.data = lesson.lesson_title
 		form.addLessonRate.data = bp.prof_rate
 		print 'ht_api_lesson_create: fill out form data.'
 	else:
@@ -512,64 +490,62 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_description = form.addLessonDescription.data
 		update = True
 
+	print 'here3 '
 	if (lesson.lesson_address_1 != form.addLessonAddress1.data):
 		print '\tUpdate lesson addr1(' + str(lesson.lesson_address_1) + ') => ' + str(form.addLessonAddress1.data)
 		lesson.lesson_address_1 = form.addLessonAddress1.data
 		update = True
 
+	print 'here4 '
 	if (lesson.lesson_address_2 != form.addLessonAddress2.data):
 		print '\tUpdate lesson addr2(' + str(lesson.lesson_address_2) + ') => ' + str(form.addLessonAddress2.data)
 		lesson.lesson_address_2 = form.addLessonAddress2.data
 		update = True
 
+	print 'here5 '
 	if (lesson.lesson_city	!= form.addLessonCity.data):
 		print '\tUpdate lesson city(' + str(lesson.lesson_city) + ') => ' + str(form.addLessonCity.data)
 		lesson.lesson_city	= form.addLessonCity.data
 		update = True
 
+	print 'here6 '
 	if (lesson.lesson_zip != form.addLessonZip.data):
 		print '\tUpdate lesson zip(' + str(lesson.lesson_zip) + ') => ' + str(form.addLessonZip.data)
 		lesson.lesson_zip = form.addLessonZip.data
 		update = True
 
+	print 'here7 '
 	if (lesson.lesson_address_details != form.addLessonAddressDetails.data):
 		print '\tUpdate lesson address details (' + str(lesson.lesson_address_details) + ') => ' + str(form.addLessonAddressDetails.data)
 		lesson.lesson_address_details = form.addLessonAddressDetails.data
 		update = True
 
+	print 'here8 '
 	if (lesson.lesson_rate != form.addLessonRate.data):
 		print '\tUpdate lesson rate(' + str(lesson.lesson_rate) + ') => ' + str(form.addLessonRate.data)
 		lesson.lesson_rate = form.addLessonRate.data
 		update = True
 
+	print 'here9 '
 	if (lesson.lesson_rate_unit != form.addLessonRateUnit.data):
 		print '\tUpdate lesson rate unit (' + str(lesson.lesson_rate_unit) + ') => ' + str(form.addLessonRateUnit.data)
 		lesson.lesson_rate_unit = form.addLessonRateUnit.data
 		update = True
 
+	print 'herea '
 	if (lesson.lesson_industry != form.addLessonIndustry.data):
 		print '\tUpdate lesson industry (' + str(lesson.lesson_industry) + ') => ' + str(form.addLessonIndustry.data)
 		lesson.lesson_industry = form.addLessonIndustry.data
 		update = True
+	print 'hereb '
 
 	if (lesson.lesson_duration != form.addLessonDuration.data):
 		print '\tUpdate lesson duration (' + str(lesson.lesson_duration) + ') => ' + str(form.addLessonDuration.data)
 		lesson.lesson_duration = form.addLessonDuration.data
 		update = True
 
-#	if (request.values.get('addLessonSave') == "True"):
-#		lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_SAVED
-#	elif (request.values.get('addLessonMakeLive') == "True"):
-#		lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_ACTIVE
-#	else:
-#		lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_PRIVATE
-#			lesson.lesson_unit			= request.values.get('addLessonRateUnit')
-#			lesson.lesson_loc_option	= request.values.get('addLessonPlace')
-			#lesson.lesson_country		= request.values.get('addLessonCountry')
-		# lesson.lesson_updated = dt.utcnow()
-		lesson.lesson_avail			= request.values.get('addLessonAvail')
-		bool_save_lesson			= request.values.get('addLessonSave',		None, type=bool)
-		return update
+	print '\treturn should we write to DB? (' + str(update) + ')'
+	return update
 
 
 

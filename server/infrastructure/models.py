@@ -685,6 +685,7 @@ class Industry(Base):
 	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
 	enumInd.insert(0, (-1, 'All Industries'))
+	enumInd2 = [(str(k), v) for k, v in enumerate(industries)]
 
 	id   = Column(Integer, primary_key = True)
 	name = Column(String(80), nullable = False, unique=True)
@@ -868,7 +869,7 @@ class Review(Base):
 
 
 	def get_review_url(self):
-		return '/review/' + str(self.rev_appt) + '/' + str(self.review_id)
+		return '/review/new/' + str(self.review_id)
 
 
 
