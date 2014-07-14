@@ -24,30 +24,32 @@
 			<p>Aenean tincidunt augue vitae eleifend pretium. Aliquam suscipit quis ipsum quis cursus. Vivamus tempus odio ac turpis ultrices porttitor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam et malesuada libero, vel blandit mi. Duis vulputate, urna eget venenatis feugiat, massa ipsum sodales purus, vitae dictum diam odio id libero. In scelerisque iaculis tellus. Duis sed eros nec enim molestie fermentum.</p>
 		</div>
 
-		<div class="dashboardOffers">
-			<h1>My Lessons</h1>
-			{% for lesson in lessons %}
-				{% if lesson.lesson_flags > 0 %}
-				<div class="dashboardApptLeftColumn">
-					{% if lesson.lesson_flags == 0 %}
-						Incomplete			
-					{% elif lesson.lesson_flags == 1 %}
-						Inactive
-					{% else %}
-						Active
-					{% endif %}
-				</div>
-				<div class="dashboardApptCenterColumn">
-					<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
-				</div>
-				<div class="dashboardApptRightColumn">
+		{% if bp.availability > 0 %}
+			<div class="dashboardOffers">
+				<h1>My Lessons</h1>
+				{% for lesson in lessons %}
+					{% if lesson.lesson_flags > 0 %}
+					<div class="dashboardApptLeftColumn">
+						{% if lesson.lesson_flags == 0 %}
+							Incomplete			
+						{% elif lesson.lesson_flags == 1 %}
+							Inactive
+						{% else %}
+							Active
+						{% endif %}
+					</div>
+					<div class="dashboardApptCenterColumn">
+						<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+					</div>
+					<div class="dashboardApptRightColumn">
 
-				</div>
-				<div class="clear"></div>	
-				{% endif %}			
-			{% endfor %}
-
-		</div>
+					</div>
+					<div class="clear"></div>	
+					{% endif %}			
+				{% endfor %}
+			</div>
+		{% endif %}
+		
 		<div class="dashboardOffers">
 			<h1>Pending Offers ({{proposals|length}})</h1>
 

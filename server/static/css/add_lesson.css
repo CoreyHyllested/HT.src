@@ -97,6 +97,10 @@
 	font-size: 1.6em;
 	font-weight: bold;
 }
+.addLessonHeaderPageSubtitle {
+	margin-top: 8px;
+	font-size: 1em;
+}
 
 /* Main Content Areas */
 

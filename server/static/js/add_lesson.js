@@ -1,6 +1,5 @@
 
-$(document).ready(function(){
-
+$(document).ready(function() {
 	var firstPage = "overview";
 	var lastPage = "review";
 	var lessonID = $("#addLessonForm").attr("data-lesson-id");

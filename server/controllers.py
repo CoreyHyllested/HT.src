@@ -530,10 +530,9 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 
 
 
-def ht_create_lesson():
-	bp = Profile.get_by_uid(session["uid"])
+def ht_create_lesson(profile):
 	try:
-		lesson = Lesson(bp.prof_id)
+		lesson = Lesson(profile.prof_id)
 		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
 		# lesson.set_state(LESSON_STATE_STARTED)
 		db_session.add(lesson)
@@ -544,7 +543,7 @@ def ht_create_lesson():
 		db_session.rollback()
 		return None
 	except Exception as e:
-		print 'ht_create_lesson: ERROR e:', e
+		print 'ht_create_lesson: ERROR e:', type(e), e
 		db_session.rollback()
 		return None
 	return lesson

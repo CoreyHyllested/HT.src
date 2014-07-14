@@ -120,6 +120,54 @@ class LoginForm(Form):
 	input_login_password = PasswordField('Password', [validators.Required()])
 
 
+
+
+class LessonForm(Form):
+	#lesson = Lesson.get_by_lesson_id(lesson_id)
+	#lesson.lesson_title			= request.form.get('addLessonTitle')
+	#lesson.lesson_description	= request.form.get('addLessonDescription')
+
+	#lesson.lesson_industry		= request.form.get('addLessonIndustry')
+	#lesson.lesson_address_1		= request.form.get('addLessonAddress1')
+	#lesson.lesson_address_2		= request.form.get('addLessonAddress2')
+	#lesson.lesson_city			= request.form.get('addLessonCity')
+	#lesson.lesson_zip			= request.form.get('addLessonZip')
+	#lesson.lesson_country		= request.form.get('addLessonCountry')
+	#lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
+
+#lesson.lesson_state			= request.form.get('addLessonState')
+
+#		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
+	duration = ['No Set duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
+	duratime = [-1, 30, 45, 60, 90 ]
+	enumDura = zip(duratime, duration)
+
+	lesson_id = HiddenField('Lesson ID', None)
+	addLessonTitle			= TextField('Lesson Title', None)
+	addLessonDescription	= TextAreaField('Lesson Description', None)
+#		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
+#		lesson.lesson_loc_option	= request.form.get('addLessonPlace')
+	addLessonAddress1	= TextField('Address Line 1', None)
+	addLessonAddress2	= TextField('Address Line 1', None)
+	addLessonCity		= TextField('City',	None)
+	addLessonState		= TextField('State', None)
+	#addLessonZip		= TextField('Zip', None)
+	addLessonZip		= TextField('Zip', None)
+	addLessonCountry	= TextField('Country', None)
+	addLessonAddressDetails = TextField('Details', None)
+	addLessonRate		= IntegerField('Lesson Rate', None, default=0)
+	#addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
+	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
+	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
+
+#		lesson.lesson_avail			= request.form.get('addLessonAvail')
+#		rate_lesson					= request.values.get('perHour',			None, type=int)
+#		bool_save_lesson			= request.form.get('addLessonSave',		None, type=bool)
+
+
+
+
+
 class ProfileForm(Form):
 	edit_name     = TextField('Name',     [validators.Required(), validators.length(min=1, max=40)])
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
@@ -129,7 +177,6 @@ class ProfileForm(Form):
 	edit_url      = TextField('Website', [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
-
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
