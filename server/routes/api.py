@@ -275,10 +275,10 @@ def ht_api_send_message():
 
 
 
-# TODO RENAME... 
-@insprite_views.route("/postreview", methods=['GET','POST'])
+
+@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
 @req_authentication
-def ht_api_review():
+def ht_api_review(review_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	print 'enter postreview'

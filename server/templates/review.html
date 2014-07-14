@@ -16,7 +16,7 @@
 	</div>
 
 	<div class="reviewRightColumn">
-		<form name='post_review' action=/postreview method=POST>
+		<form name='post_review' action='/review/create/{{form.review_id.data}}' method=POST>
 			{{form.hidden_tag()}}
 
 			<h3>Your Impressions</h3>
