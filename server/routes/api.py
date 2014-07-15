@@ -290,18 +290,17 @@ def ht_api_review_create(review_id):
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
-	# if this has been 30 days since proposal / review creation. Return an  error.
+	# check review for validity.
 	if review_form.validate_on_submit():
 		print 'ht_api_review_create() form is valid'
 		try:
-			# add review to database
+			# get review from database, modify and update review.
 			review = Review.get_by_id(review_form.review_id.data)
 			review.appt_score = int(review_form.input_rating.data)
 			review.generalcomments = review_form.input_review.data
 			review.score_attr_comm = int(review_form.score_comm.data)
 			review.score_attr_time = int(review_form.score_time.data)
-			review.rev_status = review.rev_status | REV_STATE_VISIBLE
-			reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+			review.set_state(REV_STATE_FINSHED)
 			print 'ht_api_review_create() form is updated'
 
 			db_session.add(review)
@@ -309,7 +308,8 @@ def ht_api_review_create(review_id):
 			#log_uevent(uid, "posting " + str(review))
 
 			print 'ht_api_review_create() data has been posted'
-			ht_posting_review_update_profile(reviewed, review)
+			profile_reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+			ht_posting_review_update_profile(profile_reviewed, review)
 			ht_posting_review_update_proposal(review)
 
 			# thank user for submitting review & making the world a better place
@@ -317,15 +317,17 @@ def ht_api_review_create(review_id):
 		except Exception as e:
 			print "ht_api_review_create().  Exception...\n", type(e), e
 			db_session.rollback()
-			return jsonify(usrmsg='Data invalid')
+			raise e
 	elif request.method == 'POST':
 		print "ht_api_review_create()  POST isn't valid " + str(review_form.errors)
-		msg = str(review_form.errors)
-		return jsonify(usrmsg=msg)
+		msg = {}
+		for error in review_form.errors:
+			msg[error] = review_form.errors[error][0].decode()
+		return jsonify(usrmsg=msg), 400
 	else:
 		print "ht_api_review_create()  form wasn't posted"
 		
-	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form, usrmsg=msg))
+	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=profile_reviewed, form=review_form, usrmsg=msg))
 
 
 
@@ -337,17 +339,17 @@ def ht_api_review_create(review_id):
 
 def ht_posting_review_update_profile(profile, review):
 	try:
-		reviews = Review.query.filter_by(prof_reviewed = reviewed.prof_id).all()
+		reviews = Review.query.filter_by(prof_reviewed = profile.prof_id).all()
 		sum_ratings = review.appt_score
 		for old_review in reviews:
 			sum_ratings += old_review.appt_score
 
-		reviewed.updated = dt.now()
-		reviewed.reviews = len(reviews) + 1
-		reviewed.rating  = float(sum_ratings) / (len(reviews) + 1)
+		profile.updated = dt.now()
+		profile.reviews = len(reviews) + 1
+		profile.rating  = float(sum_ratings) / (len(reviews) + 1)
 
-		log_uevent(reviewed.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(reviewed.rating))
-		db_session.add(reviewed)
+		log_uevent(profile.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(profile.rating))
+		db_session.add(profile)
 		db_session.commit()
 	except Exception as e:
 		print 'updating profile,', profile.prof_id, '...\n', type(e), e

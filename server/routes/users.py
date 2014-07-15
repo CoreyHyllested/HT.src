@@ -15,6 +15,7 @@
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
+from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
@@ -727,15 +728,16 @@ def render_schedule_page():
 def render_review_meeting_page(review_id):
 	"""renders review page.  Results posted to ht_api_review"""
 	print 'render_review_meeting()\treview_id =', review_id
-	# if its been 30 days since review creation.  Return an error.
 	# if review already exists, return a kind message.
 
 	try:
 		review = Review.get_by_id(review_id)
 		review_days_left = review.time_until_review_disabled()
 		if (review_days_left < 0):
-			print 'Review timed out'
-			return
+			return jsonify(msg='Reviews are only available for 30 days after a meeting'), 400
+		if (review.completed()):
+			raise StateTransitionError(review.review_id, review.rev_status, review.rev_status, msg="Reviews cannot be modified once submitted")
+			#return make_response(jsonify(msg='Reviews cannot be modified once submitted'), 400
 
 		bp = Profile.get_by_uid(session['uid'])
 		ba = Account.get_by_uid(bp.account)

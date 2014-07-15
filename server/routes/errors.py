@@ -14,6 +14,7 @@
 from . import insprite_views
 from flask import render_template, session, request
 from server.infrastructure.models import Profile
+from server.infrastructure.errors import *
 
 
 
@@ -26,6 +27,17 @@ def create_error_response(resp_code, resp_text, resp_template):
 		return json_resp
 	return render_template(resp_template), resp_code
 
+
+@insprite_views.app_errorhandler(StateTransitionError)
+def error_400_bad_request_ste(e):
+	profile = None
+	if 'uid' in session:
+		profile = Profile.get_by_uid(session.get('uid'))
+	print 'Error, returning 400 response. The request was invalid, asking for an invalid state transition change.'
+	# log the resource.
+	# log the transition error.
+	# log the account / user / profile_id -- can only come from user with account.
+	return render_template('404.html', bp=profile), 400
 
 
 

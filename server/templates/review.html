@@ -3,7 +3,6 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/review.css">
-	<script src="static/js/slot_expand.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -60,5 +59,48 @@
 
 	<div class="clear"></div>
 </div>
+
+<script>
+$(document).ready(function() {
+	$('.reviewPostButton').click(function(e) {
+		// validate user input.
+		e.preventDefault();
+
+		console.log(['clicked', e]);
+
+		var fd = {};
+		fd.review_id  = $('#review_id').val();
+		fd.csrf_token = $('#csrf_token').val();
+		fd.score_comm = $('#score_comm').val();
+		fd.score_time = $('#score_time').val();
+		fd.input_rating = $('#input_rating').val();
+		fd.input_review = $('#input_review').val();
+
+		$.ajax({ url : '/review/create/{{form.review_id.data}}',
+				 type : 'POST', 	
+				 data : fd,
+				 dataType: 'json',
+				 success : function(data) { 
+					console.log(data['usrmsg']);
+					window.location.href = '/dashboard';
+					return false; 
+				 },
+				error: function(data) {
+					console.log ('fail');
+					console.log (data.responseText);
+					var resp = JSON.parse(data.responseText);
+					console.log (resp);
+					console.log (resp['usrmsg']['input_rating']);
+					var error_string = ''
+					$.each(resp['usrmsg'], function(k, v) { console.log(k+ ": " + v); error_string += (k + " " + v)});
+					openAlertWindow(error_string);
+					return false;
+				}
+		});
+		return false;
+	});
+	
+});
+</script>
 
 {% endblock %}
