@@ -153,7 +153,7 @@
 			<li id="menuUserName">{{bp.prof_name}}</li>
 
 			{% if bp.availability > 0 %}
-				<li><a href="/lesson/create">Create Lesson</a></li>
+				<li><a href="/lesson/new">Create Lesson</a></li>
 			{% else %}
 				<li><a href="/teacher/signup">Sign Up to Teach</a></li>
 			{% endif %}
@@ -207,8 +207,7 @@
 							<ul class="headerDropdownMenuActive">
 								{% if bp.availability > 0 %}
 									<a href="/teacher/signup"><li>Edit Teaching Info</li></a>
-									<a href="/lesson/create"><li>Create Lesson</li></a>
-									<a href="/lesson/create/new"><li>Create Lesson</li></a>
+									<a href="/lesson/new"><li>Create Lesson</li></a>
 								{% else %}
 									<a href="/teacher/signup"><li>Sign Up to Teach</li></a>
 								{% endif %}

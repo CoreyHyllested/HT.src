@@ -106,6 +106,18 @@ NTS_times = [ ('00:00 AM', '00:00 AM'), ('00:30 AM', '00:30 AM'),
 ('22:00 PM', '22:00 PM'), ('22:30 PM', '22:30 PM'), ('23:00 PM', '23:00 PM'),
 ('23:30 PM', '23:30 PM')]
 
+States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
+("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),
+("DC","District of Columbia"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),
+("ID","Idaho"),("IL","Illinois"),("IN","Indiana"),("IA","Iowa"),("KS","Kansas"),
+("KY","Kentucky"),("LA","Louisiana"),("ME","Maine"),("MD","Maryland"),("MA","Massachusetts"),
+("MI","Michigan"),("MN","Minnesota"),("MS","Mississippi"),("MO","Missouri"),("MT","Montana"),
+("NE","Nebraska"),("NV","Nevada"),("NH","New Hampshire"),("NJ","New Jersey"),
+("NM","New Mexico"),("NY","New York"),("NC","North Carolina"),("ND","North Dakota"),
+("OH","Ohio"),("OK","Oklahoma"),("OR","Oregon"),("PA","Pennsylvania"),
+("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),
+("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),
+("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")]
 
 class NewAccountForm(Form):
 	#names below (LHS) match what's on the HTML page.  
@@ -123,48 +135,26 @@ class LoginForm(Form):
 
 
 class LessonForm(Form):
-	#lesson = Lesson.get_by_lesson_id(lesson_id)
-	#lesson.lesson_title			= request.form.get('addLessonTitle')
-	#lesson.lesson_description	= request.form.get('addLessonDescription')
 
-	#lesson.lesson_industry		= request.form.get('addLessonIndustry')
-	#lesson.lesson_address_1		= request.form.get('addLessonAddress1')
-	#lesson.lesson_address_2		= request.form.get('addLessonAddress2')
-	#lesson.lesson_city			= request.form.get('addLessonCity')
-	#lesson.lesson_zip			= request.form.get('addLessonZip')
-	#lesson.lesson_country		= request.form.get('addLessonCountry')
-	#lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
-
-#lesson.lesson_state			= request.form.get('addLessonState')
-
-#		rate_perhour				= request.values.get('addLessonRate',	None, type=int)
-	duration = ['No Set duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
+	duration = ['No Set Duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
 	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
-	lesson_id = HiddenField('Lesson ID', None)
-	addLessonTitle			= TextField('Lesson Title', None)
-	addLessonDescription	= TextAreaField('Lesson Description', None)
-#		lesson.lesson_unit			= request.form.get('addLessonRateUnit')
-#		lesson.lesson_loc_option	= request.form.get('addLessonPlace')
-	addLessonAddress1	= TextField('Address Line 1', None)
-	addLessonAddress2	= TextField('Address Line 1', None)
-	addLessonCity		= TextField('City',	None)
-	addLessonState		= TextField('State', None)
-	#addLessonZip		= TextField('Zip', None)
-	addLessonZip		= TextField('Zip', None)
-	addLessonCountry	= TextField('Country', None)
-	addLessonAddressDetails = TextField('Details', None)
-	addLessonRate		= IntegerField('Lesson Rate', None, default=0)
-	#addLessonPlace		= RadioField('Lesson Location', choices=[('addLessonPlaceNegotiable','Flexible - I will arange with student'), ('addLessonPlaceStudent','Student\'s place'), ('addLessonPlaceTeacher', 'My Place: ')])
-	addLessonIndustry	= SelectField('Lesson Industry', coerce=str, choices=(Industry.enumInd))
-	addLessonDuration	= SelectField('Lesson Duration', coerce=int, choices=(enumDura))
-
-#		lesson.lesson_avail			= request.form.get('addLessonAvail')
-#		rate_lesson					= request.values.get('perHour',			None, type=int)
-#		bool_save_lesson			= request.form.get('addLessonSave',		None, type=bool)
-
-
+	lessonTitle			= TextField('Lesson Title', None)
+	lessonDescription	= TextAreaField('Lesson Description', None)
+	lessonAddress1	= TextField('Address Line 1', None)
+	lessonAddress2	= TextField('Address Line 1', None)
+	lessonCity		= TextField('City',	None)
+	lessonState		= SelectField('State', coerce=str, default='CA', choices=(States))
+	lessonZip		= TextField('Zip', None)
+	lessonCountry	= TextField('Country', None)
+	lessonAddressDetails = TextField('Details', None)
+	lessonRate		= IntegerField('Rate Amount', None, default=50)
+	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
+	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
+	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
+	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
+	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 
 
 

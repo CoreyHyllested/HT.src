@@ -19,7 +19,7 @@
 		</div>
 			
 		<div class="ssHeaderRight">
-			{% if (edit == "true") %}
+			{% if (edit == True) %}
 				<div class="ssHeaderPageName">Edit your profile information</div>
 			{% else %}
 				<div class="ssHeaderPageName">Sign up to teach your passions and skills</div>
@@ -82,7 +82,7 @@
 				<div id="schedule" class="ssFormPage">
 					<div class="formInstruction">Your Availability</div>
 					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
-					<input type="radio" id="ssAvailOptionFlex" name="ssAvailOption" class="ssAvailOption formField" value=1><label for="ssAvailOptionFlex">Flexible - customer should contact me.</label><br> 
+					<input type="radio" id="ssAvailOptionFlex" name="ssAvailOption" class="ssAvailOption formField" value=1 checked><label for="ssAvailOptionFlex">Flexible - customer should contact me.</label><br> 
 					<input type="radio" id="ssAvailOptionSpec" name="ssAvailOption" class="ssAvailOption formField" value=2><label for="ssAvailOptionSpec">Specific (select times below)</label><br><br> 						
 					<select name="ssAvailTimes" id="ssAvailTimes" class="formField span3">
 						<option value="now">Now
@@ -103,9 +103,7 @@
 					</div>
 					
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					<!-- <input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{ oa_stripe }}"> -->
-					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="1234567890-ABC">
-
+					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{oa_stripe}}">
 
 					<div class="ssFormButtonContainer">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">

@@ -36,7 +36,7 @@
 	width: 100%;
 }
 
-.addLessonContentWrapper {
+.lessonContentWrapper {
 	background-color: white;
 	border-radius: 6px;
 	-moz-box-sizing: border-box;
@@ -53,14 +53,14 @@
 
 /* Header and Top Navigation */
 
-.addLessonTitle {
+.lessonTitle {
 	width: 100%;
 	font-size: 2em;
 	margin: 20px 0px;
 	text-align: center;
 }
 
-.addLessonHeader {
+.lessonHeader {
 	border-bottom: 1px solid #b0b4b7;
 	padding-bottom: 15px;		
 	margin-bottom: 10px;
@@ -69,67 +69,78 @@
 	float: left;
 }
 
-.addLessonHeaderLeft {
+.lessonHeaderLeft {
     float: left;
 	width: 25%;
 }
 
-.addLessonHeaderRight {
-	float: right;
-	width: 75%;
+.lessonHeaderCenter {
+	float: left;
+	width: 60%;
 }
 
-.addLessonTopLeftNavigation {
+.lessonHeaderRight {
+	float: right;
+	width: 15%;
+	text-align: right;
+}
+
+.lessonTopLeftNavigation {
 	font-size: 1.1em;
 }
 
-.addLessonTopLeftNavigation .navItem {
+.lessonTopLeftNavigation .navItem {
 	cursor: pointer;
 	padding-right: 36px;
 
 }
 
-.addLessonTopLeftNavigation i {
+.lessonTopLeftNavigation i {
 	font-size: .9em;
 }
 
-.addLessonHeaderPageName {
+.lessonHeaderPageName {
 	font-size: 1.6em;
 	font-weight: bold;
 }
-.addLessonHeaderPageSubtitle {
+.lessonHeaderPageSubtitle {
 	margin-top: 8px;
 	font-size: 1em;
 }
 
+.lessonSave {
+	width: 80px;
+	font-size: .8em;
+}
+
 /* Main Content Areas */
 
-.addLessonContentContainer {
+.lessonContentContainer {
 
 }
 
-.addLessonLeftColumn {
+.lessonLeftColumn {
     float: left;
     text-align: right;
 	width: 25%;
 }
 
-.addLessonRightColumn {
+.lessonRightColumn {
 	float: right;
 	width: 75%;
 }
 
 /* Left Navigation */
 
-.addLessonNavContainer {
+.lessonNavContainer {
 	padding-right: 48px;
 }	
 
-.addLessonNavList {
+.lessonNavList {
 
 }
 
-.addLessonNavItem {
+.lessonNavItem {
 	height: 50px;
 	line-height: 50px;
 	font-size: 1.1em;
@@ -140,46 +151,46 @@
 	-webkit-transition: 0.2 ease;
 	transition: 0.2s ease;		
 }
-.addLessonNavItem:hover {
+.lessonNavItem:hover {
 	background-color: #fcfcfc;
 }
-.addLessonNavItem.active {
+.lessonNavItem.active {
 	background-color: #f7faff;
 }
 
-.addLessonNavLink {
+.lessonNavLink {
 	padding-right: 6px;
 	
 }
 
 /* Styles for the form container and pages */
 
-.addLessonFormPageContainer {
+.lessonFormPageContainer {
 }
 
-.addLessonFormButtonContainer {
+.lessonFormButtonContainer {
 	text-align: left;
 	float: left;
 	width: 100%;
 }
 
-.addLessonFormPreviousContainer {
+.lessonFormPreviousContainer {
 	text-align: left;
 	float: left;
 	width: 100%;	
 }
 
-.addLessonFormButton {
+.lessonFormButton {
 	width: 150px;
 	margin: 12px 0 12px 0;
 }
 
-.addLessonFormButtonSubmitContainer {
+.lessonFormButtonSubmitContainer {
 	width: 100%;
 	float: left;
 }
 
-.addLessonFormButtonSubmit {
+.lessonFormButtonSubmit {
 	float: left;
 	width: 300px;
 	margin: 12px 0 12px 0;
@@ -189,12 +200,12 @@
 	margin: 12px 0 12px 0;
 }
 
-.addLessonFormPrevious {
+.lessonFormPrevious {
 	cursor: pointer;
 	float: left;
 }
 
-.addLessonFormPage {
+.lessonFormPage {
 	padding-top: 8px;
 	display: none;
 }
@@ -283,25 +294,25 @@ textarea.formField {
 .multipleUploadButton {
 	opacity: .4;
 }
-.addLessonEditPhotosContainer {
+.lessonEditPhotosContainer {
 	max-height: 600px;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	margin-bottom: 20px;
 }
 
-.addLessonFormButtonOptions {
+.lessonFormButtonOptions {
 	float: left;
 	padding-left: 14px;
 	width: 40%;
 	margin: 12px 0;	
 }
 
-.addLessonFormButtonOptions input[type="checkbox"] {
+.lessonFormButtonOptions input[type="checkbox"] {
 	float: left;
 }
 
-.addLessonFormButtonOptions label {
+.lessonFormButtonOptions label {
 	float: left;
 	font-size: 1em;
 	padding-left: 6px;
@@ -325,12 +336,12 @@ li.editPortfolioListItem {
 	margin: 12px 0 12px 0;
 }
 
-.addLessonReviewContainer {
+.lessonReviewContainer {
 	margin-top: 12px;
 	float: left;
 }
 
-.addLessonReviewField {
+.lessonReviewField {
 	float: left;
 	width: 100%;
 	min-height: 30px;
@@ -338,32 +349,32 @@ li.editPortfolioListItem {
 	border-bottom: 1px dotted #f0f0f0;
 }
 
-.addLessonReviewFieldName {
+.lessonReviewFieldName {
 	float: left;
 	width: 20%;
 	font-weight: bold;
 }
 
-.addLessonReviewData {
+.lessonReviewData {
 	float: right;
 	width: 80%;
 	padding-bottom: 8px;
 }
 
 
-.addLessonReviewDataDetails {
+.lessonReviewDataDetails {
 	float: right;
 	width: 80%;
 	margin-top: 8px;	
 }
 
-.addLessonReviewPortfolio {
+.lessonReviewPortfolio {
 	float: left;
 	margin-top: 8px;
 	width: 100%;
 }
 
-.addLessonReviewPortfolio .portfolioImageWrapper {
+.lessonReviewPortfolio .portfolioImageWrapper {
 	float: left;
 	padding: 4px;
 	background: rgb(255, 255, 255);
@@ -375,7 +386,7 @@ li.editPortfolioListItem {
 	width: 45%;
 }
 
-.addLessonReviewPortfolio .portfolioImage {
+.lessonReviewPortfolio .portfolioImage {
 	border: 1px solid rgb(226, 228, 230);
 	border-radius: 3px;
 	-moz-box-sizing: border-box;
@@ -389,7 +400,7 @@ li.editPortfolioListItem {
 	width: 100%;
 }
 
-.addLessonReviewPortfolio .portfolioImageCaption {
+.lessonReviewPortfolio .portfolioImageCaption {
 	float: left;
 	width: 100%;
 	text-align: center;

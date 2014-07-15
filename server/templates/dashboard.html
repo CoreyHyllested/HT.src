@@ -25,11 +25,11 @@
 		</div>
 
 		{% if bp.availability > 0 %}
-			<div class="dashboardOffers">
+			<div class="dashboardLessons">
 				<h1>My Lessons</h1>
 				{% for lesson in lessons %}
-					{% if lesson.lesson_flags > 0 %}
-					<div class="dashboardApptLeftColumn">
+				<div class="dashboardLesson" id="{{lesson.lesson_id}}">
+					<div class="dashboardLessonLeftColumn">
 						{% if lesson.lesson_flags == 0 %}
 							Incomplete			
 						{% elif lesson.lesson_flags == 1 %}
@@ -38,14 +38,14 @@
 							Active
 						{% endif %}
 					</div>
-					<div class="dashboardApptCenterColumn">
-						<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+					<div class="dashboardLessonCenterColumn">
+						<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
 					</div>
-					<div class="dashboardApptRightColumn">
-
+					<div class="dashboardLessonRightColumn">
+						<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
 					</div>
 					<div class="clear"></div>	
-					{% endif %}			
+				</div>
 				{% endfor %}
 			</div>
 		{% endif %}
@@ -100,8 +100,6 @@
 			</div>
 			{% endfor %}
 		</div>
-		<br>
-
 
 		<div class="dashboardAppts">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
@@ -220,8 +218,10 @@
 			<div class="dashboardInfoBox">
 				{% if bp.reviews == 0 %}
 					No Reviews
+				{% elif bp.reviews == 1 %}
+					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Review)</a>
 				{% else %}
-					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="#">({{bp.reviews}} Reviews)</a>
+					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Reviews)</a>
 				{% endif %}
 			</div>
 		</div>
