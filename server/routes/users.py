@@ -340,7 +340,7 @@ def render_teacher_signup_page(usrmsg = None):
 	bp = Profile.get_by_uid(uid)
 	pi = Oauth.get_stripe_by_uid(uid)
 
-	stripe = 'None'
+	stripe = 'No Stripe Account Found'
 	# Stripe Connect ID, req'd to take payments
 	if (pi is not None): stripe = pi.oa_account
 
