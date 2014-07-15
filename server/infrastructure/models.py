@@ -340,8 +340,7 @@ class Oauth(Base):
 	def __repr__ (self):
 		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
-
-	@staticmethod
+@staticmethod
 	def get_stripe_by_uid(uid):
 		try:
 			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
@@ -964,8 +963,10 @@ class Lesson(Base):
 		return lessons[0]
 
 
+
+
 class Registrant(Base):
-	"""Account for interested parties signing up through the preview site."""
+	"""Account for interested parties signing up through the preview.insprite.co."""
 	__tablename__ = "registrant"
 
 	reg_userid  = Column(String(40), primary_key=True, index=True, unique=True)
@@ -980,6 +981,7 @@ class Registrant(Base):
 	reg_updated = Column(DateTime())
 	reg_comment = Column(String(1024))
 
+
 	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment):
 		self.reg_userid = str(uuid.uuid4())
 		self.reg_email  = reg_email
@@ -992,8 +994,10 @@ class Registrant(Base):
 		self.reg_created = dt.utcnow()
 		self.reg_updated = dt.utcnow()
 
+
 	def __repr___ (self):
 		return '<Registrant %r, %r, %r, %r>'% (self.reg_userid, self.reg_email, self.reg_location, self.reg_flags)
+
 
 	@staticmethod
 	def get_by_regid(regid):
