@@ -117,7 +117,7 @@ LESSON_FLAG_PRIVATE = 2 		# User completed making the lesson but left it private
 LESSON_FLAG_ACTIVE = 3 		# User completed making the lesson and made it active
 
 LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
-LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_SAVED)	#2
 LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
 LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
 
@@ -143,6 +143,8 @@ PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
 PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
 PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
 
+LESSON_RATE_PERHOUR = 0
+LESSON_RATE_PERLESSON = 1
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -853,6 +855,12 @@ class Review(Base):
 		print 'we\'re the intended audience'
 
 
+	def time_until_review_disabled(self):
+		# (utcnow - updated) is a timedelta object.
+		#print 'Right now the time is\t' + str(dt.utcnow().strftime('%A, %b %d %H:%M %p'))
+		#print 'The review updated_ts\t' + str(review.rev_updated.strftime('%A, %b %d %H:%M %p'))
+		return (dt.utcnow() - self.rev_updated).days
+
 		
 	def if_posted(self, flag):
 		return (self.rev_status & (0x1 << flag))
@@ -876,14 +884,13 @@ class Lesson(Base):
 	LESSON_AVAIL_DEFAULT = 0
 	LESSON_AVAIL_SPECIFIC = 1
 
+
+
 	lesson_id	= Column(String(40), primary_key=True, index=True)
 	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	lesson_title = Column(String(128))
 	lesson_description	= Column(String(5000))
 	lesson_industry	= Column(String(64))
-
-	lesson_hourly_rate	= Column(Integer)
-	lesson_lesson_rate	= Column(Integer)
 
 	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
 	lesson_duration	= Column(Integer)
@@ -900,6 +907,9 @@ class Lesson(Base):
 	lesson_updated = Column(DateTime())
 	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
+
+	lesson_rate = Column(Integer)
+	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
 	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
 	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
