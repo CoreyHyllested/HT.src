@@ -987,10 +987,7 @@ class Lesson(Base):
 
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> email first pass
 class Registrant(Base):
 	"""Account for interested parties signing up through the preview.insprite.co."""
 	__tablename__ = "registrant"
