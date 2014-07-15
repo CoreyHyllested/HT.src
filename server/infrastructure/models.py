@@ -656,7 +656,9 @@ class Appointment(Base):
 
 
 class Image(Base):
+	""" Table of all Images on Insprite.  Used by LessonImageMap and Profile """
 	__tablename__ = "image"
+
 	img_id = Column(String(64), primary_key=True)
 	img_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	img_comment = Column(String(256))
@@ -671,7 +673,6 @@ class Image(Base):
 		self.img_comment = comment
 		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
-
 
 	def __repr__ (self):
 		return '<image %s %s>' % (self.img_id, self.img_comment[:20])
@@ -707,6 +708,7 @@ class Image(Base):
 
 class LessonImageMap(Base):
 	__tablename__ = "image_lesson_map"
+
 	id			= Column(Integer, primary_key = True)
 	map_image	= Column(String(64),  nullable=False, index=True)
 	map_lesson	= Column(String(40),  nullable=False, index=True)
@@ -716,7 +718,6 @@ class LessonImageMap(Base):
 	#map_flags	: use flags in Lesson and Image???
 	#map_created: use timestamp in Lesson and Image???
 
-
 	def __init__(self, img, lesson, profile, comment=None):
 		self.map_image	= img
 		self.map_lesson = lesson
@@ -724,15 +725,14 @@ class LessonImageMap(Base):
 		self.map_comm	= comment
 		self.map_order	= -1
 
-
 	def __repr__(self):
 		print '<%r>' % (self.id)
 
 
 	@staticmethod
-	def get_images_by_lesson_id(lesson_id):
+	def get_images_for_lesson_id(lesson_id):
 		images = Image.query.filter_by(map_lesson=lesson_id).all()
-		print 'LessonImageMap.get_images_by_lesson_id(' + str(lesson_id) + '): ', len(images)
+		print 'LessonImageMap.get_images_for_lesson_id(' + str(lesson_id) + '): ', len(images)
 		return images
 
 
