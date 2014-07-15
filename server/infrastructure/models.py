@@ -928,7 +928,6 @@ class Review(Base):
 
 
 class Lesson(Base):
-
 	__tablename__ = "lesson"
 
 	LESSON_LOC_ANY = 0
@@ -939,34 +938,36 @@ class Lesson(Base):
 	LESSON_AVAIL_SPECIFIC = 1
 
 
-
-	lesson_id	= Column(String(40), primary_key=True, index=True)
-	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
-	lesson_title = Column(String(128))
+	# Lesson Description
+	lesson_id			= Column(String(40), primary_key=True, index=True)
+	lesson_profile		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	lesson_title		= Column(String(128))
 	lesson_description	= Column(String(5000))
-	lesson_industry	= Column(String(64))
+	lesson_industry		= Column(String(64))
 
-	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
-	lesson_duration	= Column(Integer)
+	# Lesson Availability
+	lesson_avail		= Column(Integer, default=LESSON_AVAIL_DEFAULT)
+	lesson_duration		= Column(Integer)
 
-	lesson_loc_option = Column(Integer, default=LESSON_LOC_ANY)
-	lesson_address_1 = Column(String(64))
-	lesson_address_2 = Column(String(64))
-	lesson_city = Column(String(64))
-	lesson_state = Column(String(10))
-	lesson_zip = Column(String(10))
-	lesson_country = Column(String(64))
+	# Lesson Location
+	lesson_loc_option	= Column(Integer, default=LESSON_LOC_ANY)
+	lesson_address_1	= Column(String(64))
+	lesson_address_2	= Column(String(64))
+	lesson_city			= Column(String(64))
+	lesson_state		= Column(String(10))
+	lesson_zip			= Column(String(10))
+	lesson_country		= Column(String(64))
 	lesson_address_details = Column(String(256))
 
-	lesson_updated = Column(DateTime())
-	lesson_created = Column(DateTime(), nullable=False)
+	# Lesson Metadata
+	lesson_updated	= Column(DateTime())
+	lesson_created	= Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
 
+	# Lesson Cost
 	lesson_rate = Column(Integer)
 	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
-	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
-	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
 
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
