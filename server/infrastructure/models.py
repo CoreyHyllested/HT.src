@@ -117,7 +117,7 @@ LESSON_FLAG_PRIVATE = 2 		# User completed making the lesson but left it private
 LESSON_FLAG_ACTIVE = 3 		# User completed making the lesson and made it active
 
 LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
-LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_SAVED)	#2
 LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
 LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
 
