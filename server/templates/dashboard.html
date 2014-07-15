@@ -38,10 +38,10 @@
 						{% endif %}
 					</div>
 					<div class="dashboardApptCenterColumn">
-						<h3><a href="/lesson?lesson_id={{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+						<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
 					</div>
 					<div class="dashboardApptRightColumn">
-						<a href="/lesson/create/{{lesson.lesson_id}}">EDIT</a>
+						<a href="/lesson/new/{{lesson.lesson_id}}">EDIT</a>
 					</div>
 					<div class="clear"></div>	
 				{% endfor %}
