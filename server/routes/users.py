@@ -666,6 +666,7 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+
 	return update
 
 
