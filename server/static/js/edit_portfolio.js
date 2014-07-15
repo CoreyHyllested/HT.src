@@ -1,7 +1,7 @@
 function savePortfolio() {
 	var fd = {};
-	fd.csrf_token = $('.addLessonFormButtonContainer #csrf_token').val();
-	fd.lesson_id = $('#addLessonForm').attr("data-lesson-id");
+	fd.csrf_token = $('.lessonFormButtonContainer #csrf_token').val();
+	fd.lesson_id = $('#lessonForm').attr("data-lesson-id");
 	
 	console.log("-----------------------");
 	console.log("savePortfolio : csrf_token: "+fd.csrf_token);
@@ -32,17 +32,17 @@ function savePortfolio() {
 			dataType: 'json',
 			success : function(response) {
 				console.log("AJAX success");
-				$(".addLessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
-				// $(".addLessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton addLessonFormButton").attr("id", "").on().text("Continue");
+				$(".lessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
+				// $(".lessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton lessonFormButton").attr("id", "").on().text("Continue");
 				
 				setTimeout(function() { 
-					$('.addLessonFormPage').hide();
-					$(".addLessonNavItem").removeClass("active");
+					$('.lessonFormPage').hide();
+					$(".lessonNavItem").removeClass("active");
 					$('#review').show();
-					var lessonID = $('#addLessonForm').attr("data-lesson-id");
+					var lessonID = $('#lessonForm').attr("data-lesson-id");
 					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
-					$(".addLessonEditPhotosStatus").empty();
-					$(".addLessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
+					$(".lessonEditPhotosStatus").empty();
+					$(".lessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
 					history.pushState({title: "review"}, "", '/lesson/create#review');
 				}, 2000);
 
@@ -52,8 +52,8 @@ function savePortfolio() {
 			},
 			error : function(response) {
 				console.log("AJAX error");
-				$(".addLessonEditPhotosStatus").html("<span class='error'>Whoops! Error updating images.</span>");
-				// $(".addLessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton addLessonFormButton").attr("id", "").on().text("Continue");
+				$(".lessonEditPhotosStatus").html("<span class='error'>Whoops! Error updating images.</span>");
+				// $(".lessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton lessonFormButton").attr("id", "").on().text("Continue");
 				$("#editPortfolioDoneContinueButton").show();
 				$("#editPortfolioDoneButton").hide();			
 			}
@@ -96,11 +96,11 @@ $(document).ready(function(){
 	    update: function(event, ui) {} */
 	});
 
-	$(".addLessonEditPhotosContainer .editPortfolioList").sortable({
+	$(".lessonEditPhotosContainer .editPortfolioList").sortable({
 	    items:'.editPortfolioListItem',
 	    cursor: 'move',
 	    opacity: 0.5,
-	    containment: '.addLessonEditPhotosContainer',
+	    containment: '.lessonEditPhotosContainer',
 	    tolerance: 'intersect',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
