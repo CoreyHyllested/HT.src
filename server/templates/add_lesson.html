@@ -13,214 +13,154 @@
 
 {% block content %}
 
-<div class="addLessonContentWrapper">
+
+{% if errmsg != none %}
+<script>
+	openAlertWindow('{{errmsg}}');
+</script>
+{% endif %}
+
+
+<div class="lessonContentWrapper">
 <!-- 
-	<div class="addLessonTitle">
+	<div class="lessonTitle">
 		Share Your Passion!
 	</div> -->
 
-	<div class="addLessonHeader">
-		<div class="addLessonHeaderLeft">
-			<div class="addLessonTopLeftNavigation">
+	<div class="lessonHeader">
+		<div class="lessonHeaderLeft">
+			<div class="lessonTopLeftNavigation">
 				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
 			</div>
 		</div>
-		<div class="addLessonHeaderRight">
-			<div class="addLessonHeaderPageName">
-			Create Lesson
+		<div class="lessonHeaderCenter">
+			<div class="lessonHeaderPageName">
+			{% if version == "first" %}
+				All righty! Let's create your first lesson!
+			{% elif version == "edit" %}
+				Editing Lesson: {{lesson_title}}
+			{% else %}
+				Create a Lesson				
+			{% endif %}			
 			</div>
-			<span class="debug">{{lesson_id}}</span>
-		</div>			
+<!-- 			<div class="lessonHeaderPageSubtitle">
+			<a href="/profile">No thanks, return to profile</a>
+			</div> -->
+		</div>	
+		<div class="lessonHeaderRight">
+			<span class="lessonFormStatus"></span>
+			<button class="whiteButton lessonSave" id="lessonSave">Save</button>
+		</div>					
 	</div>
   
-  	<div class="addLessonContentContainer">
-		<div class="addLessonLeftColumn">
-			<div class="addLessonNavContainer">
-				<ul class="addLessonNavList">
-					<div class="addLessonNavItem" data-target-page="overview"><a class="addLessonNavLink">Overview</a></div>
-					<div class="addLessonNavItem" data-target-page="where"><a class="addLessonNavLink">Where</a></div>
-					<div class="addLessonNavItem" data-target-page="when"><a class="addLessonNavLink">When</a></div>
-					<div class="addLessonNavItem" data-target-page="rate"><a class="addLessonNavLink">Rate</a></div>
-					<div class="addLessonNavItem" data-target-page="add_photos"><a class="addLessonNavLink">Add Photos</a></div>
-					<div class="addLessonNavItem" data-target-page="edit_photos"><a class="addLessonNavLink">Edit Photos</a></div>
-					<div class="addLessonNavItem" data-target-page="review"><a class="addLessonNavLink">Review</a></div>
+  	<div class="lessonContentContainer">
+		<div class="lessonLeftColumn">
+			<div class="lessonNavContainer">
+				<ul class="lessonNavList">
+					<div class="lessonNavItem active" data-target-page="overview"><a class="lessonNavLink">Overview</a></div>
+					<div class="lessonNavItem" data-target-page="where"><a class="lessonNavLink">Where</a></div>
+					<div class="lessonNavItem" data-target-page="when"><a class="lessonNavLink">When</a></div>
+					<div class="lessonNavItem" data-target-page="rate"><a class="lessonNavLink">Rate</a></div>
+					<div class="lessonNavItem" data-target-page="add_photos"><a class="lessonNavLink">Add Photos</a></div>
+					<div class="lessonNavItem" data-target-page="edit_photos"><a class="lessonNavLink">Edit Photos</a></div>
+					<div class="lessonNavItem" data-target-page="review"><a class="lessonNavLink">Review</a></div>
 				</ul>
 			</div>
 		</div>
 
-		<div class="addLessonRightColumn">
-			<div class="addLessonFormPageContainer">
-				<form id="addLessonForm" method="post" action="/create_lesson/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
-				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-
-				<div id="overview" class="addLessonFormPage">
+		<div class="lessonRightColumn">
+			<div class="lessonFormPageContainer">
+				<form id="lessonForm" method="post" action="/lesson/update/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
+				
+				{{form.hidden_tag()}}
+				{% if version != None %}
+					<input type="hidden" name="version" value="{{version}}">
+				{% endif %}
+				<div id="overview" class="lessonFormPage">
 					<div class="formTitle">Let's get started!</div>
 					<div class="formElement">
 						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
 
-						<input type="text" id="addLessonTitle" name="addLessonTitle" class="formField span12" placeholder="e.g. Advanced Ukulele Lessons"> 
-						<textarea id="addLessonDescription" name="addLessonDescription" class="formField span12" placeholder="Please describe what the student should expect - e.g. a general lesson plan, what you'll cover, etc."></textarea> 
+						
+						{{form.lessonTitle(id="lessonTitle", class='formField span12', placeholder='e.g. Advanced Ukulele Lessons')}}
+						{{form.lessonDescription(id="lessonDescription", class="formField span12", placeholder="Please describe what the student should expect -- e.g. general lesson plan, what you'll cover, etc.")}}
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">Which industry best describes your lesson?</div>
-
-						<!-- TODO - this needs to pull in from Industry select -->
-						<select id="addLessonIndustry" name="addLessonIndustry" class="formField span3">
-							<option value="" selected>Choose Industry</option>
-							<option value="music">Music</option>
-							<option value="finearts">Fine Arts</option>
-							<option value="other">Other</option>
-						</select>
+						{{form.lessonIndustry(class="formfield span3")}}
 					</div>
 
-					<div class="addLessonFormButtonContainer">
-						<button class="blueButton addLessonFormButton" data-current-page="overview">Continue</button>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="overview">Continue</button>
 					</div>
 				</div>
 
-				<div id="where" class="addLessonFormPage">
+				<div id="where" class="lessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">Where do you want to provide these lessons?</div>
-						
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceNegotiable" name="addLessonPlace" class="formField" value=0><label for="addLessonPlaceNegotiable">Flexible - I will arrange with student.</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceStudent" name="addLessonPlace" class="formField" value=1><label for="addLessonPlaceStudent">Student's Place</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonPlaceTeacher" name="addLessonPlace" class="formField" value=2><label for="addLessonPlaceTeacher">My Place:</label>
-						</div>
+
+						{% for subfield in form.lessonPlace %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}
+					
 						<br><br>
-						<fieldset id="addressFields">		
-						<input type="text" id="addLessonAddress1" name="addLessonAddress1" class="formField span9" placeholder="Address Line 1"> 
-						<input type="text" id="addLessonAddress2" name="addLessonAddress2" class="formField span9" placeholder="Address Line 2"> 
-						<input type="text" id="addLessonCity" name="addLessonCity" class="formField span3" placeholder="City"> 
-						<select name="addLessonState" id="addLessonState" class="formField span3">
-							<option value="">State</option>
-							<option value="AL">Alabama</option>
-							<option value="AK">Alaska</option>
-							<option value="AZ">Arizona</option>
-							<option value="AR">Arkansas</option>
-							<option value="CA">California</option>
-							<option value="CO">Colorado</option>
-							<option value="CT">Connecticut</option>
-							<option value="DE">Delaware</option>
-							<option value="DC">District of Columbia</option>
-							<option value="FL">Florida</option>
-							<option value="GA">Georgia</option>
-							<option value="HI">Hawaii</option>
-							<option value="ID">Idaho</option>
-							<option value="IL">Illinois</option>
-							<option value="IN">Indiana</option>
-							<option value="IA">Iowa</option>
-							<option value="KS">Kansas</option>
-							<option value="KY">Kentucky</option>
-							<option value="LA">Louisiana</option>
-							<option value="ME">Maine</option>
-							<option value="MD">Maryland</option>
-							<option value="MA">Massachusetts</option>
-							<option value="MI">Michigan</option>
-							<option value="MN">Minnesota</option>
-							<option value="MS">Mississippi</option>
-							<option value="MO">Missouri</option>
-							<option value="MT">Montana</option>
-							<option value="NE">Nebraska</option>
-							<option value="NV">Nevada</option>
-							<option value="NH">New Hampshire</option>
-							<option value="NJ">New Jersey</option>
-							<option value="NM">New Mexico</option>
-							<option value="NY">New York</option>
-							<option value="NC">North Carolina</option>
-							<option value="ND">North Dakota</option>
-							<option value="OH">Ohio</option>
-							<option value="OK">Oklahoma</option>
-							<option value="OR">Oregon</option>
-							<option value="PA">Pennsylvania</option>
-							<option value="RI">Rhode Island</option>
-							<option value="SC">South Carolina</option>
-							<option value="SD">South Dakota</option>
-							<option value="TN">Tennessee</option>
-							<option value="TX">Texas</option>
-							<option value="UT">Utah</option>
-							<option value="VT">Vermont</option>
-							<option value="VA">Virginia</option>
-							<option value="WA">Washington</option>
-							<option value="WV">West Virginia</option>
-							<option value="WI">Wisconsin</option>
-							<option value="WY">Wyoming</option>
-						</select>
-						<input type="text" id="addLessonZip" name="addLessonZip" class="formField span3" placeholder="Zip Code">
-						<input type="text" id="addLessonAddressDetails" name="addLessonAddressDetails" class="formField span9" placeholder="Address Details (e.g. Back Door off Patio)">
+						<fieldset id="addressFields">
+						{{form.lessonAddress1(id="lessonAddress1", class='formField span9', placeholder='Address Line 1')}}
+						{{form.lessonAddress2(id="lessonAddress2", class='formField span9', placeholder='Address Line 2')}}
+						{{form.lessonCity(id="lessonCity", class='formField span3', placeholder='City')}}
+						{{form.lessonState(id="lessonState", class='formField span3')}}
+						{{form.lessonZip(id="lessonZip", class='formField span3', placeholder='Zip Code')}}
+						{{form.lessonAddressDetails(id="lessonAddressDetails", class='formField span9', placeholder='Additional Details - e.g. Studio is in garage, not house')}}
 						</fieldset>
 					</div>
-					<div class="addLessonFormButtonContainer">
-						<button class="blueButton addLessonFormButton" data-current-page="where">Continue</button>
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="where">Continue</button>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
 						</div>
 					</div>
 				</div>
 
 
 
-				<div id="when" class="addLessonFormPage">
+				<div id="when" class="lessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">When are you available for these lessons?</div>
 						
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonAvailDefault" name="addLessonAvail" class="formField" value=0><label for="addLessonAvailDefault">Same as availability set in my profile</label>
-						</div>
-						<div class="formField formChoice span12">
-							<input type="radio" id="addLessonAvailSpecific" name="addLessonAvail" class="formField" value=1><label for="addLessonAvailSpecific">These specific times (not available yet)</label>
-						</div>
+						{% for subfield in form.lessonAvail %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}						
+
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">How long will each lesson last?</div>
-
-						<select name="addLessonDuration" id="addLessonDuration" class="formField span3">
-							<option value="">Choose duration</option>
-							<option value="none">No set duration</option>
-							<option value="30">30 minutes</option>
-							<option value="45">45 minutes</option>
-							<option value="60">1 hour</option>
-							<option value="75">1 hour 15 minutes</option>
-							<option value="90">1 hour 30 minutes</option>
-							<option value="105">1 hour 45 minutes</option>
-							<option value="120">2 hours</option>
-							<option value="135">2 hours 15 minutes</option>
-							<option value="150">2 hours 30 minutes</option>
-							<option value="165">2 hours 45 minutes</option>
-							<option value="180">3 hours</option>
-							<option value="210">3 hours 30 minutes</option>						
-							<option value="240">4 hours</option>						
-						</select>  
+						{{form.lessonDuration(class="formField span3")}}
 					</div>
-					<div class="addLessonFormButtonContainer">
-						<button class="blueButton addLessonFormButton" data-current-page="when">Continue</button>
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="when">Continue</button>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
 						</div>
 					</div>					
 				</div>
 
-				<div id="rate" class="addLessonFormPage">
+				<div id="rate" class="lessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">How much will you charge?</div>
+						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
 
-						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate.</div>
+						${{form.lessonRate(id="lessonRate", class='formField span3', placeholder='Amount')}} {{form.lessonRateUnit(id="lessonRateUnit", class='formField span3')}}
 
-						<input type="text" id="addLessonRate" name="addLessonRate" class="formField span3" placeholder="Amount"> 
-						<select name="addLessonRateUnit" id="addLessonRateUnit" class="formField span3">
-							<option value="perHour">Per Hour</option> 
-							<option value="perLesson">Per Lesson</option> 
-						</select>
 						<span class="rateUnitCaption span3"></span>
 
-						<div class="addLessonFormButtonContainer">
-							<button class="blueButton addLessonFormButton" data-current-page="rate">Continue</button>
-							<div class="addLessonFormPreviousContainer">
-								<a class="addLessonFormPrevious">Previous</a>
+						<div class="lessonFormButtonContainer">
+							<button class="blueButton lessonFormButton" data-current-page="rate">Continue</button>
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
 							</div>
 						</div>
 					</div>		
@@ -229,7 +169,7 @@
 
 				</form>
 
-				<div id="add_photos" class="addLessonFormPage">
+				<div id="add_photos" class="lessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">Please upload some photos for your lesson portfolio</div>
 
@@ -238,7 +178,7 @@
 						
 						<div class="dropzone-wrapper">
 							<form action="/upload" method="post" class="dropzone dz-clickable square" id="upload-form">
-								<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
+								<input name="lessonID" type="hidden" value="{{ lesson_id }}">
 								<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 								<div class="fallback">
 							    	<input name="file" type="file" multiple />
@@ -248,105 +188,105 @@
 						</div>
 						<div class="dropzone-status italic"></div>
 
-						<div class="addLessonFormButtonContainer">
+						<div class="lessonFormButtonContainer">
 							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
 								Upload
 							</button>
-							<button type="button" id="multipleUploadContinueButton" class="blueButton addLessonFormButton" data-current-page="add_photos">Continue</button>						
-							<div class="addLessonFormPreviousContainer">
-								<a class="addLessonFormPrevious">Previous</a>
+							<button type="button" id="multipleUploadContinueButton" class="blueButton lessonFormButton" data-current-page="add_photos">Continue</button>						
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
 							</div>
 						</div>
 					</div>
 					
 				</div>
 
-				<div id="edit_photos" class="addLessonFormPage">
+				<div id="edit_photos" class="lessonFormPage">
 					<div class="formElement">
 						<div class="formInstruction">Add some descriptions, re-order, and remove photos</div>
 
 						<div class="formDescription">Give the folks an idea what's going on in your photos, or put them in the order you want (just drag and drop). You may need to scroll to see all the photos in your portfolio. Note that the photos displayed are just thumbnails - we have stored your photos at original size and dimensions.</div>
 
 						
-						<div class="addLessonEditPhotosContainer">
+						<div class="lessonEditPhotosContainer">
 						</div>
-						<div class="addLessonEditPhotosStatus italic"></div>
+						<div class="lessonEditPhotosStatus italic"></div>
 
-						<div class="addLessonFormButtonContainer">
+						<div class="lessonFormButtonContainer">
 							<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 
 							<button type="button" id="editPortfolioDoneButton" class="blueButton editPortfolioDoneButton span6" data-current-page="edit_photos">
 								Save Changes
 							</button>
-							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton addLessonFormButton" data-current-page="edit_photos">Continue</button>
-							<div class="addLessonFormPreviousContainer">
-								<a class="addLessonFormPrevious">Previous</a>
+							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton lessonFormButton" data-current-page="edit_photos">Continue</button>
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
 							</div>
 						</div>
 					</div>
 				</div>
 
-				<div id="review" class="addLessonFormPage">
+				<div id="review" class="lessonFormPage">
 					<div class="formInstruction">OK... time to double check everything!</div>
 
 					<div class="formDescription">If anything's wrong, click the links on the left to go back and make fixes.</div>
 
-					<div class="addLessonReviewContainer">
+					<div class="lessonReviewContainer">
 
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Title</div>
-							<div class="addLessonReviewData addLessonReviewTitle"></div>
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Title</div>
+							<div class="lessonReviewData lessonReviewTitle"></div>
 						</div>
 
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Description</div>
-							<div class="addLessonReviewData addLessonReviewDescription"></div>
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Description</div>
+							<div class="lessonReviewData lessonReviewDescription"></div>
 						</div>
 
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Industry</div>
-							<div class="addLessonReviewData addLessonReviewIndustry"></div>
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Industry</div>
+							<div class="lessonReviewData lessonReviewIndustry"></div>
 						</div>
 						
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Location</div>
-							<div class="addLessonReviewData addLessonReviewLocation">
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Location</div>
+							<div class="lessonReviewData lessonReviewPlace">
 
 							</div>
-							<div class="addLessonReviewDataDetails addLessonReviewAddress">
+							<div class="lessonReviewDataDetails lessonReviewAddress">
 							</div>
 						</div>						
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Schedule</div>
-							<div class="addLessonReviewData addLessonReviewAvail">
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Schedule</div>
+							<div class="lessonReviewData lessonReviewAvail">
 							</div>
 						</div>							
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Duration</div>
-							<div class="addLessonReviewData addLessonReviewDuration">
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Duration</div>
+							<div class="lessonReviewData lessonReviewDuration">
 							</div>
 						</div>					
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Rate</div>
-							<div class="addLessonReviewData addLessonReviewRate"></div>
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Rate</div>
+							<div class="lessonReviewData lessonReviewRate"></div>
 						</div>						
 
-						<div class="addLessonReviewField">
-							<div class="addLessonReviewFieldName">Portfolio Images</div>
-							<div class="addLessonReviewData addLessonReviewPortfolio">
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Portfolio Images</div>
+							<div class="lessonReviewData lessonReviewPortfolio">
 							</div>
 						</div>
 					</div>
 
-					<div class="addLessonFormButtonContainer">
-						<div class="addLessonFormButtonContainer">
-							<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-							<input name="lesson_id" type="hidden" value="{{ lesson_id }}">
-							<button class="blueButton addLessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
-							<div class="addLessonFormButtonOptions"><input type="checkbox" name="addLessonMakeLive" id="addLessonMakeLive" value="True" checked><label for="addLessonMakeLive">Make this lesson live and public!</label></div>
+					<div class="lessonFormButtonContainer">
+						<div class="lessonFormButtonContainer">
+
+
+							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
+							<div class="lessonFormButtonOptions"><input type="checkbox" name="lessonMakeLive" id="lessonMakeLive" value="True" checked><label for="lessonMakeLive">Make this lesson live and public!</label></div>
 						</div>
-						<div class="addLessonFormPreviousContainer">
-							<a class="addLessonFormPrevious">Previous</a>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
 						</div>
 					</div>
 					
@@ -361,7 +301,6 @@
 </div>
 
 <!-- Scripts -->
-
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/lightbox.min.js"></script>	
 <script type="text/javascript" src="/static/js/add_lesson.js"></script>
@@ -371,13 +310,8 @@
 
 $(document).ready(function() {
 
-
-
 });
 
 </script>
 
-<!-- Bottom bar -->
-
 {% endblock %}
-"

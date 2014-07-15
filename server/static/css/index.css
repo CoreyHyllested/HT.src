@@ -87,7 +87,7 @@ c) 1000px - ... (desktops)
 	}
 
 	.indexFeature h2 {
-		color: #29abe1;
+		color: #1488CC;
 	}
 
 /* COVER IMAGE */
@@ -456,7 +456,7 @@ c) 1000px - ... (desktops)
 	@media only screen and (min-device-width: 240px) and (max-width: 489px) {
 
 		.indexSharePassion {
-			background-color: #29abe1;
+			background-color: #1488CC;
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;	
@@ -547,7 +547,7 @@ c) 1000px - ... (desktops)
 	@media only screen and (min-width: 490px) and (max-width: 999px) {
 
 		.indexSharePassion {
-			background-color: #29abe1;
+			background-color: #1488CC;
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;	
@@ -638,7 +638,7 @@ c) 1000px - ... (desktops)
 	@media only screen and (min-width: 1000px) {
 
 		.indexSharePassion {
-			background-color: #29abe1;
+			background-color: #1488CC;
 			border-radius: 6px 6px 0 0;
 			color: white;
 			height: 35px;

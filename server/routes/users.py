@@ -1,11 +1,26 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
+from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm
+from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm
 
 # more this into controllers / tasks.
 import boto
@@ -27,12 +42,13 @@ def render_dashboard(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
-	print 'profile.account = ', uid, bp
+	print 'render_dashboard() profile.account = ', bp.prof_name, uid
 
 	unread_msgs = []
 
 	try:
-		(props, appts) = ht_get_active_meetings(bp)
+		(props, appts, rview) = ht_get_active_meetings(bp)
+		active_reviews = ht_get_active_author_reviews(bp)
 		unread_msgs = ht_get_unread_messages(bp)
 		lessons = ht_get_lessons(bp)
 	except Exception as e:
@@ -40,7 +56,7 @@ def render_dashboard(usrmsg=None):
 		db_session.rollback()
 	
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 
@@ -295,7 +311,6 @@ def render_edit():
 @req_authentication
 @insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 
@@ -305,7 +320,6 @@ def render_multiupload_page():
 @req_authentication
 @insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
 
@@ -320,7 +334,30 @@ def render_edit_portfolio_page():
 
 
 
-@ht_server.route('/activate_seller', methods=['GET', 'POST'])
+@ht_server.route('/teacher/signup', methods=['GET', 'POST'])
+@req_authentication
+def render_teacher_signup_page(usrmsg = None):
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	pi = Oauth.get_stripe_by_uid(uid)
+	title = '- Sign Up to Teach'
+	edit  = None
+
+	# StripeConnect req'd for payments
+	stripe = 'No Stripe Account Found.'
+	if (pi is not None): stripe = pi.oa_account
+	session['next_url']='/teacher/signup#payment'
+
+	if (bp.availability > 0):
+		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
+		title = '- Edit Your Info'
+		edit  = True
+	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe, edit=edit))
+
+
+
+
+@ht_server.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
 	""" A regular user is signing up to be a seller.  """
@@ -330,179 +367,325 @@ def activate_seller():
 	uid = session['uid']
 	bp = Profile.get_by_uid(session.get('uid'))
 	ba = Account.get_by_uid(session.get('uid'))
-	form = ProfileForm(request.form)
+	form = request.form
 
 	# TODO - put this back in
 	# if form.validate_on_submit():
 
 	try:
-		bp.avail = int(form.ssAvailOption.data)
-		bp.stripe_cust = form.oauth_stripe.data
-		ba.role = 1
+		bp.availability = form.get('ssAvailOption')
+		bp.stripe_cust = form.get('oauth_stripe')
+
+		print "activate_seller(): availability:", bp.availability
+		print "activate_seller(): stripe_cust:", bp.stripe_cust
+
+		# Not used yet:
+		# bp.avail_times = int(form.ssAvailTimes.data)
 
 		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
 		# bp.updated  = dt.utcnow()
 
 		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
 		# TODO: what happens if someone wants to just keep their old one?
-		image_data = request.files[form.ssProfileImage.name].read()
-		if (len(image_data) > 0):
-			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			trace (destination_filename + ", sz = " + str(len(image_data)))
+
+		this_image = request.files['ssProfileImage']
+		this_image_data = this_image.read()
+
+		print "activate_seller(): this_image:", str(this_image)
+		print "activate_seller(): this_image_data Len:", len(this_image_data)
+		
+		if (len(this_image_data) > 0):
+			destination_filename = str(hashlib.sha1(this_image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(this_image_data)))
 			print 'activate_seller(): s3'
 			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
 			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
 			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-			sml.set_contents_from_file(StringIO(image_data))
+			sml.set_contents_from_file(StringIO(this_image_data))
 			bp.prof_img = destination_filename
 
 		print 'activate_seller(): add'
 		db_session.add(bp)
-		db_session.add(ba)
 		print 'activate_seller(): commit'
 		db_session.commit()
 		log_uevent(uid, "activate seller profile")
+		print 'activate_seller(): SUCCESS! Seller activated.'
+		
+		# TODO - add something back in to tell page the status
+		# return redirect("/lesson/add")
 
-		return make_response(redirect(url_for('render_dashboard')))
+
+		return make_response(initialize_lesson("first"))
 
 	except AttributeError as ae:
-		print 'activate_seller(): hrm. must have changed an object somehwere'
-		print ae
+		print 'activate_seller(): hrm. must have changed an object somewhere:', ae
 		db_session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
 
 	except Exception as e:
-		print e
+		print 'activate_seller(): Exception:', e
 		db_session.rollback()
-		return jsonify(usrmsg=e), 500
+		return jsonify(usrmsg="Something else screwed up."), 500
 
 
-
-
-@ht_server.route('/lesson/create', methods=['GET', 'POST'])
+# This route initiates a new lesson
+@ht_server.route('/lesson/new', methods=['GET', 'POST'])
 @req_authentication
-def ht_api_lesson_create():
-	user_message = 'Initializing Lesson...'
+def initialize_lesson(version=None):
 	bp = Profile.get_by_uid(session['uid'])
+	
+	if (bp.availability == 0): return redirect('/dashboard')
 
-	print "ht_api_lesson_create: bp is",bp
-	print "ht_api_lesson_create: bp.prof_id is",bp.prof_id
+	print 'initialize_lesson: Initializing Lesson...'
+	print 'initialize_lesson: Version is ', version
+	lesson = ht_create_lesson(bp)
+	if (lesson is None): return make_response(jsonify(usrmsg='Something bad'), 500)
+	lesson_id = lesson.lesson_id
 
-	try:
-		lesson = ht_create_lesson()
-		print 'ht_api_lesson_create: lesson id is', lesson.lesson_id
-		if (lesson is not None):
-			lesson_id = lesson.lesson_id
-			print 'ht_api_lesson_create: Successfully initialized lesson'
-		else:
-			print 'ht_api_lesson_create: Error initializing lesson'
+	form = LessonForm(request.form)
 
-	except Sanitized_Exception as se:
-		user_message = se.get_sanitized_msg()
-		print 'ht_api_lesson_create: sanitized exception:', user_message, se.httpRC()
-		print
-		return make_response(jsonify(usrmsg=user_message), se.httpRC())
-
-	except Exception as e:
-		print 'ht_api_lesson_create: exception:', type(e), e
-		print
-		return make_response(jsonify(usrmsg='Something bad'), 500)
-
-	return make_response(render_template('add_lesson.html', lesson_id=lesson_id, bp=bp))
+	if (version == "first"):
+		return redirect('/lesson/new/'+lesson_id +'?version=first')
+	else:
+		return redirect('/lesson/new/'+lesson_id)
 
 
-
-
-@ht_server.route('/create_lesson/<lesson_id>', methods=['POST'])
+# The new lesson has been initialized - redirect to the form
+@ht_server.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
-def create_lesson(lesson_id):
-	""" We have initialized a lesson already in /lesson/create - we will now add the details """
+def render_new_lesson(lesson_id, form=None, errmsg=None):
+	bp = Profile.get_by_uid(session['uid'])
+	version = request.values.get("version")
+	if (bp.availability == 0): return redirect('/dashboard')
+	
+	print "render_new_lesson: lesson_id is", lesson_id
 
-	uid = session['uid']
-	bp	= Profile.get_by_uid(uid)
-	form = request.form
+	form = LessonForm(request.form)
 
-	print "-"*32
-	print "Creating Lesson...\n"
-	print "Here's the form data:", str(form)
-	print "The Lesson ID: ",lesson_id
+	# In case the user went back in their browser to this page, after submitting
+	lesson = Lesson.get_by_lesson_id(lesson_id)
+	form.lessonTitle.data = lesson.lesson_title
+	form.lessonDescription.data = lesson.lesson_description
+	form.lessonAddress1.data = lesson.lesson_address_1
+	form.lessonAddress2.data = lesson.lesson_address_2
+	form.lessonCity.data = lesson.lesson_city
+	form.lessonState.data = lesson.lesson_state
+	form.lessonZip.data = lesson.lesson_zip
+	form.lessonCountry.data = lesson.lesson_country
+	form.lessonAddressDetails.data = lesson.lesson_address_details
+	form.lessonRate.data = lesson.lesson_rate
+	form.lessonRateUnit.data = lesson.lesson_rate_unit
+	form.lessonPlace.data = lesson.lesson_loc_option
+	form.lessonIndustry.data = lesson.lesson_industry
+	form.lessonDuration.data = lesson.lesson_duration
+	form.lessonAvail.data = lesson.lesson_avail
 
-	# if form.validate_on_submit():
-	try:
+	lessonUpdated = lesson.lesson_updated
+	lessonCreated = lessonUpdated = lesson.lesson_created
+	lessonFlags = lesson.lesson_flags
+
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
+
+
+
+# User is choosing to edit a lesson they previously saved - display the form
+@ht_server.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
+@req_authentication
+def render_edit_lesson(lesson_id, form=None, errmsg=None):
+	bp = Profile.get_by_uid(session['uid'])
+	if (bp.availability == 0): return redirect('/dashboard')
+	
+	print "render_edit_lesson: lesson_id is", lesson_id
+
+	form = LessonForm(request.form)
+	lesson = Lesson.get_by_lesson_id(lesson_id)
+	form.lessonTitle.data = lesson.lesson_title
+	form.lessonDescription.data = lesson.lesson_description
+	form.lessonAddress1.data = lesson.lesson_address_1
+	form.lessonAddress2.data = lesson.lesson_address_2
+	form.lessonCity.data = lesson.lesson_city
+	form.lessonState.data = lesson.lesson_state
+	form.lessonZip.data = lesson.lesson_zip
+	form.lessonCountry.data = lesson.lesson_country
+	form.lessonAddressDetails.data = lesson.lesson_address_details
+	form.lessonRate.data = lesson.lesson_rate
+	form.lessonRateUnit.data = lesson.lesson_rate_unit
+	form.lessonPlace.data = lesson.lesson_loc_option
+	form.lessonIndustry.data = lesson.lesson_industry
+	form.lessonDuration.data = lesson.lesson_duration
+	form.lessonAvail.data = lesson.lesson_avail
+
+	lessonUpdated = lesson.lesson_updated
+	lessonCreated = lessonUpdated = lesson.lesson_created
+	lessonFlags = lesson.lesson_flags
+
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
+
+
+# Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
+@ht_server.route('/lesson/update/<lesson_id>', methods=['POST'])
+@req_authentication
+def api_update_lesson(lesson_id):
+	bp = Profile.get_by_uid(session['uid'])
+	if (bp.availability == 0): return redirect('/dashboard')
+	
+	version = request.values.get("version")
+	print "api_update_lesson: Version is", version
+	print 'api_update_lesson: Beginning lesson update ...'
+
+	form = LessonForm(request.form)
+
+	# If the form is submitted, and it validates, do the update the database entry with this lesson
+	if form.validate_on_submit():
+		print 'api_update_lesson: valid POST'
+		print 'api_update_lesson: lesson_id is ', lesson_id
 		lesson = Lesson.get_by_lesson_id(lesson_id)
-		lesson.lesson_title = request.form.get('addLessonTitle')
-		lesson.lesson_description = request.form.get('addLessonDescription')
-		lesson.lesson_industry = request.form.get('addLessonIndustry')
-		lesson.lesson_unit = request.form.get('addLessonRateUnit')
-
-		if (lesson.lesson_unit == "perHour"):
-			try:
-			   lesson.lesson_hourly_rate = int(request.form.get('addLessonRate'))
-			except ValueError:
-			   pass
-		else:
-			try:
-			   lesson.lesson_lesson_rate = int(request.form.get('addLessonRate'))
-			except ValueError:
-			   pass
-
-		lesson.lesson_avail = request.form.get('addLessonAvail')
-
+		print 'api_update_lesson: look for updates.'
 		try:
-		   lesson.lesson_duration	= int(request.form.get('addLessonDuration'))
-		except ValueError:
-		   pass
+			update_lesson = ht_update_lesson(lesson, form)
+			if (update_lesson):
+				print 'api_update_lesson: adding lesson'
+				db_session.add(lesson)
+				db_session.commit()
+				print 'api_update_lesson: committed!'
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
 
-		lesson.lesson_loc_option = request.form.get('addLessonPlace')
-		lesson.lesson_address_1 = request.form.get('addLessonAddress1')
-		lesson.lesson_address_2 = request.form.get('addLessonAddress2')
-		lesson.lesson_city = request.form.get('addLessonCity')
-		lesson.lesson_state = request.form.get('addLessonState')
-		lesson.lesson_zip = request.form.get('addLessonZip')
-		lesson.lesson_country = request.form.get('addLessonCountry')
-		lesson.lesson_address_details = request.form.get('addLessonAddressDetails')
-
-		# This maybe doesn't work? Leaving out for now
-		# lesson.lesson_updated = dt.utcnow()
-
-		if (request.form.get('addLessonSave') == "True"):
-			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_SAVED
-		elif (request.form.get('addLessonMakeLive') == "True"):
-			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_ACTIVE
+		if (version == "save"):
+			print "api_update_lesson: SAVE SUCCESS - returning success to AJAX"
+			return jsonify(valid="true")
 		else:
-			lesson.lesson_flags = lesson.lesson_flags | LESSON_FLAG_PRIVATE
+			print 'api_update_lesson: Redirecting to view lesson:', lesson_id
+			return make_response(redirect("/lesson/"+lesson_id))
 
-		print 'adding lesson: ', lesson.lesson_id, lesson.lesson_title, lesson.lesson_industry, lesson.lesson_flags
-		db_session.add(lesson)
-		print 'committing...'
-		db_session.commit()
-		log_uevent(uid, "create lesson")
-
-		return make_response(render_lesson_page(lesson_id))
-
-	except AttributeError as ae:
-		print 'Attribute Error'
-		print ae
-		db_session.rollback()
-		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg="We messed something up"))
-
-	except Exception as e:
-		print 'Exception Error'
-		print e
-		db_session.rollback()
-		return make_response(render_template('add_lesson.html', lesson_id=lesson.lesson_id, usrmsg=e))
+	else:
+		print 'api_update_lesson: invalid POST', form.errors
 
 
+	if (version != "save"):
+
+		print 'api_update_lesson: fell through - populating form data and returning.'
+
+		lesson = Lesson.get_by_lesson_id(lesson_id)
+		form.lessonTitle.data = lesson.lesson_title
+		form.lessonDescription.data = lesson.lesson_description
+		form.lessonAddress1.data = lesson.lesson_address_1
+		form.lessonAddress2.data = lesson.lesson_address_2
+		form.lessonCity.data = lesson.lesson_city
+		form.lessonState.data = lesson.lesson_state
+		form.lessonZip.data = lesson.lesson_zip
+		form.lessonCountry.data = lesson.lesson_country
+		form.lessonAddressDetails.data = lesson.lesson_address_details
+		form.lessonRate.data = lesson.lesson_rate
+		form.lessonRateUnit.data = lesson.lesson_rate_unit
+		form.lessonPlace.data = lesson.lesson_loc_option
+		form.lessonIndustry.data = lesson.lesson_industry
+		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonAvail.data = lesson.lesson_avail
+
+		lessonUpdated = lesson.lesson_updated
+		lessonCreated = lessonUpdated = lesson.lesson_created
+		lessonFlags = lesson.lesson_flags
 
 
+		if (version == "edit"):
+			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+		else:
+			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+
+
+def ht_update_lesson(lesson, form):
+	print 'ht_update_lesson:', lesson
+	update = False
+	for key in request.values:
+		print '\t', key, request.values.get(key)
+	print 'ht_update_lesson: save all updates'
+
+	if (lesson.lesson_title != form.lessonTitle.data):
+		print '\tUpdate lesson title (' + str(lesson.lesson_title) + ') => ' + str(form.lessonTitle.data)
+		lesson.lesson_title = form.lessonTitle.data
+		update = True
+
+	if (lesson.lesson_description != form.lessonDescription.data):
+		print '\tUpdate lesson desc (' + str(lesson.lesson_description) + ') => ' + str(form.lessonDescription.data)
+		lesson.lesson_description = form.lessonDescription.data
+		update = True
+
+	if (lesson.lesson_loc_option != form.lessonPlace.data):
+		print '\tUpdate lesson loc_option (' + str(lesson.lesson_loc_option) + ') => ' + str(form.lessonPlace.data)
+		lesson.lesson_loc_option = form.lessonPlace.data
+		update = True
+
+	if (lesson.lesson_address_1 != form.lessonAddress1.data):
+		print '\tUpdate lesson addr1(' + str(lesson.lesson_address_1) + ') => ' + str(form.lessonAddress1.data)
+		lesson.lesson_address_1 = form.lessonAddress1.data
+		update = True
+
+	if (lesson.lesson_address_2 != form.lessonAddress2.data):
+		print '\tUpdate lesson addr2(' + str(lesson.lesson_address_2) + ') => ' + str(form.lessonAddress2.data)
+		lesson.lesson_address_2 = form.lessonAddress2.data
+		update = True
+
+	if (lesson.lesson_city	!= form.lessonCity.data):
+		print '\tUpdate lesson city(' + str(lesson.lesson_city) + ') => ' + str(form.lessonCity.data)
+		lesson.lesson_city	= form.lessonCity.data
+		update = True
+
+	if (lesson.lesson_state	!= form.lessonState.data):
+		print '\tUpdate lesson state(' + str(lesson.lesson_state) + ') => ' + str(form.lessonState.data)
+		lesson.lesson_state	= form.lessonState.data
+		update = True
+
+	if (lesson.lesson_zip != form.lessonZip.data):
+		print '\tUpdate lesson zip(' + str(lesson.lesson_zip) + ') => ' + str(form.lessonZip.data)
+		lesson.lesson_zip = form.lessonZip.data
+		update = True
+
+	if (lesson.lesson_address_details != form.lessonAddressDetails.data):
+		print '\tUpdate lesson address details (' + str(lesson.lesson_address_details) + ') => ' + str(form.lessonAddressDetails.data)
+		lesson.lesson_address_details = form.lessonAddressDetails.data
+		update = True
+
+	if (lesson.lesson_rate != form.lessonRate.data):
+		print '\tUpdate lesson rate(' + str(lesson.lesson_rate) + ') => ' + str(form.lessonRate.data)
+		lesson.lesson_rate = form.lessonRate.data
+		update = True
+
+	if (lesson.lesson_rate_unit != form.lessonRateUnit.data):
+		print '\tUpdate lesson rate unit (' + str(lesson.lesson_rate_unit) + ') => ' + str(form.lessonRateUnit.data)
+		lesson.lesson_rate_unit = form.lessonRateUnit.data
+		update = True
+
+	if (lesson.lesson_industry != form.lessonIndustry.data):
+		print '\tUpdate lesson industry (' + str(lesson.lesson_industry) + ') => ' + str(form.lessonIndustry.data)
+		lesson.lesson_industry = form.lessonIndustry.data
+		update = True
+
+	if (lesson.lesson_duration != form.lessonDuration.data):
+		print '\tUpdate lesson duration (' + str(lesson.lesson_duration) + ') => ' + str(form.lessonDuration.data)
+		lesson.lesson_duration = form.lessonDuration.data
+		update = True
+
+	if (lesson.lesson_avail != form.lessonAvail.data):
+		print '\tUpdate lesson avail (' + str(lesson.lesson_avail) + ') => ' + str(form.lessonAvail.data)
+		lesson.lesson_avail = form.lessonAvail.data
+		update = True
+
+
+	return update
+
+
+
+# View the lesson page
 @req_authentication
-@ht_server.route("/lesson", methods=['GET', 'POST'])
-def render_lesson_page(lesson_id=None):
+@ht_server.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
+def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 
-	if (lesson_id == None):
-		lesson_id = request.values.get('lesson_id')
+	if (lesson_id is None):
+		return make_response(render_dashboard(usrmsg='Need to specify a lesson...'))
 
 	print "-"*36
 	print "render_lesson_page(): Lesson ID:", lesson_id
@@ -636,42 +819,36 @@ def render_schedule_page():
 
 
 
-@insprite_views.route("/review/<appt_id>/<review_id>", methods=['GET', 'POST'])
+@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_meeting_page(meet_id, review_id):
-	uid = session['uid']
-
-	print 'render_review()\tenter'
-	# if its been 30 days since review creation.  Return an error.
+def render_review_meeting_page(review_id):
+	"""renders review page.  Results posted to ht_api_review"""
+	print 'render_review_meeting()\treview_id =', review_id
 	# if review already exists, return a kind message.
 
 	try:
-		print 'render_review()\t', 'meeting =', meet_id, '\treview_id =', review_id
 		review = Review.get_by_id(review_id)
+		review_days_left = review.time_until_review_disabled()
+		if (review_days_left < 0):
+			return jsonify(msg='Reviews are only available for 30 days after a meeting'), 400
+		if (review.completed()):
+			raise StateTransitionError(review.review_id, review.rev_status, review.rev_status, msg="Reviews cannot be modified once submitted")
+			#return make_response(jsonify(msg='Reviews cannot be modified once submitted'), 400
+
 		bp = Profile.get_by_uid(session['uid'])
 		ba = Account.get_by_uid(bp.account)
-		rp = Profile.get_by_prof_id(review.prof_reviewed)	# reviewed  profile
-		print 'render_review()\t, author =', bp.prof_id, bp.prof_name, ba.email
+
+		author = bp
+		review.validate_author(author.prof_id)
+
+		reviewed = Profile.get_by_prof_id(review.prof_reviewed)
+		print 'render_review()\t, author =', author.prof_id, author.prof_name, ba.email
 		print 'render_review()\t, review author =', review.prof_authored
 		print 'render_review()\t, review revied =', review.prof_reviewed
-		print review
-
-		review.validate(bp.prof_id)
-		print 'we\'re the intended audience'
-
-		print review.prof_authored
-		print uid
-		print dt.utcnow()
-
-
-		days_since_created = timedelta(days=30) # + review.rev_updated - dt.utcnow()  #CAH FIXME TODO
-		#appt = Appointment.query.filter_by(apptid=review.appt_id).all()[0]
-		#show the -cost, -time, -description, -location
-		#	were you the buyer or seller.  the_appointment.hero; the_appointment.sellr_prof
 
 		review_form = ReviewForm(request.form)
 		review_form.review_id.data = str(review_id)
-		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=rp, daysleft=str(days_since_created.days), form=review_form))
+		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
 	except NoReviewFound as rnf:
 		print rnf 
@@ -682,13 +859,13 @@ def render_review_meeting_page(meet_id, review_id):
 		db_session.rollback()
 		return jsonify(usrmsg=re.msg)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return redirect('/failure')
+		raise e
 	except IndexError as ie:
-		print 'trying to access, review, author or reviewer account and fialed'
+		print 'trying to access, review, author or reviewer account and failed'
 		db_session.rollback()
-		return redirect('/dbFailure')
+		raise ie
 
 
 
@@ -808,7 +985,7 @@ def upload():
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
-	lesson_id = request.values.get('lesson_id')
+	lesson_id = request.values.get('lessonID')
 
 	print 'upload: orig', orig
 	print 'upload: prof', prof

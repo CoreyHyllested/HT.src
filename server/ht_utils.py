@@ -45,7 +45,6 @@ def req_authentication(orig_fn):
 	@functools.wraps(orig_fn)
 	def verify_authenticated_user(*args, **kwargs):
 		if 'uid' not in session:
-			#flash('Must be logged in to view this page.', 'Error')
 			trace("no uid; " + orig_fn.__name__ + ': redirect to login')
 			return make_response(redirect('/login'))
 		return orig_fn(*args, **kwargs)

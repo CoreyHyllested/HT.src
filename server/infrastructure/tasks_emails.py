@@ -201,6 +201,10 @@ def ht_email_meeting_reminder(user_email, user_name, prop_uuid):
 def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
 	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
 	proposal = Proposal.get_by_id(prop_uuid)
+	if (proposal.canceled()):
+		print 'ht_email_review_notice()  meeting was canceled.  Do not send reviews. ' + prop_uuid
+		return
+
 	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
 	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
 	partner_prof = sellr_prof
@@ -287,8 +291,8 @@ def email_body_recover_your_password(url):
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="110" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:16px;">We get it&mdash;strong passwords can be tough to remember.<br><br>'
-	msg = msg + 'No biggie, simply follow the instructions to change it at <a href="' + url  + '" style="color:#29abe1">' + url + '</a> and you\'ll be good to go.<br><br>'
-	msg = msg + '\t\t\tDidn\'t request for a password reset?  <a href="mailto@thegang@insprite.co" style="color:#29abe1">Give us a holler ASAP</a>.</font>'
+	msg = msg + 'No biggie, simply follow the instructions to change it at <a href="' + url  + '" style="color:#1488CC">' + url + '</a> and you\'ll be good to go.<br><br>'
+	msg = msg + '\t\t\tDidn\'t request for a password reset?  <a href="mailto@thegang@insprite.co" style="color:#1488CC">Give us a holler ASAP</a>.</font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -309,8 +313,8 @@ def email_body_recover_your_password(url):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-	msg = msg + '\t\t| Sent by Insprite.co, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+	msg = msg + '\t\t| Sent by Insprite.co, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -348,7 +352,7 @@ def email_body_updated_email_confirmation(url, new_email):
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
   msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">We\'re just sending you a reminder: You changed your email.<br><br>'
-  msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto@thegang@insprite.co" style="color:#29abe1">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
+  msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto@thegang@insprite.co" style="color:#1488CC">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -369,8 +373,8 @@ def email_body_updated_email_confirmation(url, new_email):
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+  msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -406,7 +410,7 @@ def email_body_updated_password_confirmation(url):
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
   msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">We\'re just sending you a reminder: You changed your password.<br><br>'
-  msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto@thegang@insprite.co" style="color:#29abe1">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
+  msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto@thegang@insprite.co" style="color:#1488CC">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -427,8 +431,8 @@ def email_body_updated_password_confirmation(url):
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+  msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -479,8 +483,8 @@ def email_body_proposal_rejected_to_buyer(url, proposal):
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+  msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -508,9 +512,9 @@ def email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name, s
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile_id + ' style="color:#29abe1">"' + sellr_name + '" accepted your proposal.</a><br><br>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile_id + ' style="color:#1488CC">"' + sellr_name + '" accepted your proposal.</a><br><br>'
   msg = msg + '\t\t\t Check out the details: {Corey insert details} <br>'
-  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#29abe1">Go for it</a>, or send <a href="'+msg_url+'" style="color:#29abe1">"' + sellr_name + '" a message.</a><br><br></font>'
+  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="'+msg_url+'" style="color:#1488CC">"' + sellr_name + '" a message.</a><br><br></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -531,8 +535,8 @@ def email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name, s
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+  msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -561,9 +565,9 @@ def email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name, 
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="https://127.0.0.1:5000/profile?' + buyer_profile + '" style="color:#29abe1">' + buyer_name + '\'s proposal.</a><br><br>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="https://127.0.0.1:5000/profile?' + buyer_profile + '" style="color:#1488CC">' + buyer_name + '\'s proposal.</a><br><br>'
   msg = msg + '\t\t\t Check out the details:<br> {Corey insert details} <br>'
-  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#29abe1">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#29abe1"> ' + buyer_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
+  msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#1488CC"> ' + buyer_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 
@@ -584,8 +588,8 @@ def email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name, 
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
   msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#29abe1">Contact Us</a>'
-  msg = msg + '\t\t| Sent by <a href="#" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+  msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
   msg = msg + '\t</td></tr>'
   msg = msg + '</table>'
 

@@ -3,7 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/seller_signup.css"><!-- contains dropzone overrides -->
+	<link type="text/css" rel="stylesheet" href="/static/css/teacher_signup.css"><!-- contains dropzone overrides -->
 
 {% endblock %}
 
@@ -19,7 +19,11 @@
 		</div>
 			
 		<div class="ssHeaderRight">
-			<div class="ssHeaderPageName">Sign up to List Your Services</div>
+			{% if (edit == True) %}
+				<div class="ssHeaderPageName">Edit your profile information</div>
+			{% else %}
+				<div class="ssHeaderPageName">Sign up to teach your passions and skills</div>
+			{% endif %}
 		</div>			
 	</div>
   
@@ -27,9 +31,10 @@
 		<div class="ssLeftColumn">
 			<div class="ssNavContainer">
 			<ul class="ssNavList">
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>			
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
-				<div class="ssNavItem"><a class="ssNavLink" data-target-page="payment">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
+				<div class="ssNavItem active" data-target-page="intro"><a class="ssNavLink">Welcome!<i class="fa fa-fw fa-beer"></i></a></div>			
+				<div class="ssNavItem" data-target-page="profile_photo"><a class="ssNavLink">Profile Photo<i class="fa fa-fw fa-picture-o"></i></a></div>			
+				<div class="ssNavItem" data-target-page="schedule"><a class="ssNavLink">Schedule<i class="fa fa-fw fa-calendar"></i></a></div>
+				<div class="ssNavItem" data-target-page="payment"><a class="ssNavLink">Payment Info<i class="fa fa-fw fa-dollar"></i></a></div>
 			</ul>
 			</div>
 		</div>
@@ -37,11 +42,28 @@
 		<div class="ssRightColumn">
 			
 			<div class="ssFormPageContainer">
-  				<form id="ssForm" method="post" action="/activate_seller" enctype="multipart/form-data">
+  				<form id="ssForm" method="post" action="/teacher/activate" enctype="multipart/form-data">
+
+				<div id="intro" class="ssFormPage">
+					<div class="formInstruction">Awesome! We are ecstatic that you want to teach.</div>
+					<div class="formDescription">Cheers. You have worked hard at your craft, skill, or hobby, and you can't wait to make the world a happier, more creative place by sharing your talent with others. You deserve to be rewarded with some cash for your efforts. You also deserve a commendation and a trophy! That said, we have a few "guidelines": 
+					<ul>
+						<li>Be cool. Don't claim you can teach something that you can't.</li>
+						<li>Maintain an attractive profile and lesson descriptions - this means keeping it filled out with complete info, and using high-quality images.</li>
+						<li>We are serious about the photo quality - so serious that we'll send a professional to take photos of you or your work if you don't think you can do it yourself.</li>
+						<li>That's all we can think of for now.</li>
+					</ul>
+					OK with all that? Great. Let's get started.
+					</div>
+					<div class="ssFormButtonContainer">
+						<button class="blueButton ssFormButton" data-current-page="intro">Continue</button>
+					</div>					
+				
+				</div>
 
 				<div id="profile_photo" class="ssFormPage">
 					<div class="formInstruction">Upload High-Resolution Photo</div>
-					<div class="formDescription">We ask that all our Sprites provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 980 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
+					<div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div>
 
 					<div class="ssUploadPreview"><img id="ssUploadPreviewImage" class="ssUploadPreviewImage"></div>
 
@@ -52,6 +74,7 @@
 
 					<div class="ssFormButtonContainer">
 						<button class="blueButton ssFormButton" data-current-page="profile_photo">Continue</button>
+						<a class="ssFormPrevious">Previous</a>
 					</div>					
 				
 				</div>
@@ -59,8 +82,8 @@
 				<div id="schedule" class="ssFormPage">
 					<div class="formInstruction">Your Availability</div>
 					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
-					<input type="radio" id="ssAvailOptionFlex" name="ssAvailOption" class="formField" value=0><label for="ssAvailOptionFlex">Flexible - customer should contact me.</label><br> 
-					<input type="radio" id="ssAvailOptionSpec" name="ssAvailOption" class="formField" value=1><label for="ssAvailOptionSpec">Specific (select times below)</label><br><br> 						
+					<input type="radio" id="ssAvailOptionFlex" name="ssAvailOption" class="ssAvailOption formField" value=1 checked><label for="ssAvailOptionFlex">Flexible - customer should contact me.</label><br> 
+					<input type="radio" id="ssAvailOptionSpec" name="ssAvailOption" class="ssAvailOption formField" value=2><label for="ssAvailOptionSpec">Specific (select times below)</label><br><br> 						
 					<select name="ssAvailTimes" id="ssAvailTimes" class="formField span3">
 						<option value="now">Now
 						<option value="never">Never
@@ -80,8 +103,7 @@
 					</div>
 					
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="">
-
+					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{oa_stripe}}">
 
 					<div class="ssFormButtonContainer">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
@@ -98,15 +120,12 @@
 
 <!-- Scripts -->
 <script src="/static/js/dropzone.js"></script>
-<script src="/static/js/seller_signup.js"></script>
+<script src="/static/js/teacher_signup.js"></script>
 <script>
 
 $(document).ready(function(){
-
-
 });
 
 </script>
-<!-- Bottom bar -->
 
 {% endblock %}

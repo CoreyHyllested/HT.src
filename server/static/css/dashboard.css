@@ -71,6 +71,68 @@ c) 1000px - ... (desktops)
 	margin-bottom: 1em;
 }
 
+/* Lessons */
+
+
+.dashboardLessons {
+	min-height: 80px;
+}
+
+.dashboardLesson {
+	border-bottom: 1px solid #cfd7db;
+	display: block;
+	margin-top: 8px;
+	padding-bottom: 8px;
+}
+
+.dashboardLesson:last-of-type {
+	border-bottom: none;
+	margin-bottom: 24px;
+}
+
+.dashboardLessonIntro {
+	color: #6e7980;
+	font-size: 0.9em;
+	line-height: 1.5em;
+	white-space: pre-wrap;
+}
+
+.dashboardLesson img {
+	border-radius: 3px;
+	width: 100%;
+}
+
+.dashboardLessonCenterColumn h3 {
+	color: #1488CC;
+	cursor: pointer;
+	display: inline-block;
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+.dashboardLessonCenterColumn h4 {
+	color: #6e7980;
+	font-size: 0.9em;
+	font-weight: bold;
+	line-height: 1.4em;
+	margin-bottom: 20px;
+}
+
+.dashboardLessonRightColumnInfo {
+	border-bottom: 1px solid #e1e8ed;
+	color: #6e7980;
+	line-height: 1.5em;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+
+.dashboardLessonRightColumnInfo:first-of-type {
+	color: black;
+	font-weight: bold;
+	padding-top: 0;
+}
+
+
 /* Offers */
 
 .dashboardOffers {
@@ -97,7 +159,7 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardOfferCenterColumn h3 {
-	color: #29abe1;
+	color: #1488CC;
 	cursor: pointer;
 	display: inline-block;
 	font-weight: bold;
@@ -146,7 +208,7 @@ input.offerCancel:hover {
 }
 
 input.offerAccept {
-	color: #29abe2;
+	color: #1488CC;
 	float: right;
 }
 
@@ -313,7 +375,7 @@ input.lessonCancel:hover {
 }
 
 .dashboardRightColumn h3 {
-	color: #29abe1;
+	color: #1488CC;
 	display: inline-block; 
 	font-weight: bold;
 	margin: 20px 0 5px;
@@ -392,6 +454,9 @@ input.dashboardActionButton {
 		padding: 10px 0;
 	}
 
+	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
+		width: 100%;
+	}
 	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
 		width: 100%;
 	}
@@ -439,6 +504,9 @@ input.dashboardActionButton {
 		padding: 10px 0;
 	}
 
+	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
+		width: 100%;
+	}
 	.dashboardOfferLeftColumn, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
 		width: 100%;
 	}
@@ -462,19 +530,19 @@ input.dashboardActionButton {
 
 @media only screen and (min-width: 1000px) {
 
-	.dashboardOfferLeftColumn, .dashboardApptLeftColumn, .dashboardMessageLeftColumn {
+	.dashboardOfferLeftColumn, .dashboardApptLeftColumn, .dashboardMessageLeftColumn, .dashboardLessonLeftColumn {
 		float: left;
 		height: 100%;
 		margin-right: 20px;
 		width: 123px;
 	}
 
-	.dashboardOfferCenterColumn, .dashboardApptCenterColumn, .dashboardMessageCenterColumn {
+	.dashboardOfferCenterColumn, .dashboardApptCenterColumn, .dashboardMessageCenterColumn, .dashboardLessonCenterColumn {
 		float: left;
 		width: 370px;
 	}
 
-	.dashboardOfferRightColumn, .dashboardApptRightColumn, .dashboardMessageRightColumn {
+	.dashboardOfferRightColumn, .dashboardApptRightColumn, .dashboardMessageRightColumn, .dashboardLessonRightColumn {
 		float: right;
 		font-size: 0.8em;
 		width: 120px;

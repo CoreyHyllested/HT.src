@@ -34,7 +34,7 @@ mydropzone.on("error", function(file, errorMessage) {
 // });
 
 mydropzone.on("successmultiple", function(file) {
-
+	
 	$(".dropzone-status").html("<span class='success'>Images successfully uploaded! Continuing ... </span>");
 	setTimeout(function(){
 	  $('form#dropzone-continue').submit();

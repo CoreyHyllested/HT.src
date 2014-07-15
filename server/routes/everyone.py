@@ -80,8 +80,8 @@ def render_profile(usrmsg=None):
 	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
 	#print 'images in portfolio:', len(portfolio)
 
-	hero_reviews = ht_filter_displayable_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
-	show_reviews = ht_filter_displayable_reviews(hero_reviews, 'VISIBLE', None, dump=False)
+	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
 
 	# TODO: rename NTS => proposal form; hardly used form this.
 	nts = NTSForm(request.form)
@@ -277,14 +277,6 @@ def ht_email_operations(operation, data):
 		ht_send_verification_to_list(ba, bp, email_set)
 		return jsonify(rc=200), 200
 	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
-
-
-
-
-@ht_server.route('/seller_signup', methods=['GET', 'POST'])
-def render_seller_signup_page(usrmsg = None):
-	bp = Profile.get_by_uid(session.get('uid'))
-	return make_response(render_template('seller_signup.html', title='- Sign Up to Teach', bp=bp))
 
 
 

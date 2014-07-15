@@ -13,7 +13,9 @@
 
 
 import logging
+import os
 from logging.handlers import RotatingFileHandler
+from logging import StreamHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
@@ -21,32 +23,46 @@ from flask.ext.assets	import Environment, Bundle
 from flask.ext.mail		import Mail
 from flask_wtf.csrf		import CsrfProtect
 from flask_redis		import Redis
-from server.infrastructure.initialize_ht	import *
 from server.infrastructure.srvc_sessions	import RedisSessionInterface
 from config import server_configuration
 
 
 
 log_frmtr = logging.Formatter('%(asctime)s %(levelname)s %(message)s')	#[in %(pathname)s:%(lineno)d]'))
-log_hndlr = RotatingFileHandler('/tmp/ht.log', 'a', 1024*1024, 10) 
+log_hndlr = StreamHandler() #logs to stderr? #RotatingFileHandler('/tmp/ht.log', 'a', 1024*1024, 10) 
 log_hndlr.setFormatter(log_frmtr)
 log_hndlr.setLevel(logging.INFO)
 
-create_dir('/tmp/ht_upload/')
 ht_csrf  = CsrfProtect()
 ht_oauth = OAuth()
 
 ht_server = None
 
+def create_upload_directory(ht_server):
+	try:
+		dir_upload = ht_server.config['HT_UPLOAD_DIR']
+		os.makedirs(dir_upload)
+	except OSError as oe:
+		if (oe.errno != 17):
+			print oe
+			raise oe
+	except Exception as e:
+		print type(e), e
+		raise e
+
+
 def initialize_server(config_name):
-	print 'initializing server'
+	print 'initializing server...'
 	global ht_server
 	ht_server = Flask(__name__)
+
+	print 'using configuration... ', config_name
 	ht_server.config.from_object(server_configuration[config_name])
 	ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	ht_server.debug = True
 	ht_server.logger.setLevel(logging.DEBUG)
 	ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
+	create_upload_directory(ht_server)
 
 	ht_csrf.init_app(ht_server)
 	ht_oauth.init_app(ht_server)

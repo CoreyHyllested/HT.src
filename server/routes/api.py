@@ -275,75 +275,134 @@ def ht_api_send_message():
 
 
 
-# TODO RENAME... 
-@insprite_views.route("/postreview", methods=['GET','POST'])
+
+@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
 @req_authentication
-def ht_api_review():
+def ht_api_review_create(review_id):
+	msg = None
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
-	print 'enter postreview'
 
 	review_form = ReviewForm(request.form)
-	print 'got form'
-
-	print review_form
-	print review_form.input_rating.data
-	print review_form.input_review.data
 	print review_form.review_id.data
+	print review_form.input_review.data
+	print review_form.input_rating.data  #score_meet.data
 	print review_form.score_comm.data
 	print review_form.score_time.data
 
-	# if this has been 30 days since proposal / review creation. Return an  error.
-
+	# check review for validity.
 	if review_form.validate_on_submit():
-		print 'form is valid'
+		print 'ht_api_review_create() form is valid'
 		try:
-			# add review to database
-			the_review = Review.get_by_id(review_form.review_id.data)
-			the_review.appt_score = int(review_form.input_rating.data)
-			the_review.generalcomments = review_form.input_review.data
-			the_review.score_attr_comm = int(review_form.score_comm.data)
-			the_review.score_attr_time = int(review_form.score_time.data)
-			the_review.rev_status = the_review.rev_status | REV_STATE_VISIBLE
-			rp = Profile.get_by_prof_id(the_review.prof_reviewed)	# reviewed  profile
-			print 'form is updated'
+			# get review from database, modify and update review.
+			review = Review.get_by_id(review_form.review_id.data)
+			review.appt_score = int(review_form.input_rating.data)
+			review.generalcomments = review_form.input_review.data
+			review.score_attr_comm = int(review_form.score_comm.data)
+			review.score_attr_time = int(review_form.score_time.data)
+			review.set_state(REV_STATE_FINSHED)
+			print 'ht_api_review_create() form is updated'
 
-			db_session.add(the_review)
-			log_uevent(uid, "posting " + str(the_review))
-
-			# update the reviewed profile's ratings, in the future, delay this
-			# kick this out to another function.  
-			reviews = Review.query.filter_by(prof_reviewed = rp.prof_id).all()
-			sum_ratings = the_review.appt_score
-			for old_review in reviews:
-				sum_ratings += old_review.appt_score
-
-			rp.updated = dt.now()
-			rp.reviews = len(reviews) + 1
-			rp.rating  = float(sum_ratings) / (len(reviews) + 1)
-			log_uevent(rp.prof_id, "now has " + str(sum_ratings) + "points, and " + str(len(reviews) + 1) + " for a rating of " + str(rp.rating))
-			db_session.add(rp)
+			db_session.add(review)
 			db_session.commit()
-			print 'data has been posted'
+			#log_uevent(uid, "posting " + str(review))
 
-			# GET PROPOSAL / APPOINTMENT.
-			# proposal.set_flag(
-				#APPT_FLAG_BUYER_REVIEWED = 12		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-				#APPT_FLAG_SELLR_REVIEWED = 13		# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-			# db_session.add(proposal)
+			print 'ht_api_review_create() data has been posted'
+			profile_reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+			ht_posting_review_update_proposal(review)
 
-			# email alt user to know review was captured
-			return make_response(redirect('/dashboard'))
+			# thank user for submitting review & making the world a better place
+			return jsonify(usrmsg='Thanks for submitting review. It will be posted shortly'), 200
 		except Exception as e:
-			print "had an exception with Review" + str(e)
+			print "ht_api_review_create().  Exception...\n", type(e), e
 			db_session.rollback()
-			log_uevent(str(uid), "POST /review isn't valid " + str(review_form.errors))
-			return jsonify(usrmsg='Data invalid')
+			raise e
 	elif request.method == 'POST':
-		print "POST New password isn't valid " + str(review_form.errors)
-		return jsonify(usrmsg=str(review_form.errors))
+		print "ht_api_review_create()  POST isn't valid " + str(review_form.errors)
+		msg = {}
+		for error in review_form.errors:
+			if (error == 'input_rating'): key = "Overall Value option"
+			elif (error == 'score_comm'): key = "Communication option"
+			elif (error == 'score_time'):	key = "Promptness option"
+			elif (error == 'input_review'):	key = "Your Experience"
+			msg[key] = review_form.errors[error][0].decode().lower()
+		return jsonify(usrmsg=msg), 400
 	else:
-		print "form wasn't posted"
+		print "ht_api_review_create()  form wasn't posted"
 		
-	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=bp, daysleft=str(28), form=review_form))
+	return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=profile_reviewed, form=review_form, usrmsg=msg))
+
+
+
+
+
+################################################################################
+### API HELPER FUNCTIONS. ######################################################
+################################################################################
+
+
+def ht_profile_update_reviews(profile):
+	print 'ht_profile_update_reviews, updating profile,', profile.prof_name, profile.prof_id, '...\n'
+
+	try:
+		all_visible_reviews = Review.query.filter_by(prof_reviewed = profile.prof_id).filter_by(rev_status = REV_STATE_VISIBLE).all()
+
+		profile_rating = 0
+		print '\t', 'total of', len(all_visible_reviews)
+		for review in all_visible_reviews:
+			profile_rating += review.appt_score
+			print '\t', review, ' quality points = ', profile_rating
+
+		profile.updated = dt.now()
+		profile.reviews = len(all_visible_reviews)
+		profile.rating  = float(profile_rating) / len(all_visible_reviews)
+
+		print(profile.prof_id, "now has " + str(profile_rating) + " points, and " + str(len(all_visible_reviews)) + " for a rating of " + str(profile.rating)) #log_uevent
+		db_session.add(profile)
+		db_session.commit()
+	except Exception as e:
+		print 'updating profile,', profile.prof_id, '...\n', type(e), e
+		db_session.rollback()
+		raise e
+
+
+
+
+def ht_posting_review_update_proposal(review):
+	""" Check to see if other review is posted and we can make them both visible"""
+	proposal = Proposal.get_by_id(review.rev_appt)
+	rev_sellr_id = proposal.review_hero
+	rev_buyer_id = proposal.review_user
+	review_twin_id = (review.review_id == rev_sellr_id) and rev_buyer_id or rev_sellr_id
+	review_twin = Review.get_by_id(review_twin_id)
+	print 'ht_posting_review_update_proposal()\treview: ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
+	if (review_twin is None):
+		print 'ht_posting_review_update_proposal():  WTF, major error'
+		raise Exception('major error finding review')
+	if (review_twin.completed()):
+		try:
+			print 'ht_posting_review_update_proposal():  make both reviews live'
+			review.set_state(REV_STATE_VISIBLE)
+			review.updated = dt.utcnow()
+			review_twin.set_state(REV_STATE_VISIBLE)
+			review_twin.updated = dt.utcnow()
+
+			print 'ht_posting_review_update_proposal():  commit to DB'
+			db_session.add(review)
+			db_session.add(review_twin)
+		except Exception as e:
+			print 'ht_posting_review_update_proposal(): ', type(e), e
+			db_session.rollback()
+
+		print 'ht_posting_review_update_proposal(): update profiles'
+		profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
+		profile_buyer = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+		print 'ht_posting_review_update_proposal(): profile', profile_sellr.prof_name
+		print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
+		ht_profile_update_reviews(profile_sellr)
+		ht_profile_update_reviews(profile_buyer)
+	else:
+		print 'ht_posting_review_update_proposal():  just this review is available.'
+
+
 

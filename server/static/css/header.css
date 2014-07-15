@@ -3,11 +3,254 @@ There are three responsive design ranges for the header (ht_header.html):
 a) 240px - 549px (phones);
 b) 550px - 999px (phablets, tablets);
 c) 1000px - ... (desktop)
+
+New muted blues for links:
+
+#1488CC - reg
+#04304A - dark
+#7dc7f2 - light
+
 */
 
 /***** Common Elements *****/
 
-/* Header Logo */
+/* SAFE TO DELETE?
+.pageWrapper {
+	background-color: white;
+	-ms-transform: translate(0px, 0px);		
+	-moz-transform: translate(0px, 0px);
+	-o-transform: translate(0px, 0px);
+	-webkit-transform: translate(0px, 0px);		
+	transform: translate(0px, 0px);
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;		
+	transition: 0.15s ease;
+}
+
+.pageWrapperSlide {
+	-moz-transform: translate(0, 0);
+	-ms-transform: translate(0, 0);
+	-o-transform: translate(0, 0);		
+	-webkit-transform: translate(0, 0);		
+	transform: translate(0, 0);
+}
+*/
+
+.pageWrapper {
+	background-color: white;
+}
+
+/* Off-Canvas Menu (only displayed on small screens) */
+
+.menu, .menuSlide, .pageWrapperSlide {display: none;}
+
+/* Header */
+
+.headerBackground {
+	background-color: #fff;
+	height: 40px;
+	width: 100%;
+	border-bottom: 1px solid #313131;
+	position: relative;
+}
+
+.headerBackground:after {
+	content: "";
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 40px;
+	-webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.headerContentWrapper {
+	height: 40px;
+	margin: auto;
+	position: relative;
+	width: 980px;
+	z-index: 9998;
+}
+
+/* Header Search */
+
+#headerSearch {
+	float: left;
+	background: #fff;
+	border-radius: 2px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	color: black;
+	font-size: 0.8em;
+	height: 27px;
+	padding: 0 20px 0 5px;
+	width: 290px;
+	margin-top: 7px;
+	margin-left: 12px;
+}
+
+.headerSearchBar {
+	float: left;
+	width: 420px;
+	height: 40px;
+	line-height: 40px;
+}
+
+.headerSearchBarIcon {
+	float: left;
+	border-radius: 2px;
+	border-style: none;
+	width: 20px;
+	height: 40px;
+	line-height: 40px;
+	margin-left: -23px;
+}
+
+.headerSearchBarIcon i.searchIcon {
+	color: #000;
+	opacity: 0.7;
+	cursor: pointer;
+	transition: all 0.3s ease-in;
+	-moz-transition: all 0.3s ease-in;
+	-o-transition: all 0.3s ease-in;
+	-webkit-transition: all 0.3s ease-in;
+}	
+.headerSearchBarIcon i.searchIcon:hover {
+	opacity: 1;
+}
+
+
+/* Header Menu */
+
+.headerTextMenu {
+	color: rgba(0, 0, 0, 0.5);
+	list-style-type: none;
+	position: absolute;
+	right: 0px;
+	top: 8px;
+}
+
+.headerTextMenu li {
+	display: inline;
+	margin-left: 33px;
+	text-transform: uppercase;
+}
+
+.headerTextMenu a {
+	color: #1488CC;
+	font-size: 0.875em;
+	transition: all 0.3s ease-in;
+	-moz-transition: all 0.3s ease-in;
+	-o-transition: all 0.3s ease-in;
+	-webkit-transition: all 0.3s ease-in;
+}
+
+.headerTextMenu a:hover {
+	color: #1488CC;
+}
+
+.teacherSignupLink {
+	font-weight: 600;
+	text-transform: uppercase;
+	font-size: .8em;
+	margin-right: 12px;
+}
+
+/* Header Dropdown Menu */
+
+.headerDropdownMenu {
+	color: rgba(0, 0, 0, 0.5);
+	display: inline;
+	float: right;
+	height: 29px;
+	list-style: none;
+	margin: 0;
+	min-width: 100px;
+	position: relative;
+	text-align: right;
+	top: 12px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.headerDropdownMenuName {
+	display: inline-block;
+	position: relative;
+	color: rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+	font-size: 0.875em;
+	line-height: 41px;
+	max-width: 350px;
+	min-width: 110px;	
+	overflow: hidden;	
+	padding: 0 10px;
+	text-align: left;
+	text-overflow: ellipsis;
+	top: -12px;
+	white-space: nowrap;
+}
+
+.headerDropdownMenuName:hover {
+	overflow: visible;
+}
+
+.headerDropdownMenuActive {
+	font-size: 1em;
+	height: 0;
+	left: 0;
+	overflow: hidden;
+	position: absolute;
+	text-align: left;
+	top: 41px;
+	-webkit-transition: all 0.4s;
+	-moz-transition: all 0.3s;
+	-ms-transition: all 0.2s;
+	-o-transition: all 0.2s;
+	transition: all 0.4s;
+	width: 100%;
+	z-index: 9999;
+/*	-webkit-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);
+	box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.2);	*/
+}
+
+.headerDropdownMenu li:hover {
+	color: #1488CC;
+}
+
+.headerDropdownMenu li:hover ul {
+	display: block;
+	min-height: 400px;
+}
+
+.headerDropdownMenu li ul a li:hover {
+	color: rgba(0, 0, 0, 0.8);
+	background: hsla(202, 82%, 72%, 1);
+}
+
+.headerDropdownMenu li ul a li {
+	background: rgba(255,255,255, 0.95);
+	border: 1px solid rgba(0,0,0, 0.05);
+	border-top: none;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	color: rgba(0, 0, 0, 0.7);
+	display: block;
+	padding-left: 10px;
+	width: 100%;
+}
+
+.headerDropdownMenu li ul a:last-of-type li {
+	border-radius: 0 0 3px 3px;
+}	
+
+/* Header Logo and Icons */
 
 .headerLogo {
 	height: 40px;
@@ -18,22 +261,19 @@ c) 1000px - ... (desktop)
 
 .headerLogoImg {
 	width: 90px;
-
 }
 
 a.headerLogoLink {
 }
 
-/* Header Icons */
-
 .headerIcons {
 	height: 25px;
 	line-height: 38px;
 	float: right;
-
 }
+
 .headerIcons a{
-	color: #fff;
+	color: rgba(0, 0, 0, 0.5);
 	transition: all 0.2s ease-in;
 	-moz-transition: all 0.2s ease-in;
 	-o-transition: all 0.2s ease-in;
@@ -42,88 +282,18 @@ a.headerLogoLink {
 }
 
 .headerIcons a:hover{
-	color: #29abe1;
+	color: #1488CC;
 }
 
 .headerIcons .icon {
 	margin-right: 6px;
 }
 
-
-
 /***** Responsive Styles *****/
 
 /* Phones (240px - 549px) */
 @media only screen and (min-width: 240px) and (max-width: 549px) {
 
-
-	/* Off-Canvas Menu */
-	
-	.menu {
-		background-color: #3b3f45;
-		bottom: 0;
-		display: block;
-		height: 100%;
-		overflow-y: scroll;
-		position: absolute;
-		right: 0;
-		top: 0;
-		width: 200px;
-	}
-
-
-	#menuSearch {
-		background: url("../img/search.svg") #282c34 no-repeat 152px;
-		border-style: none;
-		border-radius: 2px;
-		color: white;
-		font-size: 0.9em;
-		height: 30px;
-		margin: 14px 12px 0;
-		outline: none;
-		padding: 0 25px 0 5px;
-		position: relative;
-		width: 146px;
-	}
-
-	.headerSearchBar {display: none;}
-	#headerSearch {display: none;}
-	#headerSearch:focus {outline: none;}
-	.headerTextMenu {display: none;}
-	.headerDropdownMenu {display: none;}
-
-	.headerIcons {
-		font-size: 1.2em;
-		margin-right: 36px;
-	}
-
-	.menu a {color: white;}
-	.menu a:active {color: white;}
-
-	.menu ul {
-		position: relative;
-		margin: 14px 13px;
-		text-align: center;
-	}
-
-	.menu ul li:first-child {
-		border-bottom: 1px solid #333333;
-		border-top: 1px solid #333333;
-		padding: 4px 10px;
-	}
-
-	.menu ul li {
-		border-bottom: 1px solid #333333;
-		font-size: 0.9em;
-		padding: 4px 10px;
-		text-transform: none;
-	}
-
-	.menu ul li a {
-		padding: 10px 20px;
-	}
-
-	#menuUserName {color: #808080;}
 
 	/* Page Wrapper */
 
@@ -160,20 +330,17 @@ a.headerLogoLink {
 		transform: translate(-200px, 0px);
 	}
 
-
-	/* Header Background and Wrapper */
-
-	.headerBackground {
-		background-color: black;
-		height: 40px;
-		width: 100%;
+	.headerContentWrapper {
+		margin: 0 auto;
+		width: 95%;
 	}
 
-	.headerContentWrapper {
-		height: 40px;
-		margin: 0 auto;
-		position: relative;
-		width: 95%;
+	.headerSearchBar, .headerTextMenu, .headerDropdownMenu, #headerSearch, .teacherSignupLink {display: none;}
+	#headerSearch:focus {outline: none;}
+
+	.headerIcons {
+		font-size: 1.2em;
+		margin-right: 36px;
 	}
 
 	/* Header Menu (graphical menu turned on, text menu turned off) */
@@ -190,472 +357,100 @@ a.headerLogoLink {
 		width: 26px;
 	}
 
+	/* Off-Canvas Menu */
+	
+	.menu {
+		background-color: #3b3f45;
+		bottom: 0;
+		display: block;
+		height: 100%;
+		overflow-y: scroll;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 200px;
+	}
 
+	#menuSearch {
+		background: url("../img/search.svg") #282c34 no-repeat 152px;
+		border-style: none;
+		border-radius: 2px;
+		color: white;
+		font-size: 0.9em;
+		height: 30px;
+		margin: 14px 12px 0;
+		outline: none;
+		padding: 0 25px 0 5px;
+		position: relative;
+		width: 146px;
+	}
+
+	.menu a {color: white;}
+
+	.menu ul {
+		position: relative;
+		margin: 14px 13px;
+		text-align: center;
+	}
+
+	.menu ul li:first-child {
+		border-bottom: 1px solid #333333;
+		border-top: 1px solid #333333;
+		padding: 4px 10px;
+	}
+
+	.menu ul li {
+		border-bottom: 1px solid #333333;
+		font-size: 0.9em;
+		padding: 4px 10px;
+		text-transform: none;
+	}
+
+	.menu ul li a {
+		padding: 10px 20px;
+	}
+
+	#menuUserName {
+		color: #808080;
+	}
 
 }
 
 /* Phablets (550px - 999px) */
 @media only screen and (min-width: 550px) and (max-width: 999px) {
 
-	/* Page Wrapper */
-
-	.pageWrapper {
-		background-color: white;	
-		-ms-transform: translate(0px, 0px);		
-		-moz-transform: translate(0px, 0px);
-		-o-transform: translate(0px, 0px);
-		-webkit-transform: translate(0px, 0px);		
-		transform: translate(0px, 0px);
-		-moz-transition: 0.15s ease;
-		-o-transition: 0.15s ease;
-		-webkit-transition: 0.15s ease;		
-		transition: 0.15s ease;
-	}
-
-	.pageWrapperSlide {
-		-moz-transform: translate(0, 0);
-		-ms-transform: translate(0, 0);
-		-o-transform: translate(0, 0);		
-		-webkit-transform: translate(0, 0);		
-		transform: translate(0, 0);
-	}
-
-	/* Off-Canvas Menu */
-	
-	.menu {display: none;}
-	.menuSlide {display: none;}
-
-	/* Header Background & Wrapper */
-
-	.headerBackground {
-		background-color: black;
-		height: 41px;
-		width: 100%;
+	.teacherSignupLink {
+		display: none;
 	}
 
 	.headerContentWrapper {
-		height: 40px;
-		margin: auto;
-		position: relative;
 		width: 94%;
 	}
 
-
-
-	/* Header Search */
-
-
 	.headerSearchBar {
-		float: left;
 		width: 50%;
-		height: 40px;
-		line-height: 40px;
 	}	
-	.headerSearchBarIcon {
-		float: left;
-		border-radius: 2px;
-		border-style: none;
-		width: 20px;
-		height: 40px;
-		line-height: 40px;
-		margin-left: -23px;
-	}
-
-	.headerSearchBarIcon i.searchIcon {
-		color: #fff;
-		opacity: 0.7;
-		cursor: pointer;
-		transition: all 0.3s ease-in;
-		-moz-transition: all 0.3s ease-in;
-		-o-transition: all 0.3s ease-in;
-		-webkit-transition: all 0.3s ease-in;
-	}	
-	.headerSearchBarIcon i.searchIcon:hover {
-		opacity: 1;
-	}
 
 	#headerSearch {
-		float: left;
-		background: #3b3f45;
-		border-radius: 2px;
-		border-style: none;
-		color: white;
-		font-size: 0.8em;
-		height: 27px;
-		padding: 0 20px 0 5px;
 		width: 50%;
-		margin-top: 7px;
-		margin-left: 12px;
-	}
-
-
-	/* Header Menu */
-
-	.headerTextMenu {
-		list-style-type: none;
-		position: absolute;
-		right: 0;
-		top: 8px;
 	}
 
 	.headerTextMenu li {
-		display: inline;
 		margin-left: 15px;
-		text-transform: uppercase;
-	}
-
-	.headerTextMenu a {
-		font-size: 0.875em;
-		transition: all 0.2s ease-in;
-		-moz-transition: all 0.2s ease-in;
-		-o-transition: all 0.2s ease-in;
-		-webkit-transition: all 0.2s ease-in;
-		transition: all 0.2s ease-in;
-	}
-
-	.headerTextMenu a:hover {
-		color: white;
-	}
-
-
-
-
-	/* Dropdown menu */
-	
-	.headerDropdownMenu {
-		color: white;
-		display: inline;
-		float: right;
-		height: 29px;
-		list-style: none;
-		margin: 0;
-		min-width: 100px;
-		position: relative;
-		text-align: right;
-		top: 12px;
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;		
-		z-index: 100;
 	}
 
 	.headerDropdownMenu .headerDropdownMenuName {
-		display: inline-block;
-		position: relative;
-		color: white;
-		cursor: pointer;
-		font-size: 0.875em;
-		line-height: 41px;
 		max-width: 140px;
-		min-width: 110px;	
-		overflow: hidden;	
-		padding: 0 10px;
-		text-align: left;
-		text-overflow: ellipsis;
-		top: -12px;
-		white-space: nowrap;
-	}
-
-	.headerDropdownMenu .headerDropdownMenuName:hover {
-		overflow: visible;
 	}
 
 	.headerDropdownMenu li:hover {
-		color: #29abe1;
-	}
-
-	.headerDropdownMenu li ul {
-		font-size: 1em;
-		height: 0;
-		left: 0;
-		overflow: hidden;
-		position: absolute;
-		text-align: left;
-		top: 41px;
-		-webkit-transition: all 0.4s;
-		-moz-transition: all 0.3s;
-		-ms-transition: all 0.2s;
-		-o-transition: all 0.2s;
-		transition: all 0.4s;
-		width: 100%;
-		z-index: 99999;
-	}
-
-	.headerDropdownMenu li:hover ul {
-		display: block;
-		min-height: 400px;
-	}
-
-	.headerDropdownMenu li ul a li:hover {
-		color: white;
-	}
-
-	.headerDropdownMenu li ul a li {
-		background: rgba(0,0,0, 0.8);
-		border-bottom: 1px solid rgba(0,0,0, 0.3);
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		color: white;
-		display: block;
-		padding-left: 10px;
-		width: 100%;
-	}
-
-	.headerDropdownMenu li ul a:last-of-type li {
-		border-radius: 0 0 3px 3px;
-	}	
-
-	.headerDropdownMenu li ul a li:hover {
-		background: #29abe2;
+		color: #1488CC;
 	}
 
 }
 
 /* Tablets, desktops (1000px and greater) */
 @media only screen and (min-width: 1000px) {
-
-	/* Page Wrapper */
-
-	.pageWrapper {
-		background-color: white;
-		-ms-transform: translate(0px, 0px);		
-		-moz-transform: translate(0px, 0px);
-		-o-transform: translate(0px, 0px);
-		-webkit-transform: translate(0px, 0px);		
-		transform: translate(0px, 0px);
-		-moz-transition: 0.15s ease;
-		-o-transition: 0.15s ease;
-		-webkit-transition: 0.15s ease;		
-		transition: 0.15s ease;
-	}
-
-	.pageWrapperSlide {
-		-moz-transform: translate(0, 0);
-		-ms-transform: translate(0, 0);
-		-o-transform: translate(0, 0);		
-		-webkit-transform: translate(0, 0);		
-		transform: translate(0, 0);
-	}
-
-	/* Off-Canvas Menu */
-	
-	.menu {
-		bottom: 0;
-		position: fixed;
-		right: -14em;
-		height: 100%;
-		top: 0;
-		-ms-transform: translate(0px, 0px);		
-		-moz-transform: translate(0px, 0px);
-		-o-transform: translate(0px, 0px);
-		-webkit-transform: translate(0px, 0px);		
-		transform: translate(0px, 0px);
-		-moz-transition: 0.15s ease;
-		-o-transition: 0.15s ease;
-		-webkit-transition: 0.15s ease;		
-		transition: 0.15s ease;		
-		width: 14em;
-	}
-
-	.menuSlide {
-		-moz-backface-visibility: hidden;
-	    -ms-backface-visibility: hidden;
-		-o-backface-visibility: hidden;
-		-webkit-backface-visibility: hidden;
-    	backface-visibility: hidden;		
-		-moz-transform: translate(-14em, 0px);
-		-ms-transform: translate(-14em, 0px);
-		-o-transform: translate(-14em, 0px);		
-		-webkit-transform: translate(-14em, 0px);		
-		transform: translate(-14em, 0px);
-	}
-
-
-	/* Header Background & Wrapper */
-
-	.headerBackground {
-		background-color: black;
-		height: 41px;
-		width: 100%;
-	}
-
-	.headerContentWrapper {
-		height: 40px;
-		margin: auto;
-		position: relative;
-		width: 980px;
-	}
-
-	/* Header Search */
-
-	.headerSearchBar {
-		float: left;
-		width: 420px;
-		height: 40px;
-		line-height: 40px;
-	}
-
-	.headerSearchBarIcon {
-		float: left;
-		border-radius: 2px;
-		border-style: none;
-		width: 20px;
-		height: 40px;
-		line-height: 40px;
-		margin-left: -23px;
-	}
-
-	.headerSearchBarIcon i.searchIcon {
-		color: #fff;
-		opacity: 0.7;
-		cursor: pointer;
-		transition: all 0.3s ease-in;
-		-moz-transition: all 0.3s ease-in;
-		-o-transition: all 0.3s ease-in;
-		-webkit-transition: all 0.3s ease-in;
-	}	
-	.headerSearchBarIcon i.searchIcon:hover {
-		opacity: 1;
-	}
-
-	#headerSearch {
-		float: left;
-		background: #3b3f45;
-		border-radius: 2px;
-		border-style: none;
-		color: white;
-		font-size: 0.8em;
-		height: 27px;
-		padding: 0 20px 0 5px;
-		width: 380px;
-		margin-top: 7px;
-		margin-left: 12px;
-	}
-
-	/* Header Menu */
-
-	.headerTextMenu {
-		color: white;
-		list-style-type: none;
-		position: absolute;
-		right: 0px;
-		top: 8px;
-	}
-
-	.headerTextMenu li {
-		display: inline;
-		margin-left: 33px;
-		text-transform: uppercase;
-	}
-
-	.headerTextMenu a {
-		font-size: 0.875em;
-		transition: all 0.3s ease-in;
-		-moz-transition: all 0.3s ease-in;
-		-o-transition: all 0.3s ease-in;
-		-webkit-transition: all 0.3s ease-in;
-	}
-
-	.headerTextMenu a:hover {
-		color: white;
-	}
-
-	/* Dropdown menu */
-
-	.headerDropdownMenu {
-		color: white;
-		display: inline;
-		float: right;
-		height: 29px;
-		list-style: none;
-		margin: 0;
-		min-width: 100px;
-		position: relative;
-		text-align: right;
-		top: 12px;
-		-webkit-touch-callout: none;
-		-webkit-user-select: none;
-		-khtml-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-		user-select: none;
-		z-index: 100;
-	}
-
-	.headerDropdownMenu .headerDropdownMenuName {
-		display: inline-block;
-		position: relative;
-		color: white;
-		cursor: pointer;
-		font-size: 0.875em;
-		line-height: 41px;
-		max-width: 350px;
-		min-width: 110px;	
-		overflow: hidden;	
-		padding: 0 10px;
-		text-align: left;
-		text-overflow: ellipsis;
-		top: -12px;
-		white-space: nowrap;
-	}
-
-	.headerDropdownMenu .headerDropdownMenuName:hover {
-		overflow: visible;
-	}
-
-	.headerDropdownMenu li:hover {
-		color: #29abe1;
-	}
-
-	.headerDropdownMenu li ul {
-		font-size: 1em;
-		height: 0;
-		left: 0;
-		overflow: hidden;
-		position: absolute;
-		text-align: left;
-		top: 41px;
-		-webkit-transition: all 0.4s;
-		-moz-transition: all 0.3s;
-		-ms-transition: all 0.2s;
-		-o-transition: all 0.2s;
-		transition: all 0.4s;
-		width: 100%;
-		z-index: 99999;
-	}
-
-	.headerDropdownMenu li:hover ul {
-		display: block;
-		min-height: 400px;
-	}
-
-	.headerDropdownMenu li ul a li:hover {
-		color: white;
-	}
-
-	.headerDropdownMenu li ul a li {
-		background: rgba(0,0,0, 0.8);
-		border-bottom: 1px solid rgba(0,0,0, 0.3);
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		color: white;
-		display: block;
-		padding-left: 10px;
-		width: 100%;
-	}
-
-	.headerDropdownMenu li ul a:last-of-type li {
-		border-radius: 0 0 3px 3px;
-	}	
-
-	.headerDropdownMenu li ul a li:hover {
-		background: #29abe2;
-	}
 
 
 }

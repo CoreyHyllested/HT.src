@@ -17,15 +17,15 @@
 /* Blue Button Pulse */
 
 	@-moz-keyframes bluePulse {
-	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  0% {background-color: #1488CC; border: 1px #1488CC solid;}
 	  50% {background-color: #33CCFF; border: 1px #33CCFF solid;}
-	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  100% {background-color: #1488CC; border: 1px #1488CC solid;}
 	}
 
 	@-webkit-keyframes bluePulse {
-	  0% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  0% {background-color: #1488CC; border: 1px #1488CC solid;}
 	  50% {background-color: #33CCFF; border: 1px #33CCFF solid;}
-	  100% {background-color: #29abe2; border: 1px #29abe2 solid;}
+	  100% {background-color: #1488CC; border: 1px #1488CC solid;}
 	}
 
 /* Red Button Pulse */
@@ -59,15 +59,15 @@
 /* LinkedIn Button Pulse */
 	
 	@-moz-keyframes linkedinPulse {
-		0% {background-color: #007cb3;}
+		0% {background-color: #7dc7f2;}
 		50% {background-color: #00a1e8;}
-		100% {background-color: #007cb3;}
+		100% {background-color: #7dc7f2;}
 	}
 
 	@-webkit-keyframes linkedinPulse {
-		0% {background-color: #007cb3;}
+		0% {background-color: #7dc7f2;}
 		50% {background-color: #00a1e8;}
-		100% {background-color: #007cb3;}
+		100% {background-color: #7dc7f2;}
 	}
 
 
@@ -129,8 +129,8 @@
 
 	.blueButton {
 		-webkit-appearance: none;
-		background-color: #29abe2;
-		border: 1px #29abe2 solid;
+		background-color: #1488CC;
+		border: 1px #1488CC solid;
 		-moz-border-radius: 3px;
 	  	-webkit-border-radius: 3px;
 	  	border-radius: 3px;
@@ -157,7 +157,7 @@
 	}
 
 	.whiteButton {
-		border: 1px #29abe2 solid;
+		border: 1px #1488CC solid;
 		-moz-border-radius: 3px;
 	  	-webkit-border-radius: 3px;
 	  	border-radius: 3px;
@@ -229,7 +229,7 @@
 
 #top-bar {
 	background-color: #333333;
-	border-bottom: 3px #29abe2 solid;
+	border-bottom: 3px #1488CC solid;
 	position: relative;
 	height: 65px;
 	width: 100%;
@@ -329,11 +329,11 @@
 }
 
 #top-menu ul li a:hover {
-	color: #29abe2;
+	color: #1488CC;
 }
 
 #top-search {
-	background: url("../img/search.svg") #29abe2 no-repeat 10px;
+	background: url("../img/search.svg") #1488CC no-repeat 10px;
 	height: 30px;
 	left: 300px;
 	position: absolute;
@@ -383,7 +383,7 @@ nav > ul {
 
 nav > ul:hover {
 	background: url("../img/menu-active.svg") right 6px no-repeat;	
-	color: #29abe2;
+	color: #1488CC;
 	cursor: pointer;
 }
 
@@ -442,7 +442,7 @@ nav ul ul a:hover {
 	-o-transition: background-color 0.6s;
 	-webkit-transition: background-color 0.6s;
 	transition: background-color 0.6s;
-	background-color: #29abe2;
+	background-color: #1488CC;
 	text-decoration: none;
 }
 
@@ -450,7 +450,7 @@ nav ul ul a:hover {
 /* Reject Button */
 
 .reject-button {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	color: #0087cf;	
 	display: table-cell;
 	font-weight: 400;
@@ -606,10 +606,10 @@ nav ul ul a:hover {
 #content-box-dnews, #content-box-dprop { display:none; }
 
 #content-top {
-	background-color: #29abe2;
-	border-top: 1px #29abe2 solid;
-	border-left: 1px #29abe2 solid;
-	border-right: 1px #29abe2 solid;
+	background-color: #1488CC;
+	border-top: 1px #1488CC solid;
+	border-left: 1px #1488CC solid;
+	border-right: 1px #1488CC solid;
 	left: -1px;
 	height: 4px;
 	position: absolute;
@@ -625,7 +625,7 @@ nav ul ul a:hover {
 }
 
 #tabs li {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	border-radius: 3px 3px 0 0;
 	display: inline-block;
 	height: 38px;
@@ -662,7 +662,7 @@ nav ul ul a:hover {
 }
 
 #tabs li.active {
-	background-color: #29abe2;
+	background-color: #1488CC;
 	color: white;
 }
 
@@ -697,7 +697,7 @@ nav ul ul a:hover {
 }
 
 .time-slot {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	height: 83px;
 	margin-top: 30px;
 	position: relative;
@@ -835,7 +835,7 @@ nav ul ul a:hover {
 }
 
 #active-cell {
-	background-color:#29abe2;
+	background-color:#1488CC;
 	color: white;
 }
 
@@ -854,7 +854,7 @@ nav ul ul a:hover {
 }
 
 .reject-button {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	color: #0087cf;	
 	display: table-cell;
 	font-weight: 400;
@@ -890,7 +890,7 @@ nav ul ul a:hover {
 }
 
 .negotiate-button {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	color: #0087cf;	
 	display: table-cell;
 	font-weight: 400;
@@ -922,8 +922,8 @@ nav ul ul a:hover {
 }
 
 .accept-button {
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;
+	background-color: #1488CC;
+	border: 1px #1488CC solid;
 	color: white;	
 	display: table-cell;
 	font-weight: 400;
@@ -1230,8 +1230,8 @@ nav ul ul a:hover {
 }
 
 #edit-save {
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;	
+	background-color: #1488CC;
+	border: 1px #1488CC solid;	
 	color: white;
 	cursor: pointer;	
 	display: table-cell;
@@ -1267,7 +1267,7 @@ nav ul ul a:hover {
 	bottom: 0;
 	height: 140px;
 	margin-top: -135px;
-	border-top-color: #29abe2;
+	border-top-color: #1488CC;
 	border-top-width: 3px;
 	border-top-style: solid;
 	width: 100%;
@@ -1313,7 +1313,7 @@ nav ul ul a:hover {
 }
 
 #footer-menu ul li a:hover, a:active {
-	color: #29abe2;
+	color: #1488CC;
 }
 
 #footer-copyright {
@@ -1331,15 +1331,15 @@ nav ul ul a:hover {
 
 /*
 .button-accept {
-	border: 1px #29abe2 solid;
-	background-color: #29abe2;
+	border: 1px #1488CC solid;
+	background-color: #1488CC;
 	bottom: 0;
 	color: white;
 
 /* Buttons */
 
 .button-light-full {
-	border: 1px #29abe2 solid;	
+	border: 1px #1488CC solid;	
 	color: #0087cf;	
 	display: table-cell;
 	font-size: 1.1em;
@@ -1503,7 +1503,7 @@ nav ul ul a:hover {
 }
 
 #signup-linkedin {
-	background: url("../img/linkedin.svg") #007cb3 no-repeat 0px;
+	background: url("../img/linkedin.svg") #7dc7f2 no-repeat 0px;
 	color: white;
 	display: table-cell;
 	font-weight: 400;
@@ -1656,7 +1656,7 @@ nav ul ul a:hover {
 }
 
 .login-light {
-	border: 1px #29abe2 solid;
+	border: 1px #1488CC solid;
 	color: #0087cf;	
 	display: table-cell;
 	font-weight: 400;
@@ -2544,8 +2544,8 @@ select:focus {
 }
 
 #proposal_send {
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;	
+	background-color: #1488CC;
+	border: 1px #1488CC solid;	
 	color: white;	
 	display: table-cell;
 	font-size: 0.95em;
@@ -2648,7 +2648,7 @@ select:focus {
 }
 
 .show_more {
-	border: 1px #29abe2 solid;	
+	border: 1px #1488CC solid;	
 	color: #0087cf;	
 	display: table-cell;
 	font-weight: 400;

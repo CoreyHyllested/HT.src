@@ -14,7 +14,6 @@
 
 import os
 
-print 'configuring environment'
 HT_BASEDIR	= os.path.abspath(os.path.dirname(__file__))
 LOCAL_MODE	= os.environ.get("LOCAL", None)
 

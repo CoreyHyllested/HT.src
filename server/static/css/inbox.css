@@ -209,8 +209,8 @@
 	-moz-appearance: none;
 	-o-appearance: none;
 	-webkit-appearance: none;
-	background-color: #29abe2;
-	border: 1px #29abe2 solid;
+	background-color: #1488CC;
+	border: 1px #1488CC solid;
   	-webkit-border-radius: 3px;
   	border-radius: 3px;
 	color: white;
@@ -230,8 +230,8 @@
 }
 
 .composeButton:hover {
-	border: 1px solid #007cb3;
-	background-color: #007cb3;
+	border: 1px solid #7dc7f2;
+	background-color: #7dc7f2;
 	text-decoration: none;
 }
   
@@ -239,18 +239,18 @@
 .inboxNavItem {
     background-size: 18px 18px;
     border-bottom: 1px solid #e2e4e6;
-    color: #6e7980;
+    color: inherit;
     font-size: 0.875em;
     padding: 11px 0 11px 30px;
     cursor: pointer;
 }
 
 .inboxNavItem:hover {
-    color: #007cb3;
+    color: #1488CC;
 }
 
 .inboxNavItem i {
-		padding-left: 6px; 
+	padding-left: 6px; 
 }
 
 

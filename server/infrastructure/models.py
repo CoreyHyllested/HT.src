@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2013 - 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from server.infrastructure.srvc_database import Base
 from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
@@ -65,17 +79,17 @@ OAUTH_TWITTR = 5
 
 
 REV_FLAG_CREATED = 0
-REV_FLAG_ENABLED = 1
+REV_FLAG_FINSHED = 1
 REV_FLAG_WAITING = 2
 REV_FLAG_VISIBLE = 3
 REV_FLAG_FLAGGED = 7
-REV_FLAG_NOTUSED = 8
+REV_FLAG_INVALID = 8
 
 REV_STATE_CREATED = (0x1 << REV_FLAG_CREATED)
-REV_STATE_ENABLED = (0x1 << REV_FLAG_ENABLED)
+REV_STATE_FINSHED = (0x1 << REV_FLAG_FINSHED)
 REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
 REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
-REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
+REV_STATE_INVALID = (0x1 << REV_FLAG_INVALID)
 
 IMG_FLAG_PROFILE = 0	# A Profile Image
 IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
@@ -103,10 +117,34 @@ LESSON_FLAG_PRIVATE = 2 		# User completed making the lesson but left it private
 LESSON_FLAG_ACTIVE = 3 		# User completed making the lesson and made it active
 
 LESSON_STATE_STARTED = (0x1 << LESSON_FLAG_STARTED)	#1
-LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_PRIVATE)	#2
+LESSON_STATE_SAVED = (0x1 << LESSON_FLAG_SAVED)	#2
 LESSON_STATE_PRIVATE = (0x1 << LESSON_FLAG_PRIVATE)	#4
 LESSON_STATE_ACTIVE = (0x1 << LESSON_FLAG_ACTIVE)	#8
 
+# Flags and States for Registered Users (Preview Site)
+
+REG_FLAG_ROLE_NONE = 0
+REG_FLAG_ROLE_LEARN = 1
+REG_FLAG_ROLE_TEACH = 2
+REG_FLAG_ROLE_BOTH = 3
+
+REG_STATE_ROLE_NONE = (0x1 << REG_FLAG_ROLE_NONE)
+REG_STATE_ROLE_LEARN = (0x1 << REG_FLAG_ROLE_LEARN)
+REG_STATE_ROLE_TEACH = (0x1 << REG_FLAG_ROLE_TEACH)
+REG_STATE_ROLE_BOTH = (0x1 << REG_FLAG_ROLE_BOTH)
+
+# Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
+
+PROF_FLAG_AVAIL_NONE = 0
+PROF_FLAG_AVAIL_FLEX = 1
+PROF_FLAG_AVAIL_SPEC = 2
+
+PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
+PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
+PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
+
+LESSON_RATE_PERHOUR = 0
+LESSON_RATE_PERLESSON = 1
 
 def set_flag(state, flag):  return (state | (0x1 << flag))
 def test_flag(state, flag): return (state & (0x1 << flag))
@@ -357,8 +395,10 @@ class Profile(Base):
 	headline	= Column(String(128))
 	location	= Column(String(64), nullable=False, default="Berkeley, CA")
 
-	updated = Column(DateTime(), nullable=False, default = dt.utcnow())
-	created = Column(DateTime(), nullable=False, default = dt.utcnow())
+	updated = Column(DateTime(), nullable=False, default = "")
+	created = Column(DateTime(), nullable=False, default = "")
+
+	availability = Column(Integer, default=0)	
 
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
@@ -433,8 +473,8 @@ class Proposal(Base):
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
 	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
 	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-	review_hero	= Column(String(40), ForeignKey('review.review_id'))
-	review_user = Column(String(40), ForeignKey('review.review_id'))
+	review_hero	= Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_sellr
+	review_user = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_buyer
 
 
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
@@ -521,6 +561,11 @@ class Proposal(Base):
 		self.prop_state = s_nxt
 		self.prop_flags = flags
 		self.prop_updated = dt.utcnow()
+
+
+	def accepted(self): return (self.prop_state == APPT_STATE_ACCEPTED)
+	def canceled(self): return (self.prop_state == APPT_STATE_CANCELED)
+	def occurred(self): return (self.prop_state == APPT_STATE_OCCURRED)
 
 
 	def get_prop_ts(self, tz=None):
@@ -640,6 +685,7 @@ class Industry(Base):
 	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
 	enumInd.insert(0, (-1, 'All Industries'))
+	enumInd2 = [(str(k), v) for k, v in enumerate(industries)]
 
 	id   = Column(Integer, primary_key = True)
 	name = Column(String(80), nullable = False, unique=True)
@@ -750,7 +796,7 @@ class Review(Base):
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
-	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)
+	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)	#TODO rename state
 	rev_appt	= Column(String(40), nullable = False)	# should be appt.
 	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
 
@@ -761,29 +807,26 @@ class Review(Base):
 	score_attr_comm = Column(Integer)	#their communication skills
 	generalcomments = Column(String(5000))
 
-	#rev_created = Column(DateTime(), nullable = False, default = dt.utcnow()) # needed?
-	rev_updated	= Column(DateTime(), nullable = False, default = dt.utcnow())
+	#rev_created = Column(DateTime(), nullable = False) # needed?
+	rev_updated	= Column(DateTime(), nullable = False)
 	rev_flags   = Column(Integer, default=0)	 #TODO what is this for?  Needed? 
+
 
 	def __init__ (self, prop_id, prof_reviewed, prof_author):
 		self.review_id = str(uuid.uuid4())
 		self.rev_appt = prop_id 
 		self.prof_reviewed = prof_reviewed
 		self.prof_authored = prof_author
+		self.rev_updated = dt.utcnow()
+
 
 	def __repr__ (self):
 		tmp_comments = self.generalcomments
 
 		if (tmp_comments is not None):
 			tmp_comments = tmp_comments[:20]
-			
 		return '<review %r; by %r, %r, %r>' % (self.prof_reviewed, self.prof_authored, self.appt_score, tmp_comments)
 
-
-	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
-		self.appt_score = appt_score
-		self.appt_value = appt_value
-		self.generalcomments = appt_comments
 
 
 	@staticmethod
@@ -798,14 +841,68 @@ class Review(Base):
 		return review
 
 
-	def validate (self, session_prof_id):
+
+	def consume_review(self, appt_score, appt_value, appt_comments, attr_time=None, attr_comm=None):
+		self.appt_score = appt_score
+		self.appt_value = appt_value
+		self.generalcomments = appt_comments
+
+
+
+	def validate_author(self, session_prof_id):
 		if (self.prof_authored != session_prof_id):
 			raise ReviewError('validate', self.prof_authored, session_prof_id, 'Something is wrong, try again')
 			return "no fucking way -- review author matches current profile_id"
+		print 'we\'re the intended audience'
+
+
+	def time_until_review_disabled(self):
+		# (utcnow - updated) is a timedelta object.
+		#print 'Right now the time is\t' + str(dt.utcnow().strftime('%A, %b %d %H:%M %p'))
+		#print 'The review updated_ts\t' + str(review.rev_updated.strftime('%A, %b %d %H:%M %p'))
+		return (dt.utcnow() - self.rev_updated).days
 
 		
-	def if_posted(self, flag):
-		return (self.rev_status & (0x1 << flag))
+	def completed(self):
+		mask = REV_STATE_FINSHED | REV_STATE_VISIBLE
+		return (self.rev_status & mask)
+
+
+	def set_state(self, s_nxt, flag=None, prof_id=None):
+		s_cur = self.rev_status
+		flags = self.rev_flags
+		valid = True
+		msg = None
+
+		if ((s_nxt == REV_STATE_FINSHED) and (s_cur == REV_STATE_CREATED)):
+			if (self.time_until_review_disabled() < 0):
+				msg = 'Reviews may only be submitted 30 days after a meeting'
+				valid = False
+		elif ((s_nxt == REV_STATE_FINSHED) and (s_cur == REV_STATE_FINSHED)):
+			msg	= 'Reviews cannot be modified once submitted'
+			valid = False
+		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_FINSHED)):
+			pass
+		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_VISIBLE)):
+			# used for testing.
+			pass
+		elif ((s_nxt == REV_STATE_INVALID) and (s_cur == REV_STATE_CREATED)):
+			pass
+		else:
+			valid = False
+			msg = 'Weird. The Review is in an INVALID STATE'
+
+		if (not valid):
+			raise StateTransitionError(self.review_id, self.rev_status, s_nxt, msg=msg)
+
+		self.rev_status = s_nxt
+		self.rev_updated = dt.utcnow()
+
+
+	def get_review_url(self):
+		return '/review/new/' + str(self.review_id)
+
+
 
 
 class Lesson(Base):
@@ -819,14 +916,13 @@ class Lesson(Base):
 	LESSON_AVAIL_DEFAULT = 0
 	LESSON_AVAIL_SPECIFIC = 1
 
+
+
 	lesson_id	= Column(String(40), primary_key=True, index=True)
 	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	lesson_title = Column(String(128))
 	lesson_description	= Column(String(5000))
 	lesson_industry	= Column(String(64))
-
-	lesson_hourly_rate	= Column(Integer)
-	lesson_lesson_rate	= Column(Integer)
 
 	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
 	lesson_duration	= Column(Integer)
@@ -843,6 +939,9 @@ class Lesson(Base):
 	lesson_updated = Column(DateTime())
 	lesson_created = Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
+
+	lesson_rate = Column(Integer)
+	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
 	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
 	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
@@ -863,5 +962,43 @@ class Lesson(Base):
 		if len(lessons) != 1: 
 			raise NoLessonFound(lesson_id, 'Sorry, lesson not found')
 		return lessons[0]
+
+
+class Registrant(Base):
+	"""Account for interested parties signing up through the preview site."""
+	__tablename__ = "registrant"
+
+	reg_userid  = Column(String(40), primary_key=True, index=True, unique=True)
+	reg_email   = Column(String(128), index=True, unique=True)
+	reg_location = Column(String(128))
+	reg_ip = Column(String(20))
+	reg_name    = Column(String(128))
+	reg_org    = Column(String(128))	
+	reg_referrer = Column(String(128))
+	reg_flags = Column(Integer, default=0)
+	reg_created = Column(DateTime())
+	reg_updated = Column(DateTime())
+	reg_comment = Column(String(1024))
+
+	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment):
+		self.reg_userid = str(uuid.uuid4())
+		self.reg_email  = reg_email
+		self.reg_location  = reg_location
+		self.reg_ip  = reg_ip
+		self.reg_org  = reg_org
+		self.reg_referrer  = reg_referrer
+		self.reg_flags  = reg_flags
+		self.reg_comment = reg_comment
+		self.reg_created = dt.utcnow()
+		self.reg_updated = dt.utcnow()
+
+	def __repr___ (self):
+		return '<Registrant %r, %r, %r, %r>'% (self.reg_userid, self.reg_email, self.reg_location, self.reg_flags)
+
+	@staticmethod
+	def get_by_regid(regid):
+		registrants = Registrant.query.filter_by(reg_userid=regid).all()
+		if len(registrants) != 1: raise NoAccountFound(regid, 'Sorry, no account found')
+		return registrants[0]
 
 
