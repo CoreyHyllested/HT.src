@@ -291,19 +291,42 @@ class Account(Base):
 		self.__dict__.update(new_values_dict)
 
 
-#class Email(Base):
-#	__tablename__ = "email"
 
-#	id = Column(Integer, primary_key = True)
-#	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-#	email	= Column(String(128),	nullable=False)
-#	flags	= Column(Integer,		nullable=False)
-	
-#	def __init__ (self, account, email, flags=None):
-#		self.ht_account = account
-#		self.email = email
 
+class Email(Base):
+	__tablename__ = "email"
+
+	id = Column(Integer, primary_key = True)
+	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+	email	= Column(String(128),	nullable=False, unique=True, index=True)
+	flags	= Column(Integer,		nullable=True)
+	created	= Column(DateTime(),	nullable=True)
 	
+
+	def __init__ (self, account, email, flags=None):
+		self.ht_account = account
+		self.email = email
+		self.flags = flags
+		self.created = dt.utcnow()
+	
+
+	def __repr__(self):
+		print '<%r>' % (self.email)
+
+
+	@staticmethod
+	def get_account_id(email):
+		account_id = None
+		try:
+			user_email = Oauth.query.filter_by(email=email).one()
+			account_id = user_email.ht_account
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: found multiple email accounts for ', email
+		except NoResultFound as none:
+			print 'Error: found zero email accounts for ', email
+		return account_id
+
+
 
 
 class Oauth(Base):
@@ -964,7 +987,10 @@ class Lesson(Base):
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> email first pass
 class Registrant(Base):
 	"""Account for interested parties signing up through the preview.insprite.co."""
 	__tablename__ = "registrant"
