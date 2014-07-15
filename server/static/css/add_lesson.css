@@ -74,9 +74,15 @@
 	width: 25%;
 }
 
+.lessonHeaderCenter {
+	float: left;
+	width: 60%;
+}
+
 .lessonHeaderRight {
 	float: right;
-	width: 75%;
+	width: 15%;
+	text-align: right;
 }
 
 .lessonTopLeftNavigation {
@@ -100,6 +106,11 @@
 .lessonHeaderPageSubtitle {
 	margin-top: 8px;
 	font-size: 1em;
+}
+
+.lessonSave {
+	width: 80px;
+	font-size: .8em;
 }
 
 /* Main Content Areas */

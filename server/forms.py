@@ -140,7 +140,6 @@ class LessonForm(Form):
 	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
-	lessonFoo = TextField('Test', None)
 	lessonTitle			= TextField('Lesson Title', None)
 	lessonDescription	= TextAreaField('Lesson Description', None)
 	lessonAddress1	= TextField('Address Line 1', None)
@@ -150,7 +149,7 @@ class LessonForm(Form):
 	lessonZip		= TextField('Zip', None)
 	lessonCountry	= TextField('Country', None)
 	lessonAddressDetails = TextField('Details', None)
-	lessonRate		= IntegerField('Rate Amount', None, default=0)
+	lessonRate		= IntegerField('Rate Amount', None, default=50)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))

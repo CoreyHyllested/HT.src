@@ -80,6 +80,13 @@ $(document).ready(function() {
 		history.pushState({title: nextPage}, "", '/lesson/new/'+lessonID+'#'+nextPage);
 	});
 
+	$('#lessonSave').click(function(e) {
+		e.preventDefault();
+		console.log("---------");
+		console.log("Save was clicked");
+
+		saveLessonForm(lessonID); 	
+	});
 
 	$('.lessonFormButtonSubmit').click(function(e) {
 		e.preventDefault();
@@ -122,6 +129,12 @@ $(document).ready(function() {
 		var choiceText = $(this).find(":selected").text();
 		$(".rateUnitCaption").text("Lesson Duration: "+choiceText);
 	});
+
+
+	$('#lessonForm :input').change(function() {
+		$("#lessonSave").html("Save").css("color","#1488CC");
+	});
+	
 
 });
 
@@ -235,4 +248,51 @@ function getLessonImages(lesson_id) {
 	});
 
 	return false;
+}
+
+
+function saveLessonForm(lesson_id) {
+
+	var fd = new FormData($('#lessonForm')[0]);
+	fd.append('version', "save")
+	fd.append('csrf_token', $('#csrf_token').val())
+	fd.append('lesson_title', $('#lessonTitle').val())
+	fd.append('lesson_description', $('#lessonDescription').val())
+	fd.append('lesson_address_1', $('#lessonAddress1').val())
+	fd.append('lesson_address_2', $('#lessonAddress2').val())
+	fd.append('lesson_city', $('#lessonCity').val())
+	fd.append('lesson_state', $('#lessonState').val())
+	fd.append('lesson_zip', $('#lessonZip').val())
+	fd.append('lesson_country', $('#lessonCountry').val())
+	fd.append('lesson_address_details', $('#lessonAddressDetails').val())
+	fd.append('lesson_rate', $('#lessonRate').val())
+	fd.append('lesson_rate_unit', $('#lessonRateUnit').val())
+	fd.append('lesson_loc_option', $('#lessonPlace').val())
+	fd.append('lesson_industry', $('#lessonIndustry').val())
+	fd.append('lesson_duration', $('#lessonDuration').val())
+	fd.append('lesson_avail', $('#lessonAvail').val())
+
+	// TODO save flags
+
+	$.ajax({ url	: "/lesson/update/"+lesson_id,
+			type	: "POST",
+			data : fd,
+			processData: false,
+  			contentType: false,
+			success : function(data) {
+			 	console.log("AJAX Success - lesson saved.");
+			 	$("#lessonSave").html("Saved").css("color","gray");
+
+			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
+				// setTimeout(function() {
+				// 	$('.lessonFormStatus').fadeOut(1000);
+				// }, 2000 );
+			}, 
+			error: function(response) {
+				console.log("AJAX Error - lesson not saved.");
+				// $(".lessonFormStatus").html("<span class='error'>Sorry, something went wrong. Lesson not saved.</span>").fadeIn();
+			}
+	});
+	return false;
+	
 }

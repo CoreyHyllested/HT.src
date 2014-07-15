@@ -17,7 +17,7 @@
 	<div class="lessonHeader">
 		<div class="lessonHeaderLeft">
 			<div class="lessonTopLeftNavigation">
-				<a title="Back" id="topLeftNavBack" class="topLeftNavBack navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
+				<a title="Back" id="topLeftNavBack" class="topLeftNavBack navItem" href="/dashboard"><i class="fa fa-arrow-circle-left"></i> Go to Dashboard</a>
 			</div>
 		</div>
 		<div class="lessonHeaderCenter">
@@ -59,10 +59,11 @@
 
 $(document).ready(function() {
 
-	$(document.body).on("click", "#topLeftNavBack", function(e) {
-		e.preventDefault();
-		window.history.back();	
-	});
+	// $(document.body).on("click", "#topLeftNavBack", function(e) {
+	// 	e.preventDefault();
+
+	// 	window.history.back();	
+	// });
 
 });
 

@@ -24,16 +24,14 @@ function savePortfolio() {
 
 	console.log("savePortfolio : FD: "+JSON.stringify(fd));
 
-	// fd.append('images', images.length);
-
 	$.ajax({ url : "/portfolio/update/",
 			type : "POST",
 			data : fd,
 			dataType: 'json',
 			success : function(response) {
 				console.log("AJAX success");
+				$("#lessonSave").html("Save").css("color","#1488CC");
 				$(".lessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
-				// $(".lessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton lessonFormButton").attr("id", "").on().text("Continue");
 				
 				setTimeout(function() { 
 					$('.lessonFormPage').hide();
@@ -58,28 +56,6 @@ function savePortfolio() {
 				$("#editPortfolioDoneButton").hide();			
 			}
 	});
-
-	// var xhr = new XMLHttpRequest();
-	// xhr.onreadystatechange = function(e) {
-	// 	if (4 == this.readyState) {
-	// 		console.log(['xhr post complete ', e]);
-	// 		if (this.status == 200) {
-	// 			msg = JSON.parse(xhr.responseText);
-	// 			console.log(xhr.responseText);
-	// 			openAlertWindow(msg['usrmsg']);
-	// 		} else if (this.status == 500) {
-	// 			msg = JSON.parse(xhr.responseText);
-	// 			console.log(['xhr upload complete', e]);
-	// 			openAlertWindow('Failure: ' + msg['usrmsg']);
-	// 		} else {
-	// 			msg = JSON.parse(xhr.responseText);
-	// 			openAlertWindow(msg['usrmsg']);
-	// 		}
-	// 	}
-	// };
-
-	// xhr.open('POST', "/portfolio/update/", true);
-	// xhr.send(fd);
 
 	return false;
 }

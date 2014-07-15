@@ -31,6 +31,7 @@ mydropzone.on("successmultiple", function(file) {
 	$(".dropzone-status").html("<span class='success'>Images successfully uploaded!</span>");
 	$("#multipleUploadContinueButton").show();
 	$("#multipleUploadButton").hide();
+	$("#lessonSave").html("Save").css("color","#1488CC");
 });
 
 $('button.multipleUploadButton').attr("disabled", true);

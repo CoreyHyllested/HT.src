@@ -33,18 +33,24 @@
 				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
 			</div>
 		</div>
-		<div class="lessonHeaderRight">
+		<div class="lessonHeaderCenter">
 			<div class="lessonHeaderPageName">
-			{% if activated == "true" %}
-			All righty! Let's create your first lesson!
+			{% if version == "first" %}
+				All righty! Let's create your first lesson!
+			{% elif version == "edit" %}
+				Editing Lesson: {{lesson_title}}
 			{% else %}
-			Create a Lesson
-			{% endif %}
+				Create a Lesson				
+			{% endif %}			
 			</div>
 <!-- 			<div class="lessonHeaderPageSubtitle">
 			<a href="/profile">No thanks, return to profile</a>
 			</div> -->
-		</div>			
+		</div>	
+		<div class="lessonHeaderRight">
+			<span class="lessonFormStatus"></span>
+			<button class="whiteButton lessonSave" id="lessonSave">Save</button>
+		</div>					
 	</div>
   
   	<div class="lessonContentContainer">
@@ -64,10 +70,12 @@
 
 		<div class="lessonRightColumn">
 			<div class="lessonFormPageContainer">
-				<form id="lessonForm" method="post" action="/lesson/create/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
+				<form id="lessonForm" method="post" action="/lesson/update/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
 				
 				{{form.hidden_tag()}}
-
+				{% if version != None %}
+					<input type="hidden" name="version" value="{{version}}">
+				{% endif %}
 				<div id="overview" class="lessonFormPage">
 					<div class="formTitle">Let's get started!</div>
 					<div class="formElement">
