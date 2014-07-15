@@ -333,23 +333,28 @@ def render_edit_portfolio_page():
 
 
 
+
 @ht_server.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	pi = Oauth.get_stripe_by_uid(uid)
+	title = '- Sign Up to Teach'
+	edit  = None
 
-	stripe = 'No Stripe Account Found'
-	# Stripe Connect ID, req'd to take payments
+	# StripeConnect req'd for payments
+	stripe = 'No Stripe Account Found.'
 	if (pi is not None): stripe = pi.oa_account
+	session['next_url']='/teacher/signup#payment'
 
 	if (bp.availability > 0):
 		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
-		return make_response(render_template('teacher_signup.html', title='- Edit Your Info', bp=bp, oa_stripe=stripe, edit="true"))
+		title = '- Edit Your Info'
+		edit  = True
+	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe, edit=edit))
 
-	session['next_url']='/teacher/signup#payment'
-	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
+
 
 
 @ht_server.route('/teacher/activate', methods=['GET', 'POST'])
