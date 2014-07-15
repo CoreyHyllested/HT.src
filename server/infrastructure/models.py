@@ -79,17 +79,17 @@ OAUTH_TWITTR = 5
 
 
 REV_FLAG_CREATED = 0
-REV_FLAG_ENABLED = 1
+REV_FLAG_FINSHED = 1
 REV_FLAG_WAITING = 2
 REV_FLAG_VISIBLE = 3
 REV_FLAG_FLAGGED = 7
-REV_FLAG_NOTUSED = 8
+REV_FLAG_INVALID = 8
 
 REV_STATE_CREATED = (0x1 << REV_FLAG_CREATED)
-REV_STATE_ENABLED = (0x1 << REV_FLAG_ENABLED)
+REV_STATE_FINSHED = (0x1 << REV_FLAG_FINSHED)
 REV_STATE_WAITING = (0x1 << REV_FLAG_WAITING)
 REV_STATE_VISIBLE = (0x1 << REV_FLAG_VISIBLE)
-REV_STATE_NOTUSED = (0x1 << REV_FLAG_NOTUSED)
+REV_STATE_INVALID = (0x1 << REV_FLAG_INVALID)
 
 IMG_FLAG_PROFILE = 0	# A Profile Image
 IMG_FLAG_FLAGGED = 1	# The current Profile Img, needed? -- saved in profile, right?
@@ -473,8 +473,8 @@ class Proposal(Base):
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
 	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
 	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-	review_hero	= Column(String(40), ForeignKey('review.review_id'))
-	review_user = Column(String(40), ForeignKey('review.review_id'))
+	review_hero	= Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_sellr
+	review_user = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_buyer
 
 
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
@@ -796,7 +796,7 @@ class Review(Base):
 	prof_reviewed	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	prof_authored	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 
-	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)
+	rev_status	= Column(Integer, default=REV_STATE_CREATED, index=True)	#TODO rename state
 	rev_appt	= Column(String(40), nullable = False)	# should be appt.
 	rev_twin    = Column(String(40), unique = True) 	#twin or sibling review
 
@@ -863,9 +863,40 @@ class Review(Base):
 		return (dt.utcnow() - self.rev_updated).days
 
 		
-	def if_posted(self, flag):
-		return (self.rev_status & (0x1 << flag))
+	def completed(self):
+		mask = REV_STATE_FINSHED | REV_STATE_VISIBLE
+		return (self.rev_status & mask)
 
+
+	def set_state(self, s_nxt, flag=None, prof_id=None):
+		s_cur = self.rev_status
+		flags = self.rev_flags
+		valid = True
+		msg = None
+
+		if ((s_nxt == REV_STATE_FINSHED) and (s_cur == REV_STATE_CREATED)):
+			if (self.time_until_review_disabled() < 0):
+				msg = 'Reviews may only be submitted 30 days after a meeting'
+				valid = False
+		elif ((s_nxt == REV_STATE_FINSHED) and (s_cur == REV_STATE_FINSHED)):
+			msg	= 'Reviews cannot be modified once submitted'
+			valid = False
+		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_FINSHED)):
+			pass
+		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_VISIBLE)):
+			# used for testing.
+			pass
+		elif ((s_nxt == REV_STATE_INVALID) and (s_cur == REV_STATE_CREATED)):
+			pass
+		else:
+			valid = False
+			msg = 'Weird. The Review is in an INVALID STATE'
+
+		if (not valid):
+			raise StateTransitionError(self.review_id, self.rev_status, s_nxt, msg=msg)
+
+		self.rev_status = s_nxt
+		self.rev_updated = dt.utcnow()
 
 
 	def get_review_url(self):
