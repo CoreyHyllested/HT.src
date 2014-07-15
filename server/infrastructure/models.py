@@ -473,8 +473,8 @@ class Proposal(Base):
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
 	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
 	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-	review_hero	= Column(String(40), ForeignKey('review.review_id'))
-	review_user = Column(String(40), ForeignKey('review.review_id'))
+	review_hero	= Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_sellr
+	review_user = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_buyer
 
 
 	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
@@ -881,6 +881,9 @@ class Review(Base):
 			msg	= 'Reviews cannot be modified once submitted'
 			valid = False
 		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_FINSHED)):
+			pass
+		elif ((s_nxt == REV_STATE_VISIBLE) and (s_cur == REV_STATE_VISIBLE)):
+			# used for testing.
 			pass
 		elif ((s_nxt == REV_STATE_INVALID) and (s_cur == REV_STATE_CREATED)):
 			pass

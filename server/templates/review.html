@@ -92,7 +92,7 @@ $(document).ready(function() {
 					console.log (resp);
 					console.log (resp['usrmsg']['input_rating']);
 					var error_string = ''
-					$.each(resp['usrmsg'], function(k, v) { console.log(k+ ": " + v); error_string += (k + " " + v)});
+					$.each(resp['usrmsg'], function(k, v) { console.log(k+ ": " + v); error_string += (k + " is " + v + '.\r\n')});
 					openAlertWindow(error_string);
 					return false;
 				}
