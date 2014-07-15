@@ -672,23 +672,23 @@ class Image(Base):
 		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
 
+
 	def __repr__ (self):
-		comment = self.img_comment[:20]
-		return '<image %s %s>' % (self.img_id, comment)
+		return '<image %s %s>' % (self.img_id, self.img_comment[:20])
+
 
 	@staticmethod
 	def get_by_lesson_id(lesson_id):
-		print "get_by_lesson_id: lesson_id is", lesson_id
 		images = Image.query.filter_by(img_lesson=lesson_id).all()
-		# if len(images) != 1: raise NoResourceFound('Lesson', lesson_id)
-		print "get_by_lesson_id: images length is", len(images)
-
+		print 'Image.get_by_lesson_id(' + str(lesson_id) + '): ', len(images)
 		return images
+
 
 	@staticmethod
 	def get_lesson_sample_img(lesson_id):
 		sample_img = Image.query.filter_by(lesson_id=lesson_id).first()
 		return sample_img
+
 
 	@property
 	def serialize(self):
@@ -701,6 +701,42 @@ class Image(Base):
 			'img_order'		: self.img_order,
 			'img_lesson'	: self.img_lesson
 		}
+
+
+
+
+class LessonImageMap(Base):
+	__tablename__ = "image_lesson_map"
+	id			= Column(Integer, primary_key = True)
+	map_image	= Column(String(64),  nullable=False, index=True)
+	map_lesson	= Column(String(40),  nullable=False, index=True)
+	map_prof	= Column(String(40),  nullable=True,  index=True)
+	map_comm	= Column(String(256), nullable=True)
+	map_order	= Column(Integer, 	  nullable=False)
+	#map_flags	: use flags in Lesson and Image???
+	#map_created: use timestamp in Lesson and Image???
+
+
+	def __init__(self, img, lesson, profile, comment=None):
+		self.map_image	= img
+		self.map_lesson = lesson
+		self.map_prof	= profile
+		self.map_comm	= comment
+		self.map_order	= -1
+
+
+	def __repr__(self):
+		print '<%r>' % (self.id)
+
+
+	@staticmethod
+	def get_images_by_lesson_id(lesson_id):
+		images = Image.query.filter_by(map_lesson=lesson_id).all()
+		print 'LessonImageMap.get_images_by_lesson_id(' + str(lesson_id) + '): ', len(images)
+		return images
+
+
+
 
 class Industry(Base):
 	__tablename__ = "industry"
