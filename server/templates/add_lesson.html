@@ -70,8 +70,12 @@
 				<form id="lessonForm" method="post" action="/lesson/update/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
 				
 				{{form.hidden_tag()}}
+				{{form.lessonMakeLive(id="lessonMakeLive")}}
+
 				{% if version != None %}
-					<input type="hidden" name="version" value="{{version}}">
+					<input type="hidden" name="version" id="version" value="{{version}}">
+				{% else %}
+					<input type="hidden" name="version" id="version" value="new">
 				{% endif %}
 				<div id="overview" class="lessonFormPage">
 					<div class="formTitle">Let's get started!</div>
@@ -281,8 +285,8 @@
 
 							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
 							<div class="lessonFormButtonOptions">
-							{{form.lessonMakeLive(id="lessonMakeLive", class='formField')}} {{form.lessonMakeLive.label}}
-							<!-- <input type="checkbox" name="lessonMakeLive" id="lessonMakeLive" value="True" checked><label for="lessonMakeLive">Make this lesson live and public!</label> -->
+							
+							<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y" checked><label for="lessonMakeLiveProxy">Make this lesson live and public!</label>
 							</div>
 						</div>
 						<div class="lessonFormPreviousContainer">

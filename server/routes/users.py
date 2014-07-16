@@ -704,7 +704,7 @@ def ht_update_lesson(lesson, form, saved):
 		if (lesson.lesson_flags <= 1):
 			lesson.lesson_flags = 1
 			update = True
-	elif (form.lessonMakeLive.data == "y"):
+	elif (form.lessonMakeLive.data == True):
 		print "\tUser submitted form and made live"
 		lesson.lesson_flags = 3
 		update = True

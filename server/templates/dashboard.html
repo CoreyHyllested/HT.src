@@ -28,7 +28,7 @@
 			<div class="dashboardLessons">
 				<h1>My Lessons</h1>
 				{% for lesson in lessons %}
-					{#{% if lesson.lesson_flags > 0 %}#}
+					{% if lesson.lesson_flags > 0 %}
 					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
 						<div class="dashboardLessonLeftColumn">
 						{% if lesson.lesson_flags == 1 %}
@@ -38,7 +38,7 @@
 						{% elif lesson.lesson_flags == 3 %}	
 							Live
 						{% else %}
-							None - {{lesson.lesson_flags}}
+							None
 						{% endif %}
 						</div>
 						<div class="dashboardLessonCenterColumn">
@@ -49,7 +49,7 @@
 						</div>
 						<div class="clear"></div>	
 					</div>
-					{#{% endif %}#}
+					{% endif %}
 				{% endfor %}
 			</div>
 		{% endif %}

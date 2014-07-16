@@ -407,7 +407,9 @@ li.editPortfolioListItem {
 	font-size: .8em;
 }
 
-
+#lessonMakeLive {
+	display: none;
+}
 
 /* Dropzone Styles (Overrides) */
 
