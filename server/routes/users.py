@@ -590,9 +590,9 @@ def api_update_lesson(lesson_id):
 
 
 		if (version == "edit"):
-			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+str(form.errors)))
 		else:
-			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+str(form.errors)))
 
 
 def ht_update_lesson(lesson, form):
@@ -992,35 +992,54 @@ def upload():
 	print 'upload: lesson_id', lesson_id
 
 	for mydict in request.files:
-
-		comment = ""
-
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		print("upload: reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("upload()\treqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
-		print ("upload: img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
-			# create Image.
+			# does image exist?  create Image.
+			print 'upload()\tdoes image exist?'
 			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
-			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
-			f.write(image_data)
-			f.close()
-			try:
-				print 'upload: adding metaimg to db'
-				db_session.add(metaImg)
-				db_session.commit()
-			except Exception as e:
-				print 'upload: exception', type(e), e
-				db_session.rollback()
+			metaImg = Image.get_by_id(img_hashname)
+			comment = ""
+			if (metaImg is None):
+				# image does not exists.  create.
+				print 'upload()\timage does not exist.  Create it.'
+				metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
+				f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
+				f.write(image_data)
+				f.close()
+				try:
+					print 'upload()\tadding metaimg to db'
+					db_session.add(metaImg)
+					db_session.commit()
+				except IntegrityError as ie:
+					# image already exists.
+					print 'upload()\tfunny seeing image already exist here.'
+					print 'upload: exception', type(e), e
+					db_session.rollback()
+				except Exception as e:
+					print 'upload: exception', type(e), e
+					db_session.rollback()
 
-		# upload to S3.
-		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
-		sml.set_contents_from_file(StringIO(image_data))
+				print 'upload()\tpush image to S3.'
+				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
+				sml.set_contents_from_file(StringIO(image_data))
+
+			if (lesson_id):
+				print 'upload()\create li_map', metaImg.img_id, ' <=> ', lesson_id
+				li_map = LessonImageMap(metaImg.img_id, lesson_id, bp.prof_id, comment="No comment")
+				try:
+					db_session.add(li_map)
+					db_session.commit()
+					print 'upload()\li_map committed'
+				except Exception as e:
+					print type(e), e
+					db_session.rollback()
 
 	return jsonify(tmp="/uploads/" + str(img_hashname))
 
