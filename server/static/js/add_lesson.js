@@ -139,6 +139,7 @@ $(document).ready(function() {
 });
 
 
+
 function editPortfolioImages(lesson_id) {
 
 	var fd = {};
@@ -157,12 +158,12 @@ function editPortfolioImages(lesson_id) {
 			},
 			error : function(response) {
 				console.log("AJAX error");
+				console.log(response);
 			}
 	});
-
 	return false;
-
 }
+
 
 function getLessonData(lesson_id) {
 
@@ -229,12 +230,13 @@ function getLessonImages(lesson_id) {
 		console.log('getLessonImages: ERROR - lesson_id is null');
 	}
 
-	$.ajax({ url : "/get_lesson_images",
+	$.ajax({ url : '/lesson/'+lesson_id+'/images',
 			type : "GET",
 			data : fd,
 			success : function(response) {
 				console.log("getLessonImages - AJAX success");
-				console.log("getLessonImages - Response: "+JSON.stringify(response));
+				console.log("getLessonImages - Response: "+ JSON.stringify(response));
+				console.log(response);
 				$(".lessonReviewPortfolio").empty();
 				$.each(response.images, function() {
 					console.log("IMAGE: "+this.img_id);
@@ -244,6 +246,7 @@ function getLessonImages(lesson_id) {
 			},
 			error : function(response) {
 				console.log("AJAX error");
+				console.log(response);
 			}
 	});
 
