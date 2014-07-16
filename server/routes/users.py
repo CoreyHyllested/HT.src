@@ -473,10 +473,16 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	form.lessonIndustry.data = lesson.lesson_industry
 	form.lessonDuration.data = lesson.lesson_duration
 	form.lessonAvail.data = lesson.lesson_avail
+	form.lessonMakeLive.data = 'y'
+
+	if (form.lessonRate.data <= 0):
+		form.lessonRate.data = bp.prof_rate		
+
+	if (lesson.lesson_flags == 2):
+		form.lessonMakeLive.data = None
 
 	lessonUpdated = lesson.lesson_updated
 	lessonCreated = lessonUpdated = lesson.lesson_created
-	lessonFlags = lesson.lesson_flags
 
 	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
 
@@ -493,6 +499,9 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	form = LessonForm(request.form)
 	lesson = Lesson.get_by_lesson_id(lesson_id)
+
+	print "render_edit_lesson: Lesson Flag:", lesson.lesson_flags
+
 	form.lessonTitle.data = lesson.lesson_title
 	form.lessonDescription.data = lesson.lesson_description
 	form.lessonAddress1.data = lesson.lesson_address_1
@@ -508,10 +517,15 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	form.lessonIndustry.data = lesson.lesson_industry
 	form.lessonDuration.data = lesson.lesson_duration
 	form.lessonAvail.data = lesson.lesson_avail
+	form.lessonMakeLive.data = 'y'
 
-	lessonUpdated = lesson.lesson_updated
-	lessonCreated = lessonUpdated = lesson.lesson_created
-	lessonFlags = lesson.lesson_flags
+	if (form.lessonRate.data <= 0):
+		form.lessonRate.data = bp.prof_rate		
+
+	if (lesson.lesson_flags == 2):
+		form.lessonMakeLive.data = None
+
+	# lessonUpdated = lesson.lesson_updated
 
 	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
 
@@ -524,7 +538,9 @@ def api_update_lesson(lesson_id):
 	if (bp.availability == 0): return redirect('/dashboard')
 	
 	version = request.values.get("version")
+	saved = request.values.get("saved")
 	print "api_update_lesson: Version is", version
+	print "api_update_lesson: Saved is", saved
 	print 'api_update_lesson: Beginning lesson update ...'
 
 	form = LessonForm(request.form)
@@ -534,9 +550,10 @@ def api_update_lesson(lesson_id):
 		print 'api_update_lesson: valid POST'
 		print 'api_update_lesson: lesson_id is ', lesson_id
 		lesson = Lesson.get_by_lesson_id(lesson_id)
+		print "api_update_lesson: lessonMakeLive is", form.lessonMakeLive.data
 		print 'api_update_lesson: look for updates.'
 		try:
-			update_lesson = ht_update_lesson(lesson, form)
+			update_lesson = ht_update_lesson(lesson, form, saved)
 			if (update_lesson):
 				print 'api_update_lesson: adding lesson'
 				db_session.add(lesson)
@@ -557,7 +574,7 @@ def api_update_lesson(lesson_id):
 		print 'api_update_lesson: invalid POST', form.errors
 
 
-	if (version != "save"):
+	if (saved != "true"):
 
 		print 'api_update_lesson: fell through - populating form data and returning.'
 
@@ -577,20 +594,23 @@ def api_update_lesson(lesson_id):
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
 		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMakeLive.data = 'y'
+
+		if (lesson.lesson_flags == 2):
+			form.lessonMakeLive.data = ''
 
 		lessonUpdated = lesson.lesson_updated
 		lessonCreated = lessonUpdated = lesson.lesson_created
-		lessonFlags = lesson.lesson_flags
-
 
 		if (version == "edit"):
-			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate"))
 		else:
-			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate"))
 
 
-def ht_update_lesson(lesson, form):
+def ht_update_lesson(lesson, form, saved):
 	print 'ht_update_lesson:', lesson
+	print 'ht_update_lesson: saved? ', saved
 	update = False
 	for key in request.values:
 		print '\t', key, request.values.get(key)
@@ -666,6 +686,28 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+	# Apply the flag logic
+	# Default is 0 (initialized). If lesson has already been submitted, it will either be 2 (private) or 3 (active). 
+	# It can also be saved (1) before it has been submitted. The saved state (1) implies incompleteness. Completeness validation will not happen for saved forms.
+	# So if existing flag is 2 or 3, we will never set it to 1 (or zero), only back and forth between the two. Forms must be complete to be flagged 2 or 3.
+	
+	print "\tSetting Flags...current flag is",lesson.lesson_flags
+
+	if (saved == "true"):
+		print "\tUser saved form - set flag to 1 if not already 2 or 3"
+		if (lesson.lesson_flags <= 1):
+			lesson.lesson_flags = 1
+			update = True
+	elif (form.lessonMakeLive.data == "y"):
+		print "\tUser submitted form and made live"
+		lesson.lesson_flags = 3
+		update = True
+	else:
+		print "\tUser submitted form but kept private"
+		lesson.lesson_flags = 2
+		update = True
+
+	print "\tAnd now the flag is",lesson.lesson_flags	
 
 	return update
 

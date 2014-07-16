@@ -43,9 +43,6 @@
 				Create a Lesson				
 			{% endif %}			
 			</div>
-<!-- 			<div class="lessonHeaderPageSubtitle">
-			<a href="/profile">No thanks, return to profile</a>
-			</div> -->
 		</div>	
 		<div class="lessonHeaderRight">
 			<span class="lessonFormStatus"></span>
@@ -283,7 +280,10 @@
 
 
 							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
-							<div class="lessonFormButtonOptions"><input type="checkbox" name="lessonMakeLive" id="lessonMakeLive" value="True" checked><label for="lessonMakeLive">Make this lesson live and public!</label></div>
+							<div class="lessonFormButtonOptions">
+							{{form.lessonMakeLive(id="lessonMakeLive", class='formField')}} {{form.lessonMakeLive.label}}
+							<!-- <input type="checkbox" name="lessonMakeLive" id="lessonMakeLive" value="True" checked><label for="lessonMakeLive">Make this lesson live and public!</label> -->
+							</div>
 						</div>
 						<div class="lessonFormPreviousContainer">
 							<a class="lessonFormPrevious">Previous</a>

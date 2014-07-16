@@ -254,25 +254,26 @@ function getLessonImages(lesson_id) {
 function saveLessonForm(lesson_id) {
 
 	var fd = new FormData($('#lessonForm')[0]);
-	fd.append('version', "save")
-	fd.append('csrf_token', $('#csrf_token').val())
-	fd.append('lesson_title', $('#lessonTitle').val())
-	fd.append('lesson_description', $('#lessonDescription').val())
-	fd.append('lesson_address_1', $('#lessonAddress1').val())
-	fd.append('lesson_address_2', $('#lessonAddress2').val())
-	fd.append('lesson_city', $('#lessonCity').val())
-	fd.append('lesson_state', $('#lessonState').val())
-	fd.append('lesson_zip', $('#lessonZip').val())
-	fd.append('lesson_country', $('#lessonCountry').val())
-	fd.append('lesson_address_details', $('#lessonAddressDetails').val())
-	fd.append('lesson_rate', $('#lessonRate').val())
-	fd.append('lesson_rate_unit', $('#lessonRateUnit').val())
-	fd.append('lesson_loc_option', $('#lessonPlace').val())
-	fd.append('lesson_industry', $('#lessonIndustry').val())
-	fd.append('lesson_duration', $('#lessonDuration').val())
-	fd.append('lesson_avail', $('#lessonAvail').val())
+	fd.append('saved', "true")
+	// fd.append('csrf_token', $('#csrf_token').val())
+	// fd.append('lesson_title', $('#lessonTitle').val())
+	// fd.append('lesson_description', $('#lessonDescription').val())
+	// fd.append('lesson_address_1', $('#lessonAddress1').val())
+	// fd.append('lesson_address_2', $('#lessonAddress2').val())
+	// fd.append('lesson_city', $('#lessonCity').val())
+	// fd.append('lesson_state', $('#lessonState').val())
+	// fd.append('lesson_zip', $('#lessonZip').val())
+	// fd.append('lesson_country', $('#lessonCountry').val())
+	// fd.append('lesson_address_details', $('#lessonAddressDetails').val())
+	// fd.append('lesson_rate', $('#lessonRate').val())
+	// fd.append('lesson_rate_unit', $('#lessonRateUnit').val())
+	// fd.append('lesson_loc_option', $('#lessonPlace').val())
+	// fd.append('lesson_industry', $('#lessonIndustry').val())
+	// fd.append('lesson_duration', $('#lessonDuration').val())
+	// fd.append('lesson_avail', $('#lessonAvail').val())
+	// Note - We don't need to set flags here. That's handled by ht_update_lesson.
 
-	// TODO save flags
+	console.log("saveLessonForm - version is "+fd["version"]);
 
 	$.ajax({ url	: "/lesson/update/"+lesson_id,
 			type	: "POST",

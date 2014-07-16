@@ -23,8 +23,17 @@
 		<div class="lessonHeaderCenter">
 			<div class="lessonTitle">{{lesson.lesson_title}}</div>
 		</div>
-<!-- 		<div class="lessonHeaderRight">
-		</div>	 -->		
+		<div class="lessonHeaderRight">
+		{% if lesson.lesson_flags == 1 %}
+			Status: Saved
+		{% elif lesson.lesson_flags == 2 %}
+			Status: Private
+		{% elif lesson.lesson_flags == 3 %}	
+			Status: Live
+		{% else %}
+			Uh oh - flag is messed up
+		{% endif %}
+		</div>			
 	</div>	
 
 	<div class="lessonLeftColumn">

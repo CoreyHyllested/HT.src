@@ -149,13 +149,13 @@ class LessonForm(Form):
 	lessonZip		= TextField('Zip', None)
 	lessonCountry	= TextField('Country', None)
 	lessonAddressDetails = TextField('Details', None)
-	lessonRate		= IntegerField('Rate Amount', None, default=50)
+	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
-
+	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
 
 
 class ProfileForm(Form):
