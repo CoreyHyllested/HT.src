@@ -698,7 +698,7 @@ class Image(Base):
 		self.img_comment = comment
 		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
-
+		self.img_flags = IMG_STATE_VISIBLE
 
 	def __repr__ (self):
 		return '<image %s %s>' % (self.img_id, self.img_comment[:20])
@@ -716,19 +716,6 @@ class Image(Base):
 		return img
 
 
-	@staticmethod
-	def get_by_lesson_id(lesson_id):
-		images = Image.query.filter_by(img_lesson=lesson_id).all()
-		print 'Image.get_by_lesson_id(' + str(lesson_id) + '): ', len(images)
-		return images
-
-
-	@staticmethod
-	def get_lesson_sample_img(lesson_id):
-		sample_img = Image.query.filter_by(lesson_id=lesson_id).first()
-		return sample_img
-
-
 	@property
 	def serialize(self):
 		return {
@@ -738,7 +725,6 @@ class Image(Base):
 			'img_created'	: self.img_created,
 			'img_flags'		: self.img_flags,
 			'img_order'		: self.img_order,
-			'img_lesson'	: self.img_lesson
 		}
 
 
