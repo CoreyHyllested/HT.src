@@ -15,6 +15,7 @@
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
+from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
@@ -332,23 +333,28 @@ def render_edit_portfolio_page():
 
 
 
+
 @ht_server.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	pi = Oauth.get_stripe_by_uid(uid)
+	title = '- Sign Up to Teach'
+	edit  = None
 
-	stripe = 'None'
-	# Stripe Connect ID, req'd to take payments
+	# StripeConnect req'd for payments
+	stripe = 'No Stripe Account Found.'
 	if (pi is not None): stripe = pi.oa_account
+	session['next_url']='/teacher/signup#payment'
 
 	if (bp.availability > 0):
 		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
-		return make_response(render_template('teacher_signup.html', title='- Edit Your Info', bp=bp, oa_stripe=stripe, edit="true"))
+		title = '- Edit Your Info'
+		edit  = True
+	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe, edit=edit))
 
-	session['next_url']='/teacher/signup#payment'
-	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe))
+
 
 
 @ht_server.route('/teacher/activate', methods=['GET', 'POST'])
@@ -855,19 +861,21 @@ def render_schedule_page():
 
 
 
-@insprite_views.route("/review/<meet_id>/<review_id>", methods=['GET', 'POST'])
+@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
 @req_authentication
-def render_review_meeting_page(meet_id, review_id):
-	print 'render_review_meeting()\t', 'meeting =', meet_id, '\treview_id =', review_id
-	# if its been 30 days since review creation.  Return an error.
+def render_review_meeting_page(review_id):
+	"""renders review page.  Results posted to ht_api_review"""
+	print 'render_review_meeting()\treview_id =', review_id
 	# if review already exists, return a kind message.
 
 	try:
 		review = Review.get_by_id(review_id)
 		review_days_left = review.time_until_review_disabled()
 		if (review_days_left < 0):
-			print 'Review timed out'
-			return
+			return jsonify(msg='Reviews are only available for 30 days after a meeting'), 400
+		if (review.completed()):
+			raise StateTransitionError(review.review_id, review.rev_status, review.rev_status, msg="Reviews cannot be modified once submitted")
+			#return make_response(jsonify(msg='Reviews cannot be modified once submitted'), 400
 
 		bp = Profile.get_by_uid(session['uid'])
 		ba = Account.get_by_uid(bp.account)

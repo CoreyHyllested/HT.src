@@ -26,19 +26,23 @@ class Sanitized_Exception(Exception):
 
 
 
+
 class StateTransitionError(Exception):
-	def __init__(self, uuid, s_cur, s_nxt, flags, msg):
+	def __init__(self, uuid, s_cur, s_nxt, flags=None, msg=None):
 		self.uuid  = uuid
 		self.s_cur = s_cur
 		self.s_nxt = s_nxt
 		self.flags = flags
-		self.msg = msg 
-	
+		self.msg = msg
+
 	def sanitized_msg(self):
-		return self.msg 
+		return self.msg
 
 	def __str__(self):
-		return "<TransitionError(%r, %r) [%r]=>[%r]>" % (self.uuid, self.flags, self.s_cur, self.s_nxt)
+		return "<TransitionError(%r, %r) => %r>" % (self.uuid, self.s_cur, self.s_nxt)
+
+
+
 
 class DB_Error(Exception):
 	def __init__(self, db_err, usr_msg):

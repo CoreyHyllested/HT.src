@@ -222,8 +222,10 @@
 			<div class="dashboardInfoBox">
 				{% if bp.reviews == 0 %}
 					No Reviews
+				{% elif bp.reviews == 1 %}
+					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Review)</a>
 				{% else %}
-					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="#">({{bp.reviews}} Reviews)</a>
+					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Reviews)</a>
 				{% endif %}
 			</div>
 		</div>

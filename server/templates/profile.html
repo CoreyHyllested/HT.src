@@ -6,13 +6,10 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
-
-
 {% endblock %}
 
 
 {% block content %}
-
 <div class="profileContentWrapper">
 	
 	<div class="profileHeaderColumn">
@@ -49,8 +46,10 @@
 				<div class="profileInfoBox">
 					{% if hp.reviews == 0 %}
 						No Reviews
+					{% elif hp.reviews == 1 %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Review)</a>
 					{% else %}
-						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
 					{% endif %}
 				</div>
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
@@ -62,13 +61,9 @@
 		<h3>There are no reviews for this person yet.</h3>
 
 		{% else %}
-		<div class="profileReviews">
+		<div class="profileReviews" id="reviews">
 				<div class="profileReviewsInfo">
 				<h3>Reviews ({{revs|length}})</h3>
-				<!-- CAH: Write Review should appear if user has purchased time with the person.
-					 CAH: Will make this happen later.  Currently, sent as an email.
-				<a href="/postreview">Write Review</a>
-				-->
 			</div>
 			<div class="profileLatestReviews">
 
@@ -81,13 +76,13 @@
 							{% if loop.index == 1 %}
 							<div class="profileReviewImageFacebook"></div>
 							{% endif %}
-							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
+							<a href="/profile?hero={{review.display.prof_id}}">
 								<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
 							</a>
 						</div>
 						
 						<div class="profileReviewLeftNameHeadline">
-							<a href="#" onclick="document.getElementById('h').value='{{review.display.prof_id}}'; document.p.submit();">
+							<a href="/profile?hero={{review.display.prof_id}}">
 								<h3>{{review.display.prof_name}}</h3>
 								<h4>{{review.display.headline}}</h4>
 							</a>
@@ -210,8 +205,10 @@
 				<div class="profileInfoBox profileInfoRating">
 					{% if hp.reviews == 0 %}
 						No Reviews
+					{% elif hp.reviews == 1 %}
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Review)</a>
 					{% else %}
-						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#">({{hp.reviews}} Reviews)</a>
+						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
 					{% endif %}
 				</div>
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
