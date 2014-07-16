@@ -471,11 +471,12 @@ class Profile(Base):
 
 	def update_profile_image(self, image):
 		"""Updates profile image"""
+		print 'update()\tProfile.update_profile_image()\tenter'
 		img = Image.get_by_id(self.prof_img);
 		if (img is None):
-			print 'update_profile_image()... No profile image!!!!'
+			print 'update()\tProfile.update_profile_image()\t No profile image!!!!'
 			raise Exception ("WTF, no profile image")
-			img.profile_image(False)
+		img.profile_image(False)
 
 		image.profile_image(True)
 		self.prof_img = image.img_id
@@ -734,15 +735,18 @@ class Image(Base):
 
 
 	def profile_image(self, value):
-		img_flags = self.img_flags
-		setting =  (img_flags | (0x1 << IMG_FLAG_PROFILE))
-		clearing = (img_flags & (0 ^ (0x1 << IMG_FLAG_PROFILE)))
-		img_flags = (value) and (img_flags | (0x1 << IMG_FLAG_PROFILE)) or (img_flags & (0 ^ (0x1 << IMG_FLAG_PROFILE)))
-		print 'img_flags = ' + str(hex(self.img_flags))
-		print 'img_flags = [Setting] ' + str(hex(img_flags)) + ' | ' + str(hex(0x1 << IMG_FLAG_PROFILE)) + ' = ' + setting
-		print 'img_flags = [clearng] ' + str(hex(img_flags)) + ' & ' + str(hex(0 ^ (0x1 << IMG_FLAG_PROFILE))) + ' = ' + clearing
-		print 'img_flags = (' + str(value) + ') = ' + img_flags
-		self.img_flags = img_flags
+		flags = self.img_flags
+		print 'update()\tProfile.update_profile_image()\tflags = ' + format(flags, '08x')
+		print 'update()\tProfile.update_profile_image()\t~0x0= ' + format(~0x0, '08x')
+		print 'update()\tProfile.update_profile_image()\tbin_or = ' + format(IMG_STATE_PROFILE, '08X')
+		print 'update()\tProfile.update_profile_image()\tbin_and = ' + format(~0x0 ^ (IMG_STATE_PROFILE))
+		setting =  (flags | IMG_STATE_PROFILE)
+		clearing = (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		flags = (value) and (flags | (IMG_STATE_PROFILE)) or (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		print 'update()\tProfile.update_profile_image()\timg_flags = [Setting] ' + format(flags, '08X') + ' | ' + format(IMG_STATE_PROFILE, '08X') + ' = ' + format(setting, '08X')
+		print 'update()\tProfile.update_profile_image()\timg_flags = [Clearng] ' + format(flags, '08X') + ' & ' + format(~0x0 ^ IMG_STATE_PROFILE, '08X') + ' = ' + format(clearing, '08X')
+		print 'update()\tProfile.update_profile_image()\timg_flags = (' + str(value) + ') = ' + format(flags, '08x')
+		self.img_flags = flags
 
 
 
