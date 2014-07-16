@@ -470,12 +470,9 @@ class Profile(Base):
 
 
 	def update_profile_image(self, newprof_img):
-		""" Updates profile image.   """
-		print 'update()\tProfile.update_profile_image()\tenter'
+		# grab profile's current profile image.
 		replace_img = Image.get_by_id(self.prof_img);
-		if (replace_img is None):
-			print 'Profile.update_profile_image()\t No profile image!!?!?'
-			raise Exception ("WTF, no profile image?!?")
+		if (replace_img is None): raise Exception("WTF, no profile image?!?")
 
 		# update both images and profile
 		replace_img.profile_image(False)
@@ -761,9 +758,9 @@ class Image(Base):
 
 
 class LessonImageMap(Base):
-	__tablename__ = "image_lesson_map"
+	__tablename__ = "image_lesson_map"					#TODO rename 'lesson_image_map
 
-	id			= Column(Integer, primary_key = True)
+	id			= Column(Integer, primary_key = True)	#TODO rename map_id
 	map_image	= Column(String(64),  nullable=False, index=True)
 	map_lesson	= Column(String(40),  nullable=False, index=True)
 	map_prof	= Column(String(40),  nullable=True,  index=True)
@@ -785,10 +782,23 @@ class LessonImageMap(Base):
 
 
 	@staticmethod
-	def get_images_for_lesson_id(lesson_id):
-		images = Image.query.filter_by(map_lesson=lesson_id).all()
+	def get_images_for_lesson(lesson_id):
+		images = LessonImageMap.query.filter_by(map_lesson=lesson_id).all()
 		print 'LessonImageMap.get_images_for_lesson_id(' + str(lesson_id) + '): ', len(images)
 		return images
+
+
+	@property
+	def serialize(self):
+		return {
+			'img_id'		: self.map_image,	# used by 'add_lesson.js'
+			'img_comment'	: self.map_comm,	# used by 'add_lesson.js'
+			'img_order'		: self.map_order,	# used by 'add_lesson.js'
+			'img_lesson'	: self.map_lesson,	#img_lesson
+			'img_profile'	: self.map_prof,	#img_profile
+			#img_created
+			#img_flags
+		}
 
 
 

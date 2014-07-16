@@ -321,11 +321,12 @@ def render_multiupload_page():
 @insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
-	lesson_id = request.values.get('lesson_id')
+	lesson_id = request.values.get('lesson_id', False)
 
-	if (lesson_id is not None):
+	if (lesson_id):
 		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		# warning.  dangerous. returning a LessonMap (which has same fields)
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 	else:
 		print "render_edit_portfolio_page(): get all images for profile:"
 		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
@@ -707,20 +708,16 @@ def render_lesson_page(lesson_id):
 
 
 @req_authentication
-@insprite_views.route("/get_lesson_images", methods=['GET', 'POST'])
-def get_lesson_images():
+@insprite_views.route("/lesson/<lesson_id>/images", methods=['GET', 'POST'])
+def api_get_images_for_lesson(lesson_id):
 	# move this to API.
-	lesson_id = request.values.get('lesson_id')
-	images = []
 
 	try:
-		print "get_lesson_images: lesson_id is", lesson_id
-		images = db_session.query(Image).filter(Image.img_lesson == lesson_id).all();
-		json_images = [img.serialize for img in images]
+		images = ht_get_serialized_images_for_lesson(lesson_id)
 	except Exception as e:
-		print "get_lesson_images: exception:", e
-		json_images = None
-	return jsonify(images=json_images)
+		print "api_get_images_for_lesson: exception:", type(e), e
+		raise e
+	return jsonify(portfolio=images)
 
 
 
@@ -1073,6 +1070,15 @@ def ht_map_image_to_lesson(image, lesson_id):
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
+
+
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
+
 
 
 
