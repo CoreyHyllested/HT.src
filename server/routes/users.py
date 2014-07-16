@@ -693,16 +693,12 @@ def render_lesson_page(lesson_id):
 
 	try:
 		lesson = Lesson.get_by_lesson_id(lesson_id)
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
-
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		print "render_lesson_page(): Lesson String:", str(lesson)
-		print "render_lesson_page(): Images:", str(portfolio)
-
-		return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
-
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
 
 
 
