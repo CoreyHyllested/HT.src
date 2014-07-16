@@ -986,7 +986,7 @@ def upload():
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
-	profile_img = request.values.get('profile', False)
+	update_profile_img = request.values.get('profile', False)
 	lesson_id = request.values.get('lessonID')
 
 	print 'upload: orig', orig
@@ -999,29 +999,16 @@ def upload():
 		image_data = request.files[mydict].read()
 		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
-		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
 			image = ht_create_image(bp, image_data, comment="No caption")
 
 			if (lesson_id):
-				print 'upload()\tlesson_id is ' + str(lesson_id)
+				print 'upload()\tlesson_id' + str(lesson_id)
 				ht_map_image_to_lesson(image, lesson_id)
 
-			if (profile_img):
-				print 'upload()\timage is profile image.'
-				(profile, img_1, img_2) = bp.update_profile_image(image)
-				print profile
-				print img_1
-				print img_2
-				# try to move this to models
-				try:
-					db_session.add(profile)
-					db_session.add(img_1)
-					db_session.add(img_2)
-					db_session.commit()
-				except Exception as e:
-					print type(e), e
-					db_session.rollback()
+			if (update_profile_img):
+				print 'upload()\tupdate profile img'
+				bp.update_profile_image(image)
 
 	return jsonify(tmp="/uploads/" + str(image.img_id))
 
@@ -1040,27 +1027,24 @@ def uploaded_file(filename):
 
 def ht_create_image(profile, image_data, comment="No Caption"):
 	print 'upload()\tht_create_image()\tenter'
-	img_name = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-	image = Image.get_by_id(img_name)
+	imgid = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+	image = Image.get_by_id(imgid)
 	if (image is None):
-		# image does not exists.  create.
 		print 'upload()\tht_image_create\t image does not exist.  Create it.'
-		image = Image(img_name, profile.prof_id, comment)
+		# image doesn't exist. Create and upload to S3
+		image = Image(imgid, profile.prof_id, comment)
 		try:
-			print 'upload()\tht_image_create()\tadding image to S3'
 			ht_upload_image_to_S3(image, image_data)
-			print 'upload()\tht_image_create()\tadding image to db'
 			db_session.add(image)
 			db_session.commit()
 		except IntegrityError as ie:
 			# image already exists.
-			print 'upload()\tht_image_creat() funny seeing image already exist here.'
+			print 'upload()\tht_image_create() funny seeing image already exist here.'
 			print 'upload: exception', type(e), e
 			db_session.rollback()
 		except Exception as e:
 			print 'upload: exception', type(e), e
 			db_session.rollback()
-	print 'upload()\tht_create_image()\treturning img'
 	return image
 
 
@@ -1072,13 +1056,10 @@ def ht_upload_image_to_S3(image, image_data):
 
 	print 'upload()\tupload_image_to_S3\tpush image to S3.'
 	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-	print 'upload()\tupload_image_to_S3\tcreated connection.'
 	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
-	print 'upload()\tupload_image_to_S3\tcreated s3_bkt.'
 	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
 	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
 	s3_key.set_contents_from_file(StringIO(image_data))
-	print 'upload()\tupload_image_to_S3\tcreated value.'
 
 
 

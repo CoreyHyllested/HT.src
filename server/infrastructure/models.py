@@ -12,7 +12,7 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base
+from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
@@ -469,20 +469,29 @@ class Profile(Base):
 
 
 
-	def update_profile_image(self, image):
-		"""Updates profile image"""
+	def update_profile_image(self, newprof_img):
+		""" Updates profile image.   """
 		print 'update()\tProfile.update_profile_image()\tenter'
-		img = Image.get_by_id(self.prof_img);
-		if (img is None):
-			print 'update()\tProfile.update_profile_image()\t No profile image!!!!'
-			raise Exception ("WTF, no profile image")
-		img.profile_image(False)
+		replace_img = Image.get_by_id(self.prof_img);
+		if (replace_img is None):
+			print 'Profile.update_profile_image()\t No profile image!!?!?'
+			raise Exception ("WTF, no profile image?!?")
 
-		image.profile_image(True)
-		self.prof_img = image.img_id
-		return (self, img, image)
-		# try updating DB from here?
+		# update both images and profile
+		replace_img.profile_image(False)
+		newprof_img.profile_image(True)
+		self.prof_img = newprof_img.img_id
 
+		try:
+			# save updated images, self
+			db_session.add(replace_img)
+			db_session.add(newprof_img)
+			db_session.add(self)
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+		return self
 
 
 
@@ -685,12 +694,14 @@ class Image(Base):
 	img_order	= Column(Integer, default=0, nullable=False)
 	img_lesson	= Column(String(256))
 
+
 	def __init__(self, imgid, prof_id, comment=None, lesson=None):
 		self.img_id  = imgid
 		self.img_profile = str(prof_id)
 		self.img_comment = comment
 		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
+
 
 	def __repr__ (self):
 		return '<image %s %s>' % (self.img_id, self.img_comment[:20])
@@ -734,19 +745,16 @@ class Image(Base):
 		}
 
 
-	def profile_image(self, value):
+	def profile_image(self, new_value):
 		flags = self.img_flags
-		print 'update()\tProfile.update_profile_image()\tflags = ' + format(flags, '08x')
-		print 'update()\tProfile.update_profile_image()\t~0x0= ' + format(~0x0, '08x')
-		print 'update()\tProfile.update_profile_image()\tbin_or = ' + format(IMG_STATE_PROFILE, '08X')
-		print 'update()\tProfile.update_profile_image()\tbin_and = ' + format(~0x0 ^ (IMG_STATE_PROFILE))
-		setting =  (flags | IMG_STATE_PROFILE)
-		clearing = (flags & (~0x0 ^ IMG_STATE_PROFILE))
-		flags = (value) and (flags | (IMG_STATE_PROFILE)) or (flags & (~0x0 ^ IMG_STATE_PROFILE))
-		print 'update()\tProfile.update_profile_image()\timg_flags = [Setting] ' + format(flags, '08X') + ' | ' + format(IMG_STATE_PROFILE, '08X') + ' = ' + format(setting, '08X')
-		print 'update()\tProfile.update_profile_image()\timg_flags = [Clearng] ' + format(flags, '08X') + ' & ' + format(~0x0 ^ IMG_STATE_PROFILE, '08X') + ' = ' + format(clearing, '08X')
-		print 'update()\tProfile.update_profile_image()\timg_flags = (' + str(value) + ') = ' + format(flags, '08x')
+		#setting =  (flags | (       IMG_STATE_PROFILE))
+		#clearing = (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		flags = (new_value) and (flags | (IMG_STATE_PROFILE)) or (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		#print 'update()\tProfile.update_profile_image()\timg_flags = [Setting] ' + format(flags, '08X') + ' | ' + format(IMG_STATE_PROFILE, '08X') + ' = ' + format(setting, '08X')
+		#print 'update()\tProfile.update_profile_image()\timg_flags = [Clearng] ' + format(flags, '08X') + ' & ' + format(~0x0 ^ IMG_STATE_PROFILE, '08X') + ' = ' + format(clearing, '08X')
+		#print 'update()\tProfile.update_profile_image()\timg_flags = (' + str(new_value) + ') = ' + format(flags, '08x')
 		self.img_flags = flags
+		return (self.img_flags & IMG_STATE_PROFILE)
 
 
 
