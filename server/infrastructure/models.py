@@ -363,7 +363,7 @@ class Oauth(Base):
 	def __repr__ (self):
 		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
-@staticmethod
+	@staticmethod
 	def get_stripe_by_uid(uid):
 		try:
 			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
