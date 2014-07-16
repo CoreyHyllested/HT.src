@@ -457,6 +457,16 @@ def display_partner_proposal(meeting, profile):
 
 
 
+def ht_filter_images(image_set, filter_by='VISIBLE', dump=False):
+	images = []
+	if (filter_by == 'VISIBLE'):
+		images = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), image_set)
+	else:
+		print '\t\t YOU DID NOT USE A VALID FILTER NAME'
+	return images
+
+
+
 def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
 	reviews = []
 	if (filter_by == 'REVIEWED'):
