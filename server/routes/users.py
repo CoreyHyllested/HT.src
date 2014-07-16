@@ -975,16 +975,18 @@ def render_settings():
 
 
 
+
+# rename /image/create
 @insprite_views.route('/upload', methods=['POST'])
 @dbg_enterexit
 @req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
-	#trace(request.files)
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
+	profile_img = request.values.get('profile', False)
 	lesson_id = request.values.get('lessonID')
 
 	print 'upload: orig', orig
@@ -999,49 +1001,29 @@ def upload():
 
 		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
-			# does image exist?  create Image.
-			print 'upload()\tdoes image exist?'
-			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image.get_by_id(img_hashname)
-			comment = ""
-			if (metaImg is None):
-				# image does not exists.  create.
-				print 'upload()\timage does not exist.  Create it.'
-				metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
-				f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
-				f.write(image_data)
-				f.close()
-				try:
-					print 'upload()\tadding metaimg to db'
-					db_session.add(metaImg)
-					db_session.commit()
-				except IntegrityError as ie:
-					# image already exists.
-					print 'upload()\tfunny seeing image already exist here.'
-					print 'upload: exception', type(e), e
-					db_session.rollback()
-				except Exception as e:
-					print 'upload: exception', type(e), e
-					db_session.rollback()
-
-				print 'upload()\tpush image to S3.'
-				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
-				sml.set_contents_from_file(StringIO(image_data))
+			image = ht_create_image(bp, image_data, comment="No caption")
 
 			if (lesson_id):
-				print 'upload()\create li_map', metaImg.img_id, ' <=> ', lesson_id
-				li_map = LessonImageMap(metaImg.img_id, lesson_id, bp.prof_id, comment="No comment")
+				print 'upload()\tlesson_id is ' + str(lesson_id)
+				ht_map_image_to_lesson(image, lesson_id)
+
+			if (profile_img):
+				print 'upload()\timage is profile image.'
+				(profile, img_1, img_2) = bp.update_profile_image(image)
+				print profile
+				print img_1
+				print img_2
+				# try to move this to models
 				try:
-					db_session.add(li_map)
+					db_session.add(profile)
+					db_session.add(img_1)
+					db_session.add(img_2)
 					db_session.commit()
-					print 'upload()\li_map committed'
 				except Exception as e:
 					print type(e), e
 					db_session.rollback()
 
-	return jsonify(tmp="/uploads/" + str(img_hashname))
+	return jsonify(tmp="/uploads/" + str(image.img_id))
 
 
 
@@ -1055,6 +1037,60 @@ def uploaded_file(filename):
 	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 
 
+
+def ht_create_image(profile, image_data, comment="No Caption"):
+	print 'upload()\tht_create_image()\tenter'
+	img_name = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+	image = Image.get_by_id(img_name)
+	if (image is None):
+		# image does not exists.  create.
+		print 'upload()\tht_image_create\t image does not exist.  Create it.'
+		image = Image(img_name, profile.prof_id, comment)
+		try:
+			print 'upload()\tht_image_create()\tadding image to S3'
+			ht_upload_image_to_S3(image, image_data)
+			print 'upload()\tht_image_create()\tadding image to db'
+			db_session.add(image)
+			db_session.commit()
+		except IntegrityError as ie:
+			# image already exists.
+			print 'upload()\tht_image_creat() funny seeing image already exist here.'
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+		except Exception as e:
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+	print 'upload()\tht_create_image()\treturning img'
+	return image
+
+
+
+def ht_upload_image_to_S3(image, image_data):
+	f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], image.img_id), 'w')
+	f.write(image_data)
+	f.close()
+
+	print 'upload()\tpush image to S3.'
+	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
+	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + Image.img_id)
+	s3_key.set_contents_from_file(StringIO(image_data))
+
+
+
+def ht_map_image_to_lesson(image, lesson_id):
+	print 'upload()\tmap_image_to_lesson\t', image.img_id, ' <=> ', lesson_id
+	li_map = LessonImageMap(image.img_id, lesson_id, image.img_profile, comment=image.img_comment)
+	try:
+		db_session.add(li_map)
+		db_session.commit()
+		print 'upload()\tmap_image_to_lesson\tcommitted'
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+
+
 def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
 	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
@@ -1066,6 +1102,8 @@ def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
 	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
 	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
+
+
 
 def error_sanitize(message):
 	if (message[0:16] == "(IntegrityError)"):
