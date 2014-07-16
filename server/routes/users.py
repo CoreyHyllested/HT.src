@@ -1070,11 +1070,15 @@ def ht_upload_image_to_S3(image, image_data):
 	f.write(image_data)
 	f.close()
 
-	print 'upload()\tpush image to S3.'
+	print 'upload()\tupload_image_to_S3\tpush image to S3.'
 	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+	print 'upload()\tupload_image_to_S3\tcreated connection.'
 	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
-	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + Image.img_id)
+	print 'upload()\tupload_image_to_S3\tcreated s3_bkt.'
+	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
+	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
 	s3_key.set_contents_from_file(StringIO(image_data))
+	print 'upload()\tupload_image_to_S3\tcreated value.'
 
 
 
