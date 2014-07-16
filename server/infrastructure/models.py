@@ -469,6 +469,23 @@ class Profile(Base):
 
 
 
+	def update_profile_image(self, image):
+		"""Updates profile image"""
+		img = Image.get_by_id(self.prof_img);
+		if (img is None):
+			print 'update_profile_image()... No profile image!!!!'
+			raise Exception ("WTF, no profile image")
+			img.profile_image(False)
+
+		image.profile_image(True)
+		self.prof_img = image.img_id
+		return (self, img, image)
+		# try updating DB from here?
+
+
+
+
+
 class Proposal(Base):
 	__tablename__ = "proposal"
 	prop_uuid	= Column(String(40), primary_key=True)													# NonSequential ID
@@ -714,6 +731,19 @@ class Image(Base):
 			'img_order'		: self.img_order,
 			'img_lesson'	: self.img_lesson
 		}
+
+
+	def profile_image(self, value):
+		img_flags = self.img_flags
+		setting =  (img_flags | (0x1 << IMG_FLAG_PROFILE))
+		clearing = (img_flags & (0 ^ (0x1 << IMG_FLAG_PROFILE)))
+		img_flags = (value) and (img_flags | (0x1 << IMG_FLAG_PROFILE)) or (img_flags & (0 ^ (0x1 << IMG_FLAG_PROFILE)))
+		print 'img_flags = ' + str(hex(self.img_flags))
+		print 'img_flags = [Setting] ' + str(hex(img_flags)) + ' | ' + str(hex(0x1 << IMG_FLAG_PROFILE)) + ' = ' + setting
+		print 'img_flags = [clearng] ' + str(hex(img_flags)) + ' & ' + str(hex(0 ^ (0x1 << IMG_FLAG_PROFILE))) + ' = ' + clearing
+		print 'img_flags = (' + str(value) + ') = ' + img_flags
+		self.img_flags = img_flags
+
 
 
 
