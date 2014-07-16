@@ -679,6 +679,18 @@ class Image(Base):
 
 
 	@staticmethod
+	def get_by_id(image_name):
+		try:
+			img = None
+			img = Image.query.filter_by(img_id=image_name).first()
+		except MultipleResultsFound as mrf:
+			print 'Never Happen Error: caught exception looking for img_id ', image_name
+		except NoResultsFound as nrf:
+			pass
+		return img
+
+
+	@staticmethod
 	def get_by_lesson_id(lesson_id):
 		images = Image.query.filter_by(img_lesson=lesson_id).all()
 		print 'Image.get_by_lesson_id(' + str(lesson_id) + '): ', len(images)
@@ -724,9 +736,10 @@ class LessonImageMap(Base):
 		self.map_prof	= profile
 		self.map_comm	= comment
 		self.map_order	= -1
+		print 'LessonImageMap.  created'
 
 	def __repr__(self):
-		print '<%r>' % (self.id)
+		print '<li_map %r>' % (self.id)
 
 
 	@staticmethod
