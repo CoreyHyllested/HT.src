@@ -869,28 +869,29 @@ def render_review_meeting_page(review_id):
 
 
 
+
 @insprite_views.route('/settings', methods=['GET', 'POST'])
 @req_authentication
 def render_settings():
-	""" Provides users the ability to modify their settings.
-		- detect HT Session info.  Provide modified info.
-	"""
+	""" Allows Insprite users to modify their account settings."""
+
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
 	pi	= Oauth.get_stripe_by_uid(uid)
 
-	card = 'Null'
+
+	# StripeConnect allows user to charge customers.
+	stripe_connect = 'StripeConnect account not found.'
 	if (pi is not None):
-		#pp(pi.serialize)
-		# Not a Customer.  Customers exist in Accounts.
-		# This is the Stripe Connect ID.  Own business.
-		# We use the pub & secret keys to charge users
-		card = pi.oa_account
+		stripe_connect = pi.oa_account
 
 	errmsg = None
+
+	print 'render_settings() enter'
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
+		print 'render_settings() validated POST '
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
@@ -901,12 +902,12 @@ def render_settings():
 		update_fail = False
 
 		if (form.set_input_newpass.data != ""):
-			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
+			print("render_settings() attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
 			update_acct = True
 			update_pass = form.set_input_newpass.data
 
 		if (ba.email != form.set_input_email.data):
-			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
+			print("render_settings() attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
 			update_acct = True
 			update_mail = form.set_input_email.data
 
@@ -915,9 +916,9 @@ def render_settings():
 				pwd = form.set_input_curpass.data
 			else:
 				pwd = form.set_input_email_pass.data
-			trace("password is: " + pwd)
+			print("render_settings() password is: " + pwd)
 			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
-			trace("modify acct = " + str(rc) + ", errno = " + str(errno))
+			print("render_settings() modify acct = " + str(rc) + ", errno = " + str(errno))
 			if (rc == False):
 				trace("restate errno" + str(errno))
 				errmsg = str(errno)
@@ -927,17 +928,19 @@ def render_settings():
 				form.set_input_verpass.data = ''
 				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 			else:
-				print "Update should be complete"
+				print "render_settings() Update should be complete"
 
 		if (update_prof):
 			try:
-				print "update prof"
+				print "render_settings() update prof"
 				db_session.add(bp)
 				db_session.commit()
-				trace("commited plus email is : " + update_mail)
+				trace("render_settings() commited plus email is : " + update_mail)
 			except Exception as e:
+				print type(e), e
 				db_session.rollback()
-				return redirect('/dbFailure')
+				errmsg = str(e)
+				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 
 
 		#change email; send email to both.
@@ -950,28 +953,31 @@ def render_settings():
 			send_passwd_change_email(ba.email)
 			errmsg = "Password successfully updated."
 
-		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
+		print 'render_settings() Finished Handling POST.'
 	elif request.method == 'GET':
+		print 'render_settings() GET'
 		msg = request.values.get('messages')
 		if (msg is not None): errmsg = msg
 	else:
-		print "form isnt' valid"
+		print "render_settings() form isnt' valid"
 		print form.errors
 		errmsg = "Passwords must match."
 
 
 	email_unver = False
 	if (ba.status == Account.USER_UNVERIFIED):
-		print bp.prof_name, ' email is unverified'
 		email_unver = True
+	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
-	form.oauth_stripe.data     = card
+	form.oauth_stripe.data     = stripe_connect
 	form.set_input_email.data  = ba.email
 	nexturl = "/settings"
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
+	print 'render_settings()', bp.prof_name, ' nexturl', nexturl
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
+
 
 
 
