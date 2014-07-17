@@ -720,37 +720,34 @@ def api_get_images_for_lesson(lesson_id):
 
 @req_authentication
 @insprite_views.route("/portfolio/<operation>/", methods=['POST'])
-def ht_api_update_portfolio(operation):
+def api_update_portfolio(operation):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
+	images = request.values.get('images')
 
 	print "-"*24
-	print "ht_api_update_portfolio(): operation:", operation
-	print "ht_api_update_portfolio(): lesson_id:", lesson_id
+	print "api_update_portfolio(): operation:", operation
+	print "api_update_portfolio(): lesson_id:", lesson_id
 
 	try:
 		# get portfolio.
 		portfolio = None
-		# PRE-LESSONS # portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 
 		# get lesson-portfolio imgs
 		if (lesson_id is not None):
-			portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+			portfolio = htdb_get_lesson_images(lesson_id)
+			print 'api_update_portfolio():', len(portfolio)
 		else:
-			print "ht_api_update_portfolio(): Couldn't find Lesson."
-			#
+			print "api_update_portfolio(): Couldn't find Lesson."
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	if (operation == 'add'):
-		print 'ht_api_update_portfolio(): adding file'
+		print 'api_update_portfolio(): adding file'
 	elif (operation == 'update'):
-		print 'ht_api_update_portfolio(): usr request: update portfolio'
-		images = request.values.get('images')
-		print "ht_api_update_portfolio(): images:", str(images)
-
+		print 'api_update_portfolio(): usr request: update portfolio'
 		try:
 			for img in portfolio:
 				update = False;
@@ -783,6 +780,55 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
+
+
+
+
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/image/update", methods=['POST'])
+def api_lesson_image_update(lesson_id):
+	bp = Profile.get_by_uid(session['uid'])
+
+	print 'api_lesson_image_update(): usr request: update portfolio'
+	if (lesson_id is None):
+		print "api_lesson_image_update(): Couldn't find Lesson."
+		return jsonify(usrmsg="no lesson specified")
+
+	try:
+		# get lesson-portfolio imgs
+		portfolio = htdb_get_lesson_images(lesson_id)
+		print 'api_lesson_image_update():', len(portfolio)
+
+		for lesson_map in portfolio:
+			update = False;
+			print "api_lesson_image_update()\tlook for lesson image:", lesson_map.map_image
+			img = request.values.get(lesson_map.map_image, None)
+			if img is None:
+				print 'api_lesson_image_update()\t', lesson_map.map_image, 'doesnt exist in user-set, deleted.'
+				db_session.delete(lesson_map)
+				continue
+
+			obj = json.loads(img)
+			print lesson_map.map_image, obj['idx'], obj['cap']
+			if (lesson_map.map_order != obj['idx']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img_order'
+				lesson_map.map_order = int(obj['idx'])
+
+			if (lesson_map.map_comm != obj['cap']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img caption'
+				lesson_map.map_comm = obj['cap']
+
+			if (update): db_session.add(lesson_map)
+		db_session.commit()
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+		return jsonify(usrmsg='This is embarassing.  We failed'), 500
+	return make_response(jsonify(usrmsg='Writing a note here: Huge Success'))
+
 
 
 
@@ -1056,8 +1102,16 @@ def ht_upload_image_to_S3(image, image_data):
 
 
 
+
 def ht_map_image_to_lesson(image, lesson_id):
 	print 'upload()\tmap_image_to_lesson\t', image.img_id, ' <=> ', lesson_id
+
+	print 'upload()\tmap_image_to_lesson\t Does map exist?'
+	map_exists = LessonImageMap.exists(image.img_id, lesson_id)
+	if (map_exists):
+		print 'upload()\tmap_image_to_lesson\t yes map already exists'
+		return
+
 	li_map = LessonImageMap(image.img_id, lesson_id, image.img_profile, comment=image.img_comment)
 	try:
 		db_session.add(li_map)
