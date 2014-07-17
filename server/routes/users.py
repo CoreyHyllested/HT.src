@@ -17,7 +17,6 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
-from server import ht_csrf
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
@@ -719,7 +718,6 @@ def api_get_images_for_lesson(lesson_id):
 
 
 
-@ht_csrf.exempt
 @req_authentication
 @insprite_views.route("/portfolio/<operation>/", methods=['POST'])
 def api_update_portfolio(operation):
