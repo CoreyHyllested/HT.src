@@ -243,13 +243,11 @@ class Account(Base):
 
 	@staticmethod
 	def get_by_uid(uid):
+		account = None
 		try:
 			account = Account.query.filter_by(userid=uid).one()
-		except MultipleResultsFound as multiple:
-			print 'Never Happen Error: caught exception looking for Account UID', uid
-			account = None
 		except NoResultFound as none:
-			account = None
+			pass
 		return account
 
 	def set_email(self, e):
@@ -320,8 +318,6 @@ class Email(Base):
 		try:
 			user_email = Oauth.query.filter_by(email=email).one()
 			account_id = user_email.ht_account
-		except MultipleResultsFound as multiple:
-			print 'Never Happen Error: found multiple email accounts for ', email
 		except NoResultFound as none:
 			print 'Error: found zero email accounts for ', email
 		return account_id
@@ -440,18 +436,22 @@ class Profile(Base):
 
 	@staticmethod
 	def get_by_prof_id(profile_id):
-		profiles = Profile.query.filter_by(prof_id=profile_id).all()
-		if len(profiles) != 1: 
-			raise NoProfileFound(profile_id, 'Sorry, profile not found')
-		return profiles[0]
+		profile = None
+		try:
+			profile = Profile.query.filter_by(prof_id=profile_id).one()
+		except NoResultFound as nrf:
+			pass
+		return profile
 
 
 	@staticmethod
 	def get_by_uid(uid):
-		profiles = Profile.query.filter_by(account=uid).all()
-		if len(profiles) != 1: 
-			raise NoProfileFound(uid, 'Sorry, profile not found')
-		return profiles[0]
+		profile = None
+		try:
+			profile = Profile.query.filter_by(account=uid).one()
+		except NoResultFound as nrf:
+			pass
+		return profile
 
 
 	@property
@@ -711,7 +711,7 @@ class Image(Base):
 			img = Image.query.filter_by(img_id=image_name).first()
 		except MultipleResultsFound as mrf:
 			print 'Never Happen Error: caught exception looking for img_id ', image_name
-		except NoResultsFound as nrf:
+		except NoResultFound as nrf:
 			pass
 		return img
 
@@ -948,13 +948,11 @@ class Review(Base):
 
 	@staticmethod
 	def get_by_id(rev_id):
+		review = None
 		try:
 			review = Review.query.filter_by(review_id=rev_id).one()
-		except MultipleResultsFound as mrf:
-			print 'Never Happen Error: caught exception looking for Account UID', rev_id
-			review = None
-		except NoResultsFound as nrf:
-			review = None
+		except NoResultFound as nrf:
+			pass
 		return review
 
 
