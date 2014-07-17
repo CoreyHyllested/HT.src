@@ -30,7 +30,7 @@
 	<div class="lessonHeader">
 		<div class="lessonHeaderLeft">
 			<div class="lessonTopLeftNavigation">
-				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back</a>
+				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Dashboard</a>
 			</div>
 		</div>
 		<div class="lessonHeaderCenter">
@@ -42,6 +42,17 @@
 			{% else %}
 				Create a Lesson				
 			{% endif %}			
+			</div>
+			<div class="lessonHeaderPageSubtitle">
+				{% if form.errors %}
+					<div class="formFieldErrors">
+				        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+				            {% for error in field_errors %}
+				                <div class="formFieldError">{{ form[field_name].label }}: {{ error }}</div>
+				            {% endfor %}
+				        {% endfor %}
+				    </div>
+				{% endif %}			
 			</div>
 		</div>	
 		<div class="lessonHeaderRight">
@@ -69,6 +80,8 @@
 			<div class="lessonFormPageContainer">
 				<form id="lessonForm" method="post" action="/lesson/update/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
 				
+
+
 				{{form.hidden_tag()}}
 				{{form.lessonMakeLive(id="lessonMakeLive")}}
 
@@ -82,9 +95,19 @@
 					<div class="formElement">
 						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
 
-						
+						{% if form.lessonTitle.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonTitle.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}						
 						{{form.lessonTitle(id="lessonTitle", class='formField span12', placeholder='e.g. Advanced Ukulele Lessons')}}
+
+
+						{% if form.lessonDescription.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonDescription.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}
 						{{form.lessonDescription(id="lessonDescription", class="formField span12", placeholder="Please describe what the student should expect -- e.g. general lesson plan, what you'll cover, etc.")}}
+
+
+
 					</div>
 					<div class="formElement">
 						<div class="formInstruction">Which industry best describes your lesson?</div>
@@ -154,6 +177,9 @@
 						<div class="formInstruction">How much will you charge?</div>
 						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
 
+						{% if form.lessonRate.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonRate.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}
 						${{form.lessonRate(id="lessonRate", class='formField span3', placeholder='Amount')}} {{form.lessonRateUnit(id="lessonRateUnit", class='formField span3')}}
 
 						<span class="rateUnitCaption span3"></span>

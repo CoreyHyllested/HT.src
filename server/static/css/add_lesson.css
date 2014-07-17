@@ -230,7 +230,6 @@
 	margin-bottom: 12px;
 }
 
-
 .formField {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -253,6 +252,26 @@
 	height: 30px;
 	padding-left: 10px;	
 }
+
+.formFieldErrors {
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: red;
+	width: 100%;
+}
+.formFieldErrors label {
+	font-size: .9em;
+	font-weight: bold;
+	color: red;
+}
+
+.formFieldError {
+	float: left;
+	width: 100%;
+}
+
 
 .span3 {
 	width: 25%;

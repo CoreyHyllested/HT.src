@@ -89,7 +89,7 @@ $(document).ready(function() {
 
 		$('#'+nextPage).show();
 		$(".lessonNavItem[data-target-page=" + nextPage + "]").addClass("active");
-		history.pushState({title: nextPage}, "", stateRoute+lessonID+'#'+nextPage);
+		history.pushState({title: nextPage}, "", statePath+lessonID+'#'+nextPage);
 	});
 
 	$('#lessonSave').click(function(e) {
@@ -117,7 +117,7 @@ $(document).ready(function() {
 		var prevPage = $(".lessonNavItem[data-target-page=" + currentPage + "]").prev(".lessonNavItem").attr("data-target-page");
 		$('#'+prevPage).show();
 		$(".lessonNavItem[data-target-page=" + prevPage + "]").addClass("active");
-		history.pushState({title: prevPage}, "", stateRoute+lessonID+'#'+prevPage);
+		history.pushState({title: prevPage}, "", statePath+lessonID+'#'+prevPage);
 	})
 
 	// Form element Behavior
@@ -277,23 +277,6 @@ function saveLessonForm(lesson_id) {
 
 	var fd = new FormData($('#lessonForm')[0]);
 	fd.append('saved', "true")
-	// fd.append('csrf_token', $('#csrf_token').val())
-	// fd.append('lesson_title', $('#lessonTitle').val())
-	// fd.append('lesson_description', $('#lessonDescription').val())
-	// fd.append('lesson_address_1', $('#lessonAddress1').val())
-	// fd.append('lesson_address_2', $('#lessonAddress2').val())
-	// fd.append('lesson_city', $('#lessonCity').val())
-	// fd.append('lesson_state', $('#lessonState').val())
-	// fd.append('lesson_zip', $('#lessonZip').val())
-	// fd.append('lesson_country', $('#lessonCountry').val())
-	// fd.append('lesson_address_details', $('#lessonAddressDetails').val())
-	// fd.append('lesson_rate', $('#lessonRate').val())
-	// fd.append('lesson_rate_unit', $('#lessonRateUnit').val())
-	// fd.append('lesson_loc_option', $('#lessonPlace').val())
-	// fd.append('lesson_industry', $('#lessonIndustry').val())
-	// fd.append('lesson_duration', $('#lessonDuration').val())
-	// fd.append('lesson_avail', $('#lessonAvail').val())
-	// Note - We don't need to set flags here. That's handled by ht_update_lesson.
 
 	console.log("saveLessonForm - version is "+fd["version"]);
 
@@ -305,6 +288,7 @@ function saveLessonForm(lesson_id) {
 			success : function(data) {
 			 	console.log("AJAX Success - lesson saved.");
 			 	$("#lessonSave").html("Saved").css("color","gray");
+			 	$(".formFieldErrors").remove();
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
 				// setTimeout(function() {

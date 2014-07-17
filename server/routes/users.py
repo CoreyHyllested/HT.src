@@ -28,7 +28,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
-
+from pprint import pprint
 
 
 @insprite_views.route('/home',      methods=['GET', 'POST'])
@@ -460,35 +460,41 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_new_lesson: lesson_id is", lesson_id
 
-	form = LessonForm(request.form)
-
-	# In case the user went back in their browser to this page, after submitting
 	lesson = Lesson.get_by_lesson_id(lesson_id)
-	form.lessonTitle.data = lesson.lesson_title
-	form.lessonDescription.data = lesson.lesson_description
-	form.lessonAddress1.data = lesson.lesson_address_1
-	form.lessonAddress2.data = lesson.lesson_address_2
-	form.lessonCity.data = lesson.lesson_city
-	form.lessonState.data = lesson.lesson_state
-	form.lessonZip.data = lesson.lesson_zip
-	form.lessonCountry.data = lesson.lesson_country
-	form.lessonAddressDetails.data = lesson.lesson_address_details
-	form.lessonRate.data = lesson.lesson_rate
-	form.lessonRateUnit.data = lesson.lesson_rate_unit
-	form.lessonPlace.data = lesson.lesson_loc_option
-	form.lessonIndustry.data = lesson.lesson_industry
-	form.lessonDuration.data = lesson.lesson_duration
-	form.lessonAvail.data = lesson.lesson_avail
-	form.lessonMakeLive.data = 'y'
 
-	if (form.lessonRate.data <= 0):
-		form.lessonRate.data = bp.prof_rate		
+	# Form will be none unless we are here after an unsuccessful form validation.
+	if (form == None):
+		print "render_edit_lesson: no form submitted"
+		
+		# In case the user went back in their browser to this page, after submitting
+		form = LessonForm(request.form)
+		form.lessonTitle.data = lesson.lesson_title
+		form.lessonDescription.data = lesson.lesson_description
+		form.lessonAddress1.data = lesson.lesson_address_1
+		form.lessonAddress2.data = lesson.lesson_address_2
+		form.lessonCity.data = lesson.lesson_city
+		form.lessonState.data = lesson.lesson_state
+		form.lessonZip.data = lesson.lesson_zip
+		form.lessonCountry.data = lesson.lesson_country
+		form.lessonAddressDetails.data = lesson.lesson_address_details
+		form.lessonRate.data = lesson.lesson_rate
+		form.lessonRateUnit.data = lesson.lesson_rate_unit
+		form.lessonPlace.data = lesson.lesson_loc_option
+		form.lessonIndustry.data = lesson.lesson_industry
+		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMakeLive.data = 'y'
 
-	if (lesson.lesson_flags == 2):
-		form.lessonMakeLive.data = None
+		if (form.lessonRate.data <= 0):
+			form.lessonRate.data = bp.prof_rate		
 
-	lessonUpdated = lesson.lesson_updated
-	lessonCreated = lessonUpdated = lesson.lesson_created
+		if (lesson.lesson_flags == 2):
+			form.lessonMakeLive.data = None
+
+	else:
+		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
+		print "render_edit_lesson: invalid form imported"
+		
 
 	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
 
@@ -502,34 +508,46 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	if (bp.availability == 0): return redirect('/dashboard')
 	
 	print "render_edit_lesson: lesson_id is", lesson_id
-
-	form = LessonForm(request.form)
+	
 	lesson = Lesson.get_by_lesson_id(lesson_id)
 
-	print "render_edit_lesson: Lesson Flag:", lesson.lesson_flags
+	session_form = session.pop('form', None)
+	session_errmsg = session.pop('errmsg', None)
 
-	form.lessonTitle.data = lesson.lesson_title
-	form.lessonDescription.data = lesson.lesson_description
-	form.lessonAddress1.data = lesson.lesson_address_1
-	form.lessonAddress2.data = lesson.lesson_address_2
-	form.lessonCity.data = lesson.lesson_city
-	form.lessonState.data = lesson.lesson_state
-	form.lessonZip.data = lesson.lesson_zip
-	form.lessonCountry.data = lesson.lesson_country
-	form.lessonAddressDetails.data = lesson.lesson_address_details
-	form.lessonRate.data = lesson.lesson_rate
-	form.lessonRateUnit.data = lesson.lesson_rate_unit
-	form.lessonPlace.data = lesson.lesson_loc_option
-	form.lessonIndustry.data = lesson.lesson_industry
-	form.lessonDuration.data = lesson.lesson_duration
-	form.lessonAvail.data = lesson.lesson_avail
-	form.lessonMakeLive.data = 'y'
+	# Form will be none unless we are here after an unsuccessful form validation.
+	if (session_form == None):
+		print "render_edit_lesson: no form submitted - creating new"
+		
+		form = LessonForm(request.form)
+		form.lessonTitle.data = lesson.lesson_title
+		form.lessonDescription.data = lesson.lesson_description
+		form.lessonAddress1.data = lesson.lesson_address_1
+		form.lessonAddress2.data = lesson.lesson_address_2
+		form.lessonCity.data = lesson.lesson_city
+		form.lessonState.data = lesson.lesson_state
+		form.lessonZip.data = lesson.lesson_zip
+		form.lessonCountry.data = lesson.lesson_country
+		form.lessonAddressDetails.data = lesson.lesson_address_details
+		form.lessonRate.data = lesson.lesson_rate
+		form.lessonRateUnit.data = lesson.lesson_rate_unit
+		form.lessonPlace.data = lesson.lesson_loc_option
+		form.lessonIndustry.data = lesson.lesson_industry
+		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMakeLive.data = 'y'
 
-	if (form.lessonRate.data <= 0):
-		form.lessonRate.data = bp.prof_rate		
+		if (form.lessonRate.data <= 0):
+			form.lessonRate.data = bp.prof_rate		
 
-	if (lesson.lesson_flags == 2):
-		form.lessonMakeLive.data = None
+		if (lesson.lesson_flags == 2):
+			form.lessonMakeLive.data = None
+
+	else:
+		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
+		print "render_edit_lesson: invalid form imported"
+		form = session_form
+		errmsg = session_errmsg
+		
 
 	# lessonUpdated = lesson.lesson_updated
 
@@ -550,69 +568,103 @@ def api_update_lesson(lesson_id):
 	print 'api_update_lesson: Beginning lesson update ...'
 
 	form = LessonForm(request.form)
+	lesson = Lesson.get_by_lesson_id(lesson_id)
 
-	# If the form is submitted, and it validates, do the update the database entry with this lesson
-	if form.validate_on_submit():
-		print 'api_update_lesson: valid POST'
-		print 'api_update_lesson: lesson_id is ', lesson_id
-		lesson = Lesson.get_by_lesson_id(lesson_id)
-		print "api_update_lesson: lessonMakeLive is", form.lessonMakeLive.data
-		print 'api_update_lesson: look for updates.'
-		try:
-			update_lesson = ht_update_lesson(lesson, form, saved)
-			if (update_lesson):
-				print 'api_update_lesson: adding lesson'
-				db_session.add(lesson)
-				db_session.commit()
-				print 'api_update_lesson: committed!'
-		except Exception as e:
-			print type(e), e
-			db_session.rollback()
+	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
+	
+	if (saved != "true"):
 
-		if (version == "save"):
-			print "api_update_lesson: SAVE SUCCESS - returning success to AJAX"
-			return jsonify(valid="true")
+		# If the form is submitted, and it validates, do the update the database entry with this lesson
+		if form.validate_on_submit():
+			print 'api_update_lesson: valid POST'
+			print 'api_update_lesson: lesson_id is ', lesson_id
+			print 'api_update_lesson: looking for updates...'
+			try:
+				update_lesson = ht_update_lesson(lesson, form, saved)
+				if (update_lesson):
+					print 'api_update_lesson: updating lesson...'
+					db_session.add(lesson)
+					db_session.commit()
+					print 'api_update_lesson: committed!'
+			except Exception as e:
+				print 'api_update_lesson: Exception:', type(e), e
+				db_session.rollback()
+
+			if (version == "save"):
+				print "api_update_lesson: Returning to form"
+				return jsonify(valid="true")
+			else:
+				print 'api_update_lesson: Redirecting to view lesson:', lesson_id
+				return make_response(redirect("/lesson/"+lesson_id))
+
 		else:
-			print 'api_update_lesson: Redirecting to view lesson:', lesson_id
-			return make_response(redirect("/lesson/"+lesson_id))
+			print 'api_update_lesson: invalid POST', form.errors
 
 	else:
-		print 'api_update_lesson: invalid POST', form.errors
+		if form:
 
+			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete/saved.
+			if form.validate_on_submit():
+				print 'api_update_lesson: lesson was SAVED and it validated'
+			else:
+				print 'api_update_lesson: lesson was SAVED and it did NOT validate'
+			
+			print 'api_update_lesson: lesson_id is ', lesson_id
+			print 'api_update_lesson: looking for updates...'
+			try:
+				update_lesson = ht_update_lesson(lesson, form, saved)
+				if (update_lesson):
+					print 'api_update_lesson: updating lesson...'
+					db_session.add(lesson)
+					db_session.commit()
+					print 'api_update_lesson: committed!'
+			except Exception as e:
+				print 'api_update_lesson: Exception:', type(e), e
+				db_session.rollback()			
+
+			print "api_update_lesson: Returning to form"
+			return jsonify(valid="true")
 
 	if (saved != "true"):
 
 		print 'api_update_lesson: fell through - populating form data and returning.'
 
-		lesson = Lesson.get_by_lesson_id(lesson_id)
-		form.lessonTitle.data = lesson.lesson_title
-		form.lessonDescription.data = lesson.lesson_description
-		form.lessonAddress1.data = lesson.lesson_address_1
-		form.lessonAddress2.data = lesson.lesson_address_2
-		form.lessonCity.data = lesson.lesson_city
-		form.lessonState.data = lesson.lesson_state
-		form.lessonZip.data = lesson.lesson_zip
-		form.lessonCountry.data = lesson.lesson_country
-		form.lessonAddressDetails.data = lesson.lesson_address_details
-		form.lessonRate.data = lesson.lesson_rate
-		form.lessonRateUnit.data = lesson.lesson_rate_unit
-		form.lessonPlace.data = lesson.lesson_loc_option
-		form.lessonIndustry.data = lesson.lesson_industry
-		form.lessonDuration.data = lesson.lesson_duration
-		form.lessonAvail.data = lesson.lesson_avail
-		form.lessonMakeLive.data = 'y'
+		# This is messed up bc it is not accommodating an unsuccessful form submission - should take values from the form in that case, rather than from the database (where the lesson fields may be empty)
 
-		if (lesson.lesson_flags == 2):
-			form.lessonMakeLive.data = ''
+		# form.lessonTitle.data = lesson.lesson_title
+		# form.lessonDescription.data = lesson.lesson_description
+		# form.lessonAddress1.data = lesson.lesson_address_1
+		# form.lessonAddress2.data = lesson.lesson_address_2
+		# form.lessonCity.data = lesson.lesson_city
+		# form.lessonState.data = lesson.lesson_state
+		# form.lessonZip.data = lesson.lesson_zip
+		# form.lessonCountry.data = lesson.lesson_country
+		# form.lessonAddressDetails.data = lesson.lesson_address_details
+		# form.lessonRate.data = lesson.lesson_rate
+		# form.lessonRateUnit.data = lesson.lesson_rate_unit
+		# form.lessonPlace.data = lesson.lesson_loc_option
+		# form.lessonIndustry.data = lesson.lesson_industry
+		# form.lessonDuration.data = lesson.lesson_duration
+		# form.lessonAvail.data = lesson.lesson_avail
+		# form.lessonMakeLive.data = 'y'
 
-		lessonUpdated = lesson.lesson_updated
-		lessonCreated = lessonUpdated = lesson.lesson_created
+		# if (lesson.lesson_flags == 2):
+		# 	form.lessonMakeLive.data = ''
+
+		# lessonUpdated = lesson.lesson_updated
+		# lessonCreated = lesson.lesson_created
+
+		errmsg = "Sorry, something went wrong - your form didn't validate"
+		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
+
+		session['form'] = form
+		session['errmsg'] = errmsg
 
 		if (version == "edit"):
-			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate"))
-		else:
-			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate"))
+			return redirect(url_for("render_edit_lesson", lesson_id=lesson_id))
 
+		else:
+			return redirect(url_for("render_new_lesson", lesson_id=lesson_id))
 
 def ht_update_lesson(lesson, form, saved):
 	print 'ht_update_lesson:', lesson

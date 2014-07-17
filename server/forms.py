@@ -140,8 +140,8 @@ class LessonForm(Form):
 	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
-	lessonTitle			= TextField('Lesson Title', None)
-	lessonDescription	= TextAreaField('Lesson Description', None)
+	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
+	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
 	lessonAddress1	= TextField('Address Line 1', None)
 	lessonAddress2	= TextField('Address Line 1', None)
 	lessonCity		= TextField('City',	None)
