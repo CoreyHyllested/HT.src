@@ -764,7 +764,7 @@ class LessonImageMap(Base):
 		print 'LessonImageMap.  created'
 
 	def __repr__(self):
-		print '<li_map %r>' % (self.id)
+		print '<li_map %r %r>' % (self.map_lesson, self.map_image)
 
 
 	@staticmethod
@@ -772,6 +772,14 @@ class LessonImageMap(Base):
 		images = LessonImageMap.query.filter_by(map_lesson=lesson_id).all()
 		print 'LessonImageMap.get_images_for_lesson_id(' + str(lesson_id) + '): ', len(images)
 		return images
+
+
+	@staticmethod
+	def exists(image_id, lesson_id):
+		images = LessonImageMap.get_images_for_lesson(lesson_id)
+		for img in images:
+			if (img.map_image == image_id): return True
+		return False
 
 
 	@property
