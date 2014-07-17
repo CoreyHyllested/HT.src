@@ -40,9 +40,8 @@ def render_dashboard(usrmsg=None):
 		- Show any statistics.
 	"""
 
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	print 'render_dashboard() profile.account = ', bp.prof_name, uid
+	bp = Profile.get_by_uid(session['uid'])
+	print 'render_dashboard() profile.account = ', bp.prof_name, session['uid']
 
 	unread_msgs = []
 
@@ -55,6 +54,10 @@ def render_dashboard(usrmsg=None):
 		print type(e), e
 		db_session.rollback()
 	
+	if (usrmsg is None):
+		usrmsg = request.values.get('messages', None)
+		print 'setting usrmsg', usrmsg
+
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
@@ -931,12 +934,15 @@ def render_schedule_page():
 
 	usrmsg = None
 	try:
-		hp_id = request.values.get('hp', None)
 		bp = Profile.get_by_uid(session.get('uid'))
-		hp = Profile.get_by_prof_id(request.values.get('hp', None))
 		ba = Account.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
+
+	if (hp is None):
+		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
 		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
