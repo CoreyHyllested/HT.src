@@ -12,7 +12,7 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base
+from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
@@ -291,19 +291,42 @@ class Account(Base):
 		self.__dict__.update(new_values_dict)
 
 
-#class Email(Base):
-#	__tablename__ = "email"
 
-#	id = Column(Integer, primary_key = True)
-#	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
-#	email	= Column(String(128),	nullable=False)
-#	flags	= Column(Integer,		nullable=False)
-	
-#	def __init__ (self, account, email, flags=None):
-#		self.ht_account = account
-#		self.email = email
 
+class Email(Base):
+	__tablename__ = "email"
+
+	id = Column(Integer, primary_key = True)
+	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+	email	= Column(String(128),	nullable=False, unique=True, index=True)
+	flags	= Column(Integer,		nullable=True)
+	created	= Column(DateTime(),	nullable=True)
 	
+
+	def __init__ (self, account, email, flags=None):
+		self.ht_account = account
+		self.email = email
+		self.flags = flags
+		self.created = dt.utcnow()
+	
+
+	def __repr__(self):
+		print '<%r>' % (self.email)
+
+
+	@staticmethod
+	def get_account_id(email):
+		account_id = None
+		try:
+			user_email = Oauth.query.filter_by(email=email).one()
+			account_id = user_email.ht_account
+		except MultipleResultsFound as multiple:
+			print 'Never Happen Error: found multiple email accounts for ', email
+		except NoResultFound as none:
+			print 'Error: found zero email accounts for ', email
+		return account_id
+
+
 
 
 class Oauth(Base):
@@ -340,7 +363,7 @@ class Oauth(Base):
 	def __repr__ (self):
 		return '<oauth, %r %r %r>' % (self.ht_account, self.oa_service, self.oa_account)
 
-@staticmethod
+	@staticmethod
 	def get_stripe_by_uid(uid):
 		try:
 			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
@@ -443,6 +466,30 @@ class Profile(Base):
 			'headline'	: str(self.headline),
 			'industry'	: str(self.industry),
 		}
+
+
+
+	def update_profile_image(self, newprof_img):
+		# grab profile's current profile image.
+		replace_img = Image.get_by_id(self.prof_img);
+		if (replace_img is None): raise Exception("WTF, no profile image?!?")
+
+		# update both images and profile
+		replace_img.profile_image(False)
+		newprof_img.profile_image(True)
+		self.prof_img = newprof_img.img_id
+
+		try:
+			# save updated images, self
+			db_session.add(replace_img)
+			db_session.add(newprof_img)
+			db_session.add(self)
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+		return self
+
 
 
 
@@ -633,7 +680,9 @@ class Appointment(Base):
 
 
 class Image(Base):
+	""" Table of all Images on Insprite.  Used by LessonImageMap and Profile """
 	__tablename__ = "image"
+
 	img_id = Column(String(64), primary_key=True)
 	img_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
 	img_comment = Column(String(256))
@@ -642,30 +691,30 @@ class Image(Base):
 	img_order	= Column(Integer, default=0, nullable=False)
 	img_lesson	= Column(String(256))
 
+
 	def __init__(self, imgid, prof_id, comment=None, lesson=None):
 		self.img_id  = imgid
 		self.img_profile = str(prof_id)
 		self.img_comment = comment
 		self.img_lesson = lesson
 		self.img_created = dt.utcnow()
+		self.img_flags = IMG_STATE_VISIBLE
 
 	def __repr__ (self):
-		comment = self.img_comment[:20]
-		return '<image %s %s>' % (self.img_id, comment)
+		return '<image %s %s>' % (self.img_id, self.img_comment[:20])
+
 
 	@staticmethod
-	def get_by_lesson_id(lesson_id):
-		print "get_by_lesson_id: lesson_id is", lesson_id
-		images = Image.query.filter_by(img_lesson=lesson_id).all()
-		# if len(images) != 1: raise NoResourceFound('Lesson', lesson_id)
-		print "get_by_lesson_id: images length is", len(images)
+	def get_by_id(image_name):
+		try:
+			img = None
+			img = Image.query.filter_by(img_id=image_name).first()
+		except MultipleResultsFound as mrf:
+			print 'Never Happen Error: caught exception looking for img_id ', image_name
+		except NoResultsFound as nrf:
+			pass
+		return img
 
-		return images
-
-	@staticmethod
-	def get_lesson_sample_img(lesson_id):
-		sample_img = Image.query.filter_by(lesson_id=lesson_id).first()
-		return sample_img
 
 	@property
 	def serialize(self):
@@ -676,8 +725,77 @@ class Image(Base):
 			'img_created'	: self.img_created,
 			'img_flags'		: self.img_flags,
 			'img_order'		: self.img_order,
-			'img_lesson'	: self.img_lesson
 		}
+
+
+	def profile_image(self, new_value):
+		flags = self.img_flags
+		#setting =  (flags | (       IMG_STATE_PROFILE))
+		#clearing = (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		flags = (new_value) and (flags | (IMG_STATE_PROFILE)) or (flags & (~0x0 ^ IMG_STATE_PROFILE))
+		#print 'update()\tProfile.update_profile_image()\timg_flags = [Setting] ' + format(flags, '08X') + ' | ' + format(IMG_STATE_PROFILE, '08X') + ' = ' + format(setting, '08X')
+		#print 'update()\tProfile.update_profile_image()\timg_flags = [Clearng] ' + format(flags, '08X') + ' & ' + format(~0x0 ^ IMG_STATE_PROFILE, '08X') + ' = ' + format(clearing, '08X')
+		#print 'update()\tProfile.update_profile_image()\timg_flags = (' + str(new_value) + ') = ' + format(flags, '08x')
+		self.img_flags = flags
+		return (self.img_flags & IMG_STATE_PROFILE)
+
+
+
+
+
+class LessonImageMap(Base):
+	__tablename__ = "image_lesson_map"					#TODO rename 'lesson_image_map
+
+	id			= Column(Integer, primary_key = True)	#TODO rename map_id
+	map_image	= Column(String(64),  nullable=False, index=True)
+	map_lesson	= Column(String(40),  nullable=False, index=True)
+	map_prof	= Column(String(40),  nullable=True,  index=True)
+	map_comm	= Column(String(256), nullable=True)
+	map_order	= Column(Integer, 	  nullable=False)
+	#map_flags	: use flags in Lesson and Image???
+	#map_created: use timestamp in Lesson and Image???
+
+	def __init__(self, img, lesson, profile, comment=None):
+		self.map_image	= img
+		self.map_lesson = lesson
+		self.map_prof	= profile
+		self.map_comm	= comment
+		self.map_order	= -1
+		print 'LessonImageMap.  created'
+
+	def __repr__(self):
+		print '<li_map %r %r>' % (self.map_lesson, self.map_image)
+
+
+	@staticmethod
+	def get_images_for_lesson(lesson_id):
+		images = LessonImageMap.query.filter_by(map_lesson=lesson_id).all()
+		print 'LessonImageMap.get_images_for_lesson_id(' + str(lesson_id) + '): ', len(images)
+		return images
+
+
+	@staticmethod
+	def exists(image_id, lesson_id):
+		images = LessonImageMap.get_images_for_lesson(lesson_id)
+		for img in images:
+			if (img.map_image == image_id): return True
+		return False
+
+
+	@property
+	def serialize(self):
+		return {
+			'img_id'		: self.map_image,	# used by 'add_lesson.js'
+			'img_comment'	: self.map_comm,	# used by 'add_lesson.js'
+			'img_order'		: self.map_order,	# used by 'add_lesson.js'
+			'img_lesson'	: self.map_lesson,	#img_lesson
+			'img_profile'	: self.map_prof,	#img_profile
+			#img_created
+			#img_flags
+		}
+
+
+
 
 class Industry(Base):
 	__tablename__ = "industry"
@@ -905,7 +1023,6 @@ class Review(Base):
 
 
 class Lesson(Base):
-
 	__tablename__ = "lesson"
 
 	LESSON_LOC_ANY = 0
@@ -916,34 +1033,36 @@ class Lesson(Base):
 	LESSON_AVAIL_SPECIFIC = 1
 
 
-
-	lesson_id	= Column(String(40), primary_key=True, index=True)
-	lesson_profile = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
-	lesson_title = Column(String(128))
+	# Lesson Description
+	lesson_id			= Column(String(40), primary_key=True, index=True)
+	lesson_profile		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+	lesson_title		= Column(String(128))
 	lesson_description	= Column(String(5000))
-	lesson_industry	= Column(String(64))
+	lesson_industry		= Column(String(64))
 
-	lesson_avail = Column(Integer, default=LESSON_AVAIL_DEFAULT)
-	lesson_duration	= Column(Integer)
+	# Lesson Availability
+	lesson_avail		= Column(Integer, default=LESSON_AVAIL_DEFAULT)
+	lesson_duration		= Column(Integer)
 
-	lesson_loc_option = Column(Integer, default=LESSON_LOC_ANY)
-	lesson_address_1 = Column(String(64))
-	lesson_address_2 = Column(String(64))
-	lesson_city = Column(String(64))
-	lesson_state = Column(String(10))
-	lesson_zip = Column(String(10))
-	lesson_country = Column(String(64))
+	# Lesson Location
+	lesson_loc_option	= Column(Integer, default=LESSON_LOC_ANY)
+	lesson_address_1	= Column(String(64))
+	lesson_address_2	= Column(String(64))
+	lesson_city			= Column(String(64))
+	lesson_state		= Column(String(10))
+	lesson_zip			= Column(String(10))
+	lesson_country		= Column(String(64))
 	lesson_address_details = Column(String(256))
 
-	lesson_updated = Column(DateTime())
-	lesson_created = Column(DateTime(), nullable=False)
+	# Lesson Metadata
+	lesson_updated	= Column(DateTime())
+	lesson_created	= Column(DateTime(), nullable=False)
 	lesson_flags	= Column(Integer, default=0)
 
+	# Lesson Cost
 	lesson_rate = Column(Integer)
 	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
 
-	# lesson_rating   = Column(Float(),   nullable=False, default=-1)
-	# lesson_reviews  = Column(Integer(), nullable=False, default=0)
 
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())

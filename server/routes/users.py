@@ -321,11 +321,12 @@ def render_multiupload_page():
 @insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
-	lesson_id = request.values.get('lesson_id')
+	lesson_id = request.values.get('lesson_id', False)
 
-	if (lesson_id is not None):
+	if (lesson_id):
 		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		# warning.  dangerous. returning a LessonMap (which has same fields)
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 	else:
 		print "render_edit_portfolio_page(): get all images for profile:"
 		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
@@ -666,6 +667,9 @@ def api_update_lesson(lesson_id):
 		else:
 			return redirect(url_for("render_new_lesson", lesson_id=lesson_id))
 
+
+
+
 def ht_update_lesson(lesson, form, saved):
 	print 'ht_update_lesson:', lesson
 	print 'ht_update_lesson: saved? ', saved
@@ -786,72 +790,55 @@ def render_lesson_page(lesson_id):
 
 	try:
 		lesson = Lesson.get_by_lesson_id(lesson_id)
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
-
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		print "render_lesson_page(): Lesson String:", str(lesson)
-		print "render_lesson_page(): Images:", str(portfolio)
-
-		return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
-
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
 
 
 
 
 @req_authentication
-@insprite_views.route("/get_lesson_images", methods=['GET', 'POST'])
-def get_lesson_images():
+@insprite_views.route("/lesson/<lesson_id>/images", methods=['GET', 'POST'])
+def api_get_images_for_lesson(lesson_id):
 	# move this to API.
-	lesson_id = request.values.get('lesson_id')
-	images = []
 
 	try:
-		print "get_lesson_images: lesson_id is", lesson_id
-		images = db_session.query(Image).filter(Image.img_lesson == lesson_id).all();
-		json_images = [img.serialize for img in images]
+		images = ht_get_serialized_images_for_lesson(lesson_id)
 	except Exception as e:
-		print "get_lesson_images: exception:", e
-		json_images = None
-	return jsonify(images=json_images)
+		print "api_get_images_for_lesson: exception:", type(e), e
+		raise e
+	return jsonify(portfolio=images)
 
 
 
 
 @req_authentication
 @insprite_views.route("/portfolio/<operation>/", methods=['POST'])
-def ht_api_update_portfolio(operation):
-	uid = session['uid']
+def api_update_portfolio(operation):
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
 
 	print "-"*24
-	print "ht_api_update_portfolio(): operation:", operation
-	print "ht_api_update_portfolio(): lesson_id:", lesson_id
+	print "api_update_portfolio(): operation:", operation
 
 	try:
 		# get portfolio.
 		portfolio = None
-		# PRE-LESSONS # portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 
 		# get lesson-portfolio imgs
-		if (lesson_id is not None):
-			portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
-		else:
-			print "ht_api_update_portfolio(): Couldn't find Lesson."
-			#
+		print "api_update_portfolio(): Couldn't find Lesson."
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	if (operation == 'add'):
-		print 'ht_api_update_portfolio(): adding file'
+		print 'api_update_portfolio(): adding file'
 	elif (operation == 'update'):
-		print 'ht_api_update_portfolio(): usr request: update portfolio'
-		images = request.values.get('images')
-		print "ht_api_update_portfolio(): images:", str(images)
-
+		print 'api_update_portfolio(): usr request: update portfolio'
 		try:
 			for img in portfolio:
 				update = False;
@@ -884,6 +871,55 @@ def ht_api_update_portfolio(operation):
 		return jsonify(usrmsg='Writing a note here: Huge Success'), 200
 	else:
 		return jsonify(usrmsg='Unknown operation.'), 500
+
+
+
+
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/image/update", methods=['POST'])
+def api_lesson_image_update(lesson_id):
+	bp = Profile.get_by_uid(session['uid'])
+
+	print 'api_lesson_image_update(): usr request: update portfolio'
+	if (lesson_id is None):
+		print "api_lesson_image_update(): Couldn't find Lesson."
+		return jsonify(usrmsg="no lesson specified")
+
+	try:
+		# get lesson-portfolio imgs
+		portfolio = htdb_get_lesson_images(lesson_id)
+		print 'api_lesson_image_update():', len(portfolio)
+
+		for lesson_map in portfolio:
+			update = False;
+			print "api_lesson_image_update()\tlook for lesson image:", lesson_map.map_image
+			img = request.values.get(lesson_map.map_image, None)
+			if img is None:
+				print 'api_lesson_image_update()\t', lesson_map.map_image, 'doesnt exist in user-set, deleted.'
+				db_session.delete(lesson_map)
+				continue
+
+			obj = json.loads(img)
+			print lesson_map.map_image, obj['idx'], obj['cap']
+			if (lesson_map.map_order != obj['idx']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img_order'
+				lesson_map.map_order = int(obj['idx'])
+
+			if (lesson_map.map_comm != obj['cap']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img caption'
+				lesson_map.map_comm = obj['cap']
+
+			if (update): db_session.add(lesson_map)
+		db_session.commit()
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+		return jsonify(usrmsg='This is embarassing.  We failed'), 500
+	return make_response(jsonify(usrmsg='Writing a note here: Huge Success'))
+
 
 
 
@@ -1069,16 +1105,18 @@ def render_settings():
 
 
 
+
+# rename /image/create
 @insprite_views.route('/upload', methods=['POST'])
 @dbg_enterexit
 @req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
-	#trace(request.files)
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
+	update_profile_img = request.values.get('profile', False)
 	lesson_id = request.values.get('lessonID')
 
 	print 'upload: orig', orig
@@ -1086,37 +1124,23 @@ def upload():
 	print 'upload: lesson_id', lesson_id
 
 	for mydict in request.files:
-
-		comment = ""
-
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		print("upload: reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("upload()\treqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
-		print ("upload: img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
-		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
-			# create Image.
-			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
-			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
-			f.write(image_data)
-			f.close()
-			try:
-				print 'upload: adding metaimg to db'
-				db_session.add(metaImg)
-				db_session.commit()
-			except Exception as e:
-				print 'upload: exception', type(e), e
-				db_session.rollback()
+			image = ht_create_image(bp, image_data, comment="No caption")
 
-		# upload to S3.
-		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
-		sml.set_contents_from_file(StringIO(image_data))
+			if (lesson_id):
+				print 'upload()\tlesson_id' + str(lesson_id)
+				ht_map_image_to_lesson(image, lesson_id)
 
-	return jsonify(tmp="/uploads/" + str(img_hashname))
+			if (update_profile_img):
+				print 'upload()\tupdate profile img'
+				bp.update_profile_image(image)
+
+	return jsonify(tmp="/uploads/" + str(image.img_id))
 
 
 
@@ -1130,6 +1154,75 @@ def uploaded_file(filename):
 	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 
 
+
+def ht_create_image(profile, image_data, comment="No Caption"):
+	print 'upload()\tht_create_image()\tenter'
+	imgid = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+	image = Image.get_by_id(imgid)
+	if (image is None):
+		print 'upload()\tht_image_create\t image does not exist.  Create it.'
+		# image doesn't exist. Create and upload to S3
+		image = Image(imgid, profile.prof_id, comment)
+		try:
+			ht_upload_image_to_S3(image, image_data)
+			db_session.add(image)
+			db_session.commit()
+		except IntegrityError as ie:
+			# image already exists.
+			print 'upload()\tht_image_create() funny seeing image already exist here.'
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+		except Exception as e:
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+	return image
+
+
+
+def ht_upload_image_to_S3(image, image_data):
+	f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], image.img_id), 'w')
+	f.write(image_data)
+	f.close()
+
+	print 'upload()\tupload_image_to_S3\tpush image to S3.'
+	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
+	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
+	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
+	s3_key.set_contents_from_file(StringIO(image_data))
+
+
+
+
+def ht_map_image_to_lesson(image, lesson_id):
+	print 'upload()\tmap_image_to_lesson\t', image.img_id, ' <=> ', lesson_id
+
+	print 'upload()\tmap_image_to_lesson\t Does map exist?'
+	map_exists = LessonImageMap.exists(image.img_id, lesson_id)
+	if (map_exists):
+		print 'upload()\tmap_image_to_lesson\t yes map already exists'
+		return
+
+	li_map = LessonImageMap(image.img_id, lesson_id, image.img_profile, comment=image.img_comment)
+	try:
+		db_session.add(li_map)
+		db_session.commit()
+		print 'upload()\tmap_image_to_lesson\tcommitted'
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
+
+
+
+
 def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
 	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
@@ -1141,6 +1234,8 @@ def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
 	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
 	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
+
+
 
 def error_sanitize(message):
 	if (message[0:16] == "(IntegrityError)"):
