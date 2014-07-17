@@ -803,9 +803,9 @@ def email_body_verify_account():
 
   msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600"><tr>'
   msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px; padding-left:85px; padding-right:85px; padding-bottom:25px" align="left" valign="top">'
-  msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Welcome to Insprite! We\'re thrilled that you’ve joined us.<br><br>'
+  msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Welcome to Insprite! We\'re thrilled that you\'ve joined us.<br><br>'
   msg = msg + 'Insprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. We think you\'ll love exploring our growing community!<br><br>'
-  msg = msg + 'Before you explore the cool things you can learn and experience from the inspiring, creative people around you (or decide to be one of them), please verify your email account so we know you\re a real breathing human.<br><br>'
+  msg = msg + 'Before you explore the cool things you can learn and experience from the inspiring, creative people around you (or decide to be one of them), please verify your email account so we know you\'re a real breathing human.<br><br>'
   msg = msg + 'If you\'re getting this message by mistake and didn\'t create an account, <a href="mailto@thegang@insprite.co" style="color:#29abe1">drop us a line</a> and we\'ll get on it ASAP.</font>'
   msg = msg + '</td></tr>'
 
@@ -948,43 +948,43 @@ def email_body_review():
   return msg
   
 def email_body_beta_email(url):
-	""" HTML for sending the password recovery email """
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
+  """ HTML for sending the beta email """
+  msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
+  msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr>'
+  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
+  msg = msg + '<tbody>'
 
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
+  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
+  msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+  msg = msg + '\t</td></tr>'
+  msg = msg + '</tbody>'
+  msg = msg + '</table>'
 
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-1.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
+  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
+  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-1.png">'
+  msg = msg + '\t</td></tr>'
+  msg = msg + '</table>'
 
   msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
   msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Thanks for signing up for Insprite! We are excited that you\'re interested in what we are doing over here. We are creating Insprite to be a vibrant, friendly community where you can both learn from creative people in your area, and teach your passions to others. We sincerely hope that you will be a part of it!'
-  msg = msg + '<br><br>We’re currently in the process of finishing up Insprite... and we’re nearly there. We\'re just adding some bells and whistles on it so it’ll be the best possible experience for you.<br><br>'
+  msg = msg + '<br><br>We\'re currently in the process of finishing up Insprite... and we\'re nearly there. We\'re just adding some bells and whistles on it so it\'ll be the best possible experience for you.<br><br>'
   msg = msg + 'We will be in touch when we\'re getting ready to launch&mdash;tentatively in late 2014. We can\'t wait to show you what we\'ve been working on. You\'re going to love it.<br><br>'
-  msg = msg + 'In the meantime, feel free to drop us a line, or follow us on our <a href="#" style="color:#29abe1">Blog</a>, where we will post lots of cool bloggy things (no, really, we\'re gonna try and keep it interesting).<br><br>
-  msg = msg + '<br>Spritely yours,<br>
-  msg = msg + 'The Insprite Gang </font>
+  msg = msg + 'In the meantime, feel free to drop us a line, or follow us on our <a href="#" style="color:#29abe1">Blog</a>, where we will post lots of cool bloggy things (no, really, we\'re gonna try and keep it interesting).<br><br>'
+  msg = msg + '<br>Spritely yours,<br>'
+  msg = msg + 'The Insprite Gang </font>'
 
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
+  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/facebookIcon.png">'
+  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/twitterIcon.png">'
+  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
+  msg = msg + '\t</td></tr>'
+  msg = msg + '</table>'
 
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
+  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
+  msg = msg + '\t</td></tr>'
+  msg = msg + '</table>'
 
