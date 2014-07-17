@@ -136,8 +136,58 @@ $(document).ready(function() {
 	});
 	
 
+	$('#updateLessonPortfolioButton').click(function(e) {
+		e.preventDefault();
+		saveLessonPortfolio();
+	});
+
 });
 
+
+
+
+function saveLessonPortfolio() {
+	/* forked from edit_portfolio.js, savePortfolio */
+
+	var fd = {};
+	addPortfolioInformation(fd);
+
+	var lessonID = $('#lessonForm').attr("data-lesson-id");
+	$.ajax({ url : '/lesson/' + lessonID + '/image/update',
+			type : "POST",
+			data : fd,
+			dataType: 'json',
+			success : function(response) {
+				console.log("AJAX success");
+				$("#lessonSave").html("Save").css("color","#1488CC");
+				$(".lessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
+
+				setTimeout(function() {
+					$('.lessonFormPage').hide();
+					$(".lessonNavItem").removeClass("active");
+					$('#review').show();
+
+					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
+					$(".lessonEditPhotosStatus").empty();
+					$(".lessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
+					history.pushState({title: "review"}, "", '/lesson/create#review');
+				}, 2000);
+
+				// Uncomment this and comment the setTimeout function if we want user to manually continue.
+				// $("#editPortfolioDoneContinueButton").show();
+				// $("#editPortfolioDoneButton").hide();
+			},
+			error : function(response) {
+				console.log("AJAX error");
+				$(".lessonEditPhotosStatus").html("<span class='error'>Whoops! Error updating images.</span>");
+				// $(".lessonFormButtonContainer").children(".editPortfolioDoneButton").toggleClass("editPortfolioDoneButton lessonFormButton").attr("id", "").on().text("Continue");
+				$("#editPortfolioDoneContinueButton").show();
+				$("#editPortfolioDoneButton").hide();
+			}
+	});
+
+	return false;
+}
 
 
 function editPortfolioImages(lesson_id) {
@@ -153,7 +203,7 @@ function editPortfolioImages(lesson_id) {
 				$(".lessonEditPhotosContainer").html(page_content);
 				$.getScript("/static/js/edit_portfolio.js");
 				$("#editPortfolioDoneContinueButton").hide();
-				$("#editPortfolioDoneButton").show();					
+				$("#updateLessonPortfolioButton").show();
 				// $('#sendMessage').bind('click', savePortfolio);
 			},
 			error : function(response) {
@@ -236,7 +286,6 @@ function getLessonImages(lesson_id) {
 			success : function(response) {
 				console.log("getLessonImages - AJAX success");
 				console.log("getLessonImages - Response: "+ JSON.stringify(response));
-				console.log(response);
 				$(".lessonReviewPortfolio").empty();
 				$.each(response.images, function() {
 					console.log("IMAGE: "+this.img_id);
@@ -255,7 +304,6 @@ function getLessonImages(lesson_id) {
 
 
 function saveLessonForm(lesson_id) {
-
 	var fd = new FormData($('#lessonForm')[0]);
 	fd.append('version', "save")
 	fd.append('csrf_token', $('#csrf_token').val())
@@ -297,5 +345,4 @@ function saveLessonForm(lesson_id) {
 			}
 	});
 	return false;
-	
 }
