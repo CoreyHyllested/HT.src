@@ -28,24 +28,28 @@
 			<div class="dashboardLessons">
 				<h1>My Lessons</h1>
 				{% for lesson in lessons %}
-				<div class="dashboardLesson" id="{{lesson.lesson_id}}">
-					<div class="dashboardLessonLeftColumn">
-						{% if lesson.lesson_flags == 0 %}
-							Incomplete			
-						{% elif lesson.lesson_flags == 1 %}
-							Inactive
+					{% if lesson.lesson_flags > 0 %}
+					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
+						<div class="dashboardLessonLeftColumn">
+						{% if lesson.lesson_flags == 1 %}
+							Saved
+						{% elif lesson.lesson_flags == 2 %}
+							Private
+						{% elif lesson.lesson_flags == 3 %}	
+							Live
 						{% else %}
-							Active
+							None
 						{% endif %}
+						</div>
+						<div class="dashboardLessonCenterColumn">
+							<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+						</div>
+						<div class="dashboardLessonRightColumn">
+							<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
+						</div>
+						<div class="clear"></div>	
 					</div>
-					<div class="dashboardLessonCenterColumn">
-						<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
-					</div>
-					<div class="dashboardLessonRightColumn">
-						<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
-					</div>
-					<div class="clear"></div>	
-				</div>
+					{% endif %}
 				{% endfor %}
 			</div>
 		{% endif %}

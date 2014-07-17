@@ -3,6 +3,18 @@ $(document).ready(function() {
 	var firstPage = "overview";
 	var lastPage = "review";
 	var lessonID = $("#lessonForm").attr("data-lesson-id");
+	
+
+	// version will be "edit" if user is editing existing, or "first" if it's a first-time lesson creation. It is "new" for general "add lesson" state
+	var version = $("#version").val(); 
+
+	// statePath determines the uri pushed by the state functions - depends on the version (do we make the uri "/edit" or "/new")
+	var statePath = "/lesson/new/";
+	if (version == "edit") {
+		statePath = "/lesson/edit/";
+	}
+
+	console.log("version is "+version);
 	var referrer = document.referrer;
 	console.log("referrer is "+referrer);
 
@@ -59,7 +71,7 @@ $(document).ready(function() {
 		}
 		$("#"+target).show();
 		$(this).addClass("active");
-		history.pushState({title: target}, "", '/lesson/new/'+lessonID+'#'+target);
+		history.pushState({title: target}, "", statePath+lessonID+'#'+target);
 	});
 
 	$(document.body).on("click", ".lessonFormButton", function(e) {
@@ -77,7 +89,7 @@ $(document).ready(function() {
 
 		$('#'+nextPage).show();
 		$(".lessonNavItem[data-target-page=" + nextPage + "]").addClass("active");
-		history.pushState({title: nextPage}, "", '/lesson/new/'+lessonID+'#'+nextPage);
+		history.pushState({title: nextPage}, "", statePath+lessonID+'#'+nextPage);
 	});
 
 	$('#lessonSave').click(function(e) {
@@ -105,7 +117,7 @@ $(document).ready(function() {
 		var prevPage = $(".lessonNavItem[data-target-page=" + currentPage + "]").prev(".lessonNavItem").attr("data-target-page");
 		$('#'+prevPage).show();
 		$(".lessonNavItem[data-target-page=" + prevPage + "]").addClass("active");
-		history.pushState({title: prevPage}, "", '/lesson/new/'+lessonID+'#'+prevPage);
+		history.pushState({title: prevPage}, "", statePath+lessonID+'#'+prevPage);
 	})
 
 	// Form element Behavior
@@ -140,6 +152,17 @@ $(document).ready(function() {
 		e.preventDefault();
 		saveLessonPortfolio();
 	});
+
+
+	// The "make lesson live" checkbox must use a proxy, because the visible checkbox is outside of the form (bc of the embedded image forms.)
+	// So when the visible 'proxy' element is checked or unchecked, the same happens to the real, hidden one, which is submitted thru wtforms.
+	var checkState = $('#lessonMakeLive').prop('checked');
+	$('#lessonMakeLiveProxy').prop('checked', checkState);
+
+	$('#lessonMakeLiveProxy').click(function() {
+		var newCheckState = $('#lessonMakeLiveProxy').prop('checked');
+		$('#lessonMakeLive').prop('checked', newCheckState);
+	})
 
 });
 
@@ -305,25 +328,9 @@ function getLessonImages(lesson_id) {
 
 function saveLessonForm(lesson_id) {
 	var fd = new FormData($('#lessonForm')[0]);
-	fd.append('version', "save")
-	fd.append('csrf_token', $('#csrf_token').val())
-	fd.append('lesson_title', $('#lessonTitle').val())
-	fd.append('lesson_description', $('#lessonDescription').val())
-	fd.append('lesson_address_1', $('#lessonAddress1').val())
-	fd.append('lesson_address_2', $('#lessonAddress2').val())
-	fd.append('lesson_city', $('#lessonCity').val())
-	fd.append('lesson_state', $('#lessonState').val())
-	fd.append('lesson_zip', $('#lessonZip').val())
-	fd.append('lesson_country', $('#lessonCountry').val())
-	fd.append('lesson_address_details', $('#lessonAddressDetails').val())
-	fd.append('lesson_rate', $('#lessonRate').val())
-	fd.append('lesson_rate_unit', $('#lessonRateUnit').val())
-	fd.append('lesson_loc_option', $('#lessonPlace').val())
-	fd.append('lesson_industry', $('#lessonIndustry').val())
-	fd.append('lesson_duration', $('#lessonDuration').val())
-	fd.append('lesson_avail', $('#lessonAvail').val())
+	fd.append('saved', "true")
 
-	// TODO save flags
+	console.log("saveLessonForm - version is "+fd["version"]);
 
 	$.ajax({ url	: "/lesson/update/"+lesson_id,
 			type	: "POST",
@@ -333,6 +340,7 @@ function saveLessonForm(lesson_id) {
 			success : function(data) {
 			 	console.log("AJAX Success - lesson saved.");
 			 	$("#lessonSave").html("Saved").css("color","gray");
+			 	$(".formFieldErrors").remove();
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
 				// setTimeout(function() {

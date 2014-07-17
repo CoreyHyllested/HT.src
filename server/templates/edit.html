@@ -41,18 +41,14 @@
 			{{form.edit_bio}}
 		</div>
 
-
 		<div id="edit-save-wrap">
 			<input type="submit" id="edit-save" class="blueButton" value="Save changes">
 		</div>
 
 		<div class="editBackToProfile">
-			<a href="#" onclick="document.getElementById('h').value='{{bp.prof_id}}'; document.p.submit();">Back to Profile</a>
+			<a href='/profile?{{bp.prof_id}}'>Back to Profile</a>
 		</div>
 	</form>
-
 </div>
-
-<!-- Bottom bar -->
 
 {% endblock %}
