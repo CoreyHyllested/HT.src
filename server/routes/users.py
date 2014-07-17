@@ -17,6 +17,7 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
+from server import ht_csrf
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
@@ -718,28 +719,23 @@ def api_get_images_for_lesson(lesson_id):
 
 
 
+@ht_csrf.exempt
 @req_authentication
 @insprite_views.route("/portfolio/<operation>/", methods=['POST'])
 def api_update_portfolio(operation):
-	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
-	images = request.values.get('images')
 
 	print "-"*24
 	print "api_update_portfolio(): operation:", operation
-	print "api_update_portfolio(): lesson_id:", lesson_id
 
 	try:
 		# get portfolio.
 		portfolio = None
 
 		# get lesson-portfolio imgs
-		if (lesson_id is not None):
-			portfolio = htdb_get_lesson_images(lesson_id)
-			print 'api_update_portfolio():', len(portfolio)
-		else:
-			print "api_update_portfolio(): Couldn't find Lesson."
+		print "api_update_portfolio(): Couldn't find Lesson."
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
