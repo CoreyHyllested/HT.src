@@ -1,3 +1,24 @@
+function addPortfolioInformation(fd) {
+	console.log('addPortfolioInformation() -- enter');
+
+	fd.csrf_token = $('.lessonFormButtonContainer #csrf_token').val();
+	fd.lesson_id = $('#lessonForm').attr("data-lesson-id");
+
+	$(".editPortfolioListItem").each(function(i, el) {
+		var img	= new Object();
+		img.idx	= $(el).index();
+		img.old	= $(el).attr('order');
+		img.cap	= $(this).find(".editPortfolioImage").data("title");
+		var img_id	= $(this).find(".editPortfolioImage").data("id");
+		console.log("img id is"+img_id);
+		fd[img_id] = JSON.stringify(img);
+		console.log('fd['+img_id+'] is '+fd[img_id]);
+	});
+	return fd;
+}
+
+
+
 function savePortfolio() {
 	var fd = {};
 	fd.csrf_token = $('.lessonFormButtonContainer #csrf_token').val();
@@ -9,6 +30,7 @@ function savePortfolio() {
 
 	// var images = [];
 
+	//TODO replace with addPortfolioInformation
 	$(".editPortfolioListItem").each(function(i, el) {
 		var img	= new Object();
 		img.idx	= $(el).index();
@@ -17,7 +39,7 @@ function savePortfolio() {
 		var img_id	= $(this).find(".editPortfolioImage").data("id");
 		console.log("img id is"+img_id);
 		fd[img_id] = JSON.stringify(img);
-		console.log("fd[img_id] is "+fd[img_id]);
+		console.log('fd['+img_id+'] is '+fd[img_id]);
 	});
 
 	// console.log("savePortfolio : Images: "+JSON.stringify(images));
@@ -106,6 +128,5 @@ $(document).ready(function(){
 	$("#editPortfolioDoneButton").off().on('click', function(e) {
 		e.preventDefault();
 		savePortfolio();
-		
 	});
 });
