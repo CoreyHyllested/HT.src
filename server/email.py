@@ -99,7 +99,7 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 ################################################################################
 
 
-def ht_send_seller_proposal_update(proposal, hero_email, hero_name, buyer_name, buyer_id):
+def ht_send_sellr_proposal_update_notification(proposal, hero_email, hero_name, buyer_name, buyer_id):
 	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
 
 	url = 'https://herotime.co/profile?hero=' + str(buyer_id)
@@ -110,6 +110,23 @@ def ht_send_seller_proposal_update(proposal, hero_email, hero_name, buyer_name, 
 	msg = create_msg(msg_subject, hero_email, hero_name, 'noreply@herotime.co', u'HeroTime Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(hero_email, msg)
+
+
+
+def ht_send_buyer_proposal_update_notification(prop, buyer_email, buyer_name, hero_name, hero_id):
+	return
+
+
+def ht_send_buyer_proposal_rejected_notification(proposal):
+	""" email buyer (and seller?) the current proposal was rejected. """
+	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(proposal)
+
+	buyer_msg_html = email_body_buyer_proposal_rejected_notification(url, proposal)
+	buyer_msg = create_msg(str(hero_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite')
+	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
+	ht_send_email(user_addr, buyer_msg)
+
+
 
 
 
@@ -150,18 +167,6 @@ def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, messag
 
 
 
-def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_id):
-	url = 'https://herotime.co/profile?hero=' + str(hero_id)
-	msg_html =	"Alright. We sent your proposal to <a href=\"" + str(url) + "\">" + hero_name + ".</a><br>"
-	msg_html = msg_html + "The request was for " + str(prop.get_prop_ts().strftime('%A, %b %d, %Y %H:%M %p')) + " - " + str(prop.get_prop_tf().strftime('%A, %b %d, %Y %H:%M %p')) + "<br>"
-	msg_html = msg_html + str(prop.prop_place) + "<br>" + str(prop.prop_desc) + "<br>" + str(prop.prop_cost)
-
-	msg_subject = "Proposal to meet " + hero_name
-	if (prop.prop_count > 1): msg_subject = msg_subject + "(updated)"
-
-	msg = create_msg(msg_subject, buyer_email, buyer_name, 'noreply@herotime.co', u'HeroTime Notifications')
-	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_email, msg)
 
 
 
@@ -173,29 +178,6 @@ def email_user_proposal_updated(prop, buyer_email, buyer_name, hero_name, hero_i
 
 
 
-
-
-
-
-
-
-
-def ht_email_notice_of_proposal_rejection(the_proposal):
-	""" email buyer (and seller?) the current proposal was rejected. """
-	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(the_proposal)
-
-	# we need to create a different notification if a user rejects another user's proposal.
-	#hero_msg_html = email_body_proposal_rejected_to_seller(url, the_proposal)
-	#hero_msg = create_msg("You rejected " + user_name + "'s proposal", hero_addr, hero_name, 'noreply@insprite.co', u'Insprite')
-	#hero_msg.attach(MIMEText(hero_msg_html, 'plain'))
-	#ht_send_email(hero_addr, hero_msg)
-
-
-	# Emails sends the proposal rejection email to the buyer.
-	buyer_msg_html = email_body_proposal_rejected_to_buyer(url, the_proposal)
-	buyer_msg = create_msg(str(hero_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite')
-	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
-	ht_send_email(user_addr, buyer_msg)
 
 
 
@@ -292,56 +274,6 @@ def ht_send_email(email_addr, msg):
 
 
 
-
-def email_body_proposal_rejected_to_buyer(url, proposal):
-	""" generate email body (HTML).  the proposal was rejected email, will be sent to the buyer."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> {insert hero_name} didn\'t accept your proposal this time around.<br><br>'
-	msg = msg + '\t\t\t Why, you ask? There could be many reasons, but trust us, don\'t take it personally. <br><br>'
-	msg = msg + '\t\t\t Need to edit, manage or update the appointment? Go for it, or follow up with {insert hero_name} </font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
-	msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr> <td style="border-top: 0px solid #333333; border-bottom: 0px solid #FFFFFF;">'
-	msg = msg + '\t\t<img width="596px" src="http://ryanfbaker.com/insprite/footerImage.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
 
 
 

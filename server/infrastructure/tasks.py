@@ -87,8 +87,8 @@ def ht_proposal_create(values, uid):
 		db_session.commit()		 # raises IntegrityError
 		print "ht_proposal_create: successfully committed proposal"
 
-		ht_send_seller_proposal_update(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+		ht_send_sellr_proposal_update_notification(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+		ht_send_buyer_proposal_update_notification(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 		print "ht_proposal_create: successfully emailed proposal information"
 	except NoResourceFound as npf:
 		ht_sanitize_errors(npf)
@@ -111,10 +111,8 @@ def ht_proposal_update(p_uuid, p_from):
 	prop = Proposal.get_by_id(p_uuid)
 	(ha, hp) = get_account_and_profile(prop.prop_hero)
 	(ba, bp) = get_account_and_profile(prop.prop_user)
-
-	# pretty annoying.  we need to encode unicode here to utf8; decoding will fail.
-	email_hero_proposal_updated(prop, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	email_user_proposal_updated(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
+	ht_send_sellr_proposal_update_notification(prop, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	ht_send_buyer_proposal_update_notification(prop, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 
 
 
@@ -171,20 +169,20 @@ def ht_proposal_accept(prop_uuid, uid):
 
 
 
-def ht_proposal_reject(p_uuid, uid):
-	print 'received proposal uuid: ', p_uuid 
+def ht_proposal_reject(prop_id, uid):
+	print 'received proposal id:', prop_id
 	bp = Profile.get_by_uid(uid)
-	the_proposal = Proposal.get_by_id(p_uuid) 
-	the_proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
+	proposal = Proposal.get_by_id(prop_id)
+	proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
 
 	try:
-		db_session.add(the_proposal)
+		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
 		db_session.rollback()
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
-	ht_email_notice_of_proposal_rejection(the_proposal)
+	ht_send_buyer_proposal_rejected_notification(proposal)
 	return (200, 'success')
 
 
