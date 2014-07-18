@@ -87,7 +87,7 @@ def ht_proposal_create(values, uid):
 		db_session.commit()		 # raises IntegrityError
 		print "ht_proposal_create: successfully committed proposal"
 
-		email_hero_proposal_updated(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+		ht_send_seller_proposal_update(proposal, ha.email, hp.prof_name.encode('utf8', 'ignore') , bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
 		email_user_proposal_updated(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore') , hp.prof_name.encode('utf8', 'ignore'), hp.prof_id)
 		print "ht_proposal_create: successfully emailed proposal information"
 	except NoResourceFound as npf:
