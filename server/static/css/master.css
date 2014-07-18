@@ -22,6 +22,10 @@ html, body {
 	font-style: italic;
 }
 
+.serif {
+	font-family: "Garamond", "EB Garamond", "Georgia", serif;
+}
+
 strong {
 	font-weight: bold;
 }
