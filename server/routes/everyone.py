@@ -295,7 +295,7 @@ def ht_send_verification_to_list(account, profile, email_set):
 
 	for email in email_set:
 		print 'sending email to', email
-		send_verification_email(email, profile.prof_name, challenge_hash)
+		ht_send_verify_email_address(email, profile.prof_name, challenge_hash)
 
 
 

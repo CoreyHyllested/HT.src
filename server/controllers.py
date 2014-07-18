@@ -157,8 +157,9 @@ def ht_create_account(name, email, passwd):
 		db_session.rollback()
 		return None, False
 
-	send_verification_email(email, name, challenge_hash=challenge_hash)
+	ht_send_verify_email_address(email, name, challenge_hash=challenge_hash)
 	return (hero, prof)
+
 
 
 
