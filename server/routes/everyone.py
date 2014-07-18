@@ -243,7 +243,7 @@ def render_password_reset_page(challengeHash):
 		try:
 			db_session.add(hero_account)
 			db_session.commit()
-			ht_email_confirmation_of_changed_password(email)
+			ht_send_password_changed_confirmation(email)
 		except Exception as e:
 			trace(str(e))
 			db_session.rollback()
