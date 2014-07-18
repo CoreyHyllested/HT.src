@@ -940,9 +940,9 @@ def render_settings():
 				return redirect('/dbFailure')
 
 
-		#change email; send email to both.
 		if (update_mail):
-			ht_email_confirmation_of_changed_email_address(ba.email, form.set_input_email.data)
+			# user changed email; for security, send confimration email to last email addr.
+			ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
 
 		#change pass send email
