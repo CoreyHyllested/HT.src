@@ -19,8 +19,6 @@ import pytz
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
@@ -129,7 +127,7 @@ def ht_password_recovery(email):
 		db_session.rollback()
 		return (str(e))
 
-	ht_email_password_recovery_link(email, challenge_hash)
+	ht_send_password_recovery_link(email, challenge_hash)
 	return usrmsg
 
 
