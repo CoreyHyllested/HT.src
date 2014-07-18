@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2014 Insprite, LLC.
 # All Rights Reserved.
 #
 # All information contained is the property of Insprite, LLC.  Any intellectual
@@ -29,11 +29,11 @@ import json, smtplib, urllib
 
 
 @mngr.task
-def send_welcome_email(user_email, user_name):
-	msg_text = "Welcome to HeroTime!\nNow go buy and sell time. Enjoy.\n"
-	msg_html = """<html><body>Welcome to HeroTime!<br><br>Now go buy and sell time. Enjoy.</body></html>"""
+def ht_email_welcome_message(user_email, user_name):
+	msg_text = "Welcome to Insprite!\n"
+	msg_html = email_body_verify_account()
 
-	msg = create_msg('Welcome to HeroTime', user_email, user_name, 'noreply@herotime.co', u'HeroTime')
+	msg = create_msg('Welcome to Insprite', user_email, user_name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)

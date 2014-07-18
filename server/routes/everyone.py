@@ -323,7 +323,7 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 	# bind session cookie to this user's profile
 	bp = Profile.get_by_uid(account.userid)
-	send_welcome_email(email, bp.prof_name)
+	ht_email_welcome_message(email, bp.prof_name)
 	ht_bind_session(bp)
 	if (nexturl is not None):
 		# POSTED from jquery in /settings:verify_email not direct GET
