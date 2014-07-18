@@ -393,7 +393,18 @@ li.editPortfolioListItem {
 	width: 100%;
 }
 
-.lessonReviewPortfolio .portfolioImageWrapper {
+.lessonReviewPortfolioLeftCol {
+	float: left;
+	width: 50%;	
+}
+
+.lessonReviewPortfolioRightCol {
+	float: right;
+	width: 50%;	
+}
+
+/* Contains the image wrapper and the caption. height-restricted */
+.lessonReviewPortfolio .portfolioImageBox {
 	float: left;
 	padding: 4px;
 	background: rgb(255, 255, 255);
@@ -403,6 +414,15 @@ li.editPortfolioListItem {
 	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.16);
 	margin: 6px;
 	width: 45%;
+	
+}
+
+.lessonReviewPortfolio .portfolioImageWrapper {
+	float: left;
+/*	padding: 4px;
+	margin: 6px;*/
+	max-height: 250px;
+	overflow: hidden;
 }
 
 .lessonReviewPortfolio .portfolioImage {
@@ -413,8 +433,6 @@ li.editPortfolioListItem {
 	box-sizing: border-box;
 	display: block;
 	float: left;
-	/* height: 200px; */
-	/* margin-right: 11px; */
 	margin-bottom: 11px;
 	width: 100%;
 }

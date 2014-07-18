@@ -59,7 +59,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.editPortfolioWrapper',
-	    tolerance: 'intersect',
+	    tolerance: 'pointer',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -69,7 +69,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.lessonEditPhotosContainer',
-	    tolerance: 'intersect',
+	    tolerance: 'pointer',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -83,16 +83,19 @@ $(document).ready(function(){
 		//console.log("deleted: " + img_id);
 	});
 
-	$(".editPortfolioSave").click(function() {
-		var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
-		$(this).parent().siblings(".editPortfolioImage").data("title", caption);
-		$(this).parent().fadeOut();
-	});
+	// $(".editPortfolioSave").click(function() {
+	// 	var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
+	// 	$(this).parent().siblings(".editPortfolioImage").data("title", caption);
+	// 	$(this).parent().fadeOut();
+	// });
 
 	$(".editPortfolioImageCaption").keyup(function(){
+		var caption = $(this).val();
+		console.log("caption is"+caption);
+		$(this).parent().siblings("a.editPortfolioImage").attr("data-title", caption);
 		$("#editPortfolioDoneContinueButton").hide();
 		$("#editPortfolioDoneButton").show();
-		$(this).parent().siblings(".save-button").fadeIn();
+		// $(this).parent().siblings(".save-button").fadeIn();
 	});
 
 	$(".editPortfolioDoneButton").off().on('click', function(e) {
