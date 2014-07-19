@@ -29,19 +29,12 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-	<!--script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script-->
 
 	<script src="/static/js/modal_windows.js"></script>	
-
 	{% endblock %}
 
-	{% if jsfiles %}
-	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
-	{% endif %}
-
 	<script>
-
-		// [All pages] Sticky footer (Mar 2014, replaces whatever else we had before)
+		// [All pages] Sticky footer
 
 		// Window load event used just in case window height is dependant upon images
 		$(window).bind("load", function() { 
@@ -115,9 +108,7 @@
 </head>
 
 <body>
-	<!-- MODAL WINDOWS -->
-	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
-			
+	<!-- MODAL WINDOWS; when model window is open, users can click the transparent black overlay to close. -->
 	<!-- Alert Modal -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
@@ -141,7 +132,7 @@
 	</div>
 
 
-	<!-- This is the hidden menu that only shows up on mobile -->
+	<!-- hidden menu that only shows up on mobile -->
 	<div class="menu">
 		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
@@ -172,7 +163,6 @@
 
 	<div class="pageWrapper"><!-- Page wrapper starts here -->
 
-		<!-- HEADER -->
 		<!-- Header starts here -->
 		<div class="headerBackground">
 			<!-- Content wrapper contains all header elements in necessary width -->
@@ -180,11 +170,9 @@
 
 				<!-- HEADER LOGO -->
 				<div class="headerLogo">
-					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-					{% if bp %}
-						<a href="/dashboard" class="headerLogoLink">
-					{% else %}
-						<a href="/" class="headerLogoLink">
+					<!-- If user is logged in, open Dashboard; otherwise, open home page -->
+					{% if bp %}<a href="/dashboard" class="headerLogoLink">
+					{% else %}<a href="/" class="headerLogoLink">
 					{% endif %}
 					<img src="/static/img/insprite-small.png" class="headerLogoImg"></a>
 				</div>
@@ -224,7 +212,7 @@
 					{% if bp.availability == 0 %}
 						<a class="teacherSignupLink blend" href="/teacher/signup">Sign up to teach</a>
 					{% endif %}
-					<a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a>
+					<!--a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a-->
 					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"></i></a>
 				</div>
 
@@ -257,14 +245,14 @@
 				<ul>
 					<li><a href="/about">About</a> |</li>
 					<li><a href="/terms">Terms &amp; Privacy</a> |</li>
-					<li><a href="mailto:team@herotime.co">Contact</a></li>
+					<li><a href="mailto:thegang@insprite.co">Contact</a></li>
 				</ul>
 			</div>
 				<!-- <ul>
-					<li><a href="http://www.linkedin.com/company/herotime">LinkedIn</a> |</li>
-					<li><a href="https://www.facebook.com/pages/HeroTime/545914632110849">Facebook</a> |</li>
+					<li><a href="http://www.linkedin.com/company/Insprite">LinkedIn</a> |</li>
+					<li><a href="https://www.facebook.com/pages/Insprite/545914632110849">Facebook</a> |</li>
 					<li><a href="https://plus.google.com/u/0/117608740634064140119">Google+</a> |</li>
-					<li><a href="https://twitter.com/HeroTimeCo">Twitter</a> |</li>
+					<li><a href="https://twitter.com/Insprite">Twitter</a> |</li>
 					<li><a href="http://www.youtube.com/channel/UCIgliSHZYHZNAdJqpjeUTVw/feed?view_as=public">YouTube</a></li>
 				</ul> -->
 			<div class="footerCopyright">
@@ -275,15 +263,9 @@
 
 	<script>
 	$(document).ready(function() {
-
 		$(".searchIcon").click(function() {
 			$("#srchForm").submit();
 		});
-
-		function rp(id) {
-			document.getElementById('h').value=id;
-			document.p.submit();
-		}
 
 		function searchBar() {
 			var x=document.forms["srchForm"]["search"].value;
