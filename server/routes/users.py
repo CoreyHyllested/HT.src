@@ -224,18 +224,50 @@ def render_message_page():
 
 
 
-@insprite_views.route('/edit', methods=['GET', 'POST'])
+@insprite_views.route('/profile/edit', methods=['GET', 'POST'])
 @req_authentication
-def render_edit():
-	""" Provides Hero space to update their information.  """
+def render_edit_profile():
+	# Form to edit a profile
+
+	bp = Profile.get_by_uid(session['uid'])
+
+	# session_form = session.pop('form', None)
+	# session_errmsg = session.pop('errmsg', None)
+	
+	form = ProfileForm(request.form)
+	x = 0
+	for x in range(len(Industry.industries)):
+		if Industry.industries[x] == bp.industry:
+			form.edit_industry.data = str(x)
+			break
+	form.edit_name.data     = bp.prof_name
+	form.edit_rate.data     = bp.prof_rate
+	form.edit_headline.data = bp.headline
+	form.edit_location.data = bp.location
+	form.edit_industry.data = str(x)
+	form.edit_url.data      = bp.prof_url #replace.httpX://www.
+	form.edit_bio.data      = bp.prof_bio
+	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	return make_response(render_template('edit_profile.html', form=form, bp=bp, photoURL=photoURL))
+
+
+@insprite_views.route('/profile/update', methods=['POST'])
+@req_authentication
+def api_update_profile(usrmsg=None):
+	# Process the edit profile form
+
+	print "api_update_profile: beginning update"
 
 	uid = session['uid']
-	bp	= Profile.get_by_uid(uid)
+	bp = Profile.get_by_uid(uid)
 
 	form = ProfileForm(request.form)
+
+	print "api_update_profile: the form: ", form
+
 	if form.validate_on_submit():
 		try:
-			print ("form is valid")
+			print "api_update_profile: form is valid"
 			bp.prof_rate = form.edit_rate.data
 			bp.headline = form.edit_headline.data 
 			bp.location = form.edit_location.data 
@@ -254,7 +286,7 @@ def render_edit():
 				trace (destination_filename + ", sz = " + str(len(image_data)))
 
 				#print source_extension
-				print 's3'
+				print 'api_update_profile: s3'
 				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
 				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
 				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
@@ -267,16 +299,16 @@ def render_edit():
 				if (bp.prof_url[:7] != "http://"):
 					bp.prof_url = "http://" + bp.prof_url;
 
-			print 'add'
+			print 'api_update_profile: add'
 			db_session.add(bp)
-			print 'commit'
+			print 'api_update_profile: commit'
 			db_session.commit()
 			log_uevent(uid, "update profile")
 
 			return jsonify(usrmsg="profile updated"), 200
 
 		except AttributeError as ae:
-			print 'hrm. must have changed an object somehwere'
+			print 'api_update_profile: hrm. must have changed an object somehwere'
 			print ae
 			db_session.rollback()
 			return jsonify(usrmsg='We messed something up, sorry'), 500
@@ -288,26 +320,12 @@ def render_edit():
 
 	elif request.method == 'POST':
 		log_uevent(uid, "editform isnt' valid" + str(form.errors))
-		print 'shoulding this fire?'
-		return jsonify(usrmsg='Invalid Request: ' + str(form.errors)), 500
+		return jsonify(usrmsg='Invalid Request', errors=form.errors), 500
 
-	x = 0
-	for x in range(len(Industry.industries)):
-		if Industry.industries[x] == bp.industry:
-			form.edit_industry.data = str(x)
-			break
-
-	form = ProfileForm(request.form)
-	form.edit_name.data     = bp.prof_name
-	form.edit_rate.data     = bp.prof_rate
-	form.edit_headline.data = bp.headline
-	form.edit_location.data = bp.location
-	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-	form.edit_bio.data      = bp.prof_bio
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
-
+	# return redirect('/profile/edit')
+	print "api_update_profile: Something went wrong - Fell Through."
+	# return jsonify(errors=str(form.errors)), 500
+	return jsonify(form=form)
 
 
 
@@ -468,7 +486,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
-		print "render_edit_lesson: no form submitted"
+		print "render_new_lesson: no form submitted"
 		
 		# In case the user went back in their browser to this page, after submitting
 		form = LessonForm(request.form)
@@ -497,7 +515,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 
 	else:
 		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
-		print "render_edit_lesson: invalid form imported"
+		print "render_new_lesson: invalid form imported"
 		
 
 	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
@@ -514,6 +532,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	print "render_edit_lesson: lesson_id is", lesson_id
 	
 	lesson = Lesson.get_by_lesson_id(lesson_id)
+
+	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')
 
 	session_form = session.pop('form', None)
 	session_errmsg = session.pop('errmsg', None)
@@ -565,17 +585,17 @@ def api_update_lesson(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
 	if (bp.availability == 0): return redirect('/dashboard')
 	
+	form = LessonForm(request.form)
+	lesson = Lesson.get_by_lesson_id(lesson_id)
+
+	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')	
+
 	version = request.values.get("version")
 	saved = request.values.get("saved")
 	print "api_update_lesson: Version is", version
 	print "api_update_lesson: Saved is", saved
 	print 'api_update_lesson: Beginning lesson update ...'
 
-	form = LessonForm(request.form)
-	lesson = Lesson.get_by_lesson_id(lesson_id)
-
-	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
-	
 	if (saved != "true"):
 
 		# If the form is submitted, and it validates, do the update the database entry with this lesson
@@ -604,6 +624,7 @@ def api_update_lesson(lesson_id):
 		else:
 			print 'api_update_lesson: invalid POST', form.errors
 
+	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
 	else:
 		if form:
 
@@ -632,45 +653,16 @@ def api_update_lesson(lesson_id):
 	if (saved != "true"):
 
 		print 'api_update_lesson: fell through - populating form data and returning.'
-
-		# This is messed up bc it is not accommodating an unsuccessful form submission - should take values from the form in that case, rather than from the database (where the lesson fields may be empty)
-
-		# form.lessonTitle.data = lesson.lesson_title
-		# form.lessonDescription.data = lesson.lesson_description
-		# form.lessonAddress1.data = lesson.lesson_address_1
-		# form.lessonAddress2.data = lesson.lesson_address_2
-		# form.lessonCity.data = lesson.lesson_city
-		# form.lessonState.data = lesson.lesson_state
-		# form.lessonZip.data = lesson.lesson_zip
-		# form.lessonCountry.data = lesson.lesson_country
-		# form.lessonAddressDetails.data = lesson.lesson_address_details
-		# form.lessonRate.data = lesson.lesson_rate
-		# form.lessonRateUnit.data = lesson.lesson_rate_unit
-		# form.lessonPlace.data = lesson.lesson_loc_option
-		# form.lessonIndustry.data = lesson.lesson_industry
-		# form.lessonDuration.data = lesson.lesson_duration
-		# form.lessonAvail.data = lesson.lesson_avail
-		# form.lessonMakeLive.data = 'y'
-
-		# if (lesson.lesson_flags == 2):
-		# 	form.lessonMakeLive.data = ''
-
-		# lessonUpdated = lesson.lesson_updated
-		# lessonCreated = lesson.lesson_created
-
-		errmsg = "Sorry, something went wrong - your form didn't validate"
 		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
 
+		errmsg = "Sorry, something went wrong - your form didn't validate"
 		session['form'] = form
 		session['errmsg'] = errmsg
 
 		if (version == "edit"):
 			return redirect(url_for("render_edit_lesson", lesson_id=lesson_id))
-
 		else:
 			return redirect(url_for("render_new_lesson", lesson_id=lesson_id))
-
-
 
 
 def ht_update_lesson(lesson, form, saved):

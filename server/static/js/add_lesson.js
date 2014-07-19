@@ -193,7 +193,7 @@ function saveLessonPortfolio() {
 					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
 					$(".lessonEditPhotosStatus").empty();
 					$(".lessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
-					history.pushState({title: "review"}, "", '/lesson/create#review');
+					history.pushState({title: "review"}, "", statePath='#review');
 				}, 2000);
 
 				// Uncomment this and comment the setTimeout function if we want user to manually continue.
@@ -329,8 +329,6 @@ function getLessonImages(lesson_id) {
 function saveLessonForm(lesson_id) {
 	var fd = new FormData($('#lessonForm')[0]);
 	fd.append('saved', "true")
-
-	console.log("saveLessonForm - version is "+fd["version"]);
 
 	$.ajax({ url	: "/lesson/update/"+lesson_id,
 			type	: "POST",

@@ -11,39 +11,12 @@ $(document).ready(function() {
 	});
 
 
-	$("#edit-save-wrap").click(function () {
-		var fd = new FormData($('#editform')[0]);
-		fd.append('csrf_token', $('#csrf_token').val())
-		fd.append('edit_name',     $('#edit_name').val())
-		fd.append('edit_rate',     $('#edit_rate').val())
-		fd.append('edit_headline', $('#edit_headline').val())
-		fd.append('edit_location', $('#edit_location').val())
-		fd.append('edit_industry', $('#edit_industry').val())
-		fd.append('edit_bio',      $('#edit_bio').val())
-		fd.append('edit_url',      $('#edit_url').val())
-		fd.append('edit_photo',    $('#edit_photo').val())
+	$("#edit-save").click(function(e) {
 
-		var xhr = new XMLHttpRequest();
-		xhr.open('post', "/edit", true);
-		xhr.send(fd)
+		e.preventDefault();
 
-		//catch response.  make any modificaitons.
-		xhr.onreadystatechange = function(e) {
-			if (4 == this.readyState) {
-				if (this.status == 200) {
-					console.log(['xhr post complete', e]);
-					console.log(xhr.responseText);
-					rc = JSON.parse(xhr.responseText);
-					openAlertWindow("Success: " + rc['usrmsg'])
-				} else {
-					console.log(['xhr post complete', e]);
-					rc = JSON.parse(xhr.responseText);
-					openAlertWindow("Failure: " + rc['usrmsg'])
-				}
-			}
-		};
+		saveProfile();
 
-		return false;
 	});
 
 	
@@ -89,4 +62,59 @@ $(document).ready(function() {
 		}
 	}
 
+
+
 });
+
+
+function saveProfile() {
+
+	var fd = new FormData($('#editProfileForm')[0]);
+
+	$.ajax({ url	: "/profile/update",
+			type	: "POST",
+			data : fd,
+			processData: false,
+  			contentType: false,
+			success : function(response) {
+			 	console.log("AJAX Success - profile saved.");
+
+			 	openAlertWindow("Success: " + response.usrmsg);
+
+			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
+				// setTimeout(function() {
+				// 	$('.lessonFormStatus').fadeOut(1000);
+				// }, 2000 );
+			}, 
+			error: function(response) {
+				console.log("AJAX Error - profile not saved.");
+			
+				openAlertWindow("Error: " + response.errors);
+				// $(".lessonFormStatus").html("<span class='error'>Sorry, something went wrong. Lesson not saved.</span>").fadeIn();
+			
+			}
+	});
+	return false;
+
+}
+
+function createReader(input, whenReady) {
+
+	if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		    var image = new Image;
+		    image.onload = function(e) {
+	            var width = this.width;
+	            var height = this.height;
+	            var src = this.src;
+	            if (whenReady) whenReady(width, height, src);
+		    };
+		    image.src = e.target.result;
+		    $('.ssUploadPreviewImage').attr('src', e.target.result).show();
+		}
+		reader.readAsDataURL(input.files[0]);
+
+	}
+
+}

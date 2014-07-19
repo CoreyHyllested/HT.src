@@ -27,7 +27,7 @@
 		</div>
 		<div class="profileMobileBlock">
 			{% if hp is sameas bp %}
-			<form method="link" action="/edit">
+			<form method="link" action="/profile/edit">
 				<input type="submit" class="whiteButton" value="Edit Profile">
 			</form>
 
@@ -187,7 +187,7 @@
 			<div class="perHour">per<br>hour</div>
 		</div>
 		{% if hp is sameas bp %}
-			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
+			<a href="/profile/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
 		{% else %}
 
 		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
