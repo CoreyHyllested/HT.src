@@ -23,7 +23,8 @@ $(document).ready(function() {
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
 		e.preventDefault();
 		// window.history.back();	
-		document.location.href = referrer;
+		// document.location.href = referrer;
+		document.location.href = "/dashboard";
 	});
 
 	if (window.location.hash) {
@@ -310,9 +311,11 @@ function getLessonImages(lesson_id) {
 				console.log("getLessonImages - AJAX success");
 				console.log("getLessonImages - Response: "+ JSON.stringify(response));
 				$(".lessonReviewPortfolio").empty();
-				$.each(response.images, function() {
+				$.each(response.portfolio, function() {
 					console.log("IMAGE: "+this.img_id);
-					$(".lessonReviewPortfolio").append("<div class='portfolioImageWrapper'><img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/"+this.img_id+"' class='portfolioImage'><div class='portfolioImageCaption'>"+this.img_comment+"</div></div>");
+
+					$(".lessonReviewPortfolio").append("<div class='portfolioImageBox'><div class='portfolioImageWrapper'><img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/"+this.img_id+"' class='portfolioImage'></div><div class='portfolioImageCaption'>"+this.img_comment+"</div></div>");
+
 				});
 		
 			},

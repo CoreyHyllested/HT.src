@@ -1161,7 +1161,7 @@ def uploaded_file(filename):
 
 
 
-def ht_create_image(profile, image_data, comment="No Caption"):
+def ht_create_image(profile, image_data, comment=None):
 	print 'upload()\tht_create_image()\tenter'
 	imgid = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 	image = Image.get_by_id(imgid)
