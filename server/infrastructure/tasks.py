@@ -196,7 +196,7 @@ def ht_proposal_reject(prop_id, uid):
 		db_session.rollback()
 		print 'DB error:', e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
-	ht_send_buyer_proposal_rejected_notification(proposal)
+	ht_send_meeting_rejected_notifications(proposal)
 	return (200, 'success')
 
 

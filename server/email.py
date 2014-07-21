@@ -118,15 +118,19 @@ def ht_send_buyer_proposal_update_notification(prop, buyer_email, buyer_name, he
 	return
 
 
-#TODO -- rename meeting_proposed rjected
-def ht_send_buyer_proposal_rejected_notification(proposal):
+def ht_send_meeting_rejected_notifications(proposal):
 	""" email buyer (and seller?) the current proposal was rejected. """
-	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(proposal)
+	(sellr_addr, sellr_name, user_addr, user_name) = get_proposal_email_info(proposal)
 
-	buyer_msg_html = email_body_buyer_proposal_rejected_notification(url, proposal)
-	buyer_msg = create_msg(str(hero_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite Notifications')
+	buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(url, proposal)
+	buyer_msg = create_msg(str(sellr_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite Notifications')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 	ht_send_email(user_addr, buyer_msg)
+
+	sellr_msg_html = email_body_meeting_rejected_notification_to_seller()
+	sellr_msg = create_msg('You rejected a proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
+	sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
+	ht_send_email(sellr_addr, sellr_msg)
 
 
 
@@ -331,41 +335,6 @@ def ht_send_email(email_addr, msg):
 
 
 
-def email_body_rejected_from_seller():
-  """ generate email body (HTML).  Seller rejects proposal and receives this email."""
-  msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-  msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-  msg = msg + '<tbody>'
-
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-  msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</tbody>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-  msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">You did not accept a proposal from <a href="#" style="color:#29abe1">{insert buyer name}</a>.<br><br>'
-  msg = msg + '\t\t\t Message <a href="#" style="color:#29abe1">{insert buyer name}</a> to see if you can work our a new date and time. </font><br><br>'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-  msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-
-  msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-  msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-  msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-  msg = msg + '\t</td></tr>'
-  msg = msg + '</table>'
-  return msg
-  
 
 
  
