@@ -171,8 +171,8 @@ def ht_proposal_accept(prop_uuid, uid):
 
 	ht_send_meeting_accepted_notification(the_proposal)
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	enque_reminder1 = ht_email_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	enque_reminder2 = ht_email_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
+	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 
 	# perhaps we should create a change_state event; ht_proposal_occrred.  which would check if it was canceled.  If not canceled; charge (+ queue capture) and enable Reviews
 	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
