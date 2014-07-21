@@ -250,6 +250,22 @@ class Account(Base):
 			pass
 		return account
 
+
+	@staticmethod
+	def get_by_email(email_address):
+		account = None
+		try:
+			account = Account.query.filter_by(email=email_address).one()
+		except NoResultFound as none:
+			pass
+		return account
+
+
+	def reset_security_question(self):
+		self.sec_question = str(uuid.uuid4())
+		self.updated = dt.utcnow()
+		return self.sec_question
+
 	def set_email(self, e):
 		self.email = e
 		self.updated = dt.utcnow()

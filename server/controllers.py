@@ -108,27 +108,21 @@ def ht_password_recovery(email):
 	"""
 
 	trace("Entering password recovery")
-
-	challenge_hash = uuid.uuid4()
-	accounts = Account.query.filter_by(email=email).all()
-
-	if (len(accounts) != 1):
-		return "Not a valid email."
-
-	ba = accounts[0]
-	ba.set_sec_question(str(challenge_hash))
-	usrmsg = "Password recovery email has been sent."
+	account = Account.get_by_email(email)
+	if (account is None):
+		return "Invalid email."
 
 	try:
-		db_session.add(ba)
+		account.reset_security_question()
+		db_session.add(account)
 		db_session.commit()
 	except Exception as e:
-		trace(str(e))
+		print type(e), e
 		db_session.rollback()
-		return (str(e))
+		return str(e)
 
-	ht_send_password_recovery_link(email, challenge_hash)
-	return usrmsg
+	ht_send_password_recovery_link(account)
+	return "Password recovery email has been sent."
 
 
 
