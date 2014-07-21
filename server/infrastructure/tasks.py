@@ -4,10 +4,10 @@ from server import ht_server
 from pytz import timezone
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.tasks_emails	 import *
 from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
+from server.email	import *
 from sqlalchemy.exc import IntegrityError
 from pprint import pprint as pp
 import json, smtplib
@@ -155,7 +155,7 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.rollback()
 		raise e
 
-	ht_email_meeting_accepted(the_proposal)
+	ht_send_meeting_accepted_notification(the_proposal)
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
 	enque_reminder1 = ht_email_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
 	enque_reminder2 = ht_email_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
