@@ -407,6 +407,8 @@ class Profile(Base):
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
 		self.account	= acct
+		self.created	= dt.utcnow()
+		self.updated	= dt.utcnow()
 
 
 	def __repr__ (self):
@@ -444,6 +446,7 @@ class Profile(Base):
 			'headline'	: str(self.headline),
 			'industry'	: str(self.industry),
 		}
+
 
 
 
