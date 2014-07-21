@@ -183,10 +183,9 @@ def ht_send_meeting_canceled_notification(proposal):
 
 
 
-
-
-
-
+################################################################################
+### USER TO USER MESSAGES ######################################################
+################################################################################
 
 def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, message):
 	print 'email_user_to_user_message'
@@ -217,7 +216,11 @@ def email_user_to_user_message(send_prof, recv_prof, msg_subject, thread, messag
 
 
 
-# DELAYED
+
+################################################################################
+### DELAYED REMINDER EMAILS (Meeting, Review) ##################################
+################################################################################
+
 @mngr.task
 def ht_send_meeting_reminder(user_email, user_name, prop_id):
 	print 'ht_send_meeting_reminder() --  sending appointment reminder emails now for ' + prop_id
@@ -233,32 +236,12 @@ def ht_send_meeting_reminder(user_email, user_name, prop_id):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @mngr.task
-def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
-	print 'ht_email_review_notice()  sending meeting review emails now for ' + prop_uuid
+def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
+	print 'ht_send_review_reminder()  sending meeting review emails now for ' + prop_uuid
 	proposal = Proposal.get_by_id(prop_uuid)
 	if (proposal.canceled()):
-		print 'ht_email_review_notice()  meeting was canceled.  Do not send reviews. ' + prop_uuid
+		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + prop_uuid
 		return
 
 	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
@@ -267,12 +250,29 @@ def ht_email_review_notice(user_email, user_name, prop_uuid, review_id):
 	if (sellr_acct.email == user_email):
 		partner_prof = buyer_prof
 
-	msg_html = "<p>Hey, " + user_name + ",</p>"
-	msg_html = msg_html + "<p>Your meeting is over.<br>" + "When you have a few minutes, <a href=\"http://127.0.0.1:5000/review/"+prop_uuid+"/"+review_id+"\"> review your meeting.</a> "
-	msg_html = msg_html + " with " + partner_prof.prof_name + " going over " + proposal.prop_desc + "</p>"
-	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@herotime.co', u'Insprite Notifications')
+	msg_html = email_body_review_reminder():
+	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@insprite.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -445,44 +445,6 @@ def email_body_rejected_from_seller():
   
 
 
-def email_body_review():
-	""" generate email body (HTML).  Rate and review email, both buyer and seller."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr>td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px; padding-right:75px" align="left" valign="top">'
-	msg = msg + '\t\t <font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">We hope you had a great appointment!<br>'
-	msg = msg + '\t\t\t Your opinion goes a long way&mdash;write up your review of the appointment so others can learn from your experience with <a href="#" style="color:#29abe1">{user\'s name}</a></font><br><br>'
-	msg = msg + '\t</td></tr>'
-
-	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:200px" align="left" valign="top">'
-	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:100px;text-align:center;" target="_blank">Rate & Review</a>'
-	msg = msg + '</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
  
 
 

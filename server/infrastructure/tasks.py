@@ -253,8 +253,8 @@ def ht_enable_reviews(prop_uuid):
 		review_finsh = proposal.prop_tf + timedelta(days = 30)
 
 		# Notifiy users.  Enqueue delayed review email.  TODO YET: Add an event notice on each users' dashboard.
-		ht_email_review_notice.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, review_bp.review_id], eta=review_start)
-		ht_email_review_notice.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid, review_hp.review_id], eta=review_start)
+		ht_send_review_reminder.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, review_bp.review_id], eta=review_start)
+		ht_send_review_reminder.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid, review_hp.review_id], eta=review_start)
 		post_reviews.apply_async(args=[proposal.prop_uuid, review_hp.review_id, review_bp.review_id], eta=review_finsh)
 	except Exception as e:
 		print type(e), e
