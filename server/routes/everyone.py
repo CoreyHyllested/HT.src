@@ -70,24 +70,16 @@ def render_profile(usrmsg=None):
 
 	try:
 		# complicated search queries can fail and lock up DB.
-		portfolio = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	#for img in portfolio: print 'render_profile()  ' + str(img)
-	#portfolio = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), portfolio)
-	#print 'images in portfolio:', len(portfolio)
-
+	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-
-	# TODO: rename NTS => proposal form; hardly used form this.
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-	profile_img = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(hp.prof_img)
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, revs=show_reviews, ntsform=nts, profile_img=profile_img, portfolio=portfolio))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, portfolio=visible_imgs))
 
 
 

@@ -14,7 +14,7 @@
 	
 	<div class="profileHeaderColumn">
 		<div class="profilePicContainer">
-			<img class="profilePic" src="{{profile_img}}">
+			<img class="profilePic" src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hp.prof_img}}">
 		</div>
 	</div>
 
@@ -57,17 +57,17 @@
 		</div>
 		<div class="profileAboutMe italic">{{hp.prof_bio}}</div>
 
-		{% if revs|count == 0 %}
+		{% if reviews|count == 0 %}
 		<h3>There are no reviews for this person yet.</h3>
 
 		{% else %}
 		<div class="profileReviews" id="reviews">
 				<div class="profileReviewsInfo">
-				<h3>Reviews ({{revs|length}})</h3>
+				<h3>Reviews ({{reviews|length}})</h3>
 			</div>
 			<div class="profileLatestReviews">
 
-				{% for review in revs %}
+				{% for review in reviews %}
 				<!-- The individual review box starts here -->
 				<div class="profileReviewBox">
 					<div class="profileReviewLeft">

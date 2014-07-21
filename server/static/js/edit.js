@@ -49,17 +49,12 @@ $(document).ready(function() {
 	
 
 	$('#change-photo-button').change(function(e) {
-		reloadProfImg("../static/img/loader.gif", true, false);
+		reloadProfImg("/static/img/loader.GIF", true, false);
 		var fd = new FormData($('#editform')[0]);
-		fd.append('csrf_token', $('#csrf_token').val())
+		fd.append('csrf_token', $('#csrf_token').val());
+		fd.append('profile', true);
 
 		var xhr = new XMLHttpRequest();
-
-//		xhr.addEventListener('progress', function(e) {
-//			var done = e.position || e.loaded, total = e.totalSize || e.total;
-//			console.log('xhr progress: ' + (Math.floor(done/total*1000)/10) + '%');
-//		}, false);
-
 		if ( xhr.upload ) {
 			xhr.upload.onprogress = function(e) {
 				var done = e.position || e.loaded, total = e.totalSize || e.total;

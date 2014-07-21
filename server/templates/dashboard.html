@@ -3,19 +3,22 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
-	{% assets "js_mapformat" %}<script src="{{ ASSET_URL }}"></script>{% endassets %}
 	{% assets "sass_foo" %}
 		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
 	{% endassets %}
+	<script src="/static/js/format.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
 
+
 {% block content %}
 
+{% if errmsg != none %}
+<script>openAlertWindow('{{errmsg}}');</script>
+{% endif %}
+
 <div class="dashboardContentWrapper">
-
 	<div class="dashboardLeftColumn">
-
 		<div class="dashboardEmpty">
 			<h1>Welcome to Insprite!</h1>
 			<h2>This is your personal dashboard.</h2>
@@ -28,24 +31,28 @@
 			<div class="dashboardLessons">
 				<h1>My Lessons</h1>
 				{% for lesson in lessons %}
-				<div class="dashboardLesson" id="{{lesson.lesson_id}}">
-					<div class="dashboardLessonLeftColumn">
-						{% if lesson.lesson_flags == 0 %}
-							Incomplete			
-						{% elif lesson.lesson_flags == 1 %}
-							Inactive
+					{% if lesson.lesson_flags > 0 %}
+					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
+						<div class="dashboardLessonLeftColumn">
+						{% if lesson.lesson_flags == 1 %}
+							Saved
+						{% elif lesson.lesson_flags == 2 %}
+							Private
+						{% elif lesson.lesson_flags == 3 %}	
+							Live
 						{% else %}
-							Active
+							None
 						{% endif %}
+						</div>
+						<div class="dashboardLessonCenterColumn">
+							<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+						</div>
+						<div class="dashboardLessonRightColumn">
+							<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
+						</div>
+						<div class="clear"></div>	
 					</div>
-					<div class="dashboardLessonCenterColumn">
-						<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
-					</div>
-					<div class="dashboardLessonRightColumn">
-						<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
-					</div>
-					<div class="clear"></div>	
-				</div>
+					{% endif %}
 				{% endfor %}
 			</div>
 		{% endif %}
@@ -87,8 +94,7 @@
 
 					<div class="dashboardOfferRightColumnInfo">
 						{{proposal.Proposal.prop_place}}
-						<!-- CAH: This should open Google Maps with the meeting location marked. -->
-						<a href="#" class="falseMap">(see map)</a>
+						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Proposal.prop_uuid}}" data-location="{{proposal.Proposal.prop_place}}"></div>
 					</div>
 					{% if proposal.seller == true %}
 					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
@@ -138,6 +144,7 @@
 						<!-- CAH: This should open Google Maps with the meeting location marked. -->
 						<a href="#" class="falseMap blend"><i class="fa fa-map-marker"></i>
 						{{appointment.Proposal.prop_place}}
+						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Proposal.prop_uuid}}" data-location="{{appointment.Proposal.prop_place}}" ></div>
 						</a>
 					</div>
 
@@ -233,9 +240,12 @@
 </div>
 
 
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
+<script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 $(document).ready(function() {
+	google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
 
     $('.offerAccept').click(function () {
         var id = this.id;
