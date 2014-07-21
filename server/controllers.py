@@ -132,15 +132,16 @@ def ht_password_recovery(email):
 
 
 
+
 def ht_create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
 
 	try:
 		print 'create account and profile'
-		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		prof  = Profile(name, hero.userid)
-		db_session.add(hero)
-		db_session.add(prof)
+		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		profile = Profile(name, account.userid)
+		db_session.add(account)
+		db_session.add(profile)
 		db_session.commit()
 
 	except IntegrityError as ie:
@@ -151,12 +152,12 @@ def ht_create_account(name, email, passwd):
 			#-- if is is a merge.
 		return None, False
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
+		return (None, None)
 
 	ht_send_verify_email_address(email, name, challenge_hash=challenge_hash)
-	return (hero, prof)
+	return (account, profile)
 
 
 

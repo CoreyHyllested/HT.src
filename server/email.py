@@ -22,6 +22,7 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
+from server.email_body import *
 from pprint import pprint as pp
 import json, smtplib, urllib
 
