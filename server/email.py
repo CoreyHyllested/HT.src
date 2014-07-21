@@ -244,7 +244,7 @@ def ht_send_meeting_reminder(user_email, user_name, prop_id):
 	if (proposal.canceled()): return
 
 	msg_html = email_body_meeting_reminder()
-	msg = create_msg(' You Have an Appointment Tomorrow with {insert name}', user_email, user_name, 'noreply@insprite.co', u'Insprite')
+	msg = create_notification('You Have an Appointment Tomorrow with {insert name}', user_email, user_name)
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
 
@@ -265,7 +265,7 @@ def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
 		partner_prof = buyer_prof
 
 	msg_html = email_body_review_reminder()
-	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg = create_notification('Review Meeting with ' + partner_prof.prof_name, user_email, user_name)
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
 
@@ -273,24 +273,19 @@ def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
 
 
 
+################################################################################
+### HELPER and WORKHORSE FUNCTIONS #############################################
+################################################################################
 
+def get_proposal_email_info(proposal):
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(proposal.prop_user)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	hero_addr = ha.email
+	user_addr = ba.email
+	hero_name = hp.prof_name.encode('utf8', 'ignore')
+	user_name = bp.prof_name.encode('utf8', 'ignore')
+	return (hero_addr, hero_name, user_addr, user_name)
 
 
 
@@ -306,8 +301,17 @@ def create_msg(subject, email_to, name_to, email_from, name_from):
 
 
 
+def create_notification(subject, email_to, name_to):
+	if (name_to == None):	name_to = email_to
 
-@mngr.task
+	msg = MIMEMultipart('alternative')
+	msg['Subject']	= '%s'  % Header(subject, 'utf-8')
+	msg['To']	= "\"%s\" <%s>" % (Header(name_to,	 'utf-8'), email_to)
+	msg['From'] = "\"%s\" <%s>" % (Header('Insprite Notifications', 'utf-8'), 'noreply@insprite.co')
+	return msg
+
+
+
 def ht_send_email(email_addr, msg):
 	# SendGrid login; TODO, move into config file.
 	username = 'radnovic'
@@ -319,103 +323,3 @@ def ht_send_email(email_addr, msg):
 	s.sendmail('noreply@herotime.co', email_addr, msg.as_string())
 	s.quit()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
-
-
-def email_body_beta_email(url):
-	""" HTML for sending the beta email """
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ebebeb"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-1.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
-	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Thanks for signing up for Insprite! We are excited that you\'re interested in what we are doing over here. We are creating Insprite to be a vibrant, friendly community where you can both learn from creative people in your area, and teach your passions to others. We sincerely hope that you will be a part of it!'
-	msg = msg + '<br><br>We\'re currently in the process of finishing up Insprite... and we\'re nearly there. We\'re just adding some bells and whistles on it so it\'ll be the best possible experience for you.<br><br>'
-	msg = msg + 'We will be in touch when we\'re getting ready to launch&mdash;tentatively in late 2014. We can\'t wait to show you what we\'ve been working on. You\'re going to love it.<br><br>'
-	msg = msg + 'In the meantime, feel free to drop us a line, or follow us on our <a href="#" style="color:#29abe1">Blog</a>, where we will post lots of cool bloggy things (no, really, we\'re gonna try and keep it interesting).<br><br>'
-	msg = msg + '<br>Spritely yours,<br>'
-	msg = msg + 'The Insprite Gang </font>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-### HELPER FUNCTIONS ###########################################################
-################################################################################
-
-def get_proposal_email_info(proposal):
-	(ha, hp) = get_account_and_profile(proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(proposal.prop_user)
-
-	hero_addr = ha.email
-	user_addr = ba.email
-	hero_name = hp.prof_name.encode('utf8', 'ignore')
-	user_name = bp.prof_name.encode('utf8', 'ignore')
-	return (hero_addr, hero_name, user_addr, user_name)
