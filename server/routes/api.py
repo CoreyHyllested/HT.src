@@ -163,7 +163,7 @@ def ht_api_appt_cancel():
 
 
 @req_authentication
-@ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
+@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 def ht_api_get_message_thread(msg_thread):
 	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])

@@ -135,8 +135,8 @@ def oauth_login_facebook():
 @facebook.authorized_handler
 def facebook_authorized(resp):
 	if resp is None:
-		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('render_login', messages=msg))
+		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('insprite.render_login'))
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
@@ -166,14 +166,14 @@ def facebook_authorized(resp):
 def oauth_signup_linkedin():
 	print 'signup_linkedin'
 	session['oauth_linkedin_signup'] = True
-	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
 
 
 @insprite_views.route('/login/linkedin', methods=['GET'])
 def oauth_login_linkedin():
 	print 'login_linkedin()'
 	session['oauth_linkedin_signup'] = False
-	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
 
 
 

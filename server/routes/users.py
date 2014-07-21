@@ -108,7 +108,7 @@ def render_compose_page():
 
 
 @req_authentication
-@ht_server.route("/get_threads", methods=['GET', 'POST'])
+@insprite_views.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
 	threads = []
@@ -339,7 +339,7 @@ def render_edit_portfolio_page():
 
 
 
-@ht_server.route('/teacher/signup', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
@@ -362,7 +362,7 @@ def render_teacher_signup_page(usrmsg = None):
 
 
 
-@ht_server.route('/teacher/activate', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
 	""" A regular user is signing up to be a seller.  """
@@ -434,7 +434,7 @@ def activate_seller():
 
 
 # This route initiates a new lesson
-@ht_server.route('/lesson/new', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new', methods=['GET', 'POST'])
 @req_authentication
 def initialize_lesson(version=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -456,7 +456,7 @@ def initialize_lesson(version=None):
 
 
 # The new lesson has been initialized - redirect to the form
-@ht_server.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
 def render_new_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -506,7 +506,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 
 
 # User is choosing to edit a lesson they previously saved - display the form
-@ht_server.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
 def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -560,7 +560,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
-@ht_server.route('/lesson/update/<lesson_id>', methods=['POST'])
+@insprite_views.route('/lesson/update/<lesson_id>', methods=['POST'])
 @req_authentication
 def api_update_lesson(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
@@ -666,10 +666,9 @@ def api_update_lesson(lesson_id):
 		session['errmsg'] = errmsg
 
 		if (version == "edit"):
-			return redirect(url_for("render_edit_lesson", lesson_id=lesson_id))
-
+			return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
 		else:
-			return redirect(url_for("render_new_lesson", lesson_id=lesson_id))
+			return redirect(url_for("insprite.render_new_lesson", lesson_id=lesson_id))
 
 
 
@@ -781,7 +780,7 @@ def ht_update_lesson(lesson, form, saved):
 
 # View the lesson page
 @req_authentication
-@ht_server.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
+@insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
