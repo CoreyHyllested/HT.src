@@ -19,13 +19,3 @@ def get_account_and_profile(profile_id):
 		raise e
 	return (a, p)
 
-
-def get_proposal_email_info(proposal):
-	(ha, hp) = get_account_and_profile(proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(proposal.prop_user)
-
-	hero_addr = ha.email
-	user_addr = ba.email
-	hero_name = hp.prof_name.encode('utf8', 'ignore')
-	user_name = bp.prof_name.encode('utf8', 'ignore')
-	return (hero_addr, hero_name, user_addr, user_name)

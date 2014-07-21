@@ -98,6 +98,7 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 ### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
 ################################################################################
 
+#TODO -- rename meeting proposed
 def ht_send_sellr_proposal_update_notification(proposal, hero_email, hero_name, buyer_name, buyer_id):
 	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
 
@@ -112,10 +113,12 @@ def ht_send_sellr_proposal_update_notification(proposal, hero_email, hero_name, 
 
 
 
+#TODO -- rename meeting proposed
 def ht_send_buyer_proposal_update_notification(prop, buyer_email, buyer_name, hero_name, hero_id):
 	return
 
 
+#TODO -- rename meeting_proposed rjected
 def ht_send_buyer_proposal_rejected_notification(proposal):
 	""" email buyer (and seller?) the current proposal was rejected. """
 	(hero_addr, hero_name, user_addr, user_name) = get_proposal_email_info(proposal)
@@ -124,6 +127,7 @@ def ht_send_buyer_proposal_rejected_notification(proposal):
 	buyer_msg = create_msg(str(hero_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite Notifications')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 	ht_send_email(user_addr, buyer_msg)
+
 
 
 
@@ -143,6 +147,26 @@ def ht_send_meeting_accepted_notification(proposal):
 	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
 	ht_send_email(buyer_addr, buyer_msg)
 
+
+
+
+def ht_send_meeting_canceled_notification(proposal):
+	""" email notification to both buyer and seller, the appointment has been canceled."""
+	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(proposal)
+
+	sellr_html = email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name)
+	sellr_msg = create_msg('Meeting with ' + str(user_name) + ' canceled', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+	ht_send_email(sellr_addr, sellr_msg)
+
+	# email buyer that seller accepted their proposal.
+	if (dt.utcnow() - proposal.prop_ts > timedelta(hours=24)):
+		#change_function = email_body_cancellation_from_buyer_within_24_hours()
+		pass
+	buyer_html = email_body_cancellation_from_buyer_outside_24_hours (url, buyer_name, sellr_name)
+	buyer_msg = create_msg('Meeting with ' + str(sellr_name) + ' canceled', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
+	ht_send_email(buyer_addr, buyer_msg)
 
 
 
@@ -276,82 +300,6 @@ def ht_send_email(email_addr, msg):
 
 
 
-def email_body_cancellation_from_buyer():
-	""" generate email body (HTML).  The buyer cancels the appointment later than 24 hours."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Shucks. You cancelled your appointment. Thanks for letting <a href="#" style="color:#29abe1">{insert seller name}</a> know ahead of time; you will not be charged for the cancellation.<br><br>'
-	msg = msg + '\t\t\t Need to reschedule? Go right ahead. <br><br>'
-	msg = msg + '\t\t\t You can also explore other options, too. </font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
-
-
-
-
-def email_body_24_hour_cancellation_from_buyer():
-	""" generate email body (HTML).  The buyer cancels the appointment within the 24 hours and will be charged."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> You cancelled the appointment with <a href="#" style="color:#29abe1">{insert seller name}</a>.<br><br>'
-	msg = msg + '\t\t\t We know life can be busy, but we also value accountability within the community and adhere to a <a href="#" style="color:#29abe1">24-hour cancellation policy</a>. You will be charged <a href="#" style="color:#29abe1">{$ insert fee}</a> for the service. <br><br>'
-	msg = msg + '\t\t\t Questions? <a href="#" style="color:#29abe1">Drop us a line</a> or read our <a href="#" style="color:#29abe1">Terms of Service</a> and <a href="#" style="color:#29abe1">cancellation policies</a> for additional information. </font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
-
-
 
 
 def email_body_appt_reminder():
@@ -431,7 +379,7 @@ def email_body_msg_to():
 
 
 def email_body_msg_received():
-	""" generate email body (HTML).  Notification when seller receives a new proposal. email_user_to_user_message"""
+	""" generate email body (HTML).  email_user_to_user_message"""
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
@@ -707,3 +655,20 @@ def email_body_cancellation_email_to_buyer():
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 	return msg
+
+
+
+
+################################################################################
+### HELPER FUNCTIONS ###########################################################
+################################################################################
+
+def get_proposal_email_info(proposal):
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(proposal.prop_user)
+
+	hero_addr = ha.email
+	user_addr = ba.email
+	hero_name = hp.prof_name.encode('utf8', 'ignore')
+	user_name = bp.prof_name.encode('utf8', 'ignore')
+	return (hero_addr, hero_name, user_addr, user_name)

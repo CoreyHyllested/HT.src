@@ -1,3 +1,17 @@
+#################################################################################
+# Copyright (C) 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from flask import render_template
 from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
 from ..forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
@@ -123,6 +137,7 @@ def ht_api_appt_cancel():
 		print the_proposal
 
 		#send emails notifying users.
+		# ht_send_meeting_canceled_notification(proposal)
 		print "success, canceled appt"
 	except DB_Error as dbe:
 		print dbe
