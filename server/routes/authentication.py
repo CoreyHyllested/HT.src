@@ -88,6 +88,8 @@ def render_login(usrmsg=None):
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
+	usrmsg = None
+	insprite_msg = session.pop('messages', None)
 
 	if ('uid' in session):
 		# user already logged in; take 'em home
@@ -107,8 +109,7 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
-	insprite_msg = session.pop('messages', None)
-	if (usrmsg is not None and insprite_msg):
+	if (usrmsg is None and insprite_msg):
 		usrmsg = insprite_msg
 
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))

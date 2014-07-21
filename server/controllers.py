@@ -574,8 +574,8 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('insprite.render_login', messages=msg))
+			session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
+			return redirect(url_for('insprite.render_login'))
 
 	try:
 		print 'updating account'

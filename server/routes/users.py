@@ -41,7 +41,7 @@ def render_dashboard(usrmsg=None):
 	"""
 
 	bp = Profile.get_by_uid(session['uid'])
-	insprite_msgs = session.pop('messages', None)
+	insprite_msg = session.pop('messages', None)
 	print 'render_dashboard() profile.account = ', bp.prof_name, session['uid']
 
 	unread_msgs = []
@@ -55,8 +55,8 @@ def render_dashboard(usrmsg=None):
 		print type(e), e
 		db_session.rollback()
 	
-	if (usrmsg is None and insprite_msgs):
-		usrmsg = insprite_msgs
+	if (usrmsg is None and insprite_msg):
+		usrmsg = insprite_msg
 		print 'render_dashboard() usrmsg = ', usrmsg
 
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
