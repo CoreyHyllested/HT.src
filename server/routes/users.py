@@ -945,7 +945,8 @@ def render_schedule_page():
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
+		session['messages'] = 'We require a verified email prior to scheduling'
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
@@ -1025,6 +1026,8 @@ def render_settings():
 		card = pi.oa_account
 
 	errmsg = None
+	insprite_msg = session.pop('messages', None)
+
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
 		update_acct = False		# requires current_pw_set, 					Sends email
@@ -1088,8 +1091,7 @@ def render_settings():
 
 		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 	elif request.method == 'GET':
-		msg = request.values.get('messages')
-		if (msg is not None): errmsg = msg
+		pass
 	else:
 		print "form isnt' valid"
 		print form.errors
@@ -1106,6 +1108,7 @@ def render_settings():
 	nexturl = "/settings"
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
+	if (errmsg is None): errmsg = insprite_msg
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 

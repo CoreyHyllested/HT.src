@@ -202,11 +202,10 @@ def ht_send_meeting_canceled_notification(proposal):
 ### USER TO USER MESSAGES ######################################################
 ################################################################################
 
-def ht_send_peer_message(send_prof, recv_prof, msg_subject, thread, message):
-	print 'ht_send_peer_message'
+def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, message):
 	try:
-		recv_account = Account.get_by_uid(recv_prof.account)
-		send_account = Account.get_by_uid(send_prof.account)
+		recv_account = Account.get_by_uid(recv_profile.account)
+		send_account = Account.get_by_uid(send_profile.account)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -214,13 +213,13 @@ def ht_send_peer_message(send_prof, recv_prof, msg_subject, thread, message):
 	if (message.msg_flags & MSG_STATE_THRD_UPDATED):
 		msg_subject = msg_subject + " (updated)"
 
-	msg_to_recvr_html = email_body_to_user_receiving_msg()
-	msg_to_recvr = create_msg(msg_subject, recv_account.email, recv_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_recvr_html = email_body_to_user_receiving_msg(recv_profile, message)
+	msg_to_recvr = create_msg(msg_subject, recv_account.email, recv_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
 	msg_to_recvr.attach(MIMEText(msg_to_recvr_html, 'html', 'UTF-8'))
 	ht_send_email(recv_account.email, msg_to_recvr)
 
-	msg_to_sendr_html = email_body_to_user_sending_msg()
-	msg_to_sendr = create_msg(msg_subject, send_account.email, send_prof.prof_name, 'messages-'+str(message.msg_thread)+'@herotime.co', u'HeroTime Messages')
+	msg_to_sendr_html = email_body_to_user_sending_msg(send_profile, message)
+	msg_to_sendr = create_msg(msg_subject, send_account.email, send_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
 	msg_to_sendr.attach(MIMEText(msg_to_sendr_html, 'html', 'UTF-8'))
 	ht_send_email(send_account.email, msg_to_sendr)
 

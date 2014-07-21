@@ -227,8 +227,6 @@ def ht_api_get_message_thread(msg_thread):
 def ht_api_send_message():
 	""" Send a user message. """
 
-	uid = session['uid']
-
 	try:
 		bp = Profile.get_by_uid(session['uid'])
 
@@ -240,8 +238,7 @@ def ht_api_send_message():
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
 
-		print
-		print "/sendmsg - MESSAGE DETAILS"
+		print "ht_api_send_message() - MESSAGE DETAILS"
 		print 'message from ' + bp.prof_name
 		print 'message to ' + msg_to
 		print 'subject=', subject
@@ -267,7 +264,6 @@ def ht_api_send_message():
 			db_session.add(msg_thread_leader)
 
 		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
-		
 		db_session.add(message)
 		db_session.commit()
 
@@ -283,8 +279,7 @@ def ht_api_send_message():
 		print nre
 		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
 	except Exception as e:
-		print type(e)
-		print e
+		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 
