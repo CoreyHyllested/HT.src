@@ -98,24 +98,38 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 ### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
 ################################################################################
 
-#TODO -- rename meeting proposed
-def ht_send_sellr_proposal_update_notification(proposal, hero_email, hero_name, buyer_name, buyer_id):
+def ht_send_meeting_proposed_notifications(proposal, sa, sp, ba, bp):
+	ht_send_meeting_proposed_notification_to_sellr(proposal, sa.email, sp.prof_name.encode('utf8', 'ignore'), bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	ht_send_meeting_proposed_notification_to_buyer(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore'), sa.prof_name.encode('utf8', 'ignore'), sp.prof_id)
+
+
+def ht_send_meeting_proposed_notification_to_sellr(proposal, sellr_email, sellr_name, buyer_name, buyer_prof_id):
 	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
 
-	url = 'https://herotime.co/profile?hero=' + str(buyer_id)
-	msg_html =	email_body_new_proposal_notification_to_seller(buyer_name, proposal)
+	url = 'https://herotime.co/profile?hero=' + str(buyer_prof_id)
+	msg_html = email_body_new_proposal_notification_to_seller(buyer_name, proposal)
 	msg_subj = "Proposal to meet " + buyer_name
 	if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
 
-	msg = create_msg(msg_subject, hero_email, hero_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg = create_msg(msg_subject, sellr_email, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(hero_email, msg)
+	ht_send_email(sellr_email, msg)
 
 
 
-#TODO -- rename meeting proposed
-def ht_send_buyer_proposal_update_notification(prop, buyer_email, buyer_name, hero_name, hero_id):
-	return
+def ht_send_meeting_proposed_notification_to_buyer(prop, buyer_email, buyer_name, sellr_name, sellr_prof_id):
+	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
+	url = 'https://herotime.co/profile?hero=' + str(sellr_prof_id)
+
+	msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, proposal)
+	msg_subj = "Proposal to meet " + sellr_name
+	if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
+
+	msg = create_msg(msg_subject, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg.attach(MIMEText(msg_html, 'html'))
+	ht_send_email(buyer_email, msg)
+
+
 
 
 def ht_send_meeting_rejected_notifications(proposal):
@@ -250,7 +264,7 @@ def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
 	if (sellr_acct.email == user_email):
 		partner_prof = buyer_prof
 
-	msg_html = email_body_review_reminder():
+	msg_html = email_body_review_reminder()
 	msg = create_msg('Review Meeting with ' + partner_prof.prof_name, user_email, user_name, 'noreply@insprite.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
