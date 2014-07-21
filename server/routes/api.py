@@ -272,7 +272,7 @@ def ht_api_send_message():
 		db_session.commit()
 
 		hp = Profile.get_by_prof_id(msg_to)
-		email_user_to_user_message(bp, hp, subject, thread, message)
+		ht_send_peer_message(bp, hp, subject, thread, message)
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
 	except DB_Error as dbe:
