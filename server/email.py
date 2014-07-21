@@ -154,16 +154,27 @@ def ht_send_meeting_canceled_notification(proposal):
 	""" email notification to both buyer and seller, the appointment has been canceled."""
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(proposal)
 
-	sellr_html = email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name)
+	# if canceled by seller.
+		# only send meeting notice to buyer?
+		#email_body_cancellation_from_seller_to_buyer():
+
+
+	if (dt.utcnow() - proposal.prop_ts > timedelta(hours=48)):
+		# assumes buyer canceled.
+		sellr_html = email_body_cancellation_from_buyer_within_48_hours_to_seller()
+	else:
+		# assumes buyer canceled.
+		sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller()
+	# email seller that meeting has been canceled.
 	sellr_msg = create_msg('Meeting with ' + str(user_name) + ' canceled', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 	ht_send_email(sellr_addr, sellr_msg)
 
-	# email buyer that seller accepted their proposal.
-	if (dt.utcnow() - proposal.prop_ts > timedelta(hours=24)):
-		#change_function = email_body_cancellation_from_buyer_within_24_hours()
-		pass
-	buyer_html = email_body_cancellation_from_buyer_outside_24_hours (url, buyer_name, sellr_name)
+	# email buyer that meeting has been canceled.
+	if (dt.utcnow() - proposal.prop_ts < timedelta(hours=24)):
+		buyer_html = email_body_cancellation_from_buyer_within_24_hours()
+	else:
+		buyer_html = email_body_cancellation_from_buyer_outside_24_hours (buyer_name, sellr_name)
 	buyer_msg = create_msg('Meeting with ' + str(sellr_name) + ' canceled', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
 	ht_send_email(buyer_addr, buyer_msg)
@@ -546,115 +557,9 @@ def email_body_beta_email(url):
 
 
 
-def email_body_48_hour_cancellation_email_to_seller():
-	""" generate email body (HTML).  Buyer cancels the meeting within 48 hours and seller receives this email."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Drats. <a href="#" style="color:#29abe1">{Insert user - buyer}</a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Message <a href="#" style="color:#29abe1">{insert buyer name}</a> to see if you can work out a new date and time. </font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
 
 
 
-
-def email_body_24_hour_cancellation_email_to_seller():
-	""" generate email body (HTML).  Buyer cancels the meeting within 24 hours and seller receives this email."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#29abe1">{Insert user - buyer}</a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Sometimes things come up in life, but your time and talent are still valuable. You\'ll receive {insert fee} from {insert buyer} for the cancelled booking.</font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
-
-
-
-def email_body_cancellation_email_to_buyer():
-	""" generate email body (HTML).  Seller cancels the meeting, sends this email to buyer."""
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#29abe1">{Insert user - seller}</a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Check out <a href="#" style="color:#29abe1">{Insert seller}</a>\'s availability, and send a new proposal. (Sometimes, a little reshuffling can really make things happen!)</font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
-	return msg
 
 
 
