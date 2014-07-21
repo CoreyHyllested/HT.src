@@ -143,20 +143,19 @@ def ht_create_account(name, email, passwd):
 		db_session.add(account)
 		db_session.add(profile)
 		db_session.commit()
-
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
 		# raise --fail... user already exists
 		# is this a third-party signup-merge?
 			#-- if is is a merge.
-		return None, False
+		return (None, None)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 		return (None, None)
 
-	ht_send_verify_email_address(email, name, challenge_hash=challenge_hash)
+	ht_email_welcome_message(email, name, challenge_hash)
 	return (account, profile)
 
 
@@ -164,30 +163,28 @@ def ht_create_account(name, email, passwd):
 
 def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 	print 'ht_create_account_with_oauth: ', name, email, oa_provider
-	(hero, prof) = ht_create_account(name, email, str(uuid.uuid4()))
+	(account, profile) = ht_create_account(name, email, str(uuid.uuid4()))
 
-	if (hero is None):
+	if (account is None):
 		print 'create_account failed. happens when same email address is used'
 		print 'Right, now mention an account uses this email address.'
 		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
-		return None, False
+		return None, None
 
 	try:
 		print 'create oauth account'
-		oa_user = Oauth(str(hero.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
+		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
 		db_session.add(oa_user)
 		db_session.commit()
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
-		return None, False
+		return None, None 
 	except Exception as e:
-		print type(e)
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
-
-	return (hero, prof)
+		return None, None
+	return (account , profile)
 
 
 
@@ -328,14 +325,11 @@ def ht_get_active_meetings(profile):
 	appts = []
 	rview = []
 
-	print 'ht_get_active_meetings()  Get composite meetings'
 	meetings = htdb_get_composite_meetings(profile)
-	print 'ht_get_active_meetings()  Got composite meetings', len(meetings)
-
 	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
 	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
 	rview = filter(lambda r: (r.Proposal.prop_state  & APPT_STATE_OCCURRED), meetings)
-	print 'ht_get_active_meetings()  total:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
+	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
@@ -411,12 +405,10 @@ def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dum
 
 
 def ht_get_active_author_reviews(profile):
-	print 'ht_get_active_reviews() enter'
 	prof_reviews = htdb_get_composite_reviews(profile)
 	active_reviews = ht_filter_composite_reviews(prof_reviews,	 filter_by='ACTIVE', profile=profile, dump=False)
 	author_reviews = ht_filter_composite_reviews(active_reviews, filter_by='AUTHORED', profile=profile, dump=False)
-	print 'ht_get_active_reviews()  total:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
-
+	print 'ht_get_active_reviews() \ttotal:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
 	return author_reviews
 
 
@@ -570,9 +562,42 @@ def htdb_get_lesson_images(lesson_id):
 
 
 
-def ht_get_lessons(profile):
-	print "ht_get_lessons: profile_id:", profile.prof_id
+def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
-	print "ht_get_lessons: lessons count:", len(lessons)
+	print "ht_get_active_lessons() \ttotal:", len(lessons)
 	return lessons
+
+
+
+
+def ht_email_verify(email, challengeHash, nexturl=None):
+	# find account, if any, that matches the requested challengeHash
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+	if (len(accounts) != 1 or accounts[0].email != email):
+			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
+			return redirect(url_for('insprite.render_login', messages=msg))
+
+	try:
+		print 'updating account'
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
+
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	profile = Profile.get_by_uid(account.userid)
+	ht_bind_session(profile)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
+
+	session['messages'] = 'Great! You\'ve verified your email'
+	return redirect(url_for('insprite.render_dashboard'))
+
 

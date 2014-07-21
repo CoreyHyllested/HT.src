@@ -29,25 +29,12 @@ import json, smtplib, urllib
 
 
 
-def ht_email_welcome_message(user_email, user_name):
+def ht_email_welcome_message(user_email, user_name, challenge_hash):
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
 	msg_text = "Welcome to Insprite!\n"
-	msg_html = email_body_verify_account()
+	msg_html = email_body_verify_account(verify_email_url)
 
 	msg = create_msg('Welcome to Insprite', user_email, user_name, 'noreply@insprite.co', u'Insprite')
-	msg.attach(MIMEText(msg_text, 'plain'))
-	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(user_email, msg)
-
-
-
-
-def ht_send_verify_email_address(user_email, user_name, challenge_hash):
-	""" Emails the account verification to the user. """
-	url  = 'https://herotime.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	msg_html = "Thank you for creating a HeroTime account. <a href=\"" + str(url) + "\">Verify your email address.</a><br>"  + str(challenge_hash)
-	msg_text = email_body_verify_account()
-
-	msg = create_msg('Verify your Insprite account', user_email, user_name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)

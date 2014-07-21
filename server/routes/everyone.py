@@ -253,7 +253,7 @@ def render_password_reset_page(challengeHash):
 def ht_email_operations(operation, data):
 	print operation, data
 	if (operation == 'verify'):
-		email = request.values.get('email_addr')
+		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
 		print 'verify: data  = ', data, 'email =', email
 		return ht_email_verify(email, data, nexturl)
@@ -291,49 +291,8 @@ def ht_send_verification_to_list(account, profile, email_set):
 
 
 
-
-def ht_email_verify(email, challengeHash, nexturl=None):
-	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
-
-	if (len(accounts) != 1 or accounts[0].email != email):
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('insprite.render_login', messages=msg))
-
-	try:
-		print 'update user account'
-		# update user's account.
-		account = accounts[0]
-		account.set_email(email)
-		account.set_sec_question("")
-		account.set_status(Account.USER_ACTIVE)
-
-		db_session.add(account)
-		db_session.commit()
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-
-	# bind session cookie to this user's profile
-	bp = Profile.get_by_uid(account.userid)
-	ht_email_welcome_message(email, bp.prof_name)
-	ht_bind_session(bp)
-	if (nexturl is not None):
-		# POSTED from jquery in /settings:verify_email not direct GET
-		return make_response(jsonify(usrmsg="Account Updated."), 200)
-	return make_response(redirect('/dashboard'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+################################################################################
+### HELP FUNCTIONS.  ###########################################################
+################################################################################
 
 

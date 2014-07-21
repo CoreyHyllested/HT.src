@@ -41,6 +41,7 @@ def render_dashboard(usrmsg=None):
 	"""
 
 	bp = Profile.get_by_uid(session['uid'])
+	insprite_msgs = session.pop('messages', None)
 	print 'render_dashboard() profile.account = ', bp.prof_name, session['uid']
 
 	unread_msgs = []
@@ -48,18 +49,18 @@ def render_dashboard(usrmsg=None):
 	try:
 		(props, appts, rview) = ht_get_active_meetings(bp)
 		active_reviews = ht_get_active_author_reviews(bp)
+		active_lessons = ht_get_active_lessons(bp)
 		unread_msgs = ht_get_unread_messages(bp)
-		lessons = ht_get_lessons(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
-	if (usrmsg is None):
-		usrmsg = request.values.get('messages', None)
-		print 'setting usrmsg', usrmsg
+	if (usrmsg is None and insprite_msgs):
+		usrmsg = insprite_msgs
+		print 'render_dashboard() usrmsg = ', usrmsg
 
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 

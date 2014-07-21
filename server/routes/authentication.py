@@ -107,9 +107,9 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
-	msg = request.values.get('messages')
-	if (msg is not None):
-		usrmsg = msg
+	insprite_msg = session.pop('messages', None)
+	if (usrmsg is not None and insprite_msg):
+		usrmsg = insprite_msg
 
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
