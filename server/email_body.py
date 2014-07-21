@@ -195,6 +195,13 @@ def email_body_password_changed_confirmation(url):
 
 
 
+def email_body_verify_email_address(url, code):  #bug267
+	"""HTML for email address verification; sent via  ht_send_email_address_verify_link() """
+	msg = ""
+	return msg
+
+
+
 def email_body_email_address_changed_confirmation(url, new_email):
 	"""HTML for email address change; sent via  ht_send_email_address_changed_confirmation() """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'

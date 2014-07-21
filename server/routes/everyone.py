@@ -264,23 +264,22 @@ def ht_email_operations(operation, data):
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
 	elif (operation == 'request-verification') and ('uid' in session):
 
-		bp = Profile.get_by_uid(session.get('uid'))
-		ba = Account.get_by_uid(session.get('uid'))
-		email_set = set([ba.email, request.values.get('email_addr')])
+		profile = Profile.get_by_uid(session.get('uid'))
+		account = Account.get_by_uid(session.get('uid'))
+		email_set = set([account.email, request.values.get('email_addr')])
 		print email_set
-		ht_send_verification_to_list(ba, bp, email_set)
+
+		ht_send_verification_to_list(account, email_set)
 		return jsonify(rc=200), 200
 	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
 
 
 
 
-def ht_send_verification_to_list(account, profile, email_set):
-	print 'ht_send_verification_to_list'
-	challenge_hash = str(uuid.uuid4())
-	account.set_sec_question(challenge_hash)
-
+def ht_send_verification_to_list(account, email_set):
+	print 'ht_send_verification_to_list() enter'
 	try:
+		account.reset_security_question()
 		db_session.add(account)
 		db_session.commit()
 	except Exception as e:
@@ -289,7 +288,7 @@ def ht_send_verification_to_list(account, profile, email_set):
 
 	for email in email_set:
 		print 'sending email to', email
-		ht_send_verify_email_address(email, profile.prof_name, challenge_hash)
+		ht_send_email_address_verify_link(email, account)
 
 
 
