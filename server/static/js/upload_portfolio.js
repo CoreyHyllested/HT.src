@@ -1,5 +1,3 @@
-
-
 Dropzone.autoDiscover = false;
 
 mydropzone = new Dropzone("form.dropzone", 
@@ -15,7 +13,6 @@ mydropzone = new Dropzone("form.dropzone",
 		clickable: true
 	}
 );
-
 
 mydropzone.on("maxfilesreached", function(file) {
 	$(".dropzone-status").html("<span>You have reached the maximum number of files allowed (32).</span>");
@@ -37,6 +34,7 @@ mydropzone.on("error", function(file, errorMessage) {
 // });
 
 mydropzone.on("successmultiple", function(file) {
+	
 	$(".dropzone-status").html("<span class='success'>Images successfully uploaded! Continuing ... </span>");
 	setTimeout(function(){
 	  $('form#dropzone-continue').submit();
@@ -77,7 +75,6 @@ mydropzone.on("addedfile", function(file) {
 	$('button.multipleUploadButton').attr("disabled", false);
 });
 
-
 mydropzone.on("processing", function() {
 	this.options.autoProcessQueue = true;
 });
@@ -85,8 +82,6 @@ mydropzone.on("processing", function() {
 $('button.multipleUploadButton').click(function() {
 	mydropzone.processQueue();
 });
-
-
 
 $(function() {
     $(".dropzone").sortable({

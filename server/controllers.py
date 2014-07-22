@@ -1,32 +1,31 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
-# 
-# All information contained is the property of HeroTime, Inc.  Any intellectual 
-# property about the design, implementation, processes, and interactions with 
-# services may be protected by U.S. and Foreign Patents.  All intellectual 
-# property contained within is covered by trade secret and copyright law.   
-# 
-# Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
 #################################################################################
 
 import os, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
+import pytz
 
 from pprint import pprint as pp
-from datetime import timedelta
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from datetime import timedelta, datetime as dt
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
 from server.ht_utils import *
-from server import ht_server, linkedin
+from server import ht_server
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
@@ -58,13 +57,6 @@ def ht_browsingprofile():
 	return None
 
 
-#@deprecated use Account.get_by...
-def ht_get_account(user_id=None):
-	if (user_id == None): user_id = session.get('uid', 0)
-	accounts = Account.query.filter_by(userid=user_id).all()
-	if (len(accounts) == 1): return accounts[0]
-	return None
-
 
 def ht_authenticate_user(user_email, password):
 	""" Returns authenticated account """
@@ -95,6 +87,7 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
 								   .all()
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
 
 	if len(oauth_accounts) == 1:
@@ -115,27 +108,22 @@ def ht_password_recovery(email):
 	"""
 
 	trace("Entering password recovery")
-
-	challenge_hash = uuid.uuid4()
-	accounts = Account.query.filter_by(email=email).all()
-
-	if (len(accounts) != 1):
-		return "Not a valid email."
-
-	ba = accounts[0]
-	ba.set_sec_question(str(challenge_hash))
-	usrmsg = "Password recovery email has been sent."
+	account = Account.get_by_email(email)
+	if (account is None):
+		return "Invalid email."
 
 	try:
-		db_session.add(ba)
+		account.reset_security_question()
+		db_session.add(account)
 		db_session.commit()
 	except Exception as e:
-		trace(str(e))
+		print type(e), e
 		db_session.rollback()
-		return (str(e))
+		return str(e)
 
-	send_recovery_email(email, challenge_hash)
-	return usrmsg
+	ht_send_password_recovery_link(account)
+	return "Password recovery email has been sent."
+
 
 
 
@@ -144,55 +132,54 @@ def ht_create_account(name, email, passwd):
 
 	try:
 		print 'create account and profile'
-		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		prof  = Profile(name, hero.userid)
-		db_session.add(hero)
-		db_session.add(prof)
+		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		profile = Profile(name, account.userid)
+		db_session.add(account)
+		db_session.add(profile)
 		db_session.commit()
-
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
 		# raise --fail... user already exists
 		# is this a third-party signup-merge?
 			#-- if is is a merge.
-		return None, False
+		return (None, None)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
+		return (None, None)
 
-	send_verification_email(email, name, challenge_hash=challenge_hash)
-	return (hero, prof)
+	ht_email_welcome_message(email, name, challenge_hash)
+	return (account, profile)
+
 
 
 
 def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 	print 'ht_create_account_with_oauth: ', name, email, oa_provider
-	(hero, prof) = ht_create_account(name, email, str(uuid.uuid4()))
+	(account, profile) = ht_create_account(name, email, str(uuid.uuid4()))
 
-	if (hero is None):
+	if (account is None):
 		print 'create_account failed. happens when same email address is used'
 		print 'Right, now mention an account uses this email address.'
 		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
-		return None, False
+		return None, None
 
 	try:
 		print 'create oauth account'
-		oa_user = Oauth(str(hero.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
+		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
 		db_session.add(oa_user)
 		db_session.commit()
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
-		return None, False
+		return None, None 
 	except Exception as e:
-		print type(e)
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
+		return None, None
+	return (account , profile)
 
-	return (hero, prof)
 
 
 
@@ -225,6 +212,7 @@ def import_profile(bp, oauth_provider, oauth_data):
 	except Exception as e:
 		print 'ah fuck, it failed other place', e
 		db_session.rollback()
+
 
 
 
@@ -275,8 +263,53 @@ def htdb_get_composite_meetings(profile):
 							.join(user, user.prof_id == Proposal.prop_user)												\
 							.join(hero, hero.prof_id == Proposal.prop_hero).all();
 
+	map(lambda meeting: meeting_timedout(meeting), meetings)
 	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
 	return meetings
+
+
+
+
+def meeting_timedout(meeting):
+	proposal = meeting.Proposal
+
+	if (proposal.prop_state != APPT_STATE_PROPOSED and proposal.prop_state != APPT_STATE_ACCEPTED):
+		return
+
+	utc_now = dt.now(timezone('UTC'))
+	utcsoon = utc_now - timedelta(hours=20)
+	ystrday = utc_now - timedelta(days=1)
+
+	try:
+		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
+		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
+		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
+		print '\t\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
+
+		if (proposal.prop_state == APPT_STATE_PROPOSED):
+			print '\t\t\t\tPROPOSED...'
+			if (prop_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
+				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
+				proposal.set_state(APPT_STATE_TIMEDOUT)
+				db_session.add(proposal)
+				db_session.commit()
+			else:
+				to = prop_ts - utcsoon
+				print '\t\t\t\t\t is before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+				print '\t\t\t\t\t Safe! until ' +  str(to.seconds/3600) + ' hours'
+				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
+		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
+			print '\t\t\t\tACCEPTED...'
+			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
+				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				print '\t\t\t\tFILTER Event out manually.  The events are working!!!'
+				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
+			else:
+				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
 
 
 
@@ -284,11 +317,15 @@ def htdb_get_composite_meetings(profile):
 def ht_get_active_meetings(profile):
 	props = []
 	appts = []
+	rview = []
 
 	meetings = htdb_get_composite_meetings(profile)
+	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
+	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
+	rview = filter(lambda r: (r.Proposal.prop_state  & APPT_STATE_OCCURRED), meetings)
+	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
 
-	props = filter(lambda p: ((p.Proposal.prop_state == APPT_STATE_PROPOSED) or (p.Proposal.prop_state == APPT_STATE_RESPONSE)), meetings)
-	appts = filter(lambda a: ((a.Proposal.prop_state == APPT_STATE_ACCEPTED) or (a.Proposal.prop_state == APPT_STATE_CAPTURED) or (a.Proposal.prop_state == APPT_STATE_OCCURRED)), meetings)
+	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
 	#for meeting in meetings:
 	#	if (profile.prof_id == thread.UserMessage.msg_to):
@@ -303,7 +340,7 @@ def ht_get_active_meetings(profile):
 	#	setattr(thread, 'thread_partner', thread_partner)
 	#	mbox.append(thread)
 
-	return (props, appts)
+	return (props, appts, rview)
 
 
 
@@ -340,25 +377,33 @@ def htdb_get_composite_messages(profile):
 def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dump=False):
 	messages = []
 	if (filter_by == 'RECEIVED'):
-		print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages received by ', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_to == profile.prof_id), message_set)
 	if (filter_by == 'SENT'):
-		print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
+		#print 'Searching message_set for messages sent by', profile.prof_name, profile.prof_id
 		messages = filter(lambda msg: (msg.UserMessage.msg_from == profile.prof_id), message_set)
 	if (filter_by == 'UNREAD'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_flags & MSG_STATE_LASTMSG_READ) == 0), message_set)
 	if (filter_by == 'THREADS'):
-		print 'Searching message_set for messages marked as unread'
+		#print 'Searching message_set for messages marked as unread'
 		messages = filter(lambda msg: ((msg.UserMessage.msg_thread == msg.UserMessage.msg_id) == 0), message_set)
 
 	if (dump):
-		print 'Original set',  len(message_set), "=>", len(messages)
+		#print 'Original set',  len(message_set), "=>", len(messages)
 		for msg in messages:
 			print msg.msg_from.prof_name, 'sent', msg.msg_to.prof_name, 'about', msg.UserMessage.msg_subject, '\t', msg.UserMessage.msg_flags, '\t', msg.UserMessage.msg_thread
 	return messages
 
 
+
+
+def ht_get_active_author_reviews(profile):
+	prof_reviews = htdb_get_composite_reviews(profile)
+	active_reviews = ht_filter_composite_reviews(prof_reviews,	 filter_by='ACTIVE', profile=profile, dump=False)
+	author_reviews = ht_filter_composite_reviews(active_reviews, filter_by='AUTHORED', profile=profile, dump=False)
+	print 'ht_get_active_reviews() \ttotal:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
+	return author_reviews
 
 
 
@@ -367,7 +412,7 @@ def htdb_get_composite_reviews(profile):
 	user = aliased(Profile, name='user')
 	appt = aliased(Proposal, name='appt')
 
-	# OBJECT
+	# COMPOSITE REVIEW OBJECT
 	# OBJ.Review	# Review
 	# OBJ.hero		# Profile of seller
 	# OBJ.user		# Profile of buyer
@@ -383,6 +428,7 @@ def htdb_get_composite_reviews(profile):
 	return all_reviews
 
 
+
 def display_review_partner(r, prof_id):
 	display_attr = (prof_id == r.Review.prof_reviewed) and r.user or r.hero
 	setattr(r, 'display', display_attr)
@@ -392,27 +438,42 @@ def display_review_partner(r, prof_id):
 def display_partner_proposal(meeting, profile):
 	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
 	setattr(meeting, 'display', display_partner)
+	setattr(meeting, 'seller', (profile == meeting.hero))
 
 
 
 
-def ht_filter_displayable_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
+def ht_filter_images(image_set, filter_by='VISIBLE', dump=False):
+	images = []
+	if (filter_by == 'VISIBLE'):
+		images = filter(lambda img: (img.img_flags & IMG_STATE_VISIBLE), image_set)
+	else:
+		print '\t\t YOU DID NOT USE A VALID FILTER NAME'
+	return images
+
+
+
+def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, dump=False):
 	reviews = []
 	if (filter_by == 'REVIEWED'):
-		print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
+	#	print 'Searching review_set for reviews of', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_reviewed == profile.prof_id), review_set)
-	if (filter_by == 'AUTHORED'):
-		print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
+	elif (filter_by == 'AUTHORED'):
+	#	print 'Searching review_set for reviews authored by', profile.prof_name, profile.prof_id
 		reviews = filter(lambda r: (r.Review.prof_authored == profile.prof_id), review_set)
-	if (filter_by == 'VISIBLE'):
-		print 'Searching review_set for reviews marked as visible'
+	elif (filter_by == 'VISIBLE'):
+	#	print 'Searching review_set for reviews marked as visible'
 		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_VISIBLE), review_set)
+	elif (filter_by == 'ACTIVE'):
+		reviews = filter(lambda r: (r.Review.rev_status & REV_STATE_CREATED), review_set)
+	else:
+		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
 
 	if (dump):
-		print 'Original set',  len(review_set), "=>", len(reviews)
+		print '\t\tfilter review_set by %s, by %s [%s]' % (filter_by, profile.prof_name, str(profile.prof_id)), '\tREVIEW SET: ', len(review_set), "=>", len(reviews)
 		for r in reviews:
-			# see ht_get_composite_reviews for object
-			print r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
+			# see htdb_get_composite_reviews() for object description.
+			print '\t\t', r.user.prof_name, 'bought', r.hero.prof_name, 'on', r.Review.review_id, '\t', r.Review.rev_flags, '\t', r.Review.appt_score
 	return reviews
 
 
@@ -461,5 +522,76 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 		mbox.append(thread)
 
 	return (inbox, archive)
+
+
+
+
+def ht_create_lesson(profile):
+	lesson = None
+	try:
+		lesson = Lesson(profile.prof_id)
+		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
+		# lesson.set_state(LESSON_STATE_STARTED)
+		db_session.add(lesson)
+		db_session.commit()
+	except IntegrityError as ie:
+		print 'ht_create_lesson: ERROR ie:', ie
+		db_session.rollback()
+	except Exception as e:
+		print 'ht_create_lesson: ERROR e:', type(e), e
+		db_session.rollback()
+	return lesson
+
+
+
+
+def htdb_get_lesson_images(lesson_id):
+	try:
+		lesson_images	= db_session.query(LessonImageMap)								\
+									.filter(LessonImageMap.map_lesson == lesson_id).all()
+	except Exception as e:
+		print type(e), e
+	return lesson_images
+
+
+
+
+def ht_get_active_lessons(profile):
+	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
+	print "ht_get_active_lessons() \ttotal:", len(lessons)
+	return lessons
+
+
+
+
+def ht_email_verify(email, challengeHash, nexturl=None):
+	# find account, if any, that matches the requested challengeHash
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+	if (len(accounts) != 1 or accounts[0].email != email):
+			session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
+			return redirect(url_for('insprite.render_login'))
+
+	try:
+		print 'updating account'
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
+
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	profile = Profile.get_by_uid(account.userid)
+	ht_bind_session(profile)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
+
+	session['messages'] = 'Great! You\'ve verified your email'
+	return redirect(url_for('insprite.render_dashboard'))
 
 

@@ -106,6 +106,18 @@ NTS_times = [ ('00:00 AM', '00:00 AM'), ('00:30 AM', '00:30 AM'),
 ('22:00 PM', '22:00 PM'), ('22:30 PM', '22:30 PM'), ('23:00 PM', '23:00 PM'),
 ('23:30 PM', '23:30 PM')]
 
+States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
+("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),
+("DC","District of Columbia"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),
+("ID","Idaho"),("IL","Illinois"),("IN","Indiana"),("IA","Iowa"),("KS","Kansas"),
+("KY","Kentucky"),("LA","Louisiana"),("ME","Maine"),("MD","Maryland"),("MA","Massachusetts"),
+("MI","Michigan"),("MN","Minnesota"),("MS","Mississippi"),("MO","Missouri"),("MT","Montana"),
+("NE","Nebraska"),("NV","Nevada"),("NH","New Hampshire"),("NJ","New Jersey"),
+("NM","New Mexico"),("NY","New York"),("NC","North Carolina"),("ND","North Dakota"),
+("OH","Ohio"),("OK","Oklahoma"),("OR","Oregon"),("PA","Pennsylvania"),
+("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),
+("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),
+("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")]
 
 class NewAccountForm(Form):
 	#names below (LHS) match what's on the HTML page.  
@@ -120,6 +132,32 @@ class LoginForm(Form):
 	input_login_password = PasswordField('Password', [validators.Required()])
 
 
+
+
+class LessonForm(Form):
+
+	duration = ['No Set Duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
+	duratime = [-1, 30, 45, 60, 90 ]
+	enumDura = zip(duratime, duration)
+
+	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
+	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
+	lessonAddress1	= TextField('Address Line 1', None)
+	lessonAddress2	= TextField('Address Line 1', None)
+	lessonCity		= TextField('City',	None)
+	lessonState		= SelectField('State', coerce=str, default='CA', choices=(States))
+	lessonZip		= TextField('Zip', None)
+	lessonCountry	= TextField('Country', None)
+	lessonAddressDetails = TextField('Details', None)
+	lessonRate		= IntegerField('Rate Amount', None, default=100)
+	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
+	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
+	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
+	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
+	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
+	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
+
+
 class ProfileForm(Form):
 	edit_name     = TextField('Name',     [validators.Required(), validators.length(min=1, max=40)])
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
@@ -129,7 +167,6 @@ class ProfileForm(Form):
 	edit_url      = TextField('Website', [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
-
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
@@ -175,7 +212,7 @@ class NewPasswordForm(Form):
 
 class ProposalActionForm(Form):
 	proposal_id   = TextField('id', [validators.Required()])
-	proposal_stat = TextField('status', [validators.Required()])
+	proposal_stat = TextField('status')
 	proposal_challenge = TextField('ch', [validators.Required()])
 
 

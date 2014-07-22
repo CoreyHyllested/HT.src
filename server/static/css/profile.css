@@ -334,7 +334,7 @@ h3 {color: black;}
 	}
 
 	.profileReviewLeft h3 {
-		color: #29abe1;
+		color: #1488CC;
 		display: block;
 		font-weight: bold;
 		width: 100%;
@@ -420,25 +420,25 @@ h3 {color: black;}
 	}
 
 	.profileReviewRatingBarFillTwo {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 36px;
 	}
 
 	.profileReviewRatingBarFillThree {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 54px;
 	}
 
 	.profileReviewRatingBarFillFour {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 72px;
 	}
 
 	.profileReviewRatingBarFillFive {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 90px;
 	}	
@@ -518,12 +518,12 @@ h3 {color: black;}
 
 
 	.addImage {
-		border: 1px solid #29abe2;
+		border: 1px solid #1488CC;
 		border-radius: 3px;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;					
-		color: #29abe2;
+		color: #1488CC;
 		cursor: pointer;
 		display: table;
 		float: left;
@@ -680,7 +680,7 @@ h3 {color: black;}
 	}
 
 	.profileReviewLeft h3 {
-		color: #29abe1;
+		color: #1488CC;
 		display: block;
 		font-weight: bold;
 		width: 100%;
@@ -765,25 +765,25 @@ h3 {color: black;}
 	}
 
 	.profileReviewRatingBarFillTwo {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 36px;
 	}
 
 	.profileReviewRatingBarFillThree {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 54px;
 	}
 
 	.profileReviewRatingBarFillFour {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 72px;
 	}
 
 	.profileReviewRatingBarFillFive {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 90px;
 	}	
@@ -874,12 +874,12 @@ h3 {color: black;}
 	}
 
 	.addImage {
-		border: 1px solid #29abe2;
+		border: 1px solid #1488CC;
 		border-radius: 3px;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;					
-		color: #29abe2;
+		color: #1488CC;
 		cursor: pointer;
 		display: table;
 		float: left;
@@ -906,7 +906,7 @@ h3 {color: black;}
 	}
 
 	.addImage:hover {
-		border: 1px solid #29abe2;	
+		border: 1px solid #1488CC;	
 	}
 }
 
@@ -1028,7 +1028,7 @@ h3 {color: black;}
 	}
 
 	.profileReviewLeft h3 {
-		color: #29abe1;
+		color: #1488CC;
 		font-weight: bold;
 		margin-bottom: 5px;
 		width: 100%;
@@ -1111,25 +1111,25 @@ h3 {color: black;}
 	}
 
 	.profileReviewRatingBarFillTwo {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 36px;
 	}
 
 	.profileReviewRatingBarFillThree {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 54px;
 	}
 
 	.profileReviewRatingBarFillFour {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 72px;
 	}
 
 	.profileReviewRatingBarFillFive {
-		background-color: #29abe1;
+		background-color: #1488CC;
 		height: 100%;
 		width: 90px;
 	}	
@@ -1222,7 +1222,7 @@ h3 {color: black;}
 	.profilePortfolioImage:hover {
 		background-color: white;
 		background-size: 120px 120px;
-		border: 1px solid #29abe2;
+		border: 1px solid #1488CC;
 		
 	}
 
@@ -1259,7 +1259,7 @@ h3 {color: black;}
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;					
-		color: #29abe2;
+		color: #1488CC;
 		cursor: pointer;
 		display: table;
 		float: left;
@@ -1287,6 +1287,6 @@ h3 {color: black;}
 	}
 
 	.addImage:hover {
-		border: 1px solid #29abe2;	
+		border: 1px solid #1488CC;	
 	}
 }

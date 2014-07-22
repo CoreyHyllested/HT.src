@@ -1,0 +1,191 @@
+/* PAGE WRAPPERS */
+
+/* Mobiles, phablets, and tablets */
+	.pageWrapper {
+		background-color: white;
+		min-height: 100%;
+		padding-bottom: 50px;		
+		width: 100%;
+	}
+
+/* Desktop */
+@media only screen and (min-width: 890px) {
+
+	.pageWrapper {
+		background: #dfdfdf;
+		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
+		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
+		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
+	}
+}
+
+/* Nav and Layout */
+
+.lessonContentWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+}
+
+.lessonHeader {
+	margin-bottom: 10px;
+	width: 100%;
+	border-bottom: 1px dotted #f0f0f0;;
+	padding-bottom: 12px;
+	float: left;
+}
+
+.lessonFooter {
+	margin-top: 10px;
+	width: 100%;
+	border-top: 1px dotted #f0f0f0;
+	padding-top: 12px;
+	float: left;
+}
+
+.lessonHeaderTitle {
+	color: black;
+	width: 75%;
+	float: left;
+	font-size: 1.8em;
+}
+
+.lessonHeaderLeft {
+    float: left;
+	width: 25%;
+}
+
+.lessonHeaderCenter {
+	float: left;
+	width: 75%;
+}
+
+.lessonHeaderRight {
+	float: right;
+	width: 25%;
+}
+
+.lessonTopLeftNavigation {
+	font-size: 1.1em;
+}
+
+.lessonTopLeftNavigation .navItem {
+	cursor: pointer;
+	padding-right: 36px;
+
+}
+
+.lessonTopLeftNavigation i {
+	font-size: .9em;
+}
+
+.lessonLeftColumn {
+    float: left;
+	width: 25%;
+}
+
+.lessonCenterColumn {
+    float: left;
+	width: 50%;
+}
+
+.lessonRightColumn {
+	float: right;
+	width: 25%;
+}
+
+
+
+.lessonContainer {
+	width: 100%;
+	float: left;
+}
+
+
+/* Content */
+
+.lessonTitle {
+	font-size: 1.6em;
+	font-weight: bold;
+}
+
+.lessonDescription {
+	font-size: 1em;
+}
+
+
+.portfolioImageContainer {
+	float: left;
+	margin-top: 8px;
+	width: 100%;
+}
+
+.portfolioImageWrapper {
+	float: left;
+	padding: 4px;
+	width: 33%;
+}
+
+.portfolioImage {
+	border: 1px solid rgb(226, 228, 230);
+	border-radius: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	/* height: 200px; */
+	/* margin-right: 11px; */
+	/*margin-bottom: 11px;*/
+	width: 100%;
+}
+
+.portfolioImageCaption {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-size: .8em;
+}
+
+
+
+/* Messaging Component */
+
+.lessonReplyContainer {
+	float: left;
+	width: 100%;
+}
+
+textarea.lessonReplyBody {
+	resize: none;
+	float: left;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.lessonReplySendButton {
+	width: 250px;
+	margin: 0px auto;
+}
+
+.lessonReplyStatus{
+	display: none;
+	font-weight: bold;
+	font-size: 1.2em;
+	width: 100%;
+	text-align: center;
+	padding: 10px 0px;
+	float: left;
+}

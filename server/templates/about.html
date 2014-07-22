@@ -6,67 +6,56 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/about.css">
 {% endblock %}
 
-
-<!-- Not really sure what this script does here. -->
-<!--<script type="text/javascript">
-   function isNumberKey(evt) {
-     var charCode = (evt.which) ? evt.which : event.keyCode;
-     if (charCode > 31 && (charCode < 48 || charCode > 57))
-       return false;
-     return true;
-   }
-</script>-->
-
 {% block content %}
 
-  <div class="aboutIntroductionHeader">
-    <div class="headlineIntroduction">
-    <h1>Learn. Create. Inspire.</h1>
-    </div>
-    <p class="test1">Join us in making a home for the creative community, so you can<br> connect to everything that it has to offer&mdash;instantly. <br>
-<!--    Discover one-of-a-kind, interesting experiences you can have, do and share with the local talent shepherding you along the way.</p>  -->
+<div class="headlineContainer">
+  <div class="headlineIntroduction">
+    Connecting creative minds.
   </div>
-  
-  <div class="aboutTeam">
-    <div class="teamIntroduction">
-    <h1>Let Us Introduce Ourselves</h1>
-    </div>
-    <div class="teamContainer">
-        <img class="teamPortrait" src="/static/img/team-christine.png">
-          <h2 class="teamHeader">
-          <a href="www.linkedin.com/in/christinepetrozzo/">Christine Petrozzo</a>
-          </h2>
-    </div>
-    <div class="teamContainer">
-        <img class="teamPortrait" src="/static/img/team-corey.png">
-          <h2 class="teamHeader">
-          <a href="www.linkedin.com/in/coreyhyllested">Corey Hyllested</a>
-          </h2>
-    </div>
-    <div class="teamContainer">
-        <img class="teamPortrait" src="/static/img/team-corey.png">
-          <h2 class="teamHeader">
-          <a href="www.linkedin.com/in/ryanfbaker">Ryan Baker</a>
-          </h2>
+  <div class="headlineDeck serif">Join us in making a home for the creative community, so you can connect to everything that it has to offer&mdash;instantly.</div>
+</div>
+
+<div class="howWeWorkContainer">
+  <div class="howWeWorkHeader">
+    How we work
+  </div>
+  <div class="learnerContainer serif">
+    <div class="learnerHeader"> <img src="static/img/about-page-learner-header.png"></div>
+    <div class="learnerText">
+      Feeling creative? Enrich your skills (and life) by finding mentors in your community to teach you awesome creative skills that you’ve always wanted to learn!
     </div>
   </div>
-  
-  <div class="aboutTeamExperience">
-    <div class="headlineExperience">
-        <h1>We Draw Our Experience From</h1>
-    </div>
-    <div class="experienceContainer">
-        <img class="experienceImage" src="/static/img/ibm-logo.svg">
-    </div>
-    <div class="experienceContainer">
-        <img class="experienceImage" src="/static/img/nbc-logo.svg">
-    </div>
-    <div class="experienceContainer">
-        <img class="experienceImage" src="/static/img/berkeley-logo.svg">
-    </div>
-     <div class="experienceContainer">
-        <img class="experienceImage" src="/static/img/FTC.svg">
+
+  <div class="mentorContainer serif">
+    <div class="mentorHeader"><img src="static/img/about-page-mentor-header.png"></div>
+    <div class="mentorText">
+      Have a creative skill you want to share with the world? Share your passion, mentor people nearby and make a living doing what you love most.
     </div>
   </div>
+
+</div> 
+
+<div class="aboutTeamContainer">
+	<div class="teamHeader">Meet Our Team</div>
+	<div class="teamMember">
+		<a href="www.linkedin.com/in/christinepetrozzo/" class="blend"><img class="teamPortrait" src="/static/img/team-christine.png" alt="Christine"></a>
+		<div class="teamCaption serif">
+		<a href="www.linkedin.com/in/christinepetrozzo/" class="blend" style="color:#808080;">Christine Petrozzo</a>
+		</div>
+	</div>
+	<div class="teamMember">
+		<a href="www.linkedin.com/in/coreyhyllested" class="blend"><img class="teamPortrait" src="/static/img/team-corey.png" alt="Corey"></a>
+		<div class="teamCaption serif">
+		<a href="www.linkedin.com/in/coreyhyllested" class="blend" style="color:#808080">Corey Hyllested</a>
+		</div>
+	</div>
+	<div class="teamMember">
+		<a href="www.linkedin.com/in/coreyhyllested" class="blend"><img class="teamPortrait" src="/static/img/team-ryan.png" alt="Ryan"></a>
+		<div class="teamCaption serif">
+		<a href="www.linkedin.com/in/ryanfbaker" class="blend" style="color:#808080">Ryan Baker</a>
+		</div>
+	</div>
+</div>
+
 
 {% endblock %}

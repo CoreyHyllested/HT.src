@@ -1,0 +1,345 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/dropzone_overrides.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/add_lesson.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+
+
+{% endblock %}
+
+{% block content %}
+
+
+{% if errmsg != none %}
+<script>
+	openAlertWindow('{{errmsg}}');
+</script>
+{% endif %}
+
+
+<div class="lessonContentWrapper">
+<!-- 
+	<div class="lessonTitle">
+		Share Your Passion!
+	</div> -->
+
+	<div class="lessonHeader">
+		<div class="lessonHeaderLeft">
+			<div class="lessonTopLeftNavigation">
+				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Dashboard</a>
+			</div>
+		</div>
+		<div class="lessonHeaderCenter">
+			<div class="lessonHeaderPageName">
+			{% if version == "first" %}
+				All righty! Let's create your first lesson!
+			{% elif version == "edit" %}
+				Editing Lesson: {{lesson_title}}
+			{% else %}
+				Create a Lesson				
+			{% endif %}			
+			</div>
+			<div class="lessonHeaderPageSubtitle">
+				{% if form.errors %}
+					<div class="formFieldErrors">
+				        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+				            {% for error in field_errors %}
+				                <div class="formFieldError">{{ form[field_name].label }}: {{ error }}</div>
+				            {% endfor %}
+				        {% endfor %}
+				    </div>
+				{% endif %}			
+			</div>
+		</div>	
+		<div class="lessonHeaderRight">
+			<span class="lessonFormStatus"></span>
+			<button class="whiteButton lessonSave" id="lessonSave">Save</button>
+		</div>					
+	</div>
+  
+  	<div class="lessonContentContainer">
+		<div class="lessonLeftColumn">
+			<div class="lessonNavContainer">
+				<ul class="lessonNavList">
+					<div class="lessonNavItem active" data-target-page="overview"><a class="lessonNavLink">Overview</a></div>
+					<div class="lessonNavItem" data-target-page="where"><a class="lessonNavLink">Where</a></div>
+					<div class="lessonNavItem" data-target-page="when"><a class="lessonNavLink">When</a></div>
+					<div class="lessonNavItem" data-target-page="rate"><a class="lessonNavLink">Rate</a></div>
+					<div class="lessonNavItem" data-target-page="add_photos"><a class="lessonNavLink">Add Photos</a></div>
+					<div class="lessonNavItem" data-target-page="edit_photos"><a class="lessonNavLink">Edit Photos</a></div>
+					<div class="lessonNavItem" data-target-page="review"><a class="lessonNavLink">Review</a></div>
+				</ul>
+			</div>
+		</div>
+
+		<div class="lessonRightColumn">
+			<div class="lessonFormPageContainer">
+				<form id="lessonForm" method="post" action="/lesson/update/{{lesson_id}}" data-lesson-id="{{lesson_id}}">
+				
+
+
+				{{form.hidden_tag()}}
+				{{form.lessonMakeLive(id="lessonMakeLive")}}
+
+				{% if version != None %}
+					<input type="hidden" name="version" id="version" value="{{version}}">
+				{% else %}
+					<input type="hidden" name="version" id="version" value="new">
+				{% endif %}
+				<div id="overview" class="lessonFormPage">
+					<div class="formTitle">Let's get started!</div>
+					<div class="formElement">
+						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
+
+						{% if form.lessonTitle.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonTitle.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}						
+						{{form.lessonTitle(id="lessonTitle", class='formField span12', placeholder='e.g. Advanced Ukulele Lessons')}}
+
+
+						{% if form.lessonDescription.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonDescription.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}
+						{{form.lessonDescription(id="lessonDescription", class="formField span12", placeholder="Please describe what the student should expect -- e.g. general lesson plan, what you'll cover, etc.")}}
+
+
+
+					</div>
+					<div class="formElement">
+						<div class="formInstruction">Which industry best describes your lesson?</div>
+						{{form.lessonIndustry(class="formfield span3")}}
+					</div>
+
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="overview">Continue</button>
+					</div>
+				</div>
+
+				<div id="where" class="lessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">Where do you want to provide these lessons?</div>
+
+						{% for subfield in form.lessonPlace %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}
+					
+						<br><br>
+						<fieldset id="addressFields">
+						{{form.lessonAddress1(id="lessonAddress1", class='formField span9', placeholder='Address Line 1')}}
+						{{form.lessonAddress2(id="lessonAddress2", class='formField span9', placeholder='Address Line 2')}}
+						{{form.lessonCity(id="lessonCity", class='formField span3', placeholder='City')}}
+						{{form.lessonState(id="lessonState", class='formField span3')}}
+						{{form.lessonZip(id="lessonZip", class='formField span3', placeholder='Zip Code')}}
+						{{form.lessonAddressDetails(id="lessonAddressDetails", class='formField span9', placeholder='Additional Details - e.g. Studio is in garage, not house')}}
+						</fieldset>
+					</div>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="where">Continue</button>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
+						</div>
+					</div>
+				</div>
+
+
+
+				<div id="when" class="lessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">When are you available for these lessons?</div>
+						
+						{% for subfield in form.lessonAvail %}
+							<div class="formField formChoice span12">
+							{{ subfield }} {{ subfield.label }}
+							</div>
+ 						{% endfor %}						
+
+					</div>
+					<div class="formElement">
+						<div class="formInstruction">How long will each lesson last?</div>
+						{{form.lessonDuration(class="formField span3")}}
+					</div>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="when">Continue</button>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
+						</div>
+					</div>					
+				</div>
+
+				<div id="rate" class="lessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">How much will you charge?</div>
+						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
+
+						{% if form.lessonRate.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonRate.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}
+						${{form.lessonRate(id="lessonRate", class='formField span3', placeholder='Amount')}} {{form.lessonRateUnit(id="lessonRateUnit", class='formField span3')}}
+
+						<span class="rateUnitCaption span3"></span>
+
+						<div class="lessonFormButtonContainer">
+							<button class="blueButton lessonFormButton" data-current-page="rate">Continue</button>
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
+							</div>
+						</div>
+					</div>		
+
+				</div>
+
+				</form>
+
+				<div id="add_photos" class="lessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">Please upload some photos for your lesson portfolio</div>
+
+						<div class="formDescription">Students are more likely to enlist your services if they can see high-quality photos of you doing your work, or photos of the stuff you or other students have made. Please make sure they are well-lit, tasteful, and would make someone want to hire you!</div>
+
+						
+						<div class="dropzone-wrapper">
+							<form action="/upload" method="post" class="dropzone dz-clickable square" id="upload-form">
+								<input name="lessonID" type="hidden" value="{{ lesson_id }}">
+								<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+								<div class="fallback">
+							    	<input name="file" type="file" multiple />
+							  	</div>
+							  	<div class="dz-message dropzoneMessage">Drag files or click here to upload</div>
+							</form>
+						</div>
+						<div class="dropzone-status italic"></div>
+
+						<div class="lessonFormButtonContainer">
+							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
+								Upload
+							</button>
+							<button type="button" id="multipleUploadContinueButton" class="blueButton lessonFormButton" data-current-page="add_photos">Continue</button>						
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div id="edit_photos" class="lessonFormPage">
+					<div class="formElement">
+						<div class="formInstruction">Add some descriptions, re-order, and remove photos</div>
+
+						<div class="formDescription">Give the folks an idea what's going on in your photos, or put them in the order you want (just drag and drop). You may need to scroll to see all the photos in your portfolio. Note that the photos displayed are just thumbnails - we have stored your photos at original size and dimensions.</div>
+
+						
+						<div class="lessonEditPhotosContainer">
+						</div>
+						<div class="lessonEditPhotosStatus italic"></div>
+
+						<div class="lessonFormButtonContainer">
+							<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+							<button type="button" id="updateLessonPortfolioButton" class="blueButton updateLessonPortfolioButton span6" data-current-page="edit_photos">Save Changes</button>
+							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton lessonFormButton" data-current-page="edit_photos">Continue</button>
+							<div class="lessonFormPreviousContainer">
+								<a class="lessonFormPrevious">Previous</a>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="review" class="lessonFormPage">
+					<div class="formInstruction">OK... time to double check everything!</div>
+
+					<div class="formDescription">If anything's wrong, click the links on the left to go back and make fixes.</div>
+
+					<div class="lessonReviewContainer">
+
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Title</div>
+							<div class="lessonReviewData lessonReviewTitle"></div>
+						</div>
+
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Description</div>
+							<div class="lessonReviewData lessonReviewDescription"></div>
+						</div>
+
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Industry</div>
+							<div class="lessonReviewData lessonReviewIndustry"></div>
+						</div>
+						
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Location</div>
+							<div class="lessonReviewData lessonReviewPlace">
+
+							</div>
+							<div class="lessonReviewDataDetails lessonReviewAddress">
+							</div>
+						</div>						
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Schedule</div>
+							<div class="lessonReviewData lessonReviewAvail">
+							</div>
+						</div>							
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Duration</div>
+							<div class="lessonReviewData lessonReviewDuration">
+							</div>
+						</div>					
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Rate</div>
+							<div class="lessonReviewData lessonReviewRate"></div>
+						</div>						
+
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Portfolio Images</div>
+							<div class="lessonReviewData lessonReviewPortfolio">
+
+							</div>
+						</div>
+					</div>
+
+					<div class="lessonFormButtonContainer">
+						<div class="lessonFormButtonContainer">
+
+
+							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
+							<div class="lessonFormButtonOptions">
+							
+							<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y" checked><label for="lessonMakeLiveProxy">Make this lesson live and public!</label>
+							</div>
+						</div>
+						<div class="lessonFormPreviousContainer">
+							<a class="lessonFormPrevious">Previous</a>
+						</div>
+					</div>
+					
+				</div>
+
+			</div>
+
+			
+		</div><!--right column-->
+	</div><!--empty, container-->
+
+</div>
+
+<!-- Scripts -->
+<script src="/static/js/dropzone.js"></script>
+<script src="/static/js/lightbox.min.js"></script>	
+<script type="text/javascript" src="/static/js/add_lesson.js"></script>
+<script type="text/javascript" src="/static/js/upload_lesson_portfolio.js"></script>
+<script type="text/javascript" src="/static/js/edit_portfolio.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+});
+
+</script>
+
+{% endblock %}

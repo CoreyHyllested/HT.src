@@ -61,14 +61,14 @@
 	font-size: .9em;
 }
 .navigation a {
-	color: #29abe1;
+	color: #1488CC;
 	-moz-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
 	-webkit-transition: 0.5 ease;
 	transition: 0.5s ease;	
 }
 .navigation a:hover {
-	color: #007cb3;
+	color: #7dc7f2;
 }
 
 .composeMessageContainer {

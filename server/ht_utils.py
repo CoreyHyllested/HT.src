@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2012 - 2013 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
-# 
-# All information contained is the property of HeroTime, Inc.  Any intellectual 
-# property about the design, implementation, processes, and interactions with 
-# services may be protected by U.S. and Foreign Patents.  All intellectual 
-# property contained within is covered by trade secret and copyright law.   
-# 
-# Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
 #################################################################################
 
 
@@ -45,7 +45,6 @@ def req_authentication(orig_fn):
 	@functools.wraps(orig_fn)
 	def verify_authenticated_user(*args, **kwargs):
 		if 'uid' not in session:
-			#flash('Must be logged in to view this page.', 'Error')
 			trace("no uid; " + orig_fn.__name__ + ': redirect to login')
 			return make_response(redirect('/login'))
 		return orig_fn(*args, **kwargs)

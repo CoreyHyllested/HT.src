@@ -12,13 +12,16 @@
 #################################################################################
 
 
-from server import ht_server
+from flask	import Flask
+from config	import server_configuration
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-DATABASE_URI = ht_server.config['SQLALCHEMY_DATABASE_URI']
-MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
+db_config = Flask(__name__)
+db_config.config.from_object(server_configuration['default'])
+DATABASE_URI = db_config.config['SQLALCHEMY_DATABASE_URI']
+MIGRATE_REPO = db_config.config['SQLALCHEMY_MIGRATE_REPO']
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)
 # gotten from http://flask.pocoo.org/docs/patterns/sqlalchemy/ ... under Declaritive
@@ -28,7 +31,7 @@ MIGRATE_REPO = ht_server.config['SQLALCHEMY_MIGRATE_REPO']
 #def shutdown_session(exception=None):
 #    db_session.remove()
 
-print 'init::db -- create engine and scoped connection'
+#print 'init::db -- create engine and scoped connection'
 db_engine	= create_engine(DATABASE_URI) #, echo=True)
 db_session	= scoped_session(sessionmaker(bind=db_engine))
 
@@ -38,9 +41,3 @@ Base.query = db_session.query_property()
 
 # models uses (Base)
 from server.infrastructure import models
-
-def init_db():
-	# import and create metadata models
-	print 'init::db -- import database models'
-	#Base.metadata.create_all(bind=engine)
-	print 'init::db -- done'

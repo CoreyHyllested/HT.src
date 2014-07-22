@@ -4,7 +4,6 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
-	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
 	<script src="/static/js/lightbox.min.js"></script>
 {% endblock %}
 
@@ -15,111 +14,41 @@
 	<h1>Edit Portfolio Images</h1>
 	<a href="/profile"><i class="fa fa-arrow-left"> Back</i></a> | <a href="/upload_portfolio"><i class="fa fa-upload"> Upload </i></a> | <a href="#" onclick="savePortfolio()"><i class="fa fa-save"> Save Changes</i></a>
 	<div class="editPortfolioStatus"></div>
-	<ul class="editPortfolioList">
-		{% for img in portfolio|sort(attribute='img_order') %}
+	<div class="editPortfolioListContainer">
+		<ul class="editPortfolioList">
+			{% for img in portfolio|sort(attribute='img_order') %}
 
-			<li class="editPortfolioListItem" order="{{img.img_order}}" orig_caption="{{img.img_comment}}">
-				<div class="editPortfolioImageContainer">
-					<div class="editPortfolioImageWrapper">
-						<div class="header">
-							<div class="img-delete">×</div>
-						</div>
-						<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" data-id="{{img.img_id}}" class="editPortfolioImage" ></a>
+				<li class="editPortfolioListItem" order="{{img.img_order}}" orig_caption="{{img.img_comment}}">
+					<div class="editPortfolioImageContainer">
+						<div class="editPortfolioImageWrapper">
+							<div class="header">
+								<div class="img-delete">×</div>
+							</div>
+							<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" data-id="{{img.img_id}}" class="editPortfolioImage" ></a>
 
-						<div class="caption">
-							<textarea rows="3" cols="20" class='editPortfolioImageCaption' name='caption' maxlength='100' placeholder='Enter a caption' />{{img.img_comment}}</textarea>
-						</div>
-						<div class="save-button">
-							<button class="editPortfolioSave whiteButton">Save Caption</button>
+							<div class="caption">
+								<textarea rows="3" cols="20" class='editPortfolioImageCaption' name='caption' maxlength='100' placeholder='Enter a caption'>{{img.img_comment}}</textarea>
+							</div>
+							<div class="save-button">
+								<button class="editPortfolioSave whiteButton">Save Caption</button>
+							</div>
 						</div>
 					</div>
-				</div>
-			</li>
+				</li>
 
-		{% endfor %}
-	</ul>
-
+			{% endfor %}
+		</ul>
+	</div>
 <div class="editPortfolioDone">
+	<input id="csrf_token" type="hidden" value="{{ csrf_token() }}">
 	<button type="button" class="blueButton editPortfolioDoneButton">
 		Save Changes
 	</button>
 </div>
 </div>
 
+<script src="/static/js/edit_portfolio.js"></script>
 <script>
-function savePortfolio() {
-	var fd = new FormData();
-	var csrf = "{{ csrf_token() }}";
-	fd.append('csrf_token', csrf);
-	var images = [];
-
-	$(".editPortfolioList li").each(function(i, el) {
-		var img	= new Object();
-		img.idx	= $(el).index();
-		img.old	= $(el).attr('order');
-		img.cap	= $(this).find(".editPortfolioImage").data("title");
-		img_id	= $(this).find(".editPortfolioImage").data("id");
-		images.push(img);
-		fd.append(img_id, JSON.stringify(img));
-	});
-	fd.append('images', images.length);
-	console.log(JSON.stringify(images));
-
-	var xhr = new XMLHttpRequest();
-	xhr.onreadystatechange = function(e) {
-		if (4 == this.readyState) {
-			console.log(['xhr post complete ', e]);
-			if (this.status == 200) {
-				msg = JSON.parse(xhr.responseText);
-				console.log(xhr.responseText);
-				openAlertWindow(msg['usrmsg']);
-			} else if (this.status == 500) {
-				msg = JSON.parse(xhr.responseText);
-				console.log(['xhr upload complete', e]);
-				openAlertWindow('Failure: ' + msg['usrmsg']);
-			} else {
-				msg = JSON.parse(xhr.responseText);
-				openAlertWindow(msg['usrmsg']);
-			}
-		}
-	};
-	xhr.open('POST', "/portfolio/update/", true);
-	xhr.send(fd);
-	return false;
-}
-
-
-$(".editPortfolioList").sortable({
-    items:'.editPortfolioListItem',
-    cursor: 'move',
-    opacity: 0.5,
-    containment: '.editPortfolioWrapper',
-    tolerance: 'pointer',
-    /*start: function(event, ui){console.log(ui.item.index());},
-    update: function(event, ui) {} */
-});
-
-
-$(".img-delete").click(function() {
-	var img_id = $(this).parent().siblings(".editPortfolioImage").data("id");
-	$(this).parent().parent().parent().parent().remove();
-	//console.log("deleted: " + img_id);
-});
-
-$(".editPortfolioSave").click(function() {
-	var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
-	$(this).parent().siblings(".editPortfolioImage").data("title", caption);
-	$(this).parent().fadeOut();
-});
-
-$(".editPortfolioImageCaption").keyup(function(){
-	$(this).parent().siblings(".save-button").fadeIn();
-});
-
-$(".editPortfolioDoneButton").click(function() {
-	savePortfolio();
-})
-
 </script>
 
 

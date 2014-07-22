@@ -10,21 +10,21 @@ c) 890px - ... (desktops)
 
 	/* LinkedIn Button Pulse */
 	@-moz-keyframes linkedinPulse {
-		0% {background-color: #007cb3;}
+		0% {background-color: #7dc7f2;}
 		50% {background-color: #00a1e8;}
-		100% {background-color: #007cb3;}
+		100% {background-color: #7dc7f2;}
 	}
 
 	@-webkit-keyframes linkedinPulse {
-		0% {background-color: #007cb3;}
+		0% {background-color: #7dc7f2;}
 		50% {background-color: #00a1e8;}
-		100% {background-color: #007cb3;}
+		100% {background-color: #7dc7f2;}
 	}
 
 	@keyframes linkedinPulse {
-		0% {background-color: #007cb3;}
+		0% {background-color: #7dc7f2;}
 		50% {background-color: #00a1e8;}
-		100% {background-color: #007cb3;}
+		100% {background-color: #7dc7f2;}
 	}
 
 /* COMMON ELEMENTS */
@@ -43,7 +43,7 @@ c) 890px - ... (desktops)
 	}
 
 	.loginLinkedIn {
-		background: url("../img/linkedin.svg") #007cb3 no-repeat 2px 3px;
+		background: url("../img/linkedin.svg") #7dc7f2 no-repeat 2px 3px;
 		border: 0;
 		border-radius: 3px;
 		color: white;
@@ -133,12 +133,12 @@ c) 890px - ... (desktops)
 	}
 
 	.loginSwitchEmail {
-		border: 1px #29abe2 solid;
+		border: 1px #1488CC solid;
 		border-radius: 3px 0 0 3px;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
-		color: #29abe2;
+		color: #1488CC;
 		cursor: pointer;
 		float: left;
 		font-size: 0.9em;
@@ -149,12 +149,12 @@ c) 890px - ... (desktops)
 	}
 
 	.loginSwitchSocial {
-		border: 1px #29abe2 solid;
+		border: 1px #1488CC solid;
 		border-radius: 0 3px 3px 0;
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
-		color: #29abe2;
+		color: #1488CC;
 		cursor: pointer;
 		float: left;
 		font-size: 0.9em;
@@ -166,7 +166,7 @@ c) 890px - ... (desktops)
 	}
 
 	.loginSwitchActive {
-		background-color: #29abe2;
+		background-color: #1488CC;
 		color: white;
 	}
 

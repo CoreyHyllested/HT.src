@@ -3,7 +3,6 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/review.css">
-	<script src="static/js/slot_expand.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -16,41 +15,40 @@
 	</div>
 
 	<div class="reviewRightColumn">
-		<form name='post_review' action=/postreview method=POST>
+		<form name='post_review' action='/review/create/{{form.review_id.data}}' method=POST>
 			{{form.hidden_tag()}}
 
 			<h3>Your Impressions</h3>
 			<select id="input_rating" name="input_rating" required>
-				<option disabled>Overall Value</option>
+				<option selected=True disabled>Overall Value</option>
 				<option value="1">Poor Value</option>
 				<option value="2">Fair Value</option>
 				<option value="3">Good Value</option>
 				<option value="4">Great Value</option>
-				<option selected="true" value="5">Excellent Value</option>
+				<option value="5">Excellent Value</option>
 			</select>
 
 			<select id="score_time" name="score_time" required>
-				<option disabled>Promptness</option>
+				<option selected disabled>Promptness</option>
 				<option value="1">Poor Promptness</option>
 				<option value="2">Fair Promptness</option>
 				<option value="3">Good Promptness</option>
 				<option value="4">Great Promptness</option>
-				<option selected="true" value="5">Excellent Promptness</option>
+				<option value="5">Excellent Promptness</option>
 			</select>
 
 			<select id="score_comm" name="score_comm" required>
-				<option disabled>Communication</option>
+				<option selected disabled>Communication</option>
 				<option value="1">Poor Communication</option>
 				<option value="2">Fair Communication</option>
 				<option value="3">Good Communication</option>
 				<option value="4">Great Communication</option>
-				<option selected="true" value="5">Excellent Communication</option>
+				<option value="5">Excellent Communication</option>
 			</select>
 
 			<h3>Your Experience</h3>
 			{{form.input_review}}
 
-			<!-- Buttons -->
 			<input type="submit" class="blueButton reviewPostButton" value="Post Review"/>
 		</form>
 
@@ -61,5 +59,48 @@
 
 	<div class="clear"></div>
 </div>
+
+<script>
+$(document).ready(function() {
+	$('.reviewPostButton').click(function(e) {
+		// validate user input.
+		e.preventDefault();
+
+		console.log(['clicked', e]);
+
+		var fd = {};
+		fd.review_id  = $('#review_id').val();
+		fd.csrf_token = $('#csrf_token').val();
+		fd.score_comm = $('#score_comm').val();
+		fd.score_time = $('#score_time').val();
+		fd.input_rating = $('#input_rating').val();
+		fd.input_review = $('#input_review').val();
+
+		$.ajax({ url : '/review/create/{{form.review_id.data}}',
+				 type : 'POST', 	
+				 data : fd,
+				 dataType: 'json',
+				 success : function(data) { 
+					console.log(data['usrmsg']);
+					window.location.href = '/dashboard';
+					return false; 
+				 },
+				error: function(data) {
+					console.log ('fail');
+					console.log (data.responseText);
+					var resp = JSON.parse(data.responseText);
+					console.log (resp);
+					console.log (resp['usrmsg']['input_rating']);
+					var error_string = ''
+					$.each(resp['usrmsg'], function(k, v) { console.log(k+ ": " + v); error_string += (k + " is " + v + '.\r\n')});
+					openAlertWindow(error_string);
+					return false;
+				}
+		});
+		return false;
+	});
+	
+});
+</script>
 
 {% endblock %}
