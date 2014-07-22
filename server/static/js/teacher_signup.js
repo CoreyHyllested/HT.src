@@ -127,32 +127,3 @@ function createReader(input, whenReady) {
 	}
 
 }
-
-function validateForm() {
-	// Fetch form elements
-	var address1 = document.forms["ssForm"]["ssAddress1"];
-
-	// Check for empty fields; if found, highlight them
-	var form_fields = [address1];
-	for (var i = 0; i < form_fields.length; i++) {
-		var current_element = form_fields[i];
-		var current_value = form_fields[i].value;
-		if (current_value.match(/^\s*$/)) {
-			$(current_element).focus();
-			return false;
-		}
-	}
-}
-
-function submitForm() {
-	// Fetch form elements
-	var address1 = document.forms["ssForm"]["ssAddress1"];
-
-	// Assemble an object
-
-	// Do an ajax insert, target add_seller_info
-
-
-
-
-}

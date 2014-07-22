@@ -2,56 +2,183 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/edit_profile.css">
-	<script type="text/javascript" src="/static/js/edit_profile.js"></script>
-	<script type="text/javascript" src="/static/js/format.js"></script>
+	<!-- <link type="text/css" rel="stylesheet" href="/static/css/dropzone.css"> -->
+	<link type="text/css" rel="stylesheet" href="/static/css/edit_profile.css"><!-- contains dropzone overrides -->
+
 {% endblock %}
 
 {% block content %}
 
+<div class="editProfContentWrapper">
 
+	<div class="editProfHeader">
+		<div class="editProfHeaderLeft">
+			<div class="editProfTopLeftNavigation">
+				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Profile</a>
+			</div>
+		</div>
+			
+		<div class="editProfHeaderRight">
+			<div class="editProfHeaderPageName">Edit your profile</div>
+		</div>			
+	</div>
+  
+  	<div class="editProfContentContainer">
+		<div class="editProfLeftColumn">
 
-<div class="editContentWrapper">
-	<div class="windowClose"><a href="/profile">&#x2715;</a></div>
-	<!-- <form method="post" action="/profile/update" id="editProfileForm" enctype="multipart/form-data"> -->
-	<form id="editProfileForm">
+			<div class="editProfNavContainer">
+			<div class="editProfNavListHeader">Basic Profile</div>
+			<ul class="editProfNavList">
+				<div class="editProfNavItem active" data-target-page="general">Basic Info<i class="fa fa-fw fa-star-o"></i></div>		
 
+				<div class="editProfNavItem" data-target-page="profile_photo">Photo<i class="fa fa-fw fa-picture-o"></i></div>	
 
-		{{form.hidden_tag()}}
+			</ul>
+			</div>
 
-		<div class="editPhoto">
-			<h2>Profile Picture</h2>
-			<img id="profile_img" src={{photoURL}} />
-			<p>For best results, please make sure the image is at least 720 pixels wide and is in landscape orientation.</p>
-			{{form.edit_photo(id="change-photo-button")}}
-			<input type="button" class="whiteButton" id="editChooseImage" value="Choose Image...">
+			<div class="editProfNavContainer mentorNav">
+				<div class="editProfNavListHeader">Mentor Profile</div>
+				<ul class="editProfNavList">
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="intro">Guidelines<i class="fa fa-fw fa-beer"></i></div>			
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></div>
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="payment">Payment<i class="fa fa-fw fa-dollar"></i></div>
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="temp">Temp<i class="fa fa-fw fa-star-o"></i></div>
+				</ul>
+			</div>
+
 		</div>
 
-		<div class="editBasicInfo">
-			<h2>Basic Information</h2>
-			{{form.edit_name(placeholder="Name", maxlength="40")}}
-			{{form.edit_headline(placeholder="Profile Headline")}}
-			{{form.edit_rate(maxlength="7", onkeypress="return isNumberKey(event)")}}
-			{{form.edit_industry(placeholder="Industry")}}
-			{{form.edit_location(placeholder="Location")}}
-			{{form.edit_url(placeholder="Website")}}
-			<div class="editRateDollars">$</div>
-			<div class="editRatePerHour">per hour</div>
-		</div>
+		<div class="editProfRightColumn">
+			
+			<div class="editProfFormPageContainer">
 
-		<div class="editAboutMe">
-			<h2>Your Story</h2>
-			{{form.edit_bio}}
-		</div>
+  				<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
 
-		<div id="edit-save-wrap">
-			<button id="edit-save" class="blueButton">Save changes</button>
-		</div>
+  				{{form.hidden_tag()}}
 
-		<div class="editBackToProfile">
-			<a href='/profile'>Back to Profile</a>
-		</div>
-	</form>
+				<div id="general" class="editProfFormPage">
+					<div class="formInstruction">Basic Information</div>
+
+					<div class="formContainer span9">
+
+						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span12")}}
+						{{form.edit_headline(placeholder="Profile Headline", class="formField span12")}}
+						{{form.edit_location(placeholder="Location", class="formField span12")}}
+						
+					</div>
+
+					<div class="formInstruction">Your Story</div>
+					
+					<div class="formContainer span9">
+						{{form.edit_bio(class="formField span12")}}	
+					</div>
+
+
+					<div class="editProfFormButtonContainer">
+						<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
+					</div>	
+
+				</div>
+
+				<div id="profile_photo" class="editProfFormPage">
+					<div class="formInstruction">Upload Photo</div>				
+					<!-- <div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div> -->
+
+					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview"></div>
+
+					<input type="button" class="whiteButton editProfImageButton" id="editProfImageButton" value="Choose Image...">
+					<div class="editProfImageInfo"></div>
+
+					<input name="editProfImage" id="editProfImage" type="file" accept="image/*">
+
+					<div class="editProfFormButtonContainer">
+						<button class="blueButton editProfFormButton" data-current-page="profile_photo">Continue</button>
+						<a class="editProfFormPrevious">Previous</a>
+					</div>					
+				
+				</div>
+
+
+				<div id="intro" class="editProfFormPage mentorForm">
+					<div class="formInstruction">Awesome! We are ecstatic that you want to teach.</div>
+					<div class="formDescription">Cheers. You have worked hard at your craft, skill, or hobby, and you can't wait to make the world a happier, more creative place by sharing your talent with others. You deserve to be rewarded with some cash for your efforts. You also deserve a commendation and a trophy! That said, we have a few "guidelines": 
+					<ul>
+						<li>Be cool. Don't claim you can teach something that you can't.</li>
+						<li>Maintain an attractive profile and lesson descriptions - this means keeping it filled out with complete info, and using high-quality images.</li>
+						<li>We are serious about the photo quality - so serious that we'll send a professional to take photos of you or your work if you don't think you can do it yourself.</li>
+						<li>That's all we can think of for now.</li>
+					</ul>
+					OK with all that? Great. Let's get started.
+					</div>
+					<div class="editProfFormButtonContainer">
+						<button class="blueButton editProfFormButton" data-current-page="intro">Continue</button>
+					</div>					
+				
+				</div>
+
+
+				<div id="schedule" class="editProfFormPage mentorForm">
+					<div class="formInstruction">Your Availability</div>
+					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
+					<input type="radio" id="editProfAvailOptionFlex" name="editProfAvailOption" class="editProfAvailOption formField" value=1 checked><label for="editProfAvailOptionFlex">Flexible - customer should contact me.</label><br> 
+					<input type="radio" id="editProfAvailOptionSpec" name="editProfAvailOption" class="editProfAvailOption formField" value=2><label for="editProfAvailOptionSpec">Specific (select times below)</label><br><br> 						
+					<select name="editProfAvailTimes" id="editProfAvailTimes" class="formField span3">
+						<option value="now">Now
+						<option value="never">Never
+					</select>  	
+
+					<div class="editProfFormButtonContainer">
+						<button class="blueButton editProfFormButton" data-current-page="schedule">Continue</button>
+						<a class="editProfFormPrevious">Previous</a>
+					</div>				
+				</div>
+
+				<div id="payment" class="editProfFormPage mentorForm">
+					<div class="formInstruction">Payment Information</div>
+					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
+					<br><br>
+					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+					</div>
+					
+					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
+					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{oa_stripe}}">
+
+					<div class="editProfFormButtonContainer">
+						<button class="blueButton editProfFormButton" data-current-page="payment">Continue</button>
+						<a class="editProfFormPrevious">Previous</a>
+					</div>			
+
+				</div>
+				<div id="temp" class="editProfFormPage mentorForm">
+
+					{{form.edit_url(placeholder="Website", class="formField span12")}}
+					{{form.edit_rate(maxlength="7", onkeypress="return isNumberKey(event)", class="formField span12")}}
+					{{form.edit_industry(placeholder="Industry", class="formField span12")}}
+
+					<div class="editProfFormButtonContainer">
+						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+						<button class="blueButton editProfFormButtonSubmit" data-current-page="temp">Submit and Continue</button>
+						<a class="editProfFormPrevious">Previous</a>
+					</div>	
+
+				</div>
+
+
+
+			</div>	
+
+	</div><!--empty, container-->
+
 </div>
+
+<!-- Scripts -->
+<!-- <script src="/static/js/dropzone.js"></script> -->
+<script src="/static/js/edit_profile.js"></script>
+<script>
+
+$(document).ready(function(){
+});
+
+</script>
 
 {% endblock %}

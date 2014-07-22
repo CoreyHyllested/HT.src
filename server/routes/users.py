@@ -319,12 +319,20 @@ def api_update_profile(usrmsg=None):
 			return jsonify(usrmsg=e), 500
 
 	elif request.method == 'POST':
-		log_uevent(uid, "editform isnt' valid" + str(form.errors))
+		# log_uevent(uid, "editform isn't valid" + str(form.errors))
+		# formerrors = {}
+		# for key, value in form.errors.iteritems():
+		# 	formerrors[key] = value
+
+		# print "form.errors: ", str(form.errors)
 		return jsonify(usrmsg='Invalid Request', errors=form.errors), 500
+		# return jsonify(usrmsg='Invalid Request', formerrors=formerrors), 500
 
 	# return redirect('/profile/edit')
 	print "api_update_profile: Something went wrong - Fell Through."
 	# return jsonify(errors=str(form.errors)), 500
+	print "here is the form object:"
+	print str(form)
 	return jsonify(form=form)
 
 
