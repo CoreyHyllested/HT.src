@@ -1,5 +1,3 @@
-#!/opt/HeroTime/dev/bin/python
-
 import os
 import imp
 from migrate.versioning import api
