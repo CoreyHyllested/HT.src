@@ -278,11 +278,11 @@ def meeting_timedout(meeting):
 
 	utc_now = dt.now(timezone('UTC'))
 	utcsoon = utc_now - timedelta(hours=20)
-	ystrday = utc_now - timedelta(days=1)
 
 	try:
 		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
 		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
+		prop_to	= prop_ts - timedelta(hours=20)
 		print 'meeting_timeout()\t', proposal.prop_uuid, proposal.prop_desc[:20]
 		print '\t\t\t' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
@@ -294,10 +294,9 @@ def meeting_timedout(meeting):
 				db_session.add(proposal)
 				db_session.commit()
 			else:
-				to = prop_ts - utcsoon
-				print '\t\t\t\tis before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
-				print '\t\t\t\tSafe! until ' +  str(to.seconds/3600) + ' hours'
-				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
+				timeout = prop_to - utc_now
+				print '\t\t\t\tSafe! until ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
+				setattr(meeting, 'timeout', ht_print_timedelta(timeout))
 		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
 			print '\t\t\tACCEPTED...'
 			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
@@ -593,5 +592,23 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 	session['messages'] = 'Great! You\'ve verified your email'
 	return redirect(url_for('insprite.render_dashboard'))
+
+
+
+#################################################################################
+### HELPER FUNCTIONS ############################################################
+#################################################################################
+
+def ht_print_timedelta(td):
+	if (td.days >= 9):
+		return 'more than a week'
+	if (td.days >= 6):
+		return 'about a week'
+	elif (td.days >=2):
+		return str(td.days) + ' days'
+	elif (td.days == 1):
+		return 'one day'
+	else:
+		return str(td.seconds / 3600) + ' hours'
 
 
