@@ -283,11 +283,11 @@ def meeting_timedout(meeting):
 	try:
 		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
 		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
-		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
-		print '\t\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
+		print 'meeting_timeout()\t', proposal.prop_uuid, proposal.prop_desc[:20]
+		print '\t\t\t' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
 		if (proposal.prop_state == APPT_STATE_PROPOSED):
-			print '\t\t\t\tPROPOSED...'
+			print '\t\t\tPROPOSED...'
 			if (prop_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
 				proposal.set_state(APPT_STATE_TIMEDOUT)
@@ -295,14 +295,14 @@ def meeting_timedout(meeting):
 				db_session.commit()
 			else:
 				to = prop_ts - utcsoon
-				print '\t\t\t\t\t is before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
-				print '\t\t\t\t\t Safe! until ' +  str(to.seconds/3600) + ' hours'
+				print '\t\t\t\tis before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
+				print '\t\t\t\tSafe! until ' +  str(to.seconds/3600) + ' hours'
 				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
 		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
-			print '\t\t\t\tACCEPTED...'
+			print '\t\t\tACCEPTED...'
 			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
-				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
-				print '\t\t\t\tFILTER Event out manually.  The events are working!!!'
+				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				print '\t\t\tFILTER Event out manually.  The events are working!!!'
 				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
 			else:
 				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')

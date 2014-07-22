@@ -91,7 +91,6 @@ def ht_api_proposal_reject():
 	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
 	log_uevent(session['uid'], pstr)
 
-
 	if not form.validate_on_submit():
 		msg = "invalid form: " + str(form.errors)
 		log_uevent(session['uid'], msg) 

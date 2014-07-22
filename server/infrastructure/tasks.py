@@ -100,9 +100,6 @@ def ht_proposal_create(values, uid):
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
 		print "ht_proposal_create: successfully committed proposal"
-
-		ht_send_meeting_proposed_notifications(prop, ha, hp, ba, bp)
-		print "ht_proposal_create: successfully emailed proposal information"
 	except NoResourceFound as npf:
 		ht_sanitize_errors(npf)
 	except IntegrityError as ie:	#TODO: add to ht_sanitize
@@ -115,16 +112,19 @@ def ht_proposal_create(values, uid):
 		db_session.rollback()
 		ht_sanitize_errors(e)
 		print "ht_proposal_create: returning proposal"
+
+	ht_send_meeting_proposed_notifications(proposal, ha, hp, ba, bp)
+	print "ht_proposal_create: emailed proposal information"
 	return proposal
 
 
 
 
 def ht_proposal_update(p_uuid, p_from):
-	prop = Proposal.get_by_id(p_uuid)
-	(ha, hp) = get_account_and_profile(prop.prop_hero)
-	(ba, bp) = get_account_and_profile(prop.prop_user)
-	ht_send_meeting_proposed_notifications(prop, ha, hp, ba, bp)
+	proposal = Proposal.get_by_id(p_uuid)
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(proposal.prop_user)
+	ht_send_meeting_proposed_notifications(proposal, ha, hp, ba, bp)
 
 
 
