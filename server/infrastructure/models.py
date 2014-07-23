@@ -620,7 +620,7 @@ class Proposal(Base):
 			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
 
 		if (msg or not valid):
-			raise StateTransitionError(self.prop_uuid, self.prop_state, s_nxt, flags, msg)
+			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, msg)
 
 		self.prop_state = s_nxt
 		self.prop_flags = flags
@@ -1063,7 +1063,7 @@ class Review(Base):
 			msg = 'Weird. The Review is in an INVALID STATE'
 
 		if (not valid):
-			raise StateTransitionError(self.review_id, self.rev_status, s_nxt, msg=msg)
+			raise StateTransitionError(self.__class__, self.review_id, self.rev_status, s_nxt, msg=msg)
 
 		self.rev_status = s_nxt
 		self.rev_updated = dt.utcnow()
