@@ -105,9 +105,6 @@ def ht_proposal_create(values, uid):
 	except IntegrityError as ie:	#TODO: add to ht_sanitize
 		db_session.rollback()
 		ht_sanitize_errors(ie)
-	except StateTransitionError as ste:
-		db_session.rollback()
-		ht_sanitize_errors(ste, details=400)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
