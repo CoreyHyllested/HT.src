@@ -127,10 +127,10 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 
-def ht_proposal_accept(prop_uuid, profile):
-	print 'ht_proposal_accept()  enter; uuid :', prop_uuid
+def ht_proposal_accept(proposal_id, profile):
+	print 'ht_proposal_accept()  enter; uuid :', proposal_id
 	try:
-		proposal = Proposal.get_by_id(prop_uuid)
+		proposal = Proposal.get_by_id(proposal_id)
 		stripe_card = proposal.charge_credit_card
 		stripe_tokn = proposal.charge_user_token
 		print 'ht_proposal_accept()  cust:', proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn
@@ -170,8 +170,9 @@ def ht_proposal_accept(prop_uuid, profile):
 
 	ht_send_meeting_accepted_notification(proposal)
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid], eta=(remindTime))
-	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
+	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal_id], eta=remindTime)
+	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal_id], eta=remindTime)
+	ht_charge_creditcard(args=[proposal_id, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
 	print 'ht_proposal_accept: returning gracefully.'
 	return (200, 'Proposal meeting accepted')
