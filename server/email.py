@@ -152,21 +152,21 @@ def ht_send_meeting_rejected_notifications(proposal):
 
 def ht_send_meeting_accepted_notification(proposal):
 	""" email proposal accepted emails to both buyer and seller."""
-	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(proposal)
+	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
 	sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
 	buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 	print 'sending proposal-accepted emails @ ' + proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
 
 	sellr_html = email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile)
-	sellr_msg = create_msg('You accepted "' + user_name + 's proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+	sellr_msg = create_msg('You accepted "' + buyer_name + 's proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
-	ht_send_email(sellr_addr, sellr_msg)
+	ht_send_email(sellr_email_addr, sellr_msg)
 
 	# email buyer that seller accepted their proposal.
 	buyer_html = email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile)
-	buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+	buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_addr, buyer_msg)
+	ht_send_email(buyer_email_addr, buyer_msg)
 
 
 
@@ -187,7 +187,7 @@ def ht_send_meeting_canceled_notification(proposal):
 		# assumes buyer canceled.
 		sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller()
 	# email seller that meeting has been canceled.
-	sellr_msg = create_msg('Meeting with ' + str(user_name) + ' canceled', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+	sellr_msg = create_msg('Meeting with ' + str(buyer_name) + ' canceled', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 	ht_send_email(sellr_addr, sellr_msg)
 
@@ -284,10 +284,10 @@ def get_proposal_email_info(proposal):
 	(ba, bp) = get_account_and_profile(proposal.prop_user)
 
 	hero_addr = ha.email
-	user_addr = ba.email
-	hero_name = hp.prof_name.encode('utf8', 'ignore')
-	user_name = bp.prof_name.encode('utf8', 'ignore')
-	return (hero_addr, hero_name, user_addr, user_name)
+	buyer_email_addr = ba.email
+	sellr_name = hp.prof_name.encode('utf8', 'ignore')
+	buyer_name = bp.prof_name.encode('utf8', 'ignore')
+	return (hero_addr, sellr_name, buyer_email_addr, buyer_name)
 
 
 
