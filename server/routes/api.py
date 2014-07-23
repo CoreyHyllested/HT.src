@@ -52,20 +52,24 @@ def ht_api_proposal_accept():
 #	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
 #	log_uevent(session['uid'], pstr)
 
+	if form.validate_on_submit():
+		p_id = form.proposal_id.data
+		p_ch = form.proposal_challenge.data
+	elif (request.method == 'POST'):
+		# INVALID POST, attempt from /dashboard
+		print 'ht_api_proposal_accept()\tform-errors', form.errors
+		return jsonify(usrmsg=str(form.errors)), 400
 
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=msg), 400
 
 	try:
 		print "ht_api_proposal_accept: validated form. Accept proposal."
-		ht_proposal_accept(form.proposal_id.data, session['uid'])
+		bp = Profile.get_by_uid(session['uid'])
+		ht_proposal_accept(p_id, bp)
 	except Sanitized_Exception as se:
 		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except Exception as e:
-		print "ht_api_proposal_accept: exception", type(e), e
+		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg=str(e)), 500
 	print "ht_api_proposal_accept: success"
@@ -101,7 +105,7 @@ def ht_api_proposal_reject():
 	elif (request.method == 'POST'):
 		# INVALID POST, attempt from /dashboard
 		print 'ht_api_reject_proposal()\tform-errors', form.errors
-		return jsonify(usrmsg=str(form.errors)), 504
+		return jsonify(usrmsg=str(form.errors)), 400
 
 	try:
 		# Attempt rejecting proposal (GET/POST)

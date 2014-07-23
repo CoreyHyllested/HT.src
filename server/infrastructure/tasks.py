@@ -129,7 +129,7 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 
-def ht_proposal_accept(prop_uuid, uid):
+def ht_proposal_accept(prop_uuid, profile):
 	print 'ht_proposal_accept()  enter; uuid :', prop_uuid
 	try:
 		proposal = Proposal.get_by_id(prop_uuid)
@@ -142,7 +142,7 @@ def ht_proposal_accept(prop_uuid, uid):
 
 		# update proposal
 		print 'ht_proposal_accept: change state to accepted'
-		proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
+		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
 		db_session.add(proposal)
 		db_session.commit()
 
