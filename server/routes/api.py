@@ -84,10 +84,10 @@ def ht_api_proposal_accept():
 
 @insprite_views.route('/proposal/negotiate', methods=['POST'])
 @req_authentication
-def ht_api_proposal_negotiate():
-	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
-	#the_proposal.prop_count = the_proposal.prop_count + 1
+def ht_api_meeting_negotiate():
+	#meeting = Proposal.get_by_id(form.proposal_id.data)
+	#meeting.set_state(APPT_STATE_RESPONSE)
+	#meeting.prop_count = meeting.prop_count + 1
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
 
@@ -130,38 +130,32 @@ def ht_api_proposal_reject():
 
 
 
-@insprite_views.route('/appointment/cancel', methods=['POST'])
-@dbg_enterexit
+@insprite_views.route('/meeting/cancel', methods=['POST'])
 @req_authentication
-def ht_api_appt_cancel():
-	""" Cancels a logged in user's appointment. """
+def ht_api_meeting_cancel():
+	form = ProposalActionForm(request.form)
 
-	uid = session['uid']
-	print 'apptid = ', request.values.get('appt_id', 'Nothing found here, sir')
+	if form.validate_on_submit():
+		p_id = form.proposal_id.data
+		p_ch = form.proposal_challenge.data
+	elif (request.method == 'POST'):
+		# INVALID POST attempted from /dashboard
+		print 'ht_api_meeting_cancel()\tform-errors', form.errors
+		return jsonify(usrmsg=str(form.errors)), 400
+
 
 	try:
-		the_proposal = Proposal.get_by_id(request.values.get('appt_id'))
-		the_proposal.set_state(APPT_STATE_CANCELED)
-		db_session.add(the_proposal)
-		db_session.commit()
-		print the_proposal
-
-		#send emails notifying users.
-		# ht_send_meeting_canceled_notification(proposal)
-		print "success, canceled appt"
-	except StateTransitionError as ste:
-		print ste
-		db_session.rollback()
-		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
-	except NoResourceFound as nre:
-		print nre
-		return jsonify(usrmsg=nre), 400
+		bp = Profile.get_by_uid(session['uid'])
+		rc, msg = ht_meeting_cancel(p_id, bp)
+	except SanitizedException as se:
+		print "ht_api_meeting_cancel(): sanitized exception", se
+		return se.api_response(request.method)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return jsonify(usrmsg='Bizarre, something failed'), 500
+		return jsonify(usrmsg='Bizarre, something failed'), 400
 
-	return jsonify(usrmsg="succesfully canceled proposal"), 200
+	return jsonify(usrmsg=msg), rc
 
 
 

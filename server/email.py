@@ -171,34 +171,45 @@ def ht_send_meeting_accepted_notification(proposal):
 
 
 
-def ht_send_meeting_canceled_notification(proposal):
+def ht_send_meeting_canceled_notifications(proposal):
 	""" email notification to both buyer and seller, the appointment has been canceled."""
-	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(proposal)
+	print 'ht_send_meeting_canceled_notifications\t enter()'
+	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
 
 	# if canceled by seller.
 		# only send meeting notice to buyer?
 		#email_body_cancellation_from_seller_to_buyer():
 
 
-	if (dt.utcnow() - proposal.prop_ts > timedelta(hours=48)):
+	print 'ht_send_meeting_canceled_notifications\t check if meeting occurs in 48 hours'
+	# use tzinfo = None to remove timezone info, both are already in UTC.
+	if ((dt.utcnow() - proposal.prop_ts.replace(tzinfo=None)) > timedelta(hours=48)):
 		# assumes buyer canceled.
+		print 'ht_send_meeting_canceled_notifications\t meeting occurs in more than 48 hours'
 		sellr_html = email_body_cancellation_from_buyer_within_48_hours_to_seller()
 	else:
 		# assumes buyer canceled.
+		print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
 		sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller()
+
 	# email seller that meeting has been canceled.
-	sellr_msg = create_msg('Meeting with ' + str(buyer_name) + ' canceled', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+	print 'ht_send_meeting_canceled_notifications\t create seller_msg'
+	sellr_msg = create_msg('Meeting with ' + str(buyer_name) + ' canceled', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
-	ht_send_email(sellr_addr, sellr_msg)
+	ht_send_email(sellr_email_addr, sellr_msg)
 
 	# email buyer that meeting has been canceled.
-	if (dt.utcnow() - proposal.prop_ts < timedelta(hours=24)):
+	print 'ht_send_meeting_canceled_notifications\t create buyer_path html'
+	if (dt.utcnow() - proposal.get_prop_ts() < timedelta(hours=24)):
+		print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 24 hours'
 		buyer_html = email_body_cancellation_from_buyer_within_24_hours()
 	else:
+		print 'ht_send_meeting_canceled_notifications\t meeting occurs in > 24 hours'
 		buyer_html = email_body_cancellation_from_buyer_outside_24_hours (buyer_name, sellr_name)
-	buyer_msg = create_msg('Meeting with ' + str(sellr_name) + ' canceled', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+	print 'ht_send_meeting_canceled_notifications\t meeting create buyer_msg'
+	buyer_msg = create_msg('Meeting with ' + str(sellr_name) + ' canceled', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_addr, buyer_msg)
+	ht_send_email(buyer_email_addr, buyer_msg)
 
 
 
