@@ -51,8 +51,6 @@ def ht_api_proposal_accept():
 	form = ProposalActionForm(request.form)
 	p_id = request.values.get('proposal_id', None)
 	p_ch = request.values.get('proposal_challenge', None)
-#	pstr = "wants to accept proposal (%s); challenge_hash = %s" % (form.proposal_id.data, form.proposal_challenge.data)
-#	log_uevent(session['uid'], pstr)
 
 	if form.validate_on_submit():
 		p_id = form.proposal_id.data
@@ -67,7 +65,6 @@ def ht_api_proposal_accept():
 		print "ht_api_proposal_accept: validated form. Accept proposal."
 		bp = Profile.get_by_uid(session['uid'])
 		rc, msg = ht_proposal_accept(p_id, bp)
-		print 'ht_api_proposal_accept', rc, msg
 	except SanitizedException as se:
 		print "ht_api_proposal_accept: sanitized exception", se
 		return se.api_response(request.method)
@@ -76,12 +73,11 @@ def ht_api_proposal_accept():
 		db_session.rollback()
 		return jsonify(usrmsg=str(e)), 500
 
-	print "ht_api_proposal_accept: success"
+	print 'ht_api_proposal_accept', rc, msg
 	if (request.method == 'GET'):
 		# user accepted proposal from an email.
 		if (rc == 200): session['messages'] = msg
-		return make_response(redirect(url_for('insprite.render_dashboard')))
-	return make_response(redirect('/dashboard'))
+	return make_response(redirect(url_for('insprite.render_dashboard')))
 
 
 
@@ -104,8 +100,6 @@ def ht_api_proposal_reject():
 	form = ProposalActionForm(request.form)
 	p_id = request.values.get('proposal_id', None)
 	p_ch = request.values.get('proposal_challenge', None)
-	pstr = "wants to reject proposal (%s); challenge_hash = %s" % (p_id, p_ch)
-	log_uevent(session['uid'], pstr)
 
 	if form.validate_on_submit():
 		p_id = form.proposal_id.data
