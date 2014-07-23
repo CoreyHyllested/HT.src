@@ -31,7 +31,7 @@ def ht_api_proposal_create():
 		print 'ht_api_proposal_create'
 		proposal = ht_proposal_create(request.values, session['uid'])
 		if (proposal is not None): user_message = 'Successfully created proposal'
-	except Sanitized_Exception as se:
+	except SanitizedException as se:
 		user_message = se.get_sanitized_msg()
 		print 'ht_api_proposal_create() sanitized messages',  user_message
 		return make_response(jsonify(usrmsg=user_message), se.httpRC())
@@ -68,7 +68,7 @@ def ht_api_proposal_accept():
 		bp = Profile.get_by_uid(session['uid'])
 		rc, msg = ht_proposal_accept(p_id, bp)
 		print 'ht_api_proposal_accept', rc, msg
-	except Sanitized_Exception as se:
+	except SanitizedException as se:
 		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
 	except StateTransitionError as ste:

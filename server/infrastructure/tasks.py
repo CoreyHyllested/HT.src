@@ -33,11 +33,11 @@ def ht_sanitize_errors(e, details=None):
 	msg = 'caught error: ' + type(e) + ' ' +  str(e)
 	print msg
 	if (type(e) == NoResourceFound):
-		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
+		raise SanitizedException(e, httpRC=400, msg=e.sanitized_msg())
 	elif (type(e) == ValueError):
-		raise Sanitized_Exception(e, httpRC=400, msg="Invalid input")
+		raise SanitizedException(e, httpRC=400, msg="Invalid input")
 	elif (type(e) == StateTransitionError):
-		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
+		raise SanitizedException(e, httpRC=400, msg=e.sanitized_msg())
 	else:
 		raise e
 
