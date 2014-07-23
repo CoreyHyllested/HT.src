@@ -131,7 +131,7 @@ def ht_proposal_accept(proposal_id, profile):
 	print 'ht_proposal_accept(' + proposal_id + ')'
 
 	proposal = Proposal.get_by_id(proposal_id)
-	if (proposal is None): raise NoProposalFound(proposal_id)
+	if (proposal is None): raise NoMeetingFound(proposal_id)
 
 	try:
 		print 'ht_proposal_accept: change state to accepted'
@@ -171,11 +171,33 @@ def ht_proposal_accept(proposal_id, profile):
 
 
 
+def ht_meeting_cancel(proposal_id, profile):
+	print 'ht_meeting_cancel() proposal_id:', proposal_id
+
+	proposal = Proposal.get_by_id(proposal_id)
+	if (proposal is None): raise NoMeetingFound(proposal_id)
+
+	try:
+		proposal.set_state(APPT_STATE_CANCELED, prof_id=profile.prof_id)
+		# throws StateTransitionError
+		db_session.add(proposal)
+		db_session.commit()
+	except Exception as e:
+		db_session.rollback()
+		print type(e), e
+		raise e
+
+	ht_send_meeting_canceled_notifications(proposal)
+	return (200, 'Proposed meeting canceled')
+
+
+
+
 def ht_proposal_reject(proposal_id, profile):
 	print 'ht_proposal_reject() proposal id:', proposal_id, profile.prof_id
 
 	proposal = Proposal.get_by_id(proposal_id)
-	if (proposal is None): raise NoResourceFound(Proposal, proposal_id)
+	if (proposal is None): raise NoMeetingFound(proposal_id)
 
 	try:
 		proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)

@@ -645,20 +645,16 @@ class Proposal(Base):
 	def canceled(self): return (self.prop_state == APPT_STATE_CANCELED)
 	def occurred(self): return (self.prop_state == APPT_STATE_OCCURRED)
 
-
 	def get_prop_ts(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_ts.astimezone(timezone(zone))
-
 
 	def get_prop_tf(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_tf.astimezone(timezone(zone))
 
-
 	def get_duration(self):
 		return (self.prop_tf - self.prop_ts)
-
 
 	def get_duration_in_hours(self):
 		td = self.prop_tf - self.prop_ts
