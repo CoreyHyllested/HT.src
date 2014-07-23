@@ -34,7 +34,7 @@ def ht_api_proposal_create():
 	except SanitizedException as se:
 		user_message = se.get_sanitized_msg()
 		print 'ht_api_proposal_create() sanitized messages',  user_message
-		return make_response(jsonify(usrmsg=user_message), se.httpRC())
+		return make_response(jsonify(usrmsg=user_message), se.http_resp_code())
 	except Exception as e:
 		print 'ht_api_proposal_create() raw exception'
 		print type(e), e
@@ -70,10 +70,7 @@ def ht_api_proposal_accept():
 		print 'ht_api_proposal_accept', rc, msg
 	except SanitizedException as se:
 		print "ht_api_proposal_accept: sanitized exception", se
-		return jsonify(usrmsg=se.get_sanitized_msg()), 500
-	except StateTransitionError as ste:
-		print "ht_api_proposal_accept: state transition error", ste
-		return jsonify(usrmsg=ste.sanitized_msg()), 400
+		return se.api_response(request.method)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()

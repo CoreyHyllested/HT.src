@@ -3,47 +3,60 @@ from datetime import datetime as dt
 
 
 class SanitizedException(Exception):
-	def __init__(self, error, httpRC=400, msg=None):
-		self.exception = error
-		self.next = None
-		self.rc = httpRC
-
-		if (msg is None):
-			# ensure a message exists
-			self.sanitized_msg = str(error)
+	def __init__(self, error, resp_code=400, msg=None):
+		print 'SanitzedExeption()\t set exception to str() ' + str(error)
+		self._exception = error
+		self._http_resp = resp_code
+		self._http_next = None
+		self._http_mesg = None			# show users a friendly message
+		self._tech_mesg = str(msg)		# preserve the truth
 	
 	def exception(self):
-		return str(self.exception)
+		return str(self._exception)
 
 	def exception_type(self):
-		return type(self.exception)
-	
-	def sanitized_msg(self):
-		return self.sanitized_msg
-	
-	def httpRC(self):
-		return self.rc
+		return type(self._exception)
 
-	def httpNext(self):
-		return self.sanitized_msg
+	def technical_msg(self, msg = None):
+		if (msg is not None): self._tech_mesg = msg
+		return self._tech_mesg
 
-	#def httpResp(self):
-	#	return self.json
+	def sanitized_msg(self, msg = None):
+		if (msg is not None): self._http_mesg = msg
+		return self._http_mesg
+
+	def http_resp_code(self, rc = None):
+		if (rc is not None): self._http_resp = rc
+		return self._http_resp
+
+	def http_next(self, nxt = None):
+		if (nxt is not None): self._http_next = nxt
+		return self._http_next
+	
+	def http_response(self, method):
+		pass
+
+	def api_response(self, method):
+		# allow route/errors to catch and render HTML page
+		if (method == 'GET'): raise self
+
+		# POSTed from Web-Client, respond with JSON Error Mesg.
+		return jsonify(usrmsg=self._http_mesg), self._http_resp
+
+
 
 
 
 
 class StateTransitionError(SanitizedException):
-#	def __init__(self, uuid, s_cur, s_nxt, flags=None, msg=None):
-	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, msg=None):
-		super(StateTransitionError, self).__init__(None, msg=msg)
+	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, error_msg=None):
+		print 'StateTransitionError()\tcreating'
+		super(StateTransitionError, self).__init__(None, msg=error_msg)
 		self.resrc_id  = resrc_id
 		self.state_cur = state_cur
 		self.state_nxt = state_nxt
 		self.flags = flags
-
-	def update_msg(self, msg):
-		self.sanitized_msg = msg
+		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + error_msg)
 
 	def __str__(self):
 		return "<TransitionError(%r, %r) => %r>" % (self.resrc_id, self.state_cur, self.state_nxt)

@@ -33,11 +33,11 @@ def ht_sanitize_errors(e, details=None):
 	msg = 'caught error: ' + type(e) + ' ' +  str(e)
 	print msg
 	if (type(e) == NoResourceFound):
-		raise SanitizedException(e, httpRC=400, msg=e.sanitized_msg())
+		raise SanitizedException(e, resp_code=400, msg=e.sanitized_msg())
 	elif (type(e) == ValueError):
-		raise SanitizedException(e, httpRC=400, msg="Invalid input")
+		raise SanitizedException(e, resp_code=400, msg="Invalid input")
 	elif (type(e) == StateTransitionError):
-		raise SanitizedException(e, httpRC=400, msg=e.sanitized_msg())
+		raise SanitizedException(e, resp_code=400, msg=e.sanitized_msg())
 	else:
 		raise e
 
@@ -128,52 +128,50 @@ def ht_proposal_update(p_uuid, p_from):
 
 
 def ht_proposal_accept(proposal_id, profile):
-	print 'ht_proposal_accept()  enter; uuid :', proposal_id
+	print 'ht_proposal_accept(' + proposal_id + ')'
+
+	proposal = Proposal.get_by_id(proposal_id)
+	if (proposal is None): #throw NoResourceFound(unable to find resource)
+		pass
+
 	try:
-		proposal = Proposal.get_by_id(proposal_id)
-		stripe_card = proposal.charge_credit_card
-		stripe_tokn = proposal.charge_user_token
-		print 'ht_proposal_accept()  cust:', proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn
-
-		(ha, hp) = get_account_and_profile(proposal.prop_hero)
-		(ba, bp) = get_account_and_profile(proposal.prop_user)
-
-		# update proposal
 		print 'ht_proposal_accept: change state to accepted'
 		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
 		db_session.add(proposal)
 		db_session.commit()
-
-		print 'ht_proposal_accept: send confirmation notices'
-		remindTime = proposal.prop_ts - timedelta(days=2)
-		chargeTime = proposal.prop_ts - timedelta(days=2)
-		reviewTime = proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
-		print 'ht_proposal_accept: reminder emails @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
-		print 'ht_proposal_accept: charge the buyr @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
-		print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
-
 	except StateTransitionError as ste:
-		ste_msg = 'Meeting cannot be accepted'
-		if (ste.s_cur == ste.s_nxt):
-			ste_msg = ste_msg + ', already accepted'
-		ste.update_msg(ste_msg)
-		print ste.sanitized_msg()
+		new_msg = 'Meeting cannot be accepted'
+		if (ste.state_cur == ste.state_nxt):
+			new_msg = new_msg + ', already accepted'
+		print 'ht_proposal_accept', ste.sanitized_msg(new_msg)
 		raise ste
-	except NoResourceFound as nrf:
-		db_session.rollback()
-		print nrf
-		raise nrf
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 		raise e
 
-	ht_send_meeting_accepted_notification(proposal)
+	stripe_card = proposal.charge_credit_card
+	stripe_tokn = proposal.charge_user_token
+	print 'ht_proposal_accept()  cust:', proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn
+
+	(ha, hp) = get_account_and_profile(proposal.prop_hero)
+	(ba, bp) = get_account_and_profile(proposal.prop_user)
+
+	print 'ht_proposal_accept: send confirmation notices'
+	remindTime = proposal.prop_ts - timedelta(days=2)
+	chargeTime = proposal.prop_ts - timedelta(days=2)
+	reviewTime = proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
+	print 'ht_proposal_accept: reminder emails @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
+	print 'ht_proposal_accept: charge the buyr @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
+	print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
+
 	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal_id], eta=remindTime)
 	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal_id], eta=remindTime)
 	ht_charge_creditcard(args=[proposal_id, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
+
+	ht_send_meeting_accepted_notification(proposal)
 	print 'ht_proposal_accept: returning gracefully.'
 	return (200, 'Proposal meeting accepted')
 
@@ -191,10 +189,9 @@ def ht_proposal_reject(prop_id, profile):
 		db_session.commit()
 	except StateTransitionError as ste:
 		ste_msg = 'Meeting cannot be rejected'
-		if (ste.s_cur == ste.s_nxt):
+		if (ste.state_cur == ste.state_nxt):
 			ste_msg = ste_msg + ', already rejected'
-		ste.update_msg(ste_msg)
-		print ste.sanitized_msg()
+		print ste.sanitized_msg(ste_msg)
 		raise ste
 	except Exception as e:
 		db_session.rollback()
