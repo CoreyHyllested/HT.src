@@ -640,10 +640,42 @@ class Proposal(Base):
 	def get_prop_tf(self, tz=None):
 		zone = self.prop_tz or 'US/Pacific'
 		return self.prop_tf.astimezone(timezone(zone))
+
+
+	def get_duration(self):
+		return (self.prop_tf - self.prop_ts)
+
+
+	def get_duration_in_hours(self):
+		td = self.prop_tf - self.prop_ts
+		td_days = td.days
+		td_hour	= (td.seconds / 3600)
+		td_mins = (td.seconds % 3600) / 60
+
+		elapsed	= ''
+		if (td_hour > 1):
+			elapsed = elapsed + str(td_hour) + 'hours'
+		elif (td_hour == 1):
+			elapsed = elapsed + str(td_hour) + 'hour'
+
+		if (td_mins != 0):
+			if (td_hour != 0): elapsed = elapsed + ' and '
+			elapsed = elapsed + str(td_min) + 'mins'
+		return elapsed
+
 			
+
+	def accept_url(self):
+		return str('https://127.0.0.1:5000/proposal/accept?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
+
+
+	def reject_url(self):
+		return str('https://127.0.0.1:5000/proposal/reject?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
+
 
 	def __repr__(self):
 		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
+
 
 	@property
 	def serialize(self):
@@ -656,6 +688,7 @@ class Proposal(Base):
 			'prop_cost'		: self.prop_cost,
 			'prop_updated'	: self.prop_updated.strftime('%A, %b %d, %Y %H:%M %p')
 		}
+
 
 
 
