@@ -654,13 +654,13 @@ class Proposal(Base):
 
 		elapsed	= ''
 		if (td_hour > 1):
-			elapsed = elapsed + str(td_hour) + 'hours'
+			elapsed = elapsed + str(td_hour) + ' hours'
 		elif (td_hour == 1):
-			elapsed = elapsed + str(td_hour) + 'hour'
+			elapsed = elapsed + str(td_hour) + ' hour'
 
 		if (td_mins != 0):
 			if (td_hour != 0): elapsed = elapsed + ' and '
-			elapsed = elapsed + str(td_mins) + 'mins'
+			elapsed = elapsed + str(td_mins) + ' mins'
 		return elapsed
 
 
