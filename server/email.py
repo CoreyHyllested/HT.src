@@ -130,16 +130,18 @@ def ht_send_meeting_proposed_notification_to_buyer(proposal, buyer_email, buyer_
 def ht_send_meeting_rejected_notifications(proposal):
 	""" email buyer (and seller?) the current proposal was rejected. """
 	print 'ht_send_meeting_rejected_notifications enter'
-	(sellr_addr, sellr_name, user_addr, user_name) = get_proposal_email_info(proposal)
+	(sellr_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
+	sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
+	buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 	print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
 	buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(proposal)
 	print 'ht_send_meeting_rejected_notifications created buyer_msg_html'
-	buyer_msg = create_msg(str(sellr_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite Notifications')
+	buyer_msg = create_msg(str(sellr_name) + ' rejected your proposal', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
-	ht_send_email(user_addr, buyer_msg)
+	ht_send_email(buyer_email_addr, buyer_msg)
 
 	print 'ht_send_meeting_rejected_notifications create sellr_msg_html'
-	sellr_msg_html = email_body_meeting_rejected_notification_to_seller(proposal)
+	sellr_msg_html = email_body_meeting_rejected_notification_to_seller(proposal, buyer_profile.prof_name, buyer_profile.prof_id)
 	print 'ht_send_meeting_rejected_notifications created sellr_msg_html'
 	sellr_msg = create_msg('You rejected a proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
 	sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
