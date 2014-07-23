@@ -28,6 +28,8 @@ def create_error_response(resp_code, resp_text, resp_template):
 	return render_template(resp_template), resp_code
 
 
+
+
 @insprite_views.app_errorhandler(StateTransitionError)
 def error_400_bad_request_ste(ste):
 	profile = None
@@ -41,6 +43,24 @@ def error_400_bad_request_ste(ste):
 	# log the transition error.
 	# log the account / user / profile_id -- can only come from user with account.
 	return render_template('404.html', bp=profile), 400
+
+
+
+
+@insprite_views.app_errorhandler(NoResourceFound)
+def error_400_no_resource_found(nrf):
+	profile = None
+	if 'uid' in session:
+		profile = Profile.get_by_uid(session.get('uid'))
+	print 'Error, returning 400 response. The request was invalid, asking for an resource that could not be found.'
+	print 'bad_resource_requested', nrf.sanitized_msg()
+	print 'bad_resource_requested', nrf.technical_msg()
+
+	# log the resource.
+	# log the transition error.
+	# log the account / user / profile_id -- can only come from user with account.
+	return render_template('404.html', bp=profile), 400
+
 
 
 

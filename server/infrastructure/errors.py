@@ -99,6 +99,7 @@ class NoResourceFound(SanitizedException):
 		super(NoResourceFound, self).__init__(None, msg=error_msg)
 		self.resrc		= str(resrc)
 		self.resrc_id	= resrc_id
+		self.sanitized_msg(str(resrc) + ' ' + resrc_id + ' not found.')
 		self.technical_msg(str(resrc) + ' ' + resrc_id + ' not found.')
 
 	def __str__(self):
