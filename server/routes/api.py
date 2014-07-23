@@ -88,7 +88,6 @@ def ht_api_proposal_negotiate():
 	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
 	#the_proposal.set_state(APPT_STATE_RESPONSE)
 	#the_proposal.prop_count = the_proposal.prop_count + 1
-	#the_proposal.prop_updated = dt.now()
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
 
@@ -150,10 +149,6 @@ def ht_api_appt_cancel():
 		#send emails notifying users.
 		# ht_send_meeting_canceled_notification(proposal)
 		print "success, canceled appt"
-	except DB_Error as dbe:
-		print dbe
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except StateTransitionError as ste:
 		print ste
 		db_session.rollback()
@@ -282,10 +277,6 @@ def ht_api_send_message():
 		ht_send_peer_message(bp, hp, subject, thread, message)
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
-	except DB_Error as dbe:
-		print dbe
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some DB problem, try again", next=next, valid="true"), 505
 	except NoResourceFound as nre:
 		print nre
 		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505

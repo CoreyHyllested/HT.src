@@ -65,19 +65,6 @@ class StateTransitionError(SanitizedException):
 
 
 
-class DB_Error(Exception):
-	def __init__(self, db_err, usr_msg):
-		self.db_err  = db_err
-		self.msg = usr_msg
-
-	def sanitized_msg(self):
-		return self.msg 
-
-	def __str__(self):
-		return "DB_ERR(%s, %s)" % (self.db_err, self.msg)
-
-
-
 class PermissionDenied(Exception):
 	def __init__(self, task, usr, usr_msg):
 		self.task = task
