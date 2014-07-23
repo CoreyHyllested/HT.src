@@ -33,7 +33,7 @@ def email_body_verify_account(verify_email_url):
 	msg = msg + '<tbody>'
 
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -67,7 +67,7 @@ def email_body_verify_account(verify_email_url):
 	msg = msg + '<img src="http://ryanfbaker.com/insprite/spacer-2.png"></td></tr></table>'
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600"><tr>'
 	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#29abe1">Contact Us</a> | Sent by <a href="https://insprite.co" style="color:#29abe1">Insprite.co</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#29abe1">Contact Us</a> | Sent by <a href="https://insprite.co" style="color:#29abe1">Insprite</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
 	msg = msg + '</td></tr></table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600"><tr>'
@@ -87,7 +87,7 @@ def email_body_recover_your_password(url):
 	msg = msg + '<tbody>'
 
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -146,7 +146,7 @@ def email_body_password_changed_confirmation(url):
 	msg = msg + '<tbody>'
 
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -210,7 +210,7 @@ def email_body_email_address_changed_confirmation(url, new_email):
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -224,7 +224,7 @@ def email_body_email_address_changed_confirmation(url, new_email):
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:50px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">We\'re just sending you a reminder: You changed your email.<br><br>'
-	msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto@thegang@insprite.co" style="color:#1488CC">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
+	msg = msg + '\t\t\t We want to keep your information safe and secure, so if you didn\'t change it yourself <a href="mailto:thegang@insprite.co" style="color:#1488CC">give us a holler ASAP</a> and we\'ll get on it.<br><br></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -245,8 +245,8 @@ def email_body_email_address_changed_confirmation(url, new_email):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
-	msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+	msg = msg + '\t\t| Sent by <a href="https://insprite.co" style="color:#1488CC">Insprite</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -277,7 +277,7 @@ def email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_p
 	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
 	msg = msg + '\n\t\t<tbody>'
 	msg = msg + '\n\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\n\t\t\t\t<a href="https://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" />'
+	msg = msg + '\n\t\t\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" />'
 	msg = msg + '\n\t\t\t\t</a>'
 	msg = msg + '\n\t\t\t</td></tr>'
 	msg = msg + '\n\t\t</tbody>'
@@ -332,7 +332,7 @@ def email_body_meeting_rejected_notification_to_buyer(proposal):
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -361,8 +361,8 @@ def email_body_meeting_rejected_notification_to_buyer(proposal):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
-	msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+	msg = msg + '\t\t| Sent by <a href="https://insprite.co" style="color:#1488CC">Insprite</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -386,7 +386,7 @@ def email_body_meeting_rejected_notification_to_seller(proposal, buyer_name, buy
 	msg = msg + '\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
 	msg = msg + '\t\t\t<tbody>'
 	msg = msg + '\t\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t\t\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t\t\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t\t\t\t</td></tr>'
 	msg = msg + '\t\t\t</tbody>'
 	msg = msg + '\t\t</table>'
@@ -430,7 +430,7 @@ def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="https://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -438,7 +438,7 @@ def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + ' style="color:#1488CC">"' + sellr_profile.prof_name + '" accepted your proposal.</a><br><br>'
-	msg = msg + '\t\t\t Check out the details:<br>'
+	msg = msg + '\t\t\t Check out the details: <br>'
 	msg = msg + '\n\t\t\t\tTime: ' + proposal.prop_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
 	msg = msg + '\n\t\t\t\tDuration: ' + proposal.get_duration_in_hours() + ' hours<br>'
 	msg = msg + '\n\t\t\t\tLocation: ' + str(proposal.prop_place) + '<br>'
@@ -449,7 +449,7 @@ def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr
 
 	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
-	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center='+proposal.prop_place+'&zoom=14&size=450x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7CT'+proposal.prop_place+'">'
+	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center='+proposal.prop_place+'&zoom=14&size=450x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C'+proposal.prop_place+'">'
 	msg = msg + '\n\t\t</td></tr>'
 	msg = msg + '\n\t</table>'
 
@@ -496,7 +496,7 @@ def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sell
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -512,6 +512,13 @@ def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sell
 	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#1488CC"> ' + buyer_profile.prof_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
+
+	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
+	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center='+proposal.prop_place+'&zoom=14&size=450x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C'+proposal.prop_place+'">'
+	msg = msg + '\n\t\t</td></tr>'
+	msg = msg + '\n\t</table>'
+
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
@@ -529,8 +536,8 @@ def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sell
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto@thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
-	msg = msg + '\t\t| Sent by <a href="#" style="color:#1488CC">Insprite.co</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#1488CC">Contact Us</a>'
+	msg = msg + '\t\t| Sent by <a href="https://insprite.co" style="color:#1488CC">Insprite</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -552,7 +559,7 @@ def email_body_cancellation_from_buyer_outside_24_hours():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -591,7 +598,7 @@ def email_body_cancellation_from_buyer_within_24_hours():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -630,7 +637,7 @@ def email_body_cancellation_from_buyer_within_24_hours_to_seller():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -668,7 +675,7 @@ def email_body_cancellation_from_buyer_within_48_hours_to_seller():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -706,7 +713,7 @@ def email_body_cancellation_from_seller_to_buyer():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -748,7 +755,7 @@ def email_body_meeting_reminder():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -786,7 +793,7 @@ def email_body_review_reminder():
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -831,7 +838,7 @@ def email_body_to_user_sending_msg(profile, message):
 	msg = msg + '<tbody>'
 
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -869,7 +876,7 @@ def email_body_to_user_receiving_msg(profile, message):
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
 	msg = msg + '<tbody>'
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '<a href="https://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
@@ -922,7 +929,7 @@ def email_body_beta_email(url):
 	msg = msg + '<tbody>'
 
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF; padding-top:35px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoB.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
