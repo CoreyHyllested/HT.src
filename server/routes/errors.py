@@ -29,11 +29,13 @@ def create_error_response(resp_code, resp_text, resp_template):
 
 
 @insprite_views.app_errorhandler(StateTransitionError)
-def error_400_bad_request_ste(e):
+def error_400_bad_request_ste(ste):
 	profile = None
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid, asking for an invalid state transition change.'
+	print ste.technical_msg()
+
 	# log the resource.
 	# log the transition error.
 	# log the account / user / profile_id -- can only come from user with account.
