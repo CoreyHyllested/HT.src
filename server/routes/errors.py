@@ -34,7 +34,8 @@ def error_400_bad_request_ste(ste):
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid, asking for an invalid state transition change.'
-	print ste.technical_msg()
+	print 'bad_request_ste', ste.sanitized_msg()
+	print 'bad_request_ste', ste.technical_msg()
 
 	# log the resource.
 	# log the transition error.

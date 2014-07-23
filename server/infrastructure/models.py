@@ -582,6 +582,7 @@ class Proposal(Base):
 	def get_by_id(proposal_id):
 		proposal = None
 		try:
+			# cannot raise MultipleResultsFound, prop_uuid is table unique.
 			proposal = Proposal.query.filter_by(prop_uuid=proposal_id).one()
 		except NoResultFound as nrf:
 			pass

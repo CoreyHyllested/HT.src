@@ -136,10 +136,10 @@ def ht_proposal_accept(proposal_id, profile):
 	try:
 		print 'ht_proposal_accept: change state to accepted'
 		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
+		# throws StateTransitionError
 		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
-		#except StateTransitionError as e:
 		print type(e), e
 		db_session.rollback()
 		raise e
@@ -166,31 +166,27 @@ def ht_proposal_accept(proposal_id, profile):
 	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
 
 	ht_send_meeting_accepted_notification(proposal)
-	print 'ht_proposal_accept: returning gracefully.'
-	return (200, 'Proposal meeting accepted')
+	return (200, 'Proposed meeting accepted')
 
 
 
 
+def ht_proposal_reject(proposal_id, profile):
+	print 'ht_proposal_reject() proposal id:', proposal_id, profile.prof_id
 
-def ht_proposal_reject(prop_id, profile):
-	print 'ht_proposal_reject() proposal id:', prop_id, profile.prof_id
-	proposal = Proposal.get_by_id(prop_id)
+	proposal = Proposal.get_by_id(proposal_id)
+	if (proposal is None): raise NoResourceFound(Proposal, proposal_id)
 
 	try:
 		proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
+		# throws StateTransitionError
 		db_session.add(proposal)
 		db_session.commit()
-	except StateTransitionError as ste:
-		ste_msg = 'Meeting cannot be rejected'
-		if (ste.state_cur == ste.state_nxt):
-			ste_msg = ste_msg + ', already rejected'
-		print ste.sanitized_msg(ste_msg)
-		raise ste
 	except Exception as e:
 		db_session.rollback()
 		print type(e), e
 		raise e
+
 	ht_send_meeting_rejected_notifications(proposal)
 	return (200, 'Proposed meeting rejected')
 
