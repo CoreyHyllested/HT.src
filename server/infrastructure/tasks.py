@@ -132,24 +132,24 @@ def ht_proposal_update(p_uuid, p_from):
 def ht_proposal_accept(prop_uuid, uid):
 	print 'ht_proposal_accept()  enter; uuid :', prop_uuid
 	try:
-		the_proposal = Proposal.get_by_id(prop_uuid)
-		stripe_card = the_proposal.charge_credit_card
-		stripe_tokn = the_proposal.charge_user_token
-		print 'ht_proposal_accept()  cust:', the_proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn 
+		proposal = Proposal.get_by_id(prop_uuid)
+		stripe_card = proposal.charge_credit_card
+		stripe_tokn = proposal.charge_user_token
+		print 'ht_proposal_accept()  cust:', proposal.charge_customer_id, "  card:", stripe_card, "  token:", stripe_tokn
 
-		(ha, hp) = get_account_and_profile(the_proposal.prop_hero)
-		(ba, bp) = get_account_and_profile(the_proposal.prop_user)
+		(ha, hp) = get_account_and_profile(proposal.prop_hero)
+		(ba, bp) = get_account_and_profile(proposal.prop_user)
 
 		# update proposal
 		print 'ht_proposal_accept: change state to accepted'
-		the_proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
-		db_session.add(the_proposal)
+		proposal.set_state(APPT_STATE_ACCEPTED, uid=uid)
+		db_session.add(proposal)
 		db_session.commit()
 
 		print 'ht_proposal_accept: send confirmation notices'
-		remindTime = the_proposal.prop_ts - timedelta(days=2)
-		chargeTime = the_proposal.prop_ts - timedelta(days=2)
-		reviewTime = the_proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
+		remindTime = proposal.prop_ts - timedelta(days=2)
+		chargeTime = proposal.prop_ts - timedelta(days=2)
+		reviewTime = proposal.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
 		print 'ht_proposal_accept: reminder emails @ ' + remindTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'ht_proposal_accept: charge the buyr @ ' + chargeTime.strftime('%A, %b %d, %Y %H:%M %p')
 		print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
@@ -167,14 +167,11 @@ def ht_proposal_accept(prop_uuid, uid):
 		db_session.rollback()
 		raise e
 
-	ht_send_meeting_accepted_notification(the_proposal)
+	ht_send_meeting_accepted_notification(proposal)
 	print 'ht_proposal_accept: queue events... reminder emails, enable_reviews.  Check to see if proposal was canceled.'
-	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, the_proposal.prop_uuid], eta=(remindTime))
-
-	# perhaps we should create a change_state event; ht_proposal_occrred.  which would check if it was canceled.  If not canceled; charge (+ queue capture) and enable Reviews
-	ht_charge_creditcard.apply_async(args=[the_proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, the_proposal.charge_customer_id, the_proposal.prop_cost], eta=chargeTime)
-	ht_enable_reviews.apply_async(args=[the_proposal.prop_uuid], eta=(reviewTime))
+	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid], eta=(remindTime))
+	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
+	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
 	print 'ht_proposal_accept: returning successfully'
 
 
