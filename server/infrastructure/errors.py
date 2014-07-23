@@ -52,10 +52,11 @@ class StateTransitionError(SanitizedException):
 	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, error_msg=None):
 		print 'StateTransitionError()\tcreating'
 		super(StateTransitionError, self).__init__(None, msg=error_msg)
-		self.resrc_id  = resrc_id
-		self.state_cur = state_cur
-		self.state_nxt = state_nxt
-		self.flags = flags
+		self.resrc		= str(resrc)
+		self.resrc_id	= resrc_id
+		self.state_cur	= state_cur
+		self.state_nxt	= state_nxt
+		self.flags	= flags
 		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + error_msg)
 
 	def __str__(self):
@@ -92,19 +93,17 @@ class PermissionDenied(Exception):
 
 
 
-class NoResourceFound(Exception):
 
-	def __init__(self, r_type, r_id, msg=None, loc=None):
-		self.rt = r_type
-		self.id = r_id
-		self.msg = msg
-		self.loc = loc
-
-	def sanitized_msg(self):
-		return self.msg 
+class NoResourceFound(SanitizedException):
+	def __init__(self, resrc, resrc_id, error_msg=None):
+		super(NoResourceFound, self).__init__(None, msg=error_msg)
+		self.resrc		= str(resrc)
+		self.resrc_id	= resrc_id
+		self.technical_msg(str(resrc) + ' ' + resrc_id + ' not found.')
 
 	def __str__(self):
-		return '<No%rFound::%r>' % (self.rt, self.id)
+		return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
+
 
 
 

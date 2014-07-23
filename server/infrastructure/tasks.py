@@ -131,21 +131,15 @@ def ht_proposal_accept(proposal_id, profile):
 	print 'ht_proposal_accept(' + proposal_id + ')'
 
 	proposal = Proposal.get_by_id(proposal_id)
-	if (proposal is None): #throw NoResourceFound(unable to find resource)
-		pass
+	if (proposal is None): raise NoResourceFound(Proposal, proposal_id)
 
 	try:
 		print 'ht_proposal_accept: change state to accepted'
 		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
 		db_session.add(proposal)
 		db_session.commit()
-	except StateTransitionError as ste:
-		new_msg = 'Meeting cannot be accepted'
-		if (ste.state_cur == ste.state_nxt):
-			new_msg = new_msg + ', already accepted'
-		print 'ht_proposal_accept', ste.sanitized_msg(new_msg)
-		raise ste
 	except Exception as e:
+		#except StateTransitionError as e:
 		print type(e), e
 		db_session.rollback()
 		raise e

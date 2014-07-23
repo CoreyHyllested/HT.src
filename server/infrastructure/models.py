@@ -579,10 +579,13 @@ class Proposal(Base):
 
 
 	@staticmethod
-	def get_by_id(prop_uuid):
-		proposals = Proposal.query.filter_by(prop_uuid=prop_uuid).all()
-		if len(proposals) != 1: raise NoResourceFound('Proposal', prop_uuid)
-		return proposals[0]
+	def get_by_id(proposal_id):
+		proposal = None
+		try:
+			proposal = Proposal.query.filter_by(prop_uuid=proposal_id).one()
+		except NoResultFound as nrf:
+			pass
+		return proposal
 	
 
 	def set_flag(self, flag):
