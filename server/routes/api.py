@@ -113,22 +113,15 @@ def ht_api_proposal_reject():
 		# Attempt rejecting proposal (GET/POST)
 		bp = Profile.get_by_uid(session['uid'])
 		rc, msg = ht_proposal_reject(p_id, bp)
-		print 'ht_api_proposal_reject()\t', rc, msg
-	except NoProposalFound as npf:
-		print rc, msg
-		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except StateTransitionError as ste:
-		print "ht_api_proposal_reject: state transition error", ste.sanitized_msg()
-		return jsonify(usrmsg=ste.sanitized_msg()), 400
-	except DB_Error as ste:
-		db_session.rollback()
-		print ste
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
+	except SanitizedException as se:
+		print "ht_api_proposal_reject(): sanitized exception", se
+		return se.api_response(request.method)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
-		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
+		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 400
 
+	print 'ht_api_proposal_reject()\t', rc, msg
 	if (request.method == 'GET'):
 		# user rejected this proposal from an email.
 		if (rc == 200): session['messages'] = 'Proposal Removed'
