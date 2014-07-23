@@ -80,6 +80,9 @@ class NoResourceFound(SanitizedException):
 class NoProposalFound(NoResourceFound):
 	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', pid)
 
+class NoMeetingFound(NoResourceFound):
+	def __init__(self, mid): super(NoProposalFound, self).__init__('Meeting', mid)
+
 class NoProfileFound(NoResourceFound):
 	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', pid)
 		
