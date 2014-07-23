@@ -466,6 +466,7 @@ class Profile(Base):
 	def get_by_uid(uid):
 		profile = None
 		try:
+			# cannot throw MultipleResultsFound, DB uniqueness
 			profile = Profile.query.filter_by(account=uid).one()
 		except NoResultFound as nrf:
 			pass
@@ -592,35 +593,44 @@ class Proposal(Base):
 	def set_state(self, s_nxt, flag=None, uid=None, prof_id=None):
 		s_cur = self.prop_state 
 		flags = self.prop_flags
-		valid = True
-		msg = None
+		valid = False
+		error = None
 
 		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
+			valid = True
 			s_nxt = APPT_STATE_REJECTED
 			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
+
 		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
-			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))): msg = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
+			valid = True
+
+			if (((prof_id != self.prop_hero) and (prof_id != self.prop_user))):
+				error = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
+
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
-			if (self.prop_from == prof_id): msg = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
+			if (self.prop_from == prof_id):
+				error = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
 			self.appt_secured = dt.utcnow()
 #		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
 #			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
 #			flags = set_flag(flags, APPT_FLAG_USERPAID)
 #			self.appt_charged = dt.now()
 		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
-			pass
+			valid = True
 		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
-			pass
+			valid = True
 		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
-			pass
+			valid = True
 		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
-			pass
+			valid = True
 		else:
-			valid = False
-			msg = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
+			# Invalid Transition; set a SANITIZED ERROR MESSAGE, for major problems
+			error = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
+			if (s_nxt == s_cur):
+				error = 'Meeting already in STATE (' + str(s_cur) +  ')'
 
-		if (msg or not valid):
-			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, msg)
+		if (error or not valid):
+			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, error)
 
 		self.prop_state = s_nxt
 		self.prop_flags = flags
