@@ -628,8 +628,8 @@ class Proposal(Base):
 		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
 			valid = True
 		else:
-			# Invalid Transition; set a SANITIZED ERROR MESSAGE, for major problems
-			error = 'Weird. The APPOINTMENT PROPOSAL is in an INVALID STATE'
+			# Invalid Transition; create a SANITIZED MESSAGE for problems
+			error = 'The MEETING is in an INVALID STATE for this transaction'
 			if (s_nxt == s_cur):
 				error = 'Meeting already in STATE (' + str(s_cur) +  ')'
 
