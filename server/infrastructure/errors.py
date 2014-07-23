@@ -2,47 +2,51 @@ import sys
 from datetime import datetime as dt
 
 
-#IndexError: list index out of range
-#seen: we tried to index a list (from DB) that was zero
-
-class Sanitized_Exception(Exception):
-	def __init__(self, caught, httpRC=None, httpJSON=None, msg='Oops'):
-		self.caught = caught
-		self.sanitized_msg = msg
+class SanitizedException(Exception):
+	def __init__(self, error, httpRC=400, msg=None):
+		self.exception = error
+		self.next = None
 		self.rc = httpRC
-		self.json = httpJSON
+
+		if (msg is None):
+			# ensure a message exists
+			self.sanitized_msg = str(error)
 	
-	def orig_error(self):
-		return self.caught
+	def exception(self):
+		return str(self.exception)
+
+	def exception_type(self):
+		return type(self.exception)
 	
-	def get_sanitized_msg(self):
+	def sanitized_msg(self):
 		return self.sanitized_msg
 	
 	def httpRC(self):
 		return self.rc
 
-	def httpResp(self):
-		return self.json
+	def httpNext(self):
+		return self.sanitized_msg
+
+	#def httpResp(self):
+	#	return self.json
 
 
 
 
-class StateTransitionError(Exception):
-	def __init__(self, uuid, s_cur, s_nxt, flags=None, msg=None):
-		self.uuid  = uuid
-		self.s_cur = s_cur
-		self.s_nxt = s_nxt
+class StateTransitionError(SanitizedException):
+#	def __init__(self, uuid, s_cur, s_nxt, flags=None, msg=None):
+	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, msg=None):
+		super(StateTransitionError, self).__init__(None, msg=msg)
+		self.resrc_id  = resrc_id
+		self.state_cur = state_cur
+		self.state_nxt = state_nxt
 		self.flags = flags
-		self.msg = msg
-
-	def sanitized_msg(self):
-		return self.msg
 
 	def update_msg(self, msg):
-		self.msg = msg
+		self.sanitized_msg = msg
 
 	def __str__(self):
-		return "<TransitionError(%r, %r) => %r>" % (self.uuid, self.s_cur, self.s_nxt)
+		return "<TransitionError(%r, %r) => %r>" % (self.resrc_id, self.state_cur, self.state_nxt)
 
 
 
