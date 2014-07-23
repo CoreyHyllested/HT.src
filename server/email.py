@@ -97,48 +97,50 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 
 def ht_send_meeting_proposed_notifications(proposal, sa, sp, ba, bp):
 	ht_send_meeting_proposed_notification_to_sellr(proposal, sa.email, sp.prof_name.encode('utf8', 'ignore'), bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	ht_send_meeting_proposed_notification_to_buyer(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore'), sa.prof_name.encode('utf8', 'ignore'), sp.prof_id)
+	ht_send_meeting_proposed_notification_to_buyer(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore'), sp.prof_name.encode('utf8', 'ignore'), sp.prof_id)
+
 
 
 def ht_send_meeting_proposed_notification_to_sellr(proposal, sellr_email, sellr_name, buyer_name, buyer_prof_id):
-	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
-
-	url = 'https://herotime.co/profile?hero=' + str(buyer_prof_id)
-	msg_html = email_body_new_proposal_notification_to_seller(buyer_name, proposal)
+	print "ht_send_meeting_proposed_notification (to seller) (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
+	msg_html = email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_prof_id)
 	msg_subj = "Proposal to meet " + buyer_name
 	if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
 
-	msg = create_msg(msg_subject, sellr_email, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg = create_msg(msg_subj, sellr_email, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(sellr_email, msg)
 
 
 
-def ht_send_meeting_proposed_notification_to_buyer(prop, buyer_email, buyer_name, sellr_name, sellr_prof_id):
+def ht_send_meeting_proposed_notification_to_buyer(proposal, buyer_email, buyer_name, sellr_name, sellr_prof_id):
 	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
-	url = 'https://herotime.co/profile?hero=' + str(sellr_prof_id)
 
-	msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, proposal)
-	msg_subj = "Proposal to meet " + sellr_name
-	if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
+	#msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, proposal)
+	#msg_subj = "Proposal to meet " + sellr_name
+	#if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
 
-	msg = create_msg(msg_subject, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
-	msg.attach(MIMEText(msg_html, 'html'))
-	ht_send_email(buyer_email, msg)
+	#msg = create_msg(msg_subj, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
+	#msg.attach(MIMEText(msg_html, 'html'))
+	#ht_send_email(buyer_email, msg)
 
 
 
 
 def ht_send_meeting_rejected_notifications(proposal):
 	""" email buyer (and seller?) the current proposal was rejected. """
+	print 'ht_send_meeting_rejected_notifications enter'
 	(sellr_addr, sellr_name, user_addr, user_name) = get_proposal_email_info(proposal)
-
-	buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(url, proposal)
+	print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
+	buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(proposal)
+	print 'ht_send_meeting_rejected_notifications created buyer_msg_html'
 	buyer_msg = create_msg(str(sellr_name) + ' rejected your proposal', user_addr, user_name, 'noreply@insprite.co', u'Insprite Notifications')
 	buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 	ht_send_email(user_addr, buyer_msg)
 
-	sellr_msg_html = email_body_meeting_rejected_notification_to_seller()
+	print 'ht_send_meeting_rejected_notifications create sellr_msg_html'
+	sellr_msg_html = email_body_meeting_rejected_notification_to_seller(proposal)
+	print 'ht_send_meeting_rejected_notifications created sellr_msg_html'
 	sellr_msg = create_msg('You rejected a proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
 	sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
 	ht_send_email(sellr_addr, sellr_msg)
@@ -149,15 +151,17 @@ def ht_send_meeting_rejected_notifications(proposal):
 def ht_send_meeting_accepted_notification(proposal):
 	""" email proposal accepted emails to both buyer and seller."""
 	(sellr_addr, sellr_name, buyer_addr, buyer_name) = get_proposal_email_info(proposal)
+	sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
+	buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 	print 'sending proposal-accepted emails @ ' + proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
 
-	sellr_html = email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name)
+	sellr_html = email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile)
 	sellr_msg = create_msg('You accepted "' + user_name + 's proposal', sellr_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 	ht_send_email(sellr_addr, sellr_msg)
 
 	# email buyer that seller accepted their proposal.
-	buyer_html = email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name)
+	buyer_html = email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile)
 	buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
 	ht_send_email(buyer_addr, buyer_msg)

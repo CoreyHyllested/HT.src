@@ -267,50 +267,55 @@ def email_body_email_address_changed_confirmation(url, new_email):
 ################################################################################
 
 
-def email_body_new_proposal_notification_to_seller():
+def email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_profile_id):
 	""" generate email body (HTML).  Notification when seller receives a new proposal.  Sent via ht_send_sellr_proposal_update(). """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
+
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
 	msg = msg + '<tbody>'
-
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="http://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
+	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
+	msg = msg + '<a href="https://www.insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '</td></tr>'
 	msg = msg + '</tbody>'
 	msg = msg + '</table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
-	msg = msg + '\t\t<<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Great! You received a new proposal from <a href="#" style="color:#29abe1">{user\'s name}</a>. <br><br>'
-	msg = msg + '\t\t\t <br>Day: <br>Time <br>Duration: <br>Location:<br>Fee:<br><br></font> <br><br>'
+	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
+	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Great! You received a new proposal from <a href=\"https://127.0.0.1:5000/profile?hero=' + buyer_profile_id + '\" style="color:#29abe1">'+ buyer_name + '</a>.<br><br><br>'
+	msg = msg + 'Time: ' + proposal.prop_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
+	msg = msg + 'Duration: ' + proposal.get_duration_in_hours() + ' hours<br>'
+	msg = msg + 'Location: ' + str(proposal.prop_place) + '<br>'
+	msg = msg + 'Fee: $' + str(proposal.prop_cost) + '<br><br>'
+	msg = msg + 'Description: ' + str(proposal.prop_desc) + '<br><br>'
+	msg = msg + '</font><br><br>'
 	msg = msg + '</td></tr>'
 
 	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:200px" align="left" valign="top">'
-	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a>'
-	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #e55e62;font-size: 14px;border-radius: 3px;border: 1px solid #e55e62;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center" target="_blank">Reject</a>'
+	msg = msg + '<a href=\"'+ proposal.accept_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a> '
+	msg = msg + '<a href=\"'+ proposal.reject_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #e55e62;font-size: 14px;border-radius: 3px;border: 1px solid #e55e62;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center" target="_blank">Reject</a> '
 	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t</td></tr>'
+	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
+	msg = msg + '<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
+	msg = msg + '<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
+	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t</td></tr>'
+	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
+	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
 	return msg
 
 
 
 
-def email_body_meeting_rejected_notification_to_buyer(url, proposal):
+def email_body_meeting_rejected_notification_to_buyer(proposal):
 	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_rejected_notification. """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
@@ -362,7 +367,7 @@ def email_body_meeting_rejected_notification_to_buyer(url, proposal):
 
 
 
-def email_body_meeting_rejected_notification_to_seller():
+def email_body_meeting_rejected_notification_to_seller(proposal):
 	""" generate email body (HTML).  Seller rejects proposal and receives this email; sent via ht_send_meeting_rejected_notification. """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
@@ -401,7 +406,7 @@ def email_body_meeting_rejected_notification_to_seller():
  
 
 
-def email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name, sellr_profile_id="SELLER_PROFILE_ID", msg_url="https://127.0.0.1:5000/message?profile=xxxx"):
+def email_body_appointment_confirmation_for_buyer(url, buyer_profile, sellr_profile, msg_url="https://127.0.0.1:5000/message?profile=xxxx"):
 	"""HTML email for buyer after the proposal is accepted; called from ht_send_meeting_accepted_notification """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
@@ -416,9 +421,9 @@ def email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name, s
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile_id + ' style="color:#1488CC">"' + sellr_name + '" accepted your proposal.</a><br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + ' style="color:#1488CC">"' + sellr_profile.prof_name + '" accepted your proposal.</a><br><br>'
 	msg = msg + '\t\t\t Check out the details: {Corey insert details} <br>'
-	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="'+msg_url+'" style="color:#1488CC">"' + sellr_name + '" a message.</a><br><br></font>'
+	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="'+msg_url+'" style="color:#1488CC">"' + sellr_profile.prof_name + '" a message.</a><br><br></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -454,7 +459,9 @@ def email_body_appointment_confirmation_for_buyer(url, buyer_name, sellr_name, s
 
 
 
-def email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name, buyer_profile='prof_id', msg_user_link='https://INSPRITE.co/message/USER'):
+def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile, msg_user_link='https://INSPRITE.co/message/USER'):
+	print 'email_body_appointment_confirmation_for_seller() enter'
+	print 'email_body_appointment_confirmation_for_seller() buyer_profile type ', type(buyer_profile)
 	"""HTML email for seller after accepted proposal; called from ht_send_meeting_accepted_notification """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
@@ -469,9 +476,9 @@ def email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name, 
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="https://127.0.0.1:5000/profile?' + buyer_profile + '" style="color:#1488CC">' + buyer_name + '\'s proposal.</a><br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#1488CC">' + buyer_profile.prof_name + '\'s proposal.</a><br><br>'
 	msg = msg + '\t\t\t Check out the details:<br> {Corey insert details} <br>'
-	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#1488CC"> ' + buyer_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
+	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#1488CC"> ' + buyer_profile.prof_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -488,7 +495,6 @@ def email_body_appointment_confirmation_for_seller(url, buyer_name, sellr_name, 
 	msg = msg + '\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
-
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
