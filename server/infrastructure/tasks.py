@@ -155,12 +155,15 @@ def ht_proposal_accept(prop_uuid, profile):
 		print 'ht_proposal_accept: reviews sent @ ' + reviewTime.strftime('%A, %b %d, %Y %H:%M %p')
 
 	except StateTransitionError as ste:
-		print ste
-		db_session.rollback()
+		ste_msg = 'Meeting cannot be accepted'
+		if (ste.s_cur == ste.s_nxt):
+			ste_msg = ste_msg + ', already accepted'
+		ste.update_msg(ste_msg)
+		print ste.sanitized_msg()
 		raise ste
 	except NoResourceFound as nrf:
-		print nrf
 		db_session.rollback()
+		print nrf
 		raise nrf
 	except Exception as e:
 		print type(e), e
@@ -172,7 +175,8 @@ def ht_proposal_accept(prop_uuid, profile):
 	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal.prop_uuid], eta=(remindTime))
 	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal.prop_uuid, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
-	print 'ht_proposal_accept: returning successfully'
+	print 'ht_proposal_accept: returning gracefully.'
+	return (200, 'Proposal meeting accepted')
 
 
 
@@ -181,17 +185,24 @@ def ht_proposal_accept(prop_uuid, profile):
 def ht_proposal_reject(prop_id, profile):
 	print 'ht_proposal_reject() proposal id:', prop_id, profile.prof_id
 	proposal = Proposal.get_by_id(prop_id)
-	proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
 
 	try:
+		proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
 		db_session.add(proposal)
 		db_session.commit()
+	except StateTransitionError as ste:
+		ste_msg = 'Meeting cannot be rejected'
+		if (ste.s_cur == ste.s_nxt):
+			ste_msg = ste_msg + ', already rejected'
+		ste.update_msg(ste_msg)
+		print ste.sanitized_msg()
+		raise ste
 	except Exception as e:
 		db_session.rollback()
-		print 'DB error:', type(e), e
-		raise DB_Error(e, 'Shit that\'s embarrassing')
+		print type(e), e
+		raise e
 	ht_send_meeting_rejected_notifications(proposal)
-	return (200, 'success')
+	return (200, 'Proposed meeting rejected')
 
 
 

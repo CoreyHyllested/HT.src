@@ -33,8 +33,10 @@ def ht_api_proposal_create():
 		if (proposal is not None): user_message = 'Successfully created proposal'
 	except Sanitized_Exception as se:
 		user_message = se.get_sanitized_msg()
+		print 'ht_api_proposal_create() sanitized messages',  user_message
 		return make_response(jsonify(usrmsg=user_message), se.httpRC())
 	except Exception as e:
+		print 'ht_api_proposal_create() raw exception'
 		print type(e), e
 		return make_response(jsonify(usrmsg='Something bad'), 500)
 	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
@@ -42,14 +44,14 @@ def ht_api_proposal_create():
 
 
 
-@insprite_views.route('/proposal/accept', methods=['POST'])
+@insprite_views.route('/proposal/accept', methods=['GET','POST'])
 @req_authentication
 def ht_api_proposal_accept():
 	print "ht_api_proposal_accept: enter"
 	form = ProposalActionForm(request.form)
 	p_id = request.values.get('proposal_id', None)
 	p_ch = request.values.get('proposal_challenge', None)
-#	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+#	pstr = "wants to accept proposal (%s); challenge_hash = %s" % (form.proposal_id.data, form.proposal_challenge.data)
 #	log_uevent(session['uid'], pstr)
 
 	if form.validate_on_submit():
@@ -64,15 +66,24 @@ def ht_api_proposal_accept():
 	try:
 		print "ht_api_proposal_accept: validated form. Accept proposal."
 		bp = Profile.get_by_uid(session['uid'])
-		ht_proposal_accept(p_id, bp)
+		rc, msg = ht_proposal_accept(p_id, bp)
+		print 'ht_api_proposal_accept', rc, msg
 	except Sanitized_Exception as se:
 		print "ht_api_proposal_accept: sanitized exception", se
 		return jsonify(usrmsg=se.get_sanitized_msg()), 500
+	except StateTransitionError as ste:
+		print "ht_api_proposal_accept: state transition error", ste
+		return jsonify(usrmsg=ste.sanitized_msg()), 400
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg=str(e)), 500
+
 	print "ht_api_proposal_accept: success"
+	if (request.method == 'GET'):
+		# user accepted proposal from an email.
+		if (rc == 200): session['messages'] = msg
+		return make_response(redirect(url_for('insprite.render_dashboard')))
 	return make_response(redirect('/dashboard'))
 
 
@@ -104,21 +115,20 @@ def ht_api_proposal_reject():
 		p_ch = form.proposal_challenge.data
 	elif (request.method == 'POST'):
 		# INVALID POST, attempt from /dashboard
-		print 'ht_api_reject_proposal()\tform-errors', form.errors
+		print 'ht_api_proposal_reject()\tform-errors', form.errors
 		return jsonify(usrmsg=str(form.errors)), 400
 
 	try:
 		# Attempt rejecting proposal (GET/POST)
 		bp = Profile.get_by_uid(session['uid'])
 		rc, msg = ht_proposal_reject(p_id, bp)
-		print 'ht_api_reject_proposal()\t', rc, msg
+		print 'ht_api_proposal_reject()\t', rc, msg
 	except NoProposalFound as npf:
 		print rc, msg
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
 	except StateTransitionError as ste:
-		db_session.rollback()
-		print ste, ste.get_sanitized_msg()
-		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
+		print "ht_api_proposal_reject: state transition error", ste.sanitized_msg()
+		return jsonify(usrmsg=ste.sanitized_msg()), 400
 	except DB_Error as ste:
 		db_session.rollback()
 		print ste

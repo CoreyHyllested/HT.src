@@ -38,6 +38,9 @@ class StateTransitionError(Exception):
 	def sanitized_msg(self):
 		return self.msg
 
+	def update_msg(self, msg):
+		self.msg = msg
+
 	def __str__(self):
 		return "<TransitionError(%r, %r) => %r>" % (self.uuid, self.s_cur, self.s_nxt)
 
