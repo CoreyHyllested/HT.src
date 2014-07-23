@@ -30,7 +30,7 @@ import stripe
 
 
 def ht_sanitize_errors(e, details=None):
-	msg = 'caught error: ' + str(e)
+	msg = 'caught error: ' + type(e) + ' ' +  str(e)
 	print msg
 	if (type(e) == NoResourceFound):
 		raise Sanitized_Exception(e, httpRC=400, msg=e.sanitized_msg())
@@ -107,8 +107,9 @@ def ht_proposal_create(values, uid):
 		ht_sanitize_errors(ie)
 	except StateTransitionError as ste:
 		db_session.rollback()
-		ht_sanitize_errors(ste, details=500)
+		ht_sanitize_errors(ste, details=400)
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
 		ht_sanitize_errors(e)
 		print "ht_proposal_create: returning proposal"
