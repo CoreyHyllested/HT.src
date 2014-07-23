@@ -181,35 +181,22 @@ def ht_proposal_accept(prop_uuid, uid):
 
 
 
-def ht_proposal_reject(prop_id, uid):
-	print 'received proposal id:', prop_id
-	bp = Profile.get_by_uid(uid)
+def ht_proposal_reject(prop_id, profile):
+	print 'ht_proposal_reject() proposal id:', prop_id, profile.prof_id
 	proposal = Proposal.get_by_id(prop_id)
-	proposal.set_state(APPT_STATE_REJECTED, prof_id=bp.prof_id)
+	proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
 
 	try:
 		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
 		db_session.rollback()
-		print 'DB error:', e
+		print 'DB error:', type(e), e
 		raise DB_Error(e, 'Shit that\'s embarrassing')
 	ht_send_meeting_rejected_notifications(proposal)
 	return (200, 'success')
 
 
-
-
-
-@mngr.task
-def getDBCorey(x):
-	print ('in getDBCorey' + str(x))
-	accounts = Account.query.filter_by(email=('corey.hyllested@gmail.com')).all()
-	print ('accounts = ' + str(len(accounts)))
-	if (len(accounts) == 1):
-		print str(accounts[0].userid) + ' ' + str(accounts[0].name) + ' ' + str(accounts[0].email)
-	print 'exit getDBCorey'
-	return str(accounts[0].userid) + ' ' + str(accounts[0].name) + ' ' + str(accounts[0].email)
 
 
 

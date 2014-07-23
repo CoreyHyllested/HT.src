@@ -84,20 +84,28 @@ def ht_api_proposal_negotiate():
 
 
 
-@insprite_views.route('/proposal/reject', methods=['POST'])
+@insprite_views.route('/proposal/reject', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_proposal_reject():
 	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
+	p_id = request.values.get('proposal_id', None)
+	p_ch = request.values.get('proposal_challenge', None)
+	pstr = "wants to reject proposal (%s); challenge_hash = %s" % (p_id, p_ch)
 	log_uevent(session['uid'], pstr)
 
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=str(msg)), 504
+	if form.validate_on_submit():
+		p_id = form.proposal_id.data
+		p_ch = form.proposal_challenge.data
+	elif (request.method == 'POST'):
+		# INVALID POST, attempt from /dashboard
+		print 'ht_api_reject_proposal()\tform-errors', form.errors
+		return jsonify(usrmsg=str(form.errors)), 504
 
 	try:
-		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
+		# Attempt rejecting proposal (GET/POST)
+		bp = Profile.get_by_uid(session['uid'])
+		rc, msg = ht_proposal_reject(p_id, bp)
+		print 'ht_api_reject_proposal()\t', rc, msg
 	except NoProposalFound as npf:
 		print rc, msg
 		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
@@ -110,10 +118,14 @@ def ht_api_proposal_reject():
 		print ste
 		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
-	print rc, msg
+
+	if (request.method == 'GET'):
+		# user rejected this proposal from an email.
+		if (rc == 200): session['messages'] = 'Proposal Removed'
+		return make_response(redirect(url_for('insprite.render_dashboard')))
 	return jsonify(usrmsg="Proposal Deleted"), 200
 
 
