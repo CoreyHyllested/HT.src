@@ -61,9 +61,6 @@ def render_profile(usrmsg=None):
 
 		# replace 'hp' with the actual Hero's Profile.
 		print "HP = ", hp.prof_name, hp.prof_id, hp.account
-	except NoProfileFound as nf:
-		print nf
-		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
 	except Exception as e:
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500

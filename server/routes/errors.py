@@ -36,8 +36,8 @@ def error_400_bad_request_ste(ste):
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid, asking for an invalid state transition change.'
-	print 'bad_request_ste', ste.sanitized_msg()
-	print 'bad_request_ste', ste.technical_msg()
+	print 'bad_request_ste sanitized', ste.sanitized_msg()
+	print 'bad_request_ste technical', ste.technical_msg()
 
 	# log the resource.
 	# log the transition error.
@@ -57,7 +57,6 @@ def error_400_no_resource_found(nrf):
 	print 'bad_resource_requested', nrf.technical_msg()
 
 	# log the resource.
-	# log the transition error.
 	# log the account / user / profile_id -- can only come from user with account.
 	return render_template('404.html', bp=profile), 400
 

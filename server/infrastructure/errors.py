@@ -65,25 +65,9 @@ class StateTransitionError(SanitizedException):
 
 
 
-class PermissionDenied(Exception):
-	def __init__(self, task, usr, usr_msg):
-		self.task = task
-		self.usr  = usr
-		self.msg  = usr_msg
-
-	def sanitized_msg(self):
-		return self.msg 
-
-
-	def __str__(self):
-		return "PermissionError(%s, %s, %s)" % (self.task, self.usr, self.msg)
-
-
-
-
 class NoResourceFound(SanitizedException):
 	def __init__(self, resrc, resrc_id, error_msg=None):
-		super(NoResourceFound, self).__init__(None, msg=error_msg)
+		super(NoResourceFound, self).__init__(None)
 		self.resrc		= str(resrc)
 		self.resrc_id	= resrc_id
 		self.sanitized_msg(str(resrc) + ' ' + resrc_id + ' not found.')
@@ -93,49 +77,20 @@ class NoResourceFound(SanitizedException):
 		return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
 
 
+class NoProposalFound(NoResourceFound):
+	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', pid)
 
-
-class NoOauthFound(Exception):
-	def __init__(self, uid, otype, msg=None):
-		self.uid = uid 
-		self.ot  = otype
-		self.msg = msg 
+class NoProfileFound(NoResourceFound):
+	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', pid)
 		
-	def sanitized_msg(self):
-		return self.msg 
-
-	def __str__(self):
-		return "Oauth (%s, %s) not found" % (self.uid, self.ot)
+class NoReviewFound(NoResourceFound):
+	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', rid)
 
 
-class NoProposalFound(Exception):
-	def __init__(self, p_uuid, p_from):
-		self.prop_uuid = p_uuid
-		self.prop_from = p_from
-		
-	def __str__(self):
-		return "Proposal (%s, %s) not found" % (self.prop_uuid, self.prop_from)
 
-
-class NoProfileFound(Exception):
-	def __init__(self, pid, msg):
-		self.puid = pid 
-		self.msg  = msg
-		
-	def __str__(self):
-		return "Profile %s not found, %s" % (self.puid, self.msg)
-
-class NoReviewFound(Exception):
-	def __init__(self, rid, msg):
-		self.ruid = rid 
-		self.msg  = msg
-		
-	def __str__(self):
-		return "Review (%s, %s) not found" % (self.ruid, self.msg)
-
-
-class ReviewError(Exception):
-	def __init__(self, op, exp, seen, msg):
+class ReviewError(SanitizedException):
+	def __init__(self, op, exp, seen, error_msg=None):
+		super(ReviewError, self).__init__(None, msg=error_msg)
 		self.op = op
 		self.exp = exp
 		self.seen = seen
@@ -143,12 +98,3 @@ class ReviewError(Exception):
 
 	def __str__(self):
 		return "Review error during %s.  Exp[%s/%s]" % (self.op, self.exp, self.seen)
-
-
-
-class InvalidCreditCard(Exception):
-	def __init__(self, value):
-		self.value = value
-
-	def __str__(self):
-		return repr(self.value)

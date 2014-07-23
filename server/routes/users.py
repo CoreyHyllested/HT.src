@@ -987,14 +987,10 @@ def render_review_meeting_page(review_id):
 		review_form.review_id.data = str(review_id)
 		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
-	except NoReviewFound as rnf:
-		print rnf 
+	except SanitizedException as se:
+		print se
 		db_session.rollback()
-		return jsonify(usrmsg=rnf.msg)
-	except ReviewError as re:
-		print re
-		db_session.rollback()
-		return jsonify(usrmsg=re.msg)
+		return jsonify(usrmsg=se.sanitized_msg())
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()

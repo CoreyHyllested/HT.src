@@ -131,7 +131,7 @@ def ht_proposal_accept(proposal_id, profile):
 	print 'ht_proposal_accept(' + proposal_id + ')'
 
 	proposal = Proposal.get_by_id(proposal_id)
-	if (proposal is None): raise NoResourceFound(Proposal, proposal_id)
+	if (proposal is None): raise NoProposalFound(proposal_id)
 
 	try:
 		print 'ht_proposal_accept: change state to accepted'
