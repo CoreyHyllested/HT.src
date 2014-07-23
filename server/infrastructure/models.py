@@ -662,7 +662,8 @@ class Proposal(Base):
 			if (td_hour != 0): elapsed = elapsed + ' and '
 			elapsed = elapsed + str(td_mins) + 'mins'
 		return elapsed
-	
+
+
 	def get_description_html(self):
 		description = self.prop_desc.replace('\n', '<br>')
 		return description

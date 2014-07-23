@@ -47,6 +47,8 @@ def ht_api_proposal_create():
 def ht_api_proposal_accept():
 	print "ht_api_proposal_accept: enter"
 	form = ProposalActionForm(request.form)
+	p_id = request.values.get('proposal_id', None)
+	p_ch = request.values.get('proposal_challenge', None)
 #	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
 #	log_uevent(session['uid'], pstr)
 
