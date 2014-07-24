@@ -61,7 +61,7 @@ def ht_api_meeting_accept():
 
 	if (request.method == 'GET'):
 		# user accepted proposal from an email.
-		if (rc == 200): session['messages'] = msg
+		if (resp_code == 200): session['messages'] = resp_message
 	return make_response(redirect(url_for('insprite.render_dashboard')))
 
 
