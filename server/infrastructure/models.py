@@ -612,8 +612,10 @@ class Proposal(Base):
 				error = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
 
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
+			valid = True
+			print '\tPropsoal.set_state()\tTransition from PROPOSED to ACCEPTED'
 			if (self.prop_from == prof_id):
-				error = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + uid
+				error = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + str(uid)
 			self.appt_secured = dt.utcnow()
 #		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
 #			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
@@ -634,6 +636,7 @@ class Proposal(Base):
 				error = 'Meeting already in STATE (' + str(s_cur) +  ')'
 
 		if (error or not valid):
+			print '\tPropsoal.set_state()\tTransition from PROPOSED to ACCEPTED'
 			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, error)
 
 		self.prop_state = s_nxt
