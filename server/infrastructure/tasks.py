@@ -22,24 +22,11 @@ from server.infrastructure.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from server.email	import *
-from sqlalchemy.exc import IntegrityError
 from pprint import pprint as pp
 import json, smtplib
 import stripe
 
 
-
-def ht_sanitize_errors(e, details=None):
-	msg = 'caught error: ' + type(e) + ' ' +  str(e)
-	print msg
-	if (type(e) == NoResourceFound):
-		raise SanitizedException(e, resp_code=400, msg=e.sanitized_msg())
-	elif (type(e) == ValueError):
-		raise SanitizedException(e, resp_code=400, msg="Invalid input")
-	elif (type(e) == StateTransitionError):
-		raise SanitizedException(e, resp_code=400, msg=e.sanitized_msg())
-	else:
-		raise SanitizedException(e, resp_code=400, msg=str(e))
 
 
 
@@ -97,7 +84,7 @@ def ht_meeting_create(values, uid):
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
-		ht_sanitize_errors(e)
+		ht_sanitize_error(e)
 	print "ht_meeting_create: sending notifications"
 	ht_send_meeting_proposed_notifications(proposal, ha, hp, ba, bp)
 
@@ -171,8 +158,7 @@ def ht_meeting_cancel(proposal_id, profile):
 		db_session.commit()
 	except Exception as e:
 		db_session.rollback()
-		print type(e), e
-		raise e
+		ht_sanitize_error(e)
 
 	ht_send_meeting_canceled_notifications(proposal)
 	return (200, 'Proposed meeting canceled')

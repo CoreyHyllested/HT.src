@@ -6,10 +6,6 @@ import json, smtplib
 
 
 
-#def ht_sanitize_errors(e, details=None):
-#	msg = 'caught error:' + str(e)
-#	return msg
-
 def get_account_and_profile(profile_id):
 	try:
 		p = Profile.get_by_prof_id(profile_id)

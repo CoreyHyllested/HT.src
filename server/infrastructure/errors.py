@@ -1,6 +1,23 @@
+#################################################################################
+# Copyright (C) 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 import sys
 from flask import render_template, session, request, jsonify
+from sqlalchemy.exc import IntegrityError
 from datetime import datetime as dt
+
+
 
 
 class SanitizedException(Exception):
@@ -46,6 +63,11 @@ class SanitizedException(Exception):
 		return jsonify(usrmsg=self._http_mesg), self._http_resp
 
 
+
+
+################################################################################
+### SUBCLASS EXCEPTIONS ########################################################
+################################################################################
 
 
 class StateTransitionError(SanitizedException):
@@ -102,3 +124,24 @@ class ReviewError(SanitizedException):
 
 	def __str__(self):
 		return "Review error during %s.  Exp[%s/%s]" % (self.op, self.exp, self.seen)
+
+
+
+
+################################################################################
+### EXCEPTION FUNCTIONSl #######################################################
+################################################################################
+
+def ht_sanitize_error(e, details=None):
+	msg = 'caught error: ' + type(e) + ' ' +  str(e)
+	print msg
+	if ((type(e) == NoResourceFound) or
+		(type(e) == StateTransitionError)):
+		print 'PRE-Sanitized Exception '
+		raise e
+	elif (type(e) == ValueError):
+		raise SanitizedException(e, resp_code=400, msg="Invalid input")
+	else:
+		raise SanitizedException(e, resp_code=400, msg=str(e))
+
+
