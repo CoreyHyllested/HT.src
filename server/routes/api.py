@@ -93,31 +93,25 @@ def ht_api_meeting_negotiate():
 @insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_reject():
-	form = ProposalActionForm(request.form)
+	# cannot use form to validate inputs. do manually
 	meet_id = request.values.get('proposal_id', None)
 	meet_ch = request.values.get('proposal_challenge', None)
-
-	if form.validate_on_submit():
-		meet_id = form.proposal_id.data
-		meet_ch = form.proposal_challenge.data
-	elif (request.method == 'POST'):
-		# INVALID POST, attempt from /dashboard
-		print 'ht_api_meeting_reject()\tform-errors', form.errors
-		return jsonify(usrmsg=str(form.errors)), 400
+	resp_code = 200
+	resp_message = 'Proposed meeting rejected'
 
 	try:
-		bp = Profile.get_by_uid(session['uid'])
-		rc, msg = ht_proposal_reject(meet_id, bp)
+		profile = Profile.get_by_uid(session['uid'])
+		rc, msg = ht_proposal_reject(meet_id, profile)
 	except SanitizedException as se:
 		print "ht_api_proposal_reject(): sanitized exception", se
 		return se.api_response(request.method)
 
 	print 'ht_api_meeting_reject()\t', rc, msg
 	if (request.method == 'GET'):
-		# user rejected this proposal from an email.
-		if (rc == 200): session['messages'] = 'Proposal Removed'
+		# from email, redir to /dashboard.
+		session['messages'] = resp_message
 		return make_response(redirect(url_for('insprite.render_dashboard')))
-	return jsonify(usrmsg="Proposal Deleted"), 200
+	return jsonify(usrmsg=resp_message), resp_code
 
 
 
