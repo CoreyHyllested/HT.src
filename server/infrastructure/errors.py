@@ -1,4 +1,5 @@
 import sys
+from flask import render_template, session, request, jsonify
 from datetime import datetime as dt
 
 
@@ -36,11 +37,13 @@ class SanitizedException(Exception):
 	def http_response(self, method):
 		pass
 
+
 	def api_response(self, method):
 		# allow route/errors to catch and render HTML page
 		if (method == 'GET'): raise self
 
 		# POSTed from Web-Client, respond with JSON Error Mesg.
+		print 'api_response = POST : resp(' + self._http_resp) + ') : ' + self._http_mesg
 		return jsonify(usrmsg=self._http_mesg), self._http_resp
 
 
