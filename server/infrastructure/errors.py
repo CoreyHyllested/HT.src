@@ -12,7 +12,7 @@
 #################################################################################
 
 
-import sys
+import sys, traceback
 from flask import render_template, session, request, jsonify
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime as dt
@@ -129,7 +129,7 @@ class ReviewError(SanitizedException):
 
 
 ################################################################################
-### EXCEPTION FUNCTIONSl #######################################################
+### EXCEPTION FUNCTIONS ########################################################
 ################################################################################
 
 def ht_sanitize_error(error, details=None, reraise=True):
@@ -141,7 +141,11 @@ def ht_sanitize_error(error, details=None, reraise=True):
 	elif (type(error) == ValueError):
 		e = SanitizedException(error, resp_code=400, msg="Invalid input")
 	else:
+		print 'ht_sanitize_error()\tcreating SE from ' + str(type(error))
 		e = SanitizedException(error, resp_code=400, msg=str(error))
 
 	if (reraise): raise e
+	else:
+		print 'ht_sanitize_error() traceback\n', traceback.format_exc()
+		print 'ht_sanitize_error() exec_info\n', sys.exc_info()[0]
 
