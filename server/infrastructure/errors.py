@@ -5,7 +5,6 @@ from datetime import datetime as dt
 
 class SanitizedException(Exception):
 	def __init__(self, error, resp_code=400, msg=None):
-		print 'SanitzedExeption()\t set exception to str() ' + str(error)
 		self._exception = error
 		self._http_resp = resp_code
 		self._http_next = None
@@ -43,7 +42,7 @@ class SanitizedException(Exception):
 		if (method == 'GET'): raise self
 
 		# POSTed from Web-Client, respond with JSON Error Mesg.
-		print 'api_response = POST : resp(' + self._http_resp + ') : ' + self._http_mesg
+		print 'api_response = POST : resp(' + str(self._http_resp) + ') : ' + str(self._http_mesg)
 		return jsonify(usrmsg=self._http_mesg), self._http_resp
 
 
@@ -51,14 +50,15 @@ class SanitizedException(Exception):
 
 class StateTransitionError(SanitizedException):
 	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, error_msg=None):
-		print 'StateTransitionError()\tcreating'
+		#print 'StateTransitionError()\tcreating'
 		super(StateTransitionError, self).__init__(None, msg=error_msg)
 		self.resrc		= str(resrc)
 		self.resrc_id	= resrc_id
 		self.state_cur	= state_cur
 		self.state_nxt	= state_nxt
 		self.flags	= flags
-		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + error_msg)
+		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + str(error_msg))
+		#print 'StateTransitionError()\tcompleting'
 
 	def __str__(self):
 		return "<TransitionError(%r, %r) => %r>" % (self.resrc_id, self.state_cur, self.state_nxt)
