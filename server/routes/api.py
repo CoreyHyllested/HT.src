@@ -41,10 +41,10 @@ def ht_api_meeting_create():
 
 
 
-@insprite_views.route('/proposal/accept', methods=['GET','POST'])
+@insprite_views.route('/meeting/accept', methods=['GET','POST'])
 @req_authentication
-def ht_api_proposal_accept():
-	print "ht_api_proposal_accept: enter"
+def ht_api_meeting_accept():
+	print "ht_api_meeting_accept: enter"
 	form = ProposalActionForm(request.form)
 	p_id = request.values.get('proposal_id', None)
 	p_ch = request.values.get('proposal_challenge', None)
@@ -54,23 +54,23 @@ def ht_api_proposal_accept():
 		p_ch = form.proposal_challenge.data
 	elif (request.method == 'POST'):
 		# INVALID POST, attempt from /dashboard
-		print 'ht_api_proposal_accept()\tform-errors', form.errors
+		print 'ht_api_meeting_accept()\tform-errors', form.errors
 		return jsonify(usrmsg=str(form.errors)), 400
 
 
 	try:
-		print "ht_api_proposal_accept: validated form. Accept proposal."
+		print "ht_api_meeting_accept: validated form. Accept proposal."
 		bp = Profile.get_by_uid(session['uid'])
 		rc, msg = ht_proposal_accept(p_id, bp)
 	except SanitizedException as se:
-		print "ht_api_proposal_accept: sanitized exception", se
+		print "ht_api_meeting_accept: sanitized exception", se
 		return se.api_response(request.method)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg=str(e)), 500
 
-	print 'ht_api_proposal_accept', rc, msg
+	print 'ht_api_meeting_accept', rc, msg
 	if (request.method == 'GET'):
 		# user accepted proposal from an email.
 		if (rc == 200): session['messages'] = msg

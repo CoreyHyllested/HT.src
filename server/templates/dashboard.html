@@ -239,15 +239,14 @@ $(document).ready(function() {
     $('.offerAccept').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
-        var csrf = "{{ csrf_token() }}";
 
         var fd = new FormData();
         fd.append('proposal_id', id);
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', "/proposal/accept", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.open('post', "/meeting/accept", true);
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
 		xhr.send(fd);
 		console.log('sent');
 
