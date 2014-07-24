@@ -243,7 +243,6 @@ $(document).ready(function() {
 
         var fd = new FormData();
         fd.append('proposal_id', id);
-        fd.append('proposal_stat', 'accept');
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
@@ -261,16 +260,11 @@ $(document).ready(function() {
 					window.location.href="/dashboard";
                 } else if (this.status == 400) {
                     msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=400 ', e]);
+                    console.log(['xhr post complete, err=400', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else if (this.status == 500) {
                     msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 501) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=501 ', e]);
-                    msg = JSON.parse(xhr.responseText);
+                    console.log(['xhr post complete, err=500', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else {
                     msg = JSON.parse(xhr.responseText);
@@ -286,7 +280,6 @@ $(document).ready(function() {
    $('.offerCancel').click(function () {
         var id = this.id;
         var ch = $(this).attr("ch");
-        var csrf = "{{ csrf_token() }}";
 		var sid = "#appt-" + id;
 
         var fd = new FormData();
@@ -294,11 +287,11 @@ $(document).ready(function() {
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', "/meeting/cancel", true);
-        xhr.setRequestHeader("X-CSRFToken", csrf);
+        xhr.open('POST', "/meeting/cancel", true);
+        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
         xhr.send(fd);
 
-        //catch response.  make any modificaitons.
+        //catch response. make modificaitons.
         xhr.onreadystatechange = function(e) {
             if (4 == this.readyState) {
                 if (this.status == 200) {
@@ -307,17 +300,15 @@ $(document).ready(function() {
 					$(sid).remove();
 
 					msg = JSON.parse(xhr.responseText);
-					openAlertWindow('Success.\n' + msg['usrmsg']);
+					openAlertWindow(msg['usrmsg']);
                 } else if (this.status == 400) {
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=400', e]);
+					msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure:' + ' ' + msg['usrmsg']);
                 } else if (this.status == 500) {
-                    console.log(['xhr post complete, err=500 ', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 501) {
-                    console.log(['xhr post complete, err=501 ', e]);
-                    msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                    console.log(['xhr post complete, err=500', e]);
+					msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure:' + ' ' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=?? ', this.status,  e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
@@ -348,13 +339,10 @@ $(document).ready(function() {
                 if (this.status == 200) {
                     console.log(['xhr post complete', e]);
                     console.log(xhr.responseText);
-                    openAlertWindow('Success.\n' + msg['usrmsg']);
+                    openAlertWindow(msg['usrmsg']);
                     $('#'+id).remove();
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500', e]);
-                    openAlertWindow('Failure:' + msg['usrmsg']);
-                } else if (this.status == 501) {
-                    console.log(['xhr post complete, err=501', e]);
                     openAlertWindow('Failure:' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=??', this.status,  e]);
