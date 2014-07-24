@@ -90,34 +90,29 @@ def ht_api_meeting_negotiate():
 
 
 
-@insprite_views.route('/proposal/reject', methods=['GET', 'POST'])
+@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
 @req_authentication
-def ht_api_proposal_reject():
+def ht_api_meeting_reject():
 	form = ProposalActionForm(request.form)
-	p_id = request.values.get('proposal_id', None)
-	p_ch = request.values.get('proposal_challenge', None)
+	meet_id = request.values.get('proposal_id', None)
+	meet_ch = request.values.get('proposal_challenge', None)
 
 	if form.validate_on_submit():
-		p_id = form.proposal_id.data
-		p_ch = form.proposal_challenge.data
+		meet_id = form.proposal_id.data
+		meet_ch = form.proposal_challenge.data
 	elif (request.method == 'POST'):
 		# INVALID POST, attempt from /dashboard
-		print 'ht_api_proposal_reject()\tform-errors', form.errors
+		print 'ht_api_meeting_reject()\tform-errors', form.errors
 		return jsonify(usrmsg=str(form.errors)), 400
 
 	try:
-		# Attempt rejecting proposal (GET/POST)
 		bp = Profile.get_by_uid(session['uid'])
-		rc, msg = ht_proposal_reject(p_id, bp)
+		rc, msg = ht_proposal_reject(meet_id, bp)
 	except SanitizedException as se:
 		print "ht_api_proposal_reject(): sanitized exception", se
 		return se.api_response(request.method)
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 400
 
-	print 'ht_api_proposal_reject()\t', rc, msg
+	print 'ht_api_meeting_reject()\t', rc, msg
 	if (request.method == 'GET'):
 		# user rejected this proposal from an email.
 		if (rc == 200): session['messages'] = 'Proposal Removed'

@@ -328,7 +328,7 @@ $(document).ready(function() {
         fd.append('proposal_challenge', ch);
 
         var xhr = new XMLHttpRequest();
-        xhr.open('post', "/proposal/reject", true);
+        xhr.open('post', "/meeting/reject", true);
         xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
         xhr.send(fd);
 
