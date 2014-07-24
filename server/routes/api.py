@@ -131,6 +131,8 @@ def ht_api_proposal_reject():
 @req_authentication
 def ht_api_meeting_cancel():
 	form = ProposalActionForm(request.form)
+	resp_code = 200
+	resp_message = 'Successfully canceled meeting'
 
 	if form.validate_on_submit():
 		meet_id = form.proposal_id.data
@@ -143,11 +145,11 @@ def ht_api_meeting_cancel():
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		rc, msg = ht_meeting_cancel(meet_id, bp)
+		ht_meeting_cancel(meet_id, bp)
 	except SanitizedException as se:
 		print "ht_api_meeting_cancel()\t EXCEPTION", se
 		return se.api_response(request.method)
-	return jsonify(usrmsg=msg), rc
+	return jsonify(usrmsg=resp_message), resp_code
 
 
 
