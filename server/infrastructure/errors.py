@@ -132,16 +132,16 @@ class ReviewError(SanitizedException):
 ### EXCEPTION FUNCTIONSl #######################################################
 ################################################################################
 
-def ht_sanitize_error(e, details=None):
-	msg = 'caught error: ' + type(e) + ' ' +  str(e)
-	print msg
-	if ((type(e) == NoResourceFound) or
-		(type(e) == StateTransitionError)):
+def ht_sanitize_error(error, details=None, reraise=True):
+	print 'ht_sanitize_error()\t' + str(type(error)) + ' ' +  str(error)
+	if ((type(error) == NoResourceFound) or
+		(type(error) == StateTransitionError)):
 		print 'PRE-Sanitized Exception '
-		raise e
-	elif (type(e) == ValueError):
-		raise SanitizedException(e, resp_code=400, msg="Invalid input")
+		e = error
+	elif (type(error) == ValueError):
+		e = SanitizedException(error, resp_code=400, msg="Invalid input")
 	else:
-		raise SanitizedException(e, resp_code=400, msg=str(e))
+		e = SanitizedException(error, resp_code=400, msg=str(error))
 
+	if (reraise): raise e
 
