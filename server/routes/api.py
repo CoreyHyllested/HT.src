@@ -101,14 +101,14 @@ def ht_api_meeting_reject():
 
 	try:
 		profile = Profile.get_by_uid(session['uid'])
-		rc, msg = ht_proposal_reject(meet_id, profile)
+		ht_meeting_reject(meet_id, profile)
+		print 'ht_api_meeting_reject()\tsuccess'
 	except SanitizedException as se:
 		print "ht_api_proposal_reject(): sanitized exception", se
 		return se.api_response(request.method)
 
-	print 'ht_api_meeting_reject()\t', rc, msg
 	if (request.method == 'GET'):
-		# from email, redir to /dashboard.
+		# from email, send to /dashboard.
 		session['messages'] = resp_message
 		return make_response(redirect(url_for('insprite.render_dashboard')))
 	return jsonify(usrmsg=resp_message), resp_code

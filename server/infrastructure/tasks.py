@@ -166,11 +166,11 @@ def ht_meeting_cancel(proposal_id, profile):
 
 
 
-def ht_proposal_reject(proposal_id, profile):
-	print 'ht_proposal_reject() proposal id:', proposal_id, profile.prof_id
+def ht_meeting_reject(meet_id, profile):
+	print 'ht_meeting_reject(' +  meet_id + ')', profile.prof_id
 
-	proposal = Proposal.get_by_id(proposal_id)
-	if (proposal is None): raise NoMeetingFound(proposal_id)
+	proposal = Proposal.get_by_id(meet_id)
+	if (proposal is None): raise NoMeetingFound(meet_id)
 
 	try:
 		proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
