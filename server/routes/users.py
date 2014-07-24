@@ -951,7 +951,7 @@ def render_schedule_page():
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_SECRET'], errmsg=usrmsg))
 
 
 

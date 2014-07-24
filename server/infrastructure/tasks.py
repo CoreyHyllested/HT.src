@@ -39,25 +39,24 @@ def ht_sanitize_errors(e, details=None):
 	elif (type(e) == StateTransitionError):
 		raise SanitizedException(e, resp_code=400, msg=e.sanitized_msg())
 	else:
-		raise e
+		raise SanitizedException(e, resp_code=400, msg=str(e))
 
 
 
 
-def ht_proposal_create(values, uid):
-	""" Creates a Proposal
-		returns	on success: Proposal
-		returns	on failure: Exception
+def ht_meeting_create(values, uid):
+	""" Creates a PROPOSED MEETING
+		Raises Exception
 	"""
 
-	print 'ht_proposal_create: enter()'
+	print 'ht_meeting_create: enter()'
 	#	Stripe fields should be validated.
 	#	v1 - end time is reasonable (after start time)
 	#	v2 - hero exists.
 	#	v3 - place doesn't matter as much..
 	#	v4 - cost..
 	try:
-		print 'ht_proposal_create: validate input'
+		print 'ht_meeting_create: validate input'
 		stripe_tokn = values.get('stripe_tokn')		# used to charge
 		stripe_card = values.get('stripe_card')		# card to add to insprite_customer.
 		stripe_cust = values.get('stripe_cust')
@@ -79,41 +78,29 @@ def ht_proposal_create(values, uid):
 		# convert to user's local TimeZone.
 		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
 		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
-	except Exception as e:
-		print type(e), e
-		ht_sanitize_errors(e)
 
-	print 'ht_proposal_create: (from stripe) token =', stripe_tokn, 'card =', stripe_card, 'cust =', stripe_cust
 
-	try:
-		# raises (No<Resrc>Found errors)
+		print 'ht_meeting_create: (from stripe) token =', stripe_tokn, 'card =', stripe_card, 'cust =', stripe_cust
 		hp	= Profile.get_by_prof_id(prop_hero)
 		bp	= Profile.get_by_uid(uid)
 		ba  = Account.get_by_uid(uid)
 		ha  = Account.get_by_uid(hp.account)
-		print 'ht_proposal_create: lookup buyer\'s stripe customer id'
+		print 'ht_meeting_create: lookup buyer\'s stripe customer id'
 		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
-		print "ht_proposal_create:", bp.prof_name, ':', stripe_cust
+		print "ht_meeting_create:", bp.prof_name, ':', stripe_cust
 
 		proposal = Proposal(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
-		print "ht_proposal_create: successfully created proposal"
+		print "ht_meeting_create: successfully created proposal"
 		db_session.add(proposal)
 		db_session.commit()		 # raises IntegrityError
-		print "ht_proposal_create: successfully committed proposal"
-	except NoResourceFound as npf:
-		ht_sanitize_errors(npf)
-	except IntegrityError as ie:	#TODO: add to ht_sanitize
-		db_session.rollback()
-		ht_sanitize_errors(ie)
+		print "ht_meeting_create: successfully committed proposal"
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 		ht_sanitize_errors(e)
-		print "ht_proposal_create: returning proposal"
-
+	print "ht_meeting_create: sending notifications"
 	ht_send_meeting_proposed_notifications(proposal, ha, hp, ba, bp)
-	print "ht_proposal_create: emailed proposal information"
-	return proposal
+
 
 
 
