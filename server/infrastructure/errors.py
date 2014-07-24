@@ -49,8 +49,6 @@ class SanitizedException(Exception):
 
 
 
-
-
 class StateTransitionError(SanitizedException):
 	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, error_msg=None):
 		print 'StateTransitionError()\tcreating'
