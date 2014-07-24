@@ -43,7 +43,7 @@ class SanitizedException(Exception):
 		if (method == 'GET'): raise self
 
 		# POSTed from Web-Client, respond with JSON Error Mesg.
-		print 'api_response = POST : resp(' + self._http_resp) + ') : ' + self._http_mesg
+		print 'api_response = POST : resp(' + self._http_resp + ') : ' + self._http_mesg
 		return jsonify(usrmsg=self._http_mesg), self._http_resp
 
 
