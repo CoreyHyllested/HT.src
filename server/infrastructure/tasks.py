@@ -77,11 +77,11 @@ def ht_meeting_create(values, uid):
 		print "ht_meeting_create:", bp.prof_name, ':', stripe_cust
 
 		proposal = Proposal(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_place), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
-		print "ht_meeting_create: successfully created proposal"
 		db_session.add(proposal)
-		db_session.commit()		 # raises IntegrityError
+		db_session.commit()
 		print "ht_meeting_create: successfully committed proposal"
 	except Exception as e:
+		# IntegrityError, from commit()
 		print type(e), e
 		db_session.rollback()
 		ht_sanitize_error(e)
@@ -107,13 +107,11 @@ def ht_meeting_accept(proposal_id, profile):
 	if (proposal is None): raise NoMeetingFound(proposal_id)
 
 	try:
-		print 'ht_meeting_accept: change state to accepted'
 		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
-		# throws StateTransitionError
 		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
-		print type(e), e
+		# catches StateTransitionError
 		db_session.rollback()
 		ht_sanitize_error(e)
 
@@ -144,10 +142,10 @@ def ht_meeting_cancel(proposal_id, profile):
 
 	try:
 		proposal.set_state(APPT_STATE_CANCELED, prof_id=profile.prof_id)
-		# throws StateTransitionError
 		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
+		# catches StateTransitionError
 		db_session.rollback()
 		ht_sanitize_error(e)
 
@@ -165,13 +163,12 @@ def ht_meeting_reject(meet_id, profile):
 
 	try:
 		proposal.set_state(APPT_STATE_REJECTED, prof_id=profile.prof_id)
-		# throws StateTransitionError
 		db_session.add(proposal)
 		db_session.commit()
 	except Exception as e:
+		# catches StateTransitionError
 		db_session.rollback()
-		print type(e), e
-		raise e
+		ht_sanitize_error(e)
 
 	ht_send_meeting_rejected_notifications(proposal)
 	return (200, 'Proposed meeting rejected')

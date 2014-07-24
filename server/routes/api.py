@@ -107,18 +107,11 @@ def ht_api_meeting_reject():
 @insprite_views.route('/meeting/cancel', methods=['POST'])
 @req_authentication
 def ht_api_meeting_cancel():
-	form = ProposalActionForm(request.form)
+	# cannot use form to validate inputs. do manually
+	meet_id = request.values.get('proposal_id', None)
+	meet_ch = request.values.get('proposal_challenge', None)
 	resp_code = 200
 	resp_message = 'Canceled meeting.'
-
-	if form.validate_on_submit():
-		meet_id = form.proposal_id.data
-		meet_ch = form.proposal_challenge.data
-	elif (request.method == 'POST'):
-		# INVALID POST attempted from /dashboard
-		print 'ht_api_meeting_cancel()\t form-errors', form.errors
-		return jsonify(usrmsg=str(form.errors)), 400
-
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
