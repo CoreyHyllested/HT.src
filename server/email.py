@@ -157,21 +157,24 @@ def ht_send_meeting_rejected_notifications(proposal):
 
 def ht_send_meeting_accepted_notification(proposal):
 	""" email proposal accepted emails to both buyer and seller."""
-	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
-	sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
-	buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
-	print 'sending proposal-accepted emails @ ' + proposal.get_prop_ts().strftime('%A, %b %d, %Y -- %H:%M %p')
+	try:
+		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
+		sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
+		buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 
-	sellr_html = email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile)
-	sellr_msg = create_msg('You accepted "' + buyer_name + 's proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
-	sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
-	ht_send_email(sellr_email_addr, sellr_msg)
+		sellr_html = email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile)
+		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+		sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
+		ht_send_email(sellr_email_addr, sellr_msg)
 
-	# email buyer that seller accepted their proposal.
-	buyer_html = email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile)
-	buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
-	buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
-	ht_send_email(buyer_email_addr, buyer_msg)
+		# email buyer that seller accepted their proposal.
+		buyer_html = email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile)
+		buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+		buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
+		ht_send_email(buyer_email_addr, buyer_msg)
+	except Exception as e:
+		# emails are not critical, swallow.
+		ht_sanitize_error(e, reraise=False)
 
 
 
