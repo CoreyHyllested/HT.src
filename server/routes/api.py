@@ -22,24 +22,21 @@ from . import insprite_views
 
 
 
-@insprite_views.route('/proposal/create', methods=['POST'])
+@insprite_views.route('/meeting/create', methods=['POST'])
 @req_authentication
-def ht_api_proposal_create():
-	user_message = 'Interesting'
+def ht_api_meeting_create():
+	print 'ht_api_meeting_create()'
+	resp_message = 'Meeting proposal created'
+	resp_code = 200
 
 	try:
-		print 'ht_api_proposal_create'
-		proposal = ht_proposal_create(request.values, session['uid'])
-		if (proposal is not None): user_message = 'Successfully created proposal'
+		ht_meeting_create(request.values, session['uid'])
 	except SanitizedException as se:
-		user_message = se.get_sanitized_msg()
-		print 'ht_api_proposal_create() sanitized messages',  user_message
-		return make_response(jsonify(usrmsg=user_message), se.http_resp_code())
-	except Exception as e:
-		print 'ht_api_proposal_create() raw exception'
-		print type(e), e
-		return make_response(jsonify(usrmsg='Something bad'), 500)
-	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
+		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
+		#resp_message = se.sanitized_msg()
+		return se.api_response(request.method)
+
+	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
 

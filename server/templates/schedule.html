@@ -167,7 +167,7 @@ $(document).ready(function() {
 			console.log('time = ' + $time);
 			console.log('cost = ' + $cost);
 
-			$.ajax({ url	: "/proposal/create",
+			$.ajax({ url	: "/meeting/create",
 					type	: "POST",
 					data	: fd,
 					success : function(data) {
@@ -185,7 +185,7 @@ $(document).ready(function() {
 		};
 
 		StripeCheckout.open({
-			key: 'pk_test_d3gRvdhkXhLBS3ABhRPhOort',
+			key: '{{ STRIPE_PK }}',
 			amount:      $cost,
 			address:     true,
 			description: "You'll be charged after the meeting.",
