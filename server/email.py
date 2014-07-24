@@ -192,7 +192,7 @@ def ht_send_meeting_canceled_notifications(proposal):
 		else:
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
-			sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, proposal.prop_cost)
+			sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, str(proposal.prop_cost))
 
 		# email seller that meeting has been canceled.
 		print 'ht_send_meeting_canceled_notifications\t create seller_msg'
@@ -204,7 +204,7 @@ def ht_send_meeting_canceled_notifications(proposal):
 		print 'ht_send_meeting_canceled_notifications\t create buyer_path html'
 		if (dt.utcnow() - proposal.prop_ts.replace(tzinfo=None) < timedelta(hours=24)):
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 24 hours'
-			buyer_html = email_body_cancellation_from_buyer_within_24_hours(sellr_name, proposal.prop_cost)
+			buyer_html = email_body_cancellation_from_buyer_within_24_hours(sellr_name, str(proposal.prop_cost))
 		else:
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in > 24 hours'
 			buyer_html = email_body_cancellation_from_buyer_outside_24_hours (buyer_name, sellr_name)

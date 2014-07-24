@@ -605,7 +605,7 @@ def email_body_cancellation_from_buyer_within_24_hours(sellr_name, cost):
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> You cancelled the appointment with <a href="#" style="color:#29abe1">' + sellr_name + '</a>.<br><br>'
-	msg = msg + '\t\t\t We know life can be busy, but we also value accountability within the community and adhere to a <a href="#" style="color:#29abe1">24-hour cancellation policy</a>. You will be charged <a href="#" style="color:#29abe1">$' + cost + '</a> for the service. <br><br>'
+	msg = msg + '\t\t\t We know life can be busy, but we also value accountability within the community and adhere to a <a href="#" style="color:#29abe1">24-hour cancellation policy</a>. You will be charged <a href="#" style="color:#29abe1">$' + str(cost) + '</a> for the service. <br><br>'
 	msg = msg + '\t\t\t Questions? <a href="#" style="color:#29abe1">Drop us a line</a> or read our <a href="#" style="color:#29abe1">Terms of Service</a> and <a href="#" style="color:#29abe1">cancellation policies</a> for additional information. </font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
@@ -644,7 +644,7 @@ def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, cos
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#29abe1"> ' + buyer_name + ' </a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Sometimes things come up in life, but your time and talent are still valuable. You\'ll receive {insert fee} from ' + buyer_name + ' for the cancelled booking.</font><br><br>'
+	msg = msg + '\t\t\t Sometimes things come up in life, but your time and talent are still valuable. You\'ll receive '+ str(cost) +' from ' + buyer_name + ' for the cancelled booking.</font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
