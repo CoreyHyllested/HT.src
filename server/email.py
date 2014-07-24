@@ -200,7 +200,7 @@ def ht_send_meeting_canceled_notifications(proposal):
 
 	# email buyer that meeting has been canceled.
 	print 'ht_send_meeting_canceled_notifications\t create buyer_path html'
-	if (dt.utcnow() - proposal.get_prop_ts() < timedelta(hours=24)):
+	if (dt.utcnow() - proposal.prop_ts.replace(tzinfo=None) < timedelta(hours=24)):
 		print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 24 hours'
 		buyer_html = email_body_cancellation_from_buyer_within_24_hours()
 	else:
