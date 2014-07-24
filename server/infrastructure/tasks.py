@@ -149,7 +149,7 @@ def ht_proposal_accept(proposal_id, profile):
 
 	reminder1 = ht_send_meeting_reminder.apply_async(args=[ba.email, bp.prof_name, proposal_id], eta=remindTime)
 	reminder2 = ht_send_meeting_reminder.apply_async(args=[ha.email, hp.prof_name, proposal_id], eta=remindTime)
-	ht_charge_creditcard(args=[proposal_id, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
+	ht_charge_creditcard.apply_async(args=[proposal_id, ba.email, bp.prof_name.encode('utf8', 'ignore'), stripe_card, proposal.charge_customer_id, proposal.prop_cost], eta=chargeTime)
 	ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(reviewTime))
 
 	ht_send_meeting_accepted_notification(proposal)
