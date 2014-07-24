@@ -133,28 +133,21 @@ def ht_api_meeting_cancel():
 	form = ProposalActionForm(request.form)
 
 	if form.validate_on_submit():
-		p_id = form.proposal_id.data
-		p_ch = form.proposal_challenge.data
+		meet_id = form.proposal_id.data
+		meet_ch = form.proposal_challenge.data
 	elif (request.method == 'POST'):
 		# INVALID POST attempted from /dashboard
-		print 'ht_api_meeting_cancel()\tform-errors', form.errors
+		print 'ht_api_meeting_cancel()\t form-errors', form.errors
 		return jsonify(usrmsg=str(form.errors)), 400
 
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
-		rc, msg = ht_meeting_cancel(p_id, bp)
+		rc, msg = ht_meeting_cancel(meet_id, bp)
 	except SanitizedException as se:
-		print "ht_api_meeting_cancel(): sanitized exception", se
+		print "ht_api_meeting_cancel()\t EXCEPTION", se
 		return se.api_response(request.method)
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-		return jsonify(usrmsg='Bizarre, something failed'), 400
-
 	return jsonify(usrmsg=msg), rc
-
-
 
 
 
