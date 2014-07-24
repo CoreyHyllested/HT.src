@@ -324,26 +324,36 @@ def email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_p
 
 
 
-def email_body_meeting_rejected_notification_to_buyer(proposal):
-	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_rejected_notification. """
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
-	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '<tbody>'
+def email_body_meeting_rejected_notification_to_buyer(proposal, sellr_name):
+	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_rejected_notifications. """
+	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody>\n\t<tr>\n\t\t<td align="center" valign="top"></td>\n\t</tr>\n</tbody>\n</table>\n\n'
 
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</tbody>'
-	msg = msg + '</table>'
+	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">'
+	msg = msg + '\n<tbody>'
+	msg = msg + '\n\t<tr>'
 
-	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> {insert hero_name} didn\'t accept your proposal this time around.<br><br>'
-	msg = msg + '\t\t\t Why, you ask? There could be many reasons, but trust us, don\'t take it personally. <br><br>'
-	msg = msg + '\t\t\t Need to edit, manage or update the appointment? Go for it, or follow up with {insert hero_name} </font><br><br>'
-	msg = msg + '\t</td></tr>'
-	msg = msg + '</table>'
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
+	msg = msg + '\n\t\t\t<tbody>'
+
+	msg = msg + '\n\t\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
+	msg = msg + '\n\t\t\t\t\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\n\t\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t\t</tr>'
+	msg = msg + '\n\t\t\t</tbody>'
+	msg = msg + '\n\t\t</table>'
+
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
+	msg = msg + '\n\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
+	msg = msg + '\n\t\t\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
+	msg = msg + '\n\t\t\t\t\t\t' + sellr_name + ' didn\'t accept your proposal this time around.<br><br>'
+	msg = msg + '\n\t\t\t\t\t\tWhy, you ask? There could be many reasons, but trust us, don\'t take it personally. <br><br>'
+	msg = msg + '\n\t\t\t\t\t\tNeed to edit, manage or update the appointment? Go for it, or follow up with ' + sellr_name + '.'
+	msg = msg + '\n\t\t\t\t\t</font><br><br>'
+	msg = msg + '\n\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t</tr>'
+	msg = msg + '\n\t\t</table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
@@ -377,45 +387,55 @@ def email_body_meeting_rejected_notification_to_buyer(proposal):
 
 
 def email_body_meeting_rejected_notification_to_seller(proposal, buyer_name, buyer_prof_id):
-	""" generate email body (HTML).  Seller rejects proposal and receives this email; sent via ht_send_meeting_rejected_notification. """
-	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody><tr><td align="center" valign="top">\n</td></tr></tbody>\n</table>'
+	""" generate email body (HTML).  Seller rejects proposal and receives this email; sent via ht_send_meeting_rejected_notifications. """
+	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody>\n\t<tr>\n\t\t<td align="center" valign="top">\n\t\t</td>\n\t</tr>\n</tbody>\n</table>\n\n'
 
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">'
-	msg = msg + '\t<tbody><tr>'
+	msg = msg + '\n<tbody>'
+	msg = msg + '\n\t<tr>'
 
-	msg = msg + '\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
-	msg = msg + '\t\t\t<tbody>'
-	msg = msg + '\t\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
-	msg = msg + '\t\t\t\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
-	msg = msg + '\t\t\t\t</td></tr>'
-	msg = msg + '\t\t\t</tbody>'
-	msg = msg + '\t\t</table>'
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
+	msg = msg + '\n\t\t\t<tbody>'
+	msg = msg + '\n\t\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #e6e6e6; border-bottom: 10px solid #FFFFFF; padding-top:75px; padding-left:58px" align="center" valign="middle">'
+	msg = msg + '\n\t\t\t\t\t\t<a href="https://insprite.co"><img src="http://ryanfbaker.com/insprite/inspriteLogoA.png" border="0" alt="Insprite" align="center" width="200px" height="55px" /></a>'
+	msg = msg + '\n\t\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t\t</tr>'
+	msg = msg + '\n\t\t\t</tbody>'
+	msg = msg + '\n\t\t</table>'
 
-	msg = msg + '\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
-	msg = msg + '\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
-	msg = msg + '\t\t\t\t\tYou did not accept a proposal from <a href=\"https://127.0.0.1:5000/profile?hero=\"' + buyer_prof_id + ' style="color:#29abe1">' + buyer_name + '</a>.<br><br>'
-	msg = msg + '\t\t\t\t\tMessage <a href="#" style="color:#29abe1">' + buyer_name + '</a> to see if you can work our a new date and time.'
-	msg = msg + '\t\t\t\t</font><br><br>'
-	msg = msg + '\t\t\t</td></tr>'
-	msg = msg + '\t\t</table>'
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
+	msg = msg + '\n\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
+	msg = msg + '\n\t\t\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
+	msg = msg + '\n\t\t\t\t\t\tYou did not accept a proposal from <a href=\"https://127.0.0.1:5000/profile?hero=\"' + buyer_prof_id + ' style="color:#29abe1">' + buyer_name + '</a>.<br><br>'
+	msg = msg + '\n\t\t\t\t\t\tMessage <a href="#" style="color:#29abe1">' + buyer_name + '</a> to see if you can work our a new date and time.'
+	msg = msg + '\n\t\t\t\t\t</font><br><br>'
+	msg = msg + '\n\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t</tr>'
+	msg = msg + '\n\t\t</table>'
 
-	msg = msg + '\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
-	msg = msg + '\t\t\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
-	msg = msg + '\t\t\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
-	msg = msg + '\t\t\t</td></tr>'
-	msg = msg + '\t\t</table>'
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\n\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\n\t\t\t\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/facebookIcon.png">'
+	msg = msg + '\n\t\t\t\t\t<img style="padding-right: 6px" src="http://ryanfbaker.com/insprite/twitterIcon.png">'
+	msg = msg + '\n\t\t\t\t\t<img src="http://ryanfbaker.com/insprite/instagramIcon.png">'
+	msg = msg + '\n\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t</tr>'
+	msg = msg + '\n\t\t</table>'
 
-	msg = msg + '\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
-	msg = msg + '\t\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '\t\t\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
-	msg = msg + '\t\t\t</td></tr>'
-	msg = msg + '\t\t</table>'
+	msg = msg + '\n\t\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
+	msg = msg + '\n\t\t\t<tr>'
+	msg = msg + '\n\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 5px solid #FFFFFF;" align="center" valign="middle">'
+	msg = msg + '\n\t\t\t\t\t<img src="http://ryanfbaker.com/insprite/spacer-2.png">'
+	msg = msg + '\n\t\t\t\t</td>'
+	msg = msg + '\n\t\t\t</tr>'
+	msg = msg + '\n\t\t</table>'
 
-	msg = msg + '\t</tr></tbody>'
-	msg = msg + '\t</table>'
+	msg = msg + '\n\t</tr>'
+	msg = msg + '\n</tbody>'
+	msg = msg + '</table>'
 	return msg
 
 

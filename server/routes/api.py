@@ -97,7 +97,7 @@ def ht_api_meeting_reject():
 	meet_id = request.values.get('proposal_id', None)
 	meet_ch = request.values.get('proposal_challenge', None)
 	resp_code = 200
-	resp_message = 'Proposed meeting rejected'
+	resp_message = 'Proposed meeting rejected.'
 
 	try:
 		profile = Profile.get_by_uid(session['uid'])
@@ -121,7 +121,7 @@ def ht_api_meeting_reject():
 def ht_api_meeting_cancel():
 	form = ProposalActionForm(request.form)
 	resp_code = 200
-	resp_message = 'Successfully canceled meeting'
+	resp_message = 'Canceled meeting.'
 
 	if form.validate_on_submit():
 		meet_id = form.proposal_id.data

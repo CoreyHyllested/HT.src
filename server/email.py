@@ -137,7 +137,7 @@ def ht_send_meeting_rejected_notifications(proposal):
 		buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 
 		print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
-		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(proposal)
+		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(proposal, seller_name)
 		buyer_msg = create_notification(str(sellr_name) + ' rejected your proposal', buyer_email_addr, buyer_name)
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 		ht_send_email(buyer_email_addr, buyer_msg)
