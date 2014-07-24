@@ -249,17 +249,20 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 ################################################################################
 
 @mngr.task
-def ht_send_meeting_reminder(user_email, user_name, prop_id):
-	print 'ht_send_meeting_reminder() --  sending appointment reminder emails now for ' + prop_id
-	proposal = Proposal.get_by_id(prop_uuid)
+def ht_send_meeting_reminder(user_email, user_name, meet_id):
+	print 'ht_send_meeting_reminder() --  sending appointment reminder emails now for ' + meet_id
+	proposal = Proposal.get_by_id(meet_id)
 
-	# do nothing if canceled meeting
-	if (proposal.canceled()): return
+	if (proposal.canceled()):
+		# meeting was canceled, log event and do not send reminder email.
+		print 'ht_send_meeting_reminder() --  meetin canceled ' + meet_id
+		return
 
 	msg_html = email_body_meeting_reminder()
 	msg = create_notification('You Have an Appointment Tomorrow with {insert name}', user_email, user_name)
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
+
 
 
 
