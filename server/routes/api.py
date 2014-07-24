@@ -53,7 +53,7 @@ def ht_api_meeting_accept():
 
 	try:
 		profile = Profile.get_by_uid(session['uid'])
-		ht_proposal_accept(meet_id, profile)
+		ht_meeting_accept(meet_id, profile)
 		print 'ht_api_meeting_accept\t success'
 	except SanitizedException as se:
 		print "ht_api_meeting_accept: sanitized exception", se
@@ -67,7 +67,7 @@ def ht_api_meeting_accept():
 
 
 
-@insprite_views.route('/proposal/negotiate', methods=['POST'])
+@insprite_views.route('/meeting/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_meeting_negotiate():
 	#meeting = Proposal.get_by_id(form.proposal_id.data)

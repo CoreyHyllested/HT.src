@@ -14,19 +14,20 @@
 
 import sys, traceback
 from flask import render_template, session, request, jsonify
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc		import IntegrityError
+from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from datetime import datetime as dt
 
 
 
 
 class SanitizedException(Exception):
-	def __init__(self, error, resp_code=400, msg=None):
+	def __init__(self, error, resp_code=400, user_msg=None):
 		self._exception = error
 		self._http_resp = resp_code
 		self._http_next = None
-		self._http_mesg = None			# show users a friendly message
-		self._tech_mesg = str(msg)		# preserve the truth
+		self._http_mesg = str(user_msg)			# show users a friendly message
+		self._tech_mesg = str(error)		# preserve the truth
 	
 	def exception(self):
 		return str(self._exception)
@@ -71,15 +72,15 @@ class SanitizedException(Exception):
 
 
 class StateTransitionError(SanitizedException):
-	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, error_msg=None):
+	def __init__(self, resrc, resrc_id, state_cur, state_nxt, flags=None, user_msg=None):
 		#print 'StateTransitionError()\tcreating'
-		super(StateTransitionError, self).__init__(None, msg=error_msg)
+		super(StateTransitionError, self).__init__(None, user_msg=user_msg)
 		self.resrc		= str(resrc)
 		self.resrc_id	= resrc_id
 		self.state_cur	= state_cur
 		self.state_nxt	= state_nxt
 		self.flags	= flags
-		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + str(error_msg))
+		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + str(user_msg))
 		#print 'StateTransitionError()\tcompleting'
 
 	def __str__(self):
@@ -115,8 +116,8 @@ class NoReviewFound(NoResourceFound):
 
 
 class ReviewError(SanitizedException):
-	def __init__(self, op, exp, seen, error_msg=None):
-		super(ReviewError, self).__init__(None, msg=error_msg)
+	def __init__(self, op, exp, seen, user_msg=None):
+		super(ReviewError, self).__init__(None, user_msg=user_msg)
 		self.op = op
 		self.exp = exp
 		self.seen = seen
@@ -138,11 +139,14 @@ def ht_sanitize_error(error, details=None, reraise=True):
 		(type(error) == StateTransitionError)):
 		print 'PRE-Sanitized Exception '
 		e = error
+	elif (type(error) == NameError):
+		e = SanitizedException(error, resp_code=500, user_msg="Server Error")
+		print 'ht_sanitize_error() NAME ERROR\n', traceback.format_exc()
 	elif (type(error) == ValueError):
-		e = SanitizedException(error, resp_code=400, msg="Invalid input")
+		e = SanitizedException(error, resp_code=400, user_msg="Invalid input")
 	else:
 		print 'ht_sanitize_error()\tcreating SE from ' + str(type(error))
-		e = SanitizedException(error, resp_code=400, msg=str(error))
+		e = SanitizedException(error, resp_code=400)
 
 	if (reraise): raise e
 	else:

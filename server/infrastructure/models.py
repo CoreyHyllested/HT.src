@@ -12,13 +12,14 @@
 #################################################################################
 
 
+from __future__ import absolute_import
 from server.infrastructure.srvc_database import Base, db_session
-from server.infrastructure.errors import *
+from server.infrastructure.errors	import *
+from server.infrastructure.basics	import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from datetime import datetime as dt
+from datetime import datetime as dt, timedelta
 from pytz import timezone
 import datetime
 import uuid
@@ -613,10 +614,12 @@ class Proposal(Base):
 
 		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
 			valid = True
-			print '\tPropsoal.set_state()\tTransition from PROPOSED to ACCEPTED'
+			print '\tProposal.set_state()\tTransition from PROPOSED to ACCEPTED'
 			if (self.prop_from == prof_id):
 				error = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + str(uid)
+
 			self.appt_secured = dt.utcnow()
+
 #		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
 #			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
 #			flags = set_flag(flags, APPT_FLAG_USERPAID)
@@ -636,12 +639,25 @@ class Proposal(Base):
 				error = 'Meeting already in STATE (' + str(s_cur) +  ')'
 
 		if (error or not valid):
-			print '\tPropsoal.set_state()\tTransition from PROPOSED to ACCEPTED'
-			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, error)
+			raise StateTransitionError(self.__class__, self.prop_uuid, self.prop_state, s_nxt, flags, user_msg=error)
 
 		self.prop_state = s_nxt
 		self.prop_flags = flags
 		self.prop_updated = dt.utcnow()
+		if (self.prop_state == APPT_STATE_ACCEPTED): self.transition_to_ACCEPTED()
+
+
+
+	def transition_to_ACCEPTED(self):
+		print '\tProposal.transition_to_ACCEPTED()'
+		charge_time = self.prop_ts - timedelta(days=2)
+		review_time	= self.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
+
+		print '\tProposal.transition_to_ACCEPTED()\tcharge buyr @ ', charge_time.strftime('%A, %b %d, %Y %H:%M %p'), 'customer', self.charge_customer_id, "card:", self.charge_credit_card
+		print '\tProposal.transition_to_ACCEPTED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
+		ht_charge_creditcard.apply_async(args=[self.prop_uuid, self.charge_credit_card, self.charge_customer_id, self.prop_cost], eta=charge_time)
+		ht_enable_reviews.apply_async(args=[self.prop_uuid], eta=(review_time))
+
 
 
 	def accepted(self): return (self.prop_state == APPT_STATE_ACCEPTED)
@@ -682,16 +698,9 @@ class Proposal(Base):
 		return description
 			
 
-	def accept_url(self):
-		return str('https://127.0.0.1:5000/proposal/accept?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
-
-
-	def reject_url(self):
-		return str('https://127.0.0.1:5000/proposal/reject?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
-
-
-	def __repr__(self):
-		return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
+	def accept_url(self): return str('https://127.0.0.1:5000/meeting/accept?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
+	def reject_url(self): return str('https://127.0.0.1:5000/meeting/reject?proposal_id=' + self.prop_uuid + '&proposal_challenge=' + self.challengeID)
+	def __repr__(self):	return '<prop %r, Hero=%r, Buy=%r, State=%r>' % (self.prop_uuid, self.prop_hero, self.prop_user, self.prop_state)
 
 
 	@property
@@ -726,7 +735,7 @@ class Appointment(Base):
 	description = Column(String(3000), nullable = True)
 	transaction	= Column(String(40), nullable = True)	#stripe transaction 
 	created		= Column(DateTime(), nullable = False)
-	updated		= Column(DateTime(), nullable = False, default = datetime.datetime.now())
+	updated		= Column(DateTime(), nullable = False, default = datetime.datetime.now())	#TODO kill, move to __init__
 	agreement	= Column(DateTime(), nullable = False, default = datetime.datetime.now())
 
 	reviewOfBuyer	= Column(String(40), ForeignKey('review.review_id'), nullable = True)
@@ -1076,7 +1085,7 @@ class Review(Base):
 			msg = 'Weird. The Review is in an INVALID STATE'
 
 		if (not valid):
-			raise StateTransitionError(self.__class__, self.review_id, self.rev_status, s_nxt, msg=msg)
+			raise StateTransitionError(self.__class__, self.review_id, self.rev_status, s_nxt, user_msg=msg)
 
 		self.rev_status = s_nxt
 		self.rev_updated = dt.utcnow()
