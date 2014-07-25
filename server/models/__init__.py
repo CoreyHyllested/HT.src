@@ -12,10 +12,12 @@
 #################################################################################
 
 
-from .Account import Account
-from .Profile import Profile
-from .Email import *
-from .Image import *
+from .Account			import *
+from .Availability		import *
+from .Profile			import *
+from .Email				import *
+from .Image				import *
+
 from .Industry import Industry
 from .LessonImageMap import LessonImageMap
 from .Lesson import Lesson
