@@ -24,19 +24,53 @@ import uuid
 
 
 
-LESSON_FLAG_STARTED	= 0 		# User started to create a lesson
-LESSON_FLAG_SAVED	= 1 		# User completed making the lesson but saved it before finished
-LESSON_FLAG_PRIVATE	= 2 		# User completed making the lesson but left it private
-LESSON_FLAG_ACTIVE	= 3 		# User completed making the lesson and made it active
+################################################################################
+### LESSON FLAGS FIELD #########################################################
+################################################################################
+################################################################################
+## 	BIT-RANGE		NAME			DETAILS
+################################################################################
+## 	0 - 3			State			Current state of the Lesson.
+##	16				Approved		Flag.  Lesson Approved to be public.
+##  17				Public			Flag.  Lesson currently is public.
+##  20				Inappropriate	Lesson flagged as in apporoprate.
+################################################################################
+##  4-15,18,19,21-31				reserved
+################################################################################
 
-LESSON_STATE_STARTED	= (0x1 << LESSON_FLAG_STARTED)	#1
-LESSON_STATE_SAVED		= (0x1 << LESSON_FLAG_SAVED)	#2
-LESSON_STATE_PRIVATE	= (0x1 << LESSON_FLAG_PRIVATE)	#4
-LESSON_STATE_ACTIVE		= (0x1 << LESSON_FLAG_ACTIVE)	#8
+
+LESSON_STATE_INCOMPLETE	= 0
+LESSON_STATE_COMPLETED	= 1
+LESSON_STATE_SUBMITTED	= 2
+LESSON_STATE_AVAILABLE	= 3
+LESSON_STATE_MASK 		= (LESSON_STATE_INCOMPLETE | LESSON_STATE_COMPLETED | LESSON_STATE_SUBMITTED | LESSON_STATE_AVAILABLE)
+
+LESSON_STATE_LOOKUP_TABLE = {
+	LESSON_STATE_INCOMPLETE : 'INCOMPLETE',
+	LESSON_STATE_COMPLETED  : 'COMPLETE',
+	LESSON_STATE_SUBMITTED  : 'SUBMITTED',
+	LESSON_STATE_AVAILABLE  : 'AVAILABLE',
+}
+
+
+
+# LESSON_FLAGS Field.
+LESSON_BIT_INCOMPLETE	= 0 		# User started to create a lesson
+LESSON_BIT_COMPLETED	= 1			# User started to create a lesson
+LESSON_BIT_SUBMITTED	= 2 		# User started to create a lesson
+LESSON_BIT_AVAILABLE	= 3			# User started to create a lesson
+
+LESSON_BIT_APPROVED			= 16 		# User started to create a lesson
+LESSON_BIT_PUBLIC			= 17		# User completed making the lesson and made it public/active
+LESSON_BIT_INAPPROPRIATE	= 20		# User completed making the lesson and made it public/active
+
+LESSON_FLAG_APPROVED		= (0x1 << LESSON_BIT_APPROVED)		#00010000,	32K
+LESSON_FLAG_PUBLIC			= (0x1 << LESSON_BIT_PUBLIC)		#00020000,	64K
+LESSON_FLAG_INAPROPRIATE	= (0x1 << LESSON_BIT_INAPPROPRIATE) #00100000,  512K
+
 
 
 # Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
-
 PROF_FLAG_AVAIL_NONE = 0
 PROF_FLAG_AVAIL_FLEX = 1
 PROF_FLAG_AVAIL_SPEC = 2
@@ -85,7 +119,7 @@ class Lesson(Base):
 	# Lesson Metadata
 	lesson_updated	= Column(DateTime())
 	lesson_created	= Column(DateTime(), nullable=False)
-	lesson_flags	= Column(Integer, default=0)
+	lesson_flags	= Column(Integer, default=LESSON_STATE_INCOMPLETE)
 
 	# Lesson Cost
 	lesson_rate = Column(Integer)
@@ -96,16 +130,86 @@ class Lesson(Base):
 		self.lesson_id	= str(uuid.uuid4())
 		self.lesson_profile	= profile_id
 		self.lesson_created = dt.utcnow()
+		self.lesson_flags = LESSON_STATE_INCOMPLETE
 
 
 	def __repr__ (self):
 		return '<Lesson: %r, %r, %r>' % (self.lesson_id, self.lesson_profile, self.lesson_title)
 
+	def invalid_transition(msg = None):
+		raise Exception('Invalid Transition ' + str(msg))
+
+
+	def set_state(self, new_state):
+		cur_state = (int(self.lesson_flags) & LESSON_STATE_MASK)
+		nxt_state = (int(new_state) & LESSON_STATE_MASK)
+		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
+		nstate_str = LESSON_STATE_LOOKUP_TABLE[nxt_state]
+
+		print 'Lesson(' + self.lesson_id + ') change state: ' + str(cstate_str) + ' => ' + str(nstate_str)
+		transitions = self.TRANSITION_MATRIX[cur_state]
+		transition = transitions.get(nxt_state)
+		if (transition is None):
+			raise StateTransitionError(self.__class__, self.lesson_id, cur_state, nxt_state, self.lesson_flags, user_msg="No message for user")
+
+		# execute transition function.
+		success = transition(self, cur_state, nxt_state, msg = 'cah')
+		if (success):
+			flags = self.lesson_flags & (~LESSON_STATE_MASK)
+			print 'Lesson.set_state()\tflags = ' + format(self.lesson_flags, '08X') + ' & ' + format(~LESSON_STATE_MASK, '08X') + ' = ' + format(flags, '08X')
+			self.lesson_flags = flags | (new_state)
+			print 'Lesson.set_state()\tflags = ' + format(flags,             '08X') + ' | ' + format(new_state,               '08X') + ' = ' + format(self.lesson_flags, '08X')
+
+
+
+	################################################################################
+	### LESSON STATE-CHANGE FUNCTIONS. #############################################
+	################################################################################
+	### The TRANSITION_MATRIX is a private matrix.  It contains all the valid     ###
+	### transitions.  Each function should validate the input, and run all tasks ###
+	### necessary for changing the state.  If a problem occurs, throw an Error.  ###
+	################################################################################
+
+	def __transition_incomplete_to_completed(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	def __transition_completed_to_submitted(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	def __transition_submitted_to_completed(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	def __transition_submitted_to_available(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	def __transition_available_to_completed(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	TRANSITION_MATRIX =	{	LESSON_STATE_INCOMPLETE	: { LESSON_STATE_COMPLETED	: __transition_incomplete_to_completed, },
+							LESSON_STATE_COMPLETED	: { LESSON_STATE_SUBMITTED	: __transition_completed_to_submitted, },
+							LESSON_STATE_SUBMITTED	: { LESSON_STATE_COMPLETED	: __transition_submitted_to_completed,
+														LESSON_STATE_AVAILABLE	: __transition_submitted_to_available, },
+							LESSON_STATE_AVAILABLE	: { LESSON_STATE_COMPLETED	: __transition_available_to_completed, },
+						}
+
 
 	@staticmethod
-	def get_by_lesson_id(lesson_id):
-		lessons = Lesson.query.filter_by(lesson_id=lesson_id).all()
-		if len(lessons) != 1: 
-			raise NoLessonFound(lesson_id, 'Sorry, lesson not found')
-		return lessons[0]
+	def state_name(state):
+		return LESSON_STATE_LOOKUP_TABLE.get(state, None)
+
+
+	@staticmethod
+	def get_by_id(lid):
+		lesson = None
+		try:
+			lesson = Lesson.query.filter_by(lesson_id=lid).one()
+		except NoResultFound as nrf:
+			pass
+		return lesson
+
 
