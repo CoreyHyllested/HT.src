@@ -7,6 +7,7 @@ from .LessonImageMap import LessonImageMap
 from .Lesson import Lesson
 from .Oauth import Oauth
 from .Proposal import Proposal
+from .Meeting import *
 from .Registrant import Registrant
 from .Review  import Review
 from .Skills import Skills
