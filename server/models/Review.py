@@ -19,7 +19,6 @@ from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeB
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 from pytz import timezone
-import datetime
 import uuid
 
 
