@@ -109,12 +109,15 @@ class NoMeetingFound(NoResourceFound):
 
 class NoProfileFound(NoResourceFound):
 	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', pid)
-		
+
+class NoLessonFound(NoResourceFound):
+	def __init__(self, pid): super(NoLessonFound, self).__init__('Lesson', pid)
+
 class NoReviewFound(NoResourceFound):
 	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', rid)
 
 class NoOauthFound(NoResourceFound):
-	def __init__(self, uid): super(NoReviewFound, self).__init__('Oauth', uid)
+	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', uid)
 
 
 
