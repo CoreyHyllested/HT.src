@@ -17,15 +17,14 @@ from .Availability		import *
 from .Profile			import *
 from .Email				import *
 from .Image				import *
-
-from .Industry import Industry
-from .LessonImageMap import LessonImageMap
-from .Lesson import Lesson
-from .Oauth import Oauth
-from .Proposal import Proposal
-from .Meeting import *
-from .Registrant import Registrant
-from .Review  import Review
-from .Skills import Skills
-from .UserMessage import UserMessage 
+from .Industry			import *
+from .LessonImageMap	import *
+from .Lesson			import *
+from .Oauth				import *
+from .Proposal			import *
+from .Meeting			import *
+from .Registrant		import *
+from .Review			import *
+from .Skills			import *
+from .UserMessage		import *
 
