@@ -132,7 +132,7 @@ def ht_send_meeting_rejected_notifications(proposal):
 	print 'ht_send_meeting_rejected_notifications(' + proposal.prop_uuid + ')\t enter'
 	try:
 		# get user profiles, user names, and user email addresses
-		(sellr_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
+		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
 		sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
 		buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
 
@@ -145,9 +145,9 @@ def ht_send_meeting_rejected_notifications(proposal):
 		print 'ht_send_meeting_rejected_notifications create sellr_msg_html'
 		sellr_msg_html = email_body_meeting_rejected_notification_to_seller(proposal, buyer_profile.prof_name, buyer_profile.prof_id)
 		print 'ht_send_meeting_rejected_notifications created sellr_msg_html'
-		sellr_msg = create_notification('You rejected a proposal', sellr_addr, sellr_name)
+		sellr_msg = create_notification('You rejected a proposal', sellr_email_addr, sellr_name)
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
-		ht_send_email(sellr_addr, sellr_msg)
+		ht_send_email(sellr_email_addr, sellr_msg)
 	except Exception as e:
 		# emails are not critical, swallow.
 		ht_sanitize_error(e, reraise=False)
@@ -263,7 +263,7 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 ################################################################################
 
 @mngr.task
-def ht_send_meeting_reminder(user_email, user_name, meet_id):
+def ht_send_meeting_reminders(meet_id):
 	print 'ht_send_meeting_reminder() --  sending appointment reminder emails now for ' + meet_id
 	proposal = Proposal.get_by_id(meet_id)
 
@@ -272,10 +272,16 @@ def ht_send_meeting_reminder(user_email, user_name, meet_id):
 		print 'ht_send_meeting_reminder() --  meetin canceled ' + meet_id
 		return
 
+	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
 	msg_html = email_body_meeting_reminder()
-	msg = create_notification('You Have an Appointment Tomorrow with {insert name}', user_email, user_name)
-	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
-	ht_send_email(user_email, msg)
+
+	msg_buyer = create_notification('You Have an Appointment Tomorrow with ' + sellr_name, buyer_email_addr, buyer_name)
+	msg_buyer.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(buyer_email_addr, msg_buyer)
+
+	msg_sellr = create_notification('You Have an Appointment Tomorrow with ' + buyer_name, sellr_email_addr, sellr_name)
+	msg_sellr.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(sellr_email_addr, msg_sellr)
 
 
 

@@ -15,7 +15,6 @@
 from __future__ import absolute_import
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
-from server.infrastructure.basics	import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
@@ -650,13 +649,6 @@ class Proposal(Base):
 
 	def transition_to_ACCEPTED(self):
 		print '\tProposal.transition_to_ACCEPTED()'
-		charge_time = self.prop_ts - timedelta(days=2)
-		review_time	= self.prop_tf + timedelta(hours=2)	# so person can hit it up (maybe meeting runs long)
-
-		print '\tProposal.transition_to_ACCEPTED()\tcharge buyr @ ', charge_time.strftime('%A, %b %d, %Y %H:%M %p'), 'customer', self.charge_customer_id, "card:", self.charge_credit_card
-		print '\tProposal.transition_to_ACCEPTED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
-		ht_charge_creditcard.apply_async(args=[self.prop_uuid, self.charge_credit_card, self.charge_customer_id, self.prop_cost], eta=charge_time)
-		ht_enable_reviews.apply_async(args=[self.prop_uuid], eta=(review_time))
 
 
 

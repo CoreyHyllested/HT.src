@@ -113,6 +113,9 @@ class NoProfileFound(NoResourceFound):
 class NoReviewFound(NoResourceFound):
 	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', rid)
 
+class NoOauthFound(NoResourceFound):
+	def __init__(self, uid): super(NoReviewFound, self).__init__('Oauth', uid)
+
 
 
 class ReviewError(SanitizedException):
@@ -152,4 +155,9 @@ def ht_sanitize_error(error, details=None, reraise=True):
 	else:
 		print 'ht_sanitize_error() traceback\n', traceback.format_exc()
 		print 'ht_sanitize_error() exec_info\n', sys.exc_info()[0]
+
+
+def dump_error(error):
+	print 'dump_error() traceback\n', traceback.format_exc()
+	print 'dump_error() exec_info\n', sys.exc_info()[0]
 
