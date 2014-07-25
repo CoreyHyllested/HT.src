@@ -12,7 +12,6 @@
 #################################################################################
 
 
-from __future__ import absolute_import
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
@@ -25,46 +24,62 @@ import uuid
 
 
 
-# Appointment States
-APPT_FLAG_PROPOSED = 0		# (0001) Proposed (tmp):  Shows up in dashboard as proposal.
-APPT_FLAG_ACCEPTED = 1		# (0002) Accepted (tmp):  Shows up in dashboard as appointment.
-APPT_FLAG_DISPUTED = 2		# (0004) disputed (tmp):  ...?
-APPT_FLAG_OCCURRED = 3		# (0008) Occurred (tmp):  Shows up in dashboard as review Opp.
-APPT_FLAG_REJECTED = 4		# (0010) Rejected (terminal)... see somewhere
-APPT_FLAG_CANCELED = 5		# (0020) Canceled (terminal)... see somewhere
-APPT_FLAG_RESOLVED = 6		# (0040) Resolved (terminal?) ...
-APPT_FLAG_COMPLETE = 7		# (0080) Completed (terminal)... see somewhere
-
-# Fake States.
-APPT_FLAG_TIMEDOUT = 8		# (0100) Proposal was rejected by timeout. (Seller didn't respond).
-
-# Occurred flags.
-APPT_FLAG_BUYER_REVIEWED = 12	# (00001000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-APPT_FLAG_SELLR_REVIEWED = 13	# (00002000)	# Appointment Reviewed:  Appointment occured.  Both reviews are in.
-APPT_FLAG_MONEY_CAPTURED = 14	# (00004000)	# Appointment Captured:  Money has taken from user, 2 days after appt.
-APPT_FLAG_MONEY_USERPAID = 15	# (00008000)	# Appointment Captured money and Transferred payment to Seller.
-APPT_FLAG_BUYER_CANCELED = 16	# (00010000)	# Appointment was canceled by buyer.
-
-
-
-# Appointment / Proposal Flags.  Modify aspects of meeting.
-APPT_FLAG_RESPONSE	= 28	# Proposal went into negotiation.
-APPT_FLAG_QUIET		= 29	# Proposal was quiet
-APPT_FLAG_DIGITAL	= 30	# Proposal was digital
-#APPT_FLAG_RUNOVER	= 31
-
-
-APPT_STATE_PROPOSED = (0x1 << APPT_FLAG_PROPOSED)	#01		from {}  					to {accepted, rejected}		visible { dashboard-proposal }
-APPT_STATE_ACCEPTED = (0x1 << APPT_FLAG_ACCEPTED)	#02		from {proposed}				to {occurred, canceled}		visible { dashboard-appointment }
-APPT_STATE_DISPUTED = (0x1 << APPT_FLAG_DISPUTED)	#04		from {occurred}				to {resolved, completed}	visible { ? }
-APPT_STATE_OCCURRED = (0x1 << APPT_FLAG_OCCURRED)	#08		from {accepted}				to {completed, disputed}	visible { }
-APPT_STATE_REJECTED = (0x1 << APPT_FLAG_REJECTED)	#10		from {proposed}				to {}						visible {}
-APPT_STATE_CANCELED = (0x1 << APPT_FLAG_CANCELED)	#20		from {accepted}				to {}						visible { history? }
-APPT_STATE_RESOLVED = (0x1 << APPT_FLAG_RESOLVED)	#40		from {disputed}				to {?}						visible {}
-APPT_STATE_COMPLETE = (0x1 << APPT_FLAG_COMPLETE)	#80		from {disputed, occurred}	to {}						visible {}
+# MEETING STATES
+#(0x1 << MEET_BIT_PROPOSED)	#01		from {}  					to {accepted, rejected}		visible { dashboard-proposal }
+#(0x1 << MEET_BIT_ACCEPTED)	#02		from {proposed}				to {occurred, canceled}		visible { dashboard-appointment }
+#(0x1 << MEET_BIT_DISPUTED)	#04		from {occurred}				to {resolved, completed}	visible { ? }
+#(0x1 << MEET_BIT_OCCURRED)	#08		from {accepted}				to {completed, disputed}	visible { }
+##(0x1 << MEET_BIT_REJECTED)	#10		from {proposed}				to {}						visible {}
+#(0x1 << MEET_BIT_CANCELED)	#20		from {accepted}				to {}						visible { history? }
+#(0x1 << MEET_BIT_RESOLVED)	#40		from {disputed}				to {?}						visible {}
+#(0x1 << MEET_BIT_COMPLETE)	#80		from {disputed, occurred}	to {}						visible {}
 # Fake States.  Replaced with above.
-APPT_STATE_TIMEDOUT = (0x1 << APPT_FLAG_TIMEDOUT)	#180
+#(0x1 << MEET_BIT_TIMEDOUT)	#180
+MEET_STATE_PROPOSED = 0		# (0001) Proposed (tmp):  Shows up in dashboard as proposal.
+MEET_STATE_ACCEPTED = 1		# (0002) Accepted (tmp):  Shows up in dashboard as appointment.
+MEET_STATE_DISPUTED = 2		# (0004) disputed (tmp):  ...?
+MEET_STATE_OCCURRED = 3		# (0008) Occurred (tmp):  Shows up in dashboard as review Opp.
+MEET_STATE_REJECTED = 4		# (0010) Rejected (terminal)... see somewhere
+MEET_STATE_CANCELED = 5		# (0020) Canceled (terminal)... see somewhere
+MEET_STATE_RESOLVED = 6		# (0040) Resolved (terminal?) ...
+MEET_STATE_COMPLETE = 7		# (0080) Completed (terminal)... see somewhere
+MEET_STATE_TIMEDOUT = 8		# (0080) Completed (terminal)... see somewhere
 
+MEETING_STATE_LOOKUP_TABLE = {
+	MEET_STATE_PROPOSED : 'PROPOSED',
+	MEET_STATE_ACCEPTED : 'ACCEPTED',
+	MEET_STATE_DISPUTED : 'DISPUTED',
+	MEET_STATE_OCCURRED : 'OCCURRED',
+	MEET_STATE_REJECTED : 'REJECTED',
+	MEET_STATE_CANCELED : 'CANCELED',
+	MEET_STATE_RESOLVED : 'RESOVLED',
+	MEET_STATE_COMPLETE : 'COMPLETE',
+	MEET_STATE_TIMEDOUT : 'TIMEDOUT',	 # Meta State?
+}
+
+
+
+################################################################################
+### MEETING FLAGS FIELD ########################################################
+################################################################################
+################################################################################
+## 	NAME				## BIT		## DETAILS
+################################################################################
+# Occurred flags.
+################################################################################
+MEET_BIT_BUYER_REVIEWED =	12		# Buyer reviewed meeting
+MEET_BIT_SELLR_REVIEWED =	13		# Seller reviewed meeting
+MEET_BIT_MONEY_CAPTURED =	14		# Money has taken from user, 2 days after appt.
+MEET_BIT_MONEY_USERPAID =	15		# Appointment Captured money and Transferred payment to Seller.
+MEET_BIT_BUYER_CANCELED =	16		# Appointment was canceled by buyer.
+################################################################################
+### MEETING DETAILS ############################################################
+################################################################################
+MEET_BIT_RESPONSE		=	28		# Meeting went into negotiation.
+MEET_BIT_QUIET			=	29		# Meeting was quiet
+MEET_BIT_DIGITAL		=	30		# Meeting was digital
+MEET_BIT_RUNOVER		=	31
+################################################################################
 
 
 class Meeting(Base):
@@ -73,7 +88,7 @@ class Meeting(Base):
 	meet_sellr	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	meet_buyer	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
 	meet_owner	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# THE PROFILE who can make a decision. (to accept, etc)
-	meet_state	= Column(Integer, nullable=False, default=APPT_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
+	meet_state	= Column(Integer, nullable=False, default=MEET_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
 	meet_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
 	meet_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	meet_cost	= Column(Integer, nullable=False, default=0)											# Cost.
@@ -136,16 +151,13 @@ class Meeting(Base):
 	@staticmethod
 	def get_by_id(meet_id):
 		meeting = None
-		try:
-			# cannot raise MultipleResultsFound, meet_id is table unique.
-			meeting = Meeting.query.filter_by(meet_id=meet_id).one()
-		except NoResultFound as nrf:
-			pass
+		try: meeting = Meeting.query.filter_by(meet_id=meet_id).one()
+		except NoResultFound as nrf: pass
 		return meeting
 	
 
 	def set_flag(self, flag):
-		if (flag <= APPT_FLAG_COMPLETE): raise Exception('Use set state to verify state change')
+		if (flag <= MEET_BIT_COMPLETE): raise Exception('Use set state to verify state change')
 		self.meet_flags = (self.meet_flags | (0x1 << flag))
 
 
@@ -155,18 +167,18 @@ class Meeting(Base):
 		valid = False
 		error = None
 
-		if ((s_nxt == APPT_STATE_TIMEDOUT) and (s_cur == APPT_STATE_PROPOSED)):
+		if ((s_nxt == MEET_STATE_TIMEDOUT) and (s_cur == MEET_STATE_PROPOSED)):
 			valid = True
-			s_nxt = APPT_STATE_REJECTED
-			flags = set_flag(flags, APPT_FLAG_TIMEDOUT)
+			s_nxt = MEET_STATE_REJECTED
+			flags = set_flag(flags, MEET_BIT_TIMEDOUT)
 
-		elif ((s_nxt == APPT_STATE_REJECTED) and (s_cur == APPT_STATE_PROPOSED)):
+		elif ((s_nxt == MEET_STATE_REJECTED) and (s_cur == MEET_STATE_PROPOSED)):
 			valid = True
 
 			if (((prof_id != self.meet_sellr) and (prof_id != self.meet_buyer))):
 				error = 'REJECTOR: ' + prof_id + " isn't HERO or USER"
 
-		elif ((s_nxt == APPT_STATE_ACCEPTED) and (s_cur == APPT_STATE_PROPOSED)):
+		elif ((s_nxt == MEET_STATE_ACCEPTED) and (s_cur == MEET_STATE_PROPOSED)):
 			valid = True
 			print '\tMeeting.set_state()\tTransition from PROPOSED to ACCEPTED'
 			if (self.meet_from == prof_id):
@@ -174,17 +186,17 @@ class Meeting(Base):
 
 			self.meet_secured = dt.utcnow()
 
-#		elif ((s_nxt == APPT_STATE_CAPTURED) and (s_cur == APPT_STATE_ACCEPTED)):
-#			if (flag == APPT_FLAG_HEROPAID): flags = set_flag(flags, APPT_FLAG_HEROPAID)
-#			flags = set_flag(flags, APPT_FLAG_USERPAID)
+#		elif ((s_nxt == MEET_STATE_CAPTURED) and (s_cur == MEET_STATE_ACCEPTED)):
+#			if (flag == MEET_BIT_HEROPAID): flags = set_flag(flags, MEET_BIT_HEROPAID)
+#			flags = set_flag(flags, MEET_BIT_USERPAID)
 #			self.meet_charged = dt.now()
-		elif ((s_nxt == APPT_STATE_OCCURRED) and (s_cur == APPT_STATE_ACCEPTED)):
+		elif ((s_nxt == MEET_STATE_OCCURRED) and (s_cur == MEET_STATE_ACCEPTED)):
 			valid = True
-		elif ((s_nxt == APPT_STATE_CANCELED) and (s_cur == APPT_STATE_ACCEPTED)):
+		elif ((s_nxt == MEET_STATE_CANCELED) and (s_cur == MEET_STATE_ACCEPTED)):
 			valid = True
-		elif ((s_nxt == APPT_STATE_COMPLETE) and (s_cur == APPT_STATE_OCCURRED)):
+		elif ((s_nxt == MEET_STATE_COMPLETE) and (s_cur == MEET_STATE_OCCURRED)):
 			valid = True
-		elif ((s_nxt == APPT_STATE_DISPUTED) and (s_cur == APPT_STATE_COMPLETE)):
+		elif ((s_nxt == MEET_STATE_DISPUTED) and (s_cur == MEET_STATE_COMPLETE)):
 			valid = True
 		else:
 			# Invalid Transition; create a SANITIZED MESSAGE for problems
@@ -198,7 +210,7 @@ class Meeting(Base):
 		self.meet_state = s_nxt
 		self.meet_flags = flags
 		self.meet_updated = dt.utcnow()
-		if (self.meet_state == APPT_STATE_ACCEPTED): self.transition_to_ACCEPTED()
+		if (self.meet_state == MEET_STATE_ACCEPTED): self.transition_to_ACCEPTED()
 
 
 
@@ -207,9 +219,9 @@ class Meeting(Base):
 
 
 
-	def accepted(self): return (self.meet_state == APPT_STATE_ACCEPTED)
-	def canceled(self): return (self.meet_state == APPT_STATE_CANCELED)
-	def occurred(self): return (self.meet_state == APPT_STATE_OCCURRED)
+	def accepted(self): return (self.meet_state == MEET_STATE_ACCEPTED)
+	def canceled(self): return (self.meet_state == MEET_STATE_CANCELED)
+	def occurred(self): return (self.meet_state == MEET_STATE_OCCURRED)
 
 	def get_meet_ts(self, tz=None):
 		zone = self.meet_tz or 'US/Pacific'
@@ -261,5 +273,40 @@ class Meeting(Base):
 			'meet_cost'		: self.meet_cost,
 			'meet_updated'	: self.meet_updated.strftime('%A, %b %d, %Y %H:%M %p')
 		}
+
+	def __transition_proposed_to_complete(self):
+		pass
+
+	def __transition_proposed_to_rejected(self):
+		pass
+
+	def __transition_accepted_to_occurred(self):
+		pass
+
+	def __transition_accepted_to_canceled(self):
+		pass
+
+	def __transition_occurred_to_complete(self):
+		pass
+
+	def __transition_occurred_to_disputed(self):
+		pass
+
+	def __transition_complete_to_disputed(self):
+		pass
+
+	def __transition_disputed_to_resolved(self):
+		pass
+
+	STATE_TRANSITION_MATRIX =	{	MEET_STATE_PROPOSED	: { MEET_STATE_ACCEPTED	: __transition_proposed_to_complete, 
+															MEET_STATE_REJECTED	: __transition_proposed_to_rejected,
+															MEET_STATE_TIMEDOUT	: __transition_proposed_to_rejected, },
+									MEET_STATE_ACCEPTED	: { MEET_STATE_OCCURRED	: __transition_accepted_to_occurred,
+															MEET_STATE_CANCELED	: __transition_accepted_to_canceled, },
+									MEET_STATE_OCCURRED	: { MEET_STATE_COMPLETE	: __transition_occurred_to_complete,
+															MEET_STATE_DISPUTED	: __transition_occurred_to_disputed, },
+									MEET_STATE_COMPLETE	: { MEET_STATE_DISPUTED	: __transition_complete_to_disputed, },
+									MEET_STATE_DISPUTED	: { MEET_STATE_DISPUTED	: __transition_disputed_to_resolved, },
+								}
 
 
