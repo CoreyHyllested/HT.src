@@ -295,7 +295,7 @@ def meeting_timedout(meeting):
 				db_session.commit()
 			else:
 				timeout = prop_to - utc_now
-				print '\t\t\t\tSafe! until ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
+				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
 				setattr(meeting, 'timeout', ht_print_timedelta(timeout))
 		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
 			print '\t\t\tACCEPTED...'
@@ -303,8 +303,6 @@ def meeting_timedout(meeting):
 				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\tFILTER Event out manually.  The events are working!!!'
 				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
-			else:
-				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
 
 	except Exception as e:
 		print type(e), e
