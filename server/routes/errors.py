@@ -13,7 +13,7 @@
 
 from . import insprite_views
 from flask import render_template, session, request
-from server.infrastructure.models import Profile
+from server.models import Profile
 from server.infrastructure.errors import *
 
 

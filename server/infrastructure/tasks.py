@@ -17,7 +17,7 @@ from datetime import datetime as dt, timedelta
 from server import ht_server
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models		 import *
+from server.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from server.email	import *

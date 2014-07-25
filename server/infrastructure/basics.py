@@ -13,7 +13,7 @@
 
 
 from datetime import datetime as dt, timedelta
-from server.infrastructure.models		 import *
+from server.models		 import *
 from server.infrastructure.errors		 import *
 from pprint import pprint as pp
 import json, smtplib

@@ -14,7 +14,7 @@
 
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
+from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views

@@ -22,8 +22,8 @@ from datetime import timedelta, datetime as dt
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
+from server.models import *
 from server.ht_utils import *
 from server import ht_server
 from string import Template

@@ -16,7 +16,7 @@ from . import insprite_views
 from flask import render_template, make_response, session, request, redirect
 from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import * 
+from server.models import * 
 from server.controllers import *
 from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf

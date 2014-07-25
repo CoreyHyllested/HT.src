@@ -15,7 +15,7 @@ from . import insprite_views
 from flask import render_template
 from server import ht_csrf, ht_oauth
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
+from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.ht_utils	import *

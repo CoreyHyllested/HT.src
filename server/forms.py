@@ -5,7 +5,7 @@ from wtforms.widgets import html_params, HTMLString
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
-from server.infrastructure.models import Industry, Review
+from server.models import *
 
 
 
