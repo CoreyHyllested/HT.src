@@ -367,10 +367,11 @@ def ht_charge_creditcard(meet_id, buyer_cc_token, buyer_cust_token, proposal_cos
 		print 'ht_charge_creditcard: Exception', type(e), e
 		db_session.rollback()
 		dump_error(e)
-		ht_sanitize_exceptions(e)
+		ht_sanitize_error(e)
 
 	captureTime = proposal.prop_tf + timedelta(days=2)
 	captureTime = dt.now(timezone('UTC')) + timedelta(minutes=15)	#remove when done testing
+
 	print 'ht_charge_creditcard: TODO... create mngr.event to capture in 4+days'
 	ht_capture_creditcard.apply_async(args=[proposal.prop_uuid], eta=(captureTime))
 
@@ -411,7 +412,9 @@ def ht_enable_reviews(prop_uuid):
 		print 'ht_enable_reviews()  modify Proposal. Set state to OCCURRED.'
 		proposal.review_user = review_bp.review_id
 		proposal.review_hero = review_hp.review_id
+		print 'ht_enable_reviews()  calling Proposal.set_state.'
 		proposal.set_state(APPT_STATE_OCCURRED)
+		print 'ht_enable_reviews()  calling Proposal.set_state.'
 		db_session.add(proposal)
 		db_session.commit()
 

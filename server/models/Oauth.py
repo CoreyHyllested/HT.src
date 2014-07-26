@@ -20,6 +20,10 @@ from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 
 
+OAUTH_NONE   = 0
+OAUTH_LINKED = 1
+OAUTH_STRIPE = 2
+OAUTH_GOOGLE = 3
 
 class Oauth(Base):
 	__tablename__ = "oauth"
