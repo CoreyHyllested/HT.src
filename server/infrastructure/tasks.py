@@ -108,6 +108,8 @@ def ht_meeting_accept(proposal_id, profile):
 
 	try:
 		proposal.set_state(APPT_STATE_ACCEPTED, prof_id=profile.prof_id)
+		db_session.add(proposal)
+		db_session.commit()
 
 		# successfully transitioned to accepted meeting
 		charge_time = proposal.prop_ts - timedelta(days=2)
@@ -117,8 +119,6 @@ def ht_meeting_accept(proposal_id, profile):
 		ht_charge_creditcard.apply_async(args=[proposal.prop_uuid, proposal.charge_credit_card, proposal.charge_customer_id, proposal.prop_cost], eta=charge_time)
 		ht_enable_reviews.apply_async(args=[proposal.prop_uuid], eta=(review_time))
 
-		db_session.add(proposal)
-		db_session.commit()
 	except Exception as e:
 		# catches StateTransitionError
 		db_session.rollback()
