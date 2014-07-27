@@ -465,7 +465,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_new_lesson: lesson_id is", lesson_id
 
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
@@ -514,7 +514,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_edit_lesson: lesson_id is", lesson_id
 	
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	session_form = session.pop('form', None)
 	session_errmsg = session.pop('errmsg', None)
@@ -573,7 +573,7 @@ def api_update_lesson(lesson_id):
 	print 'api_update_lesson: Beginning lesson update ...'
 
 	form = LessonForm(request.form)
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
 	
@@ -792,7 +792,7 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
-		lesson = Lesson.get_by_lesson_id(lesson_id)
+		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		print "render_lesson_page(): Lesson String:", str(lesson)
 	except Exception as e:
