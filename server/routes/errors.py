@@ -127,6 +127,12 @@ def error_405_method_not_allowed(e):
 
 
 
+@insprite_views.app_errorhandler(SanitizedException)
+def generic_error_sanitizedexception_error(e):
+	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
+	return create_error_response(500, 'Internal server error', '500.html')
+
+
 @insprite_views.app_errorhandler(500)
 def error_500_internal_server_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
