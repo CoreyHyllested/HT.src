@@ -350,7 +350,7 @@ class Meeting(Base):
 		return True
 
 
-	STATE_TRANSITION_MATRIX =	{	MEET_STATE_PROPOSED	: { MEET_STATE_ACCEPTED	: __transition_proposed_to_accepted, 
+	STATE_TRANSITION_MATRIX =	{	MEET_STATE_PROPOSED	: { MEET_STATE_ACCEPTED	: __transition_proposed_to_accepted,
 															MEET_STATE_REJECTED	: __transition_proposed_to_rejected,
 															MEET_STATE_TIMEDOUT	: __transition_proposed_to_rejected, },
 									MEET_STATE_ACCEPTED	: { MEET_STATE_CHARGECC	: __transition_accepted_to_chargecc,

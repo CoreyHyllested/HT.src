@@ -128,23 +128,23 @@ def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_n
 
 
 
-def ht_send_meeting_rejected_notifications(proposal):
-	""" email buyer (and seller?) the current proposal was rejected. """
-	print 'ht_send_meeting_rejected_notifications(' + proposal.prop_uuid + ')\t enter'
+def ht_send_meeting_rejected_notifications(meeting):
+	""" email buyer (and seller?) the current proposed meeting was rejected. """
+	print 'ht_send_meeting_rejected_notifications(' + meeting.meet_id + ')\t enter'
 	try:
 		# get user profiles, user names, and user email addresses
-		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
-		sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
-		buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
+		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
+		sellr_profile = Profile.get_by_prof_id(meeting.meet_sellr)
+		buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
 
 		print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
-		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(proposal, seller_name)
+		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name)
 		buyer_msg = create_notification(str(sellr_name) + ' rejected your proposal', buyer_email_addr, buyer_name)
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 		ht_send_email(buyer_email_addr, buyer_msg)
 
 		print 'ht_send_meeting_rejected_notifications create sellr_msg_html'
-		sellr_msg_html = email_body_meeting_rejected_notification_to_seller(proposal, buyer_profile.prof_name, buyer_profile.prof_id)
+		sellr_msg_html = email_body_meeting_rejected_notification_to_seller(meeting, buyer_profile.prof_name, buyer_profile.prof_id)
 		print 'ht_send_meeting_rejected_notifications created sellr_msg_html'
 		sellr_msg = create_notification('You rejected a proposal', sellr_email_addr, sellr_name)
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
@@ -156,20 +156,20 @@ def ht_send_meeting_rejected_notifications(proposal):
 
 
 
-def ht_send_meeting_accepted_notification(proposal):
-	""" email proposal accepted emails to both buyer and seller."""
+def ht_send_meeting_accepted_notification(meeting):
+	""" email meeting accepted emails to both buyer and seller."""
 	try:
-		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
-		sellr_profile = Profile.get_by_prof_id(proposal.prop_hero)
-		buyer_profile = Profile.get_by_prof_id(proposal.prop_user)
+		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
+		sellr_profile = Profile.get_by_prof_id(meeting.meet_sellr)
+		buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
 
-		sellr_html = email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile)
+		sellr_html = email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile)
 		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 		sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 		ht_send_email(sellr_email_addr, sellr_msg)
 
 		# email buyer that seller accepted their proposal.
-		buyer_html = email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile)
+		buyer_html = email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_profile)
 		buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 		buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
 		ht_send_email(buyer_email_addr, buyer_msg)
@@ -180,12 +180,12 @@ def ht_send_meeting_accepted_notification(proposal):
 
 
 
-def ht_send_meeting_canceled_notifications(proposal):
+def ht_send_meeting_canceled_notifications(meeting):
 	""" send email notification to buyer and seller, appointment has been canceled."""
-	print 'ht_send_meeting_canceled_notifications(' + proposal.prop_uuid + ')'
+	print 'ht_send_meeting_canceled_notifications(' + meeting.meet_id + ')'
 
 	try:
-		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
+		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
 
 		# if canceled by seller.
 			# only send meeting notice to buyer?
@@ -194,14 +194,14 @@ def ht_send_meeting_canceled_notifications(proposal):
 
 		print 'ht_send_meeting_canceled_notifications\t check if meeting occurs in 48 hours'
 		# use tzinfo = None to remove timezone info, both are already in UTC.
-		if ((dt.utcnow() - proposal.prop_ts.replace(tzinfo=None)) > timedelta(hours=48)):
+		if ((dt.utcnow() - meeting.meet_ts.replace(tzinfo=None)) > timedelta(hours=48)):
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in more than 48 hours'
 			sellr_html = email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name)
 		else:
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
-			sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, str(proposal.prop_cost))
+			sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, str(meeting.meet_cost))
 
 		# email seller that meeting has been canceled.
 		print 'ht_send_meeting_canceled_notifications\t create seller_msg'
@@ -211,9 +211,9 @@ def ht_send_meeting_canceled_notifications(proposal):
 
 		# email buyer that meeting has been canceled.
 		print 'ht_send_meeting_canceled_notifications\t create buyer_path html'
-		if (dt.utcnow() - proposal.prop_ts.replace(tzinfo=None) < timedelta(hours=24)):
+		if (dt.utcnow() - meeting.meet_ts.replace(tzinfo=None) < timedelta(hours=24)):
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 24 hours'
-			buyer_html = email_body_cancellation_from_buyer_within_24_hours(sellr_name, str(proposal.prop_cost))
+			buyer_html = email_body_cancellation_from_buyer_within_24_hours(sellr_name, str(meeting.meet_cost))
 		else:
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in > 24 hours'
 			buyer_html = email_body_cancellation_from_buyer_outside_24_hours (buyer_name, sellr_name)
@@ -265,15 +265,15 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 
 @mngr.task
 def ht_send_meeting_reminders(meet_id):
-	print 'ht_send_meeting_reminder() --  sending appointment reminder emails now for ' + meet_id
-	proposal = Proposal.get_by_id(meet_id)
+	print 'ht_send_meeting_reminders() --  sending appointment reminder emails now for ' + meet_id
+	meeting = Meeting.get_by_id(meet_id)
 
-	if (proposal.canceled()):
+	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.
-		print 'ht_send_meeting_reminder() --  meetin canceled ' + meet_id
+		print 'ht_send_meeting_reminders() --  meetin canceled ' + meet_id
 		return
 
-	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(proposal)
+	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
 	msg_html = email_body_meeting_reminder()
 
 	msg_buyer = create_notification('You Have an Appointment Tomorrow with ' + sellr_name, buyer_email_addr, buyer_name)
@@ -288,15 +288,15 @@ def ht_send_meeting_reminders(meet_id):
 
 
 @mngr.task
-def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
-	print 'ht_send_review_reminder()  sending meeting review emails now for ' + prop_uuid
-	proposal = Proposal.get_by_id(prop_uuid)
-	if (proposal.canceled()):
-		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + prop_uuid
+def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
+	print 'ht_send_review_reminder()  sending meeting review emails now for ' + meet_id
+	meeting = Meeting.get_by_id(meet_id)
+	if (meeting.canceled()):
+		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + meet_id
 		return
 
-	(sellr_acct, sellr_prof) = get_account_and_profile(proposal.prop_hero)
-	(buyer_acct, buyer_prof) = get_account_and_profile(proposal.prop_user)
+	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
+	(buyer_acct, buyer_prof) = get_account_and_profile(meeting.meet_buyer)
 	partner_prof = sellr_prof
 	if (sellr_acct.email == user_email):
 		partner_prof = buyer_prof
@@ -314,9 +314,9 @@ def ht_send_review_reminder(user_email, user_name, prop_uuid, review_id):
 ### HELPER and WORKHORSE FUNCTIONS #############################################
 ################################################################################
 
-def get_proposal_email_info(proposal):
-	(ha, hp) = get_account_and_profile(proposal.prop_hero)
-	(ba, bp) = get_account_and_profile(proposal.prop_user)
+def get_proposal_email_info(meeting):
+	(ha, hp) = get_account_and_profile(meeting.meet_sellr)
+	(ba, bp) = get_account_and_profile(meeting.meet_buyer)
 
 	hero_addr = ha.email
 	buyer_email_addr = ba.email

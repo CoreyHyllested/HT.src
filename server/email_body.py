@@ -324,7 +324,7 @@ def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_pr
 
 
 
-def email_body_meeting_rejected_notification_to_buyer(proposal, sellr_name):
+def email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name):
 	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_rejected_notifications. """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody>\n\t<tr>\n\t\t<td align="center" valign="top"></td>\n\t</tr>\n</tbody>\n</table>\n\n'
 
@@ -386,7 +386,7 @@ def email_body_meeting_rejected_notification_to_buyer(proposal, sellr_name):
 
 
 
-def email_body_meeting_rejected_notification_to_seller(proposal, buyer_name, buyer_prof_id):
+def email_body_meeting_rejected_notification_to_seller(meeting, buyer_name, buyer_prof_id):
 	""" generate email body (HTML).  Seller rejects proposal and receives this email; sent via ht_send_meeting_rejected_notifications. """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody>\n\t<tr>\n\t\t<td align="center" valign="top">\n\t\t</td>\n\t</tr>\n</tbody>\n</table>\n\n'
 
@@ -442,8 +442,8 @@ def email_body_meeting_rejected_notification_to_seller(proposal, buyer_name, buy
  
 
 
-def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr_profile, msg_url="https://127.0.0.1:5000/message?profile=xxxx"):
-	"""HTML email for buyer after the proposal is accepted; called from ht_send_meeting_accepted_notification """
+def email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_profile, msg_url="https://127.0.0.1:5000/message?profile=xxxx"):
+	"""HTML email for buyer after the meeting proposal is accepted; called from ht_send_meeting_accepted_notification """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6; border-top: 2px solid #e6e6e6" cellspacing="0" cellpadding="10" width="600">'
@@ -459,17 +459,17 @@ def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Ain\'t life grand? Meeting\'s on! <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + ' style="color:#1488CC">"' + sellr_profile.prof_name + '" accepted your proposal.</a><br><br>'
 	msg = msg + '\t\t\t Check out the details: <br>'
-	msg = msg + '\n\t\t\t\tTime: ' + proposal.prop_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
-	msg = msg + '\n\t\t\t\tDuration: ' + proposal.get_duration_in_hours() + ' hours<br>'
-	msg = msg + '\n\t\t\t\tLocation: ' + str(proposal.prop_place) + '<br>'
-	msg = msg + '\n\t\t\t\tFee: $' + str(proposal.prop_cost) + '<br><br>'
+	msg = msg + '\n\t\t\t\tTime: ' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
+	msg = msg + '\n\t\t\t\tDuration: ' + meeting.get_duration_in_hours() + ' hours<br>'
+	msg = msg + '\n\t\t\t\tLocation: ' + str(meeting.meet_location) + '<br>'
+	msg = msg + '\n\t\t\t\tFee: $' + str(meeting.meet_cost) + '<br><br>'
 	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="'+msg_url+'" style="color:#1488CC">"' + sellr_profile.prof_name + '" a message.</a><br><br></font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
 	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
-	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center='+proposal.prop_place+'&zoom=15&size=400x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C'+proposal.prop_place+'">'
+	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center=' + meeting.meet_location + '&zoom=15&size=400x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C' + meeting.meet_location + '">'
 	msg = msg + '\n\t\t</td></tr>'
 	msg = msg + '\n\t</table>'
 
@@ -506,8 +506,8 @@ def email_body_appointment_confirmation_for_buyer(proposal, buyer_profile, sellr
 
 
 
-def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sellr_profile, msg_user_link='https://INSPRITE.co/message/USER'):
-	"""HTML email for seller after accepted proposal; called from ht_send_meeting_accepted_notification """
+def email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile, msg_user_link='https://INSPRITE.co/message/USER'):
+	"""HTML email for seller after accepted meeting proposal; called from ht_send_meeting_accepted_notification """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr><td align="center" valign="top"></td></tr></tbody></table>'
 
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff"><tbody><tr>'
@@ -524,17 +524,17 @@ def email_body_appointment_confirmation_for_seller(proposal, buyer_profile, sell
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Fantastic! You accepted <a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#1488CC">' + buyer_profile.prof_name + '\'s proposal.</a><br><br>'
 	msg = msg + '\t\t\t Check out the details:<br>'
-	msg = msg + '\n\t\t\t\tTime: ' + proposal.prop_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
-	msg = msg + '\n\t\t\t\tDuration: ' + proposal.get_duration_in_hours() + ' hours<br>'
-	msg = msg + '\n\t\t\t\tLocation: ' + str(proposal.prop_place) + '<br>'
-	msg = msg + '\n\t\t\t\tFee: $' + str(proposal.prop_cost) + '<br><br>'
+	msg = msg + '\n\t\t\t\tTime: ' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
+	msg = msg + '\n\t\t\t\tDuration: ' + meeting.get_duration_in_hours() + ' hours<br>'
+	msg = msg + '\n\t\t\t\tLocation: ' + str(meeting.meet_location) + '<br>'
+	msg = msg + '\n\t\t\t\tFee: $' + str(meeting.meet_cost) + '<br><br>'
 	msg = msg + '\t\t\t Need to edit, manage or update the appointment? <a href="https://127.0.0.1:5000/dashboard" style="color:#1488CC">Go for it</a>, or send <a href="' + msg_user_link + '" style="color:#1488CC"> ' + buyer_profile.prof_name + ' a message.</a><br><br>We know life can be busy, so we\'ll send you a reminder 24 hours in advance too.</font>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
 	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
-	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center='+proposal.prop_place+'&zoom=15&size=400x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C'+proposal.prop_place+'"><br>'
+	msg = msg + '\n\t\t\t<img style="padding-right: 6px" src="http://maps.googleapis.com/maps/api/staticmap?center=' + meeting.meet_location + '&zoom=15&size=400x450&markers=size:large%8Ccolor:0xFFFF00%7Clabel:Insprite%7C' + meeting.meet_location + '"><br>'
 	msg = msg + '\n\t\t</td></tr>'
 	msg = msg + '\n\t</table>'
 

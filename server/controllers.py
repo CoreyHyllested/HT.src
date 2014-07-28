@@ -258,52 +258,51 @@ def htdb_get_composite_meetings(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 
-	meetings	= db_session.query(Proposal, user, hero)																\
-							.filter(or_(Proposal.prop_user == profile.prof_id, Proposal.prop_hero == profile.prof_id))	\
-							.join(user, user.prof_id == Proposal.prop_user)												\
-							.join(hero, hero.prof_id == Proposal.prop_hero).all();
+	meetings	= db_session.query(Meeting, user, hero)																	\
+							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
+							.join(user, user.prof_id == Meeting.meet_buyer)												\
+							.join(hero, hero.prof_id == Meeting.meet_sellr).all();
 
-	map(lambda meeting: meeting_timedout(meeting), meetings)
-	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
+	map(lambda composite_meeting: meeting_timedout(composite_meeting, profile), meetings)
+	map(lambda composite_meeting: display_meeting_partner(composite_meeting, profile), meetings)
 	return meetings
 
 
 
 
-def meeting_timedout(meeting):
-	proposal = meeting.Proposal
+def meeting_timedout(composite_meeting, profile):
+	meeting = composite_meeting.Meeting
 
-	if (proposal.prop_state != APPT_STATE_PROPOSED and proposal.prop_state != APPT_STATE_ACCEPTED):
+	if ((not meeting.proposed()) and (not meeting.accepted())):
 		return
 
 	utc_now = dt.now(timezone('UTC'))
 	utcsoon = utc_now - timedelta(hours=20)
 
 	try:
-		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
-		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
-		prop_to	= prop_ts - timedelta(hours=20)
-		print 'meeting_timeout()\t', proposal.prop_uuid, proposal.prop_desc[:20]
-		print '\t\t\t' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
+		meet_ts = meeting.meet_ts.astimezone(timezone('UTC'))
+		meet_tf = meeting.meet_tf.astimezone(timezone('UTC'))
+		meet_to	= meet_ts - timedelta(hours=20)
+		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
+		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
-		if (proposal.prop_state == APPT_STATE_PROPOSED):
-			print '\t\t\tPROPOSED...'
-			if (prop_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
+		if (meeting.meet_state == APPT_STATE_PROPOSED):
+			print '\t\t\tPROPOSED Meeting...'
+			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				proposal.set_state(APPT_STATE_TIMEDOUT)
-				db_session.add(proposal)
+				meeting.set_state(MEET_STATE_TIMEDOUT, profile)
+				db_session.add(meeting)
 				db_session.commit()
 			else:
-				timeout = prop_to - utc_now
+				timeout = meet_to - utc_now
 				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
-				setattr(meeting, 'timeout', ht_print_timedelta(timeout))
-		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
-			print '\t\t\tACCEPTED...'
-			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
+				setattr(composite_meeting, 'timeout', ht_print_timedelta(timeout))
+		elif (meeting.accepted()):
+			print '\t\t\tACCEPTED meeting...'
+			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
 				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\tFILTER Event out manually.  The events are working!!!'
-				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
-
+				meeting.set_state(APPT_STATE_OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -317,9 +316,9 @@ def ht_get_active_meetings(profile):
 	rview = []
 
 	meetings = htdb_get_composite_meetings(profile)
-	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
-	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
-	rview = filter(lambda r: (r.Proposal.prop_state  & APPT_STATE_OCCURRED), meetings)
+	props = filter(lambda p: (p.Meeting.proposed()), meetings)
+	appts = filter(lambda a: (a.Meeting.accepted()), meetings)
+	rview = filter(lambda r: (r.Meeting.occurred()), meetings)
 	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
@@ -432,10 +431,10 @@ def display_review_partner(r, prof_id):
 
 
 
-def display_partner_proposal(meeting, profile):
-	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
-	setattr(meeting, 'display', display_partner)
-	setattr(meeting, 'seller', (profile == meeting.hero))
+def display_meeting_partner(composite_meeting, profile):
+	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
+	setattr(composite_meeting, 'display', display_partner)
+	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
 
 
 

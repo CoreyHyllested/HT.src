@@ -60,8 +60,8 @@
 		<div class="dashboardOffers">
 			<h1>Pending Offers ({{proposals|length}})</h1>
 
-			{% for proposal in proposals|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardOffer" id="{{proposal.Proposal.prop_uuid}}">
+			{% for proposal in proposals|sort(attribute='Meeting.meet_ts')  %}
+			<div class="dashboardOffer" id="{{proposal.Meeting.meet_id}}">
 				<div class="dashboardOfferLeftColumn">
 					<a href="/profile?hero={{proposal.display.prof_id}}">
 						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
@@ -72,15 +72,15 @@
 						<h3>{{proposal.display.prof_name}}</h3>
 					</a>
 					<h4>{{proposal.display.headline}}</h4>
-					<div class="dashboardOfferIntro italic">{{proposal.Proposal.prop_desc}}</div>
+					<div class="dashboardOfferIntro italic">{{proposal.Meeting.meet_details}}</div>
 				</div>
 
 				<div class="dashboardOfferRightColumn">
 					<div class="dashboardOfferRightColumnInfo">
 						{% if proposal.buyer == True %}
-						You offered ${{proposal.Proposal.prop_cost}}.
+						You offered ${{proposal.Meeting.meet_cost}}.
 						{% else %}
-						You were offered ${{proposal.Proposal.prop_cost}}.
+						You were offered ${{proposal.Meeting.meet_cost}}.
 						{% endif %}
 					</div>
 					<div class="dashboardOfferRightColumnInfo">
@@ -88,18 +88,18 @@
 					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Proposal.get_prop_ts().strftime('%A, %b %d')}}<br>
-						{{proposal.Proposal.get_prop_ts().strftime('%H:%M %p')}} - {{proposal.Proposal.get_prop_tf().strftime('%H:%M %p')}}
+						{{proposal.Meeting.get_meet_ts().strftime('%A, %b %d')}}<br>
+						{{proposal.Meeting.get_meet_ts().strftime('%H:%M %p')}} - {{proposal.Meeting.get_meet_tf().strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Proposal.prop_place}}
-						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Proposal.prop_uuid}}" data-location="{{proposal.Proposal.prop_place}}"></div>
+						{{proposal.Meeting.meet_location}}
+						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Meeting.meet_id}}" data-location="{{proposal.Meeting.meet_location}}"></div>
 					</div>
 					{% if proposal.seller == true %}
-					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Accept Proposal">
+					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
 					{% endif %}
-					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Proposal.prop_uuid}}" ch="{{proposal.Proposal.prop_cost}}" value="Reject Proposal">
+					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -108,8 +108,8 @@
 
 		<div class="dashboardAppts">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
-			{% for appointment in appointments|sort(attribute='Proposal.prop_ts')  %}
-			<div class="dashboardAppt" id="appt-{{appointment.Proposal.prop_uuid}}">
+			{% for appointment in appointments|sort(attribute='Meeting.meet_ts')  %}
+			<div class="dashboardAppt" id="appt-{{appointment.Meeting.meet_id}}">
 				<div class="dashboardApptLeftColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
@@ -119,26 +119,26 @@
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<h3>{{appointment.display.prof_name}}</h3>
 					</a>
-					<div class="appointmentIntro italic">{{appointment.Proposal.prop_desc}}</div>
+					<div class="appointmentIntro italic">{{appointment.Meeting.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
-					<div class="dashboardApptRightColumnElement apptDate"> {{appointment.Proposal.prop_ts.strftime('%A, %b %d')}} </div>
-					<div class="dashboardApptRightColumnElement apptTime"> {{appointment.Proposal.prop_ts.strftime('%H:%M %p')}} - {{appointment.Proposal.prop_tf.strftime('%H:%M %p')}} </div>
+					<div class="dashboardApptRightColumnElement apptDate"> {{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
+					<div class="dashboardApptRightColumnElement apptTime"> {{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
 
 					<div class="dashboardApptRightColumnElement apptCost">
 						{% if appointment.buyer == True %}
-						You will pay ${{appointment.Proposal.prop_cost}}.
+						You will pay ${{appointment.Meeting.meet_cost}}.
 						{% else %}
-						You will earn ${{appointment.Proposal.prop_cost}}.
+						You will earn ${{appointment.Meeting.meet_cost}}.
 						{% endif %}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptLocation">
-						{{appointment.Proposal.prop_place}}
-						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Proposal.prop_uuid}}" data-location="{{appointment.Proposal.prop_place}}" ></div>
+						{{appointment.Meeting.meet_location}}
+						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Meeting.meet_id}}" data-location="{{appointment.Meeting.meet_location}}" ></div>
 					</div>
 
-					<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Proposal.prop_uuid}}" ch="{{appointment.Proposal.prop_cost}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -238,11 +238,9 @@ $(document).ready(function() {
 
     $('.offerAccept').click(function () {
         var id = this.id;
-        var ch = $(this).attr("ch");
 
         var fd = new FormData();
-        fd.append('proposal_id', id);
-        fd.append('proposal_challenge', ch);
+        fd.append('meet_id', id);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/meeting/accept", true);
@@ -278,12 +276,9 @@ $(document).ready(function() {
 
    $('.offerCancel').click(function () {
         var id = this.id;
-        var ch = $(this).attr("ch");
-		var sid = "#appt-" + id;
-
         var fd = new FormData();
-        fd.append('proposal_id', id);
-        fd.append('proposal_challenge', ch);
+		var sid = "#appt-" + id;
+        fd.append('meet_id', id);
 
         var xhr = new XMLHttpRequest();
         xhr.open('POST', "/meeting/cancel", true);
@@ -303,11 +298,11 @@ $(document).ready(function() {
                 } else if (this.status == 400) {
                     console.log(['xhr post complete, err=400', e]);
 					msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure:' + ' ' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500', e]);
 					msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure:' + ' ' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=?? ', this.status,  e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
@@ -320,11 +315,8 @@ $(document).ready(function() {
 
    $('.offerReject').click(function () {
         var id = $(this).data('id');
-        var ch = $(this).attr("ch");
-
         var fd = new FormData();
-        fd.append('proposal_id', id);
-        fd.append('proposal_challenge', ch);
+        fd.append('meet_id', id);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/meeting/reject", true);
@@ -342,10 +334,10 @@ $(document).ready(function() {
                     $('#'+id).remove();
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500', e]);
-                    openAlertWindow('Failure:' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 } else {
                     console.log(['xhr post complete, err=??', this.status,  e]);
-                    openAlertWindow('Failure:' + msg['usrmsg']);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
                 }
             }
         };

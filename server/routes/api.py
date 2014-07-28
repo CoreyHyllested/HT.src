@@ -33,7 +33,6 @@ def ht_api_meeting_create():
 		ht_meeting_create(request.values, session['uid'])
 	except SanitizedException as se:
 		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
-		#resp_message = se.sanitized_msg()
 		return se.api_response(request.method)
 
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
@@ -44,10 +43,8 @@ def ht_api_meeting_create():
 @insprite_views.route('/meeting/accept', methods=['GET','POST'])
 @req_authentication
 def ht_api_meeting_accept():
-	print "ht_api_meeting_accept: enter"
-	# cannot use form to validate inputs. do manually
-	meet_id = request.values.get('proposal_id', None)
-	meet_ch = request.values.get('proposal_challenge', None)
+	meet_id = request.values.get('meet_id', None)
+	print 'ht_api_meeting_accept(' + meet_id + ')\tenter'
 	resp_code = 200
 	resp_message = 'Proposed meeting accepted.'
 
@@ -82,8 +79,7 @@ def ht_api_meeting_negotiate():
 @req_authentication
 def ht_api_meeting_reject():
 	# cannot use form to validate inputs. do manually
-	meet_id = request.values.get('proposal_id', None)
-	meet_ch = request.values.get('proposal_challenge', None)
+	meet_id = request.values.get('meet_id', None)
 	resp_code = 200
 	resp_message = 'Proposed meeting rejected.'
 
@@ -108,8 +104,7 @@ def ht_api_meeting_reject():
 @req_authentication
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
-	meet_id = request.values.get('proposal_id', None)
-	meet_ch = request.values.get('proposal_challenge', None)
+	meet_id = request.values.get('meet_id', None)
 	resp_code = 200
 	resp_message = 'Canceled meeting.'
 
