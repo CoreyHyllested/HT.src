@@ -145,6 +145,8 @@ def ht_sanitize_error(error, details=None, reraise=True):
 		(type(error) == StateTransitionError)):
 		print 'PRE-Sanitized Exception '
 		e = error
+	elif (type(error) == IntegrityError):
+		e = SanitizedException(error, resp_code=400, user_msg="Database Failure")
 	elif (type(error) == NameError):
 		e = SanitizedException(error, resp_code=500, user_msg="Server Error")
 		print 'ht_sanitize_error() NAME ERROR\n', traceback.format_exc()
