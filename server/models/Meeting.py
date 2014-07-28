@@ -111,12 +111,12 @@ class Meeting(Base):
 	review_sellr = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_buyer
 
 
-	def __init__(self, hero, buyer, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
+	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None): 
 		self.meet_id	= str(uuid.uuid4())
-		self.meet_sellr	= str(hero)
-		self.meet_buyer	= str(buyer)
+		self.meet_sellr	= str(sellr_id)
+		self.meet_buyer	= str(buyer_id)
+		self.meet_owner	= str(buyer_id)
 		self.meet_cost	= int(cost)
-		self.meet_from	= str(buyer)
 		if (flags is not None): self.meet_flags = flags
 
 		self.meet_ts	= datetime_s
@@ -130,14 +130,20 @@ class Meeting(Base):
 		self.charge_user_token = token
 		print 'Meeting(p_uid=%s, cost=%s, location=%s)' % (self.meet_id, cost, location)
 		print 'Meeting(token=%s, cust=%s, card=%s)' % (token, customer, card)
+
+		if (token is None):		raise SanitizedException(None, user_msg = 'Meeting: stripe token is None')
+		if (card is None):		raise SanitizedException(None, user_msg = 'Meeting: credit card is None')
+		if (customer is None):	raise SanitizedException(None, user_msg = 'Meeting: customer is None')
+
 		self.meet_created = dt.utcnow()
 		self.meet_updated = dt.utcnow()
 
 
+
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
-		self.meet_from = prof_updated
-		self.meet_updated	= dt.utcnow()
+		self.meet_owner		= prof_updated
 		self.meet_count		= self.meet_count + 1
+		self.meet_updated	= dt.utcnow()
 
 		if (updated_s is not None): self.meet_ts = updated_s
 		if (updated_f is not None): self.meet_tf = updated_f
@@ -181,7 +187,7 @@ class Meeting(Base):
 		elif ((s_nxt == MEET_STATE_ACCEPTED) and (s_cur == MEET_STATE_PROPOSED)):
 			valid = True
 			print '\tMeeting.set_state()\tTransition from PROPOSED to ACCEPTED'
-			if (self.meet_from == prof_id):
+			if (self.meet_owner == prof_id):
 				error = 'LAST MODIFICATION and USER ACCEPTING PROPOSAL are same user: ' + str(uid)
 
 			self.meet_secured = dt.utcnow()
@@ -253,7 +259,7 @@ class Meeting(Base):
 
 
 	def get_description_html(self):
-		description = self.meet_desc.replace('\n', '<br>')
+		description = self.meet_details.replace('\n', '<br>')
 		return description
 			
 

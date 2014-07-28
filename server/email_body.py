@@ -267,8 +267,8 @@ def email_body_email_address_changed_confirmation(url, new_email):
 ################################################################################
 
 
-def email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_profile_id):
-	""" generate email body (HTML).  Notification when seller receives a new proposal.  Sent via ht_send_sellr_proposal_update(). """
+def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_profile_id):
+	""" generate email body (HTML).  Notification when seller receives a new meeting proposal.  Sent via ht_send_sellr_proposal_update(). """
 	msg = '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">\n<tbody>\n\t<tr><td align="center" valign="top">\n\t</td></tr>\n</tbody>\n</table>'
 
 	msg = msg + '<table cellspacing="0" cellpadding="0" width="100%" bgcolor="#ffffff">'
@@ -289,17 +289,17 @@ def email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_p
 	msg = msg + '\n\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
 	msg = msg + '\n\t\t\t\tGreat! You received a new proposal from <a href=\"https://127.0.0.1:5000/profile?hero=' + buyer_profile_id + '\" style="color:#29abe1">'+ buyer_name + '</a>.'
 	msg = msg + '\n\t\t\t\t<br><br><br>'
-	msg = msg + '\n\t\t\t\tTime: ' + proposal.prop_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
-	msg = msg + '\n\t\t\t\tDuration: ' + proposal.get_duration_in_hours() + ' hours<br>'
-	msg = msg + '\n\t\t\t\tLocation: ' + str(proposal.prop_place) + '<br>'
-	msg = msg + '\n\t\t\t\tFee: $' + str(proposal.prop_cost) + '<br><br>'
-	msg = msg + '\n\t\t\t\tDescription: ' + proposal.get_description_html() + '<br><br>'
+	msg = msg + '\n\t\t\t\tTime: ' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
+	msg = msg + '\n\t\t\t\tDuration: ' + meeting.get_duration_in_hours() + ' hours<br>'
+	msg = msg + '\n\t\t\t\tLocation: ' + str(meeting.meet_location) + '<br>'
+	msg = msg + '\n\t\t\t\tFee: $' + str(meeting.meet_cost) + '<br><br>'
+	msg = msg + '\n\t\t\t\tDescription: ' + meeting.get_description_html() + '<br><br>'
 	msg = msg + '\n\t\t\t</font><br><br>'
 	msg = msg + '\n\t\t</td></tr>'
 
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:150px" align="left" valign="top">'
-	msg = msg + '\n\t\t\t<a href=\"'+ proposal.accept_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a> '
-	msg = msg + '\n\t\t\t<a href=\"'+ proposal.reject_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #e55e62;font-size: 14px;border-radius: 3px;border: 1px solid #e55e62;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center" target="_blank">Reject</a> '
+	msg = msg + '\n\t\t\t<a href=\"'+ meeting.accept_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a> '
+	msg = msg + '\n\t\t\t<a href=\"'+ meeting.reject_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #e55e62;font-size: 14px;border-radius: 3px;border: 1px solid #e55e62;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center" target="_blank">Reject</a> '
 	msg = msg + '\n\t\t</td></tr>'
 	msg = msg + '\n\t</table>'
 

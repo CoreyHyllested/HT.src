@@ -95,17 +95,18 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 ### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
 ################################################################################
 
-def ht_send_meeting_proposed_notifications(proposal, sa, sp, ba, bp):
-	ht_send_meeting_proposed_notification_to_sellr(proposal, sa.email, sp.prof_name.encode('utf8', 'ignore'), bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	ht_send_meeting_proposed_notification_to_buyer(proposal, ba.email, bp.prof_name.encode('utf8', 'ignore'), sp.prof_name.encode('utf8', 'ignore'), sp.prof_id)
+def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
+	ht_send_meeting_proposed_notification_to_sellr(meeting, sa.email, sp.prof_name.encode('utf8', 'ignore'), bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
+	ht_send_meeting_proposed_notification_to_buyer(meeting, ba.email, bp.prof_name.encode('utf8', 'ignore'), sp.prof_name.encode('utf8', 'ignore'), sp.prof_id)
 
 
 
-def ht_send_meeting_proposed_notification_to_sellr(proposal, sellr_email, sellr_name, buyer_name, buyer_prof_id):
-	print "ht_send_meeting_proposed_notification (to seller) (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
-	msg_html = email_body_new_proposal_notification_to_seller(proposal, buyer_name, buyer_prof_id)
+def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
+	print "ht_send_meeting_proposed_notification (to seller) (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+
+	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
 	msg_subj = "Proposal to meet " + buyer_name
-	if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
+	if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
 
 	msg = create_msg(msg_subj, sellr_email, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
 	msg.attach(MIMEText(msg_html, 'html' ))
@@ -113,12 +114,12 @@ def ht_send_meeting_proposed_notification_to_sellr(proposal, sellr_email, sellr_
 
 
 
-def ht_send_meeting_proposed_notification_to_buyer(proposal, buyer_email, buyer_name, sellr_name, sellr_prof_id):
-	print "Proposal to hero (" + str(proposal.prop_uuid) + ") last touched by", str(proposal.prop_from)
+def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
+	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
 
-	#msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, proposal)
+	#msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
 	#msg_subj = "Proposal to meet " + sellr_name
-	#if (proposal.prop_count > 1): msg_subj = msg_subj + " (updated)"
+	#if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
 
 	#msg = create_msg(msg_subj, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
 	#msg.attach(MIMEText(msg_html, 'html'))
