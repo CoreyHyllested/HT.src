@@ -93,31 +93,31 @@ class NoResourceFound(SanitizedException):
 	def __init__(self, resrc, resrc_id, error_msg=None):
 		super(NoResourceFound, self).__init__(None)
 		self.resrc		= str(resrc)
-		self.resrc_id	= resrc_id
-		self.sanitized_msg(str(resrc) + ' ' + resrc_id + ' not found.')
-		self.technical_msg(str(resrc) + ' ' + resrc_id + ' not found.')
+		self.resrc_id	= str(resrc_id)
+		self.sanitized_msg(self.resrc + ' \'' + self.resrc_id + '\' not found.')
+		self.technical_msg(self.resrc + ' '   + self.resrc_id + ' not found.')
 
 	def __str__(self):
 		return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
 
 
 class NoProposalFound(NoResourceFound):
-	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', pid)
+	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', str(pid))
 
 class NoMeetingFound(NoResourceFound):
-	def __init__(self, mid): super(NoProposalFound, self).__init__('Meeting', mid)
+	def __init__(self, mid): super(NoMeetingFound, self).__init__('Meeting', str(mid))
 
 class NoProfileFound(NoResourceFound):
-	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', pid)
+	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', str(pid))
 
 class NoLessonFound(NoResourceFound):
-	def __init__(self, pid): super(NoLessonFound, self).__init__('Lesson', pid)
+	def __init__(self, pid): super(NoLessonFound, self).__init__('Lesson', str(pid))
 
 class NoReviewFound(NoResourceFound):
-	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', rid)
+	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
 
 class NoOauthFound(NoResourceFound):
-	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', uid)
+	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', str(uid))
 
 
 
@@ -143,10 +143,12 @@ def ht_sanitize_error(error, details=None, reraise=True):
 	print 'ht_sanitize_error()\t' + str(type(error)) + ' ' +  str(error)
 	if ((type(error) == NoResourceFound) or
 		(type(error) == StateTransitionError)):
-		print 'PRE-Sanitized Exception '
+		print 'Error Caught already a Sanitized Exception '
 		e = error
 	elif (type(error) == IntegrityError):
 		e = SanitizedException(error, resp_code=400, user_msg="Database Failure")
+	elif (type(error) == TypeError):
+		e = SanitizedException(error, resp_code=500, user_msg="Server Error")
 	elif (type(error) == NameError):
 		e = SanitizedException(error, resp_code=500, user_msg="Server Error")
 		print 'ht_sanitize_error() NAME ERROR\n', traceback.format_exc()
