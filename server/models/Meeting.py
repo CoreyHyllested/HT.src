@@ -397,7 +397,6 @@ class Meeting(Base):
 				receipt_email=str(sellr_account.email)
 			)
 
-#			print 'ht_charge_creditcard: Post Charge'
 #			pp(charge)
 
 			print 'ht_charge_creditcard: modify meeting'

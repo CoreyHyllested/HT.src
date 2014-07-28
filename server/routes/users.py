@@ -42,7 +42,7 @@ def render_dashboard(usrmsg=None):
 
 	bp = Profile.get_by_uid(session['uid'])
 	insprite_msg = session.pop('messages', None)
-	print 'render_dashboard() profile.account = ', bp.prof_name, session['uid']
+	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 
 	unread_msgs = []
 
