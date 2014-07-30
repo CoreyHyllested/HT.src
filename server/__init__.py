@@ -52,12 +52,13 @@ def create_upload_directory(ht_server):
 
 
 def initialize_server(config_name):
-	print 'initializing server...'
 	global ht_server
 	ht_server = Flask(__name__)
 
-	print 'using configuration... ', config_name
 	ht_server.config.from_object(server_configuration[config_name])
+	if (config_name == 'production' or config_name == 'devel_money'):
+		print 'using configuration... ', config_name
+
 	ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	ht_server.debug = True
 	ht_server.logger.setLevel(logging.DEBUG)
