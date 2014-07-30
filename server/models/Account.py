@@ -15,12 +15,13 @@
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
+from sqlalchemy import LargeBinary
+from sqlalchemy.orm	import relationship, backref
+from factory.alchemy import SQLAlchemyModelFactory
 from datetime import datetime as dt, timedelta
 from pytz import timezone
-import datetime
-import uuid
+import datetime, uuid, factory
 
 
 OAUTH_NONE   = 0
@@ -133,3 +134,30 @@ class Account(Base):
 	def update(self, new_values_dict):
 		self.__dict__.update(new_values_dict)
 
+
+
+
+#################################################################################
+### FOR TESTING PURPOSES ########################################################
+#################################################################################
+
+class AccountFactory(SQLAlchemyModelFactory):
+	class Meta:
+		model = Account
+		sqlalchemy_session = db_session
+
+	name = factory.Sequence(lambda n: u'Test User %d' % n)
+	email = factory.Sequence(lambda n: u'corey+TestUser%d@insprite.co' % n)
+
+	@classmethod
+	def _create(cls, model_class, *args, **kwargs):
+		"""Override default '_create' with custom call"""
+
+		n	= kwargs.pop('name', cls.name)
+		e	= kwargs.pop('email', cls.email)
+		pw	= kwargs.pop('pwhash', 'No password')
+		print '_create: name = ', n
+
+		obj = model_class(n, e, pw, *args, **kwargs)
+		obj.pwhash = 'pwtest'
+		return obj
