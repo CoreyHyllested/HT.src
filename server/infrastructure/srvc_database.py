@@ -39,5 +39,4 @@ Base = declarative_base(bind=db_engine)
 Base.query = db_session.query_property()
 
 
-# models uses (Base)
-from server.infrastructure import models
+from server.models import *

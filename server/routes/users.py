@@ -14,7 +14,7 @@
 
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
+from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
@@ -28,7 +28,7 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
-
+from pprint import pprint
 
 
 @insprite_views.route('/home',      methods=['GET', 'POST'])
@@ -40,23 +40,27 @@ def render_dashboard(usrmsg=None):
 		- Show any statistics.
 	"""
 
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	print 'render_dashboard() profile.account = ', bp.prof_name, uid
+	bp = Profile.get_by_uid(session['uid'])
+	insprite_msg = session.pop('messages', None)
+	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 
 	unread_msgs = []
 
 	try:
 		(props, appts, rview) = ht_get_active_meetings(bp)
 		active_reviews = ht_get_active_author_reviews(bp)
+		active_lessons = ht_get_active_lessons(bp)
 		unread_msgs = ht_get_unread_messages(bp)
-		lessons = ht_get_lessons(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
+	if (usrmsg is None and insprite_msg):
+		usrmsg = insprite_msg
+		print 'render_dashboard() usrmsg = ', usrmsg
+
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 
@@ -104,7 +108,7 @@ def render_compose_page():
 
 
 @req_authentication
-@ht_server.route("/get_threads", methods=['GET', 'POST'])
+@insprite_views.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
 	threads = []
@@ -321,11 +325,12 @@ def render_multiupload_page():
 @insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
-	lesson_id = request.values.get('lesson_id')
+	lesson_id = request.values.get('lesson_id', False)
 
-	if (lesson_id is not None):
+	if (lesson_id):
 		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
+		# warning.  dangerous. returning a LessonMap (which has same fields)
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 	else:
 		print "render_edit_portfolio_page(): get all images for profile:"
 		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
@@ -334,7 +339,7 @@ def render_edit_portfolio_page():
 
 
 
-@ht_server.route('/teacher/signup', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
@@ -357,7 +362,7 @@ def render_teacher_signup_page(usrmsg = None):
 
 
 
-@ht_server.route('/teacher/activate', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
 	""" A regular user is signing up to be a seller.  """
@@ -429,7 +434,7 @@ def activate_seller():
 
 
 # This route initiates a new lesson
-@ht_server.route('/lesson/new', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new', methods=['GET', 'POST'])
 @req_authentication
 def initialize_lesson(version=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -451,7 +456,7 @@ def initialize_lesson(version=None):
 
 
 # The new lesson has been initialized - redirect to the form
-@ht_server.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
 def render_new_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -460,114 +465,14 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_new_lesson: lesson_id is", lesson_id
 
-	form = LessonForm(request.form)
+	lesson = Lesson.get_by_id(lesson_id)
 
-	# In case the user went back in their browser to this page, after submitting
-	lesson = Lesson.get_by_lesson_id(lesson_id)
-	form.lessonTitle.data = lesson.lesson_title
-	form.lessonDescription.data = lesson.lesson_description
-	form.lessonAddress1.data = lesson.lesson_address_1
-	form.lessonAddress2.data = lesson.lesson_address_2
-	form.lessonCity.data = lesson.lesson_city
-	form.lessonState.data = lesson.lesson_state
-	form.lessonZip.data = lesson.lesson_zip
-	form.lessonCountry.data = lesson.lesson_country
-	form.lessonAddressDetails.data = lesson.lesson_address_details
-	form.lessonRate.data = lesson.lesson_rate
-	form.lessonRateUnit.data = lesson.lesson_rate_unit
-	form.lessonPlace.data = lesson.lesson_loc_option
-	form.lessonIndustry.data = lesson.lesson_industry
-	form.lessonDuration.data = lesson.lesson_duration
-	form.lessonAvail.data = lesson.lesson_avail
-
-	lessonUpdated = lesson.lesson_updated
-	lessonCreated = lessonUpdated = lesson.lesson_created
-	lessonFlags = lesson.lesson_flags
-
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
-
-
-
-# User is choosing to edit a lesson they previously saved - display the form
-@ht_server.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
-@req_authentication
-def render_edit_lesson(lesson_id, form=None, errmsg=None):
-	bp = Profile.get_by_uid(session['uid'])
-	if (bp.availability == 0): return redirect('/dashboard')
-	
-	print "render_edit_lesson: lesson_id is", lesson_id
-
-	form = LessonForm(request.form)
-	lesson = Lesson.get_by_lesson_id(lesson_id)
-	form.lessonTitle.data = lesson.lesson_title
-	form.lessonDescription.data = lesson.lesson_description
-	form.lessonAddress1.data = lesson.lesson_address_1
-	form.lessonAddress2.data = lesson.lesson_address_2
-	form.lessonCity.data = lesson.lesson_city
-	form.lessonState.data = lesson.lesson_state
-	form.lessonZip.data = lesson.lesson_zip
-	form.lessonCountry.data = lesson.lesson_country
-	form.lessonAddressDetails.data = lesson.lesson_address_details
-	form.lessonRate.data = lesson.lesson_rate
-	form.lessonRateUnit.data = lesson.lesson_rate_unit
-	form.lessonPlace.data = lesson.lesson_loc_option
-	form.lessonIndustry.data = lesson.lesson_industry
-	form.lessonDuration.data = lesson.lesson_duration
-	form.lessonAvail.data = lesson.lesson_avail
-
-	lessonUpdated = lesson.lesson_updated
-	lessonCreated = lessonUpdated = lesson.lesson_created
-	lessonFlags = lesson.lesson_flags
-
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
-
-
-# Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
-@ht_server.route('/lesson/update/<lesson_id>', methods=['POST'])
-@req_authentication
-def api_update_lesson(lesson_id):
-	bp = Profile.get_by_uid(session['uid'])
-	if (bp.availability == 0): return redirect('/dashboard')
-	
-	version = request.values.get("version")
-	print "api_update_lesson: Version is", version
-	print 'api_update_lesson: Beginning lesson update ...'
-
-	form = LessonForm(request.form)
-
-	# If the form is submitted, and it validates, do the update the database entry with this lesson
-	if form.validate_on_submit():
-		print 'api_update_lesson: valid POST'
-		print 'api_update_lesson: lesson_id is ', lesson_id
-		lesson = Lesson.get_by_lesson_id(lesson_id)
-		print 'api_update_lesson: look for updates.'
-		try:
-			update_lesson = ht_update_lesson(lesson, form)
-			if (update_lesson):
-				print 'api_update_lesson: adding lesson'
-				db_session.add(lesson)
-				db_session.commit()
-				print 'api_update_lesson: committed!'
-		except Exception as e:
-			print type(e), e
-			db_session.rollback()
-
-		if (version == "save"):
-			print "api_update_lesson: SAVE SUCCESS - returning success to AJAX"
-			return jsonify(valid="true")
-		else:
-			print 'api_update_lesson: Redirecting to view lesson:', lesson_id
-			return make_response(redirect("/lesson/"+lesson_id))
-
-	else:
-		print 'api_update_lesson: invalid POST', form.errors
-
-
-	if (version != "save"):
-
-		print 'api_update_lesson: fell through - populating form data and returning.'
-
-		lesson = Lesson.get_by_lesson_id(lesson_id)
+	# Form will be none unless we are here after an unsuccessful form validation.
+	if (form == None):
+		print "render_edit_lesson: no form submitted"
+		
+		# In case the user went back in their browser to this page, after submitting
+		form = LessonForm(request.form)
 		form.lessonTitle.data = lesson.lesson_title
 		form.lessonDescription.data = lesson.lesson_description
 		form.lessonAddress1.data = lesson.lesson_address_1
@@ -583,20 +488,194 @@ def api_update_lesson(lesson_id):
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
 		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMakeLive.data = 'y'
 
-		lessonUpdated = lesson.lesson_updated
-		lessonCreated = lessonUpdated = lesson.lesson_created
-		lessonFlags = lesson.lesson_flags
+		if (form.lessonRate.data <= 0):
+			form.lessonRate.data = bp.prof_rate		
 
+		if (lesson.lesson_flags == 2):
+			form.lessonMakeLive.data = None
+
+	else:
+		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
+		print "render_edit_lesson: invalid form imported"
+		
+
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
+
+
+
+# User is choosing to edit a lesson they previously saved - display the form
+@insprite_views.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
+@req_authentication
+def render_edit_lesson(lesson_id, form=None, errmsg=None):
+	bp = Profile.get_by_uid(session['uid'])
+	if (bp.availability == 0): return redirect('/dashboard')
+	
+	print "render_edit_lesson: lesson_id is", lesson_id
+	
+	lesson = Lesson.get_by_id(lesson_id)
+
+	session_form = session.pop('form', None)
+	session_errmsg = session.pop('errmsg', None)
+
+	# Form will be none unless we are here after an unsuccessful form validation.
+	if (session_form == None):
+		print "render_edit_lesson: no form submitted - creating new"
+		
+		form = LessonForm(request.form)
+		form.lessonTitle.data = lesson.lesson_title
+		form.lessonDescription.data = lesson.lesson_description
+		form.lessonAddress1.data = lesson.lesson_address_1
+		form.lessonAddress2.data = lesson.lesson_address_2
+		form.lessonCity.data = lesson.lesson_city
+		form.lessonState.data = lesson.lesson_state
+		form.lessonZip.data = lesson.lesson_zip
+		form.lessonCountry.data = lesson.lesson_country
+		form.lessonAddressDetails.data = lesson.lesson_address_details
+		form.lessonRate.data = lesson.lesson_rate
+		form.lessonRateUnit.data = lesson.lesson_rate_unit
+		form.lessonPlace.data = lesson.lesson_loc_option
+		form.lessonIndustry.data = lesson.lesson_industry
+		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMakeLive.data = 'y'
+
+		if (form.lessonRate.data <= 0):
+			form.lessonRate.data = bp.prof_rate		
+
+		if (lesson.lesson_flags == 2):
+			form.lessonMakeLive.data = None
+
+	else:
+		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
+		print "render_edit_lesson: invalid form imported"
+		form = session_form
+		errmsg = session_errmsg
+		
+
+	# lessonUpdated = lesson.lesson_updated
+
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
+
+
+# Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
+@insprite_views.route('/lesson/update/<lesson_id>', methods=['POST'])
+@req_authentication
+def api_update_lesson(lesson_id):
+	bp = Profile.get_by_uid(session['uid'])
+	if (bp.availability == 0): return redirect('/dashboard')
+	
+	version = request.values.get("version")
+	saved = request.values.get("saved")
+	print "api_update_lesson: Version is", version
+	print "api_update_lesson: Saved is", saved
+	print 'api_update_lesson: Beginning lesson update ...'
+
+	form = LessonForm(request.form)
+	lesson = Lesson.get_by_id(lesson_id)
+
+	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
+	
+	if (saved != "true"):
+
+		# If the form is submitted, and it validates, do the update the database entry with this lesson
+		if form.validate_on_submit():
+			print 'api_update_lesson: valid POST'
+			print 'api_update_lesson: lesson_id is ', lesson_id
+			print 'api_update_lesson: looking for updates...'
+			try:
+				update_lesson = ht_update_lesson(lesson, form, saved)
+				if (update_lesson):
+					print 'api_update_lesson: updating lesson...'
+					db_session.add(lesson)
+					db_session.commit()
+					print 'api_update_lesson: committed!'
+			except Exception as e:
+				print 'api_update_lesson: Exception:', type(e), e
+				db_session.rollback()
+
+			if (version == "save"):
+				print "api_update_lesson: Returning to form"
+				return jsonify(valid="true")
+			else:
+				print 'api_update_lesson: Redirecting to view lesson:', lesson_id
+				return make_response(redirect("/lesson/"+lesson_id))
+
+		else:
+			print 'api_update_lesson: invalid POST', form.errors
+
+	else:
+		if form:
+
+			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete/saved.
+			if form.validate_on_submit():
+				print 'api_update_lesson: lesson was SAVED and it validated'
+			else:
+				print 'api_update_lesson: lesson was SAVED and it did NOT validate'
+			
+			print 'api_update_lesson: lesson_id is ', lesson_id
+			print 'api_update_lesson: looking for updates...'
+			try:
+				update_lesson = ht_update_lesson(lesson, form, saved)
+				if (update_lesson):
+					print 'api_update_lesson: updating lesson...'
+					db_session.add(lesson)
+					db_session.commit()
+					print 'api_update_lesson: committed!'
+			except Exception as e:
+				print 'api_update_lesson: Exception:', type(e), e
+				db_session.rollback()			
+
+			print "api_update_lesson: Returning to form"
+			return jsonify(valid="true")
+
+	if (saved != "true"):
+
+		print 'api_update_lesson: fell through - populating form data and returning.'
+
+		# This is messed up bc it is not accommodating an unsuccessful form submission - should take values from the form in that case, rather than from the database (where the lesson fields may be empty)
+
+		# form.lessonTitle.data = lesson.lesson_title
+		# form.lessonDescription.data = lesson.lesson_description
+		# form.lessonAddress1.data = lesson.lesson_address_1
+		# form.lessonAddress2.data = lesson.lesson_address_2
+		# form.lessonCity.data = lesson.lesson_city
+		# form.lessonState.data = lesson.lesson_state
+		# form.lessonZip.data = lesson.lesson_zip
+		# form.lessonCountry.data = lesson.lesson_country
+		# form.lessonAddressDetails.data = lesson.lesson_address_details
+		# form.lessonRate.data = lesson.lesson_rate
+		# form.lessonRateUnit.data = lesson.lesson_rate_unit
+		# form.lessonPlace.data = lesson.lesson_loc_option
+		# form.lessonIndustry.data = lesson.lesson_industry
+		# form.lessonDuration.data = lesson.lesson_duration
+		# form.lessonAvail.data = lesson.lesson_avail
+		# form.lessonMakeLive.data = 'y'
+
+		# if (lesson.lesson_flags == 2):
+		# 	form.lessonMakeLive.data = ''
+
+		# lessonUpdated = lesson.lesson_updated
+		# lessonCreated = lesson.lesson_created
+
+		errmsg = "Sorry, something went wrong - your form didn't validate"
+		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
+
+		session['form'] = form
+		session['errmsg'] = errmsg
 
 		if (version == "edit"):
-			return make_response(render_edit_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
 		else:
-			return make_response(render_new_lesson(lesson_id, form=form, errmsg="Sorry, something went wrong - your form didn't validate:"+form.errors))
+			return redirect(url_for("insprite.render_new_lesson", lesson_id=lesson_id))
 
 
-def ht_update_lesson(lesson, form):
+
+
+def ht_update_lesson(lesson, form, saved):
 	print 'ht_update_lesson:', lesson
+	print 'ht_update_lesson: saved? ', saved
 	update = False
 	for key in request.values:
 		print '\t', key, request.values.get(key)
@@ -672,6 +751,28 @@ def ht_update_lesson(lesson, form):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+	# Apply the flag logic
+	# Default is 0 (initialized). If lesson has already been submitted, it will either be 2 (private) or 3 (active). 
+	# It can also be saved (1) before it has been submitted. The saved state (1) implies incompleteness. Completeness validation will not happen for saved forms.
+	# So if existing flag is 2 or 3, we will never set it to 1 (or zero), only back and forth between the two. Forms must be complete to be flagged 2 or 3.
+	
+	print "\tSetting Flags...current flag is",lesson.lesson_flags
+
+	if (saved == "true"):
+		print "\tUser saved form - set flag to 1 if not already 2 or 3"
+		if (lesson.lesson_flags <= 1):
+			lesson.lesson_flags = 1
+			update = True
+	elif (form.lessonMakeLive.data == True):
+		print "\tUser submitted form and made live"
+		lesson.lesson_flags = 3
+		update = True
+	else:
+		print "\tUser submitted form but kept private"
+		lesson.lesson_flags = 2
+		update = True
+
+	print "\tAnd now the flag is",lesson.lesson_flags	
 
 	return update
 
@@ -679,7 +780,7 @@ def ht_update_lesson(lesson, form):
 
 # View the lesson page
 @req_authentication
-@ht_server.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
+@insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
@@ -691,73 +792,56 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
-		lesson = Lesson.get_by_lesson_id(lesson_id)
-		portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
-
+		lesson = Lesson.get_by_id(lesson_id)
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		print "render_lesson_page(): Lesson String:", str(lesson)
-		print "render_lesson_page(): Images:", str(portfolio)
-
-		return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
-
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
 
 
 
 
 @req_authentication
-@insprite_views.route("/get_lesson_images", methods=['GET', 'POST'])
-def get_lesson_images():
+@insprite_views.route("/lesson/<lesson_id>/images", methods=['GET', 'POST'])
+def api_get_images_for_lesson(lesson_id):
 	# move this to API.
-	lesson_id = request.values.get('lesson_id')
-	images = []
 
 	try:
-		print "get_lesson_images: lesson_id is", lesson_id
-		images = db_session.query(Image).filter(Image.img_lesson == lesson_id).all();
-		json_images = [img.serialize for img in images]
+		images = ht_get_serialized_images_for_lesson(lesson_id)
 	except Exception as e:
-		print "get_lesson_images: exception:", e
-		json_images = None
-	return jsonify(images=json_images)
+		print "api_get_images_for_lesson: exception:", type(e), e
+		raise e
+	return jsonify(portfolio=images)
 
 
 
 
 @req_authentication
 @insprite_views.route("/portfolio/<operation>/", methods=['POST'])
-def ht_api_update_portfolio(operation):
-	uid = session['uid']
+def api_update_portfolio(operation):
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
 
 	print "-"*24
-	print "ht_api_update_portfolio(): operation:", operation
-	print "ht_api_update_portfolio(): lesson_id:", lesson_id
+	print "api_update_portfolio(): operation:", operation
 
 	try:
 		# get portfolio.
 		portfolio = None
-		# PRE-LESSONS # portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 
 		# get lesson-portfolio imgs
-		if (lesson_id is not None):
-			portfolio = db_session.query(Image).filter(Image.img_lesson == lesson_id).all()
-		else:
-			print "ht_api_update_portfolio(): Couldn't find Lesson."
-			#
+		print "api_update_portfolio(): Couldn't find Lesson."
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
 	if (operation == 'add'):
-		print 'ht_api_update_portfolio(): adding file'
+		print 'api_update_portfolio(): adding file'
 	elif (operation == 'update'):
-		print 'ht_api_update_portfolio(): usr request: update portfolio'
-		images = request.values.get('images')
-		print "ht_api_update_portfolio(): images:", str(images)
-
+		print 'api_update_portfolio(): usr request: update portfolio'
 		try:
 			for img in portfolio:
 				update = False;
@@ -794,6 +878,55 @@ def ht_api_update_portfolio(operation):
 
 
 
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/image/update", methods=['POST'])
+def api_lesson_image_update(lesson_id):
+	bp = Profile.get_by_uid(session['uid'])
+
+	print 'api_lesson_image_update(): usr request: update portfolio'
+	if (lesson_id is None):
+		print "api_lesson_image_update(): Couldn't find Lesson."
+		return jsonify(usrmsg="no lesson specified")
+
+	try:
+		# get lesson-portfolio imgs
+		portfolio = htdb_get_lesson_images(lesson_id)
+		print 'api_lesson_image_update():', len(portfolio)
+
+		for lesson_map in portfolio:
+			update = False;
+			print "api_lesson_image_update()\tlook for lesson image:", lesson_map.map_image
+			img = request.values.get(lesson_map.map_image, None)
+			if img is None:
+				print 'api_lesson_image_update()\t', lesson_map.map_image, 'doesnt exist in user-set, deleted.'
+				db_session.delete(lesson_map)
+				continue
+
+			obj = json.loads(img)
+			print lesson_map.map_image, obj['idx'], obj['cap']
+			if (lesson_map.map_order != obj['idx']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img_order'
+				lesson_map.map_order = int(obj['idx'])
+
+			if (lesson_map.map_comm != obj['cap']):
+				update = True
+				print 'api_lesson_image_update()\tupdate img caption'
+				lesson_map.map_comm = obj['cap']
+
+			if (update): db_session.add(lesson_map)
+		db_session.commit()
+
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+		return jsonify(usrmsg='This is embarassing.  We failed'), 500
+	return make_response(jsonify(usrmsg='Writing a note here: Huge Success'))
+
+
+
+
+
 @insprite_views.route('/schedule', methods=['GET','POST'])
 @req_authentication
 def render_schedule_page():
@@ -801,20 +934,24 @@ def render_schedule_page():
 
 	usrmsg = None
 	try:
-		hp_id = request.values.get('hp', None)
 		bp = Profile.get_by_uid(session.get('uid'))
-		hp = Profile.get_by_prof_id(request.values.get('hp', None))
 		ba = Account.get_by_uid(session.get('uid'))
+		hp = Profile.get_by_prof_id(request.values.get('hp', None))
 	except Exception as e:
+		print type(e), e
 		db_session.rollback()
 
+	if (hp is None):
+		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
+
 	if (ba.status == Account.USER_UNVERIFIED):
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
+		session['messages'] = 'We require a verified email prior to scheduling'
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_SECRET'], errmsg=usrmsg))
 
 
 
@@ -850,14 +987,10 @@ def render_review_meeting_page(review_id):
 		review_form.review_id.data = str(review_id)
 		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
-	except NoReviewFound as rnf:
-		print rnf 
+	except SanitizedException as se:
+		print se
 		db_session.rollback()
-		return jsonify(usrmsg=rnf.msg)
-	except ReviewError as re:
-		print re
-		db_session.rollback()
-		return jsonify(usrmsg=re.msg)
+		return jsonify(usrmsg=se.sanitized_msg())
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -873,8 +1006,8 @@ def render_review_meeting_page(review_id):
 @insprite_views.route('/settings', methods=['GET', 'POST'])
 @req_authentication
 def render_settings():
-	""" Allows Insprite users to modify their account settings."""
-
+	print 'render_settings()\t enter'
+	""" Provides users the ability to modify their settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
@@ -887,40 +1020,45 @@ def render_settings():
 		stripe_connect = pi.oa_account
 
 	errmsg = None
+	insprite_msg = session.pop('messages', None)
 
-	print 'render_settings() enter'
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
-		print 'render_settings() validated POST '
+		print 'render_settings()\tvalid submit'
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
+		update_name = None
 
-		update_prof = False		# do nothing if above are set.
 		update_prop = None
 		update_vnty = None
 		update_fail = False
 
+		if (form.set_input_name.data != ba.name):
+			print 'render_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
+			update_acct = True
+			update_name = form.set_input_name.data
+
 		if (form.set_input_newpass.data != ""):
-			print("render_settings() attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
+			print 'render_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
 			update_acct = True
 			update_pass = form.set_input_newpass.data
 
 		if (ba.email != form.set_input_email.data):
-			print("render_settings() attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
+			print 'render_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
 			update_acct = True
 			update_mail = form.set_input_email.data
 
 		if (update_acct):
+			print 'render_settings()\tupdate account'
 			if (update_pass):
 				pwd = form.set_input_curpass.data
 			else:
 				pwd = form.set_input_email_pass.data
-			print("render_settings() password is: " + pwd)
+			print 'render_settings()\tnow call modify account()'
 			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
-			print("render_settings() modify acct = " + str(rc) + ", errno = " + str(errno))
+			print("render_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
 			if (rc == False):
-				trace("restate errno" + str(errno))
 				errmsg = str(errno)
 				errmsg = error_sanitize(errmsg)
 				form.set_input_curpass.data = ''
@@ -930,22 +1068,9 @@ def render_settings():
 			else:
 				print "render_settings() Update should be complete"
 
-		if (update_prof):
-			try:
-				print "render_settings() update prof"
-				db_session.add(bp)
-				db_session.commit()
-				trace("render_settings() commited plus email is : " + update_mail)
-			except Exception as e:
-				print type(e), e
-				db_session.rollback()
-				errmsg = str(e)
-				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-
-
-		#change email; send email to both.
 		if (update_mail):
-			ht_email_confirmation_of_changed_email_address(ba.email, form.set_input_email.data)
+			# user changed email; for security, send confimration email to last email addr.
+			ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
 
 		#change pass send email
@@ -956,11 +1081,8 @@ def render_settings():
 		print 'render_settings() Finished Handling POST.'
 	elif request.method == 'GET':
 		print 'render_settings() GET'
-		msg = request.values.get('messages')
-		if (msg is not None): errmsg = msg
 	else:
-		print "render_settings() form isnt' valid"
-		print form.errors
+		print 'render_settings()\tinvalid submit' , form.errors
 		errmsg = "Passwords must match."
 
 
@@ -970,27 +1092,29 @@ def render_settings():
 	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
 	form.oauth_stripe.data     = stripe_connect
-	form.set_input_email.data  = ba.email
+	form.set_input_email.data	= ba.email
+	form.set_input_name.data	= ba.name
 	nexturl = "/settings"
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
-	print 'render_settings()', bp.prof_name, ' nexturl', nexturl
+	if (errmsg is None): errmsg = insprite_msg
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
 
 
 
+# rename /image/create
 @insprite_views.route('/upload', methods=['POST'])
 @dbg_enterexit
 @req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
-	#trace(request.files)
 
 	bp = Profile.get_by_uid(session.get('uid'))
 	orig = request.values.get('orig')
 	prof = request.values.get('prof')
+	update_profile_img = request.values.get('profile', False)
 	lesson_id = request.values.get('lessonID')
 
 	print 'upload: orig', orig
@@ -998,37 +1122,23 @@ def upload():
 	print 'upload: lesson_id', lesson_id
 
 	for mydict in request.files:
-
-		comment = ""
-
 		# for sec. reasons, ensure this is 'edit_profile' or know where it comes from
-		print("upload: reqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
+		print("upload()\treqfiles[" + str(mydict) + "] = " + str(request.files[mydict]))
 		image_data = request.files[mydict].read()
-		print ("upload: img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
+		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
-		#trace ("img_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 		if (len(image_data) > 0):
-			# create Image.
-			img_hashname = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-			metaImg = Image(img_hashname, bp.prof_id, comment, lesson_id)
-			f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], img_hashname), 'w')
-			f.write(image_data)
-			f.close()
-			try:
-				print 'upload: adding metaimg to db'
-				db_session.add(metaImg)
-				db_session.commit()
-			except Exception as e:
-				print 'upload: exception', type(e), e
-				db_session.rollback()
+			image = ht_create_image(bp, image_data, comment="No caption")
 
-		# upload to S3.
-		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + img_hashname)
-		sml.set_contents_from_file(StringIO(image_data))
+			if (lesson_id):
+				print 'upload()\tlesson_id' + str(lesson_id)
+				ht_map_image_to_lesson(image, lesson_id)
 
-	return jsonify(tmp="/uploads/" + str(img_hashname))
+			if (update_profile_img):
+				print 'upload()\tupdate profile img'
+				bp.update_profile_image(image)
+
+	return jsonify(tmp="/uploads/" + str(image.img_id))
 
 
 
@@ -1042,6 +1152,75 @@ def uploaded_file(filename):
 	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 
 
+
+def ht_create_image(profile, image_data, comment=None):
+	print 'upload()\tht_create_image()\tenter'
+	imgid = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+	image = Image.get_by_id(imgid)
+	if (image is None):
+		print 'upload()\tht_image_create\t image does not exist.  Create it.'
+		# image doesn't exist. Create and upload to S3
+		image = Image(imgid, profile.prof_id, comment)
+		try:
+			ht_upload_image_to_S3(image, image_data)
+			db_session.add(image)
+			db_session.commit()
+		except IntegrityError as ie:
+			# image already exists.
+			print 'upload()\tht_image_create() funny seeing image already exist here.'
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+		except Exception as e:
+			print 'upload: exception', type(e), e
+			db_session.rollback()
+	return image
+
+
+
+def ht_upload_image_to_S3(image, image_data):
+	f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], image.img_id), 'w')
+	f.write(image_data)
+	f.close()
+
+	print 'upload()\tupload_image_to_S3\tpush image to S3.'
+	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
+	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
+	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
+	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
+	s3_key.set_contents_from_file(StringIO(image_data))
+
+
+
+
+def ht_map_image_to_lesson(image, lesson_id):
+	print 'upload()\tmap_image_to_lesson\t', image.img_id, ' <=> ', lesson_id
+
+	print 'upload()\tmap_image_to_lesson\t Does map exist?'
+	map_exists = LessonImageMap.exists(image.img_id, lesson_id)
+	if (map_exists):
+		print 'upload()\tmap_image_to_lesson\t yes map already exists'
+		return
+
+	li_map = LessonImageMap(image.img_id, lesson_id, image.img_profile, comment=image.img_comment)
+	try:
+		db_session.add(li_map)
+		db_session.commit()
+		print 'upload()\tmap_image_to_lesson\tcommitted'
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
+
+
+
+
 def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
 	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
@@ -1053,6 +1232,8 @@ def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
 	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
 	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
+
+
 
 def error_sanitize(message):
 	if (message[0:16] == "(IntegrityError)"):

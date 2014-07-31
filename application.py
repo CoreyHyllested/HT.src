@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 import os, sys
 from server import  initialize_server
+from config import	server_configuration
 from flask.ext.script import Manager, Shell
 from OpenSSL import SSL
 
 
-application = initialize_server(os.getenv('INSPRITE_CONFIG') or 'default')
+ENV_CONFIG	= os.getenv('INSPRITE_CONFIG')
+if (ENV_CONFIG == 'devel_money'):
+	print "\n\n\n\nI too like to live dangerously.\n Serious.\nYou're entering the DangerZone"
+application = initialize_server(ENV_CONFIG or 'default')
 manager = Manager(application)
 
 

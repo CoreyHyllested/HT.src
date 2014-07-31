@@ -5,7 +5,7 @@ from wtforms.widgets import html_params, HTMLString
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
-from server.infrastructure.models import Industry, Review
+from server.models import *
 
 
 
@@ -140,8 +140,8 @@ class LessonForm(Form):
 	duratime = [-1, 30, 45, 60, 90 ]
 	enumDura = zip(duratime, duration)
 
-	lessonTitle			= TextField('Lesson Title', None)
-	lessonDescription	= TextAreaField('Lesson Description', None)
+	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
+	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
 	lessonAddress1	= TextField('Address Line 1', None)
 	lessonAddress2	= TextField('Address Line 1', None)
 	lessonCity		= TextField('City',	None)
@@ -149,13 +149,13 @@ class LessonForm(Form):
 	lessonZip		= TextField('Zip', None)
 	lessonCountry	= TextField('Country', None)
 	lessonAddressDetails = TextField('Details', None)
-	lessonRate		= IntegerField('Rate Amount', None, default=50)
+	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
-
+	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
 
 
 class ProfileForm(Form):
@@ -195,7 +195,8 @@ class SearchForm(Form):
 
 class SettingsForm(Form):
 	oauth_stripe    = TextField('Stripe')
-	set_input_email = TextField('Email', [validators.Email(), validators.Required()])
+	set_input_name	= TextField('Name')
+	set_input_email = TextField('Email')
 	set_input_email_pass = PasswordField('Password', [RequiredIf('set_input_email')])
 	set_input_curpass = PasswordField('Password', [RequiredIf('set_input_newpass')])
 	set_input_newpass = PasswordField('Password')

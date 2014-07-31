@@ -15,7 +15,7 @@
 from . import insprite_tests
 from flask import render_template, make_response, session, request, redirect
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models	import *
+from server.models	import *
 from server.infrastructure.errors	import *
 from server.infrastructure.tasks	import *
 from server.controllers				import *

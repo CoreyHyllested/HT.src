@@ -1,13 +1,13 @@
-function savePortfolio() {
-	var fd = {};
-	fd.csrf_token = $('.lessonFormButtonContainer #csrf_token').val();
+function addPortfolioInformation(fd) {
+	console.log('addPortfolioInformation() -- enter');
+
+	fd.csrf_token = $('#csrf_token').val();
 	fd.lesson_id = $('#lessonForm').attr("data-lesson-id");
-	
+
 	console.log("-----------------------");
 	console.log("savePortfolio : csrf_token: "+fd.csrf_token);
 	console.log("savePortfolio : lesson_id: "+fd.lesson_id);
 
-	// var images = [];
 
 	$(".editPortfolioListItem").each(function(i, el) {
 		var img	= new Object();
@@ -17,10 +17,16 @@ function savePortfolio() {
 		var img_id	= $(this).find(".editPortfolioImage").data("id");
 		console.log("img id is"+img_id);
 		fd[img_id] = JSON.stringify(img);
-		console.log("fd[img_id] is "+fd[img_id]);
+		console.log('fd['+img_id+'] is '+fd[img_id]);
 	});
+	return fd;
+}
 
-	// console.log("savePortfolio : Images: "+JSON.stringify(images));
+
+
+function savePortfolio() {
+	var fd = {};
+	addPortfolioInformation(fd);
 
 	console.log("savePortfolio : FD: "+JSON.stringify(fd));
 
@@ -30,20 +36,6 @@ function savePortfolio() {
 			dataType: 'json',
 			success : function(response) {
 				console.log("AJAX success");
-				$("#lessonSave").html("Save").css("color","#1488CC");
-				$(".lessonEditPhotosStatus").html("<span class='success'>Images successfully updated! Continuing...</span>");
-				
-				setTimeout(function() { 
-					$('.lessonFormPage').hide();
-					$(".lessonNavItem").removeClass("active");
-					$('#review').show();
-					var lessonID = $('#lessonForm').attr("data-lesson-id");
-					$.when(getLessonData(lessonID)).then(getLessonImages(lessonID));
-					$(".lessonEditPhotosStatus").empty();
-					$(".lessonNavItem[data-target-page=" + lessonID + "]").addClass("active");
-					history.pushState({title: "review"}, "", '/lesson/create#review');
-				}, 2000);
-
 				// Uncomment this and comment the setTimeout function if we want user to manually continue.
 				// $("#editPortfolioDoneContinueButton").show();
 				// $("#editPortfolioDoneButton").hide();				
@@ -67,7 +59,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.editPortfolioWrapper',
-	    tolerance: 'intersect',
+	    tolerance: 'pointer',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -77,7 +69,7 @@ $(document).ready(function(){
 	    cursor: 'move',
 	    opacity: 0.5,
 	    containment: '.lessonEditPhotosContainer',
-	    tolerance: 'intersect',
+	    tolerance: 'pointer',
 	    /*start: function(event, ui){console.log(ui.item.index());},
 	    update: function(event, ui) {} */
 	});
@@ -91,21 +83,23 @@ $(document).ready(function(){
 		//console.log("deleted: " + img_id);
 	});
 
-	$(".editPortfolioSave").click(function() {
-		var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
-		$(this).parent().siblings(".editPortfolioImage").data("title", caption);
-		$(this).parent().fadeOut();
-	});
+	// $(".editPortfolioSave").click(function() {
+	// 	var caption = $(this).parent().siblings(".caption").children(".editPortfolioImageCaption").val();
+	// 	$(this).parent().siblings(".editPortfolioImage").data("title", caption);
+	// 	$(this).parent().fadeOut();
+	// });
 
 	$(".editPortfolioImageCaption").keyup(function(){
+		var caption = $(this).val();
+		console.log("caption is"+caption);
+		$(this).parent().siblings("a.editPortfolioImage").attr("data-title", caption);
 		$("#editPortfolioDoneContinueButton").hide();
 		$("#editPortfolioDoneButton").show();
-		$(this).parent().siblings(".save-button").fadeIn();
+		// $(this).parent().siblings(".save-button").fadeIn();
 	});
 
-	$("#editPortfolioDoneButton").off().on('click', function(e) {
+	$(".editPortfolioDoneButton").off().on('click', function(e) {
 		e.preventDefault();
 		savePortfolio();
-		
 	});
 });

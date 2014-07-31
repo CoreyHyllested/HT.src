@@ -1,19 +1,24 @@
 
 
-.aboutIntroductionHeader {
+.headlineContainer {
   max-height:375px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
-  padding-top: 150px;
-  padding-bottom: 150px;
-  background: url('../img/background-blurred.jpg') no-repeat center right;
+  padding-top: 130px;
+  padding-bottom: 130px;
+  background: url('../img/about_bg.jpg') repeat-x center center;
   background-size: cover;
-  overflow-x: hidden;
+  overflow: auto;
   -moz-transition: 0.15s ease;
   -o-transition: 0.15s ease;
   -webkit-transition: 0.15s ease;
-	}
-  
+}
+
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { 
+  .aboutIntroductionHeader {
+    background: url('../img/about_bg@2x.jpg') repeat-x center center;
+  }
 }
 
 h1 {
@@ -36,25 +41,153 @@ a:link {
   	color: rgba(0,0,0, 0.9);
 }
 
+.headlineIntroduction {
+  /*color: #1488CC;*/
+  color: #fff;
+  font-weight: bold;  
+  font-size: 4em;
+  padding-bottom: 40px;
+  text-shadow: 0px -2px 2px rgba(0, 0, 0, 0.8);  
+}
+
 .headlineDeck {
-  text wrap: none;
-  color: black;
-  font-family: Garamond, EB Garamond, Georgia, serif;
-  font-size: 18px;
-  padding-top: 5px;
+  /*white-space: nowrap;*/
+  color: #fff;
+  font-size: 1.8em;
+  line-height: 1.1em;
+  width: 50%;
+  margin: 0px auto;
+  text-shadow: 0px -1px 4px rgba(0, 0, 0, 0.9);
 }
 
 
-.aboutTeam {
-  height:425px;
+.howWeWorkContainer {
+  height: 420px;
   text-align: center;
   border-bottom: 1px solid #e6e6e6;
-  padding-top: 45px;
-  -moz-transition: 0.15s ease;
-  -o-transition: 0.15s ease;
-  -webkit-transition: 0.15s ease;
+  margin: auto;
+  padding-bottom: 48px;
+  overflow: auto;
 }
 
+.howWeWorkHeader {
+  font-size: 4em;
+  font-weight: bold;
+  color: #e55e62;
+  text-align: center;
+  margin-top: 50px;
+  text-shadow: 0px -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.learnerContainer {
+  width: 300px;
+  float: left;
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 200px;
+  font-size: 2em;
+  text-align: left; 
+}
+
+.learnerHeader {
+  margin-top: 50px;
+}
+
+.learnerHeader img {
+  width: 100%;
+}
+
+.learnerText {
+  font-size: 0.8em;
+  line-height: 1.2em;
+}
+
+.mentorContainer {
+  width: 300px;
+  height: 155px;
+  margin-top: 10px;
+  float: right;
+  margin-right: 200px;
+  font-size: 2em;
+  text-align: left;   
+}
+.mentorHeader {
+}
+  
+.mentorHeader img {
+  width: 68%;
+}
+
+.mentorText {
+  font-size: 0.8em;
+  line-height: 1.2em;
+}
+
+
+
+/* Team and Mission */
+
+.aboutTeamContainer {
+  margin-left: auto;
+  margin-right: auto;
+  max-height: 400px;
+  text-align: center;
+  background: rgba(41, 171, 225, 0.1);
+  overflow: auto;
+}
+
+.aboutMissionStatement {
+  text wrap: none;
+  color: black;
+  font-size: 18px;
+  padding-top: 10px;
+  padding-left: 75px;
+  padding-right: 75px;
+}
+
+.aboutTeamIntroduction {
+  margin-top: 5px;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 3em;
+  margin-bottom: 36px;
+  text-shadow: 0px -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.teamHeader {
+  font-size: 3.4em;
+  font-weight: bold;
+  color: #808080;
+  margin-top: 50px;
+  margin-bottom: 25px;
+  text-shadow: 0px -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.teamMember {
+  display:inline-block;
+  padding: 40px;
+}
+
+.teamPortrait {
+  margin-bottom: 6px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  padding: 2px;
+  border: 1px solid #ebebeb;
+  -moz-box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+  -webkit-box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+  box-shadow: 0px 1px 30px rgba(0, 0, 0, 0.2);  
+}
+
+.teamCaption {
+  font-family: Garamond, EB Garamond, Georgia, serif;
+  font-size: 24px;
+}
+
+
+/* 
 .missionStatement {
   text wrap: none;
   color: black;
@@ -136,3 +269,4 @@ a:link {
 .headlineExperience h1 {
   color: white;
 }
+*/

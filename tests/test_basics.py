@@ -28,10 +28,11 @@ class BasicTestCase(unittest.TestCase):
 	def test_login_with_wrong_password(self):
 		resp = self.client.post(url_for('insprite.render_login'), data = {
 			'input_login_email'		: 'corey@insprite.co',
-			'input_login_password'	: 'NOT_THE_CORRECT_PASSWORD',
+			'input_login_password'	: 'INCORRECT_PASSWORD',
 		})
-		print resp
-		self.assertTrue(resp.status_code == 400)
+		print resp.status_code
+		# 200 (fail to login, but render /login)
+		self.assertTrue(resp.status_code == 200)
 
 
 	def test_login_with_correct_password(self):
@@ -39,5 +40,5 @@ class BasicTestCase(unittest.TestCase):
 			'input_login_email'		: 'corey@insprite.co',
 			'input_login_password'	: 'passw0rd',
 		})
-		print resp
-		self.assertTrue(resp.status_code == 200)
+		# 302 (Redirect to /dashboard)
+		self.assertTrue(resp.status_code == 302)
