@@ -1014,10 +1014,9 @@ def render_settings():
 	pi	= Oauth.get_stripe_by_uid(uid)
 
 
-	# StripeConnect allows user to charge customers.
+	# StripeConnect allows a user to charge customers.
 	stripe_connect = 'StripeConnect account not found.'
-	if (pi is not None):
-		stripe_connect = pi.oa_account
+	if (pi is not None): stripe_connect = pi.oa_account
 
 	errmsg = None
 	insprite_msg = session.pop('messages', None)
@@ -1080,9 +1079,9 @@ def render_settings():
 
 		print 'render_settings() Finished Handling POST.'
 	elif request.method == 'GET':
-		print 'render_settings() GET'
+		print 'render_settings()\t GET'
 	else:
-		print 'render_settings()\tinvalid submit' , form.errors
+		print 'render_settings()\t invalid submit' , form.errors
 		errmsg = "Passwords must match."
 
 
@@ -1091,7 +1090,7 @@ def render_settings():
 		email_unver = True
 	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
-	form.oauth_stripe.data     = stripe_connect
+	form.oauth_stripe.data	= stripe_connect
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
 	nexturl = "/settings"
