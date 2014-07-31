@@ -107,8 +107,7 @@ def ht_meeting_accept(meet_id, profile):
 	if (meeting is None): raise NoMeetingFound(meet_id)
 
 	try:
-		print 'ht_meeting_accept\tset_state(' + str(MEET_STATE_ACCEPTED) + ')'
-		meeting.set_state(MEET_STATE_ACCEPTED, profile)
+		meeting.set_state(MeetingState.MEET_STATE_ACCEPTED, profile)
 		db_session.add(meeting)
 		db_session.commit()
 	except Exception as e:
@@ -143,7 +142,7 @@ def ht_meeting_cancel(meet_id, profile):
 	if (meeting is None): raise NoMeetingFound(meet_id)
 
 	try:
-		meeting.set_state(MEET_STATE_CANCELED, profile)
+		meeting.set_state(MeetingState.MEET_STATE_CANCELED, profile)
 		db_session.add(meeting)
 		db_session.commit()
 	except Exception as e:
@@ -164,7 +163,7 @@ def ht_meeting_reject(meet_id, profile):
 	if (meeting is None): raise NoMeetingFound(meet_id)
 
 	try:
-		meeting.set_state(MEET_STATE_REJECTED, profile)
+		meeting.set_state(MeetingState.MEET_STATE_REJECTED, profile)
 		db_session.add(meeting)
 		db_session.commit()
 	except Exception as e:
