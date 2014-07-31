@@ -26,31 +26,30 @@ import uuid
 import stripe
 
 
+class MeetingState:
+	MEET_STATE_PROPOSED = 0		# Shows up in dashboard as proposal.
+	MEET_STATE_ACCEPTED = 1		# Shows up in dashboard as appointment.
+	MEET_STATE_CHARGECC = 2
+	MEET_STATE_OCCURRED = 3		# Shows up in dashboard as review Opp.
+	MEET_STATE_COMPLETE = 4		# Terminal state... see somewhere
+	MEET_STATE_RESOLVED = 5		# Terminal state... see somewhere
+	MEET_STATE_REJECTED = 10	# Terminal... see somewhere
+	MEET_STATE_TIMEDOUT = 11	# Terminal... see somewhere
+	MEET_STATE_CANCELED = 20	# Terminal state... see somewhere
+	MEET_STATE_DISPUTED = 30
 
-MEET_STATE_PROPOSED = 0		# Shows up in dashboard as proposal.
-MEET_STATE_ACCEPTED = 1		# Shows up in dashboard as appointment.
-MEET_STATE_CHARGECC	= 2
-MEET_STATE_OCCURRED = 3		# Shows up in dashboard as review Opp.
-MEET_STATE_CANCELED = 5		# Terminal state... see somewhere
-MEET_STATE_RESOLVED = 6		# Terminal state... see somewhere
-MEET_STATE_COMPLETE = 7		# Terminal state... see somewhere
-
-MEET_STATE_DISPUTED = 2
-MEET_STATE_REJECTED = 4		# Terminal... see somewhere
-MEET_STATE_TIMEDOUT = 8		# Terminal... see somewhere
-
-MEETING_STATE_LOOKUP_TABLE = {
-	MEET_STATE_PROPOSED : 'PROPOSED',
-	MEET_STATE_ACCEPTED : 'ACCEPTED',
-	MEET_STATE_DISPUTED : 'DISPUTED',
-	MEET_STATE_OCCURRED : 'OCCURRED',
-	MEET_STATE_REJECTED : 'REJECTED',
-	MEET_STATE_CANCELED : 'CANCELED',
-	MEET_STATE_RESOLVED : 'RESOVLED',
-	MEET_STATE_COMPLETE : 'COMPLETE',
-	MEET_STATE_TIMEDOUT : 'TIMEDOUT',
-	MEET_STATE_CHARGECC	: 'CHARGE CREDIT CARD',	# Trans-state
-}
+	MEETING_STATE_LOOKUP_TABLE = {
+		MEET_STATE_PROPOSED : 'PROPOSED',
+		MEET_STATE_ACCEPTED : 'ACCEPTED',
+		MEET_STATE_DISPUTED : 'DISPUTED',
+		MEET_STATE_OCCURRED : 'OCCURRED',
+		MEET_STATE_REJECTED : 'REJECTED',
+		MEET_STATE_CANCELED : 'CANCELED',
+		MEET_STATE_RESOLVED : 'RESOLVED',
+		MEET_STATE_COMPLETE : 'COMPLETE',
+		MEET_STATE_TIMEDOUT : 'TIMEDOUT',
+		MEET_STATE_CHARGECC : 'CHARGE CREDIT CARD',	# Trans-state
+	}
 
 
 
@@ -90,7 +89,7 @@ class Meeting(Base):
 	meet_sellr	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	meet_buyer	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
 	meet_owner	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# THE PROFILE who can make a decision. (to accept, etc)
-	meet_state	= Column(Integer, nullable=False, default=MEET_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
+	meet_state	= Column(Integer, nullable=False, default=MeetingState.MEET_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
 	meet_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
 	meet_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	meet_cost	= Column(Integer, nullable=False, default=0)											# Cost.
@@ -141,11 +140,11 @@ class Meeting(Base):
 		self.meet_updated = dt.utcnow()
 
 
-	def proposed(self): return (self.meet_state == MEET_STATE_PROPOSED)
-	def accepted(self): return (self.meet_state == MEET_STATE_ACCEPTED)
-	def occurred(self): return (self.meet_state == MEET_STATE_OCCURRED)
-	def complete(self): return (self.meet_state == MEET_STATE_COMPLETE)
-	def canceled(self): return (self.meet_state == MEET_STATE_CANCELED)
+	def proposed(self): return (self.meet_state == MeetingState.MEET_STATE_PROPOSED)
+	def accepted(self): return (self.meet_state == MeetingState.MEET_STATE_ACCEPTED)
+	def occurred(self): return (self.meet_state == MeetingState.MEET_STATE_OCCURRED)
+	def complete(self): return (self.meet_state == MeetingState.MEET_STATE_COMPLETE)
+	def canceled(self): return (self.meet_state == MeetingState.MEET_STATE_CANCELED)
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
 		self.meet_owner		= prof_updated
@@ -340,17 +339,17 @@ class Meeting(Base):
 		return True
 
 
-	STATE_TRANSITION_MATRIX =	{	MEET_STATE_PROPOSED	: { MEET_STATE_ACCEPTED	: __transition_proposed_to_accepted,
-															MEET_STATE_REJECTED	: __transition_proposed_to_rejected,
-															MEET_STATE_TIMEDOUT	: __transition_proposed_to_rejected, },
-									MEET_STATE_ACCEPTED	: { MEET_STATE_CHARGECC	: __transition_accepted_to_chargecc,
-															MEET_STATE_CANCELED	: __transition_accepted_to_canceled, },
-									MEET_STATE_CHARGECC	: { MEET_STATE_OCCURRED	: __transition_chargecc_to_occurred,
-															MEET_STATE_CANCELED	: __transition_chargecc_to_canceled, },
-									MEET_STATE_OCCURRED	: { MEET_STATE_COMPLETE	: __transition_occurred_to_complete,
-															MEET_STATE_DISPUTED	: __transition_occurred_to_disputed, },
-									MEET_STATE_COMPLETE	: { MEET_STATE_DISPUTED	: __transition_complete_to_disputed, },
-									MEET_STATE_DISPUTED	: { MEET_STATE_DISPUTED	: __transition_disputed_to_resolved, },
+	STATE_TRANSITION_MATRIX =	{	MeetingState.MEET_STATE_PROPOSED	: { MeetingState.MEET_STATE_ACCEPTED	: __transition_proposed_to_accepted,
+																			MeetingState.MEET_STATE_REJECTED	: __transition_proposed_to_rejected,
+																			MeetingState.MEET_STATE_TIMEDOUT	: __transition_proposed_to_rejected, },
+									MeetingState.MEET_STATE_ACCEPTED	: { MeetingState.MEET_STATE_CHARGECC	: __transition_accepted_to_chargecc,
+																			MeetingState.MEET_STATE_CANCELED	: __transition_accepted_to_canceled, },
+									MeetingState.MEET_STATE_CHARGECC	: { MeetingState.MEET_STATE_OCCURRED	: __transition_chargecc_to_occurred,
+																			MeetingState.MEET_STATE_CANCELED	: __transition_chargecc_to_canceled, },
+									MeetingState.MEET_STATE_OCCURRED	: { MeetingState.MEET_STATE_COMPLETE	: __transition_occurred_to_complete,
+																			MeetingState.MEET_STATE_DISPUTED	: __transition_occurred_to_disputed, },
+									MeetingState.MEET_STATE_COMPLETE	: { MeetingState.MEET_STATE_DISPUTED	: __transition_complete_to_disputed, },
+									MeetingState.MEET_STATE_DISPUTED	: { MeetingState.MEET_STATE_DISPUTED	: __transition_disputed_to_resolved, },
 								}
 
 
@@ -402,6 +401,7 @@ class Meeting(Base):
 			dump_error(e)
 			ht_sanitize_error(e)
 		print 'ht_charge_creditcard: failure_code=' + str(charge['failure_code']) + ', failure_message=' + str(charge['failure_message'])
+
 
 
 
@@ -483,6 +483,8 @@ def ht_enable_reviews(meet_id):
 
 	sellr_profile = Profile.get_by_prof_id(meeting.meet_sellr)
 	buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
+	print 'ht_enable_reviews(): get account ' +  sellr_profile.account
+	print 'ht_enable_reviews(): get account ' +  buyer_profile.account
 	sellr_account = Account.get_by_uid(sellr_profile.account)
 	buyer_account = Account.get_by_uid(buyer_profile.account)
 
@@ -523,7 +525,7 @@ def meeting_event_chargecc(meet_id):
 	print 'meeting_event_chargecc(' + str(meet_id) + ')'
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MEET_STATE_CHARGECC)
+		meeting.set_state(MeetingState.MEET_STATE_CHARGECC)
 	except Exception as e:
 		print 'meeting_event_chargecc callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
@@ -534,7 +536,7 @@ def meeting_event_chargecc(meet_id):
 def meeting_event_occurred(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MEET_STATE_OCCURRED)
+		meeting.set_state(MeetingState.MEET_STATE_OCCURRED)
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
@@ -546,7 +548,7 @@ def meeting_event_complete(meet_id):
 	#30 days after enable, shut it down!
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MEET_STATE_COMPLETE)
+		meeting.set_state(MeetingState.MEET_STATE_COMPLETE)
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
