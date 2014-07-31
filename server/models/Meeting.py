@@ -14,42 +14,49 @@
 
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.srvc_events	 import mngr
-from server.infrastructure.errors	import *
+from server.infrastructure.errors		 import *
 from server.models import Account, Profile, Oauth, Review
-from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import ForeignKey, LargeBinary
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
+from sqlalchemy.orm	import relationship, backref
+from factory.fuzzy	import *
+from factory.alchemy import SQLAlchemyModelFactory
 from datetime import datetime as dt, timedelta
 from pytz	import timezone
 from pprint	import pprint as pp
-import uuid
-import stripe
+import uuid, factory, stripe
+
+
 
 
 class MeetingState:
-	MEET_STATE_PROPOSED = 0		# Shows up in dashboard as proposal.
-	MEET_STATE_ACCEPTED = 1		# Shows up in dashboard as appointment.
-	MEET_STATE_CHARGECC = 2
-	MEET_STATE_OCCURRED = 3		# Shows up in dashboard as review Opp.
-	MEET_STATE_COMPLETE = 4		# Terminal state... see somewhere
-	MEET_STATE_RESOLVED = 5		# Terminal state... see somewhere
-	MEET_STATE_REJECTED = 10	# Terminal... see somewhere
-	MEET_STATE_TIMEDOUT = 11	# Terminal... see somewhere
-	MEET_STATE_CANCELED = 20	# Terminal state... see somewhere
-	MEET_STATE_DISPUTED = 30
+	PROPOSED = 0		# Shows up in dashboard as proposal.
+	ACCEPTED = 1		# Shows up in dashboard as appointment.
+	CHARGECC = 2
+	OCCURRED = 3		# Shows up in dashboard as review Opp.
+	COMPLETE = 4		# Terminal state... see somewhere
+	RESOLVED = 5		# Terminal state... see somewhere
+	REJECTED = 10	# Terminal... see somewhere
+	TIMEDOUT = 11	# Terminal... see somewhere
+	CANCELED = 20	# Terminal state... see somewhere
+	DISPUTED = 30
 
-	MEETING_STATE_LOOKUP_TABLE = {
-		MEET_STATE_PROPOSED : 'PROPOSED',
-		MEET_STATE_ACCEPTED : 'ACCEPTED',
-		MEET_STATE_DISPUTED : 'DISPUTED',
-		MEET_STATE_OCCURRED : 'OCCURRED',
-		MEET_STATE_REJECTED : 'REJECTED',
-		MEET_STATE_CANCELED : 'CANCELED',
-		MEET_STATE_RESOLVED : 'RESOLVED',
-		MEET_STATE_COMPLETE : 'COMPLETE',
-		MEET_STATE_TIMEDOUT : 'TIMEDOUT',
-		MEET_STATE_CHARGECC : 'CHARGE CREDIT CARD',	# Trans-state
+	LOOKUP_TABLE = {
+		PROPOSED : 'PROPOSED',
+		ACCEPTED : 'ACCEPTED',
+		DISPUTED : 'DISPUTED',
+		OCCURRED : 'OCCURRED',
+		REJECTED : 'REJECTED',
+		CANCELED : 'CANCELED',
+		RESOLVED : 'RESOLVED',
+		COMPLETE : 'COMPLETE',
+		TIMEDOUT : 'TIMEDOUT',
+		CHARGECC : 'CHARGE CREDIT CARD',	# Trans-state
 	}
+
+	@staticmethod
+	def state_name(state):
+		return MeetingState.LOOKUP_TABLE.get(state, 'UNDEFINED')
 
 
 
@@ -89,7 +96,7 @@ class Meeting(Base):
 	meet_sellr	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE SELLER. The Hero
 	meet_buyer	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)			# THE BUYER; requested hero.
 	meet_owner	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)						# THE PROFILE who can make a decision. (to accept, etc)
-	meet_state	= Column(Integer, nullable=False, default=MeetingState.MEET_STATE_PROPOSED,		index=True)			# Pure State (as in Machine)
+	meet_state	= Column(Integer, nullable=False, default=MeetingState.PROPOSED,	index=True)			# Pure State (as in Machine)
 	meet_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
 	meet_count	= Column(Integer, nullable=False, default=0)											# Number of times vollied back and forth.
 	meet_cost	= Column(Integer, nullable=False, default=0)											# Cost.
@@ -125,12 +132,14 @@ class Meeting(Base):
 		self.meet_tz	= 'US/Pacific'
 		self.meet_location	= location 
 		self.meet_details	= description
+		self.meet_state = MeetingState.PROPOSED
 
 		self.charge_customer_id = customer
 		self.charge_credit_card = card
 		self.charge_user_token = token
-		print 'Meeting(p_uid=%s, cost=%s, location=%s)' % (self.meet_id, cost, location)
-		print 'Meeting(token=%s, cust=%s, card=%s)' % (token, customer, card)
+
+		#print 'Meeting(p_uid=%s, cost=%s, location=%s)' % (self.meet_id, cost, location)
+		#print 'Meeting(token=%s, cust=%s, card=%s)' % (token, customer, card)
 
 		if (token is None):		raise SanitizedException(None, user_msg = 'Meeting: stripe token is None')
 		if (card is None):		raise SanitizedException(None, user_msg = 'Meeting: credit card is None')
@@ -140,11 +149,12 @@ class Meeting(Base):
 		self.meet_updated = dt.utcnow()
 
 
-	def proposed(self): return (self.meet_state == MeetingState.MEET_STATE_PROPOSED)
-	def accepted(self): return (self.meet_state == MeetingState.MEET_STATE_ACCEPTED)
-	def occurred(self): return (self.meet_state == MeetingState.MEET_STATE_OCCURRED)
-	def complete(self): return (self.meet_state == MeetingState.MEET_STATE_COMPLETE)
-	def canceled(self): return (self.meet_state == MeetingState.MEET_STATE_CANCELED)
+	def proposed(self): return (self.meet_state == MeetingState.PROPOSED)
+	def accepted(self): return (self.meet_state == MeetingState.ACCEPTED)
+	def occurred(self): return (self.meet_state == MeetingState.OCCURRED)
+	def complete(self): return (self.meet_state == MeetingState.COMPLETE)
+	def canceled(self): return (self.meet_state == MeetingState.CANCELED)
+
 
 	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
 		self.meet_owner		= prof_updated
@@ -174,8 +184,8 @@ class Meeting(Base):
 
 	def set_state(self, nxt_state, profile=None):
 		cur_state = self.meet_state
-		cstate_str = MEETING_STATE_LOOKUP_TABLE[cur_state]
-		nstate_str = MEETING_STATE_LOOKUP_TABLE[nxt_state]
+		cstate_str = MeetingState.state_name(cur_state)
+		nstate_str = MeetingState.state_name(nxt_state)
 
 		transitions = self.STATE_TRANSITION_MATRIX[cur_state]
 		transition = transitions.get(nxt_state)
@@ -339,17 +349,17 @@ class Meeting(Base):
 		return True
 
 
-	STATE_TRANSITION_MATRIX =	{	MeetingState.MEET_STATE_PROPOSED	: { MeetingState.MEET_STATE_ACCEPTED	: __transition_proposed_to_accepted,
-																			MeetingState.MEET_STATE_REJECTED	: __transition_proposed_to_rejected,
-																			MeetingState.MEET_STATE_TIMEDOUT	: __transition_proposed_to_rejected, },
-									MeetingState.MEET_STATE_ACCEPTED	: { MeetingState.MEET_STATE_CHARGECC	: __transition_accepted_to_chargecc,
-																			MeetingState.MEET_STATE_CANCELED	: __transition_accepted_to_canceled, },
-									MeetingState.MEET_STATE_CHARGECC	: { MeetingState.MEET_STATE_OCCURRED	: __transition_chargecc_to_occurred,
-																			MeetingState.MEET_STATE_CANCELED	: __transition_chargecc_to_canceled, },
-									MeetingState.MEET_STATE_OCCURRED	: { MeetingState.MEET_STATE_COMPLETE	: __transition_occurred_to_complete,
-																			MeetingState.MEET_STATE_DISPUTED	: __transition_occurred_to_disputed, },
-									MeetingState.MEET_STATE_COMPLETE	: { MeetingState.MEET_STATE_DISPUTED	: __transition_complete_to_disputed, },
-									MeetingState.MEET_STATE_DISPUTED	: { MeetingState.MEET_STATE_DISPUTED	: __transition_disputed_to_resolved, },
+	STATE_TRANSITION_MATRIX =	{	MeetingState.PROPOSED	: { MeetingState.ACCEPTED	: __transition_proposed_to_accepted,
+																MeetingState.REJECTED	: __transition_proposed_to_rejected,
+																MeetingState.TIMEDOUT	: __transition_proposed_to_rejected, },
+									MeetingState.ACCEPTED	: { MeetingState.CHARGECC	: __transition_accepted_to_chargecc,
+																MeetingState.CANCELED	: __transition_accepted_to_canceled, },
+									MeetingState.CHARGECC	: { MeetingState.OCCURRED	: __transition_chargecc_to_occurred,
+																MeetingState.CANCELED	: __transition_chargecc_to_canceled, },
+									MeetingState.OCCURRED	: { MeetingState.COMPLETE	: __transition_occurred_to_complete,
+																MeetingState.DISPUTED	: __transition_occurred_to_disputed, },
+									MeetingState.COMPLETE	: { MeetingState.DISPUTED	: __transition_complete_to_disputed, },
+									MeetingState.DISPUTED	: { MeetingState.DISPUTED	: __transition_disputed_to_resolved, },
 								}
 
 
@@ -525,7 +535,7 @@ def meeting_event_chargecc(meet_id):
 	print 'meeting_event_chargecc(' + str(meet_id) + ')'
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MeetingState.MEET_STATE_CHARGECC)
+		meeting.set_state(MeetingState.CHARGECC)
 	except Exception as e:
 		print 'meeting_event_chargecc callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
@@ -536,7 +546,7 @@ def meeting_event_chargecc(meet_id):
 def meeting_event_occurred(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MeetingState.MEET_STATE_OCCURRED)
+		meeting.set_state(MeetingState.OCCURRED)
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
@@ -548,10 +558,60 @@ def meeting_event_complete(meet_id):
 	#30 days after enable, shut it down!
 	try:
 		meeting = Meeting.get_by_id(meet_id)
-		meeting.set_state(MeetingState.MEET_STATE_COMPLETE)
+		meeting.set_state(MeetingState.COMPLETE)
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
 
 
 
+
+#################################################################################
+### FOR TESTING PURPOSES ########################################################
+#################################################################################
+
+class MeetingFactory(SQLAlchemyModelFactory):
+	class Meta:
+		model = Meeting
+		sqlalchemy_session = db_session
+		exclude = ('now', 'now_delta', )
+
+	now			= dt.utcnow()
+	now_delta	= now + timedelta(hours=6)
+
+	meet_ts	= factory.fuzzy.FuzzyNaiveDateTime(now, now_delta)
+	meet_tf	= factory.fuzzy.FuzzyNaiveDateTime(now, now_delta)
+	meet_details	= factory.Sequence(lambda n: u'Test Description %d' % n)
+	meet_location	= factory.fuzzy.FuzzyText(length=3, chars="1234567890", suffix=' Test Road, Richmond, IN 47374')
+	meet_token	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-token-')
+	meet_card	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-card-')
+	customer	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-custid-')
+	meet_cost	= factory.fuzzy.FuzzyInteger(10, 100)
+
+
+#	charge_customer_id	= Column(String(40), nullable = True)	# stripe customer id
+#	charge_credit_card	= Column(String(40), nullable = True)	# stripe credit card
+#	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
+#	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
+#	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
+#	review_buyer = Column(String(40), ForeignKey('review.review_id'))
+#	review_sellr = Column(String(40), ForeignKey('review.review_id'))
+
+	@classmethod
+	def _create(cls, model_class, *args, **kwargs):
+		"""Override default '_create' with custom call"""
+
+		ds	= kwargs.pop('meet_ts', cls.meet_ts)
+		df	= kwargs.pop('meet_tf', cls.meet_tf)
+		cost		= kwargs.pop('meet_cost',		cls.meet_cost)
+		location	= kwargs.pop('meet_location',	cls.meet_location)
+		details		= kwargs.pop('meet_details', 	cls.meet_details)
+		token		= kwargs.pop('meet_token',		cls.meet_token)
+		card		= kwargs.pop('meet_card',		cls.meet_card)
+		#print '_create: ', ds, ' - ', df
+		#print '_create: ', cost
+		#print '_create: ', location
+		#print '_create: ', details
+
+		obj = model_class('3239bc9b-b64e-4b93-b5ad-', '879c3584-9331-4bba-8689-5bfb3300625a', ds, df, cost, location, details, token=token, card=card, *args, **kwargs)
+		return obj
