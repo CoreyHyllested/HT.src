@@ -27,28 +27,17 @@ import stripe
 
 
 
-# MEETING STATES
-#(0x1 << MEET_BIT_PROPOSED)	#01		from {}  					to {accepted, rejected}		visible { dashboard-proposal }
-#(0x1 << MEET_BIT_ACCEPTED)	#02		from {proposed}				to {occurred, canceled}		visible { dashboard-appointment }
-#(0x1 << MEET_BIT_DISPUTED)	#04		from {occurred}				to {resolved, completed}	visible { ? }
-#(0x1 << MEET_BIT_OCCURRED)	#08		from {accepted}				to {completed, disputed}	visible { }
-##(0x1 << MEET_BIT_REJECTED)	#10		from {proposed}				to {}						visible {}
-#(0x1 << MEET_BIT_CANCELED)	#20		from {accepted}				to {}						visible { history? }
-#(0x1 << MEET_BIT_RESOLVED)	#40		from {disputed}				to {?}						visible {}
-#(0x1 << MEET_BIT_COMPLETE)	#80		from {disputed, occurred}	to {}						visible {}
-# Fake States.  Replaced with above.
-#(0x1 << MEET_BIT_TIMEDOUT)	#180
-MEET_STATE_PROPOSED = 0		# (0001) Proposed (tmp):  Shows up in dashboard as proposal.
-MEET_STATE_ACCEPTED = 1		# (0002) Accepted (tmp):  Shows up in dashboard as appointment.
+MEET_STATE_PROPOSED = 0		# Shows up in dashboard as proposal.
+MEET_STATE_ACCEPTED = 1		# Shows up in dashboard as appointment.
 MEET_STATE_CHARGECC	= 2
-MEET_STATE_OCCURRED = 3		# (0008) Occurred (tmp):  Shows up in dashboard as review Opp.
-MEET_STATE_CANCELED = 5		# (0020) Canceled (terminal)... see somewhere
-MEET_STATE_RESOLVED = 6		# (0040) Resolved (terminal?) ...
-MEET_STATE_COMPLETE = 7		# (0080) Completed (terminal)... see somewhere
+MEET_STATE_OCCURRED = 3		# Shows up in dashboard as review Opp.
+MEET_STATE_CANCELED = 5		# Terminal state... see somewhere
+MEET_STATE_RESOLVED = 6		# Terminal state... see somewhere
+MEET_STATE_COMPLETE = 7		# Terminal state... see somewhere
 
-MEET_STATE_DISPUTED = 2		# (0004) disputed (tmp):  ...?
-MEET_STATE_REJECTED = 4		# (0010) Rejected (terminal)... see somewhere
-MEET_STATE_TIMEDOUT = 8		# (0080) Completed (terminal)... see somewhere
+MEET_STATE_DISPUTED = 2
+MEET_STATE_REJECTED = 4		# Terminal... see somewhere
+MEET_STATE_TIMEDOUT = 8		# Terminal... see somewhere
 
 MEETING_STATE_LOOKUP_TABLE = {
 	MEET_STATE_PROPOSED : 'PROPOSED',
@@ -59,7 +48,7 @@ MEETING_STATE_LOOKUP_TABLE = {
 	MEET_STATE_CANCELED : 'CANCELED',
 	MEET_STATE_RESOLVED : 'RESOVLED',
 	MEET_STATE_COMPLETE : 'COMPLETE',
-	MEET_STATE_TIMEDOUT : 'TIMEDOUT',			# Meta state?
+	MEET_STATE_TIMEDOUT : 'TIMEDOUT',
 	MEET_STATE_CHARGECC	: 'CHARGE CREDIT CARD',	# Trans-state
 }
 
@@ -120,8 +109,8 @@ class Meeting(Base):
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
 	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
 	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-	review_buyer = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_sellr
-	review_sellr = Column(String(40), ForeignKey('review.review_id'))	#TODO rename review_buyer
+	review_buyer = Column(String(40), ForeignKey('review.review_id'))
+	review_sellr = Column(String(40), ForeignKey('review.review_id'))
 
 
 	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None):
@@ -255,6 +244,7 @@ class Meeting(Base):
 		}
 
 
+
 	def __transition_proposed_to_accepted(self, profile, cur, nxt):
 		print '\tMeeting.transition_PROPOSED_to_ACCEPTED()\tENTER'
 		if (self.meet_owner != profile.prof_id):
@@ -362,7 +352,6 @@ class Meeting(Base):
 									MEET_STATE_COMPLETE	: { MEET_STATE_DISPUTED	: __transition_complete_to_disputed, },
 									MEET_STATE_DISPUTED	: { MEET_STATE_DISPUTED	: __transition_disputed_to_resolved, },
 								}
-
 
 
 	def ht_charge_creditcard(self):
