@@ -17,14 +17,17 @@
 	{% endif %}
 
 	<form action=settings method=POST>
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 		<div class="settingsLeftSideWrapper">
+			<div class="settingsName">
+				<h2>Change Name</h2>
+				{{form.set_input_name(placeholder="Current Name")}}
+			</div>
+
 			<div class="settingsEmail">
 				<h2>Change Email</h2>
-
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-				{{form.set_input_email(placeholder="Current email")}}			
+				{{form.set_input_email(placeholder="Current email")}}
 				{{form.set_input_email_pass(placeholder="Current password")}}
 				{% if unverified_email == True %}
 				<div>

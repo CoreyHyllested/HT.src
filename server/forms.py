@@ -195,7 +195,8 @@ class SearchForm(Form):
 
 class SettingsForm(Form):
 	oauth_stripe    = TextField('Stripe')
-	set_input_email = TextField('Email', [validators.Email(), validators.Required()])
+	set_input_name	= TextField('Name')
+	set_input_email = TextField('Email')
 	set_input_email_pass = PasswordField('Password', [RequiredIf('set_input_email')])
 	set_input_curpass = PasswordField('Password', [RequiredIf('set_input_newpass')])
 	set_input_newpass = PasswordField('Password')
