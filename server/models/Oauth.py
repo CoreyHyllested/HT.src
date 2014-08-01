@@ -17,13 +17,19 @@ from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
 from sqlalchemy.orm import relationship, backref
+from factory.alchemy import SQLAlchemyModelFactory
+from factory.fuzzy	import *
 from datetime import datetime as dt, timedelta
+import factory
 
 
 OAUTH_NONE   = 0
 OAUTH_LINKED = 1
 OAUTH_STRIPE = 2
 OAUTH_GOOGLE = 3
+OAUTH_FACEBK = 4
+OAUTH_TWITTR = 5
+
 
 class Oauth(Base):
 	__tablename__ = "oauth"
@@ -88,3 +94,25 @@ class Oauth(Base):
 
 
 
+#################################################################################
+### FOR TESTING PURPOSES ########################################################
+#################################################################################
+
+class OauthFactory(SQLAlchemyModelFactory):
+	class Meta:
+		model = Oauth
+		sqlalchemy_session = db_session
+
+	userid	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-ht_account-')
+	account = factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-oa_account-')
+
+	@classmethod
+	def _create(cls, model_class, *args, **kwargs):
+		"""Override default '_create' with custom call"""
+
+		userid	= kwargs.pop('userid',	cls.userid)
+		account = kwargs.pop('account',	cls.account)
+		service = kwargs.pop('service',	OAUTH_STRIPE)
+
+		obj = model_class(account, service, userid, *args, **kwargs)
+		return obj
