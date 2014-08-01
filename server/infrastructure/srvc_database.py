@@ -30,13 +30,14 @@ def initialize_database(config):
 	global db_session
 	global Base
 
-	if (db_engine is not None):
-		raise Exception('database is already started')
+	if (db_session is not None):
+		db_session.remove()
+		#raise Exception('database is already started')
 
 	DATABASE_URI = config['SQLALCHEMY_DATABASE_URI']
 	MIGRATE_REPO = config['SQLALCHEMY_MIGRATE_REPO']
 
-	print 'initialize database... ' + DATABASE_URI
+	#print 'initialize database... ' + DATABASE_URI
 	db_engine	= create_engine(DATABASE_URI) #, echo=True)
 	db_session	= scoped_session(sessionmaker(bind=db_engine))
 	Base = declarative_base(bind=db_engine)
@@ -44,7 +45,7 @@ def initialize_database(config):
 	from server.models import *
 
 	if (config['TESTING']):
-		print 'TESTING... create database'
+		#print 'TESTING... create database'
 		Base.metadata.create_all()
 
 
