@@ -49,12 +49,12 @@ def email_body_verify_account(verify_email_url):
 	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Welcome to Insprite! We\'re thrilled that you\'ve joined us.<br><br>'
 	msg = msg + 'Insprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. We think you\'ll love exploring our growing community!<br><br>'
 	msg = msg + 'Before you explore the cool things you can learn and experience from the inspiring, creative people around you (or decide to be one of them), <a href=\"' + verify_email_url + '\">please verify your email account</a> so we know you\'re a real breathing human.<br><br>'
-	msg = msg + 'If you\'re getting this message by mistake and didn\'t create an account, <a href="mailto:thegang@insprite.co" style="color:#29abe1">drop us a line</a> and we\'ll get on it ASAP.</font>'
+	msg = msg + 'If you\'re getting this message by mistake and didn\'t create an account, <a href="mailto:thegang@insprite.co" style="color:#1488CC">drop us a line</a> and we\'ll get on it ASAP.</font>'
 	msg = msg + '</td></tr>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600" height="200">'
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="center" valign="top">'
-	msg = msg + '<a href="'+ verify_email_url + '" style="color:#ffffff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#29abe1;font-size:14px;border-radius:999em;margin-top:15px;margin-left:5px;font-family:Garamond, EB Garamond, Georgia, serif;" target="_blank">Verify your account</a>'
+	msg = msg + '<a href="'+ verify_email_url + '" style="color:#ffffff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#1488CC;font-size:14px;border-radius:999em;margin-top:15px;margin-left:5px;font-family:Garamond, EB Garamond, Georgia, serif;" target="_blank">Verify your account</a>'
 	msg = msg + '</td></tr></table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
@@ -67,7 +67,7 @@ def email_body_verify_account(verify_email_url):
 	msg = msg + '<img src="http://ryanfbaker.com/insprite/spacer-2.png"></td></tr></table>'
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600"><tr>'
 	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;" align="center" valign="middle">'
-	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#29abe1">Contact Us</a> | Sent by <a href="https://insprite.co" style="color:#29abe1">Insprite</a>, California, USA. | <a href="#" style="color:#29abe1">Unsubscribe</a></font>'
+	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:10px;"> <a href="mailto:thegang@insprite.co" style="color:#1488CC">Contact Us</a> | Sent by <a href="https://insprite.co" style="color:#1488CC">Insprite</a>, California, USA. | <a href="#" style="color:#1488CC">Unsubscribe</a></font>'
 	msg = msg + '</td></tr></table>'
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600"><tr>'
@@ -287,7 +287,7 @@ def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_pr
 	msg = msg + '\n\t<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
 	msg = msg + '\n\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
-	msg = msg + '\n\t\t\t\tGreat! You received a new proposal from <a href=\"https://127.0.0.1:5000/profile?hero=' + buyer_profile_id + '\" style="color:#29abe1">'+ buyer_name + '</a>.'
+	msg = msg + '\n\t\t\t\tGreat! You received a new proposal from <a href=\"https://127.0.0.1:5000/profile?hero=' + buyer_profile_id + '\" style="color:#1488CC">'+ buyer_name + '</a>.'
 	msg = msg + '\n\t\t\t\t<br><br><br>'
 	msg = msg + '\n\t\t\t\tTime: ' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>'
 	msg = msg + '\n\t\t\t\tDuration: ' + meeting.get_duration_in_hours() + ' hours<br>'
@@ -298,7 +298,7 @@ def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_pr
 	msg = msg + '\n\t\t</td></tr>'
 
 	msg = msg + '\n\t\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:150px" align="left" valign="top">'
-	msg = msg + '\n\t\t\t<a href=\"'+ meeting.accept_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a> '
+	msg = msg + '\n\t\t\t<a href=\"'+ meeting.accept_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #1488CC;font-size: 14px;border-radius: 3px;border: 1px solid #1488CC;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Accept</a> '
 	msg = msg + '\n\t\t\t<a href=\"'+ meeting.reject_url() +'\" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #e55e62;font-size: 14px;border-radius: 3px;border: 1px solid #e55e62;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center" target="_blank">Reject</a> '
 	msg = msg + '\n\t\t</td></tr>'
 	msg = msg + '\n\t</table>'
@@ -408,8 +408,8 @@ def email_body_meeting_rejected_notification_to_seller(meeting, buyer_name, buye
 	msg = msg + '\n\t\t\t<tr>'
 	msg = msg + '\n\t\t\t\t<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
 	msg = msg + '\n\t\t\t\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
-	msg = msg + '\n\t\t\t\t\t\tYou did not accept a proposal from <a href=\"https://127.0.0.1:5000/profile?hero=\"' + buyer_prof_id + ' style="color:#29abe1">' + buyer_name + '</a>.<br><br>'
-	msg = msg + '\n\t\t\t\t\t\tMessage <a href="#" style="color:#29abe1">' + buyer_name + '</a> to see if you can work our a new date and time.'
+	msg = msg + '\n\t\t\t\t\t\tYou did not accept a proposal from <a href=\"https://127.0.0.1:5000/profile?hero=\"' + buyer_prof_id + ' style="color:#1488CC">' + buyer_name + '</a>.<br><br>'
+	msg = msg + '\n\t\t\t\t\t\tMessage <a href="#" style="color:#1488CC">' + buyer_name + '</a> to see if you can work our a new date and time.'
 	msg = msg + '\n\t\t\t\t\t</font><br><br>'
 	msg = msg + '\n\t\t\t\t</td>'
 	msg = msg + '\n\t\t\t</tr>'
@@ -585,7 +585,7 @@ def email_body_cancellation_from_buyer_outside_24_hours(buyer_name, sellr_name):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Shucks. You cancelled your appointment. Thanks for letting <a href="#" style="color:#29abe1">' + sellr_name + '</a> know ahead of time; you will not be charged for the cancellation.<br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Shucks. You cancelled your appointment. Thanks for letting <a href="#" style="color:#1488CC">' + sellr_name + '</a> know ahead of time; you will not be charged for the cancellation.<br><br>'
 	msg = msg + '\t\t\t Need to reschedule? Go right ahead. <br><br>'
 	msg = msg + '\t\t\t You can also explore other options, too. </font><br><br>'
 	msg = msg + '\t</td></tr>'
@@ -624,9 +624,9 @@ def email_body_cancellation_from_buyer_within_24_hours(sellr_name, cost):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> You cancelled the appointment with <a href="#" style="color:#29abe1">' + sellr_name + '</a>.<br><br>'
-	msg = msg + '\t\t\t We know life can be busy, but we also value accountability within the community and adhere to a <a href="#" style="color:#29abe1">24-hour cancellation policy</a>. You will be charged <a href="#" style="color:#29abe1">$' + str(cost) + '</a> for the service. <br><br>'
-	msg = msg + '\t\t\t Questions? <a href="#" style="color:#29abe1">Drop us a line</a> or read our <a href="#" style="color:#29abe1">Terms of Service</a> and <a href="#" style="color:#29abe1">cancellation policies</a> for additional information. </font><br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> You cancelled the appointment with <a href="#" style="color:#1488CC">' + sellr_name + '</a>.<br><br>'
+	msg = msg + '\t\t\t We know life can be busy, but we also value accountability within the community and adhere to a <a href="#" style="color:#1488CC">24-hour cancellation policy</a>. You will be charged <a href="#" style="color:#1488CC">$' + str(cost) + '</a> for the service. <br><br>'
+	msg = msg + '\t\t\t Questions? <a href="#" style="color:#1488CC">Drop us a line</a> or read our <a href="#" style="color:#1488CC">Terms of Service</a> and <a href="#" style="color:#1488CC">cancellation policies</a> for additional information. </font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -663,7 +663,7 @@ def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, cos
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#29abe1"> ' + buyer_name + ' </a> cancelled your appointment.<br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#1488CC"> ' + buyer_name + ' </a> cancelled your appointment.<br><br>'
 	msg = msg + '\t\t\t Sometimes things come up in life, but your time and talent are still valuable. You\'ll receive '+ str(cost) +' from ' + buyer_name + ' for the cancelled booking.</font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
@@ -701,8 +701,8 @@ def email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Drats. <a href="#" style="color:#29abe1">' + buyer_name + '</a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Message <a href="#" style="color:#29abe1">'+buyer_name+'</a> to see if you can work out a new date and time. </font><br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> Drats. <a href="#" style="color:#1488CC">' + buyer_name + '</a> cancelled your appointment.<br><br>'
+	msg = msg + '\t\t\t Message <a href="#" style="color:#1488CC">'+buyer_name+'</a> to see if you can work out a new date and time. </font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -739,8 +739,8 @@ def email_body_cancellation_from_seller_to_buyer():
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#29abe1">{Insert user - seller}</a> cancelled your appointment.<br><br>'
-	msg = msg + '\t\t\t Check out <a href="#" style="color:#29abe1">{Insert seller}</a>\'s availability, and send a new proposal. (Sometimes, a little reshuffling can really make things happen!)</font><br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;"> <a href="#" style="color:#1488CC">{Insert user - seller}</a> cancelled your appointment.<br><br>'
+	msg = msg + '\t\t\t Check out <a href="#" style="color:#1488CC">{Insert seller}</a>\'s availability, and send a new proposal. (Sometimes, a little reshuffling can really make things happen!)</font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
 
@@ -781,8 +781,8 @@ def email_body_meeting_reminder():
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Drats. <a href="#" style="color:#29abe1">{insert seller name} cancelled your appointment</a>.<br><br>'
-	msg = msg + '\t\t\t <a href="#" style="color:#29abe1">Reschedule</a> or you can send a message to inquire about the cancellation. <br><br>'
+	msg = msg + '\t\t<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Drats. <a href="#" style="color:#1488CC">{insert seller name} cancelled your appointment</a>.<br><br>'
+	msg = msg + '\t\t\t <a href="#" style="color:#1488CC">Reschedule</a> or you can send a message to inquire about the cancellation. <br><br>'
 	msg = msg + '\t\t\t And, don\'t worry! You won\'t be charged, promise. </font><br><br>'
 	msg = msg + '\t</td></tr>'
 	msg = msg + '</table>'
@@ -820,11 +820,11 @@ def email_body_review_reminder():
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '\t<tr>td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px; padding-right:75px" align="left" valign="top">'
 	msg = msg + '\t\t <font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">We hope you had a great appointment!<br>'
-	msg = msg + '\t\t\t Your opinion goes a long way&mdash;write up your review of the appointment so others can learn from your experience with <a href="#" style="color:#29abe1">{user\'s name}</a></font><br><br>'
+	msg = msg + '\t\t\t Your opinion goes a long way&mdash;write up your review of the appointment so others can learn from your experience with <a href="#" style="color:#1488CC">{user\'s name}</a></font><br><br>'
 	msg = msg + '\t</td></tr>'
 
 	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:200px" align="left" valign="top">'
-	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:100px;text-align:center;" target="_blank">Rate & Review</a>'
+	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #1488CC;font-size: 14px;border-radius: 3px;border: 1px solid #1488CC;font-family:Garamond, EB Garamond, Georgia, serif; width:100px;text-align:center;" target="_blank">Rate & Review</a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
 
@@ -864,7 +864,7 @@ def email_body_to_user_sending_msg(profile, message):
 
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="85" width="600" height="350">'
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;" align="left" valign="top">'
-	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Way to get the conversation started! You messaged <a href=\"https://127.0.0.1:5000/profile?hero=' + profile.prof_id + '\" style="color:#29abe1">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.<br><br>'
+	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Way to get the conversation started! You messaged <a href=\"https://127.0.0.1:5000/profile?hero=' + profile.prof_id + '\" style="color:#1488CC">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.<br><br>'
 	msg = msg + 'Until then, stand tight. <br><br>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
@@ -903,12 +903,12 @@ def email_body_to_user_receiving_msg(profile, message):
 	msg = msg + '<table style="border-left: 2px solid #e6e6e6; border-right: 2px solid #e6e6e6;" cellspacing="0" cellpadding="0" width="600">'
 	msg = msg + '<tr><td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:0px;padding-left:75px" align="left" valign="top">'
 	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">'
-	msg = msg + 'You\'ve got mail. It\'s from <a href=\"https://127.0.0.1:5000/profile?hero=' + str(profile.prof_id) + '\" style="color:#29abe1">' + profile.prof_name.encode('utf8', 'ignore') + '</a>.'
+	msg = msg + 'You\'ve got mail. It\'s from <a href=\"https://127.0.0.1:5000/profile?hero=' + str(profile.prof_id) + '\" style="color:#1488CC">' + profile.prof_name.encode('utf8', 'ignore') + '</a>.'
 	msg = msg + '<br><i>' + message.msg_content + '</i>'
 	msg = msg + '</font><br>'
 	msg = msg + '</td></tr>'
 	msg = msg + '<td style="background-color: #ffffff; border-top: 0px solid #333333; border-bottom: 10px solid #FFFFFF;padding-top:10px;padding-left:75px;padding-bottom:200px" align="left" valign="top">'
-	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #29abe1;font-size: 14px;border-radius: 3px;border: 1px solid #29abe1;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Reply</a>'
+	msg = msg + '<a href="#" style="color:#ffffff;text-decoration: none;display: inline-block;min-height: 38px;line-height: 39px;padding-right: 16px;padding-left: 16px;background: #1488CC;font-size: 14px;border-radius: 3px;border: 1px solid #1488CC;font-family:Garamond, EB Garamond, Georgia, serif; width:50px;text-align:center;" target="_blank">Reply</a>'
 	msg = msg + '</td></tr>'
 	msg = msg + '</table>'
 
@@ -963,7 +963,7 @@ def email_body_beta_email(url):
 	msg = msg + '<font style="font-family:Helvetica Neue;color:#555555;font-size:14px;">Thanks for signing up for Insprite! We are excited that you\'re interested in what we are doing over here. We are creating Insprite to be a vibrant, friendly community where you can both learn from creative people in your area, and teach your passions to others. We sincerely hope that you will be a part of it!'
 	msg = msg + '<br><br>We\'re currently in the process of finishing up Insprite... and we\'re nearly there. We\'re just adding some bells and whistles so it\'ll be the best possible experience.<br><br>'
 	msg = msg + 'We will be in touch when we\'re ready to launch&mdash;tentatively in late 2014. We can\'t wait to show you what we\'ve been working on. You\'re going to love it.<br><br>'
-	msg = msg + 'In the meantime, feel free to drop us a line, or follow us on our <a href="#" style="color:#29abe1">Blog</a>, where we will post lots of cool bloggy things (no, really, we\'re gonna try and keep it interesting).<br><br>'
+	msg = msg + 'In the meantime, feel free to drop us a line, or follow us on our <a href="#" style="color:#1488CC">Blog</a>, where we will post lots of cool bloggy things (no, really, we\'re gonna try and keep it interesting).<br><br>'
 	msg = msg + '<br>Spritely yours,<br>'
 	msg = msg + 'The Insprite Gang </font>'
 
