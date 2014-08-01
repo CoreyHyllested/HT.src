@@ -44,6 +44,7 @@ class RedisSessionInterface(SessionInterface):
 	session_class = RedisSession
 
 	def __init__(self, redis=None, prefix='session:'):
+		# print('initializing sessions')
 		if redis is None:
 			redis = Redis()
 

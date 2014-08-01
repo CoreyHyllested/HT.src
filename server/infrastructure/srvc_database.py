@@ -12,16 +12,42 @@
 #################################################################################
 
 
-from flask	import Flask
-from config	import server_configuration
 from sqlalchemy     import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
-db_config = Flask(__name__)
-db_config.config.from_object(server_configuration['default'])
-DATABASE_URI = db_config.config['SQLALCHEMY_DATABASE_URI']
-MIGRATE_REPO = db_config.config['SQLALCHEMY_MIGRATE_REPO']
+DATABASE_URI = None
+MIGRATE_REPO = None
+db_engine	= None
+db_session	= None
+Base		= None
+
+
+def initialize_database(config):
+	global DATABASE_URI
+	global MIGRATE_REPO
+	global db_engine
+	global db_session
+	global Base
+
+	if (db_engine is not None):
+		raise Exception('database is already started')
+
+	DATABASE_URI = config['SQLALCHEMY_DATABASE_URI']
+	MIGRATE_REPO = config['SQLALCHEMY_MIGRATE_REPO']
+
+	print 'initialize database... ' + DATABASE_URI
+	db_engine	= create_engine(DATABASE_URI) #, echo=True)
+	db_session	= scoped_session(sessionmaker(bind=db_engine))
+	Base = declarative_base(bind=db_engine)
+	Base.query = db_session.query_property()
+	from server.models import *
+
+	if (config['TESTING']):
+		print 'TESTING... create database'
+		Base.metadata.create_all()
+
+
 
 # to make this work in ht_server ... add this code to ht_server app context somewhere (__init__?)
 # gotten from http://flask.pocoo.org/docs/patterns/sqlalchemy/ ... under Declaritive
@@ -32,11 +58,6 @@ MIGRATE_REPO = db_config.config['SQLALCHEMY_MIGRATE_REPO']
 #    db_session.remove()
 
 #print 'init::db -- create engine and scoped connection'
-db_engine	= create_engine(DATABASE_URI) #, echo=True)
-db_session	= scoped_session(sessionmaker(bind=db_engine))
-
-Base = declarative_base(bind=db_engine)
-Base.query = db_session.query_property()
 
 
-from server.models import *
+
