@@ -30,6 +30,7 @@ def main():
 @manager.command
 def test():
 	"""Run unit tests"""
+	if (ENV_CONFIG != 'testing'): raise Exception('\nFailure: Running with incorrect CONFIG(' + str(ENV_CONFIG) + ') rerun as:\nINSPRITE_CONFIG=testing python ./application.py test')
 	import unittest
 	all_tests = unittest.TestLoader().discover('tests')
 	unittest.TextTestRunner(verbosity=2).run(all_tests)
