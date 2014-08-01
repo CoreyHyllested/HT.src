@@ -19,6 +19,7 @@ from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy import LargeBinary
 from sqlalchemy.orm	import relationship, backref
 from factory.alchemy import SQLAlchemyModelFactory
+from factory.fuzzy	 import *
 from datetime import datetime as dt, timedelta
 from pytz import timezone
 import datetime, uuid, factory
@@ -193,18 +194,21 @@ class AccountFactory(SQLAlchemyModelFactory):
 		model = Account
 		sqlalchemy_session = db_session
 
-	name = factory.Sequence(lambda n: u'Test User %d' % n)
-	email = factory.Sequence(lambda n: u'corey+TestUser%d@insprite.co' % n)
+	name	= factory.Sequence(lambda n: u'Test User %d' % n)
+	email	= factory.Sequence(lambda n: u'corey+TestUser%d@insprite.co' % n)
+	userid	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='test-uid-')
 
 	@classmethod
 	def _create(cls, model_class, *args, **kwargs):
 		"""Override default '_create' with custom call"""
 
-		n	= kwargs.pop('name', cls.name)
-		e	= kwargs.pop('email', cls.email)
+		uid = kwargs.pop('userid',	cls.userid)
+		n	= kwargs.pop('name',	cls.name)
+		e	= kwargs.pop('email',	cls.email)
 		pw	= kwargs.pop('pwhash', 'No password')
-		print '_create: name = ', n
+		#print '_create: name = ', n
 
 		obj = model_class(n, e, pw, *args, **kwargs)
 		obj.pwhash = 'pwtest'
+		obj.userid = uid
 		return obj
