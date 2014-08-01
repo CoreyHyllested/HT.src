@@ -50,7 +50,6 @@ class Config:
 
 	@staticmethod
 	def init_app(app):
-		print 'SQLALCHEMY_DB: ' + str(SQLALCHEMY_DATABASE_URI)
 		pass
 
 
@@ -91,7 +90,6 @@ class TestingConfig(Config):
 
 	# maybe we don't use this
 	SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/insprite.db'
-	print 'SQLALCHEMY_DB: ' + str(SQLALCHEMY_DATABASE_URI)
 
 	def __init__ (self):
 		print 'creating testing config'
