@@ -13,11 +13,39 @@ class MeetingTestCase(unittest.TestCase):
 		self.app_context.push()
 		self.client = self.app.test_client(use_cookies=True)
 
-		self.buyer = ProfileFactory.create()
-		self.sellr = ProfileFactory.create()
+		self.buyer_acct = AccountFactory.create()
+		self.sellr_acct = AccountFactory.create()
 
-		self.the_meeting = MeetingFactory.create(meet_buyer=self.buyer.prof_id, meet_sellr=self.sellr.prof_id)
-		db_session.add(self.the_meeting)
+		self.buyer = ProfileFactory.create(prof_acct=self.buyer_acct.userid)
+		self.sellr = ProfileFactory.create(prof_acct=self.sellr_acct.userid)
+		self.oauth = OauthFactory.create(userid=self.sellr_acct.userid)
+#		print
+#		print self.sellr_acct.userid
+#		print self.sellr.account
+
+		meetings = MeetingFactory.create_batch(5, meet_buyer=self.buyer.prof_id, meet_sellr=self.sellr.prof_id)
+		self.meeting_proposed = meetings[0]
+		self.meeting_accepted = meetings[1]
+		self.meeting_chargecc = meetings[2]
+		self.meeting_occurred = meetings[3]
+		self.meeting_complete = meetings[4]
+
+		self.meeting_accepted.meet_state = MeetingState.ACCEPTED
+		self.meeting_chargecc.meet_state = MeetingState.CHARGECC
+		self.meeting_occurred.meet_state = MeetingState.OCCURRED
+		self.meeting_complete.meet_state = MeetingState.COMPLETE
+		db_session.create_all()
+		
+		db_session.add(self.meeting_proposed)
+		db_session.add(self.meeting_accepted)
+		db_session.add(self.meeting_chargecc)
+		db_session.add(self.meeting_occurred)
+		db_session.add(self.meeting_complete)
+		db_session.add(self.buyer)
+		db_session.add(self.sellr)
+		db_session.add(self.buyer_acct)
+		db_session.add(self.sellr_acct)
+		db_session.add(self.oauth)
 
 
 	def tearDown(self):
@@ -50,11 +78,8 @@ class MeetingTestCase(unittest.TestCase):
 
 
 	def test_meeting_get_by_id(self):
-		new_meeting = MeetingFactory.create()
-		db_session.add(new_meeting)
-
-		meeting = Meeting.get_by_id(new_meeting.meet_id)
-		self.assertEqual(meeting, new_meeting)
+		meeting = Meeting.get_by_id(self.meeting_proposed.meet_id)
+		self.assertEqual(meeting.meet_id, self.meeting_proposed.meet_id)
 
 		meeting = Meeting.get_by_id(None)
 		self.assertEqual(meeting, None)
@@ -64,11 +89,97 @@ class MeetingTestCase(unittest.TestCase):
 
 
 	def test_transition_PROPOSED_to_ACCEPTED(self):
-		print self.the_meeting.meet_sellr
-		self.the_meeting.set_state(MeetingState.ACCEPTED, self.sellr)
-		self.assertEqual(self.the_meeting.meet_state, MeetingState.ACCEPTED)
+		self.meeting_proposed.set_state(MeetingState.ACCEPTED, self.sellr)
+		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.ACCEPTED)
+
+	def test_transition_PROPOSED_to_REJECTED(self):
+		self.meeting_proposed.set_state(MeetingState.REJECTED, self.sellr)
+		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.REJECTED)
+
+	def test_transition_PROPOSED_to_TIMEDOUT(self):
+		self.meeting_proposed.set_state(MeetingState.TIMEDOUT, self.sellr)
+		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.TIMEDOUT)
+	
+	def test_transition_ACCEPTED_to_CHARGECC(self):
+		self.meeting_accepted.set_state(MeetingState.CHARGECC, self.sellr)
+		self.assertEqual(self.meeting_accepted.meet_state, MeetingState.CHARGECC)
+
+	def test_transition_ACCEPTED_to_CANCELED(self):
+		self.meeting_accepted.set_state(MeetingState.CANCELED, self.sellr)
+		self.assertEqual(self.meeting_accepted.meet_state, MeetingState.CANCELED)
+
+	def test_transition_PROPOSED_to_OTHERS(self):
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.PROPOSED))
+
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.CHARGECC))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.OCCURRED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.COMPLETE))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.DISPUTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.RESOLVED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.CANCELED))
 
 
+
+
+	def test_transition_ACCEPTED_to_OTHERS(self):
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.ACCEPTED))
+
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.PROPOSED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.REJECTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.TIMEDOUT))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.OCCURRED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.COMPLETE))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.DISPUTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.RESOLVED))
+
+
+
+	def test_transition_CHARGECC_to_OTHERS(self):
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.CHARGECC))
+
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.PROPOSED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.REJECTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.TIMEDOUT))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.ACCEPTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.COMPLETE))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.DISPUTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.RESOLVED))
+
+
+
+	def test_transition_OCCURRED_to_OTHERS(self):
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.OCCURRED))
+
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.PROPOSED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.REJECTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.TIMEDOUT))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.ACCEPTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.CHARGECC))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.RESOLVED))
+
+
+	def test_transition_COMPLETE_to_OTHERS(self):
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.COMPLETE))
+
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.PROPOSED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.REJECTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.TIMEDOUT))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.ACCEPTED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.CHARGECC))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.OCCURRED))
+		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.RESOLVED))
+"""
+"""
+
+#									MeetingState.CHARGECC	: { MeetingState.OCCURRED	: __transition_chargecc_to_occurred,
+#																MeetingState.CANCELED	: __transition_chargecc_to_canceled, },
+#									MeetingState.OCCURRED	: { MeetingState.COMPLETE	: __transition_occurred_to_complete,
+#									MeetingState.CHARGECC	: { MeetingState.OCCURRED	: __transition_chargecc_to_occurred,
+#																MeetingState.CANCELED	: __transition_chargecc_to_canceled, },
+#									MeetingState.OCCURRED	: { MeetingState.COMPLETE	: __transition_occurred_to_complete,
+#																MeetingState.DISPUTED	: __transition_occurred_to_disputed, },
+#									MeetingState.COMPLETE	: { MeetingState.DISPUTED	: __transition_complete_to_disputed, },
+#									MeetingState.DISPUTED	: { MeetingState.DISPUTED	: __transition_disputed_to_resolved, },
 
 
 #	def test_get_duration_in_hours(self):
