@@ -14,12 +14,14 @@
 
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
-from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
+from sqlalchemy import ForeignKey, LargeBinary
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy.orm import relationship, backref
+from factory.fuzzy	 import *
+from factory.alchemy import SQLAlchemyModelFactory
 from datetime import datetime as dt, timedelta
 from pytz import timezone
-import uuid
+import uuid, factory
 
 
 
@@ -127,3 +129,32 @@ class Profile(Base):
 			db_session.rollback()
 		return self
 
+
+
+
+
+#################################################################################
+### FOR TESTING PURPOSES ########################################################
+#################################################################################
+
+class ProfileFactory(SQLAlchemyModelFactory):
+	class Meta:
+		model = Profile
+		sqlalchemy_session = db_session
+
+	prof_name = factory.Sequence(lambda n: u'TestProfile %d' % n)
+	prof_acct = factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='test-acct-')
+
+	@classmethod
+	def _create(cls, model_class, *args, **kwargs):
+		"""Override default '_create' with custom call"""
+
+		name	= kwargs.pop('prof_name',	cls.prof_name)
+		acct	= kwargs.pop('prof_acct',	cls.prof_acct)
+		#print '_create: ', ds, ' - ', df
+		#print '_create: ', cost
+		#print '_create: ', location
+		#print '_create: ', details
+
+		obj = model_class(name, acct, *args, **kwargs)
+		return obj

@@ -86,10 +86,6 @@ MEET_BIT_RUNOVER		=	31
 
 
 
-
-
-
-
 class Meeting(Base):
 	__tablename__ = "meeting"
 	meet_id		= Column(String(40), primary_key=True)													# NonSequential ID
@@ -574,13 +570,13 @@ class MeetingFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Meeting
 		sqlalchemy_session = db_session
-		exclude = ('now', 'now_delta', )
+		exclude = ('utc_now', 'now_delta', )
 
-	now			= dt.utcnow()
-	now_delta	= now + timedelta(hours=6)
+	utc_now = dt.now(timezone('UTC'))
+	now_delta = utc_now + timedelta(hours=4)
 
-	meet_ts	= factory.fuzzy.FuzzyNaiveDateTime(now, now_delta)
-	meet_tf	= factory.fuzzy.FuzzyNaiveDateTime(now, now_delta)
+	meet_ts	= utc_now #dt.utcnow() #factory.fuzzy.FuzzyDateTime(now, now_delta)
+	meet_tf	= now_delta  #factory.fuzzy.FuzzyDateTime(now, now_delta)
 	meet_details	= factory.Sequence(lambda n: u'Test Description %d' % n)
 	meet_location	= factory.fuzzy.FuzzyText(length=3, chars="1234567890", suffix=' Test Road, Richmond, IN 47374')
 	meet_token	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-token-')
@@ -588,30 +584,23 @@ class MeetingFactory(SQLAlchemyModelFactory):
 	customer	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-custid-')
 	meet_cost	= factory.fuzzy.FuzzyInteger(10, 100)
 
-
-#	charge_customer_id	= Column(String(40), nullable = True)	# stripe customer id
-#	charge_credit_card	= Column(String(40), nullable = True)	# stripe credit card
-#	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
-#	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
-#	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-#	review_buyer = Column(String(40), ForeignKey('review.review_id'))
-#	review_sellr = Column(String(40), ForeignKey('review.review_id'))
-
 	@classmethod
 	def _create(cls, model_class, *args, **kwargs):
 		"""Override default '_create' with custom call"""
 
-		ds	= kwargs.pop('meet_ts', cls.meet_ts)
-		df	= kwargs.pop('meet_tf', cls.meet_tf)
+		ts	= kwargs.pop('meet_ts', cls.meet_ts)
+		tf	= kwargs.pop('meet_tf', cls.meet_tf)
 		cost		= kwargs.pop('meet_cost',		cls.meet_cost)
 		location	= kwargs.pop('meet_location',	cls.meet_location)
 		details		= kwargs.pop('meet_details', 	cls.meet_details)
 		token		= kwargs.pop('meet_token',		cls.meet_token)
 		card		= kwargs.pop('meet_card',		cls.meet_card)
+		buyer_prof	= kwargs.pop('meet_buyer',		'3239bc9b-b64e-4b93-b5ad-a92dae28223f')
+		sellr_prof	= kwargs.pop('meet_sellr',		'879c3584-9331-4bba-8689-5bfb3300625a')
 		#print '_create: ', ds, ' - ', df
 		#print '_create: ', cost
 		#print '_create: ', location
 		#print '_create: ', details
 
-		obj = model_class('3239bc9b-b64e-4b93-b5ad-', '879c3584-9331-4bba-8689-5bfb3300625a', ds, df, cost, location, details, token=token, card=card, *args, **kwargs)
+		obj = model_class(sellr_prof, buyer_prof, ts, tf, cost, location, details, token=token, card=card, *args, **kwargs)
 		return obj
