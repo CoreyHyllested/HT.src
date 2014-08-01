@@ -251,7 +251,6 @@ class Meeting(Base):
 
 
 	def __transition_proposed_to_accepted(self, profile, cur, nxt):
-		print '\tMeeting.transition_PROPOSED_to_ACCEPTED()\tENTER'
 		if (self.meet_owner != profile.prof_id):
 			print '\tOWNER - ', self.meet_owner, 'PERSON CHANGING meeting\t', profile.prof_id, profile.prof_name
 			raise StateTransitionError(self.__class__, self.meet_id, cur, nxt, self.meet_flags, user_msg='Only meeting owner can perform that action')
@@ -263,7 +262,7 @@ class Meeting(Base):
 		chargecc_time = self.meet_ts.astimezone(timezone('UTC')) - timedelta(days=2)
 		in_five_min = dt.now(timezone('UTC'))  + timedelta(minutes=2)
 		if (in_five_min > chargecc_time): chargecc_time = in_five_min
-		print '\tMeeting.transition_PROPOSED_to_ACCEPTED(' + self.meet_id + ')\t@ ', chargecc_time.strftime('%A, %b %d, %Y %H:%M %p')
+		#print '\tMeeting.transition_PROPOSED_to_ACCEPTED(' + self.meet_id + ')\t@ ', chargecc_time.strftime('%A, %b %d, %Y %H:%M %p')
 
 		# create event that will transition state and will charge the credit card
 		meeting_event_chargecc.apply_async(args=[self.meet_id], eta=chargecc_time)
@@ -272,19 +271,20 @@ class Meeting(Base):
 
 
 	def __transition_proposed_to_rejected(self, profile, cur, nxt):
-		print '\tMeeting.transition_PROPOSED_to_REJECTED()\tENTER'
+		#print
+		#print '\tMeeting.transition_PROPOSED_to_REJECTED()\tENTER\t', cur, nxt
 		if (self.meet_owner != profile.prof_id):
 			print '\tOWNER - ', self.meet_owner, 'PERSON CHANGING meeting\t', profile.prof_id, profile.prof_name
 			raise StateTransitionError(self.__class__, self.meet_id, cur, nxt, self.meet_flags, user_msg='Only meeting owner can perform that action')
 
 		# if (nxt == MEET_STATE_TIMEDOUT): flags = self.set_flag(MEET_BIT_TIMEDOUT)
-		print '\tMeeting.transition_PROPOSED_to_REJECTED()\tEXIT'
+		#print '\tMeeting.transition_PROPOSED_to_REJECTED()\tEXIT'
 		return True
 
 
 
 	def __transition_accepted_to_chargecc(self, profile, cur, nxt):
-		print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tENTER'
+		#print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tENTER'
 		self.ht_charge_creditcard()
 
 		# if review_time is 'in the past' (used during testing); set for five mins.
@@ -294,7 +294,7 @@ class Meeting(Base):
 
 		# create transition-state event; creates both review and capture events
 		meeting_event_occurred.apply_async(args=[self.meet_id], eta=review_time)
-		print '\tMeeting evt occurs @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
+		#print '\tMeeting evt occurs @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
 		return True
 
 
@@ -322,11 +322,11 @@ class Meeting(Base):
 
 
 	def __transition_accepted_to_canceled(self, profile, cur, nxt):
-		print '\tMeeting.transition_ACCEPTED_to_CANCELED()\tENTER'
+		#print '\tMeeting.transition_ACCEPTED_to_CANCELED()\tENTER'
 		return True
 
 	def __transition_chargecc_to_canceled(self, profile, cur, nxt):
-		print '\tMeeting.transition_CHARGECC_to_CANCELED()\tENTER'
+		#print '\tMeeting.transition_CHARGECC_to_CANCELED()\tENTER'
 		return True
 
 
@@ -360,7 +360,8 @@ class Meeting(Base):
 
 
 	def ht_charge_creditcard(self):
-		print 'ht_charge_creditcard: enter (' + self.meet_id + ', ' + str(self.meet_status) + ')  $' + str(self.meet_cost) + 'from cust. ' + self.charge_customer_id
+		print
+		print 'ht_charge_creditcard: enter (' + self.meet_id + ', ' + str(self.meet_state) + ')  $' + str(self.meet_cost) + ' from cust. ' + self.charge_customer_id
 
 		if (not self.accepted()):
 			raise StateTransitionError(self.__class__, self.meet_id, self.meet_state, MEET_STATE_CHARGECC, self.meet_flags, user_msg='Currently cannot perform that action')
@@ -532,8 +533,10 @@ def meeting_event_chargecc(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.CHARGECC)
+	except AttributeError as ae:
+		pass
 	except Exception as e:
-		print 'meeting_event_chargecc callback: ' + str(type(e)) + str(e)
+		print 'meeting_event_chargecc(' + str(meet_id) + ')\t'+ str(type(e)) + str(e)
 		db_session.rollback()
 
 
@@ -575,8 +578,9 @@ class MeetingFactory(SQLAlchemyModelFactory):
 	utc_now = dt.now(timezone('UTC'))
 	now_delta = utc_now + timedelta(hours=4)
 
-	meet_ts	= utc_now #dt.utcnow() #factory.fuzzy.FuzzyDateTime(now, now_delta)
-	meet_tf	= now_delta  #factory.fuzzy.FuzzyDateTime(now, now_delta)
+	meet_id = factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-id-')
+	meet_ts	= utc_now
+	meet_tf	= now_delta
 	meet_details	= factory.Sequence(lambda n: u'Test Description %d' % n)
 	meet_location	= factory.fuzzy.FuzzyText(length=3, chars="1234567890", suffix=' Test Road, Richmond, IN 47374')
 	meet_token	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-token-')
@@ -590,6 +594,7 @@ class MeetingFactory(SQLAlchemyModelFactory):
 
 		ts	= kwargs.pop('meet_ts', cls.meet_ts)
 		tf	= kwargs.pop('meet_tf', cls.meet_tf)
+		id	= kwargs.pop('meet_id', cls.meet_id)
 		cost		= kwargs.pop('meet_cost',		cls.meet_cost)
 		location	= kwargs.pop('meet_location',	cls.meet_location)
 		details		= kwargs.pop('meet_details', 	cls.meet_details)
@@ -603,4 +608,6 @@ class MeetingFactory(SQLAlchemyModelFactory):
 		#print '_create: ', details
 
 		obj = model_class(sellr_prof, buyer_prof, ts, tf, cost, location, details, token=token, card=card, *args, **kwargs)
+		obj.meet_id = id #over-riding for clarity when reading the log-output
+
 		return obj
