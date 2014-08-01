@@ -17,14 +17,17 @@
 	{% endif %}
 
 	<form action=settings method=POST>
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 		<div class="settingsLeftSideWrapper">
+			<div class="settingsName">
+				<h2>Change Name</h2>
+				{{form.set_input_name(placeholder="Current Name")}}
+			</div>
+
 			<div class="settingsEmail">
 				<h2>Change Email</h2>
-
-				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-				{{form.set_input_email(placeholder="Current email")}}			
+				{{form.set_input_email(placeholder="Current email")}}
 				{{form.set_input_email_pass(placeholder="Current password")}}
 				{% if unverified_email == True %}
 				<div>
@@ -50,24 +53,21 @@
 		<div class="settingsPayout">
 			<h2>Payment Information</h2>
 
-			<p>We use <a href="https://stripe.com" target="_blank">Stripe</a> to pay you for the services you sell. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet.</p>
+			<p>We use <a href="https://stripe.com" target="_blank">Stripe</a> to pay you for the services you sell. Stripe provides a secure way for individuals and businesses to accept payments over the Internet.</p>
 
 			<p><a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here for the list of supported countries.</a></p>
 
-			<label for="oauth_stripe">Your Stripe ID</label>
+			<label for="oauth_stripe">Your StripeConnect ID</label>
 			{{form.oauth_stripe(readonly=readonly)}}
 
 			<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
 
-			<!-- LS: I commented out this just in case we need it later.
-				<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=register&stripe_user[email]={{form.set_input_email.data}}&stripe_user[business_name]={{bp.name|urlencode}}" class="whiteButton" id="set-stripe-register">Register</a>
+			<!--<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=register&stripe_user[email]={{form.set_input_email.data}}&stripe_user[business_name]={{bp.name|urlencode}}" class="whiteButton" id="set-stripe-register">Register</a>
 			-->
 		</div>
 		
 		<div class="settingsPayout">
 		<h2>Privacy</h2>
-			<input type="checkbox" name="privacy-settings" value="password-change">I changed my password.<br>
-			<input type="checkbox" name="privacy-settings" value="email-change">I changed my email.<br>
 			<input type="checkbox" name="privacy-settings" value="search-listing">I want my profile listed in search.<br><br>
 			<input class="whiteButton" id="set-save" type="submit" value="Save Privacy Settings" />
 		</div>
@@ -84,6 +84,7 @@
 	<div class="clear"></div>
 </div>
 <div class="clear"></div>
+
 
 <script>
 $(document).ready(function() {

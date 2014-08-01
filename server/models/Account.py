@@ -31,6 +31,52 @@ OAUTH_GOOGLE = 3
 OAUTH_FACEBK = 4
 OAUTH_TWITTR = 5
 
+################################################################################
+### EMAIL POLICY FIELD #########################################################
+################################################################################
+################################################################################
+## 	BIT-RANGE		NAME			DETAILS
+################################################################################
+## 	0 - 4			Receipts			Receipts for action taken.
+##	8 				USERMSG_RECVD		Notification that user sent a message.
+##  9				REVIEW_POSTED		Notificaiton that a user reviewed you.
+##  16				Meeting Reminder	Reminder sent 24 hours before.
+################################################################################
+##  4-15,18,19,21-31				reserved
+################################################################################
+
+class EmailPolicy:
+	# Receipts for actions I take
+	EMAIL_BIT_RECPT_ACCEPT = 0
+	EMAIL_BIT_RECPT_REJECT = 1
+	EMAIL_BIT_RECPT_CANCEL = 2
+	EMAIL_BIT_RECPT_REVIEW = 3
+	EMAIL_BIT_RECPT_MESSGE = 4
+
+	# Non-Critical Messages to a user.
+	EMAIL_BIT_USERMSG_RECVD = 8
+	EMAIL_BIT_REVIEW_POSTED = 9
+
+	# Reminder emails.
+	EMAIL_BIT_REMIND_MEETING = 16
+	EMAIL_BIT_REMIND_REVIEWS = 17
+
+	# Receipts for actions I take
+	EMAIL_POLICY_RECPT_ACCEPT = (0x1 << EMAIL_BIT_RECPT_ACCEPT)
+	EMAIL_POLICY_RECPT_REJECT = (0x1 << EMAIL_BIT_RECPT_REJECT)
+	EMAIL_POLICY_RECPT_CANCEL = (0x1 << EMAIL_BIT_RECPT_CANCEL)
+	EMAIL_POLICY_RECPT_REVIEW = (0x1 << EMAIL_BIT_RECPT_REVIEW)
+	EMAIL_POLICY_RECPT_MESSGE = (0x1 << EMAIL_BIT_RECPT_MESSGE)
+	EMAIL_POLICY_RECEIPTS = EMAIL_POLICY_RECPT_ACCEPT | EMAIL_POLICY_RECPT_REJECT | EMAIL_POLICY_RECPT_CANCEL | EMAIL_POLICY_RECPT_REVIEW | EMAIL_POLICY_RECPT_MESSGE
+
+	# Non-Critical Messages to a user.
+	EMAIL_POLICY_USERMSG_RECVD	= (0x1 << EMAIL_BIT_USERMSG_RECVD)
+	EMAIL_POLICY_REVIEW_POSTED	= (0x1 << EMAIL_BIT_REVIEW_POSTED)
+	EMAIL_POLICY_REMIND_MEETING = (0x1 << EMAIL_BIT_REMIND_MEETING)
+	EMAIL_POLICY_REMIND_REVIEWS = (0x1 << EMAIL_BIT_REMIND_REVIEWS)
+
+
+
 
 class Account(Base):
 	"""Account maintains identity information each individual."""
@@ -55,6 +101,7 @@ class Account(Base):
 	sec_answer   = Column(String(128))
 	stripe_cust	 = Column(String(64))
 	role		 = Column(Integer, default = 0)
+	email_policy = Column(Integer, default = 0)
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
