@@ -8,6 +8,7 @@ from server.models import *
 
 class MeetingTestCase(unittest.TestCase):
 	def setUp(self):
+
 		self.app = initialize_server('testing')
 		self.app_context = self.app.app_context()
 		self.app_context.push()
@@ -18,10 +19,11 @@ class MeetingTestCase(unittest.TestCase):
 
 		self.buyer = ProfileFactory.create(prof_acct=self.buyer_acct.userid)
 		self.sellr = ProfileFactory.create(prof_acct=self.sellr_acct.userid)
-		self.oauth = OauthFactory.create(userid=self.sellr_acct.userid)
+		self.oauth = OauthFactory.create(ht_account=self.sellr_acct.userid)
 #		print
 #		print self.sellr_acct.userid
 #		print self.sellr.account
+#		print self.oauth.ht_account
 
 		meetings = MeetingFactory.create_batch(5, meet_buyer=self.buyer.prof_id, meet_sellr=self.sellr.prof_id)
 		self.meeting_proposed = meetings[0]
@@ -34,8 +36,7 @@ class MeetingTestCase(unittest.TestCase):
 		self.meeting_chargecc.meet_state = MeetingState.CHARGECC
 		self.meeting_occurred.meet_state = MeetingState.OCCURRED
 		self.meeting_complete.meet_state = MeetingState.COMPLETE
-		db_session.create_all()
-		
+
 		db_session.add(self.meeting_proposed)
 		db_session.add(self.meeting_accepted)
 		db_session.add(self.meeting_chargecc)
@@ -52,7 +53,7 @@ class MeetingTestCase(unittest.TestCase):
 		self.app_context.pop()
 
 
-	def test_state_lookup_table(self):
+	def est_state_lookup_table(self):
 		self.assertTrue(MeetingState.state_name(MeetingState.PROPOSED) == 'PROPOSED')
 		self.assertTrue(MeetingState.state_name(MeetingState.ACCEPTED) == 'ACCEPTED')
 		self.assertTrue(MeetingState.state_name(MeetingState.CHARGECC) == 'CHARGE CREDIT CARD')
@@ -65,19 +66,19 @@ class MeetingTestCase(unittest.TestCase):
 		self.assertTrue(MeetingState.state_name(MeetingState.DISPUTED) == 'DISPUTED')
 
 
-	def test_proposed_state_defaults(self):
+	def est_proposed_state_defaults(self):
 		# create a very standard meeting.
 		meeting = MeetingFactory.create()
 		self.assertTrue(meeting.proposed())
 		self.assertTrue(meeting.meet_owner == meeting.meet_sellr)
 		self.assertTrue(meeting.meet_tz == 'US/Pacific')
 
-	def test_meeting_init_without_card(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(meet_card=None))
-	def test_meeting_init_without_cust(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(customer=None))
-	def test_meeting_init_without_token(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(meet_token=None))
+	def est_meeting_init_without_card(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(meet_card=None))
+	def est_meeting_init_without_cust(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(customer=None))
+	def est_meeting_init_without_token(self): self.assertRaises(SanitizedException, lambda: MeetingFactory.create(meet_token=None))
 
 
-	def test_meeting_get_by_id(self):
+	def est_meeting_get_by_id(self):
 		meeting = Meeting.get_by_id(self.meeting_proposed.meet_id)
 		self.assertEqual(meeting.meet_id, self.meeting_proposed.meet_id)
 
@@ -88,15 +89,15 @@ class MeetingTestCase(unittest.TestCase):
 		self.assertEqual(meeting, None)
 
 
-	def test_transition_PROPOSED_to_ACCEPTED(self):
+	def est_transition_PROPOSED_to_ACCEPTED(self):
 		self.meeting_proposed.set_state(MeetingState.ACCEPTED, self.sellr)
 		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.ACCEPTED)
 
-	def test_transition_PROPOSED_to_REJECTED(self):
+	def est_transition_PROPOSED_to_REJECTED(self):
 		self.meeting_proposed.set_state(MeetingState.REJECTED, self.sellr)
 		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.REJECTED)
 
-	def test_transition_PROPOSED_to_TIMEDOUT(self):
+	def est_transition_PROPOSED_to_TIMEDOUT(self):
 		self.meeting_proposed.set_state(MeetingState.TIMEDOUT, self.sellr)
 		self.assertEqual(self.meeting_proposed.meet_state, MeetingState.TIMEDOUT)
 	
@@ -104,11 +105,11 @@ class MeetingTestCase(unittest.TestCase):
 		self.meeting_accepted.set_state(MeetingState.CHARGECC, self.sellr)
 		self.assertEqual(self.meeting_accepted.meet_state, MeetingState.CHARGECC)
 
-	def test_transition_ACCEPTED_to_CANCELED(self):
+	def est_transition_ACCEPTED_to_CANCELED(self):
 		self.meeting_accepted.set_state(MeetingState.CANCELED, self.sellr)
 		self.assertEqual(self.meeting_accepted.meet_state, MeetingState.CANCELED)
 
-	def test_transition_PROPOSED_to_OTHERS(self):
+	def est_transition_PROPOSED_to_OTHERS(self):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.PROPOSED))
 
 		self.assertRaises(StateTransitionError, lambda: self.meeting_proposed.set_state(MeetingState.CHARGECC))
@@ -121,7 +122,7 @@ class MeetingTestCase(unittest.TestCase):
 
 
 
-	def test_transition_ACCEPTED_to_OTHERS(self):
+	def est_transition_ACCEPTED_to_OTHERS(self):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.ACCEPTED))
 
 		self.assertRaises(StateTransitionError, lambda: self.meeting_accepted.set_state(MeetingState.PROPOSED))
@@ -134,7 +135,7 @@ class MeetingTestCase(unittest.TestCase):
 
 
 
-	def test_transition_CHARGECC_to_OTHERS(self):
+	def est_transition_CHARGECC_to_OTHERS(self):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.CHARGECC))
 
 		self.assertRaises(StateTransitionError, lambda: self.meeting_chargecc.set_state(MeetingState.PROPOSED))
@@ -147,7 +148,7 @@ class MeetingTestCase(unittest.TestCase):
 
 
 
-	def test_transition_OCCURRED_to_OTHERS(self):
+	def est_transition_OCCURRED_to_OTHERS(self):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.OCCURRED))
 
 		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.PROPOSED))
@@ -158,7 +159,7 @@ class MeetingTestCase(unittest.TestCase):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_occurred.set_state(MeetingState.RESOLVED))
 
 
-	def test_transition_COMPLETE_to_OTHERS(self):
+	def est_transition_COMPLETE_to_OTHERS(self):
 		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.COMPLETE))
 
 		self.assertRaises(StateTransitionError, lambda: self.meeting_complete.set_state(MeetingState.PROPOSED))
