@@ -21,7 +21,7 @@ from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy.orm	import relationship, backref
 from factory.fuzzy	import *
 from factory.alchemy import SQLAlchemyModelFactory
-from datetime import datetime as dt, timedelta
+from datetime import datetime as dt, timedelta, tzinfo
 from pytz	import timezone
 from pprint	import pprint as pp
 import uuid, factory, stripe
@@ -76,12 +76,14 @@ MEET_BIT_BUYER_CANCELED =	16		# Appointment was canceled by buyer.
 ################################################################################
 ### MEETING DETAILS ############################################################
 ################################################################################
+MEET_BIT_WAIVE_FEE		=	27		# Insprite is waiving its fee.
 MEET_BIT_RESPONSE		=	28		# Meeting went into negotiation.
 MEET_BIT_QUIET			=	29		# Meeting was quiet
 MEET_BIT_DIGITAL		=	30		# Meeting was digital
 MEET_BIT_RUNOVER		=	31
 ################################################################################
 
+MEET_FLAG_WAIVE_FEE		= (0x1 << MEET_BIT_WAIVE_FEE)
 
 
 
@@ -121,6 +123,7 @@ class Meeting(Base):
 		self.meet_owner	= str(sellr_id)
 		self.meet_buyer	= str(buyer_id)
 		self.meet_cost	= int(cost)
+		self.meet_flags	= 0
 		if (flags is not None): self.meet_flags = flags
 
 		self.meet_ts	= datetime_s
@@ -175,8 +178,10 @@ class Meeting(Base):
 	
 
 	def set_flag(self, flag):
-		self.meet_flags = (self.meet_flags | (0x1 << flag))
+		self.meet_flags = (self.meet_flags | flag)
 
+	def test_flag(self, flag):
+		return (self.meet_flags & flag)
 
 	def set_state(self, nxt_state, profile=None):
 		cur_state = self.meet_state
@@ -370,12 +375,12 @@ class Meeting(Base):
 			sellr_profile = Profile.get_by_prof_id(self.meet_sellr)
 			sellr_account = Account.get_by_uid(sellr_profile.account)
 			o_auth = Oauth.get_stripe_by_uid(sellr_profile.account)
-			if (o_auth is None): raise NoOauthResource(sellr_profile.account)
+			if (o_auth is None): raise NoOauthFound(sellr_profile.account)
 
 			print 'ht_charge_creditcard: on behalf of ' +  str(sellr_profile.prof_name) + ', ' + str(o_auth.oa_secret)
 
 			fee = 0
-			if (self.meet_cost > 5):
+			if (self.meet_cost > 5 and not self.test_flag(MEET_FLAG_WAIVE_FEE)):
 				fee = int((self.meet_cost * 7.1)-30),
 
 			print 'ht_charge_creditcard: cost (pennies)  ' +  str(self.meet_cost * 100)
@@ -392,7 +397,7 @@ class Meeting(Base):
 				receipt_email=str(sellr_account.email)
 			)
 
-#			pp(charge)
+			pp(charge)
 
 			print 'ht_charge_creditcard: modify meeting'
 			self.meet_charged = dt.now(timezone('UTC'))
@@ -573,28 +578,28 @@ class MeetingFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Meeting
 		sqlalchemy_session = db_session
-		exclude = ('utc_now', 'now_delta', )
-
-	utc_now = dt.now(timezone('UTC'))
-	now_delta = utc_now + timedelta(hours=4)
 
 	meet_id = factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-id-')
-	meet_ts	= utc_now
-	meet_tf	= now_delta
+	meet_ts = timezone('US/Pacific').localize(dt.utcnow())
+	meet_tf	= meet_ts + timedelta(hours = 4)
 	meet_details	= factory.Sequence(lambda n: u'Test Description %d' % n)
 	meet_location	= factory.fuzzy.FuzzyText(length=3, chars="1234567890", suffix=' Test Road, Richmond, IN 47374')
 	meet_token	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-token-')
-	meet_card	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-card-')
-	customer	= factory.fuzzy.FuzzyText(length=20,  chars="1234567890-", prefix='test-custid-')
+	meet_card	= 'card_4VoDT440HtEKoz'
+	customer	= 'cus_4VoBLFNml6SK4Q'
 	meet_cost	= factory.fuzzy.FuzzyInteger(10, 100)
 
 	@classmethod
 	def _create(cls, model_class, *args, **kwargs):
 		"""Override default '_create' with custom call"""
 
-		ts	= kwargs.pop('meet_ts', cls.meet_ts)
+		meet_ts	= kwargs.pop('meet_ts', cls.meet_ts)
 		tf	= kwargs.pop('meet_tf', cls.meet_tf)
 		id	= kwargs.pop('meet_id', cls.meet_id)
+
+		review_time = meet_ts.astimezone(timezone('UTC')) + timedelta(hours=2)
+		print review_time
+
 		cost		= kwargs.pop('meet_cost',		cls.meet_cost)
 		location	= kwargs.pop('meet_location',	cls.meet_location)
 		details		= kwargs.pop('meet_details', 	cls.meet_details)
@@ -604,10 +609,8 @@ class MeetingFactory(SQLAlchemyModelFactory):
 		sellr_prof	= kwargs.pop('meet_sellr',		'879c3584-9331-4bba-8689-5bfb3300625a')
 		#print '_create: ', ds, ' - ', df
 		#print '_create: ', cost
-		#print '_create: ', location
-		#print '_create: ', details
 
-		obj = model_class(sellr_prof, buyer_prof, ts, tf, cost, location, details, token=token, card=card, *args, **kwargs)
+		obj = model_class(sellr_prof, buyer_prof, meet_ts, tf, cost, location, details, token=token, card=card, *args, **kwargs)
 		obj.meet_id = id #over-riding for clarity when reading the log-output
-
+		obj.meet_flags = obj.meet_flags | MEET_FLAG_WAIVE_FEE
 		return obj
