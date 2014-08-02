@@ -49,9 +49,9 @@ class Oauth(Base):
 
 
 	#Oauth(uid, OAUTH_STRIPE, stripe_cust_userid, data1=cc_token, data2=stripe_card_dflt)
-	def __init__ (self, account, service, userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
-		self.ht_account = account
-		self.oa_account = userid
+	def __init__ (self, ht_userid, service, oa_userid, token=None, secret=None, email=None, data1=None, data2=None, data3=None):
+		self.ht_account = ht_userid
+		self.oa_account = oa_userid
 		self.oa_service = service
 		self.oa_flags	= 0
 		self.oa_created	= dt.utcnow()
@@ -103,16 +103,24 @@ class OauthFactory(SQLAlchemyModelFactory):
 		model = Oauth
 		sqlalchemy_session = db_session
 
-	userid	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-ht_account-')
-	account = factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-oa_account-')
+	oa_account	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-oa_account-')
+	ht_account	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-ht_account-')
 
 	@classmethod
 	def _create(cls, model_class, *args, **kwargs):
 		"""Override default '_create' with custom call"""
 
-		userid	= kwargs.pop('userid',	cls.userid)
-		account = kwargs.pop('account',	cls.account)
+		oa_account = kwargs.pop('oa_account', cls.oa_account)
+		ht_account = kwargs.pop('ht_account', cls.ht_account)
 		service = kwargs.pop('service',	OAUTH_STRIPE)
+		#token	= 'pk_test_d3gRvdhkXhLBS3ABhRPhOort'
+		#secret	= 'sk_test_wNvqK0VIg7EqgmeXxiOC62md'
 
-		obj = model_class(account, service, userid, *args, **kwargs)
+		#token	= 'pk_test_dsbhSXD9aQLueKZ8JSeNbciU'	#Frank U
+		#secret  = 'sk_test_knGq2VEMJonKFlNh1wo2Srye'	#Frank U
+
+		token	= 'pk_test_Wo4o8A6htBjZ0gOpamMKaXFh'	# Corey
+		secret	= 'sk_test_VHAFCveolOCrJX050GJ9HhfQ'	# corey #insprite
+
+		obj = model_class(ht_account, service, oa_account, token=token, secret=secret, *args, **kwargs)
 		return obj
