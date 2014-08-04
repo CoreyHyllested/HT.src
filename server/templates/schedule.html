@@ -177,9 +177,10 @@ $(document).ready(function() {
 						window.location.href = data.nexturl;
 					},
 					error	: function(data) {
+						console.log('something went awry');
 						console.log(data.responseText);
-						var msg = JSON.parse(data.responseText);
-						openAlertWindow(msg['usrmsg']);
+						//var msg = JSON.parse(data.responseText);
+						//openAlertWindow(msg['usrmsg']);
 					}
 			});
 		};
