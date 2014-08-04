@@ -952,7 +952,7 @@ def render_schedule_page():
 	nts.hero.data = hp.prof_id
 	print 'render_schedule()\tusing STRIPE: ', ht_server.config['STRIPE_SECRET']
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_SECRET'], errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
 
 
 
