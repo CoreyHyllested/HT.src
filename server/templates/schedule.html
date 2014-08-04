@@ -120,41 +120,23 @@ $(document).ready(function() {
         document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
     }
 
-
-	$('#send_proposal').click(function(e) {
-		e.preventDefault();
-		$hero_acct = '{{hp.prof_id}}';
-		$hero_name = '{{hp.prof_name}}';
-		$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
-		$time = $('#newslot-duration').html();
-		$desc = $('#newslot_description').val();
-		$area = $('#newslot_location').val();
-		$ts_d = $('#datepicker').val();
-		$ts_h = $('#newslot_starttime').val();
-
-		$tf_d = $('#datepicker').val();
-		$tf_h = $('#newslot_endtime').val();
-
-		$bp_name = '{{bp.prof_name}}';
-		$bp_id   = '{{bp.prof_id}}';
-		console.log('hero_acct = ' + $hero_acct + ';' + $hero_name);
-		console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
-		console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
-		console.log('@ cost = ' + $cost);
-
-		var srv_callback = function(res) {
-			$.each(res.card, function(k, v) { console.log('res.' + k + ':' + v); });
+	var stripe_chkout = StripeCheckout.configure({
+		key: '{{ STRIPE_PK }}',
+		allowRememberMe: true,
+		token: function(token) {
+			//$.each(token, function(k, v) { console.log('token.' + k + ':' + v); });
 
 			var fd = {};
 			fd.csrf_token = "{{ csrf_token() }}";
-			fd.stripe_tokn = res.id;
-			fd.stripe_card = (res.card.id);
-			fd.stripe_name = (res.card.name);
-			fd.stripe_city = (res.card.address_city);
-			fd.stripe_stat = (res.card.address_state);
-			fd.stripe_cust = (res.card.customer);
-			fd.stripe_fngr = (res.card.fingerprint);
-			fd.stripe_mail = (res.email);
+			fd.stripe_tokn = token.id;
+			fd.stripe_card = (token.card.id);
+			fd.stripe_name = (token.card.name);
+			fd.stripe_city = (token.card.address_city);
+			fd.stripe_stat = (token.card.address_state);
+			fd.stripe_cust = (token.card.customer);
+			fd.stripe_fngr = (token.card.fingerprint);
+			fd.stripe_mail = (token.email);
+
 			fd.prop_hero =  ($hero_acct);
 			fd.prop_cost =  ($cost);
 			fd.prop_area =  ($area);
@@ -177,25 +159,45 @@ $(document).ready(function() {
 						window.location.href = data.nexturl;
 					},
 					error	: function(data) {
-						console.log('something went awry');
 						console.log(data.responseText);
-						//var msg = JSON.parse(data.responseText);
-						//openAlertWindow(msg['usrmsg']);
+						var msg = JSON.parse(data.responseText);
+						openAlertWindow(msg['usrmsg']);
 					}
 			});
-		};
+		}
+	});
 
-		StripeCheckout.open({
-			key: '{{ STRIPE_PK }}',
-			amount:      $cost,
-			address:     true,
-			description: "You'll be charged after the meeting.",
-			name:        $hero_name,
-			currency:    'usd',
-			panelLabel:  'Checkout',
-			token:      srv_callback
+
+	$('#send_proposal').click(function(e) {
+		$hero_acct = '{{hp.prof_id}}';
+		$hero_name = '{{hp.prof_name}}';
+		$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
+		$time = $('#newslot-duration').html();
+		$desc = $('#newslot_description').val();
+		$area = $('#newslot_location').val();
+		$ts_d = $('#datepicker').val();
+		$ts_h = $('#newslot_starttime').val();
+
+		$tf_d = $('#datepicker').val();
+		$tf_h = $('#newslot_endtime').val();
+
+		$bp_name = '{{bp.prof_name}}';
+		$bp_id   = '{{bp.prof_id}}';
+		console.log('hero_acct = ' + $hero_acct + ';' + $hero_name);
+		console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
+		console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
+		console.log('@ cost = ' + $cost);
+
+		stripe_chkout.open({
+			name:	$hero_name,
+			description: "Meeting on " + $ts_d, // + " at " + $ts_h, //You'll be charged after the meeting.",
+			email: '{{buyer_email}}',
+//			image: '/static/img/inspriteLogoA.png',
+			amount:	$cost,
+			address:	true,
+			currency:	'usd',
 		});
-		return false;
+		e.preventDefault();
 	});
 });
 </script>
