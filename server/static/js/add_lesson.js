@@ -93,7 +93,7 @@ $(document).ready(function() {
 		history.pushState({title: nextPage}, "", statePath+lessonID+'#'+nextPage);
 	});
 
-	$('#lessonSave').click(function(e) {
+	$(document.body).on("click", "#lessonSave", function(e) {
 		e.preventDefault();
 		console.log("---------");
 		console.log("Save was clicked");
@@ -101,7 +101,15 @@ $(document).ready(function() {
 		saveLessonForm(lessonID); 	
 	});
 
-	$('.lessonFormButtonSubmit').click(function(e) {
+	$(document.body).on("click", ".lessonFormButtonSave", function(e) {
+		e.preventDefault();
+		console.log("---------");
+		console.log("Save was clicked");
+
+		saveLessonForm(lessonID); 	
+	});
+
+	$(document.body).on("click", ".lessonFormButtonSubmit", function(e) {
 		e.preventDefault();
 
 		console.log("---------");
@@ -163,6 +171,15 @@ $(document).ready(function() {
 	$('#lessonMakeLiveProxy').click(function() {
 		var newCheckState = $('#lessonMakeLiveProxy').prop('checked');
 		$('#lessonMakeLive').prop('checked', newCheckState);
+
+		$('#lessonFormButtonFinal').toggleClass("lessonFormButtonSubmit lessonFormButtonSave").toggleClass("blueButton whiteButton");
+		
+		if (newCheckState == true) {
+			$('#lessonFormButtonFinal').text("Submit Lesson").css("color","#fff");
+		} else {
+			$('#lessonFormButtonFinal').text("Save for Later").css("color","#1488CC");
+		}
+
 	})
 
 });
@@ -341,7 +358,9 @@ function saveLessonForm(lesson_id) {
 			success : function(data) {
 			 	console.log("AJAX Success - lesson saved.");
 			 	$("#lessonSave").html("Saved").css("color","gray");
+			 	$(".lessonFormButtonSave").html("Saved").css("color","gray");
 			 	$(".formFieldErrors").remove();
+			 	$(".lessonFlags").html(data.lesson_flags);
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
 				// setTimeout(function() {
