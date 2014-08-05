@@ -1,7 +1,4 @@
-#!/opt/HeroTime/dev/bin/python
-
-import os
-import imp
+import os, imp
 from migrate.versioning import api
 from migrate.exceptions import *
 from server import initialize_server

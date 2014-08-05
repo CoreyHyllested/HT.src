@@ -12,22 +12,26 @@
 #################################################################################
 
 
-from datetime import datetime as dt, timedelta
-from server.models		 import *
-from server.infrastructure.errors		 import *
-from pprint import pprint as pp
-import json, smtplib
+from server.infrastructure.srvc_database import Base, db_session
+from server.infrastructure.errors	import *
+from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
+from sqlalchemy.orm import relationship, backref
 
 
 
-def get_account_and_profile(profile_id):
-	try:
-		p = Profile.get_by_prof_id(profile_id)
-		a = Account.get_by_uid(p.account)
-	except Exception as e:
-		print type(e), e
-		raise e
-	return (a, p)
+class Skills(Base):
+	__tablename__ = "skills"
+	skill_id   = Column(Integer, primary_key = True)
+	skill_name = Column(String(80), nullable = False)
+	skill_prof = Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+
+	def __init__ (self, name, prof):
+		self.skill_name = name
+		self.skill_prof = prof
+
+	def __repr__ (self):
+		return '<skill %r>' % (self.name)
 
 
 

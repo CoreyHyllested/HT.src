@@ -15,7 +15,7 @@ from . import insprite_views
 from flask import render_template
 from server import ht_csrf, ht_oauth
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
+from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.ht_utils	import *
@@ -88,6 +88,8 @@ def render_login(usrmsg=None):
 		If successful, sets session cookies and redirects to dash
 	"""
 	bp = None
+	usrmsg = None
+	insprite_msg = session.pop('messages', None)
 
 	if ('uid' in session):
 		# user already logged in; take 'em home
@@ -107,9 +109,8 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
-	msg = request.values.get('messages')
-	if (msg is not None):
-		usrmsg = msg
+	if (usrmsg is None and insprite_msg):
+		usrmsg = insprite_msg
 
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
@@ -134,8 +135,8 @@ def oauth_login_facebook():
 @facebook.authorized_handler
 def facebook_authorized(resp):
 	if resp is None:
-		msg = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('render_login', messages=msg))
+		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('insprite.render_login'))
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
@@ -165,14 +166,14 @@ def facebook_authorized(resp):
 def oauth_signup_linkedin():
 	print 'signup_linkedin'
 	session['oauth_linkedin_signup'] = True
-	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
 
 
 @insprite_views.route('/login/linkedin', methods=['GET'])
 def oauth_login_linkedin():
 	print 'login_linkedin()'
 	session['oauth_linkedin_signup'] = False
-	return linkedin.authorize(callback=url_for('linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
 
 
 

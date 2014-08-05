@@ -16,7 +16,7 @@ from . import insprite_views
 from flask import render_template, make_response, session, request, redirect
 from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import * 
+from server.models import * 
 from server.controllers import *
 from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
@@ -61,9 +61,6 @@ def render_profile(usrmsg=None):
 
 		# replace 'hp' with the actual Hero's Profile.
 		print "HP = ", hp.prof_name, hp.prof_id, hp.account
-	except NoProfileFound as nf:
-		print nf
-		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for -1'), 500
 	except Exception as e:
 		print e
 		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
@@ -201,8 +198,10 @@ def render_password_reset_request():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
 	if request.method == 'POST':
-		trace(form.rec_input_email.data)
+		print 'password_reset_request() -', form.rec_input_email.data
 		usrmsg = ht_password_recovery(form.rec_input_email.data)
+		# TODO on success... AJAX respond with message.  After 10 seconds, redirect user.
+		return make_response(redirect(url_for('insprite.render_login')))
 	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
 
@@ -235,7 +234,7 @@ def render_password_reset_page(challengeHash):
 		try:
 			db_session.add(hero_account)
 			db_session.commit()
-			ht_email_confirmation_of_changed_password(email)
+			ht_send_password_changed_confirmation(email)
 		except Exception as e:
 			trace(str(e))
 			db_session.rollback()
@@ -253,7 +252,7 @@ def render_password_reset_page(challengeHash):
 def ht_email_operations(operation, data):
 	print operation, data
 	if (operation == 'verify'):
-		email = request.values.get('email_addr')
+		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
 		print 'verify: data  = ', data, 'email =', email
 		return ht_email_verify(email, data, nexturl)
@@ -262,23 +261,22 @@ def ht_email_operations(operation, data):
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
 	elif (operation == 'request-verification') and ('uid' in session):
 
-		bp = Profile.get_by_uid(session.get('uid'))
-		ba = Account.get_by_uid(session.get('uid'))
-		email_set = set([ba.email, request.values.get('email_addr')])
+		profile = Profile.get_by_uid(session.get('uid'))
+		account = Account.get_by_uid(session.get('uid'))
+		email_set = set([account.email, request.values.get('email_addr')])
 		print email_set
-		ht_send_verification_to_list(ba, bp, email_set)
+
+		ht_send_verification_to_list(account, email_set)
 		return jsonify(rc=200), 200
 	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
 
 
 
 
-def ht_send_verification_to_list(account, profile, email_set):
-	print 'ht_send_verification_to_list'
-	challenge_hash = str(uuid.uuid4())
-	account.set_sec_question(challenge_hash)
-
+def ht_send_verification_to_list(account, email_set):
+	print 'ht_send_verification_to_list() enter'
 	try:
+		account.reset_security_question()
 		db_session.add(account)
 		db_session.commit()
 	except Exception as e:
@@ -287,53 +285,12 @@ def ht_send_verification_to_list(account, profile, email_set):
 
 	for email in email_set:
 		print 'sending email to', email
-		send_verification_email(email, profile.prof_name, challenge_hash)
+		ht_send_email_address_verify_link(email, account)
 
 
 
-
-def ht_email_verify(email, challengeHash, nexturl=None):
-	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
-
-	if (len(accounts) != 1 or accounts[0].email != email):
-			msg = 'Verification code for user, ' + str(email) + ', didn\'t match the one on file.'
-			return redirect(url_for('insprite.render_login', messages=msg))
-
-	try:
-		print 'update user account'
-		# update user's account.
-		account = accounts[0]
-		account.set_email(email)
-		account.set_sec_question("")
-		account.set_status(Account.USER_ACTIVE)
-
-		db_session.add(account)
-		db_session.commit()
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-
-	# bind session cookie to this user's profile
-	bp = Profile.get_by_uid(account.userid)
-	send_welcome_email(email, bp.prof_name)
-	ht_bind_session(bp)
-	if (nexturl is not None):
-		# POSTED from jquery in /settings:verify_email not direct GET
-		return make_response(jsonify(usrmsg="Account Updated."), 200)
-	return make_response(redirect('/dashboard'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+################################################################################
+### HELP FUNCTIONS.  ###########################################################
+################################################################################
 
 

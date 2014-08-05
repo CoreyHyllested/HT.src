@@ -1,4 +1,4 @@
-#################################################################################
+################################################################################
 # Copyright (C) 2013 - 2014 Insprite, LLC.
 # All Rights Reserved.
 #
@@ -14,7 +14,7 @@
 
 from server.ht_utils import *
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
+from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
@@ -41,25 +41,26 @@ def render_dashboard(usrmsg=None):
 	"""
 
 	bp = Profile.get_by_uid(session['uid'])
-	print 'render_dashboard() profile.account = ', bp.prof_name, session['uid']
+	insprite_msg = session.pop('messages', None)
+	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 
 	unread_msgs = []
 
 	try:
 		(props, appts, rview) = ht_get_active_meetings(bp)
 		active_reviews = ht_get_active_author_reviews(bp)
+		active_lessons = ht_get_active_lessons(bp)
 		unread_msgs = ht_get_unread_messages(bp)
-		lessons = ht_get_lessons(bp)
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 	
-	if (usrmsg is None):
-		usrmsg = request.values.get('messages', None)
-		print 'setting usrmsg', usrmsg
+	if (usrmsg is None and insprite_msg):
+		usrmsg = insprite_msg
+		print 'render_dashboard() usrmsg = ', usrmsg
 
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
 
 
 
@@ -107,7 +108,7 @@ def render_compose_page():
 
 
 @req_authentication
-@ht_server.route("/get_threads", methods=['GET', 'POST'])
+@insprite_views.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
 	threads = []
@@ -364,7 +365,7 @@ def render_edit_portfolio_page():
 
 
 
-@ht_server.route('/teacher/signup', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/signup', methods=['GET', 'POST'])
 @req_authentication
 def render_teacher_signup_page(usrmsg = None):
 	uid = session['uid']
@@ -387,7 +388,7 @@ def render_teacher_signup_page(usrmsg = None):
 
 
 
-@ht_server.route('/teacher/activate', methods=['GET', 'POST'])
+@insprite_views.route('/teacher/activate', methods=['GET', 'POST'])
 @req_authentication
 def activate_seller():
 	""" A regular user is signing up to be a seller.  """
@@ -459,7 +460,7 @@ def activate_seller():
 
 
 # This route initiates a new lesson
-@ht_server.route('/lesson/new', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new', methods=['GET', 'POST'])
 @req_authentication
 def initialize_lesson(version=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -481,7 +482,7 @@ def initialize_lesson(version=None):
 
 
 # The new lesson has been initialized - redirect to the form
-@ht_server.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
 def render_new_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -490,7 +491,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_new_lesson: lesson_id is", lesson_id
 
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
@@ -531,7 +532,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 
 
 # User is choosing to edit a lesson they previously saved - display the form
-@ht_server.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
+@insprite_views.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
 @req_authentication
 def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -539,7 +540,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	
 	print "render_edit_lesson: lesson_id is", lesson_id
 	
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')
 
@@ -587,7 +588,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
-@ht_server.route('/lesson/update/<lesson_id>', methods=['POST'])
+@insprite_views.route('/lesson/update/<lesson_id>', methods=['POST'])
 @req_authentication
 def api_update_lesson(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
@@ -668,9 +669,9 @@ def api_update_lesson(lesson_id):
 		session['errmsg'] = errmsg
 
 		if (version == "edit"):
-			return redirect(url_for("render_edit_lesson", lesson_id=lesson_id))
+			return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
 		else:
-			return redirect(url_for("render_new_lesson", lesson_id=lesson_id))
+			return redirect(url_for("insprite.render_new_lesson", lesson_id=lesson_id))
 
 
 def ht_update_lesson(lesson, form, saved):
@@ -780,7 +781,7 @@ def ht_update_lesson(lesson, form, saved):
 
 # View the lesson page
 @req_authentication
-@ht_server.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
+@insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
@@ -792,7 +793,7 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
-		lesson = Lesson.get_by_lesson_id(lesson_id)
+		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		print "render_lesson_page(): Lesson String:", str(lesson)
 	except Exception as e:
@@ -945,12 +946,14 @@ def render_schedule_page():
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'), messages='You must verify email before scheduling.')))
+		session['messages'] = 'We require a verified email prior to scheduling'
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
 
 	nts = NTSForm(request.form)
 	nts.hero.data = hp.prof_id
+	print 'render_schedule()\tusing STRIPE: ', ht_server.config['STRIPE_SECRET']
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
 
 
 
@@ -986,14 +989,10 @@ def render_review_meeting_page(review_id):
 		review_form.review_id.data = str(review_id)
 		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
 
-	except NoReviewFound as rnf:
-		print rnf 
+	except SanitizedException as se:
+		print se
 		db_session.rollback()
-		return jsonify(usrmsg=rnf.msg)
-	except ReviewError as re:
-		print re
-		db_session.rollback()
-		return jsonify(usrmsg=re.msg)
+		return jsonify(usrmsg=se.sanitized_msg())
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -1005,57 +1004,62 @@ def render_review_meeting_page(review_id):
 
 
 
+
 @insprite_views.route('/settings', methods=['GET', 'POST'])
 @req_authentication
 def render_settings():
-	""" Provides users the ability to modify their settings.
-		- detect HT Session info.  Provide modified info.
-	"""
+	print 'render_settings()\t enter'
+	""" Provides users the ability to modify their settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
 	pi	= Oauth.get_stripe_by_uid(uid)
 
-	card = 'Null'
-	if (pi is not None):
-		#pp(pi.serialize)
-		# Not a Customer.  Customers exist in Accounts.
-		# This is the Stripe Connect ID.  Own business.
-		# We use the pub & secret keys to charge users
-		card = pi.oa_account
+
+	# StripeConnect allows a user to charge customers.
+	stripe_connect = 'StripeConnect account not found.'
+	if (pi is not None): stripe_connect = pi.oa_account
 
 	errmsg = None
+	insprite_msg = session.pop('messages', None)
+
 	form = SettingsForm(request.form)
 	if form.validate_on_submit():
+		print 'render_settings()\tvalid submit'
 		update_acct = False		# requires current_pw_set, 					Sends email
 		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
 		update_mail = None
+		update_name = None
 
-		update_prof = False		# do nothing if above are set.
 		update_prop = None
 		update_vnty = None
 		update_fail = False
 
+		if (form.set_input_name.data != ba.name):
+			print 'render_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
+			update_acct = True
+			update_name = form.set_input_name.data
+
 		if (form.set_input_newpass.data != ""):
-			trace("attempt update pass " + str(ba.pwhash) + " to " +  str(form.set_input_newpass.data))
+			print 'render_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
 			update_acct = True
 			update_pass = form.set_input_newpass.data
 
 		if (ba.email != form.set_input_email.data):
-			trace("attempt update email "  + str(ba.email) +  " to " + str(form.set_input_email.data))
+			print 'render_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
 			update_acct = True
 			update_mail = form.set_input_email.data
 
 		if (update_acct):
+			print 'render_settings()\tupdate account'
 			if (update_pass):
 				pwd = form.set_input_curpass.data
 			else:
 				pwd = form.set_input_email_pass.data
-			trace("password is: " + pwd)
+			print 'render_settings()\tnow call modify account()'
 			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
-			trace("modify acct = " + str(rc) + ", errno = " + str(errno))
+			print("render_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
 			if (rc == False):
-				trace("restate errno" + str(errno))
 				errmsg = str(errno)
 				errmsg = error_sanitize(errmsg)
 				form.set_input_curpass.data = ''
@@ -1063,22 +1067,11 @@ def render_settings():
 				form.set_input_verpass.data = ''
 				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
 			else:
-				print "Update should be complete"
+				print "render_settings() Update should be complete"
 
-		if (update_prof):
-			try:
-				print "update prof"
-				db_session.add(bp)
-				db_session.commit()
-				trace("commited plus email is : " + update_mail)
-			except Exception as e:
-				db_session.rollback()
-				return redirect('/dbFailure')
-
-
-		#change email; send email to both.
 		if (update_mail):
-			ht_email_confirmation_of_changed_email_address(ba.email, form.set_input_email.data)
+			# user changed email; for security, send confimration email to last email addr.
+			ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
 			errmsg = "Your email has been updated."
 
 		#change pass send email
@@ -1086,26 +1079,26 @@ def render_settings():
 			send_passwd_change_email(ba.email)
 			errmsg = "Password successfully updated."
 
-		return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
+		print 'render_settings() Finished Handling POST.'
 	elif request.method == 'GET':
-		msg = request.values.get('messages')
-		if (msg is not None): errmsg = msg
+		print 'render_settings()\t GET'
 	else:
-		print "form isnt' valid"
-		print form.errors
+		print 'render_settings()\t invalid submit' , form.errors
 		errmsg = "Passwords must match."
 
 
 	email_unver = False
 	if (ba.status == Account.USER_UNVERIFIED):
-		print bp.prof_name, ' email is unverified'
 		email_unver = True
+	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
-	form.oauth_stripe.data     = card
-	form.set_input_email.data  = ba.email
+	form.oauth_stripe.data	= stripe_connect
+	form.set_input_email.data	= ba.email
+	form.set_input_name.data	= ba.name
 	nexturl = "/settings"
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
+	if (errmsg is None): errmsg = insprite_msg
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 

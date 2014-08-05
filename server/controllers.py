@@ -19,13 +19,11 @@ import pytz
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
-from server.infrastructure.models import *
 from server.infrastructure.tasks  import *
+from server.models import *
 from server.ht_utils import *
 from server import ht_server
 from string import Template
@@ -110,27 +108,22 @@ def ht_password_recovery(email):
 	"""
 
 	trace("Entering password recovery")
-
-	challenge_hash = uuid.uuid4()
-	accounts = Account.query.filter_by(email=email).all()
-
-	if (len(accounts) != 1):
-		return "Not a valid email."
-
-	ba = accounts[0]
-	ba.set_sec_question(str(challenge_hash))
-	usrmsg = "Password recovery email has been sent."
+	account = Account.get_by_email(email)
+	if (account is None):
+		return "Invalid email."
 
 	try:
-		db_session.add(ba)
+		account.reset_security_question()
+		db_session.add(account)
 		db_session.commit()
 	except Exception as e:
-		trace(str(e))
+		print type(e), e
 		db_session.rollback()
-		return (str(e))
+		return str(e)
 
-	ht_email_password_recovery_link(email, challenge_hash)
-	return usrmsg
+	ht_send_password_recovery_link(account)
+	return "Password recovery email has been sent."
+
 
 
 
@@ -139,55 +132,53 @@ def ht_create_account(name, email, passwd):
 
 	try:
 		print 'create account and profile'
-		hero  = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		prof  = Profile(name, hero.userid)
-		db_session.add(hero)
-		db_session.add(prof)
+		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		profile = Profile(name, account.userid)
+		db_session.add(account)
+		db_session.add(profile)
 		db_session.commit()
-
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
 		# raise --fail... user already exists
 		# is this a third-party signup-merge?
 			#-- if is is a merge.
-		return None, False
+		return (None, None)
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
+		return (None, None)
 
-	send_verification_email(email, name, challenge_hash=challenge_hash)
-	return (hero, prof)
+	ht_email_welcome_message(email, name, challenge_hash)
+	return (account, profile)
+
 
 
 
 def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 	print 'ht_create_account_with_oauth: ', name, email, oa_provider
-	(hero, prof) = ht_create_account(name, email, str(uuid.uuid4()))
+	(account, profile) = ht_create_account(name, email, str(uuid.uuid4()))
 
-	if (hero is None):
+	if (account is None):
 		print 'create_account failed. happens when same email address is used'
 		print 'Right, now mention an account uses this email address.'
 		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
-		return None, False
+		return None, None
 
 	try:
 		print 'create oauth account'
-		oa_user = Oauth(str(hero.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
+		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
 		db_session.add(oa_user)
 		db_session.commit()
 	except IntegrityError as ie:
-		print ie
+		print type(ie), ie
 		db_session.rollback()
-		return None, False
+		return None, None 
 	except Exception as e:
-		print type(e)
-		print e
+		print type(e), e
 		db_session.rollback()
-		return None, False
-
-	return (hero, prof)
+		return None, None
+	return (account , profile)
 
 
 
@@ -267,55 +258,51 @@ def htdb_get_composite_meetings(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
 
-	meetings	= db_session.query(Proposal, user, hero)																\
-							.filter(or_(Proposal.prop_user == profile.prof_id, Proposal.prop_hero == profile.prof_id))	\
-							.join(user, user.prof_id == Proposal.prop_user)												\
-							.join(hero, hero.prof_id == Proposal.prop_hero).all();
+	meetings	= db_session.query(Meeting, user, hero)																	\
+							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
+							.join(user, user.prof_id == Meeting.meet_buyer)												\
+							.join(hero, hero.prof_id == Meeting.meet_sellr).all();
 
-	map(lambda meeting: meeting_timedout(meeting), meetings)
-	map(lambda meeting: display_partner_proposal(meeting, profile), meetings)
+	map(lambda composite_meeting: meeting_timedout(composite_meeting, profile), meetings)
+	map(lambda composite_meeting: display_meeting_partner(composite_meeting, profile), meetings)
 	return meetings
 
 
 
 
-def meeting_timedout(meeting):
-	proposal = meeting.Proposal
+def meeting_timedout(composite_meeting, profile):
+	meeting = composite_meeting.Meeting
 
-	if (proposal.prop_state != APPT_STATE_PROPOSED and proposal.prop_state != APPT_STATE_ACCEPTED):
+	if ((not meeting.proposed()) and (not meeting.accepted())):
 		return
 
 	utc_now = dt.now(timezone('UTC'))
 	utcsoon = utc_now - timedelta(hours=20)
-	ystrday = utc_now - timedelta(days=1)
 
 	try:
-		prop_ts = proposal.prop_ts.astimezone(timezone('UTC'))
-		prop_tf = proposal.prop_tf.astimezone(timezone('UTC'))
-		print 'meeting_timeout()\tBEGIN', proposal.prop_uuid, proposal.prop_desc[:20]
-		print '\t\t\t\t\tts = ' + prop_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + prop_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
+		meet_ts = meeting.meet_ts.astimezone(timezone('UTC'))
+		meet_tf = meeting.meet_tf.astimezone(timezone('UTC'))
+		meet_to	= meet_ts - timedelta(hours=20)
+		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
+		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
-		if (proposal.prop_state == APPT_STATE_PROPOSED):
-			print '\t\t\t\tPROPOSED...'
-			if (prop_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
+		if (meeting.meet_state == APPT_STATE_PROPOSED):
+			print '\t\t\tPROPOSED Meeting...'
+			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				proposal.set_state(APPT_STATE_TIMEDOUT)
-				db_session.add(proposal)
+				meeting.set_state(MEET_STATE_TIMEDOUT, profile)
+				db_session.add(meeting)
 				db_session.commit()
 			else:
-				to = prop_ts - utcsoon
-				print '\t\t\t\t\t is before utcsoon timeout != ' + utcsoon.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
-				print '\t\t\t\t\t Safe! until ' +  str(to.seconds/3600) + ' hours'
-				setattr(meeting, 'timeout', str(to.seconds/3600) + ' hours')
-		elif (proposal.prop_state == APPT_STATE_ACCEPTED):
-			print '\t\t\t\tACCEPTED...'
-			if ((proposal.get_prop_tf() + timedelta(hours=4)) <= utc_now):
-				print '\t\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
-				print '\t\t\t\tFILTER Event out manually.  The events are working!!!'
-				proposal.set_state(APPT_STATE_OCCURRED)	# Hack, see above
-			else:
-				print 'meeting_timeout()\t\tutc_now = ' + utc_now.strftime('%A, %b %d, %Y %H:%M %p %Z%z')
-
+				timeout = meet_to - utc_now
+				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
+				setattr(composite_meeting, 'timeout', ht_print_timedelta(timeout))
+		elif (meeting.accepted()):
+			print '\t\t\tACCEPTED meeting...'
+			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
+				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
+				print '\t\t\tFILTER Event out manually.  The events are working!!!'
+				meeting.set_state(APPT_STATE_OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -328,14 +315,11 @@ def ht_get_active_meetings(profile):
 	appts = []
 	rview = []
 
-	print 'ht_get_active_meetings()  Get composite meetings'
 	meetings = htdb_get_composite_meetings(profile)
-	print 'ht_get_active_meetings()  Got composite meetings', len(meetings)
-
-	props = filter(lambda p: (p.Proposal.prop_state == APPT_STATE_PROPOSED), meetings)
-	appts = filter(lambda a: (a.Proposal.prop_state == APPT_STATE_ACCEPTED), meetings)
-	rview = filter(lambda r: (r.Proposal.prop_state  & APPT_STATE_OCCURRED), meetings)
-	print 'ht_get_active_meetings()  total:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
+	props = filter(lambda p: (p.Meeting.proposed()), meetings)
+	appts = filter(lambda a: (a.Meeting.accepted()), meetings)
+	rview = filter(lambda r: (r.Meeting.occurred()), meetings)
+	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 
@@ -411,12 +395,10 @@ def ht_filter_composite_messages(message_set, profile, filter_by='RECEIVED', dum
 
 
 def ht_get_active_author_reviews(profile):
-	print 'ht_get_active_reviews() enter'
 	prof_reviews = htdb_get_composite_reviews(profile)
 	active_reviews = ht_filter_composite_reviews(prof_reviews,	 filter_by='ACTIVE', profile=profile, dump=False)
 	author_reviews = ht_filter_composite_reviews(active_reviews, filter_by='AUTHORED', profile=profile, dump=False)
-	print 'ht_get_active_reviews()  total:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
-
+	print 'ht_get_active_reviews() \ttotal:', len(prof_reviews), '\tactive:', len(active_reviews), '\tactive_authored:', len(author_reviews)
 	return author_reviews
 
 
@@ -449,10 +431,10 @@ def display_review_partner(r, prof_id):
 
 
 
-def display_partner_proposal(meeting, profile):
-	display_partner = (profile == meeting.hero) and meeting.user or meeting.hero
-	setattr(meeting, 'display', display_partner)
-	setattr(meeting, 'seller', (profile == meeting.hero))
+def display_meeting_partner(composite_meeting, profile):
+	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
+	setattr(composite_meeting, 'display', display_partner)
+	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
 
 
 
@@ -570,9 +552,62 @@ def htdb_get_lesson_images(lesson_id):
 
 
 
-def ht_get_lessons(profile):
-	print "ht_get_lessons: profile_id:", profile.prof_id
+def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
-	print "ht_get_lessons: lessons count:", len(lessons)
+	print "ht_get_active_lessons() \ttotal:", len(lessons)
 	return lessons
+
+
+
+
+def ht_email_verify(email, challengeHash, nexturl=None):
+	# find account, if any, that matches the requested challengeHash
+	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
+	if (len(accounts) != 1 or accounts[0].email != email):
+			session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
+			return redirect(url_for('insprite.render_login'))
+
+	try:
+		print 'updating account'
+		account = accounts[0]
+		account.set_email(email)
+		account.set_sec_question("")
+		account.set_status(Account.USER_ACTIVE)
+
+		db_session.add(account)
+		db_session.commit()
+	except Exception as e:
+		print type(e), e
+		db_session.rollback()
+
+	# bind session cookie to this user's profile
+	profile = Profile.get_by_uid(account.userid)
+	ht_bind_session(profile)
+	if (nexturl is not None):
+		# POSTED from jquery in /settings:verify_email not direct GET
+		return make_response(jsonify(usrmsg="Account Updated."), 200)
+
+	session['messages'] = 'Great! You\'ve verified your email'
+	return redirect(url_for('insprite.render_dashboard'))
+
+
+
+
+
+#################################################################################
+### HELPER FUNCTIONS ############################################################
+#################################################################################
+
+def ht_print_timedelta(td):
+	if (td.days >= 9):
+		return 'more than a week'
+	if (td.days >= 6):
+		return 'about a week'
+	elif (td.days >=2):
+		return str(td.days) + ' days'
+	elif (td.days == 1):
+		return 'one day'
+	else:
+		return str(td.seconds / 3600) + ' hours'
+
 
