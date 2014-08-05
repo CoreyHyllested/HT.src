@@ -47,7 +47,7 @@ LESSON_STATE_MASK 		= (LESSON_STATE_INCOMPLETE | LESSON_STATE_COMPLETED | LESSON
 
 LESSON_STATE_LOOKUP_TABLE = {
 	LESSON_STATE_INCOMPLETE : 'INCOMPLETE',
-	LESSON_STATE_COMPLETED  : 'COMPLETE',
+	LESSON_STATE_COMPLETED  : 'COMPLETED',
 	LESSON_STATE_SUBMITTED  : 'SUBMITTED',
 	LESSON_STATE_AVAILABLE  : 'AVAILABLE',
 }
@@ -161,6 +161,10 @@ class Lesson(Base):
 			print 'Lesson.set_state()\tflags = ' + format(flags,             '08X') + ' | ' + format(new_state,               '08X') + ' = ' + format(self.lesson_flags, '08X')
 
 
+	def get_state(self):
+		cur_state = (int(self.lesson_flags) & LESSON_STATE_MASK)
+		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
+		return str(cstate_str)
 
 	################################################################################
 	### LESSON STATE-CHANGE FUNCTIONS. #############################################
@@ -178,6 +182,14 @@ class Lesson(Base):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True
 
+	def __transition_completed_to_incomplete(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
+	def __transition_submitted_to_incomplete(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
 	def __transition_submitted_to_completed(self, c_state, n_state, msg = None):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True
@@ -190,11 +202,18 @@ class Lesson(Base):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True
 
+	def __transition_available_to_incomplete(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True		
+
 	TRANSITION_MATRIX =	{	LESSON_STATE_INCOMPLETE	: { LESSON_STATE_COMPLETED	: __transition_incomplete_to_completed, },
-							LESSON_STATE_COMPLETED	: { LESSON_STATE_SUBMITTED	: __transition_completed_to_submitted, },
+							LESSON_STATE_COMPLETED	: { LESSON_STATE_SUBMITTED	: __transition_completed_to_submitted, 
+														LESSON_STATE_INCOMPLETE : __transition_completed_to_incomplete, },
 							LESSON_STATE_SUBMITTED	: { LESSON_STATE_COMPLETED	: __transition_submitted_to_completed,
-														LESSON_STATE_AVAILABLE	: __transition_submitted_to_available, },
-							LESSON_STATE_AVAILABLE	: { LESSON_STATE_COMPLETED	: __transition_available_to_completed, },
+														LESSON_STATE_AVAILABLE	: __transition_submitted_to_available, 
+														LESSON_STATE_INCOMPLETE : __transition_submitted_to_incomplete, },
+							LESSON_STATE_AVAILABLE	: { LESSON_STATE_COMPLETED	: __transition_available_to_completed, 
+														LESSON_STATE_INCOMPLETE : __transition_available_to_incomplete, },
 						}
 
 

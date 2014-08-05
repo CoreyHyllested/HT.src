@@ -466,6 +466,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	print "render_new_lesson: lesson_id is", lesson_id
 
 	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "render_new_lesson: lesson_state: ", lesson_state
 
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
@@ -493,7 +495,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		if (form.lessonRate.data <= 0):
 			form.lessonRate.data = bp.prof_rate		
 
-		if (lesson.lesson_flags == 2):
+		if (lesson.lesson_flags < 2):
 			form.lessonMakeLive.data = None
 
 	else:
@@ -501,7 +503,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		print "render_edit_lesson: invalid form imported"
 		
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
 
 
 
@@ -515,6 +517,9 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	print "render_edit_lesson: lesson_id is", lesson_id
 	
 	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "render_edit_lesson: lesson_state: ", lesson_state
+
 
 	session_form = session.pop('form', None)
 	session_errmsg = session.pop('errmsg', None)
@@ -544,7 +549,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		if (form.lessonRate.data <= 0):
 			form.lessonRate.data = bp.prof_rate		
 
-		if (lesson.lesson_flags == 2):
+		# if (lesson_state == "INCOMPLETE" or lesson_state == "COMPLETED"):
+		if (lesson.lesson_flags < 2):
 			form.lessonMakeLive.data = None
 
 	else:
@@ -556,7 +562,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	# lessonUpdated = lesson.lesson_updated
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
@@ -574,6 +580,8 @@ def api_update_lesson(lesson_id):
 
 	form = LessonForm(request.form)
 	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "api_update_lesson: lesson_state: ", lesson_state
 
 	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
 	
@@ -591,28 +599,32 @@ def api_update_lesson(lesson_id):
 					db_session.add(lesson)
 					db_session.commit()
 					print 'api_update_lesson: committed!'
+
+
 			except Exception as e:
 				print 'api_update_lesson: Exception:', type(e), e
 				db_session.rollback()
 
-			if (version == "save"):
-				print "api_update_lesson: Returning to form"
-				return jsonify(valid="true")
-			else:
-				print 'api_update_lesson: Redirecting to view lesson:', lesson_id
-				return make_response(redirect("/lesson/"+lesson_id))
+			print 'api_update_lesson: Redirecting to view lesson:', lesson_id
+			return make_response(redirect("/lesson/"+lesson_id))
 
 		else:
 			print 'api_update_lesson: invalid POST', form.errors
 
 	else:
+		# User clicked the Save Button, not the submit button.
 		if form:
-
-			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete/saved.
+			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete.
 			if form.validate_on_submit():
 				print 'api_update_lesson: lesson was SAVED and it validated'
+				if (lesson_state == "INCOMPLETE"):
+					lesson.set_state(LESSON_STATE_COMPLETED)
+				# If lesson was already submitted or available, do nothing
+				
 			else:
 				print 'api_update_lesson: lesson was SAVED and it did NOT validate'
+				if (lesson_state != "INCOMPLETE"):
+					lesson.set_state(LESSON_STATE_INCOMPLETE)				
 			
 			print 'api_update_lesson: lesson_id is ', lesson_id
 			print 'api_update_lesson: looking for updates...'
@@ -628,39 +640,14 @@ def api_update_lesson(lesson_id):
 				db_session.rollback()			
 
 			print "api_update_lesson: Returning to form"
-			return jsonify(valid="true")
+			return jsonify(valid="true", lesson_flags=lesson.lesson_flags)
 
 	if (saved != "true"):
 
 		print 'api_update_lesson: fell through - populating form data and returning.'
-
-		# This is messed up bc it is not accommodating an unsuccessful form submission - should take values from the form in that case, rather than from the database (where the lesson fields may be empty)
-
-		# form.lessonTitle.data = lesson.lesson_title
-		# form.lessonDescription.data = lesson.lesson_description
-		# form.lessonAddress1.data = lesson.lesson_address_1
-		# form.lessonAddress2.data = lesson.lesson_address_2
-		# form.lessonCity.data = lesson.lesson_city
-		# form.lessonState.data = lesson.lesson_state
-		# form.lessonZip.data = lesson.lesson_zip
-		# form.lessonCountry.data = lesson.lesson_country
-		# form.lessonAddressDetails.data = lesson.lesson_address_details
-		# form.lessonRate.data = lesson.lesson_rate
-		# form.lessonRateUnit.data = lesson.lesson_rate_unit
-		# form.lessonPlace.data = lesson.lesson_loc_option
-		# form.lessonIndustry.data = lesson.lesson_industry
-		# form.lessonDuration.data = lesson.lesson_duration
-		# form.lessonAvail.data = lesson.lesson_avail
-		# form.lessonMakeLive.data = 'y'
-
-		# if (lesson.lesson_flags == 2):
-		# 	form.lessonMakeLive.data = ''
-
-		# lessonUpdated = lesson.lesson_updated
-		# lessonCreated = lesson.lesson_created
+		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
 
 		errmsg = "Sorry, something went wrong - your form didn't validate"
-		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
 
 		session['form'] = form
 		session['errmsg'] = errmsg
@@ -680,6 +667,7 @@ def ht_update_lesson(lesson, form, saved):
 	for key in request.values:
 		print '\t', key, request.values.get(key)
 	print 'ht_update_lesson: save all updates'
+
 
 	if (lesson.lesson_title != form.lessonTitle.data):
 		print '\tUpdate lesson title (' + str(lesson.lesson_title) + ') => ' + str(form.lessonTitle.data)
@@ -751,28 +739,20 @@ def ht_update_lesson(lesson, form, saved):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
-	# Apply the flag logic
-	# Default is 0 (initialized). If lesson has already been submitted, it will either be 2 (private) or 3 (active). 
-	# It can also be saved (1) before it has been submitted. The saved state (1) implies incompleteness. Completeness validation will not happen for saved forms.
-	# So if existing flag is 2 or 3, we will never set it to 1 (or zero), only back and forth between the two. Forms must be complete to be flagged 2 or 3.
+	# If user pressed 'save', we already took care of state when validating.
+	if (saved != "true"): 
+		lesson_state = lesson.get_state()
 	
-	print "\tSetting Flags...current flag is",lesson.lesson_flags
+		if (form.lessonMakeLive.data == True):
+			print "\tUser submitted a complete form"
+			if (lesson_state != "SUBMITTED"):
+				lesson.set_state(LESSON_STATE_SUBMITTED)
 
-	if (saved == "true"):
-		print "\tUser saved form - set flag to 1 if not already 2 or 3"
-		if (lesson.lesson_flags <= 1):
-			lesson.lesson_flags = 1
-			update = True
-	elif (form.lessonMakeLive.data == True):
-		print "\tUser submitted form and made live"
-		lesson.lesson_flags = 3
-		update = True
-	else:
-		print "\tUser submitted form but kept private"
-		lesson.lesson_flags = 2
-		update = True
+		else:
+			print "\tUser saved a form but didn't "
+			if (lesson_state != "COMPLETED"):
+				lesson.set_state(LESSON_STATE_COMPLETED)
 
-	print "\tAnd now the flag is",lesson.lesson_flags	
 
 	return update
 
@@ -1128,7 +1108,7 @@ def upload():
 		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
 		if (len(image_data) > 0):
-			image = ht_create_image(bp, image_data, comment="No caption")
+			image = ht_create_image(bp, image_data, comment="")
 
 			if (lesson_id):
 				print 'upload()\tlesson_id' + str(lesson_id)
