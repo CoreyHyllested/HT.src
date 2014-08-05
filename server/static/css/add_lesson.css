@@ -113,6 +113,7 @@
 	font-size: .8em;
 }
 
+
 /* Main Content Areas */
 
 .lessonContentContainer {
@@ -196,9 +197,12 @@
 	margin: 12px 0 12px 0;
 }
 
-.multipleUploadButton {
+.lessonFormButtonSave {
+	float: left;
+	width: 300px;
 	margin: 12px 0 12px 0;
 }
+
 
 .lessonFormPrevious {
 	cursor: pointer;
@@ -312,7 +316,13 @@ textarea.formField {
 
 .multipleUploadButton {
 	opacity: .4;
+	margin: 12px 0 12px 0;
+	width: 150px;
 }
+.updateLessonPortfolioButton {
+	width: 150px;
+}
+
 .lessonEditPhotosContainer {
 	max-height: 600px;
 	overflow-y: scroll;

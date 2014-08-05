@@ -527,7 +527,7 @@ def ht_create_lesson(profile):
 	try:
 		lesson = Lesson(profile.prof_id)
 		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
-		# lesson.set_state(LESSON_STATE_STARTED)
+		# lesson.set_state(LESSON_STATE_INCOMPLETE)
 		db_session.add(lesson)
 		db_session.commit()
 	except IntegrityError as ie:

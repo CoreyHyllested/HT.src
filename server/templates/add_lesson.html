@@ -58,6 +58,7 @@
 		<div class="lessonHeaderRight">
 			<span class="lessonFormStatus"></span>
 			<button class="whiteButton lessonSave" id="lessonSave">Save</button>
+			<br>Flags: <span class="lessonFlags">{{ lesson_flags }}</span>
 		</div>					
 	</div>
   
@@ -216,7 +217,7 @@
 						<div class="dropzone-status italic"></div>
 
 						<div class="lessonFormButtonContainer">
-							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
+							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton" data-current-page="add_photos">
 								Upload
 							</button>
 							<button type="button" id="multipleUploadContinueButton" class="blueButton lessonFormButton" data-current-page="add_photos">Continue</button>						
@@ -241,7 +242,7 @@
 
 						<div class="lessonFormButtonContainer">
 							<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-							<button type="button" id="updateLessonPortfolioButton" class="blueButton updateLessonPortfolioButton span6" data-current-page="edit_photos">Save Changes</button>
+							<button type="button" id="updateLessonPortfolioButton" class="blueButton updateLessonPortfolioButton" data-current-page="edit_photos">Save Changes</button>
 							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton lessonFormButton" data-current-page="edit_photos">Continue</button>
 							<div class="lessonFormPreviousContainer">
 								<a class="lessonFormPrevious">Previous</a>
@@ -306,12 +307,18 @@
 					<div class="lessonFormButtonContainer">
 						<div class="lessonFormButtonContainer">
 
-
-							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
+						{% if lesson_flags < 2 %}
+							<button id="lessonFormButtonFinal" class="whiteButton lessonFormButtonSave" data-current-page="review">Save for Later</button>
 							<div class="lessonFormButtonOptions">
-							
+							<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y"><label for="lessonMakeLiveProxy">Make this lesson live and public!</label>
+							</div>							
+						{% else %}
+							<button id="lessonFormButtonFinal" class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
+							<div class="lessonFormButtonOptions">
 							<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y" checked><label for="lessonMakeLiveProxy">Make this lesson live and public!</label>
-							</div>
+							</div>							
+						{% endif %}
+
 						</div>
 						<div class="lessonFormPreviousContainer">
 							<a class="lessonFormPrevious">Previous</a>
