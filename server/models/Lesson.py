@@ -56,8 +56,8 @@ LESSON_STATE_LOOKUP_TABLE = {
 
 # LESSON_FLAGS Field.
 LESSON_BIT_INCOMPLETE	= 0 		# User started to create a lesson
-LESSON_BIT_COMPLETED	= 1			# User started to create a lesson
-LESSON_BIT_SUBMITTED	= 2 		# User started to create a lesson
+LESSON_BIT_COMPLETED	= 1			# User saved a complete lesson
+LESSON_BIT_SUBMITTED	= 2 		# User submitted a complete lesson
 LESSON_BIT_AVAILABLE	= 3			# User started to create a lesson
 
 LESSON_BIT_APPROVED			= 16 		# User started to create a lesson
@@ -66,18 +66,8 @@ LESSON_BIT_INAPPROPRIATE	= 20		# User completed making the lesson and made it pu
 
 LESSON_FLAG_APPROVED		= (0x1 << LESSON_BIT_APPROVED)		#00010000,	32K
 LESSON_FLAG_PUBLIC			= (0x1 << LESSON_BIT_PUBLIC)		#00020000,	64K
-LESSON_FLAG_INAPROPRIATE	= (0x1 << LESSON_BIT_INAPPROPRIATE) #00100000,  512K
+LESSON_FLAG_INAPPROPRIATE	= (0x1 << LESSON_BIT_INAPPROPRIATE) #00100000,  512K
 
-
-
-# Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
-PROF_FLAG_AVAIL_NONE = 0
-PROF_FLAG_AVAIL_FLEX = 1
-PROF_FLAG_AVAIL_SPEC = 2
-
-PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
-PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
-PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
 
 LESSON_RATE_PERHOUR = 0
 LESSON_RATE_PERLESSON = 1

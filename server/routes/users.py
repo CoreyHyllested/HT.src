@@ -601,7 +601,7 @@ def api_update_lesson(lesson_id):
 	if (bp.availability == 0): return redirect('/dashboard')
 	
 	form = LessonForm(request.form)
-	lesson = Lesson.get_by_lesson_id(lesson_id)
+	lesson = Lesson.get_by_id(lesson_id)
 
 	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')	
 
@@ -672,6 +672,8 @@ def api_update_lesson(lesson_id):
 				db_session.rollback()			
 
 			print "api_update_lesson: Returning to form"
+			lesson_flags = lesson.lesson_flags;
+			print "api_update_lesson: Flags: ", lesson_flags
 			return jsonify(valid="true", lesson_flags=lesson.lesson_flags)
 
 	if (saved != "true"):
@@ -771,17 +773,9 @@ def ht_update_lesson(lesson, form, saved):
 	# If user pressed 'save', we already took care of state when validating.
 	if (saved != "true"): 
 		lesson_state = lesson.get_state()
-	
-		if (form.lessonMakeLive.data == True):
-			print "\tUser submitted a complete form"
-			if (lesson_state != "SUBMITTED"):
-				lesson.set_state(LESSON_STATE_SUBMITTED)
-
-		else:
-			print "\tUser saved a form but didn't "
-			if (lesson_state != "COMPLETED"):
-				lesson.set_state(LESSON_STATE_COMPLETED)
-
+		if (lesson_state != "SUBMITTED"):
+			lesson.set_state(LESSON_STATE_SUBMITTED)
+			update = True
 
 	return update
 

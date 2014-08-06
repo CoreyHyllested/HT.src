@@ -14,6 +14,13 @@ $(document).ready(function() {
 		statePath = "/lesson/edit/";
 	}
 
+	var lesson_flags = $(".lessonHeaderPageStatus").attr("data-flags");
+	
+	// evaluate lesson flags/state and generate the text on the form
+	generateStatus(lesson_flags);
+	// check for error messages in the form and indicate them in the navigation
+	showErrors();
+
 	console.log("version is "+version);
 	var referrer = document.referrer;
 	console.log("referrer is "+referrer);
@@ -172,19 +179,66 @@ $(document).ready(function() {
 		var newCheckState = $('#lessonMakeLiveProxy').prop('checked');
 		$('#lessonMakeLive').prop('checked', newCheckState);
 
-		$('#lessonFormButtonFinal').toggleClass("lessonFormButtonSubmit lessonFormButtonSave").toggleClass("blueButton whiteButton");
+		// $('#lessonFormButtonFinal').toggleClass("lessonFormButtonSubmit lessonFormButtonSave").toggleClass("blueButton whiteButton");
 		
-		if (newCheckState == true) {
-			$('#lessonFormButtonFinal').text("Submit Lesson").css("color","#fff");
-		} else {
-			$('#lessonFormButtonFinal').text("Save for Later").css("color","#1488CC");
-		}
+		console.log("Check state changed - value: "+ newCheckState);
 
-	})
+		// if (newCheckState == true) {
+		// 	$('#lessonFormButtonFinal').text("Submit Lesson").css("color","#fff");
+		// } else {
+		// 	$('#lessonFormButtonFinal').text("Save for Later").css("color","#1488CC");
+		// }
+
+	});
+
+
 
 });
 
+function showErrors() {
 
+	// If a page has an error in it, mark it in the navigation tab.
+
+	$(".lessonNavItem").each(function() {
+
+		var defaultIcon = $(this).attr("data-default-icon");
+
+		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i").attr("class", "fa fa-fw "+defaultIcon);
+
+		var target = $(this).attr("data-target-page");
+		var error_status = $("#"+target).find(".formFieldErrors").length;
+		if (error_status) {
+			$(this).css("color", "red").children("i").attr("class", "fa fa-fw fa-exclamation");
+		}
+
+	});
+
+}
+
+function generateStatus(lesson_flags) {
+
+	var statusText = "Lesson Status: ";
+
+	switch (parseInt(lesson_flags)) {
+		case 0:
+			statusText += "Incomplete";
+			break;
+		case 1:
+			statusText += "Saved but not submitted";
+			break;		
+		case 2:
+			statusText += "Submitted and awaiting approval";
+			break;		
+		case 3:
+			statusText += "Approved and public";
+			break;
+		default:
+			statusText += "Unknown";
+			break;
+	}
+
+	$(".lessonHeaderPageStatus").text(statusText);
+}
 
 
 function saveLessonPortfolio() {
@@ -355,12 +409,16 @@ function saveLessonForm(lesson_id) {
 			data : fd,
 			processData: false,
   			contentType: false,
-			success : function(data) {
+			success : function(response) {
 			 	console.log("AJAX Success - lesson saved.");
 			 	$("#lessonSave").html("Saved").css("color","gray");
 			 	$(".lessonFormButtonSave").html("Saved").css("color","gray");
 			 	$(".formFieldErrors").remove();
-			 	$(".lessonFlags").html(data.lesson_flags);
+
+			 	console.log("Flags: "+response.lesson_flags);
+
+			 	generateStatus(response.lesson_flags);
+			 	showErrors();
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
 				// setTimeout(function() {

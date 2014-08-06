@@ -42,7 +42,7 @@
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	margin: 12px auto 0px;
+	margin: 12px auto 12px;
 	padding: 41px;
 	position: relative;
 	overflow: auto;
@@ -106,9 +106,11 @@
 /*	line-height: 1.2em;*/
 	margin-bottom: 12px;
 }
-.lessonHeaderPageSubtitle {
+
+.lessonHeaderPageStatus {
 	margin-top: 8px;
-	font-size: 1em;
+	font-size: .9em;
+	color: rgba(0,0,0,0.6);
 }
 
 .lessonSave {
@@ -211,14 +213,32 @@
 
 .lessonFormButtonSubmit {
 	float: left;
-	width: 300px;
-	margin: 12px 0 12px 0;
+	width: 250px;
+	margin: 12px 12px 12px 0;
 }
 
 .lessonFormButtonSave {
 	float: left;
-	width: 300px;
-	margin: 12px 0 12px 0;
+	width: 250px;
+	margin: 12px 0 12px 12px;
+}
+
+.lessonFormButtonOptions {
+	float: left;
+	width: 100%;
+}
+
+.lessonFormButtonOptions input[type="checkbox"] {
+	float: left;
+}
+
+.lessonFormButtonOptions label {
+	float: left;
+	font-size: 1em;
+	padding-left: 6px;
+	font-weight: 600;
+	height: 30px;
+	line-height: 40px;
 }
 
 
@@ -347,25 +367,6 @@ textarea.formField {
 	margin-bottom: 20px;
 }
 
-.lessonFormButtonOptions {
-	float: left;
-	padding-left: 14px;
-	width: 40%;
-	margin: 12px 0;	
-}
-
-.lessonFormButtonOptions input[type="checkbox"] {
-	float: left;
-}
-
-.lessonFormButtonOptions label {
-	float: left;
-	font-size: 1em;
-	padding-left: 6px;
-	font-weight: 600;
-	height: 30px;
-	line-height: 40px;
-}
 
 li.editPortfolioListItem {
 	display: inline;
