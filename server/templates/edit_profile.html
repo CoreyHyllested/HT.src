@@ -52,6 +52,7 @@
 			
 			<div class="editProfFormPageContainer">
 
+				<div class="editProfStatus"></div>
   				<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
 
   				{{form.hidden_tag()}}
@@ -73,10 +74,10 @@
 						{{form.edit_bio(class="formField span12")}}	
 					</div>
 
-
 					<div class="editProfFormButtonContainer">
 						<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
-					</div>	
+					</div>
+					<div class="editProfFormStatus"></div>	
 
 				</div>
 
@@ -84,18 +85,19 @@
 					<div class="formInstruction">Upload Photo</div>				
 					<!-- <div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div> -->
 
-					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview"></div>
+					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview" src="{{photoURL}}"></div>
 
 					<input type="button" class="whiteButton editProfImageButton" id="editProfImageButton" value="Choose Image...">
 					<div class="editProfImageInfo"></div>
 
-					<input name="editProfImage" id="editProfImage" type="file" accept="image/*">
+					{{form.edit_photo(id="editProfImage")}}
+					<!-- <input name="editProfImage" id="editProfImage" type="file" accept="image/*"> -->
 
 					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfFormButton" data-current-page="profile_photo">Continue</button>
-						<a class="editProfFormPrevious">Previous</a>
+						<button class="blueButton editProfSave" data-current-page="profile_photo">Save Changes</button>
 					</div>					
-				
+					<div class="editProfFormStatus"></div>
+
 				</div>
 
 
@@ -113,7 +115,7 @@
 					<div class="editProfFormButtonContainer">
 						<button class="blueButton editProfFormButton" data-current-page="intro">Continue</button>
 					</div>					
-				
+					
 				</div>
 
 
@@ -129,8 +131,8 @@
 
 					<div class="editProfFormButtonContainer">
 						<button class="blueButton editProfFormButton" data-current-page="schedule">Continue</button>
-						<a class="editProfFormPrevious">Previous</a>
-					</div>				
+					</div>
+					<div class="editProfFormStatus"></div>				
 				</div>
 
 				<div id="payment" class="editProfFormPage mentorForm">
@@ -145,8 +147,8 @@
 
 					<div class="editProfFormButtonContainer">
 						<button class="blueButton editProfFormButton" data-current-page="payment">Continue</button>
-						<a class="editProfFormPrevious">Previous</a>
 					</div>			
+					<div class="editProfFormStatus"></div>
 
 				</div>
 				<div id="temp" class="editProfFormPage mentorForm">
@@ -158,12 +160,9 @@
 					<div class="editProfFormButtonContainer">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 						<button class="blueButton editProfFormButtonSubmit" data-current-page="temp">Submit and Continue</button>
-						<a class="editProfFormPrevious">Previous</a>
 					</div>	
-
+					<div class="editProfFormStatus"></div>
 				</div>
-
-
 
 			</div>	
 

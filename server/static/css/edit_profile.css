@@ -178,8 +178,16 @@
 .editProfFormButtonContainer {
 	float: left;
 	text-align: left;
-	width: 100%;
+	width: 200px;
 }
+
+.editProfFormStatus {
+	display: none;
+	float: left;
+	text-align: left;
+	width: 200px;
+}
+
 .editProfFormButton {
 	width: 150px;
 	margin: 12px 0 12px 0;
@@ -322,7 +330,7 @@ textarea.formField {
 }
 
 .editProfImagePreview {
-	display: none;
+	/*display: none;*/
 	border: 1px #cccccc solid;
 	padding: 3px;
 	width: 98%;

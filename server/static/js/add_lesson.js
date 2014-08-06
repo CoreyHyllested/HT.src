@@ -199,6 +199,8 @@ function showErrors() {
 
 	// If a page has an error in it, mark it in the navigation tab.
 
+	
+
 	$(".lessonNavItem").each(function() {
 
 		var defaultIcon = $(this).attr("data-default-icon");

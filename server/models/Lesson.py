@@ -136,6 +136,10 @@ class Lesson(Base):
 		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
 		nstate_str = LESSON_STATE_LOOKUP_TABLE[nxt_state]
 
+		if (cur_state == nxt_state):
+			print "State unchanged."
+			return
+
 		print 'Lesson(' + self.lesson_id + ') change state: ' + str(cstate_str) + ' => ' + str(nstate_str)
 		transitions = self.TRANSITION_MATRIX[cur_state]
 		transition = transitions.get(nxt_state)
@@ -168,6 +172,10 @@ class Lesson(Base):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True
 
+	def __transition_incomplete_to_submitted(self, c_state, n_state, msg = None):
+		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
+		return True
+
 	def __transition_completed_to_submitted(self, c_state, n_state, msg = None):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True
@@ -196,7 +204,8 @@ class Lesson(Base):
 		print 'transitioning from ' + str(c_state) + ' to ' + str(n_state)
 		return True		
 
-	TRANSITION_MATRIX =	{	LESSON_STATE_INCOMPLETE	: { LESSON_STATE_COMPLETED	: __transition_incomplete_to_completed, },
+	TRANSITION_MATRIX =	{	LESSON_STATE_INCOMPLETE	: { LESSON_STATE_COMPLETED	: __transition_incomplete_to_completed, 
+														LESSON_STATE_SUBMITTED	: __transition_incomplete_to_submitted, },
 							LESSON_STATE_COMPLETED	: { LESSON_STATE_SUBMITTED	: __transition_completed_to_submitted, 
 														LESSON_STATE_INCOMPLETE : __transition_completed_to_incomplete, },
 							LESSON_STATE_SUBMITTED	: { LESSON_STATE_COMPLETED	: __transition_submitted_to_completed,

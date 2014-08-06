@@ -269,12 +269,13 @@ def api_update_profile(usrmsg=None):
 	if form.validate_on_submit():
 		try:
 			print "api_update_profile: form is valid"
-			bp.prof_rate = form.edit_rate.data
-			bp.headline = form.edit_headline.data 
-			bp.location = form.edit_location.data 
-			bp.industry = Industry.industries[int(form.edit_industry.data)] 
 			bp.prof_name = form.edit_name.data
+			bp.headline = form.edit_headline.data 
+			bp.location = form.edit_location.data 			
 			bp.prof_bio  = form.edit_bio.data
+			
+			bp.prof_rate = form.edit_rate.data
+			bp.industry = Industry.industries[int(form.edit_industry.data)]
 			bp.prof_url  = form.edit_url.data
 
 			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
@@ -283,6 +284,7 @@ def api_update_profile(usrmsg=None):
 			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
 			image_data = request.files[form.edit_photo.name].read()
 			if (len(image_data) > 0):
+				print "api_update_profile: image was uploaded"
 				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 				trace (destination_filename + ", sz = " + str(len(image_data)))
 
@@ -334,7 +336,7 @@ def api_update_profile(usrmsg=None):
 	# return jsonify(errors=str(form.errors)), 500
 	print "here is the form object:"
 	print str(form)
-	return jsonify(form=form)
+	return jsonify(usrmsg="Something went wrong.")
 
 
 
@@ -681,14 +683,11 @@ def api_update_lesson(lesson_id):
 		print 'api_update_lesson: fell through - populating form data and returning.'
 		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
 
-		errmsg = "Sorry, something went wrong - your form didn't validate"
+		errmsg = "Sorry, your lesson form has some missing or invalid info. Please check it and resubmit."
 		session['form'] = form
 		session['errmsg'] = errmsg
 
-		if (version == "edit"):
-			return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
-		else:
-			return redirect(url_for("insprite.render_new_lesson", lesson_id=lesson_id))
+		return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
 
 
 def ht_update_lesson(lesson, form, saved):
@@ -773,9 +772,15 @@ def ht_update_lesson(lesson, form, saved):
 	# If user pressed 'save', we already took care of state when validating.
 	if (saved != "true"): 
 		lesson_state = lesson.get_state()
-		if (lesson_state != "SUBMITTED"):
+		print "ht_update_lesson: Previous state: ", lesson_state
+
+		if (lesson_state != "AVAILABLE"):
 			lesson.set_state(LESSON_STATE_SUBMITTED)
+			lesson.set_state(LESSON_STATE_AVAILABLE)
 			update = True
+
+	lesson_state = lesson.get_state()
+	print "ht_update_lesson: Final state: ", lesson_state
 
 	return update
 

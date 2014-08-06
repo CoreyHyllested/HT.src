@@ -170,7 +170,9 @@ $(document).ready(function() {
 
 function saveProfile() {
 
-	var fd = new FormData($('#editProfileForm')[0]);
+	var fd = new FormData($('#editProfForm')[0]);
+
+	$(".editProfFormStatus").html("Saving...").fadeIn();
 
 	$.ajax({ url	: "/profile/update",
 			type	: "POST",
@@ -178,14 +180,15 @@ function saveProfile() {
 			processData: false,
   			contentType: false,
 			success : function(response) {
+
 			 	console.log("AJAX Success - profile saved.");
 
-			 	openAlertWindow("Success: " + response.usrmsg);
+			 	// openAlertWindow("Success: " + response.usrmsg);
 
-			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();
-				// setTimeout(function() {
-				// 	$('.lessonFormStatus').fadeOut(1000);
-				// }, 2000 );
+			 	$(".editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
+				setTimeout(function() {
+					$('.editProfFormStatus').fadeOut(400);
+				}, 1600 );
 			}, 
 			error: function(xhr, status, error) {
 				console.log("AJAX Error - profile not saved.");
@@ -196,9 +199,11 @@ function saveProfile() {
 				console.log("FORM ERRORS:");
 				console.log(JSON.stringify(errors));
 
+				$(".editProfFormStatus").html("<span class='error'>");
 				$.each(errors, function(i, v) {
-					$(".editProfileStatus").html("<span class='error'>"+i+": "+v+"</span>").fadeIn();
+					$(".editProfFormStatus").append(i+": "+v);
 				});
+				$(".editProfFormStatus").append('</span>').fadeIn();
 
 				openAlertWindow("Error: " + err.usrmsg);
 				// $(".lessonFormStatus").html("<span class='error'>Sorry, something went wrong. Lesson not saved.</span>").fadeIn();
