@@ -171,21 +171,34 @@
 
 /* Styles for the form container and pages */
 
+
 .editProfFormPageContainer {
 	/*min-height: 300px;*/
+}
+
+.editProfFormPageFooter {
+	float: left;
+	width: 100%;
+	margin-top: 24px;	
 }
 
 .editProfFormButtonContainer {
 	float: left;
 	text-align: left;
-	width: 200px;
+
 }
 
+
 .editProfFormStatus {
+	color: rgb(0,0,0,.4);
 	display: none;
 	float: left;
 	text-align: left;
 	width: 200px;
+	font-size: .8em;
+	height: 30px;
+	line-height: 36px;	
+	margin-left: 20px;
 }
 
 .editProfFormButton {
@@ -247,6 +260,18 @@
 	margin-bottom: 8px;
 }
 
+.formFieldInfo {
+	color: rgba(0,0,0,0.4);
+	font-size: .9em;
+	padding-bottom: 6px;
+	padding-top: 20px;
+}
+
+.formFieldInfo.first {
+	padding-top: 0px;
+		
+}
+
 .formContainer {
 	margin-bottom: 20px;
 }
@@ -259,9 +284,19 @@
 	margin-bottom: -1px;
 }
 
+.span1 {
+	width: 8.33%;
+}
+.span2 {
+	width: 16.66%;
+}
 .span3 {
 	width: 25%;
 }
+.span4 {
+	width: 33%;
+}
+
 .span6 {
 	width: 50%;
 }
@@ -273,11 +308,11 @@
 }
 
 
-.formField:first-of-type {
+.formField.stack:first-of-type {
 	border-radius: 5px 5px 0 0;
 }
 
-.formField:last-of-type {
+.formField.stack:last-of-type {
 	border-radius: 0 0 5px 5px;
 }
 
@@ -302,10 +337,32 @@ textarea.formField {
 	/*display: none;*/
 }
 
-#schedule label {
-	font-size: 0.8em;
-	line-height: 1.7em;
-	padding-left: 10px;	
+.editProfAvailDay {
+	position: relative;
+	margin-bottom: 4px;
+}
+
+.editProfAvailDay label {
+	color: rgba(0,0,0,.7);
+	font-size: 1em;
+	font-weight: 600;
+	display: inline-block;
+	padding: 0px 10px 0px 6px;	
+	width: 100px;
+}
+
+.editProfAvailDay input[type="checkbox"]{
+	height: 20px;
+	width: 20px;
+	position: relative;
+	top: 4px;
+}
+
+.editProfAvailDay .daySelector {
+	width: 20%;
+}
+.editProfAvailDay .timeSelector {
+
 }
 
 #editProfImage {
@@ -334,6 +391,7 @@ textarea.formField {
 	border: 1px #cccccc solid;
 	padding: 3px;
 	width: 98%;
+	cursor: pointer;
 }
 
 /* Connect with Stripe */

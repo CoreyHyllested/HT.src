@@ -19,7 +19,7 @@
 		</div>
 			
 		<div class="editProfHeaderRight">
-			<div class="editProfHeaderPageName">Edit your profile</div>
+			<div class="editProfHeaderPageName"></div>
 		</div>			
 	</div>
   
@@ -27,11 +27,11 @@
 		<div class="editProfLeftColumn">
 
 			<div class="editProfNavContainer">
-			<div class="editProfNavListHeader">Basic Profile</div>
+			<!-- <div class="editProfNavListHeader">Basic Profile</div> -->
 			<ul class="editProfNavList">
-				<div class="editProfNavItem active" data-target-page="general">Basic Info<i class="fa fa-fw fa-star-o"></i></div>		
+				<div class="editProfNavItem" data-target-page="general">General Info<i class="fa fa-fw fa-star-o"></i></div>		
 
-				<div class="editProfNavItem" data-target-page="profile_photo">Photo<i class="fa fa-fw fa-picture-o"></i></div>	
+				<div class="editProfNavItem" data-target-page="profile_photo">Profile Photo<i class="fa fa-fw fa-picture-o"></i></div>	
 
 			</ul>
 			</div>
@@ -39,10 +39,10 @@
 			<div class="editProfNavContainer mentorNav">
 				<div class="editProfNavListHeader">Mentor Profile</div>
 				<ul class="editProfNavList">
-					<div class="editProfNavItem mentorFormNavItem" data-target-page="intro">Guidelines<i class="fa fa-fw fa-beer"></i></div>			
-					<div class="editProfNavItem mentorFormNavItem" data-target-page="schedule">Schedule<i class="fa fa-fw fa-calendar"></i></div>
-					<div class="editProfNavItem mentorFormNavItem" data-target-page="payment">Payment<i class="fa fa-fw fa-dollar"></i></div>
-					<div class="editProfNavItem mentorFormNavItem" data-target-page="temp">Temp<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="intro">Guidelines<i class="fa fa-fw fa-flag"></i></div>			
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="details">Mentor Details<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="schedule">Availability<i class="fa fa-fw fa-calendar"></i></div>
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="payment">Rate & Payment<i class="fa fa-fw fa-dollar"></i></div>
 				</ul>
 			</div>
 
@@ -58,31 +58,28 @@
   				{{form.hidden_tag()}}
 
 				<div id="general" class="editProfFormPage">
-					<div class="formInstruction">Basic Information</div>
 
-					<div class="formContainer span9">
+					<div class="formContainer span12">
+						<div class="formFieldInfo first">Your name as it should appear on your profile</div>
+						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span6")}}
 
-						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span12")}}
-						{{form.edit_headline(placeholder="Profile Headline", class="formField span12")}}
-						{{form.edit_location(placeholder="Location", class="formField span12")}}
-						
+						<div class="formFieldInfo">Where do you reside?</div>
+						{{form.edit_location(placeholder="Location", class="formField span6")}}
+
+						<div class="formFieldInfo">Tell everybody your story. If you want to mentor others, talk about what you have to offer.</div>
+						{{form.edit_bio(placeholder="Your Story", class="formField span12")}}	
 					</div>
 
-					<div class="formInstruction">Your Story</div>
-					
-					<div class="formContainer span9">
-						{{form.edit_bio(class="formField span12")}}	
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>	
 					</div>
-
-					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
-					</div>
-					<div class="editProfFormStatus"></div>	
 
 				</div>
 
 				<div id="profile_photo" class="editProfFormPage">
-					<div class="formInstruction">Upload Photo</div>				
 					<!-- <div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div> -->
 
 					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview" src="{{photoURL}}"></div>
@@ -91,12 +88,13 @@
 					<div class="editProfImageInfo"></div>
 
 					{{form.edit_photo(id="editProfImage")}}
-					<!-- <input name="editProfImage" id="editProfImage" type="file" accept="image/*"> -->
 
-					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfSave" data-current-page="profile_photo">Save Changes</button>
-					</div>					
-					<div class="editProfFormStatus"></div>
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="profile_photo">Save Changes</button>
+						</div>					
+						<div class="editProfFormStatus"></div>
+					</div>
 
 				</div>
 
@@ -112,57 +110,135 @@
 					</ul>
 					OK with all that? Great. Let's get started.
 					</div>
-					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfFormButton" data-current-page="intro">Continue</button>
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfFormButton" data-current-page="intro">Continue</button>
+						</div>					
 					</div>					
 					
 				</div>
 
 
-				<div id="schedule" class="editProfFormPage mentorForm">
-					<div class="formInstruction">Your Availability</div>
-					<div class="formDescription">Soon, we will show you a calendar where you can select your availability.</div>
-					<input type="radio" id="editProfAvailOptionFlex" name="editProfAvailOption" class="editProfAvailOption formField" value=1 checked><label for="editProfAvailOptionFlex">Flexible - customer should contact me.</label><br> 
-					<input type="radio" id="editProfAvailOptionSpec" name="editProfAvailOption" class="editProfAvailOption formField" value=2><label for="editProfAvailOptionSpec">Specific (select times below)</label><br><br> 						
-					<select name="editProfAvailTimes" id="editProfAvailTimes" class="formField span3">
-						<option value="now">Now
-						<option value="never">Never
-					</select>  	
+				<div id="details" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo first">Your profile title, or your specialty</div>
+					{{form.edit_headline(placeholder="e.g. Experienced Printmaker", class="formField span6")}}
 
-					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfFormButton" data-current-page="schedule">Continue</button>
+					<div class="formFieldInfo">In which category do your teachable skills primarily lie?</div>
+					{{form.edit_industry(class="formField span6")}}
+
+					<div class="formFieldInfo">Got a website?</div>
+					{{form.edit_url(placeholder="Website URL", class="formField span6")}}
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="details">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>
+					</div>			
+				</div>
+
+
+				<div id="schedule" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo first">When are you available to mentor others?</div>
+					{{form.edit_availability(id="edit_availability", class="formField span6")}}
+
+					<br><br>
+					<fieldset id="editProfAvailTimes">
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesMon" id="editProfAvailTimesMon" class="daySelector">
+						<label for="editProfAvailTimesMon">Monday</label> 						
+						<select name="editProfAvailTimesMonStart" id="editProfAvailTimesMonStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesMonEnd" id="editProfAvailTimesMonEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+					</div> 					
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesTue" id="editProfAvailTimesTue" class="daySelector">
+						<label for="editProfAvailTimesTue">Tuesday</label> 						
+						<select name="editProfAvailTimesTueStart" id="editProfAvailTimesTueStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesTueEnd" id="editProfAvailTimesTueEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+					</div> 					
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesWed" id="editProfAvailTimesWed" class="daySelector">
+						<label for="editProfAvailTimesWed">Wednesday</label> 						
+						<select name="editProfAvailTimesWedStart" id="editProfAvailTimesWedStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesWedEnd" id="editProfAvailTimesWedEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+					</div>  					
+					</fieldset>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="schedule">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>			
 					</div>
-					<div class="editProfFormStatus"></div>				
+
 				</div>
 
 				<div id="payment" class="editProfFormPage mentorForm">
-					<div class="formInstruction">Payment Information</div>
+					<div class="formFieldInfo first">Please set your default hourly rate. You will still be able to set rates for specific lessons.</div>
+					${{form.edit_rate(placeholder="US Dollars", maxlength="7", class="formField span2")}} per hour
+					<br><br>
 					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
 					<br><br>
 					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
 					</div>
 					
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					<input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{oa_stripe}}">
+					
+					<!-- <input id="oauth_stripe" name="oauth_stripe" readonly type="text" value="{{oa_stripe}}"> -->
+					{{form.edit_oauth_stripe(class="formField span6", readonly=true)}}
 
-					<div class="editProfFormButtonContainer">
-						<button class="blueButton editProfFormButton" data-current-page="payment">Continue</button>
-					</div>			
-					<div class="editProfFormStatus"></div>
-
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="payment">Save Changes</button>
+						</div>			
+						<div class="editProfFormStatus"></div>
+					</div>
 				</div>
-				<div id="temp" class="editProfFormPage mentorForm">
 
-					{{form.edit_url(placeholder="Website", class="formField span12")}}
-					{{form.edit_rate(maxlength="7", onkeypress="return isNumberKey(event)", class="formField span12")}}
-					{{form.edit_industry(placeholder="Industry", class="formField span12")}}
 
-					<div class="editProfFormButtonContainer">
-						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<button class="blueButton editProfFormButtonSubmit" data-current-page="temp">Submit and Continue</button>
-					</div>	
-					<div class="editProfFormStatus"></div>
-				</div>
+				</form>
 
 			</div>	
 

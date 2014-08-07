@@ -231,6 +231,7 @@ def render_edit_profile():
 	# Form to edit a profile
 
 	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session['uid'])
 
 	# session_form = session.pop('form', None)
 	# session_errmsg = session.pop('errmsg', None)
@@ -242,12 +243,17 @@ def render_edit_profile():
 			form.edit_industry.data = str(x)
 			break
 	form.edit_name.data     = bp.prof_name
-	form.edit_rate.data     = bp.prof_rate
+	form.edit_location.data = bp.location	
+	form.edit_bio.data      = bp.prof_bio
+
 	form.edit_headline.data = bp.headline
-	form.edit_location.data = bp.location
 	form.edit_industry.data = str(x)
 	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-	form.edit_bio.data      = bp.prof_bio
+
+	form.edit_rate.data     = bp.prof_rate
+	form.edit_oauth_stripe.data      = ba.stripe_cust
+	form.edit_availability.data      = bp.availability
+
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 	return make_response(render_template('edit_profile.html', form=form, bp=bp, photoURL=photoURL))
 
@@ -261,6 +267,7 @@ def api_update_profile(usrmsg=None):
 
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
+	ba = Account.get_by_uid(uid)
 
 	form = ProfileForm(request.form)
 
@@ -270,13 +277,15 @@ def api_update_profile(usrmsg=None):
 		try:
 			print "api_update_profile: form is valid"
 			bp.prof_name = form.edit_name.data
-			bp.headline = form.edit_headline.data 
 			bp.location = form.edit_location.data 			
 			bp.prof_bio  = form.edit_bio.data
-			
-			bp.prof_rate = form.edit_rate.data
+
+			bp.headline = form.edit_headline.data 			
 			bp.industry = Industry.industries[int(form.edit_industry.data)]
+			bp.prof_rate = form.edit_rate.data
 			bp.prof_url  = form.edit_url.data
+			bp.availability  = form.edit_availability.data
+			ba.stripe_cust = form.edit_oauth_stripe.data
 
 			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
 			# bp.updated  = dt.utcnow()
@@ -297,13 +306,15 @@ def api_update_profile(usrmsg=None):
 				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
 				bp.prof_img = destination_filename
 
-			# ensure 'http(s)://' exists
-			if (bp.prof_url[:8] != "https://"):
-				if (bp.prof_url[:7] != "http://"):
-					bp.prof_url = "http://" + bp.prof_url;
+			# if URL is set, ensure 'http(s)://' is part of it
+			if (bp.prof_url):
+				if (bp.prof_url[:8] != "https://"):
+					if (bp.prof_url[:7] != "http://"):
+						bp.prof_url = "http://" + bp.prof_url;
 
 			print 'api_update_profile: add'
 			db_session.add(bp)
+			db_session.add(ba)
 			print 'api_update_profile: commit'
 			db_session.commit()
 			log_uevent(uid, "update profile")

@@ -24,7 +24,7 @@ class Industry(Base):
 	__tablename__ = "industry"
 	industries = ['Art & Design', 'Athletics & Sports', 'Beauty & Style', 'Food', 'Music', 'Spirituality',  'Technology', 'Travel & Leisure', 'Health & Wellness', 'Other']
 	enumInd = [(str(k), v) for k, v in enumerate(industries)]
-	enumInd.insert(0, (-1, 'All Industries'))
+	enumInd.insert(0, (-1, 'All Categories'))
 	enumInd2 = [(str(k), v) for k, v in enumerate(industries)]
 
 	id   = Column(Integer, primary_key = True)

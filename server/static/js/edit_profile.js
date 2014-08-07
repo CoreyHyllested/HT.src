@@ -3,7 +3,7 @@ $(document).ready(function() {
 	// Form Navigation and State Management
 
 	var firstPage = "general";
-	var lastPage = "temp";
+	var lastPage = "payment";
 	var path = "/profile/edit";
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
@@ -13,14 +13,19 @@ $(document).ready(function() {
 	});
 
 	if (window.location.hash) {
-		var hash = window.location.hash.substring(1);	
+		$(".editProfNavItem").removeClass("active");
+		var hash = window.location.hash.substring(1);
 		$('#'+hash).show();
+		var currentNav = $(".editProfNavItem[data-target-page=" + hash + "]");
 		history.replaceState({title: hash}, "", '');
 	} else {
 		// Default to first page
 		$('#'+firstPage).show();
+		var currentNav = $(".editProfNavItem[data-target-page=" + firstPage + "]");
 		history.replaceState({title: firstPage}, "", '');
 	}
+	currentNav.addClass("active");
+	$('.editProfHeaderPageName').text(currentNav.text());
 
 	window.onpopstate = function(event) {
 		if (event.state) {
@@ -34,7 +39,7 @@ $(document).ready(function() {
 		$('.editProfFormPage').hide();
 		$(".editProfNavItem").removeClass("active");
 		var target = $(this).attr("data-target-page");
-		// $('.editProfHeaderPageName').text($("#"+target+' .formTitle').text());
+		$('.editProfHeaderPageName').text($(this).text());
 		$("#"+target).show();
 		$(this).addClass("active");
 		history.pushState({title: target}, "", path+'#'+target);
@@ -46,7 +51,8 @@ $(document).ready(function() {
 		$(".editProfNavItem").removeClass("active");
 		var currentPage = $(this).attr("data-current-page");
 		var nextPage = $('#'+currentPage).next('.editProfFormPage').attr("id");
-		// $('.editProfHeaderPageName').text($('#'+nextPage+' .formTitle').text());
+		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
+		$('.editProfHeaderPageName').text(nextNav.text());
 		$('#'+nextPage).show();
 		$(".editProfNavItem[data-target-page=" + nextPage + "]").addClass("active");
 		history.pushState({title: nextPage}, "", path+'#'+nextPage);
@@ -55,17 +61,14 @@ $(document).ready(function() {
 	$('.editProfFormButtonSubmit').click(function(e) {
 		e.preventDefault();
 		var formData = {};
-		formData.oauth_stripe = $("#oauth_stripe").val();
-		if ($("#editProfAvailOptionFlex").is(":checked")) {
-			formData.editProfAvailOption = 0;
-		} else if ($("#editProfAvailOptionSpec").is(":checked")) {
-			formData.editProfAvailOption = 1;
-		}
-		formData.editProfAvailTimes = "all the time"; // TODO - Change when it matters
+		// formData.oauth_stripe = $("#oauth_stripe").val();
+
 		console.log(JSON.stringify(formData));		
 		console.log("Photo details: 'editProfImage' - "+ JSON.stringify($("#editProfImage")[0].files[0]));
 
 		$("#editProfForm").submit();
+
+		// TODO - Make it AJAX
 
 	});
 
@@ -75,8 +78,8 @@ $(document).ready(function() {
  		$(".editProfNavItem").removeClass("active");
 		var currentPage = $(this).closest(".editProfFormPage").attr("id");
 		var prevPage = $('#'+currentPage).prev('.editProfFormPage').attr("id");
-		console.log("current page is "+currentPage);
-		// $('.editProfHeaderPageName').text($('#'+prevPage+' .formTitle').text());
+		var prevNav = $(".editProfNavItem[data-target-page=" + prevPage + "]");
+		$('.editProfHeaderPageName').text(prevNav.text());
 		$('#'+prevPage).show();
 		$(".editProfNavItem[data-target-page=" + prevPage + "]").addClass("active");
 		history.pushState({title: prevPage}, "", path+'#'+prevPage);
@@ -103,8 +106,8 @@ $(document).ready(function() {
 
 	// Image Upload
 
-	/* When visible 'Choose File...' is clicked, activate hidden 'Browse...' */
-	$("#editProfImageButton").click(function() {
+	/* When visible 'Choose Image...' or the preview image is clicked, activate hidden 'Browse...' */
+	$("#editProfImageButton, #editProfImagePreview").click(function() {
    		$("#editProfImage").click();
 	});
 
@@ -121,7 +124,7 @@ $(document).ready(function() {
 		});		
 	});
 
-	// Old Stuff
+	// Old Image Stuff
 
 	$('#change-photo-button').change(function(e) {
 		reloadProfImg("/static/img/loader.GIF", true, false);
@@ -165,6 +168,41 @@ $(document).ready(function() {
 		}
 	}
 
+	// Form element behavior
+
+
+	$("#editProfAvailTimes").css("opacity", .4).attr("disabled", "disabled");
+
+	if ($('#edit_availability').val() == "2") {
+		$("#editProfAvailTimes").css("opacity", 1).removeAttr("disabled");
+	}
+
+
+	$('#edit_availability').change(function() {
+		if ($(this).val() == "2") {
+		  $("#editProfAvailTimes").css("opacity", 1).removeAttr("disabled");
+		} else {
+		  $("#editProfAvailTimes").css("opacity", .4).attr("disabled", "disabled");
+		} 
+	});		
+
+
+	$(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
+
+	// When loading form - activate times when date is selected
+	// $.each(".daySelector", function() {
+
+
+	// });
+
+	$(".daySelector").change(function() {
+		if ($(this).prop("checked")) {
+		  $(this).siblings(".timeSelector").css("opacity", 1).removeAttr("disabled");
+		} else {
+		  $(this).siblings(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
+		} 		
+	})
+
 });
 
 
@@ -183,7 +221,11 @@ function saveProfile() {
 
 			 	console.log("AJAX Success - profile saved.");
 
-			 	// openAlertWindow("Success: " + response.usrmsg);
+			 	// openAlertWindow("Success: " + response.usrmsg);			 	
+
+			 	var imageInput = "#editProfImage";
+			 	$(imageInput).wrap('<form>').closest('form').get(0).reset();
+				$(imageInput).unwrap();
 
 			 	$(".editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
 				setTimeout(function() {
@@ -213,6 +255,7 @@ function saveProfile() {
 	return false;
 
 }
+
 
 function createReader(input, whenReady) {
 

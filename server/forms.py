@@ -163,10 +163,12 @@ class ProfileForm(Form):
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
 	edit_rate     = TextField('Rate' ) # [validators.Required(), validators.NumberRange(min=0, max=100000)])
 	edit_location = TextField('Location')
-	edit_industry = SelectField('Industry', coerce=str, choices=(Industry.enumInd))
-	edit_url      = TextField('Website', [validators.URL(require_tld=True), validators.length(min=10, max=40)])
+	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
+	edit_url      = TextField('Website') #, [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
+	edit_oauth_stripe = TextField('Stripe')
+	edit_availability = SelectField('Availability', coerce=int, choices=[(1,'Flexible - will arrange with students'),(2,'Specific (select times below)')])
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
