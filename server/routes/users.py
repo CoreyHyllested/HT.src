@@ -233,15 +233,24 @@ def render_edit_profile():
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
 
+	# StripeConnect req'd for payments
+	pi = Oauth.get_stripe_by_uid(session['uid'])
+	stripe = 'No Stripe Account Found.'
+	if (pi is not None): stripe = pi.oa_account
+	
 	# session_form = session.pop('form', None)
 	# session_errmsg = session.pop('errmsg', None)
 	
+	# Set session next_url here
+	session['next_url'] = '/profile/edit#payment'
+
 	form = ProfileForm(request.form)
 	x = 0
 	for x in range(len(Industry.industries)):
 		if Industry.industries[x] == bp.industry:
 			form.edit_industry.data = str(x)
 			break
+
 	form.edit_name.data     = bp.prof_name
 	form.edit_location.data = bp.location	
 	form.edit_bio.data      = bp.prof_bio
@@ -253,9 +262,12 @@ def render_edit_profile():
 	form.edit_rate.data     = bp.prof_rate
 	form.edit_oauth_stripe.data      = ba.stripe_cust
 	form.edit_availability.data      = bp.availability
+	form.edit_oauth_stripe.data 	 = stripe
+
+	flags = bp.availability
 
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('edit_profile.html', form=form, bp=bp, photoURL=photoURL))
+	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
 
 
 @insprite_views.route('/profile/update', methods=['POST'])
@@ -269,141 +281,183 @@ def api_update_profile(usrmsg=None):
 	bp = Profile.get_by_uid(uid)
 	ba = Account.get_by_uid(uid)
 
+	form_mode = request.values.get('formMode');
+	form_page = request.values.get('formPage');
 	form = ProfileForm(request.form)
 
+	print "api_update_profile: form mode: ", form_mode
+	print "api_update_profile: form page: ", form_page
 	print "api_update_profile: the form: ", form
 
-	if form.validate_on_submit():
+	valid = False
+
+	if (form_mode == "page"):
+		# we will validate each submitted page manually so as to bypass the mentor fields 
+
+		page_validate, errors = ht_validate_profile(form_page)
+
+		if (page_validate):
+			update = ht_update_profile(ba, bp, form, form_page)
+			if (update):
+				print 'api_update_profile: add'
+				db_session.add(bp)
+				db_session.add(ba)
+				print 'api_update_profile: commit'
+				db_session.commit()
+				log_uevent(uid, "update profile")
+				return jsonify(usrmsg="profile updated"), 200
+			else:
+				print 'api_update_profile: update error.'
+				return jsonify(usrmsg="We messed something up, sorry"), 500
+
+		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format.', errors=errors), 500
+
+	# form_mode is "full" - need to validate the whole thing.
+	elif form.validate_on_submit():
 		try:
 			print "api_update_profile: form is valid"
-			bp.prof_name = form.edit_name.data
-			bp.location = form.edit_location.data 			
-			bp.prof_bio  = form.edit_bio.data
-
-			bp.headline = form.edit_headline.data 			
-			bp.industry = Industry.industries[int(form.edit_industry.data)]
-			bp.prof_rate = form.edit_rate.data
-			bp.prof_url  = form.edit_url.data
-			bp.availability  = form.edit_availability.data
-			ba.stripe_cust = form.edit_oauth_stripe.data
-
-			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-			# bp.updated  = dt.utcnow()
-
-			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
-			image_data = request.files[form.edit_photo.name].read()
-			if (len(image_data) > 0):
-				print "api_update_profile: image was uploaded"
-				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-				trace (destination_filename + ", sz = " + str(len(image_data)))
-
-				#print source_extension
-				print 'api_update_profile: s3'
-				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-				sml.set_contents_from_file(StringIO(image_data))
-				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
-				bp.prof_img = destination_filename
-
-			# if URL is set, ensure 'http(s)://' is part of it
-			if (bp.prof_url):
-				if (bp.prof_url[:8] != "https://"):
-					if (bp.prof_url[:7] != "http://"):
-						bp.prof_url = "http://" + bp.prof_url;
-
-			print 'api_update_profile: add'
-			db_session.add(bp)
-			db_session.add(ba)
-			print 'api_update_profile: commit'
-			db_session.commit()
-			log_uevent(uid, "update profile")
-
-			return jsonify(usrmsg="profile updated"), 200
-
+			update = ht_update_profile(ba, bp, form, form_page)
+			if (update):
+				print 'api_update_profile: add'
+				db_session.add(bp)
+				db_session.add(ba)
+				print 'api_update_profile: commit'
+				db_session.commit()
+				log_uevent(uid, "update profile")
+				return jsonify(usrmsg="profile updated"), 200
+			else:
+				print 'api_update_profile: update error.'
+				return jsonify(usrmsg="We messed something up, sorry"), 500
+			
 		except AttributeError as ae:
 			print 'api_update_profile: hrm. must have changed an object somehwere'
-			print ae
+			print 'api_update_profile: AttributeError: ', ae
 			db_session.rollback()
 			return jsonify(usrmsg='We messed something up, sorry'), 500
 
 		except Exception as e:
-			print e
+			print 'api_update_profile: Exception: ', e
 			db_session.rollback()
 			return jsonify(usrmsg=e), 500
 
 	elif request.method == 'POST':
-		# log_uevent(uid, "editform isn't valid" + str(form.errors))
-		# formerrors = {}
-		# for key, value in form.errors.iteritems():
-		# 	formerrors[key] = value
-
-		# print "form.errors: ", str(form.errors)
 		return jsonify(usrmsg='Invalid Request', errors=form.errors), 500
-		# return jsonify(usrmsg='Invalid Request', formerrors=formerrors), 500
 
-	# return redirect('/profile/edit')
 	print "api_update_profile: Something went wrong - Fell Through."
-	# return jsonify(errors=str(form.errors)), 500
 	print "here is the form object:"
 	print str(form)
+
 	return jsonify(usrmsg="Something went wrong.")
 
 
+def ht_validate_profile(form_page):
+	valid = False
+	errors = {}
+	print "ht_validate_profile: validating form: ", form_page
 
+	if (form_page == "general"):
+		prof_name = request.values.get("edit_name")
+		prof_location = request.values.get("edit_location")
+		prof_bio = request.values.get("edit_bio")
+
+		if (0 < len(prof_name) < 40):
+			valid = True
+		else:
+			errors["edit_name"] = "Profile name is required, and must be less than 40 characters" 
+
+	if (form_page == "profile_photo"):
+		valid = True
+
+	if (form_page == "details"):
+		valid = True
+
+	if (form_page == "schedule"):
+		valid = True
+
+	if (form_page == "payment"):
+		valid = True
+
+	print "ht_validate_profile: valid? ", valid
+	print "ht_validate_profile: errors: ", pprint(errors)
+	return valid, errors
+
+
+def ht_update_profile(ba, bp, form, form_page):
+	print 'ht_update_profile:', bp.prof_id
+
+	update = False
+	for key in request.values:
+		print '\t', key, request.values.get(key)
+	print 'ht_update_profile: save all updates'
+
+
+
+	bp.prof_name = form.edit_name.data
+	bp.location = form.edit_location.data 			
+	bp.prof_bio  = form.edit_bio.data
+
+	bp.headline = form.edit_headline.data 			
+	bp.industry = Industry.industries[int(form.edit_industry.data)]
+	bp.prof_rate = form.edit_rate.data
+	bp.prof_url  = form.edit_url.data
+	bp.availability  = form.edit_availability.data
+	ba.stripe_cust = form.edit_oauth_stripe.data
+
+	mentor_live = form.edit_mentor_live.data
+
+	#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+	# bp.updated  = dt.utcnow()
+
+	# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
+	image_data = request.files[form.edit_photo.name].read()
+	if (len(image_data) > 0):
+		print "api_update_profile: image was uploaded"
+		destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+		trace (destination_filename + ", sz = " + str(len(image_data)))
+
+		#print source_extension
+		print 'api_update_profile: s3'
+		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
+		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+		sml.set_contents_from_file(StringIO(image_data))
+		imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
+		bp.prof_img = destination_filename
+
+	# if URL is set, ensure 'http(s)://' is part of it
+	if (bp.prof_url):
+		if (bp.prof_url[:8] != "https://"):
+			if (bp.prof_url[:7] != "http://"):
+				bp.prof_url = "http://" + bp.prof_url;
+
+	return True
+
+
+
+
+@insprite_views.route('/mentor/signup', methods=['GET', 'POST'])
 @req_authentication
-@insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
-def render_multiupload_page():
-	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('upload_portfolio.html', bp=bp))
-
-
-	
-
-@req_authentication
-@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
-def render_edit_portfolio_page():
-	bp = Profile.get_by_uid(session['uid'])
-	lesson_id = request.values.get('lesson_id', False)
-
-	if (lesson_id):
-		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
-		# warning.  dangerous. returning a LessonMap (which has same fields)
-		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
-	else:
-		print "render_edit_portfolio_page(): get all images for profile:"
-		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
-	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
-
-
-
-
-@insprite_views.route('/teacher/signup', methods=['GET', 'POST'])
-@req_authentication
-def render_teacher_signup_page(usrmsg = None):
+def render_mentor_signup_page(usrmsg = None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	pi = Oauth.get_stripe_by_uid(uid)
-	title = '- Sign Up to Teach'
 	edit  = None
 
 	# StripeConnect req'd for payments
 	stripe = 'No Stripe Account Found.'
 	if (pi is not None): stripe = pi.oa_account
-	session['next_url']='/teacher/signup#payment'
+	session['next_url']='/mentor/signup#payment'
 
 	if (bp.availability > 0):
-		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
-		title = '- Edit Your Info'
-		edit  = True
-	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe, edit=edit))
+		print "render_mentor_signup_page(): Whahappen? User is already a mentor! "
+
+	return make_response(render_template('edit_profile.html', bp=bp, oa_stripe=stripe, edit=edit))
 
 
 
-
-@insprite_views.route('/teacher/activate', methods=['GET', 'POST'])
+@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
 @req_authentication
-def activate_seller():
+def upgrade_profile():
 	""" A regular user is signing up to be a seller.  """
 
 	print "-"*32
@@ -470,6 +524,36 @@ def activate_seller():
 		print 'activate_seller(): Exception:', e
 		db_session.rollback()
 		return jsonify(usrmsg="Something else screwed up."), 500
+
+
+
+
+@req_authentication
+@insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
+def render_multiupload_page():
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('upload_portfolio.html', bp=bp))
+
+
+	
+
+@req_authentication
+@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
+def render_edit_portfolio_page():
+	bp = Profile.get_by_uid(session['uid'])
+	lesson_id = request.values.get('lesson_id', False)
+
+	if (lesson_id):
+		print "render_edit_portfolio_page(): Lesson ID:", lesson_id
+		# warning.  dangerous. returning a LessonMap (which has same fields)
+		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
+	else:
+		print "render_edit_portfolio_page(): get all images for profile:"
+		portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
+
+
+
 
 
 # This route initiates a new lesson

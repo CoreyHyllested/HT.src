@@ -3,8 +3,9 @@ $(document).ready(function() {
 	// Form Navigation and State Management
 
 	var firstPage = "general";
-	var lastPage = "payment";
+	var lastPage = "status";
 	var path = "/profile/edit";
+	var formMode = "basic"; // basic or mentor - required to know how to validate
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
 		e.preventDefault();
@@ -17,7 +18,11 @@ $(document).ready(function() {
 		var hash = window.location.hash.substring(1);
 		$('#'+hash).show();
 		var currentNav = $(".editProfNavItem[data-target-page=" + hash + "]");
+		if (currentNav.hasClass("disabled")) {
+			activateMentorForm();
+		}
 		history.replaceState({title: hash}, "", '');
+
 	} else {
 		// Default to first page
 		$('#'+firstPage).show();
@@ -27,6 +32,19 @@ $(document).ready(function() {
 	currentNav.addClass("active");
 	$('.editProfHeaderPageName').text(currentNav.text());
 
+	// evaluate flags/user state - gray out mentor nav if not activated.
+
+	// $(".mentorFormNavItem").addClass("disabled");
+
+	var flags = $(".editProfFlags").data("flags");
+
+	if (flags > 0){
+		activateMentorForm();
+	} else {
+		$("#editProfNavItemMentor").show();
+	}	
+
+
 	window.onpopstate = function(event) {
 		if (event.state) {
 			var page_title = event.state.title;
@@ -35,7 +53,9 @@ $(document).ready(function() {
 		}
 	};	
 
-	$('.editProfNavItem').click(function() {
+	// Navigation
+
+	$(document).on("click", '.editProfNavItem:not(.disabled)', function() {
 		$('.editProfFormPage').hide();
 		$(".editProfNavItem").removeClass("active");
 		var target = $(this).attr("data-target-page");
@@ -54,7 +74,7 @@ $(document).ready(function() {
 		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
 		$('.editProfHeaderPageName').text(nextNav.text());
 		$('#'+nextPage).show();
-		$(".editProfNavItem[data-target-page=" + nextPage + "]").addClass("active");
+		nextNav.addClass("active");
 		history.pushState({title: nextPage}, "", path+'#'+nextPage);
 	});
 
@@ -81,26 +101,32 @@ $(document).ready(function() {
 		var prevNav = $(".editProfNavItem[data-target-page=" + prevPage + "]");
 		$('.editProfHeaderPageName').text(prevNav.text());
 		$('#'+prevPage).show();
-		$(".editProfNavItem[data-target-page=" + prevPage + "]").addClass("active");
+		prevNav.addClass("active");
 		history.pushState({title: prevPage}, "", path+'#'+prevPage);
 	})
 
+	$(".editProfActivate").click(function(e) {
+		e.preventDefault();
+		$('.editProfFormPage').hide();
+		$(".editProfNavItem").removeClass("active");
+		activateMentorForm();
+		
+		var nextPage = "guidelines";
+		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
+		$('#'+nextPage).show();
+		$('.editProfHeaderPageName').text(nextNav.text());
+		nextNav.addClass("active");
+		history.pushState({title: nextPage}, "", path+'#'+nextPage);		
 
-
-	// /* When visible 'Choose File...' is clicked, activate hidden 'Browse...' */
-	// $("#editProfChooseImage").click(function() {
- //   		$("#change-photo-button").click();
-	// });
-
-
-	// /* When the profile pic is clicked, activate hidden 'Browse...' */
-	// $("#editProfImagePreview").click(function() {
- //   		$("#change-photo-button").click();
-	// });
+	})	
 
 	$(".editProfSave").click(function(e) {
 		e.preventDefault();
-		saveProfile();
+
+		var formPage = $(this).data("currentPage");
+		console.log("formPage: "+formPage);
+
+		saveProfile(formPage);
 	});
 
 
@@ -205,10 +231,25 @@ $(document).ready(function() {
 
 });
 
+function activateMentorForm() {
+	formMode = "mentor";
+	$(".mentorNav").css("opacity", 1);
+	$(".mentorFormNavItem").removeClass("disabled");
+}
 
-function saveProfile() {
+function saveProfile(formPage) {
 
 	var fd = new FormData($('#editProfForm')[0]);
+
+	console.log("saving from formPage: "+formPage);
+	
+	formMode = "page";
+	if (formPage == "submit") {
+		formMode = "full";
+	}
+
+	fd.append('formPage', formPage);
+	fd.append('formMode', formMode);
 
 	$(".editProfFormStatus").html("Saving...").fadeIn();
 
@@ -219,9 +260,7 @@ function saveProfile() {
   			contentType: false,
 			success : function(response) {
 
-			 	console.log("AJAX Success - profile saved.");
-
-			 	// openAlertWindow("Success: " + response.usrmsg);			 	
+			 	console.log("AJAX Success - profile saved.");		 	
 
 			 	var imageInput = "#editProfImage";
 			 	$(imageInput).wrap('<form>').closest('form').get(0).reset();
@@ -247,8 +286,10 @@ function saveProfile() {
 				});
 				$(".editProfFormStatus").append('</span>').fadeIn();
 
-				openAlertWindow("Error: " + err.usrmsg);
-				// $(".lessonFormStatus").html("<span class='error'>Sorry, something went wrong. Lesson not saved.</span>").fadeIn();
+				// TODO: Update problem elements with error info
+
+				// openAlertWindow("Error: " + err.usrmsg);
+				// $(".editProfFormStatus").html("<span class='error'>Sorry, something went wrong. Profile not saved.</span>").fadeIn();
 			
 			}
 	});

@@ -157,18 +157,21 @@ class LessonForm(Form):
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
 
-
 class ProfileForm(Form):
-	edit_name     = TextField('Name',     [validators.Required(), validators.length(min=1, max=40)])
-	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
-	edit_rate     = TextField('Rate' ) # [validators.Required(), validators.NumberRange(min=0, max=100000)])
+
+	edit_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
 	edit_location = TextField('Location')
-	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
-	edit_url      = TextField('Website') #, [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
+	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
+	edit_rate     = TextField('Rate' ) # [validators.Required(), validators.NumberRange(min=0, max=100000)])
+	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
+	edit_url      = TextField('Website') #, [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_oauth_stripe = TextField('Stripe')
 	edit_availability = SelectField('Availability', coerce=int, choices=[(1,'Flexible - will arrange with students'),(2,'Specific (select times below)')])
+	edit_mentor_live = BooleanField('Make my mentor profile live!', None)
+	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
+
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])

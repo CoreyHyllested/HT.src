@@ -103,6 +103,12 @@
 	margin-bottom: 12px;
 }
 
+.editProfFlags {
+	display: none;
+	width: 100%;
+	float: left;
+}
+
 /* Main Content Areas */
 
 .editProfContentContainer {
@@ -159,6 +165,19 @@
 	font-weight: bold;
 }
 
+.editProfNavItem.disabled {
+	color: rgba(0, 0, 0, 0.4);
+	cursor: default;
+}
+
+.editProfNavItem.disabled:hover {
+	background-color: inherit;
+}
+.editProfNavItem.disabled.active {
+	background-color: inherit;
+	font-weight: normal;
+}
+
 .editProfNavItem i {
 	font-size: .9em;
 	margin-left: 6px;
@@ -167,6 +186,16 @@
 	top: 33%;
 }
 
+/* specific nav item for mentor activation */
+#editProfNavItemMentor {
+	display: none;
+	/*visibility: hidden;*/
+}
+
+/* nav items for mentor fields */
+.mentorNav {
+	opacity: 0.4;
+}
 
 
 /* Styles for the form container and pages */
@@ -188,14 +217,13 @@
 
 }
 
-
 .editProfFormStatus {
 	color: rgb(0,0,0,.4);
 	display: none;
 	float: left;
 	text-align: left;
-	width: 200px;
-	font-size: .8em;
+/*	width: 200px;
+*/	font-size: .8em;
 	height: 30px;
 	line-height: 36px;	
 	margin-left: 20px;
@@ -212,6 +240,11 @@
 .editProfFormButtonSubmit {
 	width: 300px;
 	margin: 12px 0 12px 0;
+}
+
+.editProfActivate {
+	width: 300px;
+	margin: 12px 0 12px 0;	
 }
 
 .editProfFormPrevious {
@@ -248,7 +281,7 @@
 }
 
 .formDescription {
-
+	color: rgba(0,0,0, 0.7);
 	margin-bottom: 12px;
 }
 
@@ -333,8 +366,12 @@ textarea.formField {
 
 /* Specific Form Fields */
 
-.mentorForm, .mentorNav {
-	/*display: none;*/
+#mentor {
+	display: none;
+}
+
+#mentor .editProfFormPageFooter {
+	margin-top: 0px;
 }
 
 .editProfAvailDay {
@@ -356,6 +393,25 @@ textarea.formField {
 	width: 20px;
 	position: relative;
 	top: 4px;
+}
+
+.statusElement {
+	position: relative;
+	margin-bottom: 4px;
+}
+
+.statusElement input[type="checkbox"]{
+	height: 20px;
+	width: 20px;
+	position: relative;
+	top: 4px;
+}
+
+.statusElement label {
+	color: rgba(0,0,0,.7);
+	font-size: .9em;
+	display: inline-block;
+	padding: 0px 10px 0px 6px;	
 }
 
 .editProfAvailDay .daySelector {
