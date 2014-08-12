@@ -287,13 +287,10 @@ def api_update_profile(usrmsg=None):
 
 	print "api_update_profile: form mode: ", form_mode
 	print "api_update_profile: form page: ", form_page
-	print "api_update_profile: the form: ", form
 
-	valid = False
+	# we will validate each submitted page manually so as to allow for partial form submission (not using WTForm validation.)
 
-	if (form_mode == "page"):
-		# we will validate each submitted page manually so as to bypass the mentor fields 
-
+	try:
 		page_validate, errors = ht_validate_profile(form_page)
 
 		if (page_validate):
@@ -307,78 +304,93 @@ def api_update_profile(usrmsg=None):
 				log_uevent(uid, "update profile")
 				return jsonify(usrmsg="profile updated"), 200
 			else:
+				db_session.rollback()
 				print 'api_update_profile: update error.'
 				return jsonify(usrmsg="We messed something up, sorry"), 500
 
-		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format.', errors=errors), 500
+		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format. Please check the form.', errors=errors), 500
 
-	# form_mode is "full" - need to validate the whole thing.
-	elif form.validate_on_submit():
-		try:
-			print "api_update_profile: form is valid"
-			update = ht_update_profile(ba, bp, form, form_page)
-			if (update):
-				print 'api_update_profile: add'
-				db_session.add(bp)
-				db_session.add(ba)
-				print 'api_update_profile: commit'
-				db_session.commit()
-				log_uevent(uid, "update profile")
-				return jsonify(usrmsg="profile updated"), 200
-			else:
-				print 'api_update_profile: update error.'
-				return jsonify(usrmsg="We messed something up, sorry"), 500
-			
-		except AttributeError as ae:
-			print 'api_update_profile: hrm. must have changed an object somehwere'
-			print 'api_update_profile: AttributeError: ', ae
-			db_session.rollback()
-			return jsonify(usrmsg='We messed something up, sorry'), 500
+	except AttributeError as ae:
+		print 'api_update_profile: hrm. must have changed an object somehwere'
+		print 'api_update_profile: AttributeError: ', ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
 
-		except Exception as e:
-			print 'api_update_profile: Exception: ', e
-			db_session.rollback()
-			return jsonify(usrmsg=e), 500
-
-	elif request.method == 'POST':
-		return jsonify(usrmsg='Invalid Request', errors=form.errors), 500
+	except Exception as e:
+		print 'api_update_profile: Exception: ', e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500	
 
 	print "api_update_profile: Something went wrong - Fell Through."
 	print "here is the form object:"
 	print str(form)
 
-	return jsonify(usrmsg="Something went wrong.")
+	return jsonify(usrmsg="Something went wrong."), 500
 
 
 def ht_validate_profile(form_page):
-	valid = False
 	errors = {}
-	print "ht_validate_profile: validating form: ", form_page
+	print "ht_validate_page: validating page: ", form_page
 
-	if (form_page == "general"):
+	if (form_page == "general" or form_page == "full"):
 		prof_name = request.values.get("edit_name")
 		prof_location = request.values.get("edit_location")
 		prof_bio = request.values.get("edit_bio")
 
-		if (0 < len(prof_name) < 40):
-			valid = True
-		else:
-			errors["edit_name"] = "Profile name is required, and must be less than 40 characters" 
+		if (len(prof_name) == 0):
+			errors["edit_name"] = "Profile name is required." 
+		elif (len(prof_name) > 40):
+			errors["edit_name"] = "This must be less than 40 characters."
 
-	if (form_page == "profile_photo"):
+	if (form_page == "profile_photo" or form_page == "full"):
+		pass
+
+	if (form_page == "details" or form_page == "full"):
+		prof_headline = request.values.get("edit_headline")
+		# prof_url = request.values.get("edit_url")
+
+		if (len(prof_headline) == 0):
+			errors["edit_headline"] = "We'd really love for you to come up with something here." 
+		elif (len(prof_headline) > 40):
+			errors["edit_headline"] = "This must be less than 40 characters."
+
+	if (form_page == "schedule" or form_page == "full"):
+		# once date/time form elements are in, check if:
+		# 1. specific was selected without specifying times
+		# 2. day was selected without specifying time
+		# 3. end time was before start time on any day
+		pass
+
+	if (form_page == "payment" or form_page == "full"):
+		prof_rate = request.values.get("edit_rate")
+		oauth_stripe = request.values.get("edit_oauth_stripe")
+
+		print "ht_validate_profile: prof rate is: ", prof_rate
+
+		try:
+			prof_rate = int(prof_rate)
+			if (prof_rate > 100000):
+				errors["prof_rate"] = "Let's keep it beneath $100,000 for now."
+		except TypeError:
+			errors["prof_rate"] = "Please keep it to a whole dollar amount (or zero)."
+
+		if (oauth_stripe == ''):
+			errors["edit_oauth_stripe"] = "Stripe activation is required to become a mentor."
+
+	if (form_page == "full"):		
+		tos = request.values.get("edit_mentor_tos")
+		print "tos is ", tos
+		if (tos != 'y'):
+			errors["edit_mentor_tos"] = "You'll need to agree to the terms of service first."
+
+
+	if (len(errors) == 0):
+		print "ht_validate_profile: form is valid."
 		valid = True
+	else:
+		print "ht_validate_profile: errors: ", pprint(errors)
+		valid = False
 
-	if (form_page == "details"):
-		valid = True
-
-	if (form_page == "schedule"):
-		valid = True
-
-	if (form_page == "payment"):
-		valid = True
-
-	print "ht_validate_profile: valid? ", valid
-	print "ht_validate_profile: errors: ", pprint(errors)
 	return valid, errors
 
 
@@ -389,8 +401,6 @@ def ht_update_profile(ba, bp, form, form_page):
 	for key in request.values:
 		print '\t', key, request.values.get(key)
 	print 'ht_update_profile: save all updates'
-
-
 
 	bp.prof_name = form.edit_name.data
 	bp.location = form.edit_location.data 			

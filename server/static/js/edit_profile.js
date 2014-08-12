@@ -229,6 +229,37 @@ $(document).ready(function() {
 		} 		
 	})
 
+	$("#edit_rate").blur(function() {
+		
+		var rate = $(this).val();
+
+		console.log("type of rate: "+typeof rate);
+
+		if (isNaN(rate)) { // string
+			console.log("Ok it's not a number");
+			$(this).val(0);
+			$(this).next(".formFieldCaption").text("Please only enter a number here.").fadeIn();
+
+		} else {
+
+			if (rate % 1 === 0) { // integer
+				$(this).next(".formFieldCaption").fadeOut().empty();
+			} else { // float
+				var rounded = Math.round(rate);
+				$(this).val(rounded);
+				$(this).next(".formFieldCaption").text("Please keep it to a whole dollar amount (or zero).").fadeIn();
+			}
+		}
+		setTimeout(function() {
+			$('.formFieldCaption').fadeOut(400);
+		}, 3000 );
+		
+	})
+
+	if ($("#edit_oauth_stripe").val() != "") {
+		$("#edit_oauth_stripe").next(".formFieldCaption").text("Account number imported.").fadeIn();
+	}
+
 });
 
 function activateMentorForm() {
@@ -245,11 +276,16 @@ function saveProfile(formPage) {
 	
 	formMode = "page";
 	if (formPage == "submit") {
+		formPage = "full";
 		formMode = "full";
 	}
 
 	fd.append('formPage', formPage);
 	fd.append('formMode', formMode);
+
+	// Remove error indicators
+	$(".formFieldError").slideUp().html("");
+	$(".formField").css("border-color", "#e1e8ed");
 
 	$(".editProfFormStatus").html("Saving...").fadeIn();
 
@@ -280,23 +316,45 @@ function saveProfile(formPage) {
 				console.log("FORM ERRORS:");
 				console.log(JSON.stringify(errors));
 
-				$(".editProfFormStatus").html("<span class='error'>");
-				$.each(errors, function(i, v) {
-					$(".editProfFormStatus").append(i+": "+v);
-				});
-				$(".editProfFormStatus").append('</span>').fadeIn();
+				showErrors(errors);
 
-				// TODO: Update problem elements with error info
-
-				// openAlertWindow("Error: " + err.usrmsg);
-				// $(".editProfFormStatus").html("<span class='error'>Sorry, something went wrong. Profile not saved.</span>").fadeIn();
-			
 			}
 	});
 	return false;
 
 }
 
+
+function showErrors(errors) {
+
+	// set each to default color and icon
+	$(".lessonNavItem").each(function() {
+		var navDefaultIcon = $(this).attr("data-default-icon");
+		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i").attr("class", "fa fa-fw "+navDefaultIcon);		
+	});
+
+	// iterate thru errors, create status messages, highlight form and navigation elements.
+	$.each(errors, function(e, error){
+		// "e" here would be the form element name that has the error, e.g. "prof_name"
+		var element = "#"+e;
+		var page = $(element).parents(".editProfFormPage").attr("id");
+		var navItem = ".editProfNavItem[data-target-page='" + page + "']";
+
+		console.log("showErrors: element: "+element);
+		console.log("showErrors: page: "+page);
+		console.log("showErrors: navItem: "+navItem);
+
+		$(element).css("border-color", "red");
+		$(element).prevAll(".formFieldError").html(error).slideDown();
+
+
+		$("#"+page).find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
+
+		$(navItem).css("color", "red").children("i").attr("class", "fa fa-fw fa-exclamation");
+
+	});
+
+}
 
 function createReader(input, whenReady) {
 

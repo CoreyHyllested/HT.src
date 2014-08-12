@@ -172,6 +172,7 @@ class ProfileForm(Form):
 	edit_mentor_live = BooleanField('Make my mentor profile live!', None)
 	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
 
+	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])

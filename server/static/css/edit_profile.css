@@ -293,6 +293,12 @@
 	margin-bottom: 8px;
 }
 
+.formFieldCaption {
+	display: none;
+	font-size: .8em;
+	margin-left: 16px;
+}
+
 .formFieldInfo {
 	color: rgba(0,0,0,0.4);
 	font-size: .9em;
@@ -303,6 +309,12 @@
 .formFieldInfo.first {
 	padding-top: 0px;
 		
+}
+
+.formFieldError {
+	display: none;
+	font-size: .7em;
+	color: red;
 }
 
 .formContainer {
@@ -448,6 +460,11 @@ textarea.formField {
 	padding: 3px;
 	width: 98%;
 	cursor: pointer;
+}
+
+#edit_oauth_stripe {
+	border: 1px dashed #e3e3e3;
+	margin-left: 6px;
 }
 
 /* Connect with Stripe */

@@ -278,6 +278,11 @@
 	margin-bottom: 6px;
 }
 
+.formFieldCaption {
+	font-size: .9em;
+	margin-left: 8px;
+}
+
 .formChoice {
 	float: left;
 }
@@ -346,10 +351,7 @@ textarea.formField {
 
 /* Form Element Styles */
 
-.rateUnitCaption {
-	font-size: .9em;
-	margin-left: 8px;
-}
+
 
 .multipleUploadButton {
 	opacity: .4;
