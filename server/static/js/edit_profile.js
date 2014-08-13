@@ -286,6 +286,11 @@ function saveProfile(formPage) {
 	// Remove error indicators
 	$(".formFieldError").slideUp().html("");
 	$(".formField").css("border-color", "#e1e8ed");
+	$(".editProfNavItem").each(function() {
+		var navDefaultIcon = $(this).attr("data-default-icon");
+		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i.icon").attr("class", "fa fa-fw "+navDefaultIcon);		
+	});
+
 
 	$(".editProfFormStatus").html("Saving...").fadeIn();
 
@@ -298,6 +303,16 @@ function saveProfile(formPage) {
 
 			 	console.log("AJAX Success - profile saved.");		 	
 
+			 	console.log("formPage:" + formPage);
+
+			 	// Add progress marks
+			 	// if (formPage != "full"){
+			 	// 	var navItem = ".editProfNavItem[data-target-page='" + formPage + "']";
+			 	// 	console.log("navItem: "+navItem);
+			 	// 	$(".editProfNavItem[data-target-page='" + formPage + "']").children("i.progress").show();
+			 	// }
+			 	
+			 	// Remove the image from the file element
 			 	var imageInput = "#editProfImage";
 			 	$(imageInput).wrap('<form>').closest('form').get(0).reset();
 				$(imageInput).unwrap();
@@ -327,11 +342,7 @@ function saveProfile(formPage) {
 
 function showErrors(errors) {
 
-	// set each to default color and icon
-	$(".lessonNavItem").each(function() {
-		var navDefaultIcon = $(this).attr("data-default-icon");
-		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i").attr("class", "fa fa-fw "+navDefaultIcon);		
-	});
+	$(".editProfFormStatus").empty();
 
 	// iterate thru errors, create status messages, highlight form and navigation elements.
 	$.each(errors, function(e, error){
@@ -350,9 +361,12 @@ function showErrors(errors) {
 
 		$("#"+page).find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 
-		$(navItem).css("color", "red").children("i").attr("class", "fa fa-fw fa-exclamation");
+		$(navItem).css("color", "red");
+		$(navItem).children("i.progress").hide();
 
 	});
+
+	$("#submit").find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 
 }
 

@@ -186,6 +186,16 @@
 	top: 33%;
 }
 
+.editProfNavItem i.progress {
+	display: none;
+	font-size: .8em;
+	margin-left: 6px;
+	position: absolute;
+	right: 24px;
+	top: 33%;
+	color: rgba(0,0,0,.5);
+}
+
 /* specific nav item for mentor activation */
 #editProfNavItemMentor {
 	display: none;
