@@ -432,7 +432,7 @@ def ht_update_profile(ba, bp, form, form_page):
 		return True
 
 	if (form_page == 'details' or form_page == 'full'):	
-		bp.industry = Industry.industries[int(form.edit_industry.data)]
+		# bp.industry = Industry.industries[int(form.edit_industry.data)]
 		bp.headline = form.edit_headline.data 			
 		bp.prof_url  = form.edit_url.data
 		return True
