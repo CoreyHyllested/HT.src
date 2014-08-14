@@ -876,6 +876,8 @@ def render_lesson_page(lesson_id):
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+
+		
 	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor))
 
 

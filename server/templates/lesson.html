@@ -2,8 +2,8 @@
 
 {% block head %}
 	{{ super() }}
-	<!-- <link type="text/css" rel="stylesheet" href="/static/css/lesson.css"> -->
-	{% assets "sass_foo" %}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
+	{% assets "sass_lesson" %}
 		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
 	{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
@@ -22,9 +22,10 @@
 <div class="lessonNavBar">
 
 <ul>
-<li class="navElement">Overview</li>
-<li class="navElement">Availability</li>
-<li class="navElement">Reviews</li>
+<li class="navElement" data-target="overview">Overview</li>
+<li class="navElement" data-target="availability">Availability</li>
+<li class="navElement" data-target="materials">Materials</li>
+<li class="navElement" data-target="reviews">Reviews</li>
 </ul>
 
 </div>
@@ -34,64 +35,178 @@
 
 <div class="lessonContentWrapper">
 	
-	<div class="lessonLeftColumn">
+	<div class="lessonLeftColumnContainer">
+		<div class="lessonLeftColumn">
 
-		<div class="lessonTitleBox">
-			<div class="lessonTitle">{{lesson.lesson_title}}</div>
-			<div class="lessonState">
-				{% if lesson.lesson_flags == 1 %}
-					Status: Saved but Not Submitted
-				{% elif lesson.lesson_flags == 2 %}
-					Status: Submitted but Not Approved
-				{% elif lesson.lesson_flags == 3 %}	
-					Status: Approved and Public
-				{% else %}
-					Status: Unknown
-				{% endif %}	
+			<div class="lessonTitleBox">
+				<div class="lessonTitle"><h1>{{lesson.lesson_title}}</h1></div>
+				<div class="lessonRate"><div class="rateAmount">$100</div><div class="rateInfo">per hour</div></div>
+				<div class="lessonRating">
+					Average Rating: <span class="ratingStars"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i></span>
+				</div>				
+				<div class="lessonState">
+				</div>
 			</div>
-			<div class="lessonRating">
-				Average Rating: <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i>
+
+			<div id="overview" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Overview</h2></div>			
+				<div class="lessonDescBody">{{lesson.lesson_description}}
+				</div>
+
+				<div class="lessonDescHeader"><h2>Rates</h2></div>			
+				<div class="lessonDescBody">
+					<ul>
+					<li>Individuals: $100/hour</li>
+					<li>Groups: $50/hour per person, up to 4 people</li>
+					</ul>
+				</div>
 			</div>
+
+			<div id="availability" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Availability</h2></div>			
+				<div class="lessonDescBody">
+					<ul>
+					<li>Monday: 12:00pm to 5:00pm</li>
+					<li>Wednesday: 12:00pm to 5:00pm</li>
+					<li>Friday: 12:00pm to 5:00pm</li>
+					<li>Saturday: 12:00pm to 9:00pm</li>
+					</ul>
+				</div>
+				<div class="lessonDescHeader"><h2>Duration</h2></div>			
+				<div class="lessonDescBody">				
+				Lessons will last 2 hours
+				</div>				
+			</div>
+
+			<div id="materials" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Materials</h2></div>			
+				<div class="lessonDescBody">				
+				<h3>The mentor will provide...</h3>
+					<ul>
+					<li>All Ingredients</li>
+					<li>Cooking Utensils</li>
+					<li>Cast Iron Skillets</li>
+					</ul>
+				<br>
+				<h3>The student should bring...</h3>
+					<ul>
+					<li>A healthy appetite</li>
+					</ul>
+				</div>
+			</div>
+
+			<div id="reviews" class="lessonReviewsBox">
+				<div class="lessonReviewsHeader"><h2>Reviews</h2></div>			
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							Frank Underwood
+						</div>							
+						<div class="reviewerDate">
+							Took this lesson on June 4, 2014
+						</div>				
+						<div class="reviewerComment">
+							Ryan is a fine young man, but I take slight offense to his hippie-like appearance. It made me feel like I was at Woodstock.
+						</div>				
+					</div>		
+				</div>
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							Mike Gordon
+						</div>
+						<div class="reviewerDate">
+							Took this lesson on May 14, 2014
+						</div>					
+						<div class="reviewerComment">
+							His technique is inspiring, his hairdo alluring. Book with confidence.
+						</div>				
+					</div>		
+				</div>
+	
+			</div>
+
 		</div>
-
 	</div>
 
-	<div class="lessonRightColumn">
-		<div class="lessonMentorBox">
-			<div class="mentorPhotoContainer">
-				<div class="mentorPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{ mentor.prof_img }})">
+	<div class="lessonRightColumnContainer">
+		<div class="lessonRightColumn">
+			<div class="lessonMentorBox">
+				<div class="mentorPhotoContainer">
+					<div class="mentorPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{ mentor.prof_img }})">
+					</div>
 				</div>
+
+				<div class="mentorInfo">
+					<div class="mentorName">
+						<a href="/profile?hero={{mentor.prof_id}}" class="blend">{{ mentor.prof_name }}</a>
+					</div>				
+					<div class="mentorHeadline">
+						{{ mentor.headline }}
+					</div>				
+					<div class="mentorLocation">
+						{{ mentor.location }}
+					</div>
+				</div>
+			</div>
+			<div class="lessonButtons">
+				<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
+				<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
+			</div>
+			
+			<div class="lessonMapContainer">
+				<div class="lessonMap">
+		            <a href="http://maps.google.com/?q=Berkeley,%20CA"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7CBerkeley,CA&sensor=false"></a>
+	            </div>				
+            </div>				
+
+
 			</div>
 
-			<div class="mentorInfo">
-				<div class="mentorName">
-					{{ mentor.prof_name }}
-				</div>				
-				<div class="mentorHeadline">
-					{{ mentor.headline }}
-				</div>				
-				<div class="mentorLocation">
-					{{ mentor.location }}
-				</div>
-			</div>
+
 		</div>
-
 	</div>
 
 	<div class="clear"></div>
 </div>
 
 <script src="/static/js/lightbox.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+<script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 
 $(document).ready(function() {
+	// google.maps.event.addDomListener(window, 'load', initialize);
 
-	// $(document.body).on("click", "#topLeftNavBack", function(e) {
-	// 	e.preventDefault();
+	$('#sendModalMessage').click(function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.hp = "{{mentor.prof_id}}";
+		dataObj.next = "modal";
 
-	// 	window.history.back();	
-	// });
+		var myString = JSON.stringify(dataObj);
+		openModalWindow("/compose", ".composeWrapper", myString);	
+
+	});
+
+	$(".navElement").click(function(e){
+		e.preventDefault();
+
+		var target = $(this).data("target");
+
+        $('html,body').animate({
+          scrollTop: $("#"+target).offset().top-8
+        }, 600);
+	});	
 
 });
 

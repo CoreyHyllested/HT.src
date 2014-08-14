@@ -3,9 +3,6 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
-	{% assets "sass_foo" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
-	{% endassets %}
 	<script src="/static/js/format.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
