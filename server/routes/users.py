@@ -29,7 +29,9 @@ from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
+import os
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 @insprite_views.route('/home',      methods=['GET', 'POST'])
 @insprite_views.route('/dashboard', methods=['GET', 'POST'])
@@ -265,8 +267,12 @@ def render_edit_profile():
 	form.edit_oauth_stripe.data 	 = stripe
 
 	flags = bp.availability
+	print "render_edit_profile(): This user's availability is ", bp.availability
 
 	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+
+
+
 	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
 
 
@@ -291,7 +297,7 @@ def api_update_profile(usrmsg=None):
 	# we will validate each submitted page manually so as to allow for partial form submission (not using WTForm validation.)
 
 	try:
-		page_validate, errors = ht_validate_profile(form_page)
+		page_validate, errors = ht_validate_profile(bp, form, form_page)
 
 		if (page_validate):
 			update = ht_update_profile(ba, bp, form, form_page)
@@ -328,7 +334,7 @@ def api_update_profile(usrmsg=None):
 	return jsonify(usrmsg="Something went wrong."), 500
 
 
-def ht_validate_profile(form_page):
+def ht_validate_profile(bp, form, form_page):
 	errors = {}
 	print "ht_validate_page: validating page: ", form_page
 
@@ -343,7 +349,19 @@ def ht_validate_profile(form_page):
 			errors["edit_name"] = "This must be less than 40 characters."
 
 	if (form_page == "profile_photo" or form_page == "full"):
-		pass
+
+		file = request.files[form.edit_photo.name]
+		print "ht_validate_page: uploaded filename is ", file.filename
+		if (file):
+			if allowed_file(file.filename):
+				print "That photo works."
+			else:
+				print "File was not an image."
+				errors["edit_photo"] = "Please only upload jpg, gif, or png files." 
+		else :
+			print "No photo uploaded."
+			if (form_page == "full" and bp.prof_img == "no_pic_big.svg"):
+				errors["edit_photo"] = "All mentors must upload a profile photo." 		
 
 	if (form_page == "details" or form_page == "full"):
 		prof_headline = request.values.get("edit_headline")
@@ -369,10 +387,10 @@ def ht_validate_profile(form_page):
 
 		try:
 			prof_rate = int(prof_rate)
-			if (prof_rate > 100000):
-				errors["prof_rate"] = "Let's keep it beneath $100,000 for now."
+			if (prof_rate > 10000):
+				errors["edit_rate"] = "Let's keep it below $10,000 for now."
 		except TypeError:
-			errors["prof_rate"] = "Please keep it to a whole dollar amount (or zero)."
+			errors["edit_rate"] = "Please keep it to a whole dollar amount (or zero)."
 
 		if (oauth_stripe == ''):
 			errors["edit_oauth_stripe"] = "Stripe activation is required to become a mentor."
@@ -393,148 +411,92 @@ def ht_validate_profile(form_page):
 
 	return valid, errors
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
-
-	update = False
+	print 'ht_update_profile: form_page: ', form_page
+	if (form_page == "full"):
+		print 'ht_update_profile: save all elements'
+	else:
+		print 'ht_update_profile: save only elements from page: ', form_page
 	for key in request.values:
 		print '\t', key, request.values.get(key)
-	print 'ht_update_profile: save all updates'
+	update = False
+	
+	if (form_page == 'general' or form_page == 'full'):
+		bp.prof_name = form.edit_name.data
+		bp.location = form.edit_location.data 			
+		bp.prof_bio  = form.edit_bio.data
+		return True
 
-	bp.prof_name = form.edit_name.data
-	bp.location = form.edit_location.data 			
-	bp.prof_bio  = form.edit_bio.data
+	if (form_page == 'details' or form_page == 'full'):	
+		bp.industry = Industry.industries[int(form.edit_industry.data)]
+		bp.headline = form.edit_headline.data 			
+		bp.prof_url  = form.edit_url.data
+		return True
 
-	bp.headline = form.edit_headline.data 			
-	bp.industry = Industry.industries[int(form.edit_industry.data)]
-	bp.prof_rate = form.edit_rate.data
-	bp.prof_url  = form.edit_url.data
-	bp.availability  = form.edit_availability.data
-	ba.stripe_cust = form.edit_oauth_stripe.data
+	if (form_page == 'payment' or form_page == 'full'):	
+		bp.prof_rate = form.edit_rate.data		
+		ba.stripe_cust = form.edit_oauth_stripe.data
+		return True
 
-	mentor_live = form.edit_mentor_live.data
+	if (form_page == 'schedule' or form_page == 'full'):	
+		bp.availability  = form.edit_availability.data
+		return True
+
+	if (form_page == 'mentor'):
+		if (bp.availability == 0):
+			bp.availability = 1
+			return True
+		else:
+			print "Already a mentor. Moving on..."
+			return True
+
+	# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
+	if (form_page == 'profile_photo' or form_page == 'full'):
+
+		file = request.files[form.edit_photo.name]
+		print "ht_validate_page: uploaded filename is ", file.filename
+		if (file and allowed_file(file.filename)):
+			image_data = file.read()
+			print "api_update_profile: image was uploaded"
+			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(image_data)))
+
+			#print source_extension
+			print 'api_update_profile: s3'
+			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
+			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+			sml.set_contents_from_file(StringIO(image_data))
+			imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
+			bp.prof_img = destination_filename
+
+		# if URL is set, ensure 'http(s)://' is part of it
+		if (bp.prof_url):
+			if (bp.prof_url[:8] != "https://"):
+				if (bp.prof_url[:7] != "http://"):
+					bp.prof_url = "http://" + bp.prof_url;
+
+		return True
 
 	#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
 	# bp.updated  = dt.utcnow()
-
-	# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
-	image_data = request.files[form.edit_photo.name].read()
-	if (len(image_data) > 0):
-		print "api_update_profile: image was uploaded"
-		destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-		trace (destination_filename + ", sz = " + str(len(image_data)))
-
-		#print source_extension
-		print 'api_update_profile: s3'
-		conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-		b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-		sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-		sml.set_contents_from_file(StringIO(image_data))
-		imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
-		bp.prof_img = destination_filename
-
-	# if URL is set, ensure 'http(s)://' is part of it
-	if (bp.prof_url):
-		if (bp.prof_url[:8] != "https://"):
-			if (bp.prof_url[:7] != "http://"):
-				bp.prof_url = "http://" + bp.prof_url;
-
-	return True
-
-
-
-
-@insprite_views.route('/mentor/signup', methods=['GET', 'POST'])
-@req_authentication
-def render_mentor_signup_page(usrmsg = None):
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	pi = Oauth.get_stripe_by_uid(uid)
-	edit  = None
-
-	# StripeConnect req'd for payments
-	stripe = 'No Stripe Account Found.'
-	if (pi is not None): stripe = pi.oa_account
-	session['next_url']='/mentor/signup#payment'
-
-	if (bp.availability > 0):
-		print "render_mentor_signup_page(): Whahappen? User is already a mentor! "
-
-	return make_response(render_template('edit_profile.html', bp=bp, oa_stripe=stripe, edit=edit))
-
 
 
 @insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
 @req_authentication
 def upgrade_profile():
-	""" A regular user is signing up to be a seller.  """
-
-	print "-"*32
-	print 'activate_seller(): begin'
 	uid = session['uid']
-	bp = Profile.get_by_uid(session.get('uid'))
-	ba = Account.get_by_uid(session.get('uid'))
-	form = request.form
+	bp = Profile.get_by_uid(uid)
 
-	# TODO - put this back in
-	# if form.validate_on_submit():
+	if (bp.availability > 0):
+		print "upgrade_profile(): Whahappen? User is already a mentor!"
 
-	try:
-		bp.availability = form.get('ssAvailOption')
-		bp.stripe_cust = form.get('oauth_stripe')
-
-		print "activate_seller(): availability:", bp.availability
-		print "activate_seller(): stripe_cust:", bp.stripe_cust
-
-		# Not used yet:
-		# bp.avail_times = int(form.ssAvailTimes.data)
-
-		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-		# bp.updated  = dt.utcnow()
-
-		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
-		# TODO: what happens if someone wants to just keep their old one?
-
-		this_image = request.files['ssProfileImage']
-		this_image_data = this_image.read()
-
-		print "activate_seller(): this_image:", str(this_image)
-		print "activate_seller(): this_image_data Len:", len(this_image_data)
-		
-		if (len(this_image_data) > 0):
-			destination_filename = str(hashlib.sha1(this_image_data).hexdigest()) + '.jpg'
-			trace (destination_filename + ", sz = " + str(len(this_image_data)))
-			print 'activate_seller(): s3'
-			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-			sml.set_contents_from_file(StringIO(this_image_data))
-			bp.prof_img = destination_filename
-
-		print 'activate_seller(): add'
-		db_session.add(bp)
-		print 'activate_seller(): commit'
-		db_session.commit()
-		log_uevent(uid, "activate seller profile")
-		print 'activate_seller(): SUCCESS! Seller activated.'
-		
-		# TODO - add something back in to tell page the status
-		# return redirect("/lesson/add")
-
-
-		return make_response(initialize_lesson("first"))
-
-	except AttributeError as ae:
-		print 'activate_seller(): hrm. must have changed an object somewhere:', ae
-		db_session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
-
-	except Exception as e:
-		print 'activate_seller(): Exception:', e
-		db_session.rollback()
-		return jsonify(usrmsg="Something else screwed up."), 500
-
+	# return make_response(render_edit_profile(activate="true"))
+	return redirect('/profile/edit#mentor')
 
 
 

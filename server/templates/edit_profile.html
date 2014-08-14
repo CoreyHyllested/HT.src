@@ -94,15 +94,15 @@
 				</div>
 
 				<div id="profile_photo" class="editProfFormPage">
-					<!-- <div class="formDescription">We ask that all our teachers provide large, high-quality photos. A good-looking profile can make a big difference in attracting customers. Please make sure yours is at least 720 pixels wide, in landscape orientation (wider than it is tall), and has good lighting. If you're using a phone camera, make sure it's set to a high resolution. Ideally, the photo should be of you performing one of your skills, or of some your handiwork.</div> -->
+
+					<div class="formFieldInfo first">Recommended size is 2800 wide by 1400 tall. Photo is optional for regular users, but all mentors must upload one. Choose a good one - this will appear frequently around the site!</div>
 
 					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview" src="{{photoURL}}"></div>
 
-					<input type="button" class="whiteButton editProfImageButton" id="editProfImageButton" value="Choose Image...">
-					
-					<div class="editProfImageInfo"></div>
-					<div class="formFieldError"></div>
-					{{form.edit_photo(id="editProfImage")}}
+					<input type="button" class="whiteButton editProfImageButton" id="editProfImageButton" value="Choose Image..." data-current-page="profile_photo">
+					<div class="formFieldError alt"></div>
+										
+					{{form.edit_photo(accept="image/*")}}
 
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
@@ -130,7 +130,8 @@
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
 							<button class="blueButton editProfActivate" data-current-page="mentor">Let's Get Started</button>
-						</div>					
+						</div>	
+						<div class="editProfFormStatus"></div>				
 					</div>					
 				</div>
 
@@ -149,7 +150,8 @@
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
 							<button class="blueButton editProfFormButton" data-current-page="guidelines">Continue</button>
-						</div>					
+						</div>	
+						<div class="editProfFormStatus"></div>				
 					</div>					
 					
 				</div>
@@ -284,22 +286,23 @@
 
 
 				<div id="submit" class="editProfFormPage mentorForm">
-					<div class="formDescription">Last step - tell us if you're ready to make your mentor profile live, and that you are cool with our Terms of Service.</div>
+					<div class="formDescription">Last step - tell us if you're cool with our Terms of Service. If your profile has all the required info, we'll make it live and public!</div>					
+					<!-- <div class="formDescription">Last step - tell us if you're ready to make your mentor profile live, and that you are cool with our Terms of Service.</div> -->
 
 					
 					<div class="statusElement">
 						<div class="formFieldError"></div>
 						{{form.edit_mentor_tos}} {{form.edit_mentor_tos.label}}
 					</div>
-
-					
-					<div class="statusElement">	
+				
+<!-- 					<div class="statusElement">	
 						<div class="formFieldError"></div>				
 						{{form.edit_mentor_live}} <strong>{{form.edit_mentor_live.label}}</strong>
-					</div>
+					</div> -->
+
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
-							<button class="blueButton editProfSave" data-current-page="submit">Save and Submit!</button>
+							<button class="blueButton editProfSave final" data-current-page="submit">Save and Submit!</button>
 						</div>
 						<div class="editProfFormStatus"></div>
 					</div>			

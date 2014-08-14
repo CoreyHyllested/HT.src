@@ -1,11 +1,20 @@
+var path = "/profile/edit";
+
 $(document).ready(function() {
 
 	// Form Navigation and State Management
 
 	var firstPage = "general";
 	var lastPage = "status";
-	var path = "/profile/edit";
 	var formMode = "basic"; // basic or mentor - required to know how to validate
+
+	// evaluate flags/user state - gray out mentor nav if not activated.
+	var flags = $(".editProfFlags").data("flags");
+	var userIsMentor = "false";
+	if (flags > 0){
+		userIsMentor = "true";
+		displayMentorElements();
+	}	
 
 	$(document.body).on("click", "#topLeftNavBack", function(e) {
 		e.preventDefault();
@@ -16,12 +25,17 @@ $(document).ready(function() {
 	if (window.location.hash) {
 		$(".editProfNavItem").removeClass("active");
 		var hash = window.location.hash.substring(1);
-		$('#'+hash).show();
 		var currentNav = $(".editProfNavItem[data-target-page=" + hash + "]");
 		if (currentNav.hasClass("disabled")) {
-			activateMentorForm();
+			console.log("Hmm... user went to a disabled navigation tab. Redirecting.");
+			$('#'+firstPage).show();
+			currentNav = $(".editProfNavItem[data-target-page=" + firstPage + "]");
+			history.replaceState({title: firstPage}, "", '');
+		} else {
+			$('#'+hash).show();
+			history.replaceState({title: hash}, "", '');
 		}
-		history.replaceState({title: hash}, "", '');
+		
 
 	} else {
 		// Default to first page
@@ -29,21 +43,9 @@ $(document).ready(function() {
 		var currentNav = $(".editProfNavItem[data-target-page=" + firstPage + "]");
 		history.replaceState({title: firstPage}, "", '');
 	}
+
 	currentNav.addClass("active");
 	$('.editProfHeaderPageName').text(currentNav.text());
-
-	// evaluate flags/user state - gray out mentor nav if not activated.
-
-	// $(".mentorFormNavItem").addClass("disabled");
-
-	var flags = $(".editProfFlags").data("flags");
-
-	if (flags > 0){
-		activateMentorForm();
-	} else {
-		$("#editProfNavItemMentor").show();
-	}	
-
 
 	window.onpopstate = function(event) {
 		if (event.state) {
@@ -84,7 +86,7 @@ $(document).ready(function() {
 		// formData.oauth_stripe = $("#oauth_stripe").val();
 
 		console.log(JSON.stringify(formData));		
-		console.log("Photo details: 'editProfImage' - "+ JSON.stringify($("#editProfImage")[0].files[0]));
+		console.log("Photo details: 'edit_photo' - "+ JSON.stringify($("#edit_photo")[0].files[0]));
 
 		$("#editProfForm").submit();
 
@@ -107,17 +109,19 @@ $(document).ready(function() {
 
 	$(".editProfActivate").click(function(e) {
 		e.preventDefault();
+		if (userIsMentor != "true") {
+			activateMentor();
+		}
+
 		$('.editProfFormPage').hide();
 		$(".editProfNavItem").removeClass("active");
-		activateMentorForm();
-		
+
 		var nextPage = "guidelines";
 		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
 		$('#'+nextPage).show();
 		$('.editProfHeaderPageName').text(nextNav.text());
 		nextNav.addClass("active");
 		history.pushState({title: nextPage}, "", path+'#'+nextPage);		
-
 	})	
 
 	$(".editProfSave").click(function(e) {
@@ -134,18 +138,33 @@ $(document).ready(function() {
 
 	/* When visible 'Choose Image...' or the preview image is clicked, activate hidden 'Browse...' */
 	$("#editProfImageButton, #editProfImagePreview").click(function() {
-   		$("#editProfImage").click();
+   		$("#edit_photo").click();
 	});
 
-	$("#editProfImage").change(function(e) {
+	$("#edit_photo").change(function(e) {
+		var error = false;
 		createReader(this, function(width, height) {
-			$(".editProfImageInfo").html("Height: "+height+"px, Width: "+width+"px");
+			// $(".editProfImageInfo").html("Your photo is "+height+"px tall and "+width+"px wide.");
 			// Add more size checks here if desired
-			if (height > width) {
-				$(".editProfImageInfo").append("<br><span class='error'>Error: Photo is not in landscape orientation.</span>");
+			var errorField = $("#profile_photo").find(".formFieldError");
+			errorField.empty();
+			if (height > width) {	
+				if (errorField.text() != "") {
+					errorField.append(", ");
+				}
+				errorField.append("We recommend landscape-oriented photos");
+				error = true;
+
 			}			
 			if (width < 720) {
-				$(".editProfImageInfo").append("<br><span class='error'>Error: Photo must be at least 720 pixels wide.</span>");
+				if (errorField.text() != "") {
+					errorField.append(", ");
+				}
+				errorField.append("Try and use a photo at least 720 pixels wide");
+				error = true;
+			}
+			if (error) {
+				errorField.fadeIn();
 			}
 		});		
 	});
@@ -262,10 +281,19 @@ $(document).ready(function() {
 
 });
 
-function activateMentorForm() {
+function displayMentorElements() {
+
 	formMode = "mentor";
 	$(".mentorNav").css("opacity", 1);
-	$(".mentorFormNavItem").removeClass("disabled");
+	$(".mentorFormNavItem").removeClass("disabled");	
+
+}
+
+function activateMentor() {
+
+	saveProfile("mentor");
+	displayMentorElements();
+
 }
 
 function saveProfile(formPage) {
@@ -273,7 +301,14 @@ function saveProfile(formPage) {
 	var fd = new FormData($('#editProfForm')[0]);
 
 	console.log("saving from formPage: "+formPage);
-	
+
+	if (formPage == "profile_photo") {
+		$("#profile_photo .editProfFormStatus, #submit .editProfFormStatus").html("<i class='fa fa-fw fa-spinner fa-spin'></i> Please wait - uploading photo...").fadeIn();	
+	} else if (formPage != "mentor") {
+		$("#"+formPage+" .editProfFormStatus").html("Saving...").fadeIn();
+	}
+		
+
 	formMode = "page";
 	if (formPage == "submit") {
 		formPage = "full";
@@ -291,8 +326,6 @@ function saveProfile(formPage) {
 		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i.icon").attr("class", "fa fa-fw "+navDefaultIcon);		
 	});
 
-
-	$(".editProfFormStatus").html("Saving...").fadeIn();
 
 	$.ajax({ url	: "/profile/update",
 			type	: "POST",
@@ -313,11 +346,18 @@ function saveProfile(formPage) {
 			 	// }
 			 	
 			 	// Remove the image from the file element
-			 	var imageInput = "#editProfImage";
+			 	var imageInput = "#edit_photo";
 			 	$(imageInput).wrap('<form>').closest('form').get(0).reset();
 				$(imageInput).unwrap();
 
-			 	$(".editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
+				if (formPage == "profile_photo") {
+					$("#profile_photo .editProfFormStatus").html("<span class='success'>Photo saved.</span>").fadeIn(400);
+				} else if (formPage == "full") {
+					$("#submit .editProfFormStatus").html("<span class='success'>Changes saved... Your profile is live!</span>").fadeIn(400);
+				} else if (formPage != "mentor") {
+					$("#"+formPage+" .editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
+				}
+
 				setTimeout(function() {
 					$('.editProfFormStatus').fadeOut(400);
 				}, 1600 );
@@ -372,21 +412,32 @@ function showErrors(errors) {
 
 function createReader(input, whenReady) {
 
-	if (input.files && input.files[0]) {
-		var reader = new FileReader();
-		reader.onload = function (e) {
-		    var image = new Image;
-		    image.onload = function(e) {
-	            var width = this.width;
-	            var height = this.height;
-	            var src = this.src;
-	            if (whenReady) whenReady(width, height, src);
-		    };
-		    image.src = e.target.result;
-		    $('.editProfImagePreview').attr('src', e.target.result).show();
-		}
-		reader.readAsDataURL(input.files[0]);
+var file = input.files[0];
+var imageType = /image.*/;
 
+	if (input.files && file) {
+		if (file.type.match(imageType)) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+			    var image = new Image;
+			    image.onload = function(e) {
+		            var width = this.width;
+		            var height = this.height;
+		            var src = this.src;
+		            if (whenReady) whenReady(width, height, src);
+			    };
+			    image.src = e.target.result;
+			    $('.editProfImagePreview').attr('src', e.target.result).show();
+			}
+			reader.readAsDataURL(input.files[0]);
+		} else {
+			$("#profile_photo").find(".formFieldError").html("Please only upload jpg, gif, or png files.").slideDown();
+			// $("#profile_photo").find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").slideDown();
+		 	// Remove the image from the file element
+		 	var imageInput = "#edit_photo";
+		 	$(imageInput).wrap('<form>').closest('form').get(0).reset();
+			$(imageInput).unwrap();			
+		}
 	}
 
 }

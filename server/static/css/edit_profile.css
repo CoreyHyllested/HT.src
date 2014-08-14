@@ -104,7 +104,7 @@
 }
 
 .editProfFlags {
-	display: none;
+	/*display: none;*/
 	width: 100%;
 	float: left;
 }
@@ -198,7 +198,7 @@
 
 /* specific nav item for mentor activation */
 #editProfNavItemMentor {
-	display: none;
+	/*display: none;*/
 	/*visibility: hidden;*/
 }
 
@@ -245,6 +245,9 @@
 }
 .editProfSave {
 	width: 150px;
+}
+.editProfSave.final {
+	width: 250px;
 }
 
 .editProfFormButtonSubmit {
@@ -326,6 +329,15 @@
 	font-size: .7em;
 	color: red;
 }
+
+.formFieldError.alt {
+	float: left;
+	height: 40px;
+	line-height: 50px;
+	margin-left: 16px;
+	margin-top: 10px;
+}
+
 
 .formContainer {
 	margin-bottom: 20px;
@@ -443,7 +455,7 @@ textarea.formField {
 
 }
 
-#editProfImage {
+#edit_photo {
 	display: none;
 }
 
@@ -455,14 +467,17 @@ textarea.formField {
 }
 
 .editProfImageButton {
-	width: 300px;
-	margin-top: 8px;
+	width: 150px;
+	margin-top: 18px;
 	float: left;
 }
 
 .editProfImagePreviewContainer {
 	/*display: none;*/
 }
+
+
+
 
 .editProfImagePreview {
 	/*display: none;*/

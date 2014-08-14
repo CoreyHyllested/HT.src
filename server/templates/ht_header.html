@@ -146,7 +146,7 @@
 			{% if bp.availability > 0 %}
 				<li><a href="/lesson/new">Create Lesson</a></li>
 			{% else %}
-				<li><a href="/teacher/signup">Sign Up to Teach</a></li>
+				<a href="/profile/upgrade"><li>Become a Mentor</li></a>
 			{% endif %}
 			<li><a href="/dashboard">Dashboard</a></li>
 			<li><a href="/profile">Profile</a></li>
@@ -196,13 +196,13 @@
 								{% if bp.availability > 0 %}
 									<a href="/lesson/new"><li>Create Lesson</li></a>
 								{% else %}
-									<a href="/teacher/signup"><li>Sign Up to Teach</li></a>
+									<a href="/profile/upgrade"><li>Become a Mentor</li></a>
 								{% endif %}
 								<a href="/dashboard"><li>Dashboard</li></a>
 								<a href="/profile"><li>Profile</li></a>
+								<a href="/profile/edit"><li>Edit Profile</li></a>
 								<a href="/inbox"><li>Messages</li></a>
 								<a href="/settings"><li>Settings</li></a>
-								<a href="/profile/edit"><li>Edit Profile</li></a>
 								<a href="/logout"><li>Log Out</li></a>
 							</ul>
 						</li>
@@ -210,7 +210,7 @@
 				</div>
 				<div class="headerIcons">
 					{% if bp.availability == 0 %}
-						<a class="teacherSignupLink blend" href="/teacher/signup">Sign up to teach</a>
+						<a class="teacherSignupLink blend" href="/profile/upgrade">Become a Mentor</a>
 					{% endif %}
 					<!--a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a-->
 					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"></i></a>
