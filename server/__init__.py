@@ -79,7 +79,7 @@ def initialize_server(config_name):
 	jsfilter = ht_server.config['JSFILTER']
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
-	css_example = Bundle('scss/helper.sass', filters='pyscss', output='css/foo.css')
+	css_example = Bundle('scss/lesson.scss', filters='pyscss', output='css/lesson.css')
 
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('sass_foo', css_example)

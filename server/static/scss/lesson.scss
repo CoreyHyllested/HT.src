@@ -1,0 +1,208 @@
+@import 'colors';
+
+/* Nav and Layout */
+
+.pageWrapper {
+	background-color: $white;
+	min-height: 100%;
+	padding-bottom: 50px;		
+	width: 100%;
+}
+
+.lessonCover {
+	min-width: 100%;      
+	width: 100% !important;
+	text-align: center;
+	background: url('../img/castiron3.jpg') no-repeat center;
+	background-size: cover;
+	display: block;
+	overflow-x: hidden;
+	float: none; 
+	height: 500px;
+}
+
+.lessonNavBarContainer {
+	margin-bottom: 10px;
+	width: 100%;
+	background-color: $red;
+	height: 40px;
+
+	.lessonNavBar {
+		margin: 0px auto;
+		width: 980px;
+		height: 40px;
+
+		ul {
+			list-style-type: none;
+
+			li.navElement {
+				float: left;
+				display: inline;
+				color: white;
+				font-size: 1.2em;
+				font-weight: 400;
+				width: 33%;
+				text-align: center;
+				height: 40px;
+				line-height: 40px;
+			}
+		}
+
+	}
+}
+
+
+
+.lessonContentWrapper {
+	background-color: $white;
+	/*border-radius: 6px;*/
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 0px;
+/*	padding: 41px;*/
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+}
+
+
+.lessonLeftColumn {
+	float: left;
+	width: 66%;
+}
+
+.lessonRightColumn {
+	float: right;
+	width: 33%;
+
+	.lessonMentorBox {
+
+
+		.mentorPhotoContainer {
+			float: left;
+			/*width: 50%;*/
+			padding-right: 24px;	
+			position: relative;
+
+			.mentorPhotoWrapper {
+
+/*	            transform: rotate(45deg);
+	            -webkit-transform: rotate(45deg);
+	            -moz-transform: rotate(45deg);
+	            -o-transform: rotate(45deg);*/
+	            width:100px;
+	            height:100px;
+	            overflow:hidden;
+	        }
+	        .mentorPhoto{
+
+	            width:100px;
+	            height:100px;
+	            background-repeat: no-repeat center;
+				background-size: cover;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				-moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+				-webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+				box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);				
+
+	        }
+
+		}		
+
+
+
+		.mentorInfo {
+			float: left;
+			/*width: 50%;*/
+			.mentorName {
+				font-weight: 600;
+				font-size: 1.1em;
+				margin-top: 12px;
+				margin-bottom: 4px;
+			}
+			.mentorHeadline {
+				font-size: .9em;
+				font-weight: 200;
+			}
+			.mentorLocation {
+				font-size: .9em;
+				font-weight: 200;
+			}
+
+		}
+
+
+
+	}
+
+
+}
+
+/* Title Box */
+
+.lessonTitleBox {
+
+	.lessonTitle {
+		font-size: 1.6em;
+		font-weight: bold;
+		color: rgba(0,0,0,.8);
+	}
+
+	.lessonState {
+		font-size: 0.9em;
+	}
+
+	.lessonRating {
+		font-size: 0.9em;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+/* Portfolio Images */
+
+.portfolioImageContainer {
+	float: left;
+	margin-top: 8px;
+	width: 100%;
+}
+
+.portfolioImageWrapper {
+	float: left;
+	padding: 4px;
+	width: 33%;
+}
+
+.portfolioImage {
+	border: 1px solid rgb(226, 228, 230);
+	border-radius: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	/* height: 200px; */
+	/* margin-right: 11px; */
+	/*margin-bottom: 11px;*/
+	width: 100%;
+}
+
+.portfolioImageCaption {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-size: .8em;
+}
+

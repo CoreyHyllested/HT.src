@@ -869,11 +869,14 @@ def render_lesson_page(lesson_id):
 	try:
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
-		print "render_lesson_page(): Lesson String:", str(lesson)
+		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+
+		print "render_lesson_page(): mentor:", mentor
+		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor))
 
 
 

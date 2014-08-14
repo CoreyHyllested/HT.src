@@ -1,191 +1,124 @@
-/* PAGE WRAPPERS */
+.pageWrapper {
+  background-color: #fff;
+  min-height: 100%;
+  padding-bottom: 50px;
+  width: 100%; }
 
-/* Mobiles, phablets, and tablets */
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 50px;		
-		width: 100%;
-	}
+  .lessonCover {
+    min-width: 100%;
+    width: 100% !important;
+    text-align: center;
+    background: url('../img/castiron3.jpg') no-repeat center;
+    background-size: cover;
+    display: block;
+    overflow-x: hidden;
+    float: none;
+    height: 500px; }
 
-/* Desktop */
-@media only screen and (min-width: 890px) {
-
-	.pageWrapper {
-		background: #dfdfdf;
-		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
-		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
-	}
-}
-
-/* Nav and Layout */
+    .lessonNavBarContainer {
+      margin-bottom: 10px;
+      width: 100%;
+      background-color: #e75f63;
+      height: 40px; }
+      .lessonNavBarContainer .lessonNavBar {
+        margin: 0px auto;
+        width: 980px;
+        height: 40px; }
+        .lessonNavBarContainer .lessonNavBar ul {
+          list-style-type: none; }
+          .lessonNavBarContainer .lessonNavBar ul li.navElement {
+            float: left;
+            display: inline;
+            color: white;
+            font-size: 1.2em;
+            font-weight: 400;
+            width: 33%;
+            text-align: center;
+            height: 40px;
+            line-height: 40px; }
 
 .lessonContentWrapper {
-	background-color: white;
-	border-radius: 6px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	margin: 12px auto 0px;
-	padding: 41px;
-	position: relative;
-	overflow: auto;
-	width: 980px;
-	z-index: 30;
-}
+  background-color: #fff;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 12px auto 0px;
+  position: relative;
+  overflow: auto;
+  width: 980px;
+  z-index: 30; }
 
-.lessonHeader {
-	margin-bottom: 10px;
-	width: 100%;
-	border-bottom: 1px dotted #f0f0f0;;
-	padding-bottom: 12px;
-	float: left;
-}
-
-.lessonFooter {
-	margin-top: 10px;
-	width: 100%;
-	border-top: 1px dotted #f0f0f0;
-	padding-top: 12px;
-	float: left;
-}
-
-.lessonHeaderTitle {
-	color: black;
-	width: 75%;
-	float: left;
-	font-size: 1.8em;
-}
-
-.lessonHeaderLeft {
+  .lessonLeftColumn {
     float: left;
-	width: 25%;
-}
+    width: 66%; }
 
-.lessonHeaderCenter {
-	float: left;
-	width: 75%;
-}
+    .lessonRightColumn {
+      float: right;
+      width: 33%; }
+      .lessonRightColumn .lessonMentorBox .mentorPhotoContainer {
+        float: left;
+        padding-right: 24px;
+        position: relative; }
+        .lessonRightColumn .lessonMentorBox .mentorPhotoContainer .mentorPhotoWrapper {
+          width: 100px;
+          height: 100px;
+          overflow: hidden; }
+          .lessonRightColumn .lessonMentorBox .mentorPhotoContainer .mentorPhoto {
+            width: 100px;
+            height: 100px;
+            background-repeat: no-repeat center;
+            background-size: cover;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+            -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2); }
+      .lessonRightColumn .lessonMentorBox .mentorInfo {
+        float: left; }
+        .lessonRightColumn .lessonMentorBox .mentorInfo .mentorName {
+          font-weight: 600;
+          font-size: 1.1em;
+          margin-top: 12px;
+          margin-bottom: 4px; }
+          .lessonRightColumn .lessonMentorBox .mentorInfo .mentorHeadline {
+            font-size: 0.9em;
+            font-weight: 200; }
+            .lessonRightColumn .lessonMentorBox .mentorInfo .mentorLocation {
+              font-size: 0.9em;
+              font-weight: 200; }
 
-.lessonHeaderRight {
-	float: right;
-	width: 25%;
-}
-
-.lessonTopLeftNavigation {
-	font-size: 1.1em;
-}
-
-.lessonTopLeftNavigation .navItem {
-	cursor: pointer;
-	padding-right: 36px;
-
-}
-
-.lessonTopLeftNavigation i {
-	font-size: .9em;
-}
-
-.lessonLeftColumn {
-    float: left;
-	width: 25%;
-}
-
-.lessonCenterColumn {
-    float: left;
-	width: 50%;
-}
-
-.lessonRightColumn {
-	float: right;
-	width: 25%;
-}
-
-
-
-.lessonContainer {
-	width: 100%;
-	float: left;
-}
-
-
-/* Content */
-
-.lessonTitle {
-	font-size: 1.6em;
-	font-weight: bold;
-}
-
-.lessonDescription {
-	font-size: 1em;
-}
-
+.lessonTitleBox .lessonTitle {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.8); }
+  .lessonTitleBox .lessonState {
+    font-size: 0.9em; }
+    .lessonTitleBox .lessonRating {
+      font-size: 0.9em; }
 
 .portfolioImageContainer {
-	float: left;
-	margin-top: 8px;
-	width: 100%;
-}
+  float: left;
+  margin-top: 8px;
+  width: 100%; }
 
-.portfolioImageWrapper {
-	float: left;
-	padding: 4px;
-	width: 33%;
-}
+  .portfolioImageWrapper {
+    float: left;
+    padding: 4px;
+    width: 33%; }
 
-.portfolioImage {
-	border: 1px solid rgb(226, 228, 230);
-	border-radius: 3px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	display: block;
-	float: left;
-	/* height: 200px; */
-	/* margin-right: 11px; */
-	/*margin-bottom: 11px;*/
-	width: 100%;
-}
+    .portfolioImage {
+      border: 1px solid #e2e4e6;
+      border-radius: 3px;
+      -moz-box-sizing: border-box;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      display: block;
+      float: left;
+      width: 100%; }
 
-.portfolioImageCaption {
-	float: left;
-	width: 100%;
-	text-align: center;
-	font-size: .8em;
-}
-
-
-
-/* Messaging Component */
-
-.lessonReplyContainer {
-	float: left;
-	width: 100%;
-}
-
-textarea.lessonReplyBody {
-	resize: none;
-	float: left;
-	width: 100%;
-	margin-bottom: 20px;
-}
-
-.lessonReplySendButton {
-	width: 250px;
-	margin: 0px auto;
-}
-
-.lessonReplyStatus{
-	display: none;
-	font-weight: bold;
-	font-size: 1.2em;
-	width: 100%;
-	text-align: center;
-	padding: 10px 0px;
-	float: left;
-}
+      .portfolioImageCaption {
+        float: left;
+        width: 100%;
+        text-align: center;
+        font-size: 0.8em; }
