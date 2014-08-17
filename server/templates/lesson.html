@@ -7,16 +7,40 @@
 		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
 	{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
+	
+	<script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
+	<link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
+	
 
 {% endblock %}
 
 
 {% block content %}
 
-<div class="lessonCover">
+<div class="lessonCoverContainer">
+
+{% if portfolio|count > 0 %}
+
+	{% set bg_image = [] %}
+	{% for image in portfolio %}
+		{% if image.img_order == 0 %}
+			{% if bg_image.append(image.img_id) %}{% endif %}
+		{% endif %}
+	{% endfor %}
+	<div class="lessonCoverTemp" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bg_image[0]}})">
+		<div class="overlay"></div>
+		<div class="lessonCoverLoading"><i class="fa fa-spinner fa-spin"></i>Loading Images...</div>
+	</div>
+	<div class="lessonCover galleria">
+	</div>
+
+{% else %}
+<div class="lessonCoverDefault" style="background-image: url('/static/img/artsupplies.jpg')"></div>
+
+{% endif %}
 
 </div>
-
 <div class="lessonNavBarContainer">
 
 <div class="lessonNavBar">
@@ -178,14 +202,75 @@
 	<div class="clear"></div>
 </div>
 
+
 <script src="/static/js/lightbox.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 <script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 
+var imageData = [
+	{% for image in portfolio|sort(attribute='img_order') %}
+		{ image: "https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{image.img_id}}", title: "{{image.img_comment}}" },
+	{% endfor %}
+];
+
+if ($(".galleria").length) {
+	console.log("Found galleria element.");
+
+	Galleria.configure({
+	    transition: 'pulse',
+	    imageCrop: true,
+	    carousel: true,
+	    responsive: true,
+
+	});
+
+	Galleria.ready(function() {
+	    
+	    this.bind("thumbnail", function(e) {
+	    	if (e.index == 0){
+	    		
+	    		$(".lessonCover").css("opacity", 1);
+	    	}
+	    });
+
+	});
+
+	Galleria.run('.galleria', {
+		dataSource: imageData,
+	    extend: function(options) {
+
+	        Galleria.log(this) // the gallery instance
+	        Galleria.log(options) // the gallery options
+
+	        // listen to when an image is shown
+	        this.bind('image', function(e) {
+
+	            Galleria.log(e) // the event object may contain custom objects, in this case the main image
+	            Galleria.log(e.imageTarget) // the current image
+
+	            // lets make galleria open a lightbox when clicking the main image:
+	            $(e.imageTarget).click(this.proxy(function() {
+	               this.openLightbox();
+	            }));
+	        });
+
+	    }
+
+	});
+}
+
+
+
 $(document).ready(function() {
 	// google.maps.event.addDomListener(window, 'load', initialize);
+
+	$(document).on('click', '.lessonImageThumb', function() {
+		var target = $(this).data("image");
+		console.log("clicked on image:"+target);
+
+	});
 
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();

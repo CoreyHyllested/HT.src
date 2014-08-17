@@ -69,6 +69,12 @@ def render_profile(usrmsg=None):
 		# complicated search queries can fail and lock up DB.
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
+		lessons = ht_get_active_lessons(hp)
+		if lessons:
+			print "found lessons."
+		else:
+			print "no lessons found."
+
 	except Exception as e:
 		print e
 		db_session.rollback()
@@ -76,7 +82,7 @@ def render_profile(usrmsg=None):
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, portfolio=visible_imgs))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs))
 
 
 

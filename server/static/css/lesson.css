@@ -6,40 +6,109 @@
     padding-bottom: 50px;
     width: 100%; }
 
-    .lessonCover {
+    .galleria-theme-classic .galleria-stage {
+      position: absolute;
+      top: 0px !important;
+      bottom: 60px;
+      left: 0px !important;
+      right: 0px !important;
+      overflow: hidden; }
+      .galleria-theme-classic .galleria-image {
+        cursor: pointer; }
+        .galleria-theme-classic .galleria-info {
+          width: 33%; }
+          .galleria-theme-classic .galleria-info-text {
+            background-color: rgba(0, 0, 0, 0.3) !important; }
+
+  .lessonCoverContainer {
+    position: relative;
+    min-width: 100%;
+    width: 100% !important;
+    height: 550px;
+    background: #000; }
+    .lessonCoverContainer .lessonCoverDefault {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      width: 100% !important;
+      height: 550px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      display: block;
+      overflow-x: hidden; }
+      .lessonCoverContainer .lessonCoverTemp {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        width: 100% !important;
+        height: 500px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        display: block;
+        overflow-x: hidden; }
+        .lessonCoverContainer .lessonCoverTemp .overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          width: 100%;
+          height: 100%;
+          z-index: 10; }
+          .lessonCoverContainer .lessonCoverTemp .lessonCoverLoading {
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            margin: 0px auto;
+            text-align: center;
+            font-size: 1.6em;
+            color: #fff;
+            z-index: 11; }
+            .lessonCoverContainer .lessonCoverTemp .lessonCoverLoading i {
+              margin-right: 12px; }
+    .lessonCoverContainer .lessonCover {
+      opacity: 0;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
       min-width: 100%;
       width: 100% !important;
       text-align: center;
-      background: url('../img/castiron3.jpg') no-repeat center;
+      background-repeat: no-repeat;
+      background-position: center;
       background-size: cover;
-      display: block;
       overflow-x: hidden;
       float: none;
-      height: 500px; }
+      height: 550px;
+      z-index: 12; }
 
-      .lessonNavBarContainer {
-        width: 100%;
-        background-color: #e75f63;
-        height: 40px; }
-        .lessonNavBarContainer .lessonNavBar {
-          margin: 0px auto;
-          width: 980px;
-          height: 40px; }
-          .lessonNavBarContainer .lessonNavBar ul {
-            list-style-type: none; }
-            .lessonNavBarContainer .lessonNavBar ul li.navElement {
-              cursor: pointer;
-              float: left;
-              display: inline;
-              color: white;
-              font-size: 1.2em;
-              font-weight: 100;
-              width: 25%;
-              text-align: center;
-              height: 40px;
-              line-height: 40px; }
-              .lessonNavBarContainer .lessonNavBar ul li.navElement:hover {
-                font-weight: 300; }
+  .lessonNavBarContainer {
+    width: 100%;
+    background-color: #e75f63;
+    height: 40px; }
+    .lessonNavBarContainer .lessonNavBar {
+      margin: 0px auto;
+      width: 980px;
+      height: 40px; }
+      .lessonNavBarContainer .lessonNavBar ul {
+        list-style-type: none; }
+        .lessonNavBarContainer .lessonNavBar ul li.navElement {
+          cursor: pointer;
+          float: left;
+          display: inline;
+          color: white;
+          font-size: 1.2em;
+          font-weight: 100;
+          width: 25%;
+          text-align: center;
+          height: 40px;
+          line-height: 40px; }
+          .lessonNavBarContainer .lessonNavBar ul li.navElement:hover {
+            font-weight: 300; }
 
   .lessonContentWrapper {
     background-color: #fff;
@@ -66,7 +135,7 @@
           width: 33%; }
 
           .lessonRightColumn {
-            padding-left: 12px; }
+            padding-left: 32px; }
             .lessonRightColumn .lessonMentorBox {
               float: left;
               width: 100%;

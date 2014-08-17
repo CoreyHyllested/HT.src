@@ -1301,6 +1301,7 @@ def ht_get_serialized_images_for_lesson(lesson_id):
 
 
 
+
 def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
 	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
