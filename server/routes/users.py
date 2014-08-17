@@ -598,7 +598,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		print "render_new_lesson: invalid form imported"
 		
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
 
 
 
@@ -659,7 +659,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	# lessonUpdated = lesson.lesson_updated
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").

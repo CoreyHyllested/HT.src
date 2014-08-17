@@ -74,9 +74,9 @@ class LessonImageMap(Base):
 	@property
 	def serialize(self):
 		return {
-			'img_id'		: self.map_image,	# used by 'add_lesson.js'
-			'img_comment'	: self.map_comm,	# used by 'add_lesson.js'
-			'img_order'		: self.map_order,	# used by 'add_lesson.js'
+			'img_id'		: self.map_image,	# used by 'lesson_form.js'
+			'img_comment'	: self.map_comm,	# used by 'lesson_form.js'
+			'img_order'		: self.map_order,	# used by 'lesson_form.js'
 			'img_lesson'	: self.map_lesson,	#img_lesson
 			'img_profile'	: self.map_prof,	#img_profile
 			#img_created
