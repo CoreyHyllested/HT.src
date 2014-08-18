@@ -1,191 +1,307 @@
-/* PAGE WRAPPERS */
+@import url(https://fonts.googleapis.com/css?family=Open+Sans|Noto+Serif:400italic|Lobster+Two:400,700|Lato:100,300,400,700,900); 
+  .pageWrapper {
+    font-family: "Lato", Helvetica, sans-serif;
+    background: #fff;
+    min-height: 100%;
+    padding-bottom: 50px;
+    width: 100%; }
 
-/* Mobiles, phablets, and tablets */
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 50px;		
-		width: 100%;
-	}
+    .galleria-theme-classic .galleria-stage {
+      position: absolute;
+      top: 0px !important;
+      bottom: 60px;
+      left: 0px !important;
+      right: 0px !important;
+      overflow: hidden; }
+      .galleria-theme-classic .galleria-image {
+        cursor: pointer; }
+        .galleria-theme-classic .galleria-info {
+          width: 33%; }
+          .galleria-theme-classic .galleria-info-text {
+            background-color: rgba(0, 0, 0, 0.3) !important; }
 
-/* Desktop */
-@media only screen and (min-width: 890px) {
+  .lessonCoverContainer {
+    position: relative;
+    min-width: 100%;
+    width: 100% !important;
+    height: 550px;
+    background: #000; }
+    .lessonCoverContainer .lessonCoverDefault {
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      width: 100% !important;
+      height: 550px;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      display: block;
+      overflow-x: hidden; }
+      .lessonCoverContainer .lessonCoverTemp {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        width: 100% !important;
+        height: 500px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        display: block;
+        overflow-x: hidden; }
+        .lessonCoverContainer .lessonCoverTemp .overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          width: 100%;
+          height: 100%;
+          z-index: 10; }
+          .lessonCoverContainer .lessonCoverTemp .lessonCoverLoading {
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            margin: 0px auto;
+            text-align: center;
+            font-size: 1.6em;
+            color: #fff;
+            z-index: 11; }
+            .lessonCoverContainer .lessonCoverTemp .lessonCoverLoading i {
+              margin-right: 12px; }
+    .lessonCoverContainer .lessonCover {
+      opacity: 0;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      width: 100% !important;
+      text-align: center;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+      overflow-x: hidden;
+      float: none;
+      height: 550px;
+      z-index: 12; }
 
-	.pageWrapper {
-		background: #dfdfdf;
-		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
-		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
-	}
-}
+  .lessonNavBarContainer {
+    width: 100%;
+    background-color: #e75f63;
+    height: 40px; }
+    .lessonNavBarContainer .lessonNavBar {
+      margin: 0px auto;
+      width: 980px;
+      height: 40px; }
+      .lessonNavBarContainer .lessonNavBar ul {
+        list-style-type: none; }
+        .lessonNavBarContainer .lessonNavBar ul li.navElement {
+          cursor: pointer;
+          float: left;
+          display: inline;
+          color: white;
+          font-size: 1.2em;
+          font-weight: 100;
+          width: 25%;
+          text-align: center;
+          height: 40px;
+          line-height: 40px; }
+          .lessonNavBarContainer .lessonNavBar ul li.navElement:hover {
+            font-weight: 300; }
 
-/* Nav and Layout */
+  .lessonContentWrapper {
+    background-color: #fff;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0px auto;
+    padding: 24px 32px;
+    position: relative;
+    overflow: auto;
+    width: 980px;
+    z-index: 30;
+    min-height: 800px; }
 
-.lessonContentWrapper {
-	background-color: white;
-	border-radius: 6px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	margin: 12px auto 0px;
-	padding: 41px;
-	position: relative;
-	overflow: auto;
-	width: 980px;
-	z-index: 30;
-}
+    .lessonLeftColumnContainer {
+      float: left;
+      width: 66%; }
 
-.lessonHeader {
-	margin-bottom: 10px;
-	width: 100%;
-	border-bottom: 1px dotted #f0f0f0;;
-	padding-bottom: 12px;
-	float: left;
-}
+      .lessonLeftColumn {
+        padding-right: 24px; }
 
-.lessonFooter {
-	margin-top: 10px;
-	width: 100%;
-	border-top: 1px dotted #f0f0f0;
-	padding-top: 12px;
-	float: left;
-}
+        .lessonRightColumnContainer {
+          float: right;
+          width: 33%; }
 
-.lessonHeaderTitle {
-	color: black;
-	width: 75%;
-	float: left;
-	font-size: 1.8em;
-}
+          .lessonRightColumn {
+            padding-left: 32px; }
+            .lessonRightColumn .lessonMentorBox {
+              float: left;
+              width: 100%;
+              margin-bottom: 24px; }
+              .lessonRightColumn .lessonMentorBox .mentorPhotoContainer {
+                float: left;
+                padding: 0px 24px 0px 12px;
+                position: relative; }
+                .lessonRightColumn .lessonMentorBox .mentorPhotoContainer .mentorPhotoWrapper {
+                  width: 100px;
+                  height: 100px;
+                  overflow: hidden; }
+                  .lessonRightColumn .lessonMentorBox .mentorPhotoContainer .mentorPhoto {
+                    width: 100px;
+                    height: 100px;
+                    background-repeat: no-repeat center;
+                    background-size: cover;
+                    border-radius: 50%;
+                    -webkit-border-radius: 50%;
+                    -moz-border-radius: 50%;
+                    -moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+                    -webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2); }
+              .lessonRightColumn .lessonMentorBox .mentorInfo {
+                float: left; }
+                .lessonRightColumn .lessonMentorBox .mentorInfo .mentorName {
+                  color: rgba(0, 0, 0, 0.6);
+                  font-weight: 700;
+                  font-size: 1.1em;
+                  margin-bottom: 4px; }
+                  .lessonRightColumn .lessonMentorBox .mentorInfo .mentorHeadline {
+                    font-size: 0.9em;
+                    font-weight: 300; }
+                    .lessonRightColumn .lessonMentorBox .mentorInfo .mentorLocation {
+                      font-size: 0.9em;
+                      font-weight: 300; }
+            .lessonRightColumn .lessonButtons {
+              float: left;
+              width: 100%; }
+              .lessonRightColumn .lessonButtons button {
+                margin: 12px 0px; }
+            .lessonRightColumn .lessonMapContainer {
+              width: 100%;
+              overflow: hidden; }
 
-.lessonHeaderLeft {
+  .lessonTitleBox {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0; }
+    .lessonTitleBox .lessonTitle {
+      float: left;
+      width: 80%; }
+      .lessonTitleBox .lessonRate {
+        width: 20%;
+        float: right;
+        text-align: right; }
+        .lessonTitleBox .lessonRate .rateAmount {
+          color: rgba(0, 0, 0, 0.8);
+          font-size: 1.6em;
+          font-weight: 700; }
+          .lessonTitleBox .lessonRate .rateInfo {
+            font-size: 0.8em; }
+    .lessonTitleBox .lessonState {
+      font-size: 0.9em; }
+      .lessonTitleBox .lessonRating {
+        font-size: 0.9em; }
+        .lessonTitleBox .lessonRating .ratingStars {
+          padding-left: 6px;
+          color: #f5b889; }
+
+  .lessonDescBox {
+    padding: 12px 0px;
+    border-bottom: 1px solid #f0f0f0; }
+    .lessonDescBox .lessonDescBody {
+      margin-bottom: 18px; }
+      .lessonDescBox .lessonDescBody ul {
+        list-style-type: disc;
+        margin-left: 20px; }
+
+  .lessonReviewsBox {
     float: left;
-	width: 25%;
-}
+    padding: 12px 0px; }
+    .lessonReviewsBox .lessonReview {
+      float: left;
+      width: 100%;
+      padding: 18px 0px;
+      border-bottom: 1px dotted rgba(0, 0, 0, 0.05); }
+      .lessonReviewsBox .lessonReview:last-of-type {
+        border-bottom: none; }
+        .lessonReviewsBox .lessonReview .reviewerPhotoContainer {
+          float: left;
+          padding: 0px 24px 0px 12px;
+          position: relative; }
+          .lessonReviewsBox .lessonReview .reviewerPhotoContainer .reviewerPhoto {
+            width: 80px;
+            height: 80px;
+            background-repeat: no-repeat center;
+            background-size: cover;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            -moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+            -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2); }
+      .lessonReviewsBox .lessonReview .reviewerInfo {
+        float: right;
+        width: 80%; }
+        .lessonReviewsBox .lessonReview .reviewerInfo .reviewerName {
+          float: left;
+          width: 50%;
+          font-weight: 400;
+          font-size: 1em;
+          margin-bottom: 4px; }
+          .lessonReviewsBox .lessonReview .reviewerInfo .reviewerDate {
+            float: right;
+            width: 50%;
+            text-align: right;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 0.7em;
+            color: rgba(0, 0, 0, 0.4); }
+            .lessonReviewsBox .lessonReview .reviewerInfo .reviewerComment {
+              float: left;
+              width: 100%;
+              font-size: 0.8em;
+              font-weight: 300; }
 
-.lessonHeaderCenter {
-	float: left;
-	width: 75%;
-}
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 6px; }
 
-.lessonHeaderRight {
-	float: right;
-	width: 25%;
-}
+    h2 {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.8);
+      margin-bottom: 12px; }
 
-.lessonTopLeftNavigation {
-	font-size: 1.1em;
-}
+      h3 {
+        font-size: 1em;
+        font-weight: 700;
+        color: rgba(0, 0, 0, 0.8);
+        margin-bottom: 12px; }
 
-.lessonTopLeftNavigation .navItem {
-	cursor: pointer;
-	padding-right: 36px;
+        .portfolioImageContainer {
+          float: left;
+          margin-top: 8px;
+          width: 100%; }
 
-}
+          .portfolioImageWrapper {
+            float: left;
+            padding: 4px;
+            width: 33%; }
 
-.lessonTopLeftNavigation i {
-	font-size: .9em;
-}
+            .portfolioImage {
+              border: 1px solid #e2e4e6;
+              border-radius: 3px;
+              -moz-box-sizing: border-box;
+              -webkit-box-sizing: border-box;
+              box-sizing: border-box;
+              display: block;
+              float: left;
+              width: 100%; }
 
-.lessonLeftColumn {
-    float: left;
-	width: 25%;
-}
-
-.lessonCenterColumn {
-    float: left;
-	width: 50%;
-}
-
-.lessonRightColumn {
-	float: right;
-	width: 25%;
-}
-
-
-
-.lessonContainer {
-	width: 100%;
-	float: left;
-}
-
-
-/* Content */
-
-.lessonTitle {
-	font-size: 1.6em;
-	font-weight: bold;
-}
-
-.lessonDescription {
-	font-size: 1em;
-}
-
-
-.portfolioImageContainer {
-	float: left;
-	margin-top: 8px;
-	width: 100%;
-}
-
-.portfolioImageWrapper {
-	float: left;
-	padding: 4px;
-	width: 33%;
-}
-
-.portfolioImage {
-	border: 1px solid rgb(226, 228, 230);
-	border-radius: 3px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	display: block;
-	float: left;
-	/* height: 200px; */
-	/* margin-right: 11px; */
-	/*margin-bottom: 11px;*/
-	width: 100%;
-}
-
-.portfolioImageCaption {
-	float: left;
-	width: 100%;
-	text-align: center;
-	font-size: .8em;
-}
-
-
-
-/* Messaging Component */
-
-.lessonReplyContainer {
-	float: left;
-	width: 100%;
-}
-
-textarea.lessonReplyBody {
-	resize: none;
-	float: left;
-	width: 100%;
-	margin-bottom: 20px;
-}
-
-.lessonReplySendButton {
-	width: 250px;
-	margin: 0px auto;
-}
-
-.lessonReplyStatus{
-	display: none;
-	font-weight: bold;
-	font-size: 1.2em;
-	width: 100%;
-	text-align: center;
-	padding: 10px 0px;
-	float: left;
-}
+              .portfolioImageCaption {
+                float: left;
+                width: 100%;
+                text-align: center;
+                font-size: 0.8em; }

@@ -599,7 +599,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		print "render_new_lesson: invalid form imported"
 		
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
 
 
 
@@ -660,7 +660,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	# lessonUpdated = lesson.lesson_updated
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
@@ -870,11 +870,16 @@ def render_lesson_page(lesson_id):
 	try:
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
-		print "render_lesson_page(): Lesson String:", str(lesson)
+		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+
+		print "render_lesson_page(): mentor:", mentor
+		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
 		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
+
+		
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor))
 
 
 
@@ -1293,6 +1298,7 @@ def ht_get_serialized_images_for_lesson(lesson_id):
 	# json_serialize all images assoicated with the lesson.
 	images = LessonImageMap.get_images_for_lesson(lesson_id)
 	return [img.serialize for img in images]
+
 
 
 

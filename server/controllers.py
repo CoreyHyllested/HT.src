@@ -544,13 +544,10 @@ def ht_create_lesson(profile):
 def htdb_get_lesson_images(lesson_id):
 	try:
 		lesson_images	= db_session.query(LessonImageMap)								\
-									.filter(LessonImageMap.map_lesson == lesson_id).all()
+									.filter(LessonImageMap.map_lesson == lesson_id).order_by(LessonImageMap.map_order).all()
 	except Exception as e:
 		print type(e), e
 	return lesson_images
-
-
-
 
 def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();

@@ -1,0 +1,505 @@
+
+@import 'colors';
+@import 'fonts';
+
+/*
+Saving for later
+
+&:before {
+	content: "";
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 80px;
+	-webkit-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.2);
+	-moz-box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+	display: block;
+}
+*/
+
+/* Nav and Layout */
+
+.pageWrapper {
+	font-family: $font-family-primary-alt;
+	background: $white;
+	min-height: 100%;
+	padding-bottom: 50px;		
+	width: 100%;
+}
+
+.galleria-theme-classic {
+	.galleria-stage {
+	    position: absolute;
+	    top: 0px !important;
+	    bottom: 60px;
+	    left: 0px !important;
+	    right: 0px !important;
+	    overflow:hidden;
+	}
+/*
+	TO ENLARGE THE THUMBNAILS
+	.galleria-thumbnails-container {
+		height: 70px !important; 
+	}
+	.galleria-thumbnails .galleria-image {
+		height: 60px !important; 
+	}
+	.galleria-thumb-nav-left, .galleria-thumb-nav-right { 
+		top: 10px !important;
+	}
+*/
+	.galleria-image {
+		cursor: pointer;
+	}
+
+	.galleria-info {
+		width: 33%;
+	}
+	.galleria-info-text {
+		background-color: rgba(0, 0, 0, 0.3) !important;
+		
+	}
+/*
+	.galleria-info-link,
+	.galleria-info-close {
+	  display: none !important;
+	}*/
+}
+
+
+.lessonCoverContainer {
+	position: relative;
+	min-width: 100%;      
+	width: 100% !important;
+	height: 550px;
+	background: #000;
+
+	.lessonCoverDefault {
+		position: absolute;
+		top: 0;
+		left: 0;
+		min-width: 100%;      
+		width: 100% !important;
+		height: 550px; /* container height */
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		display: block;
+		overflow-x: hidden;
+	}
+
+	.lessonCoverTemp {
+		position: absolute;
+		top: 0;
+		left: 0;
+		min-width: 100%;      
+		width: 100% !important;
+		height: 500px; /* container - 50px */
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		display: block;
+		overflow-x: hidden;
+
+		.overlay {
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: rgba(0,0,0,.5);
+			width: 100%;
+			height: 100%;
+			z-index: 10;
+		}
+
+		.lessonCoverLoading {
+			width: 100%;
+			position: absolute;
+			top: 50%;
+			margin: 0px auto;
+			text-align: center;
+			font-size: 1.6em;
+			color: #fff;
+			z-index: 11;
+			i {
+				margin-right: 12px;
+			}
+		}	
+	}
+
+	.lessonCover {
+		opacity: 0;
+		display: block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		min-width: 100%;      
+		width: 100% !important;
+		text-align: center;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+
+		overflow-x: hidden;
+		float: none; 
+		height: 550px; /* Same height as container */
+		z-index: 12;
+
+
+	}
+}
+
+.lessonNavBarContainer {
+	/*margin-bottom: 10px;*/
+	width: 100%;
+	background-color: $red;
+	height: 40px;
+
+	.lessonNavBar {
+		margin: 0px auto;
+		width: 980px;
+		height: 40px;
+
+		ul {
+			list-style-type: none;
+
+			li.navElement {
+				cursor: pointer;
+				float: left;
+				display: inline;
+				color: white;
+				font-size: 1.2em;
+				font-weight: $font-weight-xlight;
+				width: 25%;
+				text-align: center;
+				height: 40px;
+				line-height: 40px;
+
+				&:hover {
+					font-weight: $font-weight-light;
+				}
+			}
+
+		}
+
+	}
+}
+
+
+
+.lessonContentWrapper {
+	background-color: $white;
+	/*border-radius: 6px;*/
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0px auto;
+	padding: 24px 32px;	
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	z-index: 30;
+	min-height: 800px;
+}
+
+
+.lessonLeftColumnContainer {
+	float: left;
+	width: 66%;
+}
+
+.lessonLeftColumn {
+	padding-right: 24px;
+}
+
+.lessonRightColumnContainer {
+	float: right;
+	width: 33%;
+}
+
+.lessonRightColumn {
+	padding-left: 32px;
+
+	.lessonMentorBox {
+
+		float: left;
+		width: 100%;
+		margin-bottom: 24px;
+
+		.mentorPhotoContainer {
+			float: left;
+			/*width: 50%;*/
+			padding: 0px 24px 0px 12px;	
+			position: relative;
+
+			.mentorPhotoWrapper {
+
+/*	            transform: rotate(45deg);
+	            -webkit-transform: rotate(45deg);
+	            -moz-transform: rotate(45deg);
+	            -o-transform: rotate(45deg);*/
+	            width:100px;
+	            height:100px;
+	            overflow:hidden;
+	        }
+	        .mentorPhoto{
+
+	            width:100px;
+	            height:100px;
+	            background-repeat: no-repeat center;
+				background-size: cover;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				-moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+				-webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+				box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);				
+
+	        }
+
+		}		
+
+		.mentorInfo {
+			float: left;
+			/*width: 50%;*/
+			.mentorName {
+				color: rgba(0,0,0,.6);
+				font-weight: $font-weight-bold;
+				font-size: 1.1em;
+				/*margin-top: 12px;*/
+				margin-bottom: 4px;
+			}
+			.mentorHeadline {
+				font-size: .9em;
+				font-weight: $font-weight-light;
+			}
+			.mentorLocation {
+				font-size: .9em;
+				font-weight: $font-weight-light;
+			}
+
+		}
+
+	}
+
+	.lessonButtons {
+		float: left;
+		width: 100%;
+		
+		button {
+			margin: 12px 0px;
+		}
+	}
+	.lessonMapContainer {
+		width: 100%;
+		overflow: hidden;
+		.lessonMap {
+
+		}
+	}
+
+
+}
+
+/* Title Box */
+
+.lessonTitleBox {
+
+	padding-bottom: 12px;
+	border-bottom: 1px solid $cloudy-gray;
+
+	.lessonTitle {
+		float: left;
+		width: 80%;
+	}
+
+	.lessonRate {
+		width: 20%;
+		float: right;
+		text-align: right;
+		
+		.rateAmount {
+			color: rgba(0,0,0,.8);
+			font-size: 1.6em;
+			font-weight: $font-weight-bold;
+		}
+		.rateInfo {
+			font-size: .8em;
+		}
+
+	}
+
+	.lessonState {
+		font-size: 0.9em;
+	}
+
+	.lessonRating {
+		font-size: 0.9em;
+		.ratingStars {
+			padding-left: 6px;
+			color: $orange-brighter;
+		}
+	}
+
+}
+
+.lessonDescBox {
+
+	padding: 12px 0px;
+	border-bottom: 1px solid $cloudy-gray;
+
+	.lessonDescHeader {
+
+	}
+	.lessonDescBody {
+		margin-bottom: 18px;
+
+		ul {
+			list-style-type: disc;
+			margin-left: 20px;
+			li {
+
+			}
+
+		}
+
+	}
+}
+
+.lessonReviewsBox {
+	float: left;
+	padding: 12px 0px;
+	/*border-bottom: 1px solid $cloudy-gray;*/
+
+	.lessonReviewsHeader {
+
+	}
+	.lessonReview {
+		float: left;
+		width: 100%;
+		padding: 18px 0px;
+		border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+
+		&:last-of-type {
+			border-bottom: none;
+		}
+
+		.reviewerPhotoContainer {
+			float: left;
+			padding: 0px 24px 0px 12px;	
+			position: relative;
+
+	        .reviewerPhoto{
+	            width:80px;
+	            height:80px;
+	            background-repeat: no-repeat center;
+				background-size: cover;
+				border-radius: 50%;
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				-moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);  
+				-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);  
+				box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);				
+
+	        }
+	    }
+
+		.reviewerInfo {
+			float: right;
+			width: 80%;
+			.reviewerName {
+				float: left;
+				width: 50%;
+				font-weight: $font-weight-normal;
+				font-size: 1em;
+				margin-bottom: 4px;
+			}			
+			.reviewerDate {
+				float: right;
+				width: 50%;
+				text-align: right;
+				font-weight: $font-weight-light;
+				font-style: italic;
+				font-size: .7em;
+				color: rgba(0,0,0,.4);
+			}
+
+			.reviewerComment {
+				float: left;
+				width: 100%;
+				font-size: .8em;
+				font-weight: $font-weight-light;
+			}
+
+		}		
+
+
+
+
+
+	}
+}
+
+/* Elements */
+
+h1 {
+	font-size: 2em;
+	font-weight: $font-weight-bold;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 6px; 
+}
+
+h2 {
+	font-size: 1.2em;
+	font-weight: $font-weight-bold;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 12px; 	
+}
+
+h3 {
+	font-size: 1em;
+	font-weight: $font-weight-bold;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 12px; 	
+}
+
+
+
+
+
+/* Portfolio Images */
+
+.portfolioImageContainer {
+	float: left;
+	margin-top: 8px;
+	width: 100%;
+}
+
+.portfolioImageWrapper {
+	float: left;
+	padding: 4px;
+	width: 33%;
+}
+
+.portfolioImage {
+	border: 1px solid rgb(226, 228, 230);
+	border-radius: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	/* height: 200px; */
+	/* margin-right: 11px; */
+	/*margin-bottom: 11px;*/
+	width: 100%;
+}
+
+.portfolioImageCaption {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-size: .8em;
+}
+

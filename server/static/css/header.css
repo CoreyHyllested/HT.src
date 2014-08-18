@@ -64,6 +64,7 @@ New muted blues for links:
 	-webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 	-moz-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+	z-index: 1;
 }
 
 .headerContentWrapper {

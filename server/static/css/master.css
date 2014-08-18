@@ -174,6 +174,72 @@ label {
 
 /* Buttons */
 
+.button {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	background-color: #1488CC;
+	border: 1px #1488CC solid;
+  	-webkit-border-radius: 3px;
+  	border-radius: 3px;
+	color: white;
+	cursor: pointer;
+	display: table-cell;
+	font-size: 0.9em;
+	height: 35px;
+	text-align: center;
+	-moz-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	-webkit-transition: 0.5 ease;
+	transition: 0.5s ease;		
+	vertical-align: middle;
+	width: 100%;	
+}
+.button:hover {
+	border: 1px solid #7dc7f2;
+	background-color: #7dc7f2;
+	text-decoration: none;
+}
+
+.button.orange {
+	background-color: hsla(26, 85%, 55%, 1);
+	border: 1px solid hsla(26, 85%, 55%, 1);
+}
+.button.orange:hover {
+	background-color: hsla(26, 85%, 55%, 1);
+	border: 1px solid hsla(26, 85%, 55%, 1);
+}
+.button.orange.light {
+	background-color: white;
+	border: 1px solid hsla(26, 85%, 55%, 1);
+	color: hsla(26, 85%, 55%, 1);
+}
+.button.orange.light:hover {
+	background-color: white;
+	border: 1px solid hsla(26, 85%, 45%, 1);
+	color: hsla(26, 85%, 45%, 1);
+}
+
+.button.teal {
+	background-color: hsla(180, 30%, 50%, 1);
+	border: 1px solid hsla(180, 30%, 50%, 1);
+}
+.button.teal:hover {
+	background-color: hsla(180, 30%, 27%, 1);
+	border: 1px solid hsla(180, 30%, 27%, 1);
+}
+.button.teal.light {
+	background-color: white;
+	border: 1px solid hsla(180, 30%, 50%, 1);
+	color: hsla(180, 30%, 50%, 1);
+}
+.button.teal.light:hover {
+	background-color: white;
+	border: 1px solid hsla(180, 30%, 27%, 1);
+	color: hsla(180, 30%, 27%, 1);
+}
+
+
 .blueButton {
 	-moz-appearance: none;
 	-o-appearance: none;
@@ -202,6 +268,7 @@ label {
 	background-color: #7dc7f2;
 	text-decoration: none;
 }
+
 
 .messageButton {
 	-moz-appearance: none;
