@@ -567,7 +567,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
 		print "render_new_lesson: no form submitted"
-		
+
+
 		# In case the user went back in their browser to this page, after submitting
 		form = LessonForm(request.form)
 		form.lessonTitle.data = lesson.lesson_title
@@ -867,18 +868,28 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
+
+
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+
+		x = 0
+		print "render_lesson_page(): getting industry"
+		for x in range(len(Industry.industries)):
+			if (x == int(lesson.lesson_industry)):
+				industry = str(Industry.industries[x])
+				print "render_lesson_page(): industry is ", industry
+				break
 
 		print "render_lesson_page(): mentor:", mentor
 		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
-		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+		return redirect(url_for('insprite.render_dashboard', messages='Sorry, We encountered an error loading that lesson.'))
 
 		
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry))
 
 
 

@@ -282,7 +282,10 @@ Saving for later
 		}
 
 	}
-
+	.lessonState {
+		float: left;
+		font-size: 0.9em;
+	}
 	.lessonButtons {
 		float: left;
 		width: 100%;
@@ -292,6 +295,7 @@ Saving for later
 		}
 	}
 	.lessonMapContainer {
+		float: left;
 		width: 100%;
 		overflow: hidden;
 		.lessonMap {
@@ -330,7 +334,7 @@ Saving for later
 
 	}
 
-	.lessonState {
+	.lessonCategory {
 		font-size: 0.9em;
 	}
 

@@ -152,7 +152,7 @@ class LessonForm(Form):
 	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
-	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
+	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 	lessonMakeLive = BooleanField('Make this lesson live and public!', None)

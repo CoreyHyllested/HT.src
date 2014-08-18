@@ -38,10 +38,6 @@ def render_landingpage():
 @ht_csrf.exempt
 @insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
-	""" Provides users ability to modify their information.
-		- Pre-fill all fields with prior information.
-		- Ensure all necessary fields are still populated when submit is hit.
-	"""
 
 	bp = None 
 	if (session.get('uid') is not None):

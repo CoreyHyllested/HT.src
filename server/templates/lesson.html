@@ -64,12 +64,15 @@
 
 			<div class="lessonTitleBox">
 				<div class="lessonTitle"><h1>{{lesson.lesson_title}}</h1></div>
-				<div class="lessonRate"><div class="rateAmount">$100</div><div class="rateInfo">per hour</div></div>
+				<div class="lessonRate"><div class="rateAmount">${{lesson.lesson_rate}}</div>
+				<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div></div>
 				<div class="lessonRating">
 					Average Rating: <span class="ratingStars"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i></span>
 				</div>				
-				<div class="lessonState">
-				</div>
+				<div class="lessonCategory">
+					Category: {{industry}}
+				</div>				
+
 			</div>
 
 			<div id="overview" class="lessonDescBox">
@@ -80,8 +83,7 @@
 				<div class="lessonDescHeader"><h2>Rates</h2></div>			
 				<div class="lessonDescBody">
 					<ul>
-					<li>Individuals: $100/hour</li>
-					<li>Groups: $50/hour per person, up to 4 people</li>
+					<li>Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
 					</ul>
 				</div>
 			</div>
@@ -97,8 +99,9 @@
 					</ul>
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
-				<div class="lessonDescBody">				
-				Lessons will last 2 hours
+				<div class="lessonDescBody">
+				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration()}} {% else %}Flexible - no set duration{% endif %}				
+				
 				</div>				
 			</div>
 
@@ -181,9 +184,17 @@
 					</div>
 				</div>
 			</div>
+			{% if bp.prof_id == mentor.prof_id %}
+				<div class="lessonState">Lesson Status: {{ lesson.get_state() }}
+				</div>
+			{% endif %}
 			<div class="lessonButtons">
-				<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
-				<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
+				{% if bp.prof_id == mentor.prof_id %}
+					<a href="/lesson/edit/{{lesson.lesson_id}}"><button class="button teal">Edit Lesson</button></a>
+				{% else %}
+					<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
+					<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
+				{% endif %}
 			</div>
 			
 			<div class="lessonMapContainer">
@@ -266,6 +277,8 @@ if ($(".galleria").length) {
 $(document).ready(function() {
 	// google.maps.event.addDomListener(window, 'load', initialize);
 
+	// generateStatus({{lesson.lesson_flags}});
+
 	$(document).on('click', '.lessonImageThumb', function() {
 		var target = $(this).data("image");
 		console.log("clicked on image:"+target);
@@ -293,8 +306,34 @@ $(document).ready(function() {
         }, 600);
 	});	
 
+
+
 });
 
+// function generateStatus(lesson_flags) {
+
+// 	var statusText = "Lesson Status: ";
+
+// 	switch (parseInt(lesson_flags)) {
+// 		case 0:
+// 			statusText += "Incomplete";
+// 			break;
+// 		case 1:
+// 			statusText += "Saved but not submitted";
+// 			break;		
+// 		case 2:
+// 			statusText += "Submitted and awaiting approval";
+// 			break;		
+// 		case 3:
+// 			statusText += "Approved and public";
+// 			break;
+// 		default:
+// 			statusText += "Unknown";
+// 			break;
+// 	}
+
+// 	$(".lessonState").text(statusText).show();
+// }
 </script>
 
 {% endblock %}
