@@ -322,6 +322,8 @@ function getLessonData(lesson_id) {
 
 	$(".lessonReviewTitle").text($("#lessonTitle").val());
 	$(".lessonReviewDescription").text($("#lessonDescription").val());
+	$(".lessonReviewMaterialsProvided").text($("#lessonMaterialsProvided").val());
+	$(".lessonReviewMaterialsNeeded").text($("#lessonMaterialsNeeded").val());
 	$(".lessonReviewIndustry").text($("#lessonIndustry option:selected").text());
 	$(".lessonReviewSchedule").text($("#lessonAvail").val());
 	$(".lessonReviewDuration").text($("#lessonDuration option:selected").text());
@@ -420,7 +422,7 @@ function saveLessonForm(lesson_id) {
 
 			 	console.log("Flags: "+response.lesson_flags);
 
-			 	generateStatus(response.lesson_flags);
+			 	generateStatus(lesson_id, response.lesson_flags);
 			 	showErrors();
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();

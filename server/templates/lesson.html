@@ -67,7 +67,16 @@
 				<div class="lessonRate"><div class="rateAmount">${{lesson.lesson_rate}}</div>
 				<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div></div>
 				<div class="lessonRating">
-					Average Rating: <span class="ratingStars"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i></span>
+
+					{% if mentor.reviews == 0 %}
+						<!-- Placeholder -->
+						Mentor Rating: <span class="ratingStars"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">(2 Reviews)</a>
+					{% else %}
+						Mentor Rating: <span class="ratingStars"></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">({{mentor.reviews}} Review{% if mentor.reviews > 1 %}s{% endif %})</a>
+					{% endif %}
+
+
+					
 				</div>				
 				<div class="lessonCategory">
 					Category: {{industry}}
@@ -107,23 +116,47 @@
 
 			<div id="materials" class="lessonDescBox">
 				<div class="lessonDescHeader"><h2>Materials</h2></div>			
-				<div class="lessonDescBody">				
-				<h3>The mentor will provide...</h3>
-					<ul>
-					<li>All Ingredients</li>
-					<li>Cooking Utensils</li>
-					<li>Cast Iron Skillets</li>
-					</ul>
-				<br>
-				<h3>The student should bring...</h3>
-					<ul>
-					<li>A healthy appetite</li>
-					</ul>
+				<div class="lessonDescBody">
+				{% if (lesson.lesson_materials_provided == '' and lesson.lesson_materials_needed == '') %}
+					No materials needed or provided
+				{% else %}
+					{% if lesson.lesson_materials_provided %}				
+					<h3>The mentor will provide...</h3>
+						{{lesson.lesson_materials_provided}}
+					<br><br>
+					{% endif %}
+					{% if lesson.lesson_materials_needed %}	
+					<h3>The student should bring...</h3>
+						{{lesson.lesson_materials_needed}}
+					
+					{% endif %}
+				{% endif %}
 				</div>
 			</div>
 
 			<div id="reviews" class="lessonReviewsBox">
-				<div class="lessonReviewsHeader"><h2>Reviews</h2></div>			
+				<div class="lessonReviewsHeader"><h2>Reviews of {{mentor.prof_name}}</h2></div>	
+
+				{% for review in reviews %}
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							{{review.display.prof_name}}
+						</div>							
+						<div class="reviewerDate">
+							Took this lesson on Jan 1, 1970
+						</div>				
+						<div class="reviewerComment">
+							{{review.Review.generalcomments}}
+						</div>				
+					</div>		
+				</div>
+				{% endfor %}
+
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
 						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
@@ -137,10 +170,11 @@
 							Took this lesson on June 4, 2014
 						</div>				
 						<div class="reviewerComment">
-							Ryan is a fine young man, but I take slight offense to his hippie-like appearance. It made me feel like I was at Woodstock.
+							This person was a fine mentor, but I take slight offense to their slovenly appearance. It made me feel like I was at Woodstock.
 						</div>				
 					</div>		
 				</div>
+
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
 						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
@@ -154,11 +188,16 @@
 							Took this lesson on May 14, 2014
 						</div>					
 						<div class="reviewerComment">
-							His technique is inspiring, his hairdo alluring. Book with confidence.
+							This person's technique is inspiring. Book with confidence.
 						</div>				
 					</div>		
 				</div>
-	
+				
+
+
+
+
+
 			</div>
 
 		</div>
@@ -279,11 +318,19 @@ $(document).ready(function() {
 
 	// generateStatus({{lesson.lesson_flags}});
 
+	if ({{mentor.rating}} > 0) {
+		displayStars({{mentor.rating}});
+	} else {
+		// Placeholder default if no rating
+		$(".ratingStars").html('<i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star-half-o"></i><i class="fa fa-fw fa-star-o"></i>');
+	}
+
 	$(document).on('click', '.lessonImageThumb', function() {
 		var target = $(this).data("image");
 		console.log("clicked on image:"+target);
 
-	});
+	});	
+
 
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();
@@ -309,6 +356,27 @@ $(document).ready(function() {
 
 
 });
+
+function displayStars(rating){
+
+	var rounded = (Math.round(rating * 2) / 2).toFixed(1);
+	var count = 0;
+	for (i=0; i<rounded; i++){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star"></i>');
+		count++;
+	}
+
+	if (rounded % 2 != 0){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star-half-o"></i>');
+		count++;
+	}
+
+	for (j=0; j<(5-count); j++){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star-o"></i>');
+	}
+
+}
+
 
 // function generateStatus(lesson_flags) {
 

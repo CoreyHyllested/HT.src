@@ -278,6 +278,18 @@
 	margin-bottom: 6px;
 }
 
+.formFieldInfo {
+	color: rgba(0,0,0,0.4);
+	font-size: .9em;
+	padding-bottom: 6px;
+	padding-top: 20px;
+}
+
+.formFieldInfo.first {
+	padding-top: 0px;
+		
+}
+
 .formFieldCaption {
 	font-size: .9em;
 	margin-left: 8px;

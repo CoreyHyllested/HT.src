@@ -84,10 +84,6 @@
 				<div class="profileReviewBox">
 					<div class="profileReviewLeft">
 						<div class="profileReviewImageWrap">
-							<!-- Social Media icon. -->
-							{% if loop.index == 1 %}
-							<div class="profileReviewImageFacebook"></div>
-							{% endif %}
 							<a href="/profile?hero={{review.display.prof_id}}">
 								<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
 							</a>
@@ -198,18 +194,15 @@
 			<h1 id="profilePriceBoxRate">{{hp.prof_rate}}</h1>
 			<div class="perHour">per<br>hour</div>
 		</div>
-		{% if hp is sameas bp %}
-			<a href="/profile/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
-		{% else %}
+		
+		{% if hp is not sameas bp %}
 
 		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
 
-		<form method="link" action="/schedule" method="POST">
-			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton scheduleMtgButton" value="Schedule Meeting...">
-		</form>
+		<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
 
 		{% endif %}
+
 		<div class="profileBasicInfo">
 				<!-- <div class="profileInfoBox profileInfoFacebookSocial"><img src="/static/img/facebook_thumbnails.jpg"></div> -->
 				<div class="profileInfoBox profileInfoLocation">{{hp.location}}</div>

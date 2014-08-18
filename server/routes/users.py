@@ -586,6 +586,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
 		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed		
 		form.lessonMakeLive.data = 'y'
 
 		if (form.lessonRate.data <= 0):
@@ -641,6 +643,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonPlace.data = lesson.lesson_loc_option
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed
 		form.lessonAvail.data = lesson.lesson_avail
 		form.lessonMakeLive.data = 'y'
 
@@ -837,6 +841,16 @@ def ht_update_lesson(lesson, form, saved):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+	if (lesson.lesson_materials_provided != form.lessonMaterialsProvided.data):
+		print '\tUpdate lesson_materials_provided (' + str(lesson.lesson_materials_provided) + ') => ' + str(form.lessonMaterialsProvided.data)
+		lesson.lesson_materials_provided = form.lessonMaterialsProvided.data
+		update = True
+
+	if (lesson.lesson_materials_needed != form.lessonMaterialsNeeded.data):
+		print '\tUpdate lesson_materials_needed (' + str(lesson.lesson_materials_needed) + ') => ' + str(form.lessonMaterialsNeeded.data)
+		lesson.lesson_materials_needed = form.lessonMaterialsNeeded.data
+		update = True
+
 	# If user pressed 'save', we already took care of state when validating.
 	if (saved != "true"): 
 		lesson_state = lesson.get_state()
@@ -873,6 +887,7 @@ def render_lesson_page(lesson_id):
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+		reviews = htdb_get_composite_reviews(mentor)
 
 		x = 0
 		print "render_lesson_page(): getting industry"
@@ -886,10 +901,11 @@ def render_lesson_page(lesson_id):
 		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
-		return redirect(url_for('insprite.render_dashboard', messages='Sorry, We encountered an error loading that lesson.'))
+		return redirect(url_for('insprite.render_dashboard', usrmsg='Sorry, We encountered an error loading that lesson.'))
 
-		
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry))
+	lesson_reviews = ht_filter_composite_reviews(reviews, 'REVIEWED', mentor, dump=False)
+	show_reviews = ht_filter_composite_reviews(lesson_reviews, 'VISIBLE', None, dump=False)
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews))
 
 
 

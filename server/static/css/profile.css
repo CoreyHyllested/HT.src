@@ -157,6 +157,7 @@ h3 {color: black;}
 	border-top: 1px solid #b5b6b8;
 	margin: 20px 0px;
 	width: 100%;
+	float: right;
 }
 
 .profileInfoBox {

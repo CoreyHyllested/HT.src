@@ -58,8 +58,9 @@
 				<ul class="lessonNavList">
 					<div class="lessonNavItem active" data-target-page="overview" data-default-icon="fa-star-o">Overview<i class="fa fa-fw fa-star-o"></i></div>
 					<div class="lessonNavItem" data-target-page="where" data-default-icon="fa-star-o">Where<i class="fa fa-fw fa-star-o"></i></div>
-					<div class="lessonNavItem" data-target-page="when" data-default-icon="fa-star-o">When<i class="fa fa-fw fa-star-o"></i></div>
-					<div class="lessonNavItem" data-target-page="rate" data-default-icon="fa-star-o">Rate<i class="fa fa-fw fa-star-o"></i></div>
+					<!-- <div class="lessonNavItem" data-target-page="when" data-default-icon="fa-star-o">When<i class="fa fa-fw fa-star-o"></i></div> -->
+					<div class="lessonNavItem" data-target-page="rate" data-default-icon="fa-star-o">Rate and Duration<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="materials" data-default-icon="fa-star-o">Materials<i class="fa fa-fw fa-star-o"></i></div>
 					<div class="lessonNavItem" data-target-page="add_photos" data-default-icon="fa-star-o">Add Photos<i class="fa fa-fw fa-star-o"></i></div>
 					<div class="lessonNavItem" data-target-page="edit_photos" data-default-icon="fa-star-o">Edit Photos<i class="fa fa-fw fa-star-o"></i></div>
 					<div class="lessonNavItem" data-target-page="review" data-default-icon="fa-star-o">Review<i class="fa fa-fw fa-star-o"></i></div>
@@ -83,7 +84,7 @@
 				{% endif %}
 				<div id="overview" class="lessonFormPage">
 					<div class="formElement">
-						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
+						<div class="formFieldInfo first">What lesson or instruction do you want to offer?</div>
 
 						{% if form.lessonTitle.errors %}
         					<div class="formFieldErrors">{% for error in form.lessonTitle.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
@@ -96,18 +97,16 @@
     					{% endif %}
 						{{form.lessonDescription(id="lessonDescription", class="formField span12", placeholder="Please describe what the student should expect -- e.g. general lesson plan, what you'll cover, etc.")}}
 
-
-
-					</div>
-					<div class="formElement">
-						<div class="formInstruction">Which category best describes your lesson?</div>
+						<div class="formFieldInfo">Which category best describes your lesson?</div>
 						{{form.lessonIndustry(class="formfield span3")}}
 					</div>
+
 
 					<div class="lessonFormButtonContainer">
 						<button class="blueButton lessonFormButton" data-current-page="overview">Continue</button>
 					</div>
 				</div>
+
 
 				<div id="where" class="lessonFormPage">
 					<div class="formElement">
@@ -139,30 +138,13 @@
 
 
 
-				<div id="when" class="lessonFormPage">
-					<div class="formElement">
-						<div class="formInstruction">When are you available for these lessons?</div>
-						
-						{% for subfield in form.lessonAvail %}
-							<div class="formField formChoice span12">
-							{{ subfield }} {{ subfield.label }}
-							</div>
- 						{% endfor %}						
-
-					</div>
-					<div class="formElement">
-						<div class="formInstruction">How long will each lesson last?</div>
-						{{form.lessonDuration(class="formField span3")}}
-					</div>
-					<div class="lessonFormButtonContainer">
-						<button class="blueButton lessonFormButton" data-current-page="when">Continue</button>
-					</div>					
-				</div>
 
 				<div id="rate" class="lessonFormPage">
 					<div class="formElement">
-						<div class="formInstruction">How much will you charge?</div>
-						<div class="formDescription">You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
+						<div class="formFieldInfo first">How long will each lesson last?</div>
+						{{form.lessonDuration(class="formField span3")}}
+
+						<div class="formFieldInfo">How much will you charge? You may enter an hourly rate, or a per-lesson rate. Please use whole dollar amounts.</div>
 
 						{% if form.lessonRate.errors %}
         					<div class="formFieldErrors">{% for error in form.lessonRate.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
@@ -176,6 +158,29 @@
 						</div>
 					</div>		
 
+				</div>
+
+				<div id="materials" class="lessonFormPage">
+
+					<div class="formElement">
+						<div class="formFieldInfo first">What materials will you provide?</div>
+
+						{% if form.lessonMaterialsProvided.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonMaterialsProvided.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}						
+						{{form.lessonMaterialsProvided(id="lessonMaterialsProvided", class='formField span12')}}
+
+						<div class="formFieldInfo">What materials should the student bring with them?</div>
+
+						{% if form.lessonMaterialsNeeded.errors %}
+        					<div class="formFieldErrors">{% for error in form.lessonMaterialsNeeded.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
+    					{% endif %}						
+						{{form.lessonMaterialsNeeded(id="lessonMaterialsNeeded", class='formField span12')}}
+
+					</div>
+					<div class="lessonFormButtonContainer">
+						<button class="blueButton lessonFormButton" data-current-page="materials">Continue</button>
+					</div>
 				</div>
 
 				</form>
@@ -257,11 +262,11 @@
 							<div class="lessonReviewDataDetails lessonReviewAddress">
 							</div>
 						</div>						
-						<div class="lessonReviewField">
+<!-- 						<div class="lessonReviewField">
 							<div class="lessonReviewFieldName">Schedule</div>
 							<div class="lessonReviewData lessonReviewAvail">
 							</div>
-						</div>							
+						</div>	 -->						
 						<div class="lessonReviewField">
 							<div class="lessonReviewFieldName">Duration</div>
 							<div class="lessonReviewData lessonReviewDuration">
@@ -270,6 +275,14 @@
 						<div class="lessonReviewField">
 							<div class="lessonReviewFieldName">Rate</div>
 							<div class="lessonReviewData lessonReviewRate"></div>
+						</div>								
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">I will provide</div>
+							<div class="lessonReviewData lessonReviewMaterialsProvided"></div>
+						</div>							
+						<div class="lessonReviewField">
+							<div class="lessonReviewFieldName">Student should bring</div>
+							<div class="lessonReviewData lessonReviewMaterialsNeeded"></div>
 						</div>						
 
 						<div class="lessonReviewField">
