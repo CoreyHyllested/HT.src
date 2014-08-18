@@ -56,7 +56,7 @@ def render_profile(usrmsg=None):
 		else:
 			if (bp == None): 
 				# no hero requested or logged in. go to login
-				return redirect('https://herotime.co/login')	
+				return redirect('/login')	
 			hp = bp
 
 		# replace 'hp' with the actual Hero's Profile.

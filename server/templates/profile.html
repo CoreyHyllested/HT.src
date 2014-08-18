@@ -186,9 +186,6 @@
 			<h1 id="profilePriceBoxRate">{{hp.prof_rate}}</h1>
 			<div class="perHour">per<br>hour</div>
 		</div>
-		{% if hp is sameas bp %}
-			<a href="/profile/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
-		{% else %}
 
 		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
 
@@ -197,7 +194,6 @@
 			<input type="submit" class="blueButton scheduleMtgButton" value="Schedule Meeting...">
 		</form>
 
-		{% endif %}
 		<div class="profileBasicInfo">
 				<!-- <div class="profileInfoBox profileInfoFacebookSocial"><img src="/static/img/facebook_thumbnails.jpg"></div> -->
 				<div class="profileInfoBox profileInfoLocation">{{hp.location}}</div>
@@ -213,16 +209,6 @@
 				</div>
 				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 		</div>
-
-<!-- 		{% if hp is sameas bp %}
-		<div class="portfolioButtons">
-			{% if portfolio|length == 0 %}	
-				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
-			{% else %}
-				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
-			{% endif %}
-		</div>
-		{% endif %} -->
 
 		<div class="profilePortfolio">
 			
