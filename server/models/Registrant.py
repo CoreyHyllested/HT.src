@@ -217,9 +217,10 @@ class Registrant(Base):
 	reg_created = Column(DateTime())
 	reg_updated = Column(DateTime())
 	reg_comment = Column(String(1024))
+	reg_referral_code = Column(String(128))
 
 
-	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment):
+	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment, reg_referral_code):
 		self.reg_userid = str(uuid.uuid4())
 		self.reg_email  = reg_email
 		self.reg_location  = reg_location
@@ -230,6 +231,7 @@ class Registrant(Base):
 		self.reg_comment = reg_comment
 		self.reg_created = dt.utcnow()
 		self.reg_updated = dt.utcnow()
+		self.reg_referral_code  = reg_referral_code
 
 
 	def __repr___ (self):
