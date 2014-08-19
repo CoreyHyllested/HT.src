@@ -15,7 +15,7 @@
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, Time, LargeBinary
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 from pytz import timezone
@@ -33,12 +33,12 @@ class Availability(Base):
 	avail_updated	= Column(DateTime(), nullable = False)
 
 	avail_weekday	= Column(Integer,	 nullable = True)
-	avail_start		= Column(DateTime,	 nullable = True)
-	avail_finish	= Column(DateTime,	 nullable = True)
 
 	avail_repeats	= Column(Integer,	 nullable = True)
 	avail_timeout	= Column(DateTime,	 nullable = True)
-
+	
+	avail_start		= Column(Time(),	 nullable = True)
+	avail_finish	= Column(Time(),	 nullable = True)
 
 	def __init__ (self, profile):
 		self.avail_profile	= profile.prof_id
@@ -48,6 +48,42 @@ class Availability(Base):
 
 	def __repr__ (self):
 		return '<availablity %r>' % (self.avail_profile)
+
+	@staticmethod
+	def get_by_prof_id(profile_id):
+		avail = None
+		try:
+			avail = Availability.query.filter_by(avail_profile=profile_id).all()
+		except NoResultFound as nrf:
+			pass
+		return avail
+
+	@staticmethod
+	def get_avail_by_day(profile_id, day):
+		start = None
+		end = None
+		try:
+			avail = Availability.query.filter_by(avail_weekday=day, avail_profile=profile_id).all()
+			start = avail.avail_start
+			end = avail.avail_end
+		except NoResultFound as nrf:
+			pass
+		return start, end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
