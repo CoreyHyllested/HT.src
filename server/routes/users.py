@@ -234,6 +234,7 @@ def render_edit_profile():
 
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
 
 	# StripeConnect req'd for payments
 	pi = Oauth.get_stripe_by_uid(session['uid'])
@@ -256,15 +257,20 @@ def render_edit_profile():
 	form.edit_name.data     = bp.prof_name
 	form.edit_location.data = bp.location	
 	form.edit_bio.data      = bp.prof_bio
-
 	form.edit_headline.data = bp.headline
 	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-
+	form.edit_url.data      = bp.prof_url
 	form.edit_rate.data     = bp.prof_rate
-	form.edit_oauth_stripe.data      = ba.stripe_cust
 	form.edit_availability.data      = bp.availability
 	form.edit_oauth_stripe.data 	 = stripe
+
+	# form.edit_avail_day_mon.data = ''
+	# if (form.edit_avail_time_mon_start.data, form.edit_avail_time_mon_end.data = Availability.get_avail_by_day(bp.prof_id, 0)):
+	# 	form.edit_avail_day_mon.data = 'y'
+
+	# print "render_edit_profile(): monday available?", form.edit_avail_day_mon.data
+	# print "render_edit_profile(): start time:", form.edit_avail_time_mon_start.data
+	# print "render_edit_profile(): end time:", form.edit_avail_time_mon_end.data
 
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
@@ -286,6 +292,7 @@ def api_update_profile(usrmsg=None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	ba = Account.get_by_uid(uid)
+	
 
 	form_mode = request.values.get('formMode');
 	form_page = request.values.get('formPage');
@@ -300,7 +307,22 @@ def api_update_profile(usrmsg=None):
 		page_validate, errors = ht_validate_profile(bp, form, form_page)
 
 		if (page_validate):
+
+			# avail_update = ht_update_avail_timeslots(bp, avail, form)
 			update = ht_update_profile(ba, bp, form, form_page)
+
+			if (update):
+				print "api_update_profile: made it through the regular updates."
+
+			if (form_page == 'schedule' or form_page == 'full'):	
+				
+				# We need to update the user's time slots in the Availability table.
+				avail_update = ht_update_avail_timeslots(bp, form)
+				if (avail_update):
+					print 'api_update_profile: avail timeslot update successful.'
+				else:
+					print 'api_update_profile: avail update failed.'
+
 			if (update):
 				print 'api_update_profile: add'
 				db_session.add(bp)
@@ -414,6 +436,99 @@ def ht_validate_profile(bp, form, form_page):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+def ht_update_avail_timeslots(bp, form):
+
+	print "ht_update_avail_timeslots: begin"
+
+	avail = Availability.get_by_prof_id(bp.prof_id)
+	update = False
+
+	# First delete the existing entries in the Availability table for this profile.
+	# objects = db_session.query(avail).all()
+	# for o in objects:
+	# 	db_session.delete(o)
+
+	days = {0: 'mon', 1: 'tue'}
+
+
+	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
+		pass
+
+	elif (bp.availability == 2): # They chose timeslot scheduling - need to parse and insert.
+
+		print "ht_update_avail_timeslots: availability is specific - extract preferences."
+
+		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
+
+		for key, value in days.iteritems():
+			pass
+
+		if (form.edit_avail_day_mon.data is True):
+			try:
+				start = form.edit_avail_time_mon_start.data
+				finish = form.edit_avail_time_mon_end.data
+				
+				# Initialize the avail timeslot
+				print "ht_update_avail_timeslots: initializing timeslot"
+				newavail = ht_create_avail_timeslot(bp)
+				if (newavail):
+					print "ht_update_avail_timeslots: initializing timeslot successful"
+
+					# Add the new fields
+					newavail.avail_weekday = 0 # Monday
+					newavail.avail_start = start
+					newavail.avail_finish = finish
+
+					print "ht_update_avail: add new timeslot:", newavail.avail_weekday, "-", newavail.avail_start, "=>", newavail.avail_finish
+					db_session.add(newavail)
+					update = True
+				else:
+					print "ht_update_avail_timeslots: initializing timeslot FAILED"
+			except:
+				print "ht_update_avail: Error - something went wrong."
+				update = False
+
+		if (form.edit_avail_day_tue.data is True):
+			try:
+				start = form.edit_avail_time_tue_start.data
+				finish = form.edit_avail_time_tue_end.data
+				
+				# Initialize the avail timeslot
+				print "ht_update_avail_timeslots: initializing timeslot"
+				newavail = ht_create_avail_timeslot(bp)
+				if (newavail):
+					print "ht_update_avail_timeslots: initializing timeslot successful"
+
+					# Add the new fields
+					newavail.avail_weekday = 1
+					newavail.avail_start = start
+					newavail.avail_finish = finish
+
+					print "ht_update_avail: add new timeslot:", newavail.avail_weekday, "-", newavail.avail_start, "=>", newavail.avail_finish
+					db_session.add(newavail)
+					update = True
+				else:
+					print "ht_update_avail_timeslots: initializing timeslot FAILED"
+			except:
+				print "ht_update_avail: Error - something went wrong."
+				update = False
+
+
+
+		if (update == True):	
+			print "ht_update_avail: commit"	
+			db_session.commit()
+			return True
+		else:
+			print "ht_update_avail: fail"	
+			return False
+
+	else:
+		print "ht_update_avail: Availability wasn't set - something screwed up."
+		return False
+
+
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
 	print 'ht_update_profile: form_page: ', form_page
@@ -444,6 +559,11 @@ def ht_update_profile(ba, bp, form, form_page):
 
 	if (form_page == 'schedule' or form_page == 'full'):	
 		bp.availability  = form.edit_availability.data
+
+		# We need to update the user's time slots in the Availability table.
+		# avail_update = ht_update_avail_timeslots(bp, form)
+		# if (avail_update):
+		# 	print 'ht_update_profile: avail timeslot update successful.'
 		return True
 
 	if (form_page == 'mentor'):
