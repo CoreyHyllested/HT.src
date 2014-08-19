@@ -182,13 +182,7 @@ class ProfileForm(Form):
 	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
 	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
 
-	edit_avail_day_mon = BooleanField('Monday', None)
-	edit_avail_day_tue = BooleanField('Tuesday', None)
-	edit_avail_day_wed = BooleanField('Wednesday', None)
-	edit_avail_day_thu = BooleanField('Thursday', None)
-	edit_avail_day_fri = BooleanField('Friday', None)
-	edit_avail_day_sat = BooleanField('Saturday', None)
-	edit_avail_day_sun = BooleanField('Sunday', None)
+	edit_avail_day = BooleanField('Day', None)
 
 	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
 	edit_avail_time_mon_end		= SelectField('Mon End', coerce=str, choices=NTS_times_end)

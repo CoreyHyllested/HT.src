@@ -30,6 +30,7 @@ from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
 import os
+from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -307,22 +308,7 @@ def api_update_profile(usrmsg=None):
 		page_validate, errors = ht_validate_profile(bp, form, form_page)
 
 		if (page_validate):
-
-			# avail_update = ht_update_avail_timeslots(bp, avail, form)
 			update = ht_update_profile(ba, bp, form, form_page)
-
-			if (update):
-				print "api_update_profile: made it through the regular updates."
-
-			if (form_page == 'schedule' or form_page == 'full'):	
-				
-				# We need to update the user's time slots in the Availability table.
-				avail_update = ht_update_avail_timeslots(bp, form)
-				if (avail_update):
-					print 'api_update_profile: avail timeslot update successful.'
-				else:
-					print 'api_update_profile: avail update failed.'
-
 			if (update):
 				print 'api_update_profile: add'
 				db_session.add(bp)
@@ -399,7 +385,28 @@ def ht_validate_profile(bp, form, form_page):
 		# 1. specific was selected without specifying times
 		# 2. day was selected without specifying time
 		# 3. end time was before start time on any day
-		pass
+
+		days = request.form.getlist('edit_avail_day')
+		for day in days:
+			print "ht_validate_profile: day is: ", day
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			
+			# print "start is", start
+			# print "finish is", finish
+
+			if (start == '' or finish == ''):
+				errors[day] = "Select both a start and end time."
+
+			else:
+				try: 
+					starttime = datetime.strptime(start, '%H:%M')
+					finishtime = datetime.strptime(finish, '%H:%M')
+					if (finishtime <= starttime):
+						errors[day] = "End time must be later than start time."
+				except:
+					errors[day] = "Hmm... unknown error here."
+
 
 	if (form_page == "payment" or form_page == "full"):
 		prof_rate = request.values.get("edit_rate")
@@ -438,96 +445,69 @@ def allowed_file(filename):
 
 
 def ht_update_avail_timeslots(bp, form):
-
 	print "ht_update_avail_timeslots: begin"
-
-	avail = Availability.get_by_prof_id(bp.prof_id)
 	update = False
+	d = {0: 'mon', 1: 'tue', 2: 'wed', 3: 'thu', 4: 'fri', 5: 'sat', 6: 'sun'}
 
 	# First delete the existing entries in the Availability table for this profile.
-	# objects = db_session.query(avail).all()
-	# for o in objects:
-	# 	db_session.delete(o)
-
-	days = {0: 'mon', 1: 'tue'}
-
+	avail = Availability.get_by_prof_id(bp.prof_id)
+	for o in avail:
+		db_session.delete(o)
 
 	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
-		pass
-
+		print "ht_update_avail_timeslots: availability is flexible - remove existing timeslots."
+		db_session.commit()
+		return True
 	elif (bp.availability == 2): # They chose timeslot scheduling - need to parse and insert.
-
 		print "ht_update_avail_timeslots: availability is specific - extract preferences."
 
 		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
+		days = request.form.getlist('edit_avail_day')
+		print "ht_update_avail_timeslots: avail days: ", days
+		for day in days:
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			print "-"*24
+			print "ht_update_avail_timeslots: adding slot on", day
 
-		for key, value in days.iteritems():
-			pass
-
-		if (form.edit_avail_day_mon.data is True):
 			try:
-				start = form.edit_avail_time_mon_start.data
-				finish = form.edit_avail_time_mon_end.data
-				
 				# Initialize the avail timeslot
 				print "ht_update_avail_timeslots: initializing timeslot"
 				newavail = ht_create_avail_timeslot(bp)
 				if (newavail):
 					print "ht_update_avail_timeslots: initializing timeslot successful"
-
+					
 					# Add the new fields
-					newavail.avail_weekday = 0 # Monday
+					for k, v in d.iteritems():
+						if v == day:
+							thisday = v
+							newavail.avail_weekday = k
+
 					newavail.avail_start = start
 					newavail.avail_finish = finish
 
-					print "ht_update_avail: add new timeslot:", newavail.avail_weekday, "-", newavail.avail_start, "=>", newavail.avail_finish
+					print "ht_update_avail_timeslots: db add for new timeslot:", newavail.avail_weekday, "(", thisday, ") -", newavail.avail_start, "=>", newavail.avail_finish
 					db_session.add(newavail)
 					update = True
 				else:
 					print "ht_update_avail_timeslots: initializing timeslot FAILED"
 			except:
-				print "ht_update_avail: Error - something went wrong."
+				print "ht_update_avail_timeslots: Error - something went wrong."
 				update = False
-
-		if (form.edit_avail_day_tue.data is True):
-			try:
-				start = form.edit_avail_time_tue_start.data
-				finish = form.edit_avail_time_tue_end.data
-				
-				# Initialize the avail timeslot
-				print "ht_update_avail_timeslots: initializing timeslot"
-				newavail = ht_create_avail_timeslot(bp)
-				if (newavail):
-					print "ht_update_avail_timeslots: initializing timeslot successful"
-
-					# Add the new fields
-					newavail.avail_weekday = 1
-					newavail.avail_start = start
-					newavail.avail_finish = finish
-
-					print "ht_update_avail: add new timeslot:", newavail.avail_weekday, "-", newavail.avail_start, "=>", newavail.avail_finish
-					db_session.add(newavail)
-					update = True
-				else:
-					print "ht_update_avail_timeslots: initializing timeslot FAILED"
-			except:
-				print "ht_update_avail: Error - something went wrong."
-				update = False
-
 
 
 		if (update == True):	
-			print "ht_update_avail: commit"	
+			print "ht_update_avail_timeslots: commit"	
 			db_session.commit()
 			return True
 		else:
-			print "ht_update_avail: fail"	
+			print "ht_update_avail_timeslots: fail"	
+			db_session.rollback()
 			return False
-
 	else:
 		print "ht_update_avail: Availability wasn't set - something screwed up."
+		db_session.rollback()
 		return False
-
 
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
@@ -557,13 +537,17 @@ def ht_update_profile(ba, bp, form, form_page):
 		ba.stripe_cust = form.edit_oauth_stripe.data
 		return True
 
-	if (form_page == 'schedule' or form_page == 'full'):	
-		bp.availability  = form.edit_availability.data
+	if (form_page == 'schedule' or form_page == 'full'):
 
-		# We need to update the user's time slots in the Availability table.
-		# avail_update = ht_update_avail_timeslots(bp, form)
-		# if (avail_update):
-		# 	print 'ht_update_profile: avail timeslot update successful.'
+		bp.availability = form.edit_availability.data
+
+		# Send to ht_update_avail_timeslots to update the user's availability, and their time slots in the Availability table.
+		avail_update = ht_update_avail_timeslots(bp, form)
+		if (avail_update):
+			print 'ht_update_profile: avail timeslot update successful.'
+		else:
+			print 'ht_update_profile: avail update failed.'
+
 		return True
 
 	if (form_page == 'mentor'):

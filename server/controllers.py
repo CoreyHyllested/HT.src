@@ -541,11 +541,9 @@ def ht_create_lesson(profile):
 
 def ht_create_avail_timeslot(profile):
 	avail = None
-	print 'ht_create_avail_timeslot: profile is', profile
-	print
 	try:
 		avail = Availability(profile)
-		print 'ht_create_avail_timeslot: creating lesson. Avail data:',str(avail)
+		print 'ht_create_avail_timeslot: creating timeslot.'
 		db_session.add(avail)
 		db_session.commit()
 	except IntegrityError as ie:
