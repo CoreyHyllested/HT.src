@@ -1,13 +1,22 @@
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
-from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField
+from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField
 from wtforms import IntegerField, validators
-from wtforms.widgets import html_params, HTMLString
+from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
 from server.models import *
 
 
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
 
 
 class SelectWithDisable(object):
@@ -125,6 +134,8 @@ States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 ("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),
 ("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")]
 
+Days = [(0,'sun'),(1,'mon'),(2,'tue'),(3,'wed'),(4,'thu'),(5,'fri'),(6,'sat')]
+
 class NewAccountForm(Form):
 	#names below (LHS) match what's on the HTML page.  
 	input_signup_name   = TextField('Name',  [validators.Required(), validators.length(min=4, max=120)])
@@ -182,6 +193,7 @@ class ProfileForm(Form):
 	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
 	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
 
+	# edit_avail_day = MultiCheckboxField('Day', None, choices=Days)
 	edit_avail_day = BooleanField('Day', None)
 
 	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
@@ -198,8 +210,6 @@ class ProfileForm(Form):
 	edit_avail_time_sat_end		= SelectField('Sat End', coerce=str, choices=NTS_times_end)
 	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
 	edit_avail_time_sun_end		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
-
-
 
 
 

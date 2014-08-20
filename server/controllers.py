@@ -619,4 +619,7 @@ def ht_print_timedelta(td):
 	else:
 		return str(td.seconds / 3600) + ' hours'
 
+def get_day_string(day):
+	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
+	return d[day]
 

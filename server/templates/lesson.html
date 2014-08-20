@@ -91,21 +91,24 @@
 
 				<div class="lessonDescHeader"><h2>Rates</h2></div>			
 				<div class="lessonDescBody">
-					<ul>
-					<li>Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
-					</ul>
+					Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
 				</div>
 			</div>
 
 			<div id="availability" class="lessonDescBox">
 				<div class="lessonDescHeader"><h2>Availability</h2></div>			
-				<div class="lessonDescBody">
-					<ul>
-					<li>Monday: 12:00pm to 5:00pm</li>
-					<li>Wednesday: 12:00pm to 5:00pm</li>
-					<li>Friday: 12:00pm to 5:00pm</li>
-					<li>Saturday: 12:00pm to 9:00pm</li>
-					</ul>
+				<div class="lessonDescBody lessonAvail">
+
+				{% if mentor.availability == 1 %}
+					This mentor has flexible availability - let them know what works for you.
+				{% else %}
+					
+					{% for timeslot in avail %}
+						<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+					{% endfor %}
+
+				{% endif %}				
+
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
 				<div class="lessonDescBody">
@@ -252,7 +255,7 @@
 	<div class="clear"></div>
 </div>
 
-
+<script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 <script src="/static/js/maps.js"></script>
@@ -353,7 +356,12 @@ $(document).ready(function() {
         }, 600);
 	});	
 
-
+	$(".lessonAvailDay").each(function() {
+		var weekday = $(this).data("weekday");
+		var start = $(this).data("start");
+		var finish = $(this).data("finish");
+		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + " until " + moment(finish, "HH:mm:ss").format("h:mm a"));
+	});
 
 });
 

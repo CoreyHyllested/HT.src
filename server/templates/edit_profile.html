@@ -187,6 +187,12 @@
 					<fieldset id="editProfAvailTimes">
 
 					<div class="editProfAvailDay">
+						{{form.edit_avail_day(id="sun", class="daySelector", value="sun")}} <label for="sun">Sunday</label>
+						{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_sun_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
+					<div class="editProfAvailDay">
 						{{form.edit_avail_day(id="mon", class="daySelector", value="mon")}} <label for="mon">Monday</label>
 						{{form.edit_avail_time_mon_start(class="formField timeSelector span2")}}
 						{{form.edit_avail_time_mon_end(class="formField timeSelector span2")}}
@@ -222,12 +228,7 @@
 						{{form.edit_avail_time_sat_end(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
-					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="sun", class="daySelector", value="sun")}} <label for="sun">Sunday</label>
-						{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_sun_end(class="formField timeSelector span2")}}
-						<div class="formFieldError inline"></div>
-					</div> 	
+
 
 					</fieldset>
 

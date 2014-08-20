@@ -237,6 +237,9 @@ def render_edit_profile():
 	ba = Account.get_by_uid(session['uid'])
 	avail = Availability.get_by_prof_id(bp.prof_id)
 
+	# Days array for avail
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
+
 	# StripeConnect req'd for payments
 	pi = Oauth.get_stripe_by_uid(session['uid'])
 	stripe = 'No Stripe Account Found.'
@@ -265,18 +268,33 @@ def render_edit_profile():
 	form.edit_availability.data      = bp.availability
 	form.edit_oauth_stripe.data 	 = stripe
 
-	# form.edit_avail_day_mon.data = ''
-	# if (form.edit_avail_time_mon_start.data, form.edit_avail_time_mon_end.data = Availability.get_avail_by_day(bp.prof_id, 0)):
-	# 	form.edit_avail_day_mon.data = 'y'
+	slotdays = []
 
-	# print "render_edit_profile(): monday available?", form.edit_avail_day_mon.data
-	# print "render_edit_profile(): start time:", form.edit_avail_time_mon_start.data
-	# print "render_edit_profile(): end time:", form.edit_avail_time_mon_end.data
+	for timeslot in avail:
+		print "weekday is", timeslot.avail_weekday
+		print "start is", timeslot.avail_start
+		print "finish is", timeslot.avail_finish
+		
+		day = d[timeslot.avail_weekday]
+
+		slotdays.append(day)
+
+		start = "form.edit_avail_time_"+day+"_start.data"
+		finish = "form.edit_avail_time_"+day+"_end.data"
+
+		vars()[start] = timeslot.avail_start
+		vars()[finish] = timeslot.avail_finish
+
+		print "render_edit_profile(): edit_avail_start: ", day, vars()[start]
+		print "render_edit_profile(): edit_avail_day: ", day, vars()[finish]
+
+	form.edit_avail_day.data = slotdays
+	print "render_edit_profile(): edit_avail_day final is: ", form.edit_avail_day.data
 
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
 
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 
 
 
@@ -447,7 +465,7 @@ def allowed_file(filename):
 def ht_update_avail_timeslots(bp, form):
 	print "ht_update_avail_timeslots: begin"
 	update = False
-	d = {0: 'mon', 1: 'tue', 2: 'wed', 3: 'thu', 4: 'fri', 5: 'sat', 6: 'sun'}
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
 
 	# First delete the existing entries in the Availability table for this profile.
 	avail = Availability.get_by_prof_id(bp.prof_id)
@@ -494,7 +512,6 @@ def ht_update_avail_timeslots(bp, form):
 			except:
 				print "ht_update_avail_timeslots: Error - something went wrong."
 				update = False
-
 
 		if (update == True):	
 			print "ht_update_avail_timeslots: commit"	
@@ -978,6 +995,7 @@ def ht_update_lesson(lesson, form, saved):
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
 
 	if (lesson_id is None):
 		return make_response(render_dashboard(usrmsg='Need to specify a lesson...'))
@@ -1009,7 +1027,7 @@ def render_lesson_page(lesson_id):
 
 	lesson_reviews = ht_filter_composite_reviews(reviews, 'REVIEWED', mentor, dump=False)
 	show_reviews = ht_filter_composite_reviews(lesson_reviews, 'VISIBLE', None, dump=False)
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews, avail=avail))
 
 
 
