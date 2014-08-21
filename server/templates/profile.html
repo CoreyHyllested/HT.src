@@ -24,17 +24,20 @@
 			<div class="profileName">
 				{{hp.prof_name}}
 			</div>
+			{% if hp.availability > 0 %}
 			<div class="profileHeadline">
 				{{hp.headline}}
-			</div>					
+			</div>	
+			{% endif %}	
+			{% if hp.location %}			
 			<div class="profileLocation">
 				{{hp.location}}
 			</div>		
-
+			{% endif %}
 
 			<div class="profileRating">
 				{% if hp.reviews == 0 %}
-					No Reviews
+					Not yet rated
 				{% elif hp.reviews == 1 %}
 					{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Review)</a>
 				{% else %}
@@ -45,17 +48,10 @@
 
 		<div class="profileMobileBlock">
 
-			{% if hp is not sameas bp %}
-
-			<form method="link" action="/schedule" method="POST">
-				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule meeting...">
-			</form>
-
+			{% if hp is not sameas bp and hp.availability > 0 %}
+				<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
 			{% endif %}
 			<div class="profileBasicInfo">
-				<div class="profileInfoBox"></div>
-				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
 					{% if hp.reviews == 0 %}
 						No Reviews
@@ -69,8 +65,11 @@
 			</div>
 		</div>
 
+		{% if hp.prof_bio != "About me" and hp.prof_bio != "" %}
 		<div class="profileAboutMe italic">{{hp.prof_bio}}</div>
+		{% endif %}
 
+		{% if hp.availability > 0 %}
 		<div class="profileLessons">
 		{% if lessons|count == 0 %}
 			This person has not created any lessons yet.
@@ -83,10 +82,11 @@
 			</ul>
 		{% endif %}
 		</div>
+		{% endif %}
 
 		<div class="profileReviews" id="reviews">
 			{% if reviews|count == 0 %}
-			<h3>There are no reviews for this person yet.</h3>
+			There are no reviews for this person yet.
 			{% else %}		
 				<div class="profileReviewsHeader">
 					Reviews ({{reviews|length}})
@@ -203,29 +203,36 @@
 		
 	</div>
 
+
 	<div class="profileRightColumn">
-		<div class="profilePriceBox">
-			<span class="dollar">$</span>
-			<span class="profilePriceBoxRate">{{hp.prof_rate}}</span>
-			<div class="perHour">per<br>hour</div>
-		</div>
+		{% if hp.availability > 0 %}
+			<div class="profilePriceBox">
+				<span class="dollar">$</span>
+				<span class="profilePriceBoxRate">{{hp.prof_rate}}</span>
+				<div class="perHour">per<br>hour</div>
+			</div>
 
-		{% if hp is not sameas bp %}
+			{% if hp is not sameas bp %}
 
-		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Send Message</button>
+			<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Send Message</button>
 
-		<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
+			<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
 
+			{% endif %}
+
+			{% if hp.prof_url != "http://herotime.co" %}
+			<div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div>
+			{% endif %}
+
+			<div class="profilePortfolio">
+				
+				{% for img in portfolio %}
+					<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
+
+				{% endfor %}
+
+			</div>
 		{% endif %}
-
-		<div class="profilePortfolio">
-			
-			{% for img in portfolio %}
-				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
-
-			{% endfor %}
-
-		</div>
 
 	</div>
 
