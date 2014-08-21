@@ -114,6 +114,14 @@ class Lesson(Base):
 	# Lesson Cost
 	lesson_rate = Column(Integer)
 	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_rate = Column(Integer)
+	lesson_group_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_maxsize = Column(Integer)
+
+	# Lesson Materials
+	lesson_materials_needed = Column(String(5000))
+	lesson_materials_provided = Column(String(5000))
+
 
 
 	def __init__ (self, profile_id):
