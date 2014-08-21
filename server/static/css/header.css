@@ -256,13 +256,13 @@ New muted blues for links:
 
 .headerLogo {
 	height: 40px;
-	line-height: 48px;
+	line-height: 46px;
 	float: left;
-	width: 97px;
+	width: 128px;
 }
 
 .headerLogoImg {
-	width: 90px;
+	width: 120px;
 }
 
 a.headerLogoLink {

@@ -54,6 +54,7 @@ def render_dashboard(usrmsg=None):
 		active_reviews = ht_get_active_author_reviews(bp)
 		active_lessons = ht_get_active_lessons(bp)
 		unread_msgs = ht_get_unread_messages(bp)
+		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -63,7 +64,7 @@ def render_dashboard(usrmsg=None):
 		print 'render_dashboard() usrmsg = ', usrmsg
 
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, portfolio=profile_imgs, errmsg=usrmsg))
 
 
 
