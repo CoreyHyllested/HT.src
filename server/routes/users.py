@@ -568,7 +568,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
 		print "render_new_lesson: no form submitted"
-		
+
+
 		# In case the user went back in their browser to this page, after submitting
 		form = LessonForm(request.form)
 		form.lessonTitle.data = lesson.lesson_title
@@ -586,6 +587,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
 		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed		
 		form.lessonMakeLive.data = 'y'
 
 		if (form.lessonRate.data <= 0):
@@ -599,7 +602,7 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		print "render_new_lesson: invalid form imported"
 		
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
 
 
 
@@ -641,6 +644,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonPlace.data = lesson.lesson_loc_option
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed
 		form.lessonAvail.data = lesson.lesson_avail
 		form.lessonMakeLive.data = 'y'
 
@@ -660,7 +665,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	# lessonUpdated = lesson.lesson_updated
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
+	return make_response(render_template('lesson_form.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
@@ -837,6 +842,16 @@ def ht_update_lesson(lesson, form, saved):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+	if (lesson.lesson_materials_provided != form.lessonMaterialsProvided.data):
+		print '\tUpdate lesson_materials_provided (' + str(lesson.lesson_materials_provided) + ') => ' + str(form.lessonMaterialsProvided.data)
+		lesson.lesson_materials_provided = form.lessonMaterialsProvided.data
+		update = True
+
+	if (lesson.lesson_materials_needed != form.lessonMaterialsNeeded.data):
+		print '\tUpdate lesson_materials_needed (' + str(lesson.lesson_materials_needed) + ') => ' + str(form.lessonMaterialsNeeded.data)
+		lesson.lesson_materials_needed = form.lessonMaterialsNeeded.data
+		update = True
+
 	# If user pressed 'save', we already took care of state when validating.
 	if (saved != "true"): 
 		lesson_state = lesson.get_state()
@@ -868,13 +883,30 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
+
+
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
-		print "render_lesson_page(): Lesson String:", str(lesson)
+		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+		reviews = htdb_get_composite_reviews(mentor)
+
+		x = 0
+		print "render_lesson_page(): getting industry"
+		for x in range(len(Industry.industries)):
+			if (x == int(lesson.lesson_industry)):
+				industry = str(Industry.industries[x])
+				print "render_lesson_page(): industry is ", industry
+				break
+
+		print "render_lesson_page(): mentor:", mentor
+		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
-		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio))
+		return redirect(url_for('insprite.render_dashboard', usrmsg='Sorry, We encountered an error loading that lesson.'))
+
+	lesson_reviews = ht_filter_composite_reviews(reviews, 'REVIEWED', mentor, dump=False)
+	show_reviews = ht_filter_composite_reviews(lesson_reviews, 'VISIBLE', None, dump=False)
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews))
 
 
 
@@ -1293,6 +1325,7 @@ def ht_get_serialized_images_for_lesson(lesson_id):
 	# json_serialize all images assoicated with the lesson.
 	images = LessonImageMap.get_images_for_lesson(lesson_id)
 	return [img.serialize for img in images]
+
 
 
 

@@ -321,7 +321,7 @@ function saveProfile(formPage) {
 	// Remove error indicators
 	$(".formFieldError").slideUp().html("");
 	$(".formField").css("border-color", "#e1e8ed");
-	$(".editProfNavItem").each(function() {
+	$(".editProfNavItem:not(.disabled)").each(function() {
 		var navDefaultIcon = $(this).attr("data-default-icon");
 		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i.icon").attr("class", "fa fa-fw "+navDefaultIcon);		
 	});

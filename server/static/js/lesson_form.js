@@ -17,7 +17,7 @@ $(document).ready(function() {
 	var lesson_flags = $(".lessonHeaderPageStatus").attr("data-flags");
 	
 	// evaluate lesson flags/state and generate the text on the form
-	generateStatus(lesson_flags);
+	generateStatus(lessonID, lesson_flags);
 	// check for error messages in the form and indicate them in the navigation
 	showErrors();
 
@@ -215,7 +215,7 @@ function showErrors() {
 
 }
 
-function generateStatus(lesson_flags) {
+function generateStatus(lesson_id, lesson_flags) {
 
 	var statusText = "Lesson Status: ";
 
@@ -238,6 +238,9 @@ function generateStatus(lesson_flags) {
 	}
 
 	$(".lessonHeaderPageStatus").text(statusText);
+	if (parseInt(lesson_flags) > 1){
+		$(".lessonHeaderPageStatus").append("&nbsp;&nbsp;<a href='/lesson/"+lesson_id+"'>(View lesson page)</a>");
+	}
 }
 
 
@@ -319,6 +322,8 @@ function getLessonData(lesson_id) {
 
 	$(".lessonReviewTitle").text($("#lessonTitle").val());
 	$(".lessonReviewDescription").text($("#lessonDescription").val());
+	$(".lessonReviewMaterialsProvided").text($("#lessonMaterialsProvided").val());
+	$(".lessonReviewMaterialsNeeded").text($("#lessonMaterialsNeeded").val());
 	$(".lessonReviewIndustry").text($("#lessonIndustry option:selected").text());
 	$(".lessonReviewSchedule").text($("#lessonAvail").val());
 	$(".lessonReviewDuration").text($("#lessonDuration option:selected").text());
@@ -417,7 +422,7 @@ function saveLessonForm(lesson_id) {
 
 			 	console.log("Flags: "+response.lesson_flags);
 
-			 	generateStatus(response.lesson_flags);
+			 	generateStatus(lesson_id, response.lesson_flags);
 			 	showErrors();
 
 			 	// $(".lessonFormStatus").html("<span class='success'>Lesson saved.</span>").fadeIn();

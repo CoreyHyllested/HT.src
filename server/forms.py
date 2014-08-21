@@ -154,8 +154,11 @@ class LessonForm(Form):
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
+	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
+	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
+
 
 class ProfileForm(Form):
 
@@ -165,7 +168,7 @@ class ProfileForm(Form):
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
 	edit_rate     = TextField('Rate' ) # [validators.Required(), validators.NumberRange(min=0, max=100000)])
-	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
+	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd2))
 	edit_url      = TextField('Website') #, [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_oauth_stripe = TextField('Stripe')
 	edit_availability = SelectField('Availability', coerce=int, choices=[(1,'Flexible - will arrange with students'),(2,'Specific (select times below)')])
