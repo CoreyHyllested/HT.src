@@ -1,13 +1,22 @@
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
-from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField
+from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField
 from wtforms import IntegerField, validators
-from wtforms.widgets import html_params, HTMLString
+from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
 from server.models import *
 
 
+class MultiCheckboxField(SelectMultipleField):
+    """
+    A multiple-select, except displays a list of checkboxes.
+
+    Iterating the field will produce subfields, allowing custom rendering of
+    the enclosed checkbox fields.
+    """
+    widget = ListWidget(prefix_label=False)
+    option_widget = CheckboxInput()
 
 
 class SelectWithDisable(object):
@@ -88,23 +97,29 @@ class RequiredIf(Required):
 			super(RequiredIf, self).__call__(form, field)
 
 
-NTS_times = [ ('00:00 AM', '00:00 AM'), ('00:30 AM', '00:30 AM'),
-('01:00 AM', '01:00 AM'), ('01:30 AM', '01:30 AM'), ('02:00 AM', '02:00 AM'), 
-('02:30 AM', '02:30 AM'), ('03:00 AM', '03:00 AM'), ('03:30 AM', '03:30 AM'), 
-('04:00 AM', '04:00 AM'), ('04:30 AM', '04:30 AM'), ('05:00 AM', '05:00 AM'), 
-('05:30 AM', '05:30 AM'), ('06:00 AM', '06:00 AM'), ('06:30 AM', '06:30 AM'), 
-('07:00 AM', '07:00 AM'), ('07:30 AM', '07:30 AM'), ('08:00 AM', '08:00 AM'),
-('08:30 AM', '08:30 AM'), ('09:00 AM', '09:00 AM'), ('09:30 AM', '09:30 AM'),
-('10:00 AM', '10:00 AM'), ('10:30 AM', '10:30 AM'), ('11:00 AM', '11:00 AM'),
-('11:30 AM', '11:30 AM'), ('12:00 PM', '12:00 PM'), ('12:30 PM', '12:30 PM'),
-('13:00 PM', '13:00 PM'), ('13:30 PM', '13:30 PM'), ('14:00 PM', '14:00 PM'),
-('14:30 PM', '14:30 PM'), ('15:00 PM', '15:00 PM'), ('15:30 PM', '15:30 PM'),
-('16:00 PM', '16:00 PM'), ('16:30 PM', '16:30 PM'), ('17:00 PM', '17:00 PM'),
-('17:30 PM', '17:30 PM'), ('18:00 PM', '18:00 PM'), ('18:30 PM', '18:30 PM'),
-('19:00 PM', '19:00 PM'), ('19:30 PM', '19:30 PM'), ('20:00 PM', '20:00 PM'),
-('20:30 PM', '20:30 PM'), ('21:00 PM', '21:00 PM'), ('21:30 PM', '21:30 PM'),
-('22:00 PM', '22:00 PM'), ('22:30 PM', '22:30 PM'), ('23:00 PM', '23:00 PM'),
-('23:30 PM', '23:30 PM')]
+NTS_times = [ ('00:00', '12:00 AM'), ('00:30', '12:30 AM'),
+('01:00', '1:00 AM'), ('01:30', '1:30 AM'), ('02:00', '2:00 AM'), 
+('02:30', '2:30 AM'), ('03:00', '3:00 AM'), ('03:30', '3:30 AM'), 
+('04:00', '4:00 AM'), ('04:30', '4:30 AM'), ('05:00', '5:00 AM'), 
+('05:30', '5:30 AM'), ('06:00', '6:00 AM'), ('06:30', '6:30 AM'), 
+('07:00', '7:00 AM'), ('07:30', '7:30 AM'), ('08:00', '8:00 AM'),
+('08:30', '8:30 AM'), ('09:00', '9:00 AM'), ('09:30', '9:30 AM'),
+('10:00', '10:00 AM'), ('10:30', '10:30 AM'), ('11:00', '11:00 AM'),
+('11:30', '11:30 AM'), ('12:00', '12:00 PM'), ('12:30', '12:30 PM'),
+('13:00', '1:00 PM'), ('13:30', '1:30 PM'), ('14:00', '2:00 PM'),
+('14:30', '2:30 PM'), ('15:00', '3:00 PM'), ('15:30', '3:30 PM'),
+('16:00', '4:00 PM'), ('16:30', '4:30 PM'), ('17:00', '5:00 PM'),
+('17:30', '5:30 PM'), ('18:00', '6:00 PM'), ('18:30', '6:30 PM'),
+('19:00', '7:00 PM'), ('19:30', '7:30 PM'), ('20:00', '8:00 PM'),
+('20:30', '8:30 PM'), ('21:00', '9:00 PM'), ('21:30', '9:30 PM'),
+('22:00', '10:00 PM'), ('22:30', '10:30 PM'), ('23:00', '11:00 PM'),
+('23:30', '11:30 PM')]
+
+NTS_times_start = NTS_times[:]
+NTS_times_end = NTS_times[:]
+
+NTS_times_start.insert(0, ('', 'Start Time'))
+NTS_times_end.insert(0, ('', 'End Time'))
 
 States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 ("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),
@@ -118,6 +133,8 @@ States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 ("RI","Rhode Island"),("SC","South Carolina"),("SD","South Dakota"),("TN","Tennessee"),
 ("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),
 ("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")]
+
+Days = [(0,'sun'),(1,'mon'),(2,'tue'),(3,'wed'),(4,'thu'),(5,'fri'),(6,'sat')]
 
 class NewAccountForm(Form):
 	#names below (LHS) match what's on the HTML page.  
@@ -174,8 +191,27 @@ class ProfileForm(Form):
 	edit_availability = SelectField('Availability', coerce=int, choices=[(1,'Flexible - will arrange with students'),(2,'Specific (select times below)')])
 	edit_mentor_live = BooleanField('Make my mentor profile live!', None)
 	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
-
 	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
+
+	# edit_avail_day = MultiCheckboxField('Day', None, choices=Days)
+	edit_avail_day = BooleanField('Day', None)
+
+	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_mon_end		= SelectField('Mon End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_tue_start	= SelectField('Tue Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_tue_end		= SelectField('Tue End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_wed_start	= SelectField('Wed Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_wed_end		= SelectField('Wed End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_thu_start	= SelectField('Thu Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_thu_end		= SelectField('Thu End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_fri_start	= SelectField('Fri Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_fri_end		= SelectField('Fri End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_sat_start	= SelectField('Sat Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_sat_end		= SelectField('Sat End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_sun_end		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
+
+
 
 class NTSForm(Form):
 	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])

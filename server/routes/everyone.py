@@ -71,14 +71,19 @@ def render_profile(usrmsg=None):
 		else:
 			print "no lessons found."
 
+		avail = Availability.get_by_prof_id(hp.prof_id)	
+
+
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
+
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs, avail=avail))
 
 
 

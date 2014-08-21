@@ -6,6 +6,8 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+
+
 {% endblock %}
 
 
@@ -61,7 +63,6 @@
 						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
 					{% endif %}
 				</div>
-				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
 		</div>
 
@@ -75,22 +76,34 @@
 			This person has not created any lessons yet.
 		{% else %}
 			<div class="profileLessonsHeader">Lessons & Experiences</div>
-			<ul>
 			{% for lesson in lessons %}
-				<li><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></li>
+				<div class="profileLesson"><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></div>
 			{% endfor %}
-			</ul>
 		{% endif %}
 		</div>
 		{% endif %}
 
+		{% if hp.availability > 0 %}
+		<div class="profileAvail">
+			<div class="profileAvailHeader">Availability</div>
+			{% if hp.availability == 1 %}
+				This mentor has flexible availability - let them know what works for you.
+			{% else %}
+				
+				{% for timeslot in avail %}
+					<div class="profileAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+				{% endfor %}
+
+			{% endif %}
+		</div>
+		{% endif %}
+
 		<div class="profileReviews" id="reviews">
+			<div class="profileReviewsHeader">Reviews</div>
 			{% if reviews|count == 0 %}
 			There are no reviews for this person yet.
 			{% else %}		
-				<div class="profileReviewsHeader">
-					Reviews ({{reviews|length}})
-				</div>
+
 				<div class="profileLatestReviews">
 
 					{% for review in reviews %}
@@ -243,12 +256,20 @@
 	<div class="clear"></div>
 </div>
 
+<script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 
 $(document).ready(function() {
+
+	$(".profileAvailDay").each(function() {
+		var weekday = $(this).data("weekday");
+		var start = $(this).data("start");
+		var finish = $(this).data("finish");
+		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + " until " + moment(finish, "HH:mm:ss").format("h:mm a"));
+	});
 
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();

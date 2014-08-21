@@ -30,6 +30,7 @@ from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
 import os
+from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -235,6 +236,10 @@ def render_edit_profile():
 
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
+
+	# Days array for avail
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
 
 	# StripeConnect req'd for payments
 	pi = Oauth.get_stripe_by_uid(session['uid'])
@@ -257,20 +262,40 @@ def render_edit_profile():
 	form.edit_name.data     = bp.prof_name
 	form.edit_location.data = bp.location	
 	form.edit_bio.data      = bp.prof_bio
-
 	form.edit_headline.data = bp.headline
 	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-
+	form.edit_url.data      = bp.prof_url
 	form.edit_rate.data     = bp.prof_rate
-	form.edit_oauth_stripe.data      = ba.stripe_cust
 	form.edit_availability.data      = bp.availability
 	form.edit_oauth_stripe.data 	 = stripe
+
+	slotdays = []
+
+	for timeslot in avail:
+		print "weekday is", timeslot.avail_weekday
+		print "start is", timeslot.avail_start
+		print "finish is", timeslot.avail_finish
+		
+		day = d[timeslot.avail_weekday]
+
+		slotdays.append(day)
+
+		start = "form.edit_avail_time_"+day+"_start.data"
+		finish = "form.edit_avail_time_"+day+"_end.data"
+
+		vars()[start] = timeslot.avail_start
+		vars()[finish] = timeslot.avail_finish
+
+		print "render_edit_profile(): edit_avail_start: ", day, vars()[start]
+		print "render_edit_profile(): edit_avail_day: ", day, vars()[finish]
+
+	form.edit_avail_day.data = slotdays
+	print "render_edit_profile(): edit_avail_day final is: ", form.edit_avail_day.data
 
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
 
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 
 
 
@@ -287,6 +312,7 @@ def api_update_profile(usrmsg=None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	ba = Account.get_by_uid(uid)
+	
 
 	form_mode = request.values.get('formMode');
 	form_page = request.values.get('formPage');
@@ -378,7 +404,28 @@ def ht_validate_profile(bp, form, form_page):
 		# 1. specific was selected without specifying times
 		# 2. day was selected without specifying time
 		# 3. end time was before start time on any day
-		pass
+
+		days = request.form.getlist('edit_avail_day')
+		for day in days:
+			print "ht_validate_profile: day is: ", day
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			
+			# print "start is", start
+			# print "finish is", finish
+
+			if (start == '' or finish == ''):
+				errors[day] = "Select both a start and end time."
+
+			else:
+				try: 
+					starttime = datetime.strptime(start, '%H:%M')
+					finishtime = datetime.strptime(finish, '%H:%M')
+					if (finishtime <= starttime):
+						errors[day] = "End time must be later than start time."
+				except:
+					errors[day] = "Hmm... unknown error here."
+
 
 	if (form_page == "payment" or form_page == "full"):
 		prof_rate = request.values.get("edit_rate")
@@ -415,6 +462,71 @@ def ht_validate_profile(bp, form, form_page):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+def ht_update_avail_timeslots(bp, form):
+	print "ht_update_avail_timeslots: begin"
+	update = False
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
+
+	# First delete the existing entries in the Availability table for this profile.
+	avail = Availability.get_by_prof_id(bp.prof_id)
+	for o in avail:
+		db_session.delete(o)
+
+	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
+		print "ht_update_avail_timeslots: availability is flexible - remove existing timeslots."
+		db_session.commit()
+		return True
+	elif (bp.availability == 2): # They chose timeslot scheduling - need to parse and insert.
+		print "ht_update_avail_timeslots: availability is specific - extract preferences."
+
+		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
+		days = request.form.getlist('edit_avail_day')
+		print "ht_update_avail_timeslots: avail days: ", days
+		for day in days:
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			print "-"*24
+			print "ht_update_avail_timeslots: adding slot on", day
+
+			try:
+				# Initialize the avail timeslot
+				print "ht_update_avail_timeslots: initializing timeslot"
+				newavail = ht_create_avail_timeslot(bp)
+				if (newavail):
+					print "ht_update_avail_timeslots: initializing timeslot successful"
+					
+					# Add the new fields
+					for k, v in d.iteritems():
+						if v == day:
+							thisday = v
+							newavail.avail_weekday = k
+
+					newavail.avail_start = start
+					newavail.avail_finish = finish
+
+					print "ht_update_avail_timeslots: db add for new timeslot:", newavail.avail_weekday, "(", thisday, ") -", newavail.avail_start, "=>", newavail.avail_finish
+					db_session.add(newavail)
+					update = True
+				else:
+					print "ht_update_avail_timeslots: initializing timeslot FAILED"
+			except:
+				print "ht_update_avail_timeslots: Error - something went wrong."
+				update = False
+
+		if (update == True):	
+			print "ht_update_avail_timeslots: commit"	
+			db_session.commit()
+			return True
+		else:
+			print "ht_update_avail_timeslots: fail"	
+			db_session.rollback()
+			return False
+	else:
+		print "ht_update_avail: Availability wasn't set - something screwed up."
+		db_session.rollback()
+		return False
+
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
 	print 'ht_update_profile: form_page: ', form_page
@@ -443,8 +555,17 @@ def ht_update_profile(ba, bp, form, form_page):
 		ba.stripe_cust = form.edit_oauth_stripe.data
 		return True
 
-	if (form_page == 'schedule' or form_page == 'full'):	
-		bp.availability  = form.edit_availability.data
+	if (form_page == 'schedule' or form_page == 'full'):
+
+		bp.availability = form.edit_availability.data
+
+		# Send to ht_update_avail_timeslots to update the user's availability, and their time slots in the Availability table.
+		avail_update = ht_update_avail_timeslots(bp, form)
+		if (avail_update):
+			print 'ht_update_profile: avail timeslot update successful.'
+		else:
+			print 'ht_update_profile: avail update failed.'
+
 		return True
 
 	if (form_page == 'mentor'):
@@ -875,6 +996,7 @@ def ht_update_lesson(lesson, form, saved):
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
 
 	if (lesson_id is None):
 		return make_response(render_dashboard(usrmsg='Need to specify a lesson...'))
@@ -906,7 +1028,7 @@ def render_lesson_page(lesson_id):
 
 	lesson_reviews = ht_filter_composite_reviews(reviews, 'REVIEWED', mentor, dump=False)
 	show_reviews = ht_filter_composite_reviews(lesson_reviews, 'VISIBLE', None, dump=False)
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews))
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews, avail=avail))
 
 
 

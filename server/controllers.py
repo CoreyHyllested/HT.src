@@ -539,6 +539,20 @@ def ht_create_lesson(profile):
 	return lesson
 
 
+def ht_create_avail_timeslot(profile):
+	avail = None
+	try:
+		avail = Availability(profile)
+		print 'ht_create_avail_timeslot: creating timeslot.'
+		db_session.add(avail)
+		db_session.commit()
+	except IntegrityError as ie:
+		print 'ht_create_avail_timeslot: ERROR ie:', ie
+		db_session.rollback()
+	except Exception as e:
+		print 'ht_create_avail_timeslot: ERROR e:', type(e), e
+		db_session.rollback()
+	return avail
 
 
 def htdb_get_lesson_images(lesson_id):
@@ -605,4 +619,7 @@ def ht_print_timedelta(td):
 	else:
 		return str(td.seconds / 3600) + ' hours'
 
+def get_day_string(day):
+	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
+	return d[day]
 

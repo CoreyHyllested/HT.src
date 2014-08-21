@@ -172,31 +172,63 @@ h3 {color: black;}
 }
 
 .profileLessons {
+	float: left;
+	width: 100%;	
 	margin-bottom: 24px;
 }
-
-.profileReviews {
-	margin-bottom: 24px;
-}
-
 .profileLessonsHeader {
 	width: 100%;
 	float: left;
 	font-size: 1.8em;
 	color: rgba(0,0,0,.8);
-	margin-bottom: 8px;
+	margin-bottom: 24px;
 	font-weight: bold;
 }
+
+.profileLesson {
+	width: 100%;
+	float: left;
+	margin-bottom: 6px;
+}
+
+.profileReviews {
+	float: left;
+	width: 100%;
+	margin-bottom: 24px;
+}
+
 .profileReviewsHeader {
 	width: 100%;
 	float: left;
 	font-size: 1.8em;
 	color: rgba(0,0,0,.8);
-	margin-bottom: 8px;
+	margin-bottom: 24px;
 	font-weight: bold;
 }
 
+.profileAvail {
+	width: 100%;
+	float: left;
+	margin-bottom: 24px;
+}
+
+.profileAvailHeader {
+	width: 100%;
+	float: left;
+	font-size: 1.8em;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 24px;
+	font-weight: bold;
+}
+
+.profileAvailDay {
+	width: 100%;
+	float: left;
+	margin-bottom: 6px;
+}
+
 .profileAboutMe {
+	width: 100%;	
 	color: rgba(0,0,0,.6);
 	line-height: 1.8em;
 	margin-bottom: 50px;
