@@ -43,20 +43,11 @@
 				Create a Lesson				
 			{% endif %}			
 			</div>
-			<div class="lessonHeaderPageSubtitle">
-				{% if form.errors %}
-					<div class="formFieldErrors">
-				        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
-				            {% for error in field_errors %}
-				                <div class="formFieldError">{{ form[field_name].label }}: {{ error }}</div>
-				            {% endfor %}
-				        {% endfor %}
-				    </div>
-				{% endif %}			
+			<div class="lessonHeaderPageStatus" data-flags="{{lesson_flags}}">
+
 			</div>
 		</div>	
 		<div class="lessonHeaderRight">
-			<span class="lessonFormStatus"></span>
 			<button class="whiteButton lessonSave" id="lessonSave">Save</button>
 		</div>					
 	</div>
@@ -65,13 +56,13 @@
 		<div class="lessonLeftColumn">
 			<div class="lessonNavContainer">
 				<ul class="lessonNavList">
-					<div class="lessonNavItem active" data-target-page="overview"><a class="lessonNavLink">Overview</a></div>
-					<div class="lessonNavItem" data-target-page="where"><a class="lessonNavLink">Where</a></div>
-					<div class="lessonNavItem" data-target-page="when"><a class="lessonNavLink">When</a></div>
-					<div class="lessonNavItem" data-target-page="rate"><a class="lessonNavLink">Rate</a></div>
-					<div class="lessonNavItem" data-target-page="add_photos"><a class="lessonNavLink">Add Photos</a></div>
-					<div class="lessonNavItem" data-target-page="edit_photos"><a class="lessonNavLink">Edit Photos</a></div>
-					<div class="lessonNavItem" data-target-page="review"><a class="lessonNavLink">Review</a></div>
+					<div class="lessonNavItem active" data-target-page="overview" data-default-icon="fa-star-o">Overview<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="where" data-default-icon="fa-star-o">Where<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="when" data-default-icon="fa-star-o">When<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="rate" data-default-icon="fa-star-o">Rate<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="add_photos" data-default-icon="fa-star-o">Add Photos<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="edit_photos" data-default-icon="fa-star-o">Edit Photos<i class="fa fa-fw fa-star-o"></i></div>
+					<div class="lessonNavItem" data-target-page="review" data-default-icon="fa-star-o">Review<i class="fa fa-fw fa-star-o"></i></div>
 				</ul>
 			</div>
 		</div>
@@ -91,7 +82,6 @@
 					<input type="hidden" name="version" id="version" value="new">
 				{% endif %}
 				<div id="overview" class="lessonFormPage">
-					<div class="formTitle">Let's get started!</div>
 					<div class="formElement">
 						<div class="formInstruction">What lesson or instruction do you want to offer?</div>
 
@@ -141,9 +131,9 @@
 					</div>
 					<div class="lessonFormButtonContainer">
 						<button class="blueButton lessonFormButton" data-current-page="where">Continue</button>
-						<div class="lessonFormPreviousContainer">
+						<!-- <div class="lessonFormPreviousContainer">
 							<a class="lessonFormPrevious">Previous</a>
-						</div>
+						</div> -->
 					</div>
 				</div>
 
@@ -166,9 +156,6 @@
 					</div>
 					<div class="lessonFormButtonContainer">
 						<button class="blueButton lessonFormButton" data-current-page="when">Continue</button>
-						<div class="lessonFormPreviousContainer">
-							<a class="lessonFormPrevious">Previous</a>
-						</div>
 					</div>					
 				</div>
 
@@ -182,13 +169,10 @@
     					{% endif %}
 						${{form.lessonRate(id="lessonRate", class='formField span3', placeholder='Amount')}} {{form.lessonRateUnit(id="lessonRateUnit", class='formField span3')}}
 
-						<span class="rateUnitCaption span3"></span>
+						<span class="formFieldCaption span3"></span>
 
 						<div class="lessonFormButtonContainer">
 							<button class="blueButton lessonFormButton" data-current-page="rate">Continue</button>
-							<div class="lessonFormPreviousContainer">
-								<a class="lessonFormPrevious">Previous</a>
-							</div>
 						</div>
 					</div>		
 
@@ -216,13 +200,10 @@
 						<div class="dropzone-status italic"></div>
 
 						<div class="lessonFormButtonContainer">
-							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton span6" data-current-page="add_photos">
+							<button id="multipleUploadButton" type="button" class="blueButton multipleUploadButton" data-current-page="add_photos">
 								Upload
 							</button>
-							<button type="button" id="multipleUploadContinueButton" class="blueButton lessonFormButton" data-current-page="add_photos">Continue</button>						
-							<div class="lessonFormPreviousContainer">
-								<a class="lessonFormPrevious">Previous</a>
-							</div>
+							<button type="button" id="multipleUploadContinueButton" class="blueButton lessonFormButton" data-current-page="add_photos">Continue</button>
 						</div>
 					</div>
 					
@@ -241,11 +222,8 @@
 
 						<div class="lessonFormButtonContainer">
 							<input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-							<button type="button" id="updateLessonPortfolioButton" class="blueButton updateLessonPortfolioButton span6" data-current-page="edit_photos">Save Changes</button>
+							<button type="button" id="updateLessonPortfolioButton" class="blueButton updateLessonPortfolioButton" data-current-page="edit_photos">Save Changes</button>
 							<button type="button" id="editPortfolioDoneContinueButton" class="blueButton lessonFormButton" data-current-page="edit_photos">Continue</button>
-							<div class="lessonFormPreviousContainer">
-								<a class="lessonFormPrevious">Previous</a>
-							</div>
 						</div>
 					</div>
 				</div>
@@ -306,16 +284,17 @@
 					<div class="lessonFormButtonContainer">
 						<div class="lessonFormButtonContainer">
 
+						<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
 
-							<button class="blueButton lessonFormButtonSubmit" data-current-page="review">Submit Lesson</button>
-							<div class="lessonFormButtonOptions">
-							
-							<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y" checked><label for="lessonMakeLiveProxy">Make this lesson live and public!</label>
-							</div>
+						<button class="whiteButton lessonFormButtonSave" data-current-page="review">Save for Later</button>
+
 						</div>
-						<div class="lessonFormPreviousContainer">
-							<a class="lessonFormPrevious">Previous</a>
-						</div>
+
+<!-- 						<div class="lessonFormButtonOptions">
+						<input type="checkbox" name="lessonMakeLiveProxy" id="lessonMakeLiveProxy" value="y" checked><label for="lessonMakeLiveProxy">Make this lesson live and public</label>
+						</div> -->		
+
+						
 					</div>
 					
 				</div>

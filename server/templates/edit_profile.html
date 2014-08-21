@@ -1,0 +1,329 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<!-- <link type="text/css" rel="stylesheet" href="/static/css/dropzone.css"> -->
+	<link type="text/css" rel="stylesheet" href="/static/css/edit_profile.css"><!-- contains dropzone overrides -->
+
+{% endblock %}
+
+{% block content %}
+
+<div class="editProfContentWrapper">
+
+	<div class="editProfFlags" data-flags="{{flags}}">{{flags}}</div>
+	<div class="editProfHeader">
+		<div class="editProfHeaderLeft">
+			<div class="editProfTopLeftNavigation">
+				<a title="Back" id="topLeftNavBack" class="navItem"><i class="fa fa-arrow-circle-left"></i> Back to Profile</a>
+			</div>
+		</div>
+			
+		<div class="editProfHeaderRight">
+			<div class="editProfHeaderPageName"></div>
+		</div>			
+	</div>
+  
+  	<div class="editProfContentContainer">
+		<div class="editProfLeftColumn">
+
+			<div class="editProfNavContainer">
+				<!-- <div class="editProfNavListHeader">Basic Profile</div> -->
+				<ul class="editProfNavList">
+					<div class="editProfNavItem" data-target-page="general" data-default-icon="fa-star-o">General Info<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-star-o icon"></i></div>		
+
+					<div class="editProfNavItem" data-target-page="profile_photo" data-default-icon="fa-picture-o">Profile Photo<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-picture-o icon"></i></div>	
+
+					<div class="editProfNavItem" id="editProfNavItemMentor" data-target-page="mentor" data-default-icon="fa-sun-o">Become a Mentor!<i class="fa fa-fw fa-sun-o icon"></i></div>
+
+
+				</ul>
+
+				<div class="editProfNavActivate">
+
+				</div>
+			</div>
+
+			<div class="editProfNavContainer mentorNav">
+				<div class="editProfNavListHeader">Mentor Profile</div>
+				<ul class="editProfNavList">
+					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="guidelines" data-default-icon="fa-certificate">Guidelines<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-certificate icon"></i></div>			
+					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="details" data-default-icon="fa-star-o">Details<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-star-o icon"></i></div>
+					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="schedule" data-default-icon="fa-calendar">Schedule<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-calendar icon"></i></div>
+					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="payment" data-default-icon="fa-dollar">Rate & Payment<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-dollar icon"></i></div>
+					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="submit" data-default-icon="fa-flag">Activate<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-flag icon"></i></div>
+				</ul>
+			</div>
+
+		</div>
+
+		<div class="editProfRightColumn">
+			
+			<div class="editProfFormPageContainer">
+
+				<div class="editProfStatus"></div>
+  				<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
+
+  				{{form.hidden_tag()}}
+
+				<div id="general" class="editProfFormPage">
+
+					<div class="formContainer span12">
+						
+
+						<div class="formFieldInfo first">Your name as it should appear on your profile</div>
+						<div class="formFieldError"></div>
+						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span6")}}
+
+						<div class="formFieldInfo">Where do you reside?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_location(placeholder="Location", class="formField span6")}}
+
+						<div class="formFieldInfo">Tell everybody your story. If you want to mentor others, talk about what you have to offer.</div>
+						<div class="formFieldError"></div>
+						{{form.edit_bio(placeholder="Your Story", class="formField span12")}}	
+					</div>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>	
+					</div>
+
+				</div>
+
+				<div id="profile_photo" class="editProfFormPage">
+
+					<div class="formFieldInfo first">Recommended size is 2800 wide by 1400 tall. Photo is optional for regular users, but all mentors must upload one. Choose a good one - this will appear frequently around the site!</div>
+
+					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview" src="{{photoURL}}"></div>
+
+					<input type="button" class="whiteButton editProfImageButton" id="editProfImageButton" value="Choose Image..." data-current-page="profile_photo">
+					<div class="formFieldError alt"></div>
+										
+					{{form.edit_photo(accept="image/*")}}
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="profile_photo">Save Changes</button>
+						</div>					
+						<div class="editProfFormStatus"></div>
+					</div>
+
+				</div>
+
+
+				<div id="mentor" class="editProfFormPage">
+					<div class="formInstruction">What is an Insprite Mentor?</div>
+					<div class="formDescription">You have worked hard at your craft, skill, or hobby, and you can't wait to make the world a happier, more creative place by sharing your talent with others. As an Insprite Mentor, you can earn money by mentoring others in your community who want to learn from your experience and know-how.<br>
+					<ul>
+						<li>Create your mentor profile, telling the community what you have to offer</li>
+						<li>Create lessons or experiences that you want to share</li>
+						<li>Set your schedule and hourly or per-lesson rate</li>
+						<li>Earn money by imparting your wisdom on those who want to learn</li>
+						<li>Get paid directly through Insprite with no hassle</li>
+					</ul> 
+					<br>
+					<div class="formInstruction">Ready to become an Insprite Mentor?</div>
+					</div>
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfActivate" data-current-page="mentor">Let's Get Started</button>
+						</div>	
+						<div class="editProfFormStatus"></div>				
+					</div>					
+				</div>
+
+
+				<div id="guidelines" class="editProfFormPage mentorForm">
+					<div class="formInstruction">We are ecstatic that you want to be a mentor!</div>
+					<div class="formDescription">That said, we have a few "guidelines": 
+					<ul>
+						<li>Be cool. Don't claim you can teach something that you can't.</li>
+						<li>Maintain an attractive profile and lesson descriptions - this means keeping it filled out with complete info, and using high-quality images.</li>
+						<li>We are serious about the photo quality - so serious that we'll send a professional to take photos of you or your work if you don't think you can do it yourself.</li>
+						<li>That's all we can think of for now.</li>
+					</ul>
+					OK with all that? Great. Let's get started.
+					</div>
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfFormButton" data-current-page="guidelines">Continue</button>
+						</div>	
+						<div class="editProfFormStatus"></div>				
+					</div>					
+					
+				</div>
+
+
+				<div id="details" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo first">Your profile title, or your specialty</div>
+					<div class="formFieldError"></div>
+					{{form.edit_headline(placeholder="e.g. Experienced Printmaker", class="formField span6")}}
+<!-- 
+					<div class="formFieldInfo">In which category do your teachable skills primarily lie?</div>
+					<div class="formFieldError"></div>
+					{{form.edit_industry(class="formField span6")}} -->
+
+					<div class="formFieldInfo">Got a website?</div>
+					<div class="formFieldError"></div>
+					{{form.edit_url(placeholder="Website URL", class="formField span6")}}
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="details">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>
+					</div>			
+				</div>
+
+
+				<div id="schedule" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo first">When are you available to mentor others?</div>
+					{{form.edit_availability(id="edit_availability", class="formField span6")}}
+					<br><br>
+					<div class="formFieldError"></div>
+					<fieldset id="editProfAvailTimes">
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesMon" id="editProfAvailTimesMon" class="daySelector">
+						<label for="editProfAvailTimesMon">Monday</label> 						
+						<select name="editProfAvailTimesMonStart" id="editProfAvailTimesMonStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesMonEnd" id="editProfAvailTimesMonEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+						<div class="formFieldError"></div>
+					</div> 					
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesTue" id="editProfAvailTimesTue" class="daySelector">
+						<label for="editProfAvailTimesTue">Tuesday</label> 						
+						<select name="editProfAvailTimesTueStart" id="editProfAvailTimesTueStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesTueEnd" id="editProfAvailTimesTueEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+						<div class="formFieldError"></div>
+					</div> 					
+					<div class="editProfAvailDay">
+						<input type="checkbox" name="editProfAvailTimesWed" id="editProfAvailTimesWed" class="daySelector">
+						<label for="editProfAvailTimesWed">Wednesday</label> 						
+						<select name="editProfAvailTimesWedStart" id="editProfAvailTimesWedStart" class="formField timeSelector span2">
+							<option value="">Start Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>  					
+						<select name="editProfAvailTimesWedEnd" id="editProfAvailTimesWedEnd" class="formField timeSelector span2">
+							<option value="">End Time</option>
+							<option value="0600">6:00am</option>
+							<option value="0700">7:00am</option>
+							<option value="0800">8:00am</option>
+							<option value="0900">9:00am</option>
+							<option value="1000">10:00am</option>
+						</select>
+						<div class="formFieldError"></div>
+					</div>  					
+					</fieldset>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="schedule">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>			
+					</div>
+
+				</div>
+
+				<div id="payment" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo first">Please set your default hourly rate. You will still be able to set rates for specific lessons.</div>
+					<div class="formFieldError"></div>
+					${{form.edit_rate(placeholder="US Dollars", maxlength="7", class="formField span2")}} per hour
+					<span class="formFieldCaption"></span>
+
+					<br><br>
+					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
+					<br><br>
+					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+					</div>
+
+					<div class="formFieldError"></div>
+					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
+					
+					{{form.edit_oauth_stripe(class="formField span4", readonly=true)}} <span class="formFieldCaption"></span>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="payment">Save Changes</button>
+						</div>			
+						<div class="editProfFormStatus"></div>
+					</div>
+				</div>
+
+
+				<div id="submit" class="editProfFormPage mentorForm">
+					<div class="formDescription">Last step - tell us if you're cool with our Terms of Service. If your profile has all the required info, we'll make it live and public!</div>					
+					<!-- <div class="formDescription">Last step - tell us if you're ready to make your mentor profile live, and that you are cool with our Terms of Service.</div> -->
+
+					
+					<div class="statusElement">
+						<div class="formFieldError"></div>
+						{{form.edit_mentor_tos}} {{form.edit_mentor_tos.label}}
+					</div>
+				
+<!-- 					<div class="statusElement">	
+						<div class="formFieldError"></div>				
+						{{form.edit_mentor_live}} <strong>{{form.edit_mentor_live.label}}</strong>
+					</div> -->
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave final" data-current-page="submit">Save and Activate!</button>
+						</div>
+						<div class="editProfFormStatus"></div>
+					</div>			
+				</div>
+
+				</form>
+
+			</div>	
+
+	</div><!--empty, container-->
+
+</div>
+
+<!-- Scripts -->
+<!-- <script src="/static/js/dropzone.js"></script> -->
+<script src="/static/js/edit_profile.js"></script>
+<script>
+
+$(document).ready(function(){
+});
+
+</script>
+
+{% endblock %}

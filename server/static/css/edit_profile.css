@@ -33,12 +33,13 @@
 	width: 100%;
 }
 
-.ssContentWrapper {
+.editProfContentWrapper {
 	background-color: white;
 	border-radius: 6px;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
+	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);	
 	margin: 12px auto 12px;
 	padding: 41px;
 	position: relative;
@@ -50,14 +51,14 @@
 
 /* Header and Top Navigation */
 
-.ssTitle {
+/*.editProfTitle {
 	width: 100%;
 	font-size: 2em;
 	margin: 20px 0px;
 	text-align: center;
-}
+}*/
 
-.ssHeader {
+.editProfHeader {
 	border-bottom: 1px solid #b0b4b7;
 	padding-bottom: 15px;		
 	margin-bottom: 10px;
@@ -66,126 +67,210 @@
 	float: left;
 }
 
-.ssHeaderLeft {
+.editProfHeaderLeft {
     float: left;
 	width: 25%;
 }
 
-/*.ssHeaderCenter {
+/*.editProfHeaderCenter {
 	float: left;
 	width: 65%;
 }*/
 
-.ssHeaderRight {
+.editProfHeaderRight {
 	float: left;
 	width: 75%;
 }
 
-.ssTopLeftNavigation {
+.editProfTopLeftNavigation {
 	font-size: 1.1em;
 }
 
-.ssTopLeftNavigation .navItem {
+.editProfTopLeftNavigation .navItem {
 	cursor: pointer;
 	padding-right: 36px;
 }
 
-.ssTopLeftNavigation i {
+.editProfTopLeftNavigation i {
 	font-size: .9em;
 }
 
-.ssHeaderPageName {
-	font-size: 1.5em;
+.editProfHeaderPageName {
+	color: rgba(0,0,0, 0.9);
+	font-size: 1.8em;
+	font-weight: 400;
+/*	line-height: 1.2em;*/
+	margin-bottom: 12px;
+}
+
+.editProfFlags {
+	display: none;
+	width: 100%;
+	float: left;
 }
 
 /* Main Content Areas */
 
-.ssContentContainer {
+.editProfContentContainer {
 
 }
 
-.ssLeftColumn {
+.editProfLeftColumn {
     float: left;
-    text-align: right;
+    text-align: left;
 	width: 25%;
 }
 
-.ssRightColumn {
+.editProfRightColumn {
 	float: right;
 	width: 75%;
 }
 
 /* Left Navigation */
 
-.ssNavContainer {
-	padding-right: 48px;
+.editProfNavContainer {
+	padding-right: 38px;
+	margin-bottom: 36px;
 }	
 
-.ssNavList {
+.editProfNavList {
 
 }
+.editProfNavListHeader {
+	color: rgba(0, 0, 0, 0.4);
+	font-size: .8em;
+	padding: 0px 0px 4px 4px;
+}
 
-.ssNavItem {
-	height: 50px;
-	line-height: 50px;
-	font-size: 1.1em;
-	border-bottom: 1px dotted #f0f0f0;	
+.editProfNavItem {
+	color: rgba(0, 0, 0, 0.7);
+	position: relative;
+	height: 30px;
+	line-height: 30px;
+	font-size: 1em;
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.3);	
 	cursor: pointer;
 	-moz-transition: 0.2s ease;
 	-o-transition: 0.2s ease;
 	-webkit-transition: 0.2 ease;
 	transition: 0.2s ease;	
+	padding: 4px;
 }
 
-.ssNavItem:hover {
-	background-color: #fcfcfc;
+.editProfNavItem:hover {
+	background-color: rgba(0, 0, 0, 0.1);
 }
-.ssNavItem.active {
-	background-color: #f7faff;
-}
-
-.ssNavLink {
-	cursor: pointer;
+.editProfNavItem.active {
+	background-color: rgba(0, 0, 0, 0.05);
+	font-weight: bold;
 }
 
-.ssNavItem i {
+.editProfNavItem.disabled {
+	color: rgba(0, 0, 0, 0.4);
+	cursor: default;
+}
+
+.editProfNavItem.disabled:hover {
+	background-color: inherit;
+}
+.editProfNavItem.disabled.active {
+	background-color: inherit;
+	font-weight: normal;
+}
+
+.editProfNavItem i {
 	font-size: .9em;
 	margin-left: 6px;
+	position: absolute;
+	right: 4px;
+	top: 33%;
 }
 
+.editProfNavItem i.progress {
+	display: none;
+	font-size: .8em;
+	margin-left: 6px;
+	position: absolute;
+	right: 24px;
+	top: 33%;
+	color: rgba(0,0,0,.5);
+}
+
+/* specific nav item for mentor activation */
+#editProfNavItemMentor {
+	/*display: none;*/
+	/*visibility: hidden;*/
+}
+
+/* nav items for mentor fields */
+.mentorNav {
+	opacity: 0.4;
+}
 
 
 /* Styles for the form container and pages */
 
-.ssFormPageContainer {
+
+.editProfFormPageContainer {
 	/*min-height: 300px;*/
 }
 
-.ssFormButtonContainer {
+.editProfFormPageFooter {
+	float: left;
+	width: 100%;
+	margin-top: 24px;	
+}
+
+.editProfFormButtonContainer {
 	float: left;
 	text-align: left;
-	width: 100%;
+
 }
-.ssFormButton {
+
+.editProfFormStatus {
+	color: rgb(0,0,0,.4);
+	display: none;
+	float: left;
+	text-align: left;
+/*	width: 200px;
+*/	font-size: .8em;
+	height: 30px;
+	line-height: 36px;	
+	margin-left: 20px;
+}
+
+.editProfFormButton {
 	width: 150px;
 	margin: 12px 0 12px 0;
 }
-.ssFormButtonSubmit {
+.editProfSave {
+	width: 150px;
+}
+.editProfSave.final {
+	width: 250px;
+}
+
+.editProfFormButtonSubmit {
 	width: 300px;
 	margin: 12px 0 12px 0;
 }
 
-.ssFormPrevious {
+.editProfActivate {
+	width: 300px;
+	margin: 12px 0 12px 0;	
+}
+
+.editProfFormPrevious {
 	cursor: pointer;
 	float: left;
 }
 
-.ssFormCancel {
+.editProfFormCancel {
 	display: none;
 	cursor: pointer;
 }
 
-.ssFormPage {
+.editProfFormPage {
 	display: none;
 	float: left;
 /*	padding: 8px 0px 24px 0px;*/
@@ -201,13 +286,15 @@
 }
 
 .formInstruction {
-	font-weight: bold;
-	font-size: 1.2em;
+	color: rgba(0,0,0, 0.9);
+	font-size: 1.5em;
+	font-weight: 400;
+	line-height: 1.2em;
 	margin-bottom: 12px;
 }
 
 .formDescription {
-
+	color: rgba(0,0,0, 0.7);
 	margin-bottom: 12px;
 }
 
@@ -219,36 +306,83 @@
 	margin-bottom: 8px;
 }
 
+.formFieldCaption {
+	display: none;
+	font-size: .8em;
+	margin-left: 16px;
+}
+
+.formFieldInfo {
+	color: rgba(0,0,0,0.4);
+	font-size: .9em;
+	padding-bottom: 6px;
+	padding-top: 20px;
+}
+
+.formFieldInfo.first {
+	padding-top: 0px;
+		
+}
+
+.formFieldError {
+	display: none;
+	font-size: .7em;
+	color: red;
+}
+
+.formFieldError.alt {
+	float: left;
+	height: 40px;
+	line-height: 50px;
+	margin-left: 16px;
+	margin-top: 10px;
+}
+
+
+.formContainer {
+	margin-bottom: 20px;
+}
+
 .formField {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	margin-bottom: 6px;
-	/*margin-bottom: -1px;*/
+	/*margin-bottom: 6px;*/
+	margin-bottom: -1px;
 }
 
-.formField.span3 {
+.span1 {
+	width: 8.33%;
+}
+.span2 {
+	width: 16.66%;
+}
+.span3 {
 	width: 25%;
 }
-.formField.span6 {
+.span4 {
+	width: 33%;
+}
+
+.span6 {
 	width: 50%;
 }
-.formField.span9 {
+.span9 {
 	width: 75%;
 }
-.formField.span12 {
+.span12 {
 	width: 100%;
 }
 
-/*
-.ssFormPage .formField:first-of-type {
+
+.formField.stack:first-of-type {
 	border-radius: 5px 5px 0 0;
 }
 
-.ssFormPage .formField:last-of-type {
+.formField.stack:last-of-type {
 	border-radius: 0 0 5px 5px;
 }
-*/
+
 input[type="text"].formField, select.formField {
 	height: 40px;
 }
@@ -259,47 +393,103 @@ input.formField:focus, select.formField:focus, textarea.formField:focus {
 }
 
 textarea.formField {
+	border-radius: 3px !important;
+	height: 235px;
 	resize: none;
 }
 
 /* Specific Form Fields */
 
-#ssAddress1 {
-
-}
-
-#schedule label {
-	font-size: 0.8em;
-	line-height: 1.7em;
-	padding-left: 10px;	
-}
-
-#ssProfileImage {
+#mentor {
 	display: none;
 }
 
-.ssProfileImageInfo {
+#mentor .editProfFormPageFooter {
+	margin-top: 0px;
+}
+
+.editProfAvailDay {
+	position: relative;
+	margin-bottom: 4px;
+}
+
+.editProfAvailDay label {
+	color: rgba(0,0,0,.7);
+	font-size: 1em;
+	font-weight: 600;
+	display: inline-block;
+	padding: 0px 10px 0px 6px;	
+	width: 100px;
+}
+
+.editProfAvailDay input[type="checkbox"]{
+	height: 20px;
+	width: 20px;
+	position: relative;
+	top: 4px;
+}
+
+.statusElement {
+	position: relative;
+	margin-bottom: 4px;
+}
+
+.statusElement input[type="checkbox"]{
+	height: 20px;
+	width: 20px;
+	position: relative;
+	top: 4px;
+}
+
+.statusElement label {
+	color: rgba(0,0,0,.7);
+	font-size: .9em;
+	display: inline-block;
+	padding: 0px 10px 0px 6px;	
+}
+
+.editProfAvailDay .daySelector {
+	width: 20%;
+}
+.editProfAvailDay .timeSelector {
+
+}
+
+#edit_photo {
+	display: none;
+}
+
+.editProfImageInfo {
 	width: 100%;
 	float: left;
 	margin: 12px 0px;
 	font-size: .9em;
 }
 
-.ssProfileImageButton {
-	width: 300px;
-	margin-top: 8px;
+.editProfImageButton {
+	width: 150px;
+	margin-top: 18px;
 	float: left;
 }
 
-.ssUploadPreview {
+.editProfImagePreviewContainer {
 	/*display: none;*/
 }
 
-.ssUploadPreviewImage {
-	display: none;
+
+
+
+.editProfImagePreview {
+	/*display: none;*/
 	border: 1px #cccccc solid;
 	padding: 3px;
 	width: 98%;
+	cursor: pointer;
+}
+
+#edit_oauth_stripe {
+	border: 1px dashed #e3e3e3;
+	margin-left: 6px;
 }
 
 /* Connect with Stripe */

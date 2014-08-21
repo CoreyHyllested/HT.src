@@ -183,7 +183,7 @@ New muted blues for links:
 	position: relative;
 	color: rgba(0, 0, 0, 0.5);
 	cursor: pointer;
-	font-size: 0.875em;
+	font-size: 0.8em;
 	line-height: 41px;
 	max-width: 350px;
 	min-width: 110px;	
@@ -244,6 +244,7 @@ New muted blues for links:
 	display: block;
 	padding-left: 10px;
 	width: 100%;
+
 }
 
 .headerDropdownMenu li ul a:last-of-type li {
@@ -268,8 +269,9 @@ a.headerLogoLink {
 
 .headerIcons {
 	height: 25px;
-	line-height: 38px;
+	line-height: 40px;
 	float: right;
+	font-size: .9em;
 }
 
 .headerIcons a{

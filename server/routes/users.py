@@ -29,7 +29,9 @@ from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
+import os
 
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 @insprite_views.route('/home',      methods=['GET', 'POST'])
 @insprite_views.route('/dashboard', methods=['GET', 'POST'])
@@ -51,6 +53,7 @@ def render_dashboard(usrmsg=None):
 		active_reviews = ht_get_active_author_reviews(bp)
 		active_lessons = ht_get_active_lessons(bp)
 		unread_msgs = ht_get_unread_messages(bp)
+		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -60,7 +63,7 @@ def render_dashboard(usrmsg=None):
 		print 'render_dashboard() usrmsg = ', usrmsg
 
 	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, portfolio=profile_imgs, errmsg=usrmsg))
 
 
 
@@ -225,90 +228,276 @@ def render_message_page():
 
 
 
-@insprite_views.route('/edit', methods=['GET', 'POST'])
+@insprite_views.route('/profile/edit', methods=['GET', 'POST'])
 @req_authentication
-def render_edit():
-	""" Provides Hero space to update their information.  """
+def render_edit_profile():
+	# Form to edit a profile
 
-	uid = session['uid']
-	bp	= Profile.get_by_uid(uid)
+	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session['uid'])
+
+	# StripeConnect req'd for payments
+	pi = Oauth.get_stripe_by_uid(session['uid'])
+	stripe = 'No Stripe Account Found.'
+	if (pi is not None): stripe = pi.oa_account
+	
+	# session_form = session.pop('form', None)
+	# session_errmsg = session.pop('errmsg', None)
+	
+	# Set session next_url here
+	session['next_url'] = '/profile/edit#payment'
 
 	form = ProfileForm(request.form)
-	if form.validate_on_submit():
-		try:
-			print ("form is valid")
-			bp.prof_rate = form.edit_rate.data
-			bp.headline = form.edit_headline.data 
-			bp.location = form.edit_location.data 
-			bp.industry = Industry.industries[int(form.edit_industry.data)] 
-			bp.prof_name = form.edit_name.data
-			bp.prof_bio  = form.edit_bio.data
-			bp.prof_url  = form.edit_url.data
-
-			#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-			# bp.updated  = dt.utcnow()
-
-			# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
-			image_data = request.files[form.edit_photo.name].read()
-			if (len(image_data) > 0):
-				destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-				trace (destination_filename + ", sz = " + str(len(image_data)))
-
-				#print source_extension
-				print 's3'
-				conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-				b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-				sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-				sml.set_contents_from_file(StringIO(image_data))
-				imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
-				bp.prof_img = destination_filename
-
-			# ensure 'http(s)://' exists
-			if (bp.prof_url[:8] != "https://"):
-				if (bp.prof_url[:7] != "http://"):
-					bp.prof_url = "http://" + bp.prof_url;
-
-			print 'add'
-			db_session.add(bp)
-			print 'commit'
-			db_session.commit()
-			log_uevent(uid, "update profile")
-
-			return jsonify(usrmsg="profile updated"), 200
-
-		except AttributeError as ae:
-			print 'hrm. must have changed an object somehwere'
-			print ae
-			db_session.rollback()
-			return jsonify(usrmsg='We messed something up, sorry'), 500
-
-		except Exception as e:
-			print e
-			db_session.rollback()
-			return jsonify(usrmsg=e), 500
-
-	elif request.method == 'POST':
-		log_uevent(uid, "editform isnt' valid" + str(form.errors))
-		print 'shoulding this fire?'
-		return jsonify(usrmsg='Invalid Request: ' + str(form.errors)), 500
-
 	x = 0
 	for x in range(len(Industry.industries)):
 		if Industry.industries[x] == bp.industry:
 			form.edit_industry.data = str(x)
 			break
 
-	form = ProfileForm(request.form)
 	form.edit_name.data     = bp.prof_name
-	form.edit_rate.data     = bp.prof_rate
+	form.edit_location.data = bp.location	
+	form.edit_bio.data      = bp.prof_bio
+
 	form.edit_headline.data = bp.headline
-	form.edit_location.data = bp.location
 	form.edit_industry.data = str(x)
 	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-	form.edit_bio.data      = bp.prof_bio
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-	return make_response(render_template('edit.html', form=form, bp=bp, photoURL=photoURL))
 
+	form.edit_rate.data     = bp.prof_rate
+	form.edit_oauth_stripe.data      = ba.stripe_cust
+	form.edit_availability.data      = bp.availability
+	form.edit_oauth_stripe.data 	 = stripe
+
+	flags = bp.availability
+	print "render_edit_profile(): This user's availability is ", bp.availability
+
+	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+
+
+
+	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
+
+
+@insprite_views.route('/profile/update', methods=['POST'])
+@req_authentication
+def api_update_profile(usrmsg=None):
+	# Process the edit profile form
+
+	print "api_update_profile: beginning update"
+
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	ba = Account.get_by_uid(uid)
+
+	form_mode = request.values.get('formMode');
+	form_page = request.values.get('formPage');
+	form = ProfileForm(request.form)
+
+	print "api_update_profile: form mode: ", form_mode
+	print "api_update_profile: form page: ", form_page
+
+	# we will validate each submitted page manually so as to allow for partial form submission (not using WTForm validation.)
+
+	try:
+		page_validate, errors = ht_validate_profile(bp, form, form_page)
+
+		if (page_validate):
+			update = ht_update_profile(ba, bp, form, form_page)
+			if (update):
+				print 'api_update_profile: add'
+				db_session.add(bp)
+				db_session.add(ba)
+				print 'api_update_profile: commit'
+				db_session.commit()
+				log_uevent(uid, "update profile")
+				return jsonify(usrmsg="profile updated"), 200
+			else:
+				db_session.rollback()
+				print 'api_update_profile: update error.'
+				return jsonify(usrmsg="We messed something up, sorry"), 500
+
+		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format. Please check the form.', errors=errors), 500
+
+	except AttributeError as ae:
+		print 'api_update_profile: hrm. must have changed an object somehwere'
+		print 'api_update_profile: AttributeError: ', ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+
+	except Exception as e:
+		print 'api_update_profile: Exception: ', e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500	
+
+	print "api_update_profile: Something went wrong - Fell Through."
+	print "here is the form object:"
+	print str(form)
+
+	return jsonify(usrmsg="Something went wrong."), 500
+
+
+def ht_validate_profile(bp, form, form_page):
+	errors = {}
+	print "ht_validate_page: validating page: ", form_page
+
+	if (form_page == "general" or form_page == "full"):
+		prof_name = request.values.get("edit_name")
+		prof_location = request.values.get("edit_location")
+		prof_bio = request.values.get("edit_bio")
+
+		if (len(prof_name) == 0):
+			errors["edit_name"] = "Profile name is required." 
+		elif (len(prof_name) > 40):
+			errors["edit_name"] = "This must be less than 40 characters."
+
+	if (form_page == "profile_photo" or form_page == "full"):
+
+		file = request.files[form.edit_photo.name]
+		print "ht_validate_page: uploaded filename is ", file.filename
+		if (file):
+			if allowed_file(file.filename):
+				print "That photo works."
+			else:
+				print "File was not an image."
+				errors["edit_photo"] = "Please only upload jpg, gif, or png files." 
+		else :
+			print "No photo uploaded."
+			if (form_page == "full" and bp.prof_img == "no_pic_big.svg"):
+				errors["edit_photo"] = "All mentors must upload a profile photo." 		
+
+	if (form_page == "details" or form_page == "full"):
+		prof_headline = request.values.get("edit_headline")
+		# prof_url = request.values.get("edit_url")
+
+		if (len(prof_headline) == 0):
+			errors["edit_headline"] = "We'd really love for you to come up with something here." 
+		elif (len(prof_headline) > 40):
+			errors["edit_headline"] = "This must be less than 40 characters."
+
+	if (form_page == "schedule" or form_page == "full"):
+		# once date/time form elements are in, check if:
+		# 1. specific was selected without specifying times
+		# 2. day was selected without specifying time
+		# 3. end time was before start time on any day
+		pass
+
+	if (form_page == "payment" or form_page == "full"):
+		prof_rate = request.values.get("edit_rate")
+		oauth_stripe = request.values.get("edit_oauth_stripe")
+
+		print "ht_validate_profile: prof rate is: ", prof_rate
+
+		try:
+			prof_rate = int(prof_rate)
+			if (prof_rate > 10000):
+				errors["edit_rate"] = "Let's keep it below $10,000 for now."
+		except TypeError:
+			errors["edit_rate"] = "Please keep it to a whole dollar amount (or zero)."
+
+		if (oauth_stripe == ''):
+			errors["edit_oauth_stripe"] = "Stripe activation is required to become a mentor."
+
+	if (form_page == "full"):		
+		tos = request.values.get("edit_mentor_tos")
+		print "tos is ", tos
+		if (tos != 'y'):
+			errors["edit_mentor_tos"] = "You'll need to agree to the terms of service first."
+
+
+	if (len(errors) == 0):
+		print "ht_validate_profile: form is valid."
+		valid = True
+	else:
+		print "ht_validate_profile: errors: ", pprint(errors)
+		valid = False
+
+	return valid, errors
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def ht_update_profile(ba, bp, form, form_page):
+	print 'ht_update_profile:', bp.prof_id
+	print 'ht_update_profile: form_page: ', form_page
+	if (form_page == "full"):
+		print 'ht_update_profile: save all elements'
+	else:
+		print 'ht_update_profile: save only elements from page: ', form_page
+	for key in request.values:
+		print '\t', key, request.values.get(key)
+	update = False
+	
+	if (form_page == 'general' or form_page == 'full'):
+		bp.prof_name = form.edit_name.data
+		bp.location = form.edit_location.data 			
+		bp.prof_bio  = form.edit_bio.data
+		return True
+
+	if (form_page == 'details' or form_page == 'full'):	
+		# bp.industry = Industry.industries[int(form.edit_industry.data)]
+		bp.headline = form.edit_headline.data 			
+		bp.prof_url  = form.edit_url.data
+		return True
+
+	if (form_page == 'payment' or form_page == 'full'):	
+		bp.prof_rate = form.edit_rate.data		
+		ba.stripe_cust = form.edit_oauth_stripe.data
+		return True
+
+	if (form_page == 'schedule' or form_page == 'full'):	
+		bp.availability  = form.edit_availability.data
+		return True
+
+	if (form_page == 'mentor'):
+		if (bp.availability == 0):
+			bp.availability = 1
+			return True
+		else:
+			print "Already a mentor. Moving on..."
+			return True
+
+	# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
+	if (form_page == 'profile_photo' or form_page == 'full'):
+
+		file = request.files[form.edit_photo.name]
+		print "ht_validate_page: uploaded filename is ", file.filename
+		if (file and allowed_file(file.filename)):
+			image_data = file.read()
+			print "api_update_profile: image was uploaded"
+			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
+			trace (destination_filename + ", sz = " + str(len(image_data)))
+
+			#print source_extension
+			print 'api_update_profile: s3'
+			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
+			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
+			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+			sml.set_contents_from_file(StringIO(image_data))
+			imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
+			bp.prof_img = destination_filename
+
+		# if URL is set, ensure 'http(s)://' is part of it
+		if (bp.prof_url):
+			if (bp.prof_url[:8] != "https://"):
+				if (bp.prof_url[:7] != "http://"):
+					bp.prof_url = "http://" + bp.prof_url;
+
+		return True
+
+	#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
+	# bp.updated  = dt.utcnow()
+
+
+@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
+@req_authentication
+def upgrade_profile():
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+
+	if (bp.availability > 0):
+		print "upgrade_profile(): Whahappen? User is already a mentor!"
+
+	# return make_response(render_edit_profile(activate="true"))
+	return redirect('/profile/edit#mentor')
 
 
 
@@ -338,99 +527,6 @@ def render_edit_portfolio_page():
 
 
 
-
-@insprite_views.route('/teacher/signup', methods=['GET', 'POST'])
-@req_authentication
-def render_teacher_signup_page(usrmsg = None):
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	pi = Oauth.get_stripe_by_uid(uid)
-	title = '- Sign Up to Teach'
-	edit  = None
-
-	# StripeConnect req'd for payments
-	stripe = 'No Stripe Account Found.'
-	if (pi is not None): stripe = pi.oa_account
-	session['next_url']='/teacher/signup#payment'
-
-	if (bp.availability > 0):
-		print "render_teacher_signup_page(): User is already a teacher! Repopulate the page ..."
-		title = '- Edit Your Info'
-		edit  = True
-	return make_response(render_template('teacher_signup.html', title='- Sign Up to Teach', bp=bp, oa_stripe=stripe, edit=edit))
-
-
-
-
-@insprite_views.route('/teacher/activate', methods=['GET', 'POST'])
-@req_authentication
-def activate_seller():
-	""" A regular user is signing up to be a seller.  """
-
-	print "-"*32
-	print 'activate_seller(): begin'
-	uid = session['uid']
-	bp = Profile.get_by_uid(session.get('uid'))
-	ba = Account.get_by_uid(session.get('uid'))
-	form = request.form
-
-	# TODO - put this back in
-	# if form.validate_on_submit():
-
-	try:
-		bp.availability = form.get('ssAvailOption')
-		bp.stripe_cust = form.get('oauth_stripe')
-
-		print "activate_seller(): availability:", bp.availability
-		print "activate_seller(): stripe_cust:", bp.stripe_cust
-
-		# Not used yet:
-		# bp.avail_times = int(form.ssAvailTimes.data)
-
-		# TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-		# bp.updated  = dt.utcnow()
-
-		# check for photo - if seller is uploading new one, we replace their old prof_img with it.
-		# TODO: what happens if someone wants to just keep their old one?
-
-		this_image = request.files['ssProfileImage']
-		this_image_data = this_image.read()
-
-		print "activate_seller(): this_image:", str(this_image)
-		print "activate_seller(): this_image_data Len:", len(this_image_data)
-		
-		if (len(this_image_data) > 0):
-			destination_filename = str(hashlib.sha1(this_image_data).hexdigest()) + '.jpg'
-			trace (destination_filename + ", sz = " + str(len(this_image_data)))
-			print 'activate_seller(): s3'
-			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
-			sml.set_contents_from_file(StringIO(this_image_data))
-			bp.prof_img = destination_filename
-
-		print 'activate_seller(): add'
-		db_session.add(bp)
-		print 'activate_seller(): commit'
-		db_session.commit()
-		log_uevent(uid, "activate seller profile")
-		print 'activate_seller(): SUCCESS! Seller activated.'
-		
-		# TODO - add something back in to tell page the status
-		# return redirect("/lesson/add")
-
-
-		return make_response(initialize_lesson("first"))
-
-	except AttributeError as ae:
-		print 'activate_seller(): hrm. must have changed an object somewhere:', ae
-		db_session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
-
-	except Exception as e:
-		print 'activate_seller(): Exception:', e
-		db_session.rollback()
-		return jsonify(usrmsg="Something else screwed up."), 500
 
 
 # This route initiates a new lesson
@@ -466,10 +562,12 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	print "render_new_lesson: lesson_id is", lesson_id
 
 	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "render_new_lesson: lesson_state: ", lesson_state
 
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
-		print "render_edit_lesson: no form submitted"
+		print "render_new_lesson: no form submitted"
 		
 		# In case the user went back in their browser to this page, after submitting
 		form = LessonForm(request.form)
@@ -493,15 +591,15 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		if (form.lessonRate.data <= 0):
 			form.lessonRate.data = bp.prof_rate		
 
-		if (lesson.lesson_flags == 2):
+		if (lesson.lesson_flags < 2):
 			form.lessonMakeLive.data = None
 
 	else:
 		# Submitted form didn't validate - repopulate from the submitted form instead of from the database.
-		print "render_edit_lesson: invalid form imported"
+		print "render_new_lesson: invalid form imported"
 		
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version))
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version=version, lesson_flags=lesson.lesson_flags))
 
 
 
@@ -515,6 +613,11 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	print "render_edit_lesson: lesson_id is", lesson_id
 	
 	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "render_edit_lesson: lesson_state: ", lesson_state
+
+
+	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')
 
 	session_form = session.pop('form', None)
 	session_errmsg = session.pop('errmsg', None)
@@ -544,7 +647,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		if (form.lessonRate.data <= 0):
 			form.lessonRate.data = bp.prof_rate		
 
-		if (lesson.lesson_flags == 2):
+		# if (lesson_state == "INCOMPLETE" or lesson_state == "COMPLETED"):
+		if (lesson.lesson_flags < 2):
 			form.lessonMakeLive.data = None
 
 	else:
@@ -556,7 +660,7 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 	# lessonUpdated = lesson.lesson_updated
 
-	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title))
+	return make_response(render_template('add_lesson.html', bp=bp, form=form, lesson_id=lesson_id, errmsg=errmsg, version="edit", lesson_title=lesson.lesson_title, lesson_flags=lesson.lesson_flags))
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
@@ -566,14 +670,19 @@ def api_update_lesson(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
 	if (bp.availability == 0): return redirect('/dashboard')
 	
+	form = LessonForm(request.form)
+	lesson = Lesson.get_by_id(lesson_id)
+
+	if (bp.prof_id != lesson.lesson_profile): return redirect('/dashboard')	
+
 	version = request.values.get("version")
 	saved = request.values.get("saved")
 	print "api_update_lesson: Version is", version
 	print "api_update_lesson: Saved is", saved
 	print 'api_update_lesson: Beginning lesson update ...'
 
-	form = LessonForm(request.form)
-	lesson = Lesson.get_by_id(lesson_id)
+	lesson_state = lesson.get_state()
+	print "api_update_lesson: lesson_state: ", lesson_state
 
 	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
 	
@@ -591,28 +700,33 @@ def api_update_lesson(lesson_id):
 					db_session.add(lesson)
 					db_session.commit()
 					print 'api_update_lesson: committed!'
+
+
 			except Exception as e:
 				print 'api_update_lesson: Exception:', type(e), e
 				db_session.rollback()
 
-			if (version == "save"):
-				print "api_update_lesson: Returning to form"
-				return jsonify(valid="true")
-			else:
-				print 'api_update_lesson: Redirecting to view lesson:', lesson_id
-				return make_response(redirect("/lesson/"+lesson_id))
+			print 'api_update_lesson: Redirecting to view lesson:', lesson_id
+			return make_response(redirect("/lesson/"+lesson_id))
 
 		else:
 			print 'api_update_lesson: invalid POST', form.errors
 
+	# If the form was saved, we don't need to validate - e.g. empty fields are ok.
 	else:
+		# User clicked the Save Button, not the submit button.
 		if form:
-
-			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete/saved.
+			# We need to know if it was a valid form. If it was not, we will mark the lesson as incomplete.
 			if form.validate_on_submit():
 				print 'api_update_lesson: lesson was SAVED and it validated'
+				if (lesson_state == "INCOMPLETE"):
+					lesson.set_state(LESSON_STATE_COMPLETED)
+				# If lesson was already submitted or available, do nothing
+				
 			else:
 				print 'api_update_lesson: lesson was SAVED and it did NOT validate'
+				if (lesson_state != "INCOMPLETE"):
+					lesson.set_state(LESSON_STATE_INCOMPLETE)				
 			
 			print 'api_update_lesson: lesson_id is ', lesson_id
 			print 'api_update_lesson: looking for updates...'
@@ -628,49 +742,20 @@ def api_update_lesson(lesson_id):
 				db_session.rollback()			
 
 			print "api_update_lesson: Returning to form"
-			return jsonify(valid="true")
+			lesson_flags = lesson.lesson_flags;
+			print "api_update_lesson: Flags: ", lesson_flags
+			return jsonify(valid="true", lesson_flags=lesson.lesson_flags)
 
 	if (saved != "true"):
 
 		print 'api_update_lesson: fell through - populating form data and returning.'
-
-		# This is messed up bc it is not accommodating an unsuccessful form submission - should take values from the form in that case, rather than from the database (where the lesson fields may be empty)
-
-		# form.lessonTitle.data = lesson.lesson_title
-		# form.lessonDescription.data = lesson.lesson_description
-		# form.lessonAddress1.data = lesson.lesson_address_1
-		# form.lessonAddress2.data = lesson.lesson_address_2
-		# form.lessonCity.data = lesson.lesson_city
-		# form.lessonState.data = lesson.lesson_state
-		# form.lessonZip.data = lesson.lesson_zip
-		# form.lessonCountry.data = lesson.lesson_country
-		# form.lessonAddressDetails.data = lesson.lesson_address_details
-		# form.lessonRate.data = lesson.lesson_rate
-		# form.lessonRateUnit.data = lesson.lesson_rate_unit
-		# form.lessonPlace.data = lesson.lesson_loc_option
-		# form.lessonIndustry.data = lesson.lesson_industry
-		# form.lessonDuration.data = lesson.lesson_duration
-		# form.lessonAvail.data = lesson.lesson_avail
-		# form.lessonMakeLive.data = 'y'
-
-		# if (lesson.lesson_flags == 2):
-		# 	form.lessonMakeLive.data = ''
-
-		# lessonUpdated = lesson.lesson_updated
-		# lessonCreated = lesson.lesson_created
-
-		errmsg = "Sorry, something went wrong - your form didn't validate"
 		print 'api_update_lesson: Here is the form data:', pprint(vars(form))
 
+		errmsg = "Sorry, your lesson form has some missing or invalid info. Please check it and resubmit."
 		session['form'] = form
 		session['errmsg'] = errmsg
 
-		if (version == "edit"):
-			return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
-		else:
-			return redirect(url_for("insprite.render_new_lesson", lesson_id=lesson_id))
-
-
+		return redirect(url_for("insprite.render_edit_lesson", lesson_id=lesson_id))
 
 
 def ht_update_lesson(lesson, form, saved):
@@ -680,6 +765,7 @@ def ht_update_lesson(lesson, form, saved):
 	for key in request.values:
 		print '\t', key, request.values.get(key)
 	print 'ht_update_lesson: save all updates'
+
 
 	if (lesson.lesson_title != form.lessonTitle.data):
 		print '\tUpdate lesson title (' + str(lesson.lesson_title) + ') => ' + str(form.lessonTitle.data)
@@ -751,28 +837,18 @@ def ht_update_lesson(lesson, form, saved):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
-	# Apply the flag logic
-	# Default is 0 (initialized). If lesson has already been submitted, it will either be 2 (private) or 3 (active). 
-	# It can also be saved (1) before it has been submitted. The saved state (1) implies incompleteness. Completeness validation will not happen for saved forms.
-	# So if existing flag is 2 or 3, we will never set it to 1 (or zero), only back and forth between the two. Forms must be complete to be flagged 2 or 3.
-	
-	print "\tSetting Flags...current flag is",lesson.lesson_flags
+	# If user pressed 'save', we already took care of state when validating.
+	if (saved != "true"): 
+		lesson_state = lesson.get_state()
+		print "ht_update_lesson: Previous state: ", lesson_state
 
-	if (saved == "true"):
-		print "\tUser saved form - set flag to 1 if not already 2 or 3"
-		if (lesson.lesson_flags <= 1):
-			lesson.lesson_flags = 1
+		if (lesson_state != "AVAILABLE"):
+			lesson.set_state(LESSON_STATE_SUBMITTED)
+			lesson.set_state(LESSON_STATE_AVAILABLE)
 			update = True
-	elif (form.lessonMakeLive.data == True):
-		print "\tUser submitted form and made live"
-		lesson.lesson_flags = 3
-		update = True
-	else:
-		print "\tUser submitted form but kept private"
-		lesson.lesson_flags = 2
-		update = True
 
-	print "\tAnd now the flag is",lesson.lesson_flags	
+	lesson_state = lesson.get_state()
+	print "ht_update_lesson: Final state: ", lesson_state
 
 	return update
 
@@ -1128,7 +1204,7 @@ def upload():
 		print ("upload()\timg_data type = " + str(type(image_data)) + " " + str(len(image_data)) )
 
 		if (len(image_data) > 0):
-			image = ht_create_image(bp, image_data, comment="No caption")
+			image = ht_create_image(bp, image_data, comment="")
 
 			if (lesson_id):
 				print 'upload()\tlesson_id' + str(lesson_id)
