@@ -25,6 +25,16 @@ import uuid, factory
 
 
 
+# Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
+PROF_FLAG_AVAIL_NONE = 0
+PROF_FLAG_AVAIL_FLEX = 1
+PROF_FLAG_AVAIL_SPEC = 2
+
+PROF_STATE_AVAIL_NONE = (0x1 << PROF_FLAG_AVAIL_NONE)
+PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
+PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
+
+
 class Profile(Base):
 	""" Profile maintains information for each "instance" of a users identity.
 		- i.e. Corey's 'DJ Core' profile, which is different from Corey's 'Financial Analyst' ident
@@ -53,6 +63,8 @@ class Profile(Base):
 	created = Column(DateTime(), nullable=False, default = "")
 
 	availability = Column(Integer, default=0)	
+
+	lessons = relationship('Lesson', backref='profile', cascade="all, delete-orphan")
 
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
@@ -128,7 +140,6 @@ class Profile(Base):
 			print type(e), e
 			db_session.rollback()
 		return self
-
 
 
 
