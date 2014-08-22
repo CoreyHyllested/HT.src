@@ -1,11 +1,13 @@
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
-from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField
+from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField, DateField
 from wtforms import IntegerField, validators
 from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
 from server.models import *
+from wtforms_components import DateTimeField, DateRange, Email
+from werkzeug.datastructures import MultiDict
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -168,7 +170,7 @@ class LessonForm(Form):
 	lessonAddressDetails = TextField('Details', None)
 	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
-	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
+	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
 	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
@@ -214,7 +216,7 @@ class ProfileForm(Form):
 
 
 class NTSForm(Form):
-	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
+	mentor                = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
 	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
 	newslot_location    = TextField('Location', [validators.Required(), validators.length(min=1)])
 	newslot_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
@@ -228,7 +230,18 @@ class NTSForm(Form):
 	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
 	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
 
-#
+class ProposalForm(Form):
+	
+	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
+	prop_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
+	prop_location    = TextField('Location')
+	prop_lesson      = SelectField('Lesson', coerce=str)
+	prop_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
+	prop_starttime   = SelectField('Start Time', coerce=str, choices=NTS_times_start)
+	prop_endtime     = SelectField('End Time', coerce=str, choices=NTS_times_end)
+	prop_date 		 = DateField('Date')
+
+	# prop_date = DateTimeField('Date', validators=[DateRange(min=datetime(2000, 1, 1), max=datetime(2000, 10, 10))])
 
 class SearchForm(Form):
 	keywords_field = TextField('keywords-field')
@@ -239,9 +252,10 @@ class SearchForm(Form):
 
 
 class SettingsForm(Form):
+
 	oauth_stripe    = TextField('Stripe')
 	set_input_name	= TextField('Name')
-	set_input_email = TextField('Email')
+	set_input_email = TextField('Email', validators=[Email()])
 	set_input_email_pass = PasswordField('Password', [RequiredIf('set_input_email')])
 	set_input_curpass = PasswordField('Password', [RequiredIf('set_input_newpass')])
 	set_input_newpass = PasswordField('Password')

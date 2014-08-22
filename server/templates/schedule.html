@@ -2,53 +2,56 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/schedule.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
+	{% assets "sass_schedule" %}
+		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+	{% endassets %}
+	
 	<script src="/static/js/moment.min.js"></script>
 	<script src="/static/js/date.js"></script>
-	<script src="/static/js/calendar.js"></script>
-	<script src="/static/js/calendar1.js"></script>
 	<script src="/static/js/format.js"></script>
 	<script src="/static/js/schedule.times.js"></script>
+	
 {% endblock %}
 
 
 
 {% block content %}
-<script>
-	jQuery(function($) {
-		$( "#datepicker" ).datepicker({
-			inline: true
-		});
-	});
-
-	jQuery(function($) {
-		$('#datepicker').change(function() {
-			var d1 = new Date(document.getElementById("datepicker").value);
-		});
-	});
-</script>
-
 
 <div class="scheduleContentWrapper">
+	<form id="proposalForm" method="post" action="/meeting/create">
+	{{form.hidden_tag()}}
 
 	<div class="scheduleLeftColumn">
-		<p>Lesson Request to</p>
-		<h2>{{hp.prof_name}}</h2>
-		<img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hp.prof_img}}'>
+		<p>Schedule Request to</p>
+		<h2>{{mentor.prof_name}}</h2>
+		<img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.prof_img}}'>
 
 		<div class="scheduleLeftColumnInfo">Duration <span id="newslot-duration">?</span></div>
-		<div class="scheduleLeftColumnInfo">Price <span id="newslot_price">${{hp.prof_rate}}/hour</span></div>
-		<p>You will not be charged until after the lesson, and you may see the amount as pending on your credit card statement. If the request is accepted by {{hp.prof_name}}, your card will be securely processed. {{hp.prof_name}} will never get to see your credit card number.</p>
+		<div class="scheduleLeftColumnInfo">Price <span id="newslot_price">${{mentor.prof_rate}}/hour</span></div>
+		You will not be charged until after the lesson, and you may see the amount as pending on your credit card statement. If the request is accepted by {{mentor.prof_name}}, your card will be securely processed. {{mentor.prof_name}} will never get to see your credit card number.
 	</div>
 
 	<div class="scheduleRightColumn">
+
+		<div class="scheduleLesson">
+
+		<h3>Lesson</h3>
+
+		{{form.prop_lesson}}
+
+
+		</div>
+
 		<div class="scheduleIntro">
 			<h3>Introduction</h3>
-			<textarea id="newslot_description" placeholder="Tell {{hp.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
+			<textarea id="newslot_description" placeholder="Tell {{mentor.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
 		</div>
 		
 		<div class="scheduleTime">
 			<h3>Date &amp; Time</h3>
+			
+			{# form.prop_date #}
 			<input type="text" id="datepicker" placeholder="Today" readonly="readonly">
 
 
@@ -91,31 +94,90 @@
 
 		<div class="scheduleLocation">
 			<h3>Location</h3>
-			<input type="text" id="newslot_location" placeholder="UC Berkeley School of Information, 102 S Hall Road, Berkeley, CA, United States">
+
+
+			<input type="text" id="newslot_location" placeholder="102 S Hall Road, Berkeley, CA, United States">
             <div class="scheduleMap" id="map-canvas"></div>
+
+
 			<p></p>
 		</div>
 
 		<!-- Buttons -->
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
-		<form method="post" action="/profile">
-			<input type="hidden" name="hero" value="{{hp.prof_id}}">
-			<input type="submit" class="whiteButton scheduleCancelButton" value="Cancel">
-		</form>
+		<a href="/dashboard"><button class="whiteButton scheduleCancelButton">Cancel</button></a>
+		
 	</div>
 
 	<div class="clear"></div>
 </div>
-
-
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 <script src="/static/js/maps.js"></script>
 <script>
+
+
 $(document).ready(function() {
 	console.log('schedule.html -- document.ready()');
 	google.maps.event.addDomListener(window, 'load', initialize);
-	$('#newslot_starttime').change(function() { update_time_diff({{hp.prof_rate}}); });
-	$('#newslot_endtime').change(function() { update_time_diff({{hp.prof_rate}}); });
+	
+	var daysToDisable = [2, 4, 5]
+
+	$( "#datepicker" ).datepicker({
+		inline: true,
+	    minDate: 0,
+	    maxDate: '+1Y-1D',
+	    dateFormat: "DD, M dd, yy",
+		
+	    beforeShowDay: disableSpecificWeekDays
+	});
+
+	function disableSpecificWeekDays(date) {
+	    var day = date.getDay();
+	    for (i = 0; i < daysToDisable.length; i++) {
+	        if ($.inArray(day, daysToDisable) != -1) {
+	            return [false];
+	        }
+	    }
+	    return [true];
+	}
+
+	$('#datepicker').change(function() {
+		var d1 = new Date(document.getElementById("datepicker").value);
+		var thisday = d1.getDay();
+		console.log("d1 is "+d1);
+		console.log("day is "+thisday);
+
+		// Retrieve mentor's available times based on day
+
+		var d = {}
+		var day = thisday;
+		var mentor_id = "{{mentor.prof_id}}";
+
+		d.day = thisday;
+		d.mentor_id = mentor_id
+
+		console.log('day is'+day+', mentor id is'+mentor_id);
+
+		$.ajax({ url : '/schedule/gettimes',
+				 type : 'GET', 	
+				 // data : {"day":day, "mentor_id":mentor_id},
+				 data : d,
+				 dataType: 'json',
+				 success : function(data) { 
+					 console.log ('AJAX SUCCESS');
+					 console.log(data);
+					  
+				 },
+				 error: function(data) {
+					 console.log ('AJAX FAIL');
+				 }
+		});
+		return false;
+
+	});
+
+	$('#newslot_starttime').change(function() { update_time_diff({{mentor.prof_rate}}); });
+	$('#newslot_endtime').change(function() { update_time_diff({{mentor.prof_rate}}); });
     if (document.getElementById("datepicker") != null) {
         document.getElementById("datepicker").value = moment().format("dddd, MMM D, YYYY");
     }
@@ -137,7 +199,7 @@ $(document).ready(function() {
 			fd.stripe_fngr = (token.card.fingerprint);
 			fd.stripe_mail = (token.email);
 
-			fd.prop_hero =  ($hero_acct);
+			fd.prop_mentor =  ($mentor_acct);
 			fd.prop_cost =  ($cost);
 			fd.prop_area =  ($area);
 			fd.prop_desc =  ($desc);
@@ -169,8 +231,8 @@ $(document).ready(function() {
 
 
 	$('#send_proposal').click(function(e) {
-		$hero_acct = '{{hp.prof_id}}';
-		$hero_name = '{{hp.prof_name}}';
+		$mentor_acct = '{{mentor.prof_id}}';
+		$mentor_name = '{{mentor.prof_name}}';
 		$cost = parseInt($('#newslot_price').val().replace(/,/g, ''), 10) * 100;
 		$time = $('#newslot-duration').html();
 		$desc = $('#newslot_description').val();
@@ -183,13 +245,13 @@ $(document).ready(function() {
 
 		$bp_name = '{{bp.prof_name}}';
 		$bp_id   = '{{bp.prof_id}}';
-		console.log('hero_acct = ' + $hero_acct + ';' + $hero_name);
+		console.log('mentor_acct = ' + $mentor_acct + ';' + $mentor_name);
 		console.log('ts = ' + $ts_d+ ' ; ' + $ts_h);
 		console.log('tf = ' + $tf_d+ ' ; ' + $tf_h);
 		console.log('@ cost = ' + $cost);
 
 		stripe_chkout.open({
-			name:	$hero_name,
+			name:	$mentor_name,
 			description: "Meeting on " + $ts_d, // + " at " + $ts_h, //You'll be charged after the meeting.",
 			email: '{{buyer_email}}',
 //			image: '/static/img/inspriteLogoA.png',

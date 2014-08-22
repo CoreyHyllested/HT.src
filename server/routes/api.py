@@ -35,6 +35,8 @@ def ht_api_meeting_create():
 		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
 		return se.api_response(request.method)
 
+
+	# TODO - change nexturl to depend on passed variable, go to user profile if needed
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 

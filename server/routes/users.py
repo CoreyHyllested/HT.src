@@ -20,7 +20,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm
+from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -1156,35 +1156,65 @@ def api_lesson_image_update(lesson_id):
 
 
 
-
 @insprite_views.route('/schedule', methods=['GET','POST'])
 @req_authentication
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+
+	form = ProposalForm(request.form)
+
 	try:
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
-		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		mentor = Profile.get_by_prof_id(request.values.get('mentor'))
+		lesson = Lesson.get_by_id(request.values.get('lesson'))
+
+		print 'render_schedule() mentor:', mentor
+		print 'render_schedule() lesson:', lesson
+
+
+		form.prop_lesson.choices = Lesson.get_enum_active_by_prof_id(mentor.prof_id)
+		
+		if (lesson):
+			form.prop_lesson.default = lesson.lesson_id		
+
+		form.process()
+
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
-	if (hp is None):
+	if (mentor is None):
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
 		session['messages'] = 'We require a verified email prior to scheduling'
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
-
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-	print 'render_schedule()\tusing STRIPE: ', ht_server.config['STRIPE_SECRET']
-
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
 
 
+
+	form.prop_mentor.data = mentor.prof_id
+
+	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
+
+	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
+
+
+@insprite_views.route('/schedule/gettimes', methods=['GET'])
+@req_authentication
+def get_schedule_times():
+	print "get_schedule_times: start"
+	day = request.values.get('day')
+	mentor_id = request.values.get('mentor_id')
+	print "get_schedule_times: day:", day
+	print "get_schedule_times: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	start, end = Availability.get_avail_by_day(mentor_id, day)
+
+	return jsonify(start=start, end=end)
 
 
 @insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])

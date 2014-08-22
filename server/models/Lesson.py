@@ -123,6 +123,7 @@ class Lesson(Base):
 	lesson_materials_needed = Column(String(5000))
 	lesson_materials_provided = Column(String(5000))
 
+
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
 		self.lesson_profile	= profile_id
@@ -183,6 +184,7 @@ class Lesson(Base):
 			duration_str = str(raw_duration) + " minutes"
 
 		return str(duration_str)
+
 
 	################################################################################
 	### LESSON STATE-CHANGE FUNCTIONS. #############################################
@@ -255,4 +257,31 @@ class Lesson(Base):
 		return lesson
 
 
+	@staticmethod
+	def get_active_by_prof_id(profile_id):
+		lessons = None
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+		except NoResultFound as nrf:
+			pass
+		return lessons
 
+	@staticmethod
+	def get_enum_active_by_prof_id(profile_id):
+		enumLessons = []
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+			for lesson in lessons:
+				if (lesson.lesson_rate_unit == 0):
+					lesson_rate_unit = " per hour"
+				else:
+					lesson_rate_unit = " per lesson"
+
+				lesson_info = lesson.lesson_title + " ($" + str(lesson.lesson_rate) + lesson_rate_unit + ")"
+				enumLessons.append((lesson.lesson_id, lesson_info))
+
+			# enumLessons = [(lesson.lesson_id, lesson.lesson_title) for lesson in lessons]
+
+		except NoResultFound as nrf:
+			pass
+		return enumLessons

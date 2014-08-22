@@ -64,6 +64,8 @@ class Profile(Base):
 
 	availability = Column(Integer, default=0)	
 
+	lessons = relationship('Lesson', backref='profile', cascade="all, delete-orphan")
+
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
@@ -138,7 +140,6 @@ class Profile(Base):
 			print type(e), e
 			db_session.rollback()
 		return self
-
 
 
 

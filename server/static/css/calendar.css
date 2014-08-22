@@ -1,3 +1,7 @@
+
+
+/* DATEPICKER */
+
 /* Disabled elements */
 .ui-state-disabled {
 	cursor: default !important;
@@ -91,9 +95,12 @@
 }
 
 /* Component containers */
-.ui-widget {
-	font-family: 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+
+.ui-datepicker, .ui-widget {
+	font-family: 'Helvetica Neue', Arial, sans-serif;
 	font-size: 1em;
+	background-color: white;
+	border: 1px solid #1488CC;
 }
 
 /* Interaction states */
@@ -140,3 +147,5 @@
 	background-image: url(../img/arrow-right-cal.svg);
 	left: 19px;
 }
+
+

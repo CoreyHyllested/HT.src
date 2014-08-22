@@ -4,7 +4,7 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
 	{% assets "sass_lesson" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
+		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
 	{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
@@ -234,7 +234,7 @@
 				{% if bp.prof_id == mentor.prof_id %}
 					<a href="/lesson/edit/{{lesson.lesson_id}}"><button class="button teal">Edit Lesson</button></a>
 				{% else %}
-					<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
+					<a href="/schedule?mentor={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
 					<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
 				{% endif %}
 			</div>

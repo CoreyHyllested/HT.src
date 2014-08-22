@@ -80,9 +80,11 @@ def initialize_server(config_name):
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
 	css_lesson = Bundle('scss/lesson.scss', filters='pyscss', output='css/lesson.css')
+	css_schedule = Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
 
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('sass_lesson', css_lesson)
+	assets.register('sass_schedule', css_schedule)
 
 	Compress(ht_server)
 

@@ -68,6 +68,30 @@ h3 {
 	color: red;
 }
 
+.span1 {
+	width: 8.33%;
+}
+.span2 {
+	width: 16.66%;
+}
+.span3 {
+	width: 25%;
+}
+.span4 {
+	width: 33%;
+}
+
+.span6 {
+	width: 50%;
+}
+.span9 {
+	width: 75%;
+}
+.span12 {
+	width: 100%;
+}
+
+
 /* Page Wrappers */
 
 /* These aren't implemented - they are currently defined in each page's css - introduces problems when a page imports multiple stylesheets */

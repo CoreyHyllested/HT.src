@@ -63,9 +63,11 @@ class Availability(Base):
 		start = None
 		end = None
 		try:
-			avail = Availability.query.filter_by(avail_weekday=day, avail_profile=profile_id).all()
+			avail = Availability.query.filter_by(avail_weekday=day, avail_profile=profile_id).first()
+			print "get_avail_by_day: avail: ", avail
 			start = avail.avail_start
 			end = avail.avail_end
+			print "get_avail_by_day: start: ", start
 		except NoResultFound as nrf:
 			pass
 		return start, end
