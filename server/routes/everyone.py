@@ -38,10 +38,6 @@ def render_landingpage():
 @ht_csrf.exempt
 @insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
-	""" Provides users ability to modify their information.
-		- Pre-fill all fields with prior information.
-		- Ensure all necessary fields are still populated when submit is hit.
-	"""
 
 	bp = None 
 	if (session.get('uid') is not None):
@@ -56,7 +52,7 @@ def render_profile(usrmsg=None):
 		else:
 			if (bp == None): 
 				# no hero requested or logged in. go to login
-				return redirect('https://herotime.co/login')	
+				return redirect('/login')	
 			hp = bp
 
 		# replace 'hp' with the actual Hero's Profile.
@@ -69,14 +65,25 @@ def render_profile(usrmsg=None):
 		# complicated search queries can fail and lock up DB.
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
+		lessons = ht_get_active_lessons(hp)
+		if lessons:
+			print "found lessons."
+		else:
+			print "no lessons found."
+
+		avail = Availability.get_by_prof_id(hp.prof_id)	
+
+
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
+
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, portfolio=visible_imgs))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs, avail=avail))
 
 
 

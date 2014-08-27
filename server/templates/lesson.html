@@ -3,79 +3,413 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/lesson.css">
+	{% assets "sass_lesson" %}
+		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
+	{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
+	
+	<script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
+	<link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
+	
 
 {% endblock %}
 
 
 {% block content %}
 
+<div class="lessonCoverContainer">
+
+{% if portfolio|count > 0 %}
+
+	{% set bg_image = [] %}
+	{% for image in portfolio %}
+		{% if image.img_order == 0 %}
+			{% if bg_image.append(image.img_id) %}{% endif %}
+		{% endif %}
+	{% endfor %}
+	<div class="lessonCoverTemp" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bg_image[0]}})">
+		<div class="overlay"></div>
+		<div class="lessonCoverLoading"><i class="fa fa-spinner fa-spin"></i>Loading Images...</div>
+	</div>
+	<div class="lessonCover galleria">
+	</div>
+
+{% else %}
+<div class="lessonCoverDefault" style="background-image: url('/static/img/artsupplies.jpg')"></div>
+
+{% endif %}
+
+</div>
+<div class="lessonNavBarContainer">
+
+<div class="lessonNavBar">
+
+<ul>
+<li class="navElement" data-target="overview">Overview</li>
+<li class="navElement" data-target="availability">Availability</li>
+<li class="navElement" data-target="materials">Materials</li>
+<li class="navElement" data-target="reviews">Reviews</li>
+</ul>
+
+</div>
+
+
+</div>
 
 <div class="lessonContentWrapper">
 	
-	<div class="lessonHeader">
-		<div class="lessonHeaderLeft">
-			<div class="lessonTopLeftNavigation">
-				<a title="Back" id="topLeftNavBack" class="topLeftNavBack navItem" href="/dashboard"><i class="fa fa-arrow-circle-left"></i> Go to Dashboard</a>
+	<div class="lessonLeftColumnContainer">
+		<div class="lessonLeftColumn">
+
+			<div class="lessonTitleBox">
+				<div class="lessonTitle"><h1>{{lesson.lesson_title}}</h1></div>
+				<div class="lessonRate"><div class="rateAmount">${{lesson.lesson_rate}}</div>
+				<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div></div>
+				<div class="lessonRating">
+
+					{% if mentor.reviews == 0 %}
+						<!-- Placeholder -->
+						Mentor Rating: <span class="ratingStars"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">(2 Reviews)</a>
+					{% else %}
+						Mentor Rating: <span class="ratingStars"></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">({{mentor.reviews}} Review{% if mentor.reviews > 1 %}s{% endif %})</a>
+					{% endif %}
+
+
+					
+				</div>				
+				<div class="lessonCategory">
+					Category: {{industry}}
+				</div>				
+
 			</div>
+
+			<div id="overview" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Overview</h2></div>			
+				<div class="lessonDescBody">{{lesson.lesson_description}}
+				</div>
+
+				<div class="lessonDescHeader"><h2>Rates</h2></div>			
+				<div class="lessonDescBody">
+					Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
+				</div>
+			</div>
+
+			<div id="availability" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Availability</h2></div>			
+				<div class="lessonDescBody lessonAvail">
+
+				{% if mentor.availability == 1 %}
+					This mentor has flexible availability - let them know what works for you.
+				{% else %}
+					
+					{% for timeslot in avail %}
+						<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+					{% endfor %}
+
+				{% endif %}				
+
+				</div>
+				<div class="lessonDescHeader"><h2>Duration</h2></div>			
+				<div class="lessonDescBody">
+				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration()}} {% else %}Flexible - no set duration{% endif %}				
+				
+				</div>				
+			</div>
+
+			<div id="materials" class="lessonDescBox">
+				<div class="lessonDescHeader"><h2>Materials</h2></div>			
+				<div class="lessonDescBody">
+				{% if (lesson.lesson_materials_provided == '' and lesson.lesson_materials_needed == '') %}
+					No materials needed or provided
+				{% else %}
+					{% if lesson.lesson_materials_provided %}				
+					<h3>The mentor will provide...</h3>
+						{{lesson.lesson_materials_provided}}
+					<br><br>
+					{% endif %}
+					{% if lesson.lesson_materials_needed %}	
+					<h3>The student should bring...</h3>
+						{{lesson.lesson_materials_needed}}
+					
+					{% endif %}
+				{% endif %}
+				</div>
+			</div>
+
+			<div id="reviews" class="lessonReviewsBox">
+				<div class="lessonReviewsHeader"><h2>Reviews of {{mentor.prof_name}}</h2></div>	
+
+				{% for review in reviews %}
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							{{review.display.prof_name}}
+						</div>							
+						<div class="reviewerDate">
+							Took this lesson on Jan 1, 1970
+						</div>				
+						<div class="reviewerComment">
+							{{review.Review.generalcomments}}
+						</div>				
+					</div>		
+				</div>
+				{% endfor %}
+
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							Frank Underwood
+						</div>							
+						<div class="reviewerDate">
+							Took this lesson on June 4, 2014
+						</div>				
+						<div class="reviewerComment">
+							This person was a fine mentor, but I take slight offense to their slovenly appearance. It made me feel like I was at Woodstock.
+						</div>				
+					</div>		
+				</div>
+
+				<div class="lessonReview">	
+					<div class="reviewerPhotoContainer">
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
+						</div>
+					</div>
+					<div class="reviewerInfo">
+						<div class="reviewerName">
+							Mike Gordon
+						</div>
+						<div class="reviewerDate">
+							Took this lesson on May 14, 2014
+						</div>					
+						<div class="reviewerComment">
+							This person's technique is inspiring. Book with confidence.
+						</div>				
+					</div>		
+				</div>
+				
+
+
+
+
+
+			</div>
+
 		</div>
-		<div class="lessonHeaderCenter">
-			<div class="lessonTitle">{{lesson.lesson_title}}</div>
+	</div>
+
+	<div class="lessonRightColumnContainer">
+		<div class="lessonRightColumn">
+			<div class="lessonMentorBox">
+				<div class="mentorPhotoContainer">
+					<div class="mentorPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{ mentor.prof_img }})">
+					</div>
+				</div>
+
+				<div class="mentorInfo">
+					<div class="mentorName">
+						<a href="/profile?hero={{mentor.prof_id}}" class="blend">{{ mentor.prof_name }}</a>
+					</div>				
+					<div class="mentorHeadline">
+						{{ mentor.headline }}
+					</div>				
+					<div class="mentorLocation">
+						{{ mentor.location }}
+					</div>
+				</div>
+			</div>
+			{% if bp.prof_id == mentor.prof_id %}
+				<div class="lessonState">Lesson Status: {{ lesson.get_state() }}
+				</div>
+			{% endif %}
+			<div class="lessonButtons">
+				{% if bp.prof_id == mentor.prof_id %}
+					<a href="/lesson/edit/{{lesson.lesson_id}}"><button class="button teal">Edit Lesson</button></a>
+				{% else %}
+					<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
+					<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
+				{% endif %}
+			</div>
+			
+			<div class="lessonMapContainer">
+				<div class="lessonMap">
+		            <a href="http://maps.google.com/?q=Berkeley,%20CA"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7CBerkeley,CA&sensor=false"></a>
+	            </div>				
+            </div>				
+
+
+			</div>
+
+
 		</div>
-		<div class="lessonHeaderRight">
-		{% if lesson.lesson_flags == 1 %}
-			Status: Saved
-		{% elif lesson.lesson_flags == 2 %}
-			Status: Private
-		{% elif lesson.lesson_flags == 3 %}	
-			Status: Live
-		{% else %}
-			Uh oh - flag is messed up
-		{% endif %}
-		</div>			
-	</div>	
-
-	<div class="lessonLeftColumn">
-	Left Column Stuff
-	</div>
-
-	<div class="lessonCenterColumn">
-		<h3>Lesson Description</h3>
-		{{lesson.lesson_description}}
-	</div>
-
-	<div class="lessonRightColumn">
-	Right Column Stuff
-	</div>
-
-	<div class="lessonFooter">
-		{% for img in portfolio %}
-			<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" data-lightbox="portfolio" data-title="{{img.img_comment}}">
-			<div class='portfolioImageWrapper'><img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}' class='portfolioImage' data-lightbox="portfolio">
-			</a>
-			<div class='portfolioImageCaption'>{{img.img_comment}}</div>
-			</div>			
-		{% endfor %}
 	</div>
 
 	<div class="clear"></div>
 </div>
 
+<script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+<script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 
+var imageData = [
+	{% for image in portfolio|sort(attribute='img_order') %}
+		{ image: "https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{image.img_id}}", title: "{{image.img_comment}}" },
+	{% endfor %}
+];
+
+if ($(".galleria").length) {
+	console.log("Found galleria element.");
+
+	Galleria.configure({
+	    transition: 'pulse',
+	    imageCrop: true,
+	    carousel: true,
+	    responsive: true,
+
+	});
+
+	Galleria.ready(function() {
+	    
+	    this.bind("thumbnail", function(e) {
+	    	if (e.index == 0){
+	    		
+	    		$(".lessonCover").css("opacity", 1);
+	    	}
+	    });
+
+	});
+
+	Galleria.run('.galleria', {
+		dataSource: imageData,
+	    extend: function(options) {
+
+	        Galleria.log(this) // the gallery instance
+	        Galleria.log(options) // the gallery options
+
+	        // listen to when an image is shown
+	        this.bind('image', function(e) {
+
+	            Galleria.log(e) // the event object may contain custom objects, in this case the main image
+	            Galleria.log(e.imageTarget) // the current image
+
+	            // lets make galleria open a lightbox when clicking the main image:
+	            $(e.imageTarget).click(this.proxy(function() {
+	               this.openLightbox();
+	            }));
+	        });
+
+	    }
+
+	});
+}
+
+
+
 $(document).ready(function() {
+	// google.maps.event.addDomListener(window, 'load', initialize);
 
-	// $(document.body).on("click", "#topLeftNavBack", function(e) {
-	// 	e.preventDefault();
+	// generateStatus({{lesson.lesson_flags}});
 
-	// 	window.history.back();	
-	// });
+	if ({{mentor.rating}} > 0) {
+		displayStars({{mentor.rating}});
+	} else {
+		// Placeholder default if no rating
+		$(".ratingStars").html('<i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star-half-o"></i><i class="fa fa-fw fa-star-o"></i>');
+	}
+
+	$(document).on('click', '.lessonImageThumb', function() {
+		var target = $(this).data("image");
+		console.log("clicked on image:"+target);
+
+	});	
+
+
+	$('#sendModalMessage').click(function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.hp = "{{mentor.prof_id}}";
+		dataObj.next = "modal";
+
+		var myString = JSON.stringify(dataObj);
+		openModalWindow("/compose", ".composeWrapper", myString);	
+
+	});
+
+	$(".navElement").click(function(e){
+		e.preventDefault();
+
+		var target = $(this).data("target");
+
+        $('html,body').animate({
+          scrollTop: $("#"+target).offset().top-8
+        }, 600);
+	});	
+
+	$(".lessonAvailDay").each(function() {
+		var weekday = $(this).data("weekday");
+		var start = $(this).data("start");
+		var finish = $(this).data("finish");
+		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + " until " + moment(finish, "HH:mm:ss").format("h:mm a"));
+	});
 
 });
 
+function displayStars(rating){
+
+	var rounded = (Math.round(rating * 2) / 2).toFixed(1);
+	var count = 0;
+	for (i=0; i<rounded; i++){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star"></i>');
+		count++;
+	}
+
+	if (rounded % 2 != 0){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star-half-o"></i>');
+		count++;
+	}
+
+	for (j=0; j<(5-count); j++){
+		$(".ratingStars").append('<i class="fa fa-fw fa-star-o"></i>');
+	}
+
+}
+
+
+// function generateStatus(lesson_flags) {
+
+// 	var statusText = "Lesson Status: ";
+
+// 	switch (parseInt(lesson_flags)) {
+// 		case 0:
+// 			statusText += "Incomplete";
+// 			break;
+// 		case 1:
+// 			statusText += "Saved but not submitted";
+// 			break;		
+// 		case 2:
+// 			statusText += "Submitted and awaiting approval";
+// 			break;		
+// 		case 3:
+// 			statusText += "Approved and public";
+// 			break;
+// 		default:
+// 			statusText += "Unknown";
+// 			break;
+// 	}
+
+// 	$(".lessonState").text(statusText).show();
+// }
 </script>
 
 {% endblock %}

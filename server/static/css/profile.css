@@ -132,6 +132,109 @@ c) 1000px - ... (desktops)
 
 h3 {color: black;}
 
+.profileMainInfo {
+	width: 100%;
+	float: left;
+	line-height: normal;
+	margin-bottom: 12px;
+}
+
+.profileName {
+	float: left;
+	width: 80%;
+	font-size: 2.8em;
+	color: rgba(0,0,0,.8);
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.profileLocation {
+	width: 100%;
+	float: left;
+	font-size: 1.2em;
+	color: rgba(0,0,0,.6);
+	margin-bottom: 8px;
+}
+
+.profileHeadline {
+	width: 100%;
+	float: left;
+	font-size: 1.8em;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 8px;
+
+}
+
+.profileRating {
+	width: 100%;
+	float: left;
+	margin-bottom: 12px;
+}
+
+.profileLessons {
+	float: left;
+	width: 100%;	
+	margin-bottom: 24px;
+}
+.profileLessonsHeader {
+	width: 100%;
+	float: left;
+	font-size: 1.8em;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 24px;
+	font-weight: bold;
+}
+
+.profileLesson {
+	width: 100%;
+	float: left;
+	margin-bottom: 6px;
+}
+
+.profileReviews {
+	float: left;
+	width: 100%;
+	margin-bottom: 24px;
+}
+
+.profileReviewsHeader {
+	width: 100%;
+	float: left;
+	font-size: 1.8em;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 24px;
+	font-weight: bold;
+}
+
+.profileAvail {
+	width: 100%;
+	float: left;
+	margin-bottom: 24px;
+}
+
+.profileAvailHeader {
+	width: 100%;
+	float: left;
+	font-size: 1.8em;
+	color: rgba(0,0,0,.8);
+	margin-bottom: 24px;
+	font-weight: bold;
+}
+
+.profileAvailDay {
+	width: 100%;
+	float: left;
+	margin-bottom: 6px;
+}
+
+.profileAboutMe {
+	width: 100%;	
+	color: rgba(0,0,0,.6);
+	line-height: 1.8em;
+	margin-bottom: 50px;
+	white-space: pre-wrap;
+}
+
 .profileCover {
 	display: none;
 	/*display: block;*/
@@ -147,6 +250,43 @@ h3 {color: black;}
 	width: 100% !important;
 }
 
+
+.profilePriceBox {
+	float: right;
+	height: 3em;
+	margin-bottom: 28px;
+	text-align: right;
+	width: 100%;
+}
+
+.profilePriceBox .profilePriceBoxRate {
+	display: inline-block;
+	line-height: 1em;
+	font-size: 3em;
+	color: black;
+}
+
+.profilePriceBox span.dollar {
+	font-size: 1.5em;
+	vertical-align: 0.7em;
+	color: black;	
+}
+
+.profilePortfolio {
+	float: right;
+	margin-top: 30px;
+	max-height: 600px;
+	overflow-y: scroll;
+}
+
+.perHour {
+	display: inline-block;
+	font-size: 1.188em;
+	height: 3em;
+	text-align: left;
+}
+
+
 .profileInfoBox img {
 	top: 3px;
 	position: relative;
@@ -157,6 +297,7 @@ h3 {color: black;}
 	border-top: 1px solid #b5b6b8;
 	margin: 20px 0px;
 	width: 100%;
+	float: right;
 }
 
 .profileInfoBox {
@@ -251,12 +392,6 @@ h3 {color: black;}
 		width: 100%;
 	}
 
-	.profileAboutMe {
-		color: #6e7980;
-		line-height: 2em;
-		margin-bottom: 50px;
-		white-space: pre-wrap;
-	}
 
 	.profileReviewsInfo:first-of-type {
 		border-bottom: 1px solid #b0b4b7;
@@ -488,9 +623,6 @@ h3 {color: black;}
 		text-align: center;
 	}
 
-	.profilePortfolio {
-		margin-top: 30px;
-	}
 
 	.profilePortfolio:before {
 		color: black;
@@ -596,13 +728,6 @@ h3 {color: black;}
 
 	.profileNameHeadline h3 {display: none;}
 	.profileMobileBlock {display: none;}
-
-	.profileAboutMe {
-		color: #6e7980;
-		line-height: 2em;
-		margin-bottom: 50px;
-		white-space: pre-wrap;
-	}
 
 	.profileReviewsInfo:first-of-type {
 		border-bottom: 1px solid #b0b4b7;
@@ -825,39 +950,12 @@ h3 {color: black;}
 		width: 30%;
 	}
 
-	.profilePriceBox {
-		float: right;
-		height: 3em;
-		margin-bottom: 40px;
-	}
-
-	.profilePriceBox h1 {
-		display: inline-block;
-		line-height: 1em;
-	}
-
-	.profilePriceBox span {
-		color: black;
-		font-size: 1.438em;
-		vertical-align: 0.7em;
-	}
-
-	.perHour {
-		display: inline-block;
-		font-size: 1.188em;
-		height: 3em;
-	}
-
 	.profileRightColumn input[type="submit"] {
 		width: 100%;
 	}
 
 	.portfolioButtons {
 		text-align: center;
-	}
-
-	.profilePortfolio {
-		margin-top: 30px;
 	}
 
 	.profilePortfolioImage {
@@ -951,13 +1049,6 @@ h3 {color: black;}
 
 	.profileNameHeadline h3 {display: none;}
 	.profileMobileBlock {display: none;}
-
-	.profileAboutMe {
-		color: #6e7980;
-		line-height: 2em;
-		margin-bottom: 50px;
-		white-space: pre-wrap;
-	}
 
 	.profileReviewsInfo:first-of-type {
 		border-bottom: 1px solid #b0b4b7;
@@ -1166,22 +1257,6 @@ h3 {color: black;}
 		width: 322px;
 	}
 
-	.profilePriceBox {
-		float: right;
-		height: 3em;
-		margin-bottom: 40px;
-	}
-
-	.profilePriceBox h1 {
-		display: inline-block;
-		line-height: 1em;
-	}
-
-	.profilePriceBox span {
-		color: black;
-		font-size: 1.438em;
-		vertical-align: 0.7em;
-	}
 
 	.perHour {
 		display: inline-block;
@@ -1193,9 +1268,6 @@ h3 {color: black;}
 		width: 100%;
 	}
 
-	.profilePortfolio {
-		margin-top: 30px;
-	}
 
 	.portfolioButtons {
 		text-align: center;

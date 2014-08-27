@@ -64,6 +64,7 @@ New muted blues for links:
 	-webkit-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 	-moz-box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+	z-index: 1;
 }
 
 .headerContentWrapper {
@@ -183,7 +184,7 @@ New muted blues for links:
 	position: relative;
 	color: rgba(0, 0, 0, 0.5);
 	cursor: pointer;
-	font-size: 0.875em;
+	font-size: 0.8em;
 	line-height: 41px;
 	max-width: 350px;
 	min-width: 110px;	
@@ -244,6 +245,7 @@ New muted blues for links:
 	display: block;
 	padding-left: 10px;
 	width: 100%;
+
 }
 
 .headerDropdownMenu li ul a:last-of-type li {
@@ -254,13 +256,13 @@ New muted blues for links:
 
 .headerLogo {
 	height: 40px;
-	line-height: 48px;
+	line-height: 46px;
 	float: left;
-	width: 97px;
+	width: 128px;
 }
 
 .headerLogoImg {
-	width: 90px;
+	width: 120px;
 }
 
 a.headerLogoLink {
@@ -268,8 +270,9 @@ a.headerLogoLink {
 
 .headerIcons {
 	height: 25px;
-	line-height: 38px;
+	line-height: 40px;
 	float: right;
+	font-size: .9em;
 }
 
 .headerIcons a{

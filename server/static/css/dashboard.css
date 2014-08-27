@@ -83,6 +83,7 @@ c) 1000px - ... (desktops)
 	margin-bottom: 1em;
 }
 
+
 /* Lessons */
 
 
@@ -380,6 +381,12 @@ input.lessonCancel:hover {
 }
 
 /* Right Column - Profile Info Etc */
+
+
+
+.dashboardButtons button {
+	margin: 6px auto;
+}
 
 .dashboardRightColumn img {
 	border-radius: 3px;	

@@ -527,7 +527,7 @@ def ht_create_lesson(profile):
 	try:
 		lesson = Lesson(profile.prof_id)
 		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
-		# lesson.set_state(LESSON_STATE_STARTED)
+		# lesson.set_state(LESSON_STATE_INCOMPLETE)
 		db_session.add(lesson)
 		db_session.commit()
 	except IntegrityError as ie:
@@ -539,18 +539,29 @@ def ht_create_lesson(profile):
 	return lesson
 
 
+def ht_create_avail_timeslot(profile):
+	avail = None
+	try:
+		avail = Availability(profile)
+		print 'ht_create_avail_timeslot: creating timeslot.'
+		db_session.add(avail)
+		db_session.commit()
+	except IntegrityError as ie:
+		print 'ht_create_avail_timeslot: ERROR ie:', ie
+		db_session.rollback()
+	except Exception as e:
+		print 'ht_create_avail_timeslot: ERROR e:', type(e), e
+		db_session.rollback()
+	return avail
 
 
 def htdb_get_lesson_images(lesson_id):
 	try:
 		lesson_images	= db_session.query(LessonImageMap)								\
-									.filter(LessonImageMap.map_lesson == lesson_id).all()
+									.filter(LessonImageMap.map_lesson == lesson_id).order_by(LessonImageMap.map_order).all()
 	except Exception as e:
 		print type(e), e
 	return lesson_images
-
-
-
 
 def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
@@ -592,8 +603,6 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 
 
-
-
 #################################################################################
 ### HELPER FUNCTIONS ############################################################
 #################################################################################
@@ -610,4 +619,7 @@ def ht_print_timedelta(td):
 	else:
 		return str(td.seconds / 3600) + ' hours'
 
+def get_day_string(day):
+	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
+	return d[day]
 
