@@ -49,7 +49,7 @@
       margin: 40px auto 30px;
       min-height: 568px;
       padding: 20px 25px;
-      width: 697px; }
+      width: 980px; }
       .scheduleContentWrapper h2 {
         font-weight: bold;
         padding: 10px 10px 16px 0; }
@@ -62,7 +62,7 @@
 
   .scheduleLeftColumn {
     float: left;
-    width: 100%;
+    width: 40%;
     color: #6e7980;
     font-size: 0.875em;
     font-weight: 300;
@@ -92,60 +92,101 @@
     float: right;
     line-height: 0.875em;
     margin-top: 41px;
-    width: 100%; }
+    width: 50%; }
     .scheduleRightColumn h3 {
       color: black;
       font-size: 1.188em;
       margin-bottom: 18px; }
       .scheduleRightColumn .scheduleLesson {
-        margin-bottom: 30px; }
-        .scheduleRightColumn .scheduleTime {
-          margin-bottom: 30px;
-          position: relative; }
+        margin-bottom: 8px; }
+        .scheduleRightColumn .scheduleLessonInfo {
+          padding: 8px 0px;
+          width: 90%;
+          font-size: 0.8em;
+          line-height: 1em;
+          float: left;
+          min-height: 150px; }
+          .scheduleRightColumn .scheduleLessonInfo .loading {
+            width: 100%;
+            text-align: left;
+            font-size: 1em;
+            padding-left: 8px;
+            color: rgba(0, 0, 0, 0.4); }
+            .scheduleRightColumn .scheduleLessonInfo .loading i {
+              margin-right: 8px; }
+          .scheduleRightColumn .scheduleLessonInfo .lessonField {
+            float: left;
+            width: 100%;
+            padding: 6px 8px;
+            border-bottom: 1px dotted rgba(0, 0, 0, 0.05); }
+            .scheduleRightColumn .scheduleLessonInfo .lessonField:last-of-type {
+              border-bottom: none; }
+              .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonFieldLabel {
+                font-weight: 600;
+                float: left;
+                width: 25%; }
+                .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonData {
+                  color: rgba(0, 0, 0, 0.7);
+                  float: left;
+                  width: 75%; }
+    .scheduleRightColumn .scheduleTime {
+      margin: 24px 0px 30px;
+      position: relative;
+      float: left;
+      width: 100%; }
+      .scheduleRightColumn .scheduleTime .scheduleTimeLabels {
+        float: left;
+        width: 100%;
+        padding: 12px 6px 2px; }
+        .scheduleRightColumn .scheduleTime label {
+          display: block;
+          float: left;
+          width: 50%; }
           .scheduleRightColumn .scheduleTime input[type="text"] {
             -moz-box-sizing: border-box;
             -webkit-box-sizing: border-box;
-            box-sizing: border-box;
-            border-radius: 3px 3px 0 0; }
-            .scheduleRightColumn .scheduleTime select:nth-of-type(1) {
-              border-radius: 0 0 0 3px;
+            box-sizing: border-box; }
+            .scheduleRightColumn .scheduleTime select {
               width: 50%; }
               .scheduleRightColumn .scheduleTime select:nth-of-type(2) {
-                border-radius: 0 0 3px 0;
                 position: absolute;
                 right: 0;
-                width: 50%;
-                width: calc(50% + 1em); }
-                .scheduleRightColumn .scheduleLocation {
-                  margin-bottom: 30px; }
-                  .scheduleRightColumn .scheduleLocation input[type="text"] {
-                    border-bottom: none;
-                    border-radius: 3px 3px 0 0; }
-                    .scheduleRightColumn .scheduleMap {
-                      background-color: rgba(0, 0, 0, 0.05);
-                      border: 1px #e1e8ed solid;
-                      border-radius: 0 0 3px 3px;
-                      border-top: none;
-                      -moz-box-sizing: border-box;
-                      -webkit-box-sizing: border-box;
-                      box-sizing: border-box;
-                      height: 205px;
-                      width: 100%; }
-                      .scheduleRightColumn .scheduleIntro {
-                        margin-bottom: 30px; }
-                        .scheduleRightColumn .scheduleIntro textarea {
-                          border-radius: 3px;
-                          height: 81px;
-                          resize: none;
-                          width: 100%; }
-                          .scheduleRightColumn .schedulePostButton {
-                            float: right;
-                            margin-bottom: 10px;
-                            width: 100%; }
-                            .scheduleRightColumn .scheduleCancelButton {
-                              float: left;
-                              margin-bottom: 10px;
-                              width: 100%; }
+                width: calc(50% + 1px); }
+    .scheduleRightColumn .scheduleLocation {
+      float: left;
+      width: 100%;
+      margin-bottom: 30px; }
+      .scheduleRightColumn .scheduleLocation input[type="text"] {
+        border-bottom: none;
+        border-radius: 3px 3px 0 0; }
+        .scheduleRightColumn .scheduleMap {
+          float: left;
+          background-color: rgba(0, 0, 0, 0.05);
+          border: 1px #e1e8ed solid;
+          border-radius: 0 0 3px 3px;
+          border-top: none;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+          height: 205px;
+          width: 100%; }
+          .scheduleRightColumn .scheduleIntro {
+            float: left;
+            width: 100%;
+            margin-bottom: 30px; }
+            .scheduleRightColumn .scheduleIntro textarea {
+              border-radius: 3px;
+              height: 81px;
+              resize: none;
+              width: 100%; }
+              .scheduleRightColumn .schedulePostButton {
+                float: left;
+                margin-bottom: 10px;
+                width: 45%; }
+                .scheduleRightColumn .scheduleCancelButton {
+                  float: right;
+                  margin-bottom: 10px;
+                  width: 45%; }
 
   input[type="text"] {
     -moz-box-sizing: border-box;
@@ -153,49 +194,50 @@
     box-sizing: border-box;
     width: 100%; }
 
-    .hasDatePicker {
-      position: relative; }
+    #prop_lesson {
+      color: rgba(0, 0, 0, 0.8); }
 
-      @media only screen and (min-device-width: 240px) and (max-width: 449px) {
-        .pageWrapper {
-          background-color: white;
-          min-height: 100%;
-          padding-bottom: 30px;   }
-          .scheduleContentWrapper {
-            margin: 30px auto 10px;
-            overflow-y: scroll;
-            padding: 0px 0px 0px 10px;
-            width: 90%;
-            border-radius: none;
-            box-shadow: none;
-            min-height: auto;   }
-            .schedulePostButton {
-              float: none;   }
-              .scheduleCancelButton {
-                float: none;   }
+      .hasDatePicker {
+        position: relative; }
+
+        @media only screen and (min-device-width: 240px) and (max-width: 449px) {
+          .pageWrapper {
+            background-color: white;
+            min-height: 100%;
+            padding-bottom: 30px;   }
+            .scheduleContentWrapper {
+              margin: 30px auto 10px;
+              overflow-y: scroll;
+              padding: 0px 0px 0px 10px;
+              width: 90%;
+              border-radius: none;
+              box-shadow: none;
+              min-height: auto;   }
+              .scheduleLeftColumn, .scheduleRightColumn {
+                width: 100%;   }
+                .schedulePostButton {
+                  float: none;   }
+                  .scheduleCancelButton {
+                    float: none;   }
 }
 
-  @media only screen and (min-width: 450px) and (max-width: 749px) {
+  @media only screen and (min-width: 450px) and (max-width: 899px) {
     .scheduleContentWrapper {
       -moz-animation: scheduleAppear 1s;
       -o-animation: scheduleAppear 1s;
       -webkit-animation: scheduleAppear 1s;
       animation: scheduleAppear 1s;
-      width: 440px;   }
+      width: 90%;   }
 }
 
-  @media only screen and (min-width: 750px) {
+  @media only screen and (min-width: 900px) {
     .scheduleContentWrapper {
       -moz-animation: scheduleAppear 1s;
       -o-animation: scheduleAppear 1s;
       -webkit-animation: scheduleAppear 1s;
       animation: scheduleAppear 1s;   }
-      .scheduleLeftColumn {
+      .schedulePostButton {
         width: 205px;   }
-        .scheduleRightColumn {
-          width: 370px;   }
-          .schedulePostButton {
-            width: 205px;   }
-            .scheduleCancelButton {
-              width: 123px;   }
+        .scheduleCancelButton {
+          width: 123px;   }
 }

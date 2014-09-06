@@ -168,7 +168,7 @@ class Lesson(Base):
 		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
 		return str(cstate_str)
 
-	def get_duration(self):
+	def get_duration_string(self):
 		raw_duration = int(self.lesson_duration)
 		if (raw_duration > 60):
 			hours = math.floor(raw_duration / 60)
@@ -242,6 +242,55 @@ class Lesson(Base):
 						}
 
 
+	# Lesson Metadata
+	lesson_updated	= Column(DateTime())
+	lesson_created	= Column(DateTime(), nullable=False)
+	lesson_flags	= Column(Integer, default=LESSON_STATE_INCOMPLETE)
+
+	# Lesson Cost
+	lesson_rate = Column(Integer)
+	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_rate = Column(Integer)
+	lesson_group_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_maxsize = Column(Integer)
+
+	# Lesson Materials
+	lesson_materials_needed = Column(String(5000))
+	lesson_materials_provided = Column(String(5000))
+
+	@property
+	def serialize(self):
+		duration_str = self.get_duration_string()
+		print "duration_str is ",duration_str
+		return {
+			'lesson_id'			: str(self.lesson_id),
+			'lesson_profile'	: self.lesson_profile,
+			'lesson_description': str(self.lesson_description),
+			'lesson_industry'	: str(self.lesson_industry),
+			'lesson_avail'		: self.lesson_avail,
+			'lesson_duration'	: self.lesson_duration,
+			'lesson_duration_str'	: str(duration_str),
+			'lesson_loc_option'	: self.lesson_loc_option,
+			'lesson_address_1'	: str(self.lesson_address_1),
+			'lesson_address_2'	: str(self.lesson_address_2),
+			'lesson_city'		: str(self.lesson_city),
+			'lesson_state'		: str(self.lesson_state),
+			'lesson_zip'		: str(self.lesson_zip),
+			'lesson_country'	: str(self.lesson_country),
+			'lesson_address_details'	: str(self.lesson_address_details),
+			'lesson_updated'	: str(self.lesson_updated),
+			'lesson_created'	: str(self.lesson_created),
+			'lesson_flags'		: self.lesson_flags,
+			'lesson_rate'		: self.lesson_rate,
+			'lesson_rate_unit'	: self.lesson_rate_unit,
+			'lesson_group_rate'	: self.lesson_group_rate,
+			'lesson_group_rate_unit'	: self.lesson_group_rate_unit,
+			'lesson_group_maxsize'		: self.lesson_group_maxsize,
+			'lesson_materials_needed'	: str(self.lesson_materials_needed),
+			'lesson_materials_provided'	: str(self.lesson_materials_provided)
+		}
+
+
 	@staticmethod
 	def state_name(state):
 		return LESSON_STATE_LOOKUP_TABLE.get(state, None)
@@ -272,15 +321,7 @@ class Lesson(Base):
 		try:
 			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
 			for lesson in lessons:
-				if (lesson.lesson_rate_unit == 0):
-					lesson_rate_unit = " per hour"
-				else:
-					lesson_rate_unit = " per lesson"
-
-				lesson_info = lesson.lesson_title + " ($" + str(lesson.lesson_rate) + lesson_rate_unit + ")"
-				enumLessons.append((lesson.lesson_id, lesson_info))
-
-			# enumLessons = [(lesson.lesson_id, lesson.lesson_title) for lesson in lessons]
+				enumLessons.append((lesson.lesson_id, lesson.lesson_title))
 
 		except NoResultFound as nrf:
 			pass

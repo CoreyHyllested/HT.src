@@ -56,7 +56,7 @@ c) 750px - ... (tablets, desktops)
 	margin: 40px auto 30px;
 	min-height: 568px;
 	padding: 20px 25px;
-	width: 697px;
+	width: 980px;
 
 	h2 {
 		font-weight: bold;
@@ -78,7 +78,7 @@ c) 750px - ... (tablets, desktops)
 
 .scheduleLeftColumn {
 	float: left;
-	width: 100%;
+	width: 40%;
 	color: #6e7980;
 	font-size: 0.875em;
 	font-weight: 300;
@@ -119,7 +119,7 @@ c) 750px - ... (tablets, desktops)
 	float: right;
 	line-height: 0.875em;
 	margin-top: 41px;
-	width: 100%;
+	width: 50%;
 
 	h3 {
 		color: black;
@@ -128,39 +128,86 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.scheduleLesson {
-		margin-bottom: 30px;
+		margin-bottom: 8px;
 		
+	}
+	.scheduleLessonInfo {
+		padding: 8px 0px;
+		width: 90%;
+		font-size: .8em;
+		line-height: 1em;
+		float: left;
+		min-height: 150px;
 
+		.loading {
+			width: 100%;
+			text-align: left;
+			font-size: 1em;
+			padding-left: 8px;
+			color: rgba(0,0,0,.4);
+			i {
+				margin-right: 8px;
+			}
+		}
 
+		.lessonField {
+			float: left;
+			width: 100%;
+			padding: 6px 8px;
+			border-bottom: 1px dotted rgba(0,0,0,.05);
+			&:last-of-type {
+				border-bottom: none;
+			}
+			.lessonFieldLabel {
+				font-weight: 600;
+				float: left;
+				width: 25%;
+			}
+			.lessonData {
+				color: rgba(0,0,0,.7);
+				float: left;
+				width: 75%;
+			}
+		}
 
 	}
-
 	.scheduleTime {
-		margin-bottom: 30px;
+		margin: 24px 0px 30px;
 		position: relative;
-	}
+		float: left;
+		width: 100%;
+		.scheduleTimeLabels {
+			float: left;
+			width: 100%;
+			padding: 12px 6px 2px;
+		}
 
-	.scheduleTime input[type="text"] {
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;		
-		border-radius: 3px 3px 0 0;
-	}
+		label {
+			display: block;
+			float: left;
+			width: 50%;
+		}
 
-	.scheduleTime select:nth-of-type(1) {
-		border-radius: 0 0 0 3px;
-		width: 50%;
-	}
+		input[type="text"] {
+			-moz-box-sizing: border-box;
+			-webkit-box-sizing: border-box;
+			box-sizing: border-box;		
+		}
 
-	.scheduleTime select:nth-of-type(2) {
-		border-radius: 0 0 3px 0;
-		position: absolute;
-		right: 0;
-		width: 50%;
-		width: unquote("calc(50% + 1em)");
+		select {
+			width: 50%;
+			&:nth-of-type(2) {
+				position: absolute;
+				right: 0;
+				width: unquote("calc(50% + 1px)");
+			}
+		}
+
 	}
 
 	.scheduleLocation {
+		float: left;
+		width: 100%;
 		margin-bottom: 30px;
 	}
 
@@ -170,6 +217,7 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.scheduleMap {
+		float: left;
 		background-color: rgba(0,0,0, 0.05);
 		border: 1px #e1e8ed solid;
 		border-radius: 0 0 3px 3px;
@@ -183,6 +231,8 @@ c) 750px - ... (tablets, desktops)
 
 
 	.scheduleIntro {
+		float: left;
+		width: 100%;
 		margin-bottom: 30px;
 	}
 
@@ -194,15 +244,15 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.schedulePostButton {
-		float: right;
+		float: left;
 		margin-bottom: 10px;
-		width: 100%;
+		width: 45%;
 	}
 
 	.scheduleCancelButton {
-		float: left;
+		float: right;
 		margin-bottom: 10px;
-		width: 100%;		
+		width: 45%;		
 	}
 
 }
@@ -214,6 +264,10 @@ input[type="text"] {
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	width: 100%;	
+}
+
+#prop_lesson {
+	color: rgba(0,0,0,.8);
 }
 
 /* Datepicker/Calendar Overrides */
@@ -241,6 +295,10 @@ input[type="text"] {
 		min-height: auto;
 	}
 
+	.scheduleLeftColumn, .scheduleRightColumn {
+		width: 100%;
+	}
+
 	.schedulePostButton {
 		float: none;
 	}
@@ -251,21 +309,21 @@ input[type="text"] {
 
 }
 
-/* PHABLETS */
-@media only screen and (min-width: 450px) and (max-width: 749px) {
+/* PHABLETS/TABLETS */
+@media only screen and (min-width: 450px) and (max-width: 899px) {
 
 	.scheduleContentWrapper {
 		-moz-animation: scheduleAppear 1s;
 		-o-animation: scheduleAppear 1s;
 		-webkit-animation: scheduleAppear 1s;
 		animation: scheduleAppear 1s;	
-		width: 440px;
+		width: 90%;
 	}
 
 }
 
-/* TABLETS & DESKTOPS */
-@media only screen and (min-width: 750px) {
+/* DESKTOPS */
+@media only screen and (min-width: 900px) {
 
 	.scheduleContentWrapper {
 		-moz-animation: scheduleAppear 1s;
@@ -274,13 +332,6 @@ input[type="text"] {
 		animation: scheduleAppear 1s;	
 	}
 
-	.scheduleLeftColumn {
-		width: 205px;
-	}
-
-	.scheduleRightColumn {
-		width: 370px;
-	}
 
 	.schedulePostButton {
 		width: 205px;

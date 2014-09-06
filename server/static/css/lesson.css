@@ -128,14 +128,14 @@
       width: 66%; }
 
       .lessonLeftColumn {
-        padding-right: 24px; }
+        padding-right: 36px; }
 
         .lessonRightColumnContainer {
           float: right;
           width: 33%; }
 
           .lessonRightColumn {
-            padding-left: 32px; }
+            float: right; }
             .lessonRightColumn .lessonMentorBox {
               float: left;
               width: 100%;
@@ -243,8 +243,8 @@
             -webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2);
             box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.2); }
       .lessonReviewsBox .lessonReview .reviewerInfo {
-        float: right;
-        width: 80%; }
+        float: left;
+        width: 75%; }
         .lessonReviewsBox .lessonReview .reviewerInfo .reviewerName {
           float: left;
           width: 50%;

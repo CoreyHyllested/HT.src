@@ -61,16 +61,31 @@ class Availability(Base):
 	@staticmethod
 	def get_avail_by_day(profile_id, day):
 		start = None
-		end = None
+		finish = None
 		try:
 			avail = Availability.query.filter_by(avail_weekday=day, avail_profile=profile_id).first()
 			print "get_avail_by_day: avail: ", avail
 			start = avail.avail_start
-			end = avail.avail_end
+			finish = avail.avail_finish
 			print "get_avail_by_day: start: ", start
+			print "get_avail_by_day: finish: ", finish
 		except NoResultFound as nrf:
 			pass
-		return start, end
+		return start, finish
+
+	@staticmethod
+	def get_avail_days(profile_id):
+		days = [0,1,2,3,4,5,6]
+		availdays = []
+		try:
+			for day in days:
+				dayavail = Availability.query.filter_by(avail_weekday=day, avail_profile=profile_id).all()
+				print "get_avail_by_day: day: ", day, " avail: ", str(dayavail)
+				if dayavail:
+					availdays.append(day)
+		except NoResultFound as nrf:
+			pass
+		return availdays
 
 
 

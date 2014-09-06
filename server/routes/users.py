@@ -1046,6 +1046,19 @@ def api_get_images_for_lesson(lesson_id):
 	return jsonify(portfolio=images)
 
 
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/retrieve", methods=['GET'])
+def ht_api_retrieve_lesson(lesson_id):
+	# move this to API.
+	lesson = Lesson.get_by_id(lesson_id)
+	# print "ht_api_retrieve_lesson: lesson: "+pprint(lesson)
+	return jsonify(lesson=lesson.serialize)
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
 
 
 @req_authentication
@@ -1202,6 +1215,29 @@ def render_schedule_page():
 	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
 
 
+@insprite_views.route('/schedule/getdays', methods=['GET'])
+@req_authentication
+def get_schedule_days():
+	print "get_schedule_days: start"
+	mentor_id = request.values.get('mentor_id')
+	availdays = []
+	print "get_schedule_days: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	try:
+		availdays = Availability.get_avail_days(mentor_id)
+		if (len(availdays) > 0):
+			print "get_schedule_days: user available on days ", str(availdays)
+		else:
+			print "get_schedule_days: user availability not found"
+
+	except Exception as e:
+		print "get_schedule_days: exception:", e
+		print "get_schedule_days: Couldn't find availability for that user."
+
+	return jsonify(availdays=availdays), 200	
+
+
 @insprite_views.route('/schedule/gettimes', methods=['GET'])
 @req_authentication
 def get_schedule_times():
@@ -1212,9 +1248,17 @@ def get_schedule_times():
 	print "get_schedule_times: mentor_id:", mentor_id
 	avail = Availability.get_by_prof_id(mentor_id)
 
-	start, end = Availability.get_avail_by_day(mentor_id, day)
+	try:
+		start, finish = Availability.get_avail_by_day(mentor_id, day)
+		print "get_schedule_times: start:", start
+		print "get_schedule_times: finish:", finish
 
-	return jsonify(start=start, end=end)
+		return jsonify(start=str(start), finish=str(finish)), 200
+
+	except Exception as e:
+		print "get_schedule_times: exception:", e
+		print "get_schedule_times: Couldn't find availability for that day."
+
 
 
 @insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])

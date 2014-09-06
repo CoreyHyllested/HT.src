@@ -40,7 +40,31 @@
 
 		{{form.prop_lesson}}
 
+		</div>
 
+		<div class="scheduleLessonInfo">
+		</div>
+
+		<div class="scheduleTime">
+			<h3>Date &amp; Time</h3>
+			
+			{{ form.prop_date(id="datepicker",readonly="readonly",placeholder="Choose Date") }}
+
+			<div class="scheduleTimeLabels">
+				{{form.prop_starttime.label}} {{form.prop_finishtime.label}}
+			</div>
+
+			{{form.prop_starttime}}
+			
+			{{form.prop_finishtime}}
+		</div>
+
+
+		<div class="scheduleLocation">
+			<h3>Location</h3>
+			<input type="text" id="newslot_location" placeholder="102 S Hall Road, Berkeley, CA, United States">
+            <div class="scheduleMap" id="map-canvas"></div>
+			<p></p>
 		</div>
 
 		<div class="scheduleIntro">
@@ -48,60 +72,6 @@
 			<textarea id="newslot_description" placeholder="Tell {{mentor.prof_name}} a little about yourself and what you want to learn during your lesson (optional)."></textarea>
 		</div>
 		
-		<div class="scheduleTime">
-			<h3>Date &amp; Time</h3>
-			
-			{# form.prop_date #}
-			<input type="text" id="datepicker" placeholder="Today" readonly="readonly">
-
-
-			<select id="newslot_starttime">
-				<option selected="true" disabled>Start Time</option>
-
-				<option>00:30 AM</option> <option>01:00 AM</option> <option>01:30 AM</option> <option>02:00 AM</option>
-				<option>02:30 AM</option> <option>03:00 AM</option> <option>03:30 AM</option> <option>04:00 AM</option>
-				<option>04:30 AM</option> <option>05:00 AM</option> <option>05:30 AM</option> <option>06:00 AM</option>
-				<option>06:30 AM</option> <option>07:00 AM</option> <option>07:30 AM</option> <option>08:00 AM</option>
-				<option>08:30 AM</option> <option>09:00 AM</option> <option>09:30 AM</option> <option>10:00 AM</option>
-				<option>10:30 AM</option> <option>11:00 AM</option> <option>11:30 AM</option> <option>12:00 PM</option>
-				<option>12:30 PM</option> <option>01:00 PM</option> <option>01:30 PM</option> <option>02:00 PM</option>
-				<option>02:30 PM</option> <option>03:00 PM</option> <option>03:30 PM</option> <option>04:00 PM</option>
-				<option>04:30 PM</option> <option>05:00 PM</option> <option>05:30 PM</option> <option>06:00 PM</option>
-				<option>06:30 PM</option> <option>07:00 PM</option> <option>07:30 PM</option> <option>08:00 PM</option>
-				<option>08:30 PM</option> <option>09:00 PM</option> <option>09:30 PM</option> <option>10:00 PM</option>
-				<option>10:30 PM</option> <option>11:00 PM</option> <option>11:30 PM</option> <option>12:00 PM</option>
-			</select>
-
-
-			<select id="newslot_endtime">
-				<option selected="true" disabled>End Time</option>
-
-				<option>00:30 AM</option> <option>01:00 AM</option> <option>01:30 AM</option> <option>02:00 AM</option>
-				<option>02:30 AM</option> <option>03:00 AM</option> <option>03:30 AM</option> <option>04:00 AM</option>
-				<option>04:30 AM</option> <option>05:00 AM</option> <option>05:30 AM</option> <option>06:00 AM</option>
-				<option>06:30 AM</option> <option>07:00 AM</option> <option>07:30 AM</option> <option>08:00 AM</option>
-				<option>08:30 AM</option> <option>09:00 AM</option> <option>09:30 AM</option> <option>10:00 AM</option>
-				<option>10:30 AM</option> <option>11:00 AM</option> <option>11:30 AM</option> <option>12:00 PM</option>
-				<option>12:30 PM</option> <option>01:00 PM</option> <option>01:30 PM</option> <option>02:00 PM</option>
-				<option>02:30 PM</option> <option>03:00 PM</option> <option>03:30 PM</option> <option>04:00 PM</option>
-				<option>04:30 PM</option> <option>05:00 PM</option> <option>05:30 PM</option> <option>06:00 PM</option>
-				<option>06:30 PM</option> <option>07:00 PM</option> <option>07:30 PM</option> <option>08:00 PM</option>
-				<option>08:30 PM</option> <option>09:00 PM</option> <option>09:30 PM</option> <option>10:00 PM</option>
-				<option>10:30 PM</option> <option>11:00 PM</option> <option>11:30 PM</option> <option>12:00 PM</option>				
-			</select>
-		</div>
-
-
-		<div class="scheduleLocation">
-			<h3>Location</h3>
-
-
-			<input type="text" id="newslot_location" placeholder="102 S Hall Road, Berkeley, CA, United States">
-            <div class="scheduleMap" id="map-canvas"></div>
-
-
-			<p></p>
-		</div>
 
 		<!-- Buttons -->
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
@@ -119,27 +89,69 @@
 $(document).ready(function() {
 	console.log('schedule.html -- document.ready()');
 	google.maps.event.addDomListener(window, 'load', initialize);
+		
+	var mentor_id = "{{mentor.prof_id}}";
+	var daysToEnable = [];
+	var lesson_id = "{{lesson.lesson_id}}"
+
+	if (lesson_id != "") {
+		getLessonDetails(lesson_id);
+	}
+
+	console.log("Getting Available Days for this mentor...");
 	
-	var daysToDisable = [2, 4, 5]
+	$.ajax({ url : '/schedule/getdays',
+			 type : 'GET', 	
+			 data : {"mentor_id":mentor_id},
+			 dataType: 'json',
+			 success : function(data) { 
+				 console.log ('getAvailDays:  AJAX SUCCESS');
+				 console.log(data);
+
+				 daysToEnable = data.availdays;
+
+				 console.log("getAvailDays: daysToEnable: "+daysToEnable);
+				 return daysToEnable;
+			 },
+			 error: function(data) {
+				 console.log ('getAvailDays: AJAX FAIL');
+				 return false;
+			 }
+	});
+
+
+	function enableSpecificWeekDays(date, daysToEnable) {
+
+		// console.log("enableSpecificWeekDays: daysToEnable:" + daysToEnable);
+		
+	    var day = date.getDay();
+	    for (i = 0; i < daysToEnable.length; i++) {
+	        if ($.inArray(day, daysToEnable) == -1) {
+	        	// console.log("enableSpecificWeekDays: day "+day+" not found in daysToEnable ("+daysToEnable+")");
+	            return [false];
+	        }
+
+	    }
+	    return [true];
+	}
+
+	$("#prop_lesson").change(function() {
+		getLessonDetails($(this).val());
+
+
+	});
 
 	$( "#datepicker" ).datepicker({
 		inline: true,
 	    minDate: 0,
 	    maxDate: '+1Y-1D',
 	    dateFormat: "DD, M dd, yy",
-		
-	    beforeShowDay: disableSpecificWeekDays
-	});
-
-	function disableSpecificWeekDays(date) {
-	    var day = date.getDay();
-	    for (i = 0; i < daysToDisable.length; i++) {
-	        if ($.inArray(day, daysToDisable) != -1) {
-	            return [false];
-	        }
+	    defaultDate: null,
+	    beforeShowDay: function(date) {
+	    	// console.log("Datepicker: date: "+date+", daysToEnable: "+daysToEnable);
+	    	return enableSpecificWeekDays(date, daysToEnable);
 	    }
-	    return [true];
-	}
+	});
 
 	$('#datepicker').change(function() {
 		var d1 = new Date(document.getElementById("datepicker").value);
@@ -147,26 +159,31 @@ $(document).ready(function() {
 		console.log("d1 is "+d1);
 		console.log("day is "+thisday);
 
+		// Restore the time dropdowns to show all times, before paring based on avails
+
 		// Retrieve mentor's available times based on day
 
 		var d = {}
 		var day = thisday;
-		var mentor_id = "{{mentor.prof_id}}";
 
 		d.day = thisday;
 		d.mentor_id = mentor_id
 
-		console.log('day is'+day+', mentor id is'+mentor_id);
-
 		$.ajax({ url : '/schedule/gettimes',
 				 type : 'GET', 	
-				 // data : {"day":day, "mentor_id":mentor_id},
 				 data : d,
 				 dataType: 'json',
 				 success : function(data) { 
 					 console.log ('AJAX SUCCESS');
 					 console.log(data);
-					  
+
+					 var start = data.start.substring(0,5);
+					 var finish = data.finish.substring(0,5);
+					 console.log("start: "+start+", finish: "+finish);
+
+					 // When we allow multiple times, iterate through data.
+					 processTimeSelect(start, finish);
+
 				 },
 				 error: function(data) {
 					 console.log ('AJAX FAIL');
@@ -175,6 +192,95 @@ $(document).ready(function() {
 		return false;
 
 	});
+
+	function getLessonDetails(lesson_id){
+
+		console.log("getLessonDetails for lesson "+lesson_id);
+		$(".scheduleLessonInfo").html('<div class="loading"><i class="fa fa-spinner fa-spin"></i>Loading Details...</div>');
+
+		$.ajax({ url : '/lesson/'+lesson_id+'/retrieve',
+				 type : 'GET',
+				 dataType: 'json',
+				 success : function(data) { 
+					console.log ('getLessonDetails: AJAX SUCCESS');
+					console.log(data);
+					var lesson_duration = data.lesson.lesson_duration;
+					var lesson_duration_str = data.lesson.lesson_duration_str;
+					var lesson_rate = data.lesson.lesson_rate;
+					var lesson_rate_unit = data.lesson.lesson_rate_unit;
+					var lesson_group_rate_unit = data.lesson.lesson_group_rate_unit;
+					var lesson_group_rate = data.lesson.lesson_group_rate;
+					var lesson_group_maxsize = data.lesson.lesson_group_maxsize;
+					var lesson_description = data.lesson.lesson_description;
+					
+					if (lesson_rate_unit == 0){
+						lesson_rate_unit = " per hour";
+					} else {
+						lesson_rate_unit = "";
+					}					
+					if (lesson_group_rate_unit == 0){
+						lesson_group_rate_unit = " per person, per hour";
+					} else {
+						lesson_group_rate_unit = " per person";
+					}
+					if (lesson_duration == -1) {
+						lesson_duration_str = "Flexible";
+					}
+
+					$(".scheduleLessonInfo").attr("data-duration", lesson_duration);
+					$(".scheduleLessonInfo").empty();
+				
+					$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Duration:</div><div class='lessonData'>"+lesson_duration_str+"</div></div>");
+					$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Rate:</div><div class='lessonData'>$" + lesson_rate + lesson_rate_unit + " (individuals)");
+					if (lesson_group_rate) {
+						$(".scheduleLessonInfo").append("<br>"+ lesson_group_rate + lesson_group_rate_unit+" (groups, up to "+lesson_group_maxsize+")");
+					}
+					$(".scheduleLessonInfo").append("</div></div>");
+
+					$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Description:</div><div class='lessonData'>" + lesson_description + "</div></div>");
+
+					$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>More Details:</div><div class='lessonData'><a href='lesson/"+lesson_id+"'>Go to lesson page</a></div></div>");	
+				 },
+				 error: function(data) {
+					 console.log ('getLessonDetails: AJAX FAIL');
+				 }
+		});
+		return false;		
+	}
+
+
+	function processTimeSelect(start, finish){
+
+		$("#prop_starttime, #prop_finishtime").children().removeAttr('disabled');
+
+		var startTargetFirst = $("#prop_starttime").children("option[value='"+start+"']");
+		var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']")
+
+		var finishTargetFirst = $("#prop_finishtime").children("option[value='"+start+"']");
+		var finishTargetLast = $("#prop_finishtime").children("option[value='"+finish+"']")
+
+		startTargetFirst.prevAll().attr('disabled','disabled');
+		startTargetLast.nextAll().attr('disabled','disabled');
+		finishTargetFirst.prevAll().attr('disabled','disabled');
+		finishTargetLast.nextAll().attr('disabled','disabled');
+
+		$("#prop_starttime").val(start);
+		$("#prop_finishtime").val(start);
+
+		// startTargetFirst.prevAll().remove();
+		// startTargetLast.nextAll().remove();
+		// finishTargetFirst.prevAll().remove();
+		// finishTargetLast.nextAll().remove();
+
+	}
+
+	$("#prop_starttime").change(function() {
+		// Check duration of lesson and automatically select.
+		// If no duration, set to starttime + 1
+
+	});
+
+
 
 	$('#newslot_starttime').change(function() { update_time_diff({{mentor.prof_rate}}); });
 	$('#newslot_endtime').change(function() { update_time_diff({{mentor.prof_rate}}); });
@@ -262,6 +368,8 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 });
+
+
 </script>
 <script src="https://checkout.stripe.com/checkout.js"></script>
 
