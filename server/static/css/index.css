@@ -90,6 +90,55 @@ c) 1000px - ... (desktops)
 		color: #1488CC;
 	}
 
+	.about {
+		margin: 0px auto;
+		width: 100%;	
+  		overflow: visible;
+		text-align: center;
+		background-color: #ece7e7;
+  		background-image: url(../img/backgrounds/bg_texture.png);
+  		background-repeat: repeat;  
+		padding-top: 28px;
+		padding-bottom: 56px;
+  		float: none;
+  		min-height: 550px;
+	}
+
+	.aboutItemContainer {
+  		margin: 0px auto;
+ 		width: 80%;
+ 		float: none;
+  		/*overflow: auto;*/
+	}
+
+	.aboutHeader {
+		text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  		text-align: center;
+  		height: 50px;
+  		line-height: 56px;
+  		padding: 12px 0px;
+  		font-family: 'Lobster Two', cursive;
+	}
+
+	.aboutItemIcon {
+		margin-bottom: 6px;
+  		padding: 12px;
+	}
+
+	.aboutItemTitle {
+  		font-size: 2em;
+  		color: #e75f63;
+  		font-weight: bold;
+	}
+
+	.aboutItemCaption {
+  		margin-bottom: 24px;
+  		padding: 12px 24px;
+  		color: rgba(0,0,0,.8);
+  		font-size: 1.2em;
+	}
+
+
 /* COVER IMAGE */
 
 	/* Crappy phones */
