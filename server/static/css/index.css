@@ -24,30 +24,30 @@ c) 1000px - ... (desktops)
 /* ANIMATIONS */
 
 	@keyframes coverSlideshow {
-		0% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		30% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		40% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		60% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		80% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
-		100% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
+		0% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		30% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		40% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		60% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		80% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
+		100% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
 	}
 
 	@-moz-keyframes coverSlideshow {
-		0% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		30% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		40% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		60% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		80% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
-		100% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
+		0% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		30% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		40% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		60% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		80% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
+		100% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
 	}
 
 	@-webkit-keyframes coverSlideshow {
-		0% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		30% {background: url('../img/slideshow_farmer.jpg') no-repeat center center;}
-		40% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		60% {background: url('../img/slideshow_sports.jpg') no-repeat center center;}
-		80% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
-		100% {background: url('../img/slideshow_music.jpg') no-repeat center center;}
+		0% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		30% {background: url('../img/slideshow-soap.jpg') no-repeat center center;}
+		40% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		60% {background: url('../img/artsupplies.jpg') no-repeat center center;}
+		80% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
+		100% {background: url('../img/slideshow-brushes.jpg') no-repeat center center;}
 	}
 
 
@@ -352,7 +352,7 @@ c) 1000px - ... (desktops)
 
 		.indexCoverContentWrapper {
 			position: absolute;
-			top: 25%;
+			top: 35%;
 			width: 100%;
 		}
 

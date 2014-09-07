@@ -3,7 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/index.css">
-
+	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 {% endblock %}
 
 {% block content %}
@@ -13,15 +13,16 @@
 	<div class="indexCoverContentWrapper">
 
 		<div class="indexCoverHeading">
-			<h1>NEED A HAND?</h1>
-			<h2 class="italic">Learn from lifestyle experts in your local community.</h2>
+<!-- 			<h1>NEED A HAND?</h1> -->
+			<h2 class="italic">Discover, meet and learn from makers, craftspeople<br>
+			and DIY enthusiasts in your community.</h2>
 		</div>
 
 		<div class="indexCoverSearch">
 			<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
 				<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
-				<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
-				<input class="blueButton" type="submit" value="Search">
+				<input name="search" type="text" autocomplete="off" placeholder="Search">
+				<input class="button teal" type="submit" value="Search for what you want to learn">
 			</form>
 		</div>
 	</div>
@@ -133,9 +134,23 @@
 		
 	</div>
 
-	<div class="clear"></div>
-
-</div>
+	<div class="aboutItem aboutDiscover">How it Works
+		<div class="aboutItemIcon"><img src="/static/img/discover_mglass.png" alt="Discover" class="aboutDiscoverIcon"></div>
+			<div class="aboutItemTitle">Discover</div>
+			<div class="aboutItemCaption">1. Find unique arts and crafts opportunities taught by vetted local mentors. 
+			</div>
+		</div>
+		<div class="aboutItem aboutExperience">
+		<div class="aboutItemIcon"><img src="/static/img/book.png" alt="Experience" class="aboutExperienceIcon"></div>
+			<div class="aboutItemTitle">Schedule</div>
+			<div class="aboutItemCaption">2. Book a paid one-on-one or group lesson with a creative mentor at a time that is convenient for you.</div>
+		</div>
+		<div class="aboutItem aboutMentor">
+			<div class="aboutItemIcon"><img src="/static/img/meet.png" alt="Meet" class="aboutMentorIcon"></div>
+			<div class="aboutItemTitle">Experience</div>
+			<div class="aboutItemCaption">3. Meet your creative mentor in person and start learning.</div>
+	</div>
+<!-- 	<div class="clear"></div> -->
 
 <script>
 
