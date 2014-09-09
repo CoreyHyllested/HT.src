@@ -51,7 +51,7 @@
 		<div class="profileMobileBlock">
 
 			{% if hp is not sameas bp and hp.availability > 0 %}
-				<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
+				<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
 			{% endif %}
 			<div class="profileBasicInfo">
 				<div class="profileInfoBox">
@@ -232,7 +232,7 @@
 			<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Send Message</button>
 
 
-			<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
+			<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
 
 			{% endif %}
 

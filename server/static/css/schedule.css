@@ -63,26 +63,39 @@
   .scheduleLeftColumn {
     float: left;
     width: 40%;
-    color: #6e7980;
-    font-size: 0.875em;
-    font-weight: 300;
-    line-height: 0.875em; }
-    .scheduleLeftColumn .scheduleLeftColumnInfo {
-      border-bottom: 1px solid #e2e4e6;
-      color: #6e7980;
-      font-size: 0.875em;
-      line-height: 0.875em;
-      margin-top: 16px;
-      padding-bottom: 16px; }
-      .scheduleLeftColumn .scheduleLeftColumnInfo span {
-        color: black;
-        float: right;
-        line-height: 0.875em; }
-        .scheduleLeftColumn .scheduleLeftColumnInfo p:last-of-type {
-          color: gray;
-          font-size: 0.7em;
-          line-height: 1.7em;
-          margin-top: 20px; }
+    font-size: 0.9em;
+    line-height: 1.3em;
+    font-weight: 200; }
+    .scheduleLeftColumn .scheduleMentorImage {
+      width: 100%;
+      float: left;
+      margin-bottom: 20px; }
+      .scheduleLeftColumn .schedulePaymentBlurb {
+        width: 100%;
+        float: left;
+        margin-bottom: 20px; }
+        .scheduleLeftColumn .schedulePaymentBlurb .schedulePaymentHeader {
+          width: 100%;
+          float: left;
+          font-size: 1.1em;
+          color: rgba(0, 0, 0, 0.8);
+          margin-bottom: 12px;
+          font-weight: 600; }
+    .scheduleLeftColumn .scheduleMentorAvail {
+      width: 100%;
+      float: left;
+      margin-bottom: 20px; }
+      .scheduleLeftColumn .scheduleMentorAvail .scheduleMentorAvailHeader {
+        width: 100%;
+        float: left;
+        font-size: 1.1em;
+        color: rgba(0, 0, 0, 0.8);
+        margin-bottom: 12px;
+        font-weight: 600; }
+        .scheduleLeftColumn .scheduleMentorAvail .scheduleMentorAvailDay {
+          width: 100%;
+          float: left;
+          margin-bottom: 6px; }
     .scheduleLeftColumn img {
       border-radius: 3px;
       width: 100%; }
@@ -97,40 +110,49 @@
       color: black;
       font-size: 1.188em;
       margin-bottom: 18px; }
-      .scheduleRightColumn .scheduleLesson {
-        margin-bottom: 8px; }
-        .scheduleRightColumn .scheduleLessonInfo {
-          padding: 8px 0px;
-          width: 90%;
-          font-size: 0.8em;
-          line-height: 1em;
+      .scheduleRightColumn .scheduleLessonInfo {
+        width: 90%;
+        font-size: 0.8em;
+        line-height: 1.3em;
+        float: left;
+        margin-top: 8px; }
+        .scheduleRightColumn .scheduleLessonInfo .loading {
+          width: 100%;
+          text-align: left;
+          font-size: 1em;
+          padding-left: 8px;
+          color: rgba(0, 0, 0, 0.4); }
+          .scheduleRightColumn .scheduleLessonInfo .loading i {
+            margin-right: 8px; }
+        .scheduleRightColumn .scheduleLessonInfo .lessonField {
           float: left;
-          min-height: 150px; }
-          .scheduleRightColumn .scheduleLessonInfo .loading {
-            width: 100%;
-            text-align: left;
-            font-size: 1em;
-            padding-left: 8px;
-            color: rgba(0, 0, 0, 0.4); }
-            .scheduleRightColumn .scheduleLessonInfo .loading i {
-              margin-right: 8px; }
-          .scheduleRightColumn .scheduleLessonInfo .lessonField {
-            float: left;
-            width: 100%;
-            padding: 6px 8px;
-            border-bottom: 1px dotted rgba(0, 0, 0, 0.05); }
-            .scheduleRightColumn .scheduleLessonInfo .lessonField:last-of-type {
-              border-bottom: none; }
-              .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonFieldLabel {
-                font-weight: 600;
+          width: 100%;
+          padding: 6px 8px;
+          border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+          font-weight: 200; }
+          .scheduleRightColumn .scheduleLessonInfo .lessonField:last-of-type {
+            border-bottom: none; }
+            .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonFieldLabel {
+              font-weight: 600;
+              float: left;
+              width: 25%; }
+              .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonData {
+                color: rgba(0, 0, 0, 0.7);
                 float: left;
-                width: 25%; }
-                .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonData {
-                  color: rgba(0, 0, 0, 0.7);
-                  float: left;
-                  width: 75%; }
+                width: 75%; }
+    .scheduleRightColumn .scheduleIntro {
+      float: left;
+      width: 100%;
+      margin-bottom: 30px;
+      margin-top: 30px; }
+      .scheduleRightColumn .scheduleIntro textarea {
+        border-radius: 3px;
+        height: 81px;
+        resize: none;
+        width: 100%; }
+        .scheduleRightColumn .scheduleIntro textarea placeholder {
+          font-weight: 200; }
     .scheduleRightColumn .scheduleTime {
-      margin: 24px 0px 30px;
       position: relative;
       float: left;
       width: 100%; }
@@ -148,10 +170,37 @@
             box-sizing: border-box; }
             .scheduleRightColumn .scheduleTime select {
               width: 50%; }
-              .scheduleRightColumn .scheduleTime select:nth-of-type(2) {
-                position: absolute;
-                right: 0;
-                width: calc(50% + 1px); }
+              .scheduleRightColumn .scheduleTime select:first-of-type {
+                float: left; }
+                .scheduleRightColumn .scheduleTime select:nth-of-type(2) {
+                  position: absolute;
+                  right: 0;
+                  bottom: 0;
+                  width: calc(50% + 1px); }
+    .scheduleRightColumn .scheduleTimeDetails {
+      font-size: 0.8em;
+      float: left;
+      width: 100%;
+      font-weight: 200;
+      margin-top: 10px;
+      margin-bottom: 30px; }
+      .scheduleRightColumn .scheduleTimeDetails .detailField {
+        float: left;
+        width: 100%;
+        padding: 6px 8px;
+        border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+        font-weight: 200; }
+        .scheduleRightColumn .scheduleTimeDetails .detailField.highlight {
+          color: #59a6a6;
+          font-weight: 600; }
+          .scheduleRightColumn .scheduleTimeDetails .detailField:last-of-type {
+            border-bottom: none; }
+            .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldLabel {
+              font-weight: 600;
+              float: left; }
+              .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldData {
+                float: left;
+                margin-left: 6px; }
     .scheduleRightColumn .scheduleLocation {
       float: left;
       width: 100%;
@@ -170,23 +219,14 @@
           box-sizing: border-box;
           height: 205px;
           width: 100%; }
-          .scheduleRightColumn .scheduleIntro {
+          .scheduleRightColumn .schedulePostButton {
             float: left;
-            width: 100%;
-            margin-bottom: 30px; }
-            .scheduleRightColumn .scheduleIntro textarea {
-              border-radius: 3px;
-              height: 81px;
-              resize: none;
-              width: 100%; }
-              .scheduleRightColumn .schedulePostButton {
-                float: left;
-                margin-bottom: 10px;
-                width: 45%; }
-                .scheduleRightColumn .scheduleCancelButton {
-                  float: right;
-                  margin-bottom: 10px;
-                  width: 45%; }
+            margin-bottom: 10px;
+            width: 45%; }
+            .scheduleRightColumn .scheduleCancelButton {
+              float: right;
+              margin-bottom: 10px;
+              width: 45%; }
 
   input[type="text"] {
     -moz-box-sizing: border-box;

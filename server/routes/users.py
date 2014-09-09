@@ -1183,12 +1183,14 @@ def render_schedule_page():
 		ba = Account.get_by_uid(session.get('uid'))
 		mentor = Profile.get_by_prof_id(request.values.get('mentor'))
 		lesson = Lesson.get_by_id(request.values.get('lesson'))
+		avail = Availability.get_by_prof_id(mentor.prof_id)	
 
 		print 'render_schedule() mentor:', mentor
 		print 'render_schedule() lesson:', lesson
 
 
 		form.prop_lesson.choices = Lesson.get_enum_active_by_prof_id(mentor.prof_id)
+		form.prop_lesson.choices.insert(0, ('-1', 'No specific lesson - Request a meeting'))
 		
 		if (lesson):
 			form.prop_lesson.default = lesson.lesson_id		
@@ -1207,12 +1209,11 @@ def render_schedule_page():
 		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
 
 
-
 	form.prop_mentor.data = mentor.prof_id
 
 	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
 
-	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
 
 
 @insprite_views.route('/schedule/getdays', methods=['GET'])

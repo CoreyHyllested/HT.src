@@ -260,8 +260,8 @@ class ProposalForm(Form):
 	prop_location    = TextField('Location')
 	prop_lesson      = SelectField('Lesson', coerce=str)
 	prop_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
-	prop_starttime   = SelectField('Start Time', coerce=str, choices=NTS_times_start)
-	prop_finishtime     = SelectField('End Time', coerce=str, choices=NTS_times_end)
+	prop_starttime   = SelectField('Choose Start Time', coerce=str, choices=NTS_times_start)
+	prop_finishtime     = SelectField('Choose End Time', coerce=str, choices=NTS_times_end)
 	prop_date 		 = DateField('Date')
 
 	# prop_date = DateTimeField('Date', validators=[DateRange(min=datetime(2000, 1, 1), max=datetime(2000, 10, 10))])

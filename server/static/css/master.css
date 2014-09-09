@@ -172,10 +172,22 @@ label {
 
 /* Placeholder */
 
-:-moz-placeholder {color: #939292;} /* Firefox 18- */ 
-::-moz-placeholder {color: #939292;} /* Firefox 19+ */ 
-:-ms-input-placeholder {color: #939292;}
-::-webkit-input-placeholder {color: #939292;}
+:-moz-placeholder {
+	color: rgba(0,0,0,.4);
+	font-weight: 200;
+}
+::-moz-placeholder {
+	color: rgba(0,0,0,.4);
+	font-weight: 200;
+}
+:-ms-input-placeholder {
+	color: rgba(0,0,0,.4);
+	font-weight: 200;
+}
+::-webkit-input-placeholder {
+	color: rgba(0,0,0,.4);
+	font-weight: 200;
+}
 
 
 /* Close Window Button */

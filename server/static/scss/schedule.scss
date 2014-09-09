@@ -79,32 +79,52 @@ c) 750px - ... (tablets, desktops)
 .scheduleLeftColumn {
 	float: left;
 	width: 40%;
-	color: #6e7980;
-	font-size: 0.875em;
-	font-weight: 300;
-	line-height: 0.875em;
+	font-size: .9em;
+	line-height: 1.3em;
+	font-weight: 200;
 
-	.scheduleLeftColumnInfo {
-		border-bottom: 1px solid #e2e4e6;		
-		color: #6e7980;
-		font-size: 0.875em;
-		line-height: 0.875em;
-		margin-top: 16px;
-		padding-bottom: 16px;
+	.scheduleMentorImage {
+		width: 100%;
+		float: left;
+		margin-bottom: 20px;
+	}
 
-		span {	
-			color: black;
-			float: right;
-			line-height: 0.875em;
+	.schedulePaymentBlurb {
+
+		width: 100%;
+		float: left;
+		margin-bottom: 20px;
+			
+		.schedulePaymentHeader {
+			width: 100%;
+			float: left;
+			font-size: 1.1em;
+			color: rgba(0,0,0,.8);
+			margin-bottom: 12px;
+			font-weight: 600;
+		}
+	}
+
+
+	.scheduleMentorAvail {
+		width: 100%;
+		float: left;
+		margin-bottom: 20px;
+
+		.scheduleMentorAvailHeader {
+			width: 100%;
+			float: left;
+			font-size: 1.1em;
+			color: rgba(0,0,0,.8);
+			margin-bottom: 12px;
+			font-weight: 600;
 		}
 
-		p:last-of-type {
-			color: gray;
-			font-size: 0.7em;
-			line-height: 1.7em;
-			margin-top: 20px;
-		}		
-
+		.scheduleMentorAvailDay {
+			width: 100%;
+			float: left;
+			margin-bottom: 6px;
+		}
 	}
 
 	img {
@@ -128,16 +148,16 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.scheduleLesson {
-		margin-bottom: 8px;
+		
 		
 	}
 	.scheduleLessonInfo {
-		padding: 8px 0px;
+		/*padding: 8px 0px;*/
 		width: 90%;
 		font-size: .8em;
-		line-height: 1em;
+		line-height: 1.3em;
 		float: left;
-		min-height: 150px;
+		margin-top: 8px;
 
 		.loading {
 			width: 100%;
@@ -155,9 +175,12 @@ c) 750px - ... (tablets, desktops)
 			width: 100%;
 			padding: 6px 8px;
 			border-bottom: 1px dotted rgba(0,0,0,.05);
+			font-weight: 200;
+
 			&:last-of-type {
 				border-bottom: none;
 			}
+		
 			.lessonFieldLabel {
 				font-weight: 600;
 				float: left;
@@ -167,12 +190,32 @@ c) 750px - ... (tablets, desktops)
 				color: rgba(0,0,0,.7);
 				float: left;
 				width: 75%;
+
 			}
 		}
 
 	}
+
+	.scheduleIntro {
+		float: left;
+		width: 100%;
+		margin-bottom: 30px;
+		margin-top: 30px;
+	}
+
+	.scheduleIntro textarea {
+		border-radius: 3px;
+		height: 81px;
+		resize: none;
+		width: 100%;
+
+		placeholder {
+			font-weight: 200;
+		}
+	}
+
 	.scheduleTime {
-		margin: 24px 0px 30px;
+		
 		position: relative;
 		float: left;
 		width: 100%;
@@ -196,10 +239,53 @@ c) 750px - ... (tablets, desktops)
 
 		select {
 			width: 50%;
+			
+			&:first-of-type {
+				float: left;
+			}
 			&:nth-of-type(2) {
 				position: absolute;
 				right: 0;
+				bottom: 0;
 				width: unquote("calc(50% + 1px)");
+			}
+		}
+
+	}
+
+	.scheduleTimeDetails {
+		font-size: .8em;
+		float: left;
+		width: 100%;
+		/*border-bottom: 1px dotted rgba(0,0,0,.05);*/
+		font-weight: 200;
+		margin-top: 10px;
+		margin-bottom: 30px;
+
+		.detailField {
+			float: left;
+			width: 100%;
+			padding: 6px 8px;
+			border-bottom: 1px dotted rgba(0,0,0,.05);
+			font-weight: 200;
+
+			&.highlight{
+				color: $teal;
+				font-weight: 600;
+			}
+
+			&:last-of-type {
+				border-bottom: none;
+			}
+		
+			.detailFieldLabel {
+				font-weight: 600;
+				float: left;
+
+			}
+			.detailFieldData {
+				float: left;
+				margin-left: 6px;
 			}
 		}
 
@@ -230,19 +316,6 @@ c) 750px - ... (tablets, desktops)
 	}	
 
 
-	.scheduleIntro {
-		float: left;
-		width: 100%;
-		margin-bottom: 30px;
-	}
-
-	.scheduleIntro textarea {
-		border-radius: 3px;
-		height: 81px;
-		resize: none;
-		width: 100%;
-	}
-
 	.schedulePostButton {
 		float: left;
 		margin-bottom: 10px;
@@ -269,6 +342,8 @@ input[type="text"] {
 #prop_lesson {
 	color: rgba(0,0,0,.8);
 }
+
+
 
 /* Datepicker/Calendar Overrides */
 
