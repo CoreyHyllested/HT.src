@@ -56,7 +56,6 @@ c) 1000px - ... (desktops)
 	.pageWrapper {
 		background-color: white;
 		min-height: 100%;
-		padding-bottom: 50px;
 		width: 100%;
 	}
 
@@ -90,53 +89,6 @@ c) 1000px - ... (desktops)
 		color: #1488CC;
 	}
 
-	.about {
-		margin: 0px auto;
-		width: 100%;	
-  		overflow: visible;
-		text-align: center;
-		background-color: #ece7e7;
-  		background-image: url(../img/backgrounds/bg_texture.png);
-  		background-repeat: repeat;  
-		padding-top: 28px;
-		padding-bottom: 56px;
-  		float: none;
-  		min-height: 550px;
-	}
-
-	.aboutItemContainer {
-  		margin: 0px auto;
- 		width: 80%;
- 		float: none;
-  		/*overflow: auto;*/
-	}
-
-	.aboutHeader {
-		text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-  		text-align: center;
-  		height: 50px;
-  		line-height: 56px;
-  		padding: 12px 0px;
-  		font-family: 'Lobster Two', cursive;
-	}
-
-	.aboutItemIcon {
-		margin-bottom: 6px;
-  		padding: 12px;
-	}
-
-	.aboutItemTitle {
-  		font-size: 2em;
-  		color: #e75f63;
-  		font-weight: bold;
-	}
-
-	.aboutItemCaption {
-  		margin-bottom: 24px;
-  		padding: 12px 24px;
-  		color: rgba(0,0,0,.8);
-  		font-size: 1.2em;
-	}
 
 
 /* COVER IMAGE */
@@ -489,11 +441,12 @@ c) 1000px - ... (desktops)
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;
-			margin: -200px auto 0;
+			margin: -100px auto 0;
 			padding: 10px;
 			position: relative;
 			width: 980px;
 			z-index: 30;
+			height: 800px;
 		}
 
 	}
@@ -505,7 +458,7 @@ c) 1000px - ... (desktops)
 	@media only screen and (min-device-width: 240px) and (max-width: 489px) {
 
 		.indexSharePassion {
-			background-color: #1488CC;
+			background-color: #9cc9c9;
 			-moz-box-sizing: border-box;
 			-webkit-box-sizing: border-box;
 			box-sizing: border-box;	
@@ -770,5 +723,73 @@ c) 1000px - ... (desktops)
 			line-height: 2.4em;
 		}
 
+
+		.about {
+			margin: 0px auto;
+			width: 100%;	
+  			overflow: visible;
+			text-align: center;
+			background-color: #ece7e7;
+  			background-image: url(../img/backgrounds/bg_texture.png);
+  			background-repeat: repeat;  
+			padding-top: 28px;
+			padding-bottom: 56px;
+  			float: none;
+  			min-height: 550px;
+
+		}
+
+		.aboutItemContainer {
+	  		margin: 0px auto;
+	 		width: 80%;
+	 		float: none;
+	  		/*overflow: auto;*/
+		}
+
+		.aboutHeader {
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+	  		text-align: center;
+	  		height: 50px;
+	  		line-height: 56px;
+	  		padding: 12px 0px;
+	  		font-family: 'Lobster Two', cursive;
+		}
+
+		.aboutItem {
+		  float: left;
+		  width: 33%;
+		}
+
+		.aboutItemIcon {
+			margin-bottom: 6px;
+	  		padding: 12px;
+		}
+
+		.aboutItemTitle {
+	  		font-size: 2em;
+	  		color: #e75f63;
+	  		font-weight: bold;
+		}
+
+		.aboutItemCaption {
+	  		margin-bottom: 24px;
+	  		padding: 12px 24px;
+	  		color: rgba(0,0,0,.8);
+	  		font-size: 1.2em;
+		}
+
+		.mentor {
+		  margin: 0px auto;
+		  width: 100%; 
+		  text-align: center;
+		  padding-top: 56px;
+		  padding-bottom: 56px;
+		  /*background: hsla(180, 20%, 32%, 1);  */
+		  color: #fff;
+		  background: hsla(180, 20%, 32%, 1) url('../img/craft-desk.jpg') center bottom fixed no-repeat;
+		  background-size: cover;
+		  display: block;
+		  overflow-x: hidden;
+		}
 
 	}
