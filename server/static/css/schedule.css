@@ -73,7 +73,8 @@
       .scheduleLeftColumn .schedulePaymentBlurb {
         width: 100%;
         float: left;
-        margin-bottom: 20px; }
+        margin-bottom: 20px;
+        font-size: 0.9em; }
         .scheduleLeftColumn .schedulePaymentBlurb .schedulePaymentHeader {
           width: 100%;
           float: left;
@@ -178,7 +179,7 @@
                   bottom: 0;
                   width: calc(50% + 1px); }
     .scheduleRightColumn .scheduleTimeDetails {
-      font-size: 0.8em;
+      font-size: 0.9em;
       float: left;
       width: 100%;
       font-weight: 200;
@@ -187,20 +188,21 @@
       .scheduleRightColumn .scheduleTimeDetails .detailField {
         float: left;
         width: 100%;
-        padding: 6px 8px;
-        border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
+        padding: 8px 0px;
         font-weight: 200; }
         .scheduleRightColumn .scheduleTimeDetails .detailField.highlight {
           color: #59a6a6;
           font-weight: 600; }
-          .scheduleRightColumn .scheduleTimeDetails .detailField:last-of-type {
-            border-bottom: none; }
-            .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldLabel {
-              font-weight: 600;
-              float: left; }
-              .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldData {
-                float: left;
-                margin-left: 6px; }
+          .scheduleRightColumn .scheduleTimeDetails .detailField.invalidTime {
+            display: none;
+            color: #f29c5a; }
+            .scheduleRightColumn .scheduleTimeDetails .detailField:last-of-type {
+              border-bottom: none; }
+              .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldLabel {
+                float: left; }
+                .scheduleRightColumn .scheduleTimeDetails .detailField .detailFieldData {
+                  float: left;
+                  margin-left: 6px; }
     .scheduleRightColumn .scheduleLocation {
       float: left;
       width: 100%;

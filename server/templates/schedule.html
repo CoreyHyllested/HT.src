@@ -14,8 +14,6 @@
 	
 {% endblock %}
 
-
-
 {% block content %}
 
 <div class="scheduleContentWrapper">
@@ -43,7 +41,9 @@
 
 		<div class="schedulePaymentBlurb">
 			<div class="schedulePaymentHeader">About Payments</div>
-			You will not be charged until after the lesson, and you may see the amount as pending on your credit card statement. If the request is accepted by {{mentor.prof_name}}, your card will be securely processed. {{mentor.prof_name}} will never get to see your credit card number.
+			Payments are processed securely on Insprite using the Stripe payment system. When you propose or book a lesson with a mentor, you will be asked for your credit card information. This transaction will be handled directly by Stripe - Neither Insprite nor {{mentor.prof_name}} will ever get to see your credit card number.<br><br>
+			If the request is accepted by {{mentor.prof_name}}, your card will be securely processed. <strong>You will not be charged until after your lesson has completed</strong>. In the meantime, you may see the charge as pending on your credit card statement.<br><br>
+			<a href="">Read more about our payment policies here.</a>
 		</div>
 
 	</div>
@@ -74,13 +74,14 @@
 			<div class="scheduleTimeLabels">
 				{{form.prop_starttime.label}} {{form.prop_finishtime.label}}
 			</div>
-
+			
 			{{form.prop_starttime}}
 			
 			{{form.prop_finishtime}}
 			
 		</div>
 		<div class="scheduleTimeDetails">
+			<div class="detailField invalidTime"></div>
 			<div class="detailField">
 				<div class="detailFieldLabel">
 					Your Lesson Duration:
@@ -106,8 +107,6 @@
 			<p></p>
 		</div>
 
-		
-
 		<!-- Buttons -->
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
 		<a href="/dashboard"><button class="whiteButton scheduleCancelButton">Cancel</button></a>
@@ -125,9 +124,17 @@ $(document).ready(function() {
 	google.maps.event.addDomListener(window, 'load', initialize);
 		
 	var mentor_id = "{{mentor.prof_id}}";
+	var mentor_rate = "{{mentor.prof_rate}}"
 	var lesson_id = "{{lesson.lesson_id}}"
+	var lesson_duration = "{{lesson.lesson_duration}}"
 	var mentor_availability = "{{mentor.availability}}";
 	var daysToEnable = [];
+	var surcharge = 0.1; // If we don't want to tack on 10% up front to buyer, set surcharge to 0. Can also be used for promos.
+
+	if (surcharge > 0) {
+		mentor_rate = (mentor_rate * (1 + surcharge)).toFixed(2);
+		console.log("Mentor rate is now " + mentor_rate);
+	}
 
 	getLessonDetails(lesson_id);
 
@@ -137,22 +144,17 @@ $(document).ready(function() {
 	
 	} else {
 		// Mentor has specific availability set.
-
 		// Disable time selectors until user has chosen a date
-		$("#prop_starttime, #prop_finishtime").css("opacity", .4).attr("disabled", "disabled");
+		$("#prop_starttime,label[for=prop_starttime],#prop_finishtime,label[for=prop_finishtime]").css("opacity", .4).attr("disabled", "disabled");
 
-		console.log("Getting Available Days for this mentor...");
-		
+		// console.log("Getting Available Days for this mentor...");	
 		$.ajax({ url : '/schedule/getdays',
 				 type : 'GET', 	
 				 data : {"mentor_id":mentor_id},
 				 dataType: 'json',
 				 success : function(data) { 
 					 console.log ('getAvailDays:  AJAX SUCCESS');
-					 console.log(data);
-
 					 daysToEnable = data.availdays;
-
 					 console.log("getAvailDays: daysToEnable: "+daysToEnable);
 					 return daysToEnable;
 				 },
@@ -161,32 +163,10 @@ $(document).ready(function() {
 					 return false;
 				 }
 		});
-
 	}
-
-	function enableSpecificWeekDays(date, daysToEnable) {
-
-		// console.log("enableSpecificWeekDays: daysToEnable:" + daysToEnable);
-		
-	    var day = date.getDay();
-	    for (i = 0; i < daysToEnable.length; i++) {
-	        if ($.inArray(day, daysToEnable) == -1) {
-	        	// console.log("enableSpecificWeekDays: day "+day+" not found in daysToEnable ("+daysToEnable+")");
-	            return [false];
-	        }
-
-	    }
-	    return [true];
-	}
-
 
 	$("#prop_lesson").change(function() {
-
-		$("#datepicker").val("");
-
 		getLessonDetails($(this).val());
-		
-
 	});
 
 	$(".scheduleMentorAvailDay").each(function() {
@@ -202,29 +182,9 @@ $(document).ready(function() {
 	    maxDate: '+1Y-1D',
 	    dateFormat: "DD, M dd, yy",
 	    beforeShowDay: function(date) {
-	    	// console.log("Datepicker: date: "+date+", daysToEnable: "+daysToEnable);
 	    	return enableSpecificWeekDays(date, daysToEnable);
 	    }
 	});
-	// console.log("datepicker val is "+$("#datepicker").val());
-	// $("#datepicker").val("");
-
-
-	// Not working
-	function getNextAvail(today, daysToEnable) {
-	    var todayDay = moment(today).day();
-	    console.log("Getting next avail day.");
-	    if ($.inArray(todayDay, daysToEnable) == "-1") {
-
-			var tomorrow = moment(today).add('days', 1);
-			console.log("Day "+todayDay+ " not available. would recurse now.");
-	    	// return getNextAvail(tomorrow);
-
-	    } else {
-	    	console.log("Day "+todayDay+ " available. returning.");
-	    	$( "#datepicker" ).datepicker({ defaultDate: today });
-	    }
-	}
 
 	$('#datepicker').change(function() {
 			
@@ -269,29 +229,71 @@ $(document).ready(function() {
 
 	});
 
+
+	$("#prop_starttime").change(function() {
+		if ($("#prop_finishtime").is(":visible") && ($("#prop_finishtime").val() != "")) {
+
+			var starttime = moment($("#prop_starttime").val(), "HH:mm");
+			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");			
+
+			if (validateTimes(starttime, finishtime)) {		
+				console.log("times are valid");
+				processLessonDuration();
+			} else {
+				console.log("times are invalid");
+			}
+		}
+	});
+
+	$("#prop_finishtime").change(function() {
+		if ($("#prop_starttime").val() != "") {
+			var starttime = moment($("#prop_starttime").val(), "HH:mm");
+			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
+
+			if (validateTimes(starttime, finishtime)) {		
+				console.log("times are valid");
+				processLessonDuration();
+			} else {
+				console.log("times are invalid");
+			}
+		}
+	});
+
+	// evaluate which days of the week the mentor is available, and disable others in the datepicker.
+	function enableSpecificWeekDays(date, daysToEnable) {
+
+		// console.log("enableSpecificWeekDays: daysToEnable:" + daysToEnable);
+	    var day = date.getDay();
+	    for (i = 0; i < daysToEnable.length; i++) {
+	        if ($.inArray(day, daysToEnable) == -1) {
+	        	// console.log("enableSpecificWeekDays: day "+day+" not found in daysToEnable ("+daysToEnable+")");
+	            return [false];
+	        }
+	    }
+	    return [true];
+	}		
+
+	// get all details of the chosen lesson
 	function getLessonDetails(lesson_id){
 		console.log("getLessonDetails: getting lesson details for lesson "+lesson_id);
 
+		$("#datepicker").val("");
 		$("#prop_finishtime,label[for=prop_finishtime]").show();
 		$(".detailFieldData").empty();
 
 		if (mentor_availability == 2) {
 			// if the mentor has specific availability, disable time selectors until user has chosen a date.
-			console.log("Disabling...");
-			$("#prop_starttime, #prop_finishtime").css("opacity", .4).attr("disabled", "disabled").prop('selectedIndex',0);
+			$("#prop_starttime,label[for=prop_starttime],#prop_finishtime,label[for=prop_finishtime]").css("opacity", .4).attr("disabled", "disabled").prop('selectedIndex',0);
 		}
 
 		if (lesson_id < 1){
-
 			console.log("getLessonDetails: No lesson chosen.");
 
 			$(".scheduleLessonInfo").attr("data-duration", "").empty();
-			$(".scheduleLessonInfo").append("<div class='lessonField'>You are requesting a general mentoring session from {{mentor.prof_name}} at a rate of ${{mentor.prof_rate}} per hour.</div>");
-			
+			$(".scheduleLessonInfo").append("<div class='lessonField'>You are requesting a general mentoring session from {{mentor.prof_name}} at a rate of $" + mentor_rate + " per hour.</div>");
 			$("#prop_finishtime").show();	
 
 		} else {
-
 			console.log("getLessonDetails: A lesson was chosen.");
 
 			$(".scheduleLessonInfo").show().html('<div class="loading"><i class="fa fa-spinner fa-spin"></i>Loading Details...</div>');
@@ -302,7 +304,8 @@ $(document).ready(function() {
 					 success : function(data) { 
 						console.log ('getLessonDetails: AJAX SUCCESS');
 						console.log(data);
-						var lesson_duration = data.lesson.lesson_duration;
+
+						lesson_duration = data.lesson.lesson_duration;
 						var lesson_duration_str = data.lesson.lesson_duration_str;
 						var lesson_rate = data.lesson.lesson_rate;
 						var lesson_rate_unit = data.lesson.lesson_rate_unit;
@@ -310,6 +313,11 @@ $(document).ready(function() {
 						var lesson_group_rate = data.lesson.lesson_group_rate;
 						var lesson_group_maxsize = data.lesson.lesson_group_maxsize;
 						var lesson_description = data.lesson.lesson_description;
+
+						if (surcharge > 0) {
+							lesson_rate = (lesson_rate * (1 + surcharge)).toFixed(2);
+							lesson_group_rate = (lesson_group_rate * (1 + surcharge)).toFixed(2);
+						}
 
 						$(".scheduleLessonInfo").empty().attr({
 						    "data-duration": lesson_duration, 
@@ -321,38 +329,22 @@ $(document).ready(function() {
 						});
 
 						if (lesson_duration == -1) {
-
 							console.log("getLessonDetails: The lesson has no set duration.");
 
 							lesson_duration_str = "Flexible";
 
-							// if a duration isn't set, we will allow user to select a finish time.
-							// $("#prop_finishtime").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
-
 						} else {
-
 							console.log("getLessonDetails: The lesson has a duration: "+lesson_duration_str+" - hiding finishtime select box.");
 
 							// if duration is set for this lesson, hide the finish time 
 							$("#prop_finishtime,label[for=prop_finishtime]").hide();
 							$("#detailLessonDuration").text(lesson_duration_str);
-
 							var totalCost = getTotalCost(lesson_duration, lesson_rate, lesson_rate_unit);
-
 							$("#detailLessonCost").text("$"+totalCost);
-
 						}	
 
-						if (lesson_rate_unit == 0){
-							lesson_rate_unit_text = " per hour";
-						} else {
-							lesson_rate_unit_text = "";
-						}					
-						if (lesson_group_rate_unit == 0){
-							lesson_group_rate_unit_text = " per person, per hour";
-						} else {
-							lesson_group_rate_unit_text = " per person";
-						}
+						lesson_rate_unit_text = lesson_rate_unit == 0 ? " per hour" : " per lesson";
+						lesson_group_rate_unit_text = lesson_group_rate_unit == 0 ? " per person, per hour" : " per person";
 
 						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Duration:</div><div class='lessonData'>"+lesson_duration_str+"</div></div>");
 						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Rate:</div><div class='lessonData'>$" + lesson_rate + lesson_rate_unit_text + " (individuals)");
@@ -360,9 +352,7 @@ $(document).ready(function() {
 							$(".scheduleLessonInfo").append("<br>"+ lesson_group_rate_text + lesson_group_rate_unit_text+" (groups, up to "+lesson_group_maxsize+")");
 						}
 						$(".scheduleLessonInfo").append("</div></div>");
-
 						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Description:</div><div class='lessonData'>" + lesson_description + "</div></div>");
-
 						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>More Details:</div><div class='lessonData'><a href='lesson/"+lesson_id+"'>Go to lesson page</a></div></div>");	
 					 },
 					 error: function(data) {
@@ -373,13 +363,13 @@ $(document).ready(function() {
 		}	
 	}
 
-
+	// after user has selected a date for lesson, activate time dropdowns and populate with times the mentor is available that day.
 	function processTimeSelect(start, finish){
 		
 		console.log("processTimeSelect: start: "+start+", finish: "+finish+", duration: "+$(".scheduleLessonInfo").attr("data-duration"));
 
-		$("#prop_starttime").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
-		$("#prop_finishtime").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
+		$("#prop_starttime,label[for=prop_starttime]").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
+		$("#prop_finishtime,label[for=prop_finishtime]").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
 
 		var startTargetFirst = $("#prop_starttime").children("option[value='"+start+"']");
 		var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']")
@@ -397,27 +387,63 @@ $(document).ready(function() {
 
 	}
 
-	$("#prop_starttime").change(function() {
 
-		// calculate duration by comparing w finish time and process total cost
+
+	// Take the start time and end time, process duration, calculate cost, update the UI
+	function processLessonDuration() {
+
+		var starttime = moment($("#prop_starttime").val(), "HH:mm");
+		var finishtime = moment($("#prop_finishtime").val(), "HH:mm");		
+		var diff = finishtime.diff(starttime, 'minutes');
+		lesson_duration = diff;
+		var lesson_duration_str = getDurationString(lesson_duration);
+
+		console.log("Start: " + starttime + ", Finish: " + finishtime + ", Diff is " + diff);
+
 		// fill in detailLessonDuration and detailLessonCost
+		$("#detailLessonDuration").text(lesson_duration_str);						
 
-	});
+		var lesson_rate = $(".scheduleLessonInfo").data("rate");
+		var lesson_rate_unit = $(".scheduleLessonInfo").data("rate_unit");
+		var totalCost = getTotalCost(lesson_duration, lesson_rate, lesson_rate_unit);
+		$("#detailLessonCost").text("$"+totalCost);	
+	}
 
-	$("#prop_finishtime").change(function() {
+	// Check start and finish times and make sure finish is later than start.
+	function validateTimes(start, finish){
+		var start = moment(start, "HH:mm");
+		var finish = moment(finish, "HH:mm");
 
-		// calculate duration by comparing w start time and process total cost
-		// fill in detailLessonDuration and detailLessonCost
+		if (finish.isAfter(start)) {
+			$(".invalidTime").slideUp();
+			return true;
+		} else {
+			$(".invalidTime").text("You need to finish later than you start.").slideDown();
+			return false;
+		}
+	}
 
-		// $("#detailLessonDuration").text(lesson_duration_str);
-		// var totalCost = getTotalCost(lesson_duration, lesson_rate, lesson_rate_unit);
-		// $("#detailLessonCost").text("$"+totalCost);		
-	});
+	// Turn the duration int into a string
+	function getDurationString(lesson_duration) {
+		var raw_duration = parseInt(lesson_duration);
+		var duration_str = "";
+		if (raw_duration > 60){
+			var hours = Math.floor(raw_duration / 60);
+			var minutes = raw_duration % 60;
+			duration_str = hours > 1 ? hours + " hours" : "1 hour";
+			if (minutes > 0){
+				duration_str += " and " + minutes + " minutes";
+			}
+		} else {
+			duration_str = raw_duration + " minutes";
+		}
+		return duration_str;
+	}
 
-
+	// take duration and rates and calculate the cost we charge to user.
 	function getTotalCost(lesson_duration, lesson_rate, lesson_rate_unit){
-		var mentorBaseRate = "{{mentor.prof_rate}}";
 		var totalCost = 0;
+
 		if (lesson_rate > 0) {
 			// lesson was chosen
 			if (lesson_rate_unit == 0){
@@ -429,8 +455,9 @@ $(document).ready(function() {
 			}
 		} else {
 			// no lesson chosen, it's a general meeting
-			totalCost = (mentorBaseRate * (lesson_duration / 60)).toFixed(2);
+			totalCost = (mentor_rate * (lesson_duration / 60)).toFixed(2);
 		}
+
 		return totalCost;
 	}
 

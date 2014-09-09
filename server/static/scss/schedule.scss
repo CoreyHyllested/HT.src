@@ -94,6 +94,7 @@ c) 750px - ... (tablets, desktops)
 		width: 100%;
 		float: left;
 		margin-bottom: 20px;
+		font-size: .9em;
 			
 		.schedulePaymentHeader {
 			width: 100%;
@@ -254,7 +255,7 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.scheduleTimeDetails {
-		font-size: .8em;
+		font-size: .9em;
 		float: left;
 		width: 100%;
 		/*border-bottom: 1px dotted rgba(0,0,0,.05);*/
@@ -265,8 +266,8 @@ c) 750px - ... (tablets, desktops)
 		.detailField {
 			float: left;
 			width: 100%;
-			padding: 6px 8px;
-			border-bottom: 1px dotted rgba(0,0,0,.05);
+			padding: 8px 0px;
+			/*border-bottom: 1px dotted rgba(0,0,0,.05);*/
 			font-weight: 200;
 
 			&.highlight{
@@ -274,12 +275,17 @@ c) 750px - ... (tablets, desktops)
 				font-weight: 600;
 			}
 
+			&.invalidTime {
+				display: none;
+				color: $orange;
+			}
+
 			&:last-of-type {
 				border-bottom: none;
 			}
 		
 			.detailFieldLabel {
-				font-weight: 600;
+				
 				float: left;
 
 			}
