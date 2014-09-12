@@ -239,11 +239,13 @@
 				{% endif %}
 			</div>
 			
+			{% if mentor.location != "" %}
 			<div class="lessonMapContainer">
 				<div class="lessonMap">
-		            <a href="http://maps.google.com/?q=Berkeley,%20CA"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7CBerkeley,CA&sensor=false"></a>
+		            <a href="http://maps.google.com/?q={{mentor.location}}"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
 	            </div>				
-            </div>				
+            </div>
+            {% endif %}				
 
 
 			</div>

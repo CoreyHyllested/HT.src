@@ -98,8 +98,12 @@
 
 		<div class="scheduleLocation">
 			<h3>Location</h3>
-			<input type="text" id="prop_location" placeholder="102 S Hall Road, Berkeley, CA, United States">
+			<input type="text" id="prop_location" placeholder="Enter preferred location, or leave blank to work it out with mentor">
+			<div class="propLocationText"><div class="propLocationMain"></div><div class="propLocationDetails">Exact location will be provided once mentor accepts your request.</div></div>
             <div class="scheduleMap" id="map-canvas"></div>
+            <div class="scheduleMapStatic" id="map-canvas-static">
+            	<a href="http://maps.google.com/?q={{mentor.location}}" target="_new"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=465x205&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
+            </div>
 			<p></p>
 		</div>
 
@@ -126,10 +130,11 @@ $(document).ready(function() {
 	var mentor_id = "{{mentor.prof_id}}";
 	var mentor_rate = "{{mentor.prof_rate}}";
 	var mentor_name = "{{mentor.prof_name}}";
+	var mentor_location = "{{mentor.location}}";
 	var lesson_id = "{{lesson.lesson_id}}" == '' ? -1 : "{{lesson.lesson_id}}";
 	var mentor_availability = "{{mentor.availability}}";
 	
-	var lesson_duration, lesson_duration_str, lesson_rate, lesson_rate_unit, lesson_group_rate_unit, lesson_group_rate, lesson_group_maxsize, lesson_description;
+	var lesson_loc_option, lesson_duration, lesson_duration_str, lesson_rate, lesson_rate_unit, lesson_group_rate_unit, lesson_group_rate, lesson_group_maxsize, lesson_description;
 	var daysToEnable = [];
 	
 	var totalCost = 0;
@@ -286,6 +291,7 @@ $(document).ready(function() {
 		$("#datepicker").val("");
 		$("#prop_finishtime,label[for=prop_finishtime]").show();
 		$(".detailFieldData").empty();
+		// $(".scheduleMapStatic, .scheduleMap").hide();
 
 		// Disable the time selectors until user has chosen a date.
 		$("#prop_starttime,label[for=prop_starttime],#prop_finishtime,label[for=prop_finishtime]").css("opacity", .4).attr("disabled", "disabled").prop('selectedIndex',0);
@@ -324,11 +330,28 @@ $(document).ready(function() {
 						lesson_group_rate = data.lesson.lesson_group_rate;
 						lesson_group_maxsize = data.lesson.lesson_group_maxsize;
 						lesson_description = data.lesson.lesson_description;
+						lesson_loc_option = data.lesson.lesson_loc_option;
 
 						if (surcharge > 0) {
 							lesson_rate = (lesson_rate * (1 + surcharge)).toFixed(2);
 							lesson_group_rate = (lesson_group_rate * (1 + surcharge)).toFixed(2);
 						}
+
+						console.log("loc option is "+lesson_loc_option);
+						if (lesson_loc_option == 2) {
+							// at mentor's place. static map.
+							console.log("lesson's at the mentor's place - "+mentor_location);
+
+							$(".scheduleMap").hide();
+							$(".scheduleMapStatic").show();
+							$("#prop_location").val(mentor_location).hide();
+							$(".propLocationMain").html("Mentor's place: "+mentor_location).parent().show();
+
+						} else {
+							$(".propLocationText, .scheduleMapStatic").hide();
+							$("#prop_location, .scheduleMap").show();
+						}
+
 
 						$(".scheduleLessonInfo").empty().attr({
 						    "data-duration": lesson_duration, 
@@ -484,7 +507,7 @@ $(document).ready(function() {
 		key: stripe_pk,
 		allowRememberMe: true,
 		token: function(token) {
-			//$.each(token, function(k, v) { console.log('token.' + k + ':' + v); });
+			$.each(token, function(k, v) { console.log('token.' + k + ':' + v); });
 
 			var fd = {};
 			fd.csrf_token = csrf_token;
@@ -498,15 +521,15 @@ $(document).ready(function() {
 			fd.stripe_mail = (token.email);
 
 			fd.prop_mentor = mentor_id;
-			fd.prop_cost = cost;
-			fd.prop_location = location;
-			fd.prop_lesson = lesson;
-			fd.prop_groupsize = groupsize;
-			fd.prop_desc =  description;
-			fd.prop_s_date = start_date;
-			fd.prop_s_time = start_time;
-			fd.prop_f_date = finish_date;
-			fd.prop_f_time = finish_time;
+			fd.prop_cost = $cost;
+			fd.prop_location = $location;
+			fd.prop_lesson = $lesson;
+			fd.prop_groupsize = $groupsize;
+			fd.prop_desc =  $description;
+			fd.prop_s_date = $start_date;
+			fd.prop_s_time = $start_time;
+			fd.prop_f_date = $finish_date;
+			fd.prop_f_time = $finish_time;
 
 			$.ajax({ url	: "/meeting/create",
 					type	: "POST",
@@ -532,34 +555,34 @@ $(document).ready(function() {
 	$('#send_proposal').click(function(e) {
 		e.preventDefault();
 
-		var cost = Number(totalCost) * 100;
-		var duration = lesson_duration;
-		var lesson = lesson_id;
+		$cost = Number(totalCost) * 100;
+		$duration = lesson_duration;
+		$lesson = lesson_id;
 
-		var groupsize = "1";
+		$groupsize = "1";
 
-		var description = $('#prop_description').val();
-		var location = $('#prop_location').val();
-		var start_date = finish_date = $('#datepicker').val();
-		var start_time = $('#prop_starttime').val();
-		var finish_time = $('#prop_finishtime').val();
+		$description = $('#prop_description').val();
+		$location = $('#prop_location').val();
+		$start_date = $finish_date = $('#datepicker').val();
+		$start_time = $('#prop_starttime').val();
+		$finish_time = $('#prop_finishtime').val();
 
-		console.log('lesson = ' + lesson);
-		console.log('duration = ' + duration);
-		console.log('groupsize = ' + groupsize);
-		console.log('description = ' + description);
-		console.log('location = ' + location);
+		console.log('lesson = ' + $lesson);
+		console.log('duration = ' + $duration);
+		console.log('groupsize = ' + $groupsize);
+		console.log('description = ' + $description);
+		console.log('location = ' + $location);
 		console.log('mentor = ' + mentor_id + ';' + mentor_name);
-		console.log('start time = ' + start_date+ ' ; ' + start_time);
-		console.log('finish time = ' + finish_date+ ' ; ' + finish_time);
-		console.log('total cost = ' + cost);
+		console.log('start time = ' + $start_date+ ' ; ' + $start_time);
+		console.log('finish time = ' + $finish_date+ ' ; ' + $finish_time);
+		console.log('total cost = ' + $cost);
 
 		stripe_chkout.open({
 			name: mentor_name,
-			description: "Meeting on " + start_date, // + " at " + start_time, //You'll be charged after the meeting.",
+			description: "Meeting on " + $start_date, // + " at " + start_time, //You'll be charged after the meeting.",
 			email: buyer_email,
 //			image: '/static/img/inspriteLogoA.png',
-			amount:	cost,
+			amount:	$cost,
 			address: true,
 			currency: 'usd',
 		});

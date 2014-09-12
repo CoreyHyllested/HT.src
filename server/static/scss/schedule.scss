@@ -309,6 +309,7 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	.scheduleMap {
+		display: none;
 		float: left;
 		background-color: rgba(0,0,0, 0.05);
 		border: 1px #e1e8ed solid;
@@ -321,6 +322,43 @@ c) 750px - ... (tablets, desktops)
 		width: 100%;
 	}	
 
+	.scheduleMapStatic {
+		display: none;
+		overflow: hidden;
+		float: left;
+		background-color: rgba(0,0,0, 0.05);
+		border: 1px #e1e8ed solid;
+		border-radius: 3px;
+		border-top: none;		
+		-moz-box-sizing: border-box;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;			
+		height: 205px;
+		width: 100%;
+	}	
+
+	.propLocationText {
+		display: none;
+		float: left;
+		width: 100%;
+		padding: 8px 0px;
+		height: 40px;
+		font-weight: 200;
+		color: rgba(0,0,0,.5);
+
+		.propLocationMain {
+			float: left;
+			width: 100%;
+		}
+		.propLocationDetails {
+			float: left;
+			width: 100%;
+			font-size: .8em;
+			margin-top: 10px;
+		}
+
+
+	}
 
 	.schedulePostButton {
 		float: left;

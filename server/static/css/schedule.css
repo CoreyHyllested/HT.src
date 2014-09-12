@@ -211,6 +211,7 @@
         border-bottom: none;
         border-radius: 3px 3px 0 0; }
         .scheduleRightColumn .scheduleMap {
+          display: none;
           float: left;
           background-color: rgba(0, 0, 0, 0.05);
           border: 1px #e1e8ed solid;
@@ -221,14 +222,43 @@
           box-sizing: border-box;
           height: 205px;
           width: 100%; }
-          .scheduleRightColumn .schedulePostButton {
+          .scheduleRightColumn .scheduleMapStatic {
+            display: none;
+            overflow: hidden;
             float: left;
-            margin-bottom: 10px;
-            width: 45%; }
-            .scheduleRightColumn .scheduleCancelButton {
-              float: right;
-              margin-bottom: 10px;
-              width: 45%; }
+            background-color: rgba(0, 0, 0, 0.05);
+            border: 1px #e1e8ed solid;
+            border-radius: 3px;
+            border-top: none;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            height: 205px;
+            width: 100%; }
+            .scheduleRightColumn .propLocationText {
+              display: none;
+              float: left;
+              width: 100%;
+              padding: 8px 0px;
+              height: 40px;
+              font-weight: 200;
+              color: rgba(0, 0, 0, 0.5); }
+              .scheduleRightColumn .propLocationText .propLocationMain {
+                float: left;
+                width: 100%; }
+                .scheduleRightColumn .propLocationText .propLocationDetails {
+                  float: left;
+                  width: 100%;
+                  font-size: 0.8em;
+                  margin-top: 10px; }
+    .scheduleRightColumn .schedulePostButton {
+      float: left;
+      margin-bottom: 10px;
+      width: 45%; }
+      .scheduleRightColumn .scheduleCancelButton {
+        float: right;
+        margin-bottom: 10px;
+        width: 45%; }
 
   input[type="text"] {
     -moz-box-sizing: border-box;
