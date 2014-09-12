@@ -123,6 +123,7 @@ class Lesson(Base):
 	lesson_materials_needed = Column(String(5000))
 	lesson_materials_provided = Column(String(5000))
 
+	meetings = relationship('Meeting', backref="parent")
 
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
