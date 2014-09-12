@@ -101,6 +101,7 @@
 			<input type="text" id="prop_location" placeholder="Enter preferred location, or leave blank to work it out with mentor">
 			<div class="propLocationText"><div class="propLocationMain"></div><div class="propLocationDetails">Exact location will be provided once mentor accepts your request.</div></div>
             <div class="scheduleMap" id="map-canvas"></div>
+        
             <div class="scheduleMapStatic" id="map-canvas-static">
             	<a href="http://maps.google.com/?q={{mentor.location}}" target="_new"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=465x205&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
             </div>
@@ -309,6 +310,9 @@ $(document).ready(function() {
 			});
 			$(".scheduleLessonInfo").append("<div class='lessonField'>You are requesting a general mentoring session from "+ mentor_name + " at a rate of $" + mentor_rate + " per hour.</div>");
 			$("#prop_finishtime").show();	
+			console.log("there's no lesson - location is wherever buyer wants.");
+			$(".propLocationText, .scheduleMapStatic").hide();
+			$("#prop_location, .scheduleMap").show();			
 
 		} else {
 			console.log("getLessonDetails: A lesson was chosen.");
@@ -348,6 +352,7 @@ $(document).ready(function() {
 							$(".propLocationMain").html("Mentor's place: "+mentor_location).parent().show();
 
 						} else {
+							console.log("lesson's at whatever place buyer wants.");
 							$(".propLocationText, .scheduleMapStatic").hide();
 							$("#prop_location, .scheduleMap").show();
 						}
