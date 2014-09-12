@@ -237,22 +237,6 @@ class ProfileForm(Form):
 	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
 	edit_avail_time_sun_end		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
 
-
-class NTSForm(Form):
-	mentor                = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
-	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
-	newslot_location    = TextField('Location', [validators.Required(), validators.length(min=1)])
-	newslot_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
-	datepicker  = TextField('start-date')	#cannot be earlier than today
-	datepicker1 = TextField('end-date')
-	newslot_starttime   = SelectField('st', coerce=str, choices=NTS_times)
-	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
-
-	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
-	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional()])
-	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
-	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
-
 class ProposalForm(Form):
 	
 	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
@@ -316,6 +300,21 @@ def checkfile(form,field):
 		else:
 			raise ValidationError('field not Present') # I added this justfor some debugging.
 
+
+# class NTSForm(Form):
+# 	mentor                = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
+# 	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
+# 	newslot_location    = TextField('Location', [validators.Required(), validators.length(min=1)])
+# 	newslot_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
+# 	datepicker  = TextField('start-date')	#cannot be earlier than today
+# 	datepicker1 = TextField('end-date')
+# 	newslot_starttime   = SelectField('st', coerce=str, choices=NTS_times)
+# 	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
+
+# 	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
+# 	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional()])
+# 	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
+# 	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
 
 #class StripePaymentForm(CardForm):
 #	def __init__(self, *args, **kwargs):

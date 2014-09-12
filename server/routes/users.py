@@ -20,7 +20,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm, ProposalForm
+from ..forms import ProfileForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
