@@ -169,11 +169,7 @@ class Lesson(Base):
 		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
 		return str(cstate_str)
 
-<<<<<<< HEAD
 	def get_duration_string(self):
-=======
-	def get_duration(self):
->>>>>>> database
 		raw_duration = int(self.lesson_duration)
 		if (raw_duration > 60):
 			hours = math.floor(raw_duration / 60)
@@ -326,19 +322,7 @@ class Lesson(Base):
 		try:
 			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
 			for lesson in lessons:
-<<<<<<< HEAD
 				enumLessons.append((lesson.lesson_id, lesson.lesson_title))
-=======
-				if (lesson.lesson_rate_unit == 0):
-					lesson_rate_unit = " per hour"
-				else:
-					lesson_rate_unit = " per lesson"
-
-				lesson_info = lesson.lesson_title + " ($" + str(lesson.lesson_rate) + lesson_rate_unit + ")"
-				enumLessons.append((lesson.lesson_id, lesson_info))
-
-			# enumLessons = [(lesson.lesson_id, lesson.lesson_title) for lesson in lessons]
->>>>>>> database
 
 		except NoResultFound as nrf:
 			pass
