@@ -659,6 +659,178 @@ select {
 	width: 100%;
 }
 
+/* NEW Hexagonal Photo Container */
+
+.hexagon {
+	width: 100px;
+	height: 200px;
+	overflow: hidden;
+	visibility: hidden;
+	transform: rotate(120deg);
+	position: absolute;
+	top: -40px;
+}
+
+.hexagon-in1 {
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	transform: rotate(-60deg);
+}
+
+.hexagon-in2 {
+	width: 100%;
+	height: 100%;
+	visibility: visible;
+	transform: rotate(-60deg);
+	background-size: auto 115px;
+	background-position: center;
+	repeat: no-repeat;
+	position: 50%;
+ } 
+
+/* Hexagonal Photo Container */
+
+.imageHexagon {
+  position: relative;
+  width: 100px; 
+  height: 57.74px;
+  margin: 28.87px 0;
+  background-size: auto 115.4701px;
+  background-position: center;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.imageHexTop,
+.imageHexBottom {
+  position: absolute;
+  z-index: 1;
+  width: 70.71px;
+  height: 70.71px;
+  overflow: hidden;
+  -webkit-transform: scaleY(0.5774) rotate(-45deg);
+  -ms-transform: scaleY(0.5774) rotate(-45deg);
+  transform: scaleY(0.5774) rotate(-45deg);
+  background: inherit;
+  left: 14.64px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+/*counter transform the bg image on the caps*/
+.imageHexTop:after,
+.imageHexBottom:after {
+  content: "";
+  position: absolute;
+  width: 100.0000px;
+  height: 57.73502691896258px;
+  -webkit-transform:  rotate(45deg) scaleY(1.7321) translateY(-28.8675px);
+  -ms-transform:      rotate(45deg) scaleY(1.7321) translateY(-28.8675px);
+  transform:          rotate(45deg) scaleY(1.7321) translateY(-28.8675px);
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+  background: inherit;
+}
+
+.imageHexTop {
+  top: -35.3553px;
+}
+
+.imageHexTop:after {
+  background-position: center top;
+}
+
+.imageHexBottom {
+  bottom: -35.3553px;
+}
+
+.imageHexBottom:after {
+  background-position: center bottom;
+}
+
+.imageHexagon:after {
+  content: "";
+  position: absolute;
+  top: 0.0000px;
+  left: 0;
+  width: 100.0000px;
+  height: 57.7350px;
+  z-index: 2;
+  background: inherit;
+}
+
+
+.imageHexagonSmall {
+  position: relative;
+  width: 80px; 
+  height: 46.19px;
+  margin: 23.09px 0;
+  background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e4ff6d39002dc5fca1437685844dbaa1c337eb86.jpg);
+  background-size: auto 92.3760px;
+  background-position: center;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.imageHexagonSmall .imageHexTop,
+.imageHexagonSmall .imageHexBottom {
+  position: absolute;
+  z-index: 1;
+  width: 56.57px;
+  height: 56.57px;
+  overflow: hidden;
+  -webkit-transform: scaleY(0.5774) rotate(-45deg);
+  -ms-transform: scaleY(0.5774) rotate(-45deg);
+  transform: scaleY(0.5774) rotate(-45deg);
+  background: inherit;
+  left: 11.72px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+/*counter transform the bg image on the caps*/
+.imageHexagonSmall .imageHexTop:after,
+.imageHexagonSmall .imageHexBottom:after {
+  content: "";
+  position: absolute;
+  width: 80.0000px;
+  height: 46.188021535170066px;
+  -webkit-transform:  rotate(45deg) scaleY(1.7321) translateY(-23.0940px);
+  -ms-transform:      rotate(45deg) scaleY(1.7321) translateY(-23.0940px);
+  transform:          rotate(45deg) scaleY(1.7321) translateY(-23.0940px);
+  -webkit-transform-origin: 0 0;
+  -ms-transform-origin: 0 0;
+  transform-origin: 0 0;
+  background: inherit;
+}
+
+.imageHexagonSmall .imageHexTop {
+  top: -28.2843px;
+}
+
+.imageHexagonSmall .imageHexTop:after {
+  background-position: center top;
+}
+
+.imageHexagonSmall .imageHexBottom {
+  bottom: -28.2843px;
+}
+
+.imageHexagonSmall .imageHexBottom:after {
+  background-position: center bottom;
+}
+
+.imageHexagonSmall:after {
+  content: "";
+  position: absolute;
+  top: 0.0000px;
+  left: 0;
+  width: 80.0000px;
+  height: 46.1880px;
+  z-index: 2;
+  background: inherit;
+}
+
+/* End Image Hexagon */
+
 @media only screen and (min-device-width: 240px) and (max-width: 349px) {
 
 	.alertWindow {width: 80%;}
