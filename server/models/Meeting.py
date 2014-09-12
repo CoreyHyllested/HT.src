@@ -116,8 +116,11 @@ class Meeting(Base):
 	review_buyer = Column(String(40), ForeignKey('review.review_id'))
 	review_sellr = Column(String(40), ForeignKey('review.review_id'))
 
+	meet_lesson	= Column(String(40), ForeignKey('lesson.lesson_id'))
+	meet_groupsize = Column(Integer, default=1)
 
-	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, token=None, customer=None, card=None, flags=None):
+
+	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, lesson, groupsize, token=None, customer=None, card=None, flags=None):
 		self.meet_id	= str(uuid.uuid4())
 		self.meet_sellr	= str(sellr_id)
 		self.meet_owner	= str(sellr_id)
@@ -137,6 +140,9 @@ class Meeting(Base):
 		self.charge_credit_card = card
 		self.charge_user_token = token
 
+		self.meet_lesson = lesson
+		self.meet_groupsize = groupsize
+
 		#print 'Meeting(p_uid=%s, cost=%s, location=%s)' % (self.meet_id, cost, location)
 		#print 'Meeting(token=%s, cust=%s, card=%s)' % (token, customer, card)
 
@@ -155,7 +161,7 @@ class Meeting(Base):
 	def canceled(self): return (self.meet_state == MeetingState.CANCELED)
 
 
-	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None): 
+	def update(self, prof_updated, updated_s=None, updated_f=None, update_cost=None, updated_place=None, updated_desc=None, updated_state=None, updated_flags=None, updated_lesson=None, updated_groupsize=None): 
 		self.meet_owner		= prof_updated
 		self.meet_count		= self.meet_count + 1
 		self.meet_updated	= dt.utcnow()
@@ -167,6 +173,8 @@ class Meeting(Base):
 		if (updated_place is not None):	self.meet_location = updated_place
 		if (updated_state is not None):	self.meet_state = updated_state
 		if (updated_flags is not None):	self.meet_flags = updated_flags
+		if (updated_lesson is not None): 	self.meet_lesson = updated_lesson
+		if (updated_groupsize is not None):	self.meet_groupsize = updated_groupsize
 
 
 	@staticmethod
@@ -247,6 +255,8 @@ class Meeting(Base):
 			'meet_id'		: self.meet_id,
 			'meet_sellr'	: self.meet_sellr,
 			'meet_buyer'	: self.meet_buyer,
+			'meet_lesson'	: self.meet_lesson,
+			'meet_groupsize': self.meet_groupsize,
 			'meet_state'	: self.meet_state,
 			'meet_flags'	: self.meet_flags,
 			'meet_cost'		: self.meet_cost,
