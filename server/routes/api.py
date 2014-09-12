@@ -102,7 +102,7 @@ def ht_api_meeting_reject():
 
 
 
-@insprite_views.route('/meeting/cancel', methods=['POST'])
+@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually

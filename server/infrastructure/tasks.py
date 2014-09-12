@@ -84,8 +84,7 @@ def ht_meeting_create(values, uid):
 		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
 		print "ht_meeting_create: buyer: ", bp.prof_name, ':', stripe_cust
 
-		# Todo - add lesson and groupsize
-		meeting = Meeting(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_location), str(prop_desc), token=stripe_tokn, customer=stripe_cust, card=stripe_card)
+		meeting = Meeting(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_location), str(prop_desc), str(prop_lesson), prop_groupsize, token=stripe_tokn, customer=stripe_cust, card=stripe_card)
 		db_session.add(meeting)
 		db_session.commit()
 		print "ht_meeting_create: successfully committed meeting"

@@ -262,10 +262,10 @@ class Lesson(Base):
 	@property
 	def serialize(self):
 		duration_str = self.get_duration_string()
-		print "duration_str is ",duration_str
 		return {
 			'lesson_id'			: str(self.lesson_id),
 			'lesson_profile'	: self.lesson_profile,
+			'lesson_title'		: str(self.lesson_title),
 			'lesson_description': str(self.lesson_description),
 			'lesson_industry'	: str(self.lesson_industry),
 			'lesson_avail'		: self.lesson_avail,

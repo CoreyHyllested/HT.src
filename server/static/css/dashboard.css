@@ -83,6 +83,60 @@ c) 1000px - ... (desktops)
 	margin-bottom: 1em;
 }
 
+.partnerInfoBox {
+
+	float: left;
+	width: 100%;
+	margin-bottom: 24px;
+}
+
+.partnerPhotoContainer {
+	float: left;
+	/*width: 50%;*/
+	padding-right: 12px;
+	position: relative;
+}
+
+.partnerPhotoWrapper {
+	width:100px;
+	height:100px;
+	overflow:hidden;
+}
+.partnerPhoto{
+
+    width:100px;
+    height:100px;
+    background-repeat: no-repeat center;
+	background-size: cover;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+	-webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);				
+
+}
+
+.partnerInfo {
+	width: 100%;
+	float: left;
+}
+
+.partnerName {
+	color: rgba(0,0,0,.6);
+	font-weight: 600;
+	font-size: 1em;
+	margin-top: 6px;
+	margin-bottom: 4px;
+}
+.partnerHeadline {
+	font-size: .9em;
+	font-weight: 200;
+}
+.partnerLocation {
+	font-size: .9em;
+	font-weight: 200;
+}
 
 /* Lessons */
 
@@ -159,11 +213,16 @@ c) 1000px - ... (desktops)
 	padding-bottom: 20px;
 }
 
-.dashboardOfferIntro {
-	color: #6e7980;
-	font-size: 0.9em;
-	line-height: 1.5em;
-	white-space: pre-wrap;
+.dashboardOfferName {
+	color: rgba(0,0,0,.8);
+	font-size: 1em;
+}
+
+.dashboardOfferDetails {
+	color: rgba(0,0,0,.5);
+	font-size: .9em;
+	line-height: 1.2em;
+	margin-bottom: 8px;
 }
 
 .dashboardOffer img {
@@ -171,35 +230,46 @@ c) 1000px - ... (desktops)
 	width: 100%;
 }
 
-.dashboardOfferCenterColumn h3 {
-	color: #1488CC;
-	cursor: pointer;
-	display: inline-block;
-	font-weight: bold;
-	margin-bottom: 5px;
+
+.dashboardOfferLeftColumn {
+	float: left;
+	width: 20%;
+}
+.dashboardOfferCenterColumn {
+	float: left;
+	width: 36%;
+}
+.dashboardOfferRightColumn {
+	float: right;
+	font-size: 0.8em;
+	width: 35%;
 }
 
-.dashboardOfferCenterColumn h4 {
-	color: #6e7980;
-	font-size: 0.9em;
-	font-weight: bold;
-	line-height: 1.4em;
-	margin-bottom: 20px;
+.dashboardApptLeftColumn, .dashboardMessageLeftColumn, .dashboardLessonLeftColumn {
+	float: left;
+	height: 100%;
+	margin-right: 20px;
+	width: 123px;
 }
+.dashboardApptCenterColumn, .dashboardMessageCenterColumn, .dashboardLessonCenterColumn {
+	float: left;
+	width: 370px;
+}
+
+.dashboardApptRightColumn, .dashboardMessageRightColumn, .dashboardLessonRightColumn {
+	float: right;
+	font-size: 0.8em;
+	width: 120px;
+}
+
 
 .dashboardOfferRightColumnInfo {
-	border-bottom: 1px solid #e1e8ed;
-	color: #6e7980;
+	color: rgba(0,0,0,.5);
 	line-height: 1.5em;
 	margin-bottom: 10px;
 	padding-bottom: 10px;
 }
 
-.dashboardOfferRightColumnInfo:first-of-type {
-	color: black;
-	font-weight: bold;
-	padding-top: 0;
-}
 
 .dashboardOffer input[type="button"] {
 	-moz-appearance: none;
@@ -468,11 +538,6 @@ input.dashboardActionButton {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
-		border-top: 1px solid #e1e8ed;
-		padding: 10px 0;
-	}
-
 	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
 		width: 100%;
 	}
@@ -518,11 +583,6 @@ input.dashboardActionButton {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
-		border-top: 1px solid #e1e8ed;
-		padding: 10px 0;
-	}
-
 	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
 		width: 100%;
 	}
@@ -549,22 +609,6 @@ input.dashboardActionButton {
 
 @media only screen and (min-width: 1000px) {
 
-	.dashboardOfferLeftColumn, .dashboardApptLeftColumn, .dashboardMessageLeftColumn, .dashboardLessonLeftColumn {
-		float: left;
-		height: 100%;
-		margin-right: 20px;
-		width: 123px;
-	}
 
-	.dashboardOfferCenterColumn, .dashboardApptCenterColumn, .dashboardMessageCenterColumn, .dashboardLessonCenterColumn {
-		float: left;
-		width: 370px;
-	}
-
-	.dashboardOfferRightColumn, .dashboardApptRightColumn, .dashboardMessageRightColumn, .dashboardLessonRightColumn {
-		float: right;
-		font-size: 0.8em;
-		width: 120px;
-	}
 
 }

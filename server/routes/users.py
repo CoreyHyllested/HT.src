@@ -56,7 +56,7 @@ def render_dashboard(usrmsg=None):
 		unread_msgs = ht_get_unread_messages(bp)
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
-		print type(e), e
+		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
 	if (usrmsg is None and insprite_msg):
