@@ -408,14 +408,24 @@ $(document).ready(function() {
 
 		$("#prop_starttime,label[for=prop_starttime],#prop_finishtime,label[for=prop_finishtime]").css("opacity", 1).removeAttr("disabled").children().removeAttr('disabled');
 
+		var duration = $(".scheduleLessonInfo").attr("data-duration");
+		var duration_offset = Math.ceil(parseInt(duration)/30);
+
 		if (start != "" && finish != "") {
 			var startTargetFirst = $("#prop_starttime").children("option[value='"+start+"']");
-			var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']")
+			var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']");
 			var finishTargetFirst = $("#prop_finishtime").children("option[value='"+start+"']");
-			var finishTargetLast = $("#prop_finishtime").children("option[value='"+finish+"']")
+			var finishTargetLast = $("#prop_finishtime").children("option[value='"+finish+"']");
 
 			startTargetFirst.prevAll().attr('disabled','disabled');
 			startTargetLast.nextAll().attr('disabled','disabled');
+
+			var finishPointer = startTargetLast;
+			for (i = 0; i < duration_offset; i++) { 
+			    finishPointer.attr('disabled','disabled');
+			    finishPointer = finishPointer.prev();
+			}
+
 			finishTargetFirst.prevAll().attr('disabled','disabled');
 			finishTargetLast.nextAll().attr('disabled','disabled');
 		
