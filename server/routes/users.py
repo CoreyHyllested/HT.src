@@ -1238,90 +1238,22 @@ def render_review_meeting_page(review_id):
 @req_authentication
 def render_settings():
 	print 'render_settings()\t enter'
-	""" Provides users the ability to modify their settings."""
+	""" Provides form for the user to change their settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	pi	= Oauth.get_stripe_by_uid(uid)
-
-
-	# StripeConnect allows a user to charge customers.
-	stripe_connect = 'StripeConnect account not found.'
-	if (pi is not None): stripe_connect = pi.oa_account
 
 	errmsg = None
 	insprite_msg = session.pop('messages', None)
 
 	form = SettingsForm(request.form)
-	if form.validate_on_submit():
-		print 'render_settings()\tvalid submit'
-		update_acct = False		# requires current_pw_set, 					Sends email
-		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
-		update_mail = None
-		update_name = None
-
-		update_prop = None
-		update_vnty = None
-		update_fail = False
-
-		if (form.set_input_name.data != ba.name):
-			print 'render_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
-			update_acct = True
-			update_name = form.set_input_name.data
-
-		if (form.set_input_newpass.data != ""):
-			print 'render_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
-			update_acct = True
-			update_pass = form.set_input_newpass.data
-
-		if (ba.email != form.set_input_email.data):
-			print 'render_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
-			update_acct = True
-			update_mail = form.set_input_email.data
-
-		if (update_acct):
-			print 'render_settings()\tupdate account'
-			if (update_pass):
-				pwd = form.set_input_curpass.data
-			else:
-				pwd = form.set_input_email_pass.data
-			print 'render_settings()\tnow call modify account()'
-			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
-			print("render_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
-			if (rc == False):
-				errmsg = str(errno)
-				errmsg = error_sanitize(errmsg)
-				form.set_input_curpass.data = ''
-				form.set_input_newpass.data = ''
-				form.set_input_verpass.data = ''
-				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-			else:
-				print "render_settings() Update should be complete"
-
-		if (update_mail):
-			# user changed email; for security, send confimration email to last email addr.
-			ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
-			errmsg = "Your email has been updated."
-
-		#change pass send email
-		if (update_pass):
-			send_passwd_change_email(ba.email)
-			errmsg = "Password successfully updated."
-
-		print 'render_settings() Finished Handling POST.'
-	elif request.method == 'GET':
-		print 'render_settings()\t GET'
-	else:
-		print 'render_settings()\t invalid submit' , form.errors
-		errmsg = "Passwords must match."
-
 
 	email_unver = False
 	if (ba.status == Account.USER_UNVERIFIED):
 		email_unver = True
+
 	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
-	form.oauth_stripe.data	= stripe_connect
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
 	nexturl = "/settings"
@@ -1331,6 +1263,102 @@ def render_settings():
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
+
+
+@insprite_views.route('/settings/update', methods=['GET','POST'])
+@req_authentication
+def ht_api_update_settings():
+	# Process the edit settings form
+
+	print "ht_api_update_settings: beginning update"
+
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	ba = Account.get_by_uid(uid)
+
+	form = SettingsForm(request.form)
+
+	try:
+		if form.validate_on_submit():
+			print 'ht_api_update_settings()\tvalid submit'
+			update_acct = False		# requires current_pw_set, 					Sends email
+			update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
+			update_mail = None
+			update_name = None
+
+			update_prop = None
+			update_vnty = None
+			update_fail = False
+
+			if (form.set_input_name.data != ba.name):
+				print 'ht_api_update_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
+				update_acct = True
+				update_name = form.set_input_name.data
+
+			if (form.set_input_newpass.data != ""):
+				print 'ht_api_update_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
+				update_acct = True
+				update_pass = form.set_input_newpass.data
+
+			if (ba.email != form.set_input_email.data):
+				print 'ht_api_update_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
+				update_acct = True
+				update_mail = form.set_input_email.data
+
+			if (update_acct):
+				print 'ht_api_update_settings()\tupdate account'
+				pwd = form.set_input_curpass.data
+				
+				print 'ht_api_update_settings()\tnow call modify account()'
+				(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
+				print("ht_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
+				
+				if (rc == False):
+					errmsg = str(errno)
+					errmsg = error_sanitize(errmsg)
+					form.set_input_curpass.data = ''
+					form.set_input_newpass.data = ''
+					form.set_input_verpass.data = ''
+					print "update was false - errmsg:", errmsg
+					errors = {}
+					errors["set_input_curpass"] = "This didn't match the password in your account."
+
+					return jsonify(usrmsg=errmsg, errors=errors), 500
+				else:
+					print "ht_api_update_settings() Update should be complete"
+					return jsonify(usrmsg="Settings updated"), 200
+
+
+			if (update_mail):
+				# user changed email; for security, send confimration email to last email addr.
+				ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
+				usrmsg = "Your email has been updated."
+
+			#change pass send email
+			if (update_pass):
+				send_passwd_change_email(ba.email)
+				usrmsg = "Password successfully updated."
+
+			print 'ht_api_update_settings() Finished Handling POST.'
+		
+		return jsonify(usrmsg='Sorry, there was a problem with the form.', errors=form.errors), 500
+		
+	except AttributeError as ae:
+		print 'ht_api_update_settings: AttributeError: ', ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+
+	except Exception as e:
+		print 'ht_api_update_settings: Exception: ', e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500	
+
+
+	print "ht_api_update_settings: Something went wrong - Fell Through."
+	print "here is the form object:"
+	print str(form)
+
+	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
 
 
 

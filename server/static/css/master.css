@@ -61,11 +61,11 @@ h3 {
 }
 
 .success{
-	color: green;
+	color: hsla(180, 30%, 50%, 1);
 }
 
 .error{
-	color: red;
+	color: #e75f63;
 }
 
 /* Page Wrappers */

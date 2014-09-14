@@ -33,29 +33,30 @@
             if(this.settings.password != this.settings.confirm_pass){
 
                 this.info = 'Passwords don\'t match';
-                this.color = '#E61A1A';
+                this.color = '#e75f63';
             } else if(errors == 0){
                 var strength =  '';
                 strength = zxcvbn(this.settings.password, this.settings.blackList);
 
+                console.log("strength:");
                 console.log(strength);
                 switch(strength.score){
                     case 0:
                         this.info = 'Password Strength: Very Weak';
-                        this.color = '#E61A1A';
+                        this.color = '#e75f63';
                         break;
                     case 1:
                         this.info = 'Password Strength: Weak';
-                        this.color = '#E61A1A';
+                        this.color = '#e75f63';
                         break;
                     case 2:
                         this.info = 'Password Strength: Weak';
-                        this.color = '#E61A1A';
+                        this.color = '#e75f63';
                         
                         break;
                     case 3:
                         this.info = 'Password Strength: Medium';
-                        this.color = '#F9AD0A';
+                        this.color = '#c88c1e';
                         break;
                     case 4:
 
@@ -64,14 +65,14 @@
 
                             if (crackTime.indexOf("years") !=-1) {
                                 this.info = 'Password Strength: Very Strong';
-                                this.color = '#6AE12E';
+                                this.color = '#59a6a6';
                             }else if(crackTime.indexOf("centuries") !=-1){
                                 this.info = 'Password Strength: Perfect';
-                                this.color = '#6AE12E';
+                                this.color = '#59a6a6';
                             }
                         }else{
                         this.info = 'Password Strength: Strong';
-                        this.color = '#6AE12E';
+                        this.color = '#59a6a6';
                         }
                         break;
                 }
@@ -85,7 +86,7 @@
         minChars: function () {
             if(this.settings.password.length < this.settings.minChars){
                 this.info = 'Password needs at least '+ this.settings.minChars  + ' characters';
-                this.color = '#E61A1A';
+                this.color = '#e75f63';
                 return false;
             }else{
                 return true;
@@ -94,7 +95,7 @@
         maxChars: function () {
             if(this.settings.password.length > this.settings.maxChars){
                 this.info = 'Password should have maximum of '+ this.settings.maxChars  + ' characters';
-                this.color = '#E61A1A';
+                this.color = '#e75f63';
                 return false;
             }else{
                 return true;

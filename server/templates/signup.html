@@ -86,6 +86,12 @@ $(function() {
 	$("#input_signup_confirm").keyup(function(){
 		initializeStrengthMeter();
 	});
+
+	$("#input_signup_password").keyup(function(){
+		if ($("#input_signup_confirm").val() != "") {
+			initializeStrengthMeter();
+		}
+	});
 });
 
 function initializeStrengthMeter() {
