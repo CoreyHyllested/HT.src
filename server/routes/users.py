@@ -1323,11 +1323,13 @@ def ht_api_update_settings():
 					errors = {}
 					errors["set_input_curpass"] = "This didn't match the password in your account."
 
-					return jsonify(usrmsg=errmsg, errors=errors), 500
+					return jsonify(usrmsg="Hmm... something went wrong.", errors=errors), 500
 				else:
 					print "ht_api_update_settings() Update should be complete"
 					return jsonify(usrmsg="Settings updated"), 200
-
+			else:
+				# User didn't change anything.
+				return jsonify(usrmsg="Cool... Nothing changed."), 200
 
 			if (update_mail):
 				# user changed email; for security, send confimration email to last email addr.

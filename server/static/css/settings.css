@@ -65,119 +65,155 @@
               .span6 {
                 width: 50%; }
 
-                .span9 {
-                  width: 75%; }
+                .span8 {
+                  width: 66%; }
 
-                  .span12 {
-                    width: 100%; }
+                  .span9 {
+                    width: 75%; }
 
-                    .formContainer {
-                      padding: 36px 48px; }
+                    .span12 {
+                      width: 100%; }
 
-                      .formInstruction {
-                        color: rgba(0, 0, 0, 0.9);
-                        font-size: 1.5em;
-                        font-weight: 400;
-                        line-height: 1.2em;
-                        margin-bottom: 24px; }
+                      .left {
+                        float: left; }
 
-                        .formDescription {
-                          color: rgba(0, 0, 0, 0.7);
-                          margin-bottom: 12px; }
+                        .right {
+                          float: right; }
 
-                          .formField {
-                            -moz-box-sizing: border-box;
-                            -webkit-box-sizing: border-box;
-                            box-sizing: border-box; }
+                          .formContainer {
+                            padding: 36px 48px; }
 
-                            .formFieldCaption {
-                              display: none;
-                              font-size: 0.8em;
-                              margin-left: 16px; }
+                            .formInstruction {
+                              color: rgba(0, 0, 0, 0.9);
+                              font-size: 1.5em;
+                              font-weight: 400;
+                              line-height: 1.2em; }
 
-                              .formFieldInfo {
-                                color: rgba(0, 0, 0, 0.5);
-                                font-size: 0.9em;
-                                margin: 30px 0px 6px; }
+                              .formDescription {
+                                color: rgba(0, 0, 0, 0.7);
+                                margin-bottom: 12px; }
 
-                                .formFieldInfo.first {
-                                  padding-top: 0px; }
+                                .formFieldContainer {
+                                  width: 100%;
+                                  float: left;
+                                  margin-bottom: 8px; }
 
-                                  .formFieldInfo.notice {
-                                    color: rgba(0, 0, 0, 0.9);
-                                    font-weight: 700; }
+                                  .formField {
+                                    -moz-box-sizing: border-box;
+                                    -webkit-box-sizing: border-box;
+                                    box-sizing: border-box; }
 
-                                    .formFieldError {
+                                    .formFieldCaption {
                                       display: none;
-                                      font-size: 0.7em;
-                                      color: red; }
+                                      font-size: 0.8em;
+                                      margin-left: 16px; }
 
-                                      .formFieldError.inline {
-                                        display: inline-block;
-                                        margin-left: 8px; }
+                                      .formFieldAction {
+                                        float: left;
+                                        font-size: 0.8em;
+                                        margin-left: 16px;
+                                        height: 40px;
+                                        line-height: 40px; }
 
-                                        .formFieldError.alt {
-                                          float: left;
-                                          height: 40px;
-                                          line-height: 50px;
-                                          margin-left: 16px;
-                                          margin-top: 10px; }
+                                        .formFieldInfo {
+                                          color: rgba(0, 0, 0, 0.5);
+                                          font-size: 0.9em;
+                                          margin: 30px 0px 6px; }
 
-                                          input[type="checkbox"] {
-                                            display: inline; }
+                                          .formFieldInfo.first {
+                                            padding-top: 0px; }
 
-                                            #set_input_verpass {
-                                              margin-top: -1px; }
+                                            .formFieldInfo.notice {
+                                              color: rgba(0, 0, 0, 0.9);
+                                              font-weight: 700; }
 
-                                              .settingsFormPageFooter {
-                                                float: left;
-                                                width: 100%;
-                                                margin: 24px 0px; }
+                                              .formFieldError {
+                                                display: none;
+                                                font-size: 0.7em;
+                                                color: #e75f63; }
 
-                                                .settingsFormButtonContainer {
-                                                  float: left;
-                                                  text-align: left;
-                                                  width: 100%; }
+                                                .formFieldError.inline {
+                                                  display: inline-block;
+                                                  margin-left: 8px; }
 
-                                                  .settingsFormStatus {
-                                                    color: rgba(0, 0, 0, 0.4);
+                                                  .formFieldError.alt {
                                                     float: left;
-                                                    text-align: left;
-                                                    font-size: 0.8em;
-                                                    height: 30px;
-                                                    line-height: 36px; }
+                                                    height: 40px;
+                                                    line-height: 50px;
+                                                    margin-left: 16px;
+                                                    margin-top: 10px; }
 
-                                                    .settingsFormButton {
-                                                      float: left;
-                                                      width: 250px;
-                                                      margin: 12px 0px; }
+                                                    .emailVerifyInput {
+                                                      display: none;
+                                                      height: 60px; }
 
-                                                      .settingsCancelButton {
-                                                        float: right;
-                                                        width: 250px;
-                                                        margin: 12px 0px 12px 12px; }
+                                                      .emailVerifyText {
+                                                        font-size: 0.8em;
+                                                        width: 100%; }
 
-                                                        #passMeter {
-                                                          display: none;
-                                                          font-size: 0.9em;
-                                                          padding: 8px; }
+                                                        .verifySuccess {
+                                                          height: 40px;
+                                                          line-height: 40px;
+                                                          color: rgba(0, 0, 0, 0.3); }
 
-                                                          @media only screen and (min-device-width: 240px) and (max-width: 449px) {
-                                                            .pageWrapper {
-                                                              background-color: white;
-                                                              min-height: 100%;
-                                                              padding-bottom: 30px;
-                                                              width: 100%;   }
-                                                              .settingsContentWrapper {
-                                                                margin: 30px auto 10px;
-                                                                overflow-y: scroll;
-                                                                padding-bottom: 10px;
-                                                                width: 90%;   }
-                                                                .settingsEmail {
-                                                                  padding-bottom: 15px;
-                                                                  width: 100%;   }
-                                                                  .settingsPassword {
-                                                                    margin: 30px auto 10px;
-                                                                    padding-bottom: 15px;
-                                                                    width: 100%;   }
+                                                          .verifySuccess i {
+                                                            padding-right: 4px; }
+
+                                                            input[type="checkbox"] {
+                                                              display: inline; }
+
+                                                              #set_input_verpass {
+                                                                margin-top: -1px; }
+
+                                                                .settingsFormPageFooter {
+                                                                  float: left;
+                                                                  width: 100%;
+                                                                  margin: 24px 0px; }
+
+                                                                  .settingsFormButtonContainer {
+                                                                    float: left;
+                                                                    text-align: left;
+                                                                    width: 100%; }
+
+                                                                    .settingsFormStatus {
+                                                                      color: rgba(0, 0, 0, 0.4);
+                                                                      float: left;
+                                                                      text-align: left;
+                                                                      font-size: 0.8em;
+                                                                      height: 30px;
+                                                                      line-height: 36px; }
+
+                                                                      .settingsFormButton {
+                                                                        float: left;
+                                                                        width: 250px;
+                                                                        margin: 12px 0px; }
+
+                                                                        .settingsCancelButton {
+                                                                          float: right;
+                                                                          width: 250px;
+                                                                          margin: 12px 0px 12px 12px; }
+
+                                                                          #passMeter {
+                                                                            display: none;
+                                                                            font-size: 0.9em;
+                                                                            padding: 8px; }
+
+                                                                            @media only screen and (min-device-width: 240px) and (max-width: 449px) {
+                                                                              .pageWrapper {
+                                                                                background-color: white;
+                                                                                min-height: 100%;
+                                                                                padding-bottom: 30px;
+                                                                                width: 100%;   }
+                                                                                .settingsContentWrapper {
+                                                                                  margin: 30px auto 10px;
+                                                                                  overflow-y: scroll;
+                                                                                  padding-bottom: 10px;
+                                                                                  width: 90%;   }
+                                                                                  .settingsEmail {
+                                                                                    padding-bottom: 15px;
+                                                                                    width: 100%;   }
+                                                                                    .settingsPassword {
+                                                                                      margin: 30px auto 10px;
+                                                                                      padding-bottom: 15px;
+                                                                                      width: 100%;   }
 }

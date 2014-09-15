@@ -70,13 +70,21 @@ b) 450px - ... (everything else)
 .span6 {
 	width: 50%;
 }
+.span8 {
+	width: 66%;
+}
 .span9 {
 	width: 75%;
 }
 .span12 {
 	width: 100%;
 }
-
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
 
 /* Form */
 
@@ -89,12 +97,18 @@ b) 450px - ... (everything else)
 	font-size: 1.5em;
 	font-weight: 400;
 	line-height: 1.2em;
-	margin-bottom: 24px;
+	/*margin-bottom: 24px;*/
 }
 
 .formDescription {
 	color: rgba(0,0,0, 0.7);
 	margin-bottom: 12px;
+}
+
+.formFieldContainer {
+	width: 100%;
+	float: left;
+	margin-bottom: 8px;
 }
 
 .formField {
@@ -109,6 +123,14 @@ b) 450px - ... (everything else)
 	display: none;
 	font-size: .8em;
 	margin-left: 16px;
+}
+
+.formFieldAction {
+	float: left;
+	font-size: .8em;
+	margin-left: 16px;
+	height: 40px;
+	line-height: 40px;	
 }
 
 .formFieldInfo {
@@ -130,7 +152,7 @@ b) 450px - ... (everything else)
 .formFieldError {
 	display: none;
 	font-size: .7em;
-	color: red;
+	color: #e75f63;
 }
 
 .formFieldError.inline {
@@ -148,6 +170,29 @@ b) 450px - ... (everything else)
 
 
 /* Form Elements */
+
+.emailVerifyStatus {
+
+}
+
+.emailVerifyInput {
+	display: none;
+	height: 60px;
+}
+
+.emailVerifyText {
+	font-size: .8em;
+	width: 100%;
+}
+
+.verifySuccess {
+	height: 40px;
+	line-height: 40px;
+	color: rgba(0, 0, 0, 0.3);	
+}
+.verifySuccess i {
+	padding-right: 4px;
+}
 
 input[type="checkbox"] {
 	display: inline;

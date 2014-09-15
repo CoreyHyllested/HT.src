@@ -257,11 +257,13 @@ def render_password_reset_page(challengeHash):
 # related to authentication
 @insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
-	print operation, data
+	print "ht_email_operations: begin"
+	print "ht_email_operations: operation: ", operation
+	print "ht_email_operations: data: ", data
 	if (operation == 'verify'):
 		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
-		print 'verify: data  = ', data, 'email =', email
+		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')

@@ -67,13 +67,17 @@ def ht_send_password_changed_confirmation(user_email):
 
 
 
-def ht_send_email_address_verify_link(email_address, account):
-	print 'send a verify this email account to ' + str(email_address) + '\njust stubbed out'
-	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
-	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
+def ht_send_email_address_verify_link(user_email, account):
+	print 'send a verify this email account to ' + str(user_email)
 
-	msg = create_msg('Verify your email address', email_address, account.name, 'noreply@insprite.co', u'Insprite')
-	msg.attach(MIMEText(msg_html, 'html' ))
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
+
+	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
+	msg_text = "This is the email verify message. Security Code: " + str(account.sec_question) + "\n\n" + verify_email_url
+
+	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
+	msg.attach(MIMEText(msg_text, 'plain' ))
+	# msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
 
 
