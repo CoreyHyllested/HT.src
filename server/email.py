@@ -73,7 +73,7 @@ def ht_send_email_address_verify_link(user_email, account):
 	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
 
 	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
-	msg_text = "This is the email verify message. Security Code: " + str(account.sec_question) + "\n\n" + verify_email_url
+	msg_text = "Let's get your email address verified for your Insprite account.\n\nPlease copy and paste this security code into your settings: " + str(account.sec_question) + "\n\nOr, just click on this link: " + verify_email_url
 
 	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain' ))

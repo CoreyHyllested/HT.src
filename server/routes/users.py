@@ -1310,7 +1310,7 @@ def ht_api_update_settings():
 				pwd = form.set_input_curpass.data
 				
 				print 'ht_api_update_settings()\tnow call modify account()'
-				(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
+				(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
 				print("ht_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
 				
 				if (rc == False):
@@ -1330,6 +1330,9 @@ def ht_api_update_settings():
 			else:
 				# User didn't change anything.
 				return jsonify(usrmsg="Cool... Nothing changed."), 200
+
+			if (update_name):
+				usrmsg = "Your account name has been updated."
 
 			if (update_mail):
 				# user changed email; for security, send confimration email to last email addr.

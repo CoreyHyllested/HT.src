@@ -211,7 +211,7 @@ input[type="checkbox"] {
 .settingsFormPageFooter {
 	float: left;
 	width: 100%;
-	margin: 24px 0px;
+	margin: 12px 0px;
 }
 
 .settingsFormButtonContainer {
@@ -225,10 +225,10 @@ input[type="checkbox"] {
 	/*display: none;*/
 	float: left;
 	text-align: left;
-	font-size: .8em;
+	font-size: .9em;
 	height: 30px;
-	line-height: 36px;	
-	/*margin-left: 20px;*/
+	line-height: 36px;
+	font-weight: $font-weight-ltbold;
 }
 
 .settingsFormButton {
@@ -247,6 +247,14 @@ input[type="checkbox"] {
 	display: none;
 	font-size: .9em;
 	padding: 8px;
+}
+
+.settingsFooter {
+	float: left;
+	width: 100%;
+	padding: 18px 0px 8px;
+	text-align: center;
+	font-size: .9em;
 }
 
 /* PHONE DESIGN */

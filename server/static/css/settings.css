@@ -168,7 +168,7 @@
                                                                 .settingsFormPageFooter {
                                                                   float: left;
                                                                   width: 100%;
-                                                                  margin: 24px 0px; }
+                                                                  margin: 12px 0px; }
 
                                                                   .settingsFormButtonContainer {
                                                                     float: left;
@@ -179,9 +179,10 @@
                                                                       color: rgba(0, 0, 0, 0.4);
                                                                       float: left;
                                                                       text-align: left;
-                                                                      font-size: 0.8em;
+                                                                      font-size: 0.9em;
                                                                       height: 30px;
-                                                                      line-height: 36px; }
+                                                                      line-height: 36px;
+                                                                      font-weight: 500; }
 
                                                                       .settingsFormButton {
                                                                         float: left;
@@ -198,22 +199,29 @@
                                                                             font-size: 0.9em;
                                                                             padding: 8px; }
 
-                                                                            @media only screen and (min-device-width: 240px) and (max-width: 449px) {
-                                                                              .pageWrapper {
-                                                                                background-color: white;
-                                                                                min-height: 100%;
-                                                                                padding-bottom: 30px;
-                                                                                width: 100%;   }
-                                                                                .settingsContentWrapper {
-                                                                                  margin: 30px auto 10px;
-                                                                                  overflow-y: scroll;
-                                                                                  padding-bottom: 10px;
-                                                                                  width: 90%;   }
-                                                                                  .settingsEmail {
-                                                                                    padding-bottom: 15px;
-                                                                                    width: 100%;   }
-                                                                                    .settingsPassword {
-                                                                                      margin: 30px auto 10px;
+                                                                            .settingsFooter {
+                                                                              float: left;
+                                                                              width: 100%;
+                                                                              padding: 18px 0px 8px;
+                                                                              text-align: center;
+                                                                              font-size: 0.9em; }
+
+                                                                              @media only screen and (min-device-width: 240px) and (max-width: 449px) {
+                                                                                .pageWrapper {
+                                                                                  background-color: white;
+                                                                                  min-height: 100%;
+                                                                                  padding-bottom: 30px;
+                                                                                  width: 100%;   }
+                                                                                  .settingsContentWrapper {
+                                                                                    margin: 30px auto 10px;
+                                                                                    overflow-y: scroll;
+                                                                                    padding-bottom: 10px;
+                                                                                    width: 90%;   }
+                                                                                    .settingsEmail {
                                                                                       padding-bottom: 15px;
                                                                                       width: 100%;   }
+                                                                                      .settingsPassword {
+                                                                                        margin: 30px auto 10px;
+                                                                                        padding-bottom: 15px;
+                                                                                        width: 100%;   }
 }

@@ -475,8 +475,9 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 
 
 
-def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
-	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
+def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
+	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name
+	
 	ba = Account.query.filter_by(userid=uid).all()[0]
 
 	if (not check_password_hash(ba.pwhash, current_pw)):
@@ -489,6 +490,10 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	if (new_mail != None):
 		print "update email", ba.email, "to", new_mail
 		ba.email = new_mail
+
+	if (new_name != None):
+		print "update name", ba.name, "to", new_name
+		ba.name = new_name
 
 	try:
 		db_session.add(ba)
