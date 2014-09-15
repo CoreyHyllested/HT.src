@@ -123,6 +123,8 @@ class Lesson(Base):
 	lesson_materials_needed = Column(String(5000))
 	lesson_materials_provided = Column(String(5000))
 
+	meetings = relationship('Meeting', backref="parent")
+
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
 		self.lesson_profile	= profile_id
@@ -167,7 +169,7 @@ class Lesson(Base):
 		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
 		return str(cstate_str)
 
-	def get_duration(self):
+	def get_duration_string(self):
 		raw_duration = int(self.lesson_duration)
 		if (raw_duration > 60):
 			hours = math.floor(raw_duration / 60)
@@ -255,4 +257,22 @@ class Lesson(Base):
 		return lesson
 
 
+	@staticmethod
+	def get_active_by_prof_id(profile_id):
+		lessons = None
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+		except NoResultFound as nrf:
+			pass
+		return lessons
 
+	@staticmethod
+	def get_enum_active_by_prof_id(profile_id):
+		enumLessons = []
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+			for lesson in lessons:
+				enumLessons.append((lesson.lesson_id, lesson_info))
+		except NoResultFound as nrf:
+			pass
+		return enumLessons
