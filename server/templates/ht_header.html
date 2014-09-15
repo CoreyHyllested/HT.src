@@ -137,7 +137,7 @@
 	<div class="menu">
 		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-			<input name="search" id="menuSearch" type="text" autocomplete="off">
+			<input name="keywords_field" id="menuSearch" type="text" autocomplete="off">
 		</form>
 		<ul>
 
@@ -180,7 +180,7 @@
 				<div class="headerSearchBar">
 					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<input name="search" id="headerSearch" type="text" autocomplete="off">
+						<input name="keywords_field" id="headerSearch" type="text" autocomplete="off">
 					</form>
 					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
 				</div>
@@ -280,7 +280,7 @@
 		});
 
 		function searchBar() {
-			var x=document.forms["srchForm"]["search"].value;
+			var x=document.forms["srchForm"]["keywords_field"].value;
 			if (x==null || x=="") { return false; }
 			return true;
 		}
