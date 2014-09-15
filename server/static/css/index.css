@@ -82,6 +82,7 @@ c) 1000px - ... (desktops)
 	}
 
 	.indexCoverHeading h2 {
+		font-family: 'Lato', sans-serif;
 
 	}
 
@@ -122,6 +123,7 @@ c) 1000px - ... (desktops)
 			margin-top: 0.3em;
 			text-align: center;
 			text-shadow: 0px 1px 4px rgba(0,0,0, 0.8);
+			font-family: 'Lato', sans-serif;
 		}
 
 		.indexCoverSearch {
@@ -187,6 +189,7 @@ c) 1000px - ... (desktops)
 			margin-top: 0.3em;
 			text-align: center;
 			text-shadow: 0px 1px 4px rgba(0,0,0, 0.8);
+			font-family: 'Lato', sans-serif;
 		}
 
 		.indexCoverSearch {
@@ -246,6 +249,7 @@ c) 1000px - ... (desktops)
 			margin-top: 0.3em;
 			text-align: center;
 			text-shadow: 0px 1px 4px rgba(0,0,0, 0.8);
+			font-family: 'Lato', sans-serif;
 		}
 
 		.indexCoverSearch {
@@ -301,6 +305,7 @@ c) 1000px - ... (desktops)
 			margin-top: 0.3em;
 			text-align: center;
 			text-shadow: 0px 1px 4px rgba(0,0,0, 0.8);
+			font-family: 'Lato', sans-serif;
 		}
 
 		.indexCoverSearch {
@@ -647,7 +652,7 @@ c) 1000px - ... (desktops)
 		.indexSharePassion {
 			/*background-color: #305a5a;*/
 			/*border-radius: 6px 6px 0 0;*/
-			color: #e75f63;
+			color: hsla(180, 30%, 60%, 1);
 			font-family: 'Lobster Two' cursive;
 			font-size: 2.4em;
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
@@ -691,6 +696,9 @@ c) 1000px - ... (desktops)
 
 		.indexFeature h2 {
 			margin-top: 10px;
+			font-family: 'Lato', sans-serif;
+			font-weight: bold;
+			color: hsla(180, 30%, 40%, 1);
 		}
 
 		.indexFeature p {
@@ -765,9 +773,13 @@ c) 1000px - ... (desktops)
 		.aboutHeader {
 			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	  		text-align: center;
+	  		color: #e75f63;
+	  		font-family: 'Lobster Two' cursive;
+			font-size: 2.4em;
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	  		height: 50px;
-	  		line-height: 56px;
-	  		padding: 12px 0px;
+	  		line-height: 40px;
+	  		padding: 20px 0px;
 	  		font-family: 'Lobster Two', cursive;
 		}
 
@@ -781,10 +793,16 @@ c) 1000px - ... (desktops)
 	  		padding: 12px;
 		}
 
+		.aboutItemIcon img {
+			width: 70%;
+			margin: 20px auto 8px auto;
+		}
+
 		.aboutItemTitle {
 	  		font-size: 2em;
 	  		color: #e75f63;
 	  		font-weight: bold;
+	  		font-family: 'Lato', sans-serif;
 		}
 
 		.aboutItemCaption {
@@ -792,6 +810,7 @@ c) 1000px - ... (desktops)
 	  		padding: 12px 24px;
 	  		color: rgba(0,0,0,.8);
 	  		font-size: 1.2em;
+	  		font-family: 'Lato', sans-serif;
 		}
 
 		.mentor {
@@ -808,4 +827,36 @@ c) 1000px - ... (desktops)
 		  overflow-x: hidden;
 		}
 
+		.mentorIntroduction {
+			width: 70%;
+			margin: 16px auto 52px auto;
+			font-size: 2.8em;
+			line-height: 1.4em;
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+			font-family: 'Lobster Two', cursive;
+			color: hsla(180, 30%, 60%, 1);
+
+		}
+
+		.mentorDescription {
+			width: 60%;
+			margin: 0px auto;
+			font-size: 1.5em;
+			line-height: 1.5em;
+			font-family: 'Lato', sans-serif;
+		}
+
+		.mentorCloser {
+			width: 70%;
+			margin: 48px auto 18px auto;
+			font-size: 1.8em;
+			line-height: 1.4em;
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+			font-weight: 600;
+			font-family: 'Lobster Two', cursive;
+			color: hsla(180, 30%, 60%, 1);
+		}
+	
 	}
+
+	
