@@ -18,27 +18,41 @@ function loadMessageThread(msg_thread_id) {
 }
 
 
-function verify_email_js(e) {
-	e.preventDefault();
+function verify_email_js() {
+	
+	console.log("verify_email_js: begin");
+
 	var fd = {};
 	var challenge = $('#challenge').val();
-	fd.email_addr = $('#set_input_email').val();
+	fd.email = $('#set_input_email').val();
 	fd.csrf_token = $('#csrf').val();
 	fd.next_url   = $('#nexturl').val();
 
-	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
+	console.log("verify_email_js: challenge: " + challenge);
+	console.log("verify_email_js: email: " + $('#set_input_email').val());
+	console.log("verify_email_js: csrf_token: " + $('#csrf').val());
+	console.log("verify_email_js: next_url: " + $('#nexturl').val());
+
+	// $.each(fd, function(k, v) { console.log(k+ ": " + v); });
 	$.ajax({ url : '/email/verify/'+challenge,
 			 type : 'POST', 	
 			 data : fd,
 			 dataType: 'json',
 			 success : function(data) { 
-				 console.log ('in success');
-				 console.log(data);
-				 window.location.href = $('#nexturl').val();
-				 return false; 
+				console.log ('/email/verify - AJAX success');
+				console.log(data);
+				// window.location.href = $('#nexturl').val();
+				$(".emailVerifyText").html("<span class='success'>Email successfully verified!</span>");
+				$(".emailVerifyStatus").html("<div class='verifySuccess'><i class='fa fa-fw fa-check'></i>Email verified.</div>");
+				setTimeout(function() {
+					$('.emailVerifyInput').slideUp(1000);
+				}, 2000 );				 
+				return false; 
 			 },
 			 error: function(data) {
-				 console.log ('in fail');
+			 	console.log ('/email/verify - AJAX error');
+			 	$(".emailVerifyText").html("<span class='error'>Sorry, that code didn't work.</span>");
+
 			 }
 	});
 	return false;
@@ -207,8 +221,5 @@ function sendmessage_js(e) {
 }
 
 $(document).ready(function() {
-	console.log('page ready');
-	$('#rec_submit').on('click', verify_email_js);
-	$('#rec_verify').on('click', send_verification_email);
 	$('#sendMessage').on("click", sendmessage_js);
 });

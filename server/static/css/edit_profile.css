@@ -228,12 +228,11 @@
 }
 
 .editProfFormStatus {
-	color: rgb(0,0,0,.4);
+	color: rgba(0,0,0,.4);
 	display: none;
 	float: left;
 	text-align: left;
-/*	width: 200px;
-*/	font-size: .8em;
+	font-size: .8em;
 	height: 30px;
 	line-height: 36px;	
 	margin-left: 20px;
@@ -241,7 +240,7 @@
 
 .editProfFormButton {
 	width: 150px;
-	margin: 12px 0 12px 0;
+	margin: 12px 0px;
 }
 .editProfSave {
 	width: 150px;

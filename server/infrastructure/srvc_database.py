@@ -42,7 +42,7 @@ def initialize_database(config):
 	db_session	= scoped_session(sessionmaker(bind=db_engine))
 	Base = declarative_base(bind=db_engine)
 	Base.query = db_session.query_property()
-	from server.models import *
+	from server import models 
 
 	if (config['TESTING']):
 		#print 'TESTING... create database'

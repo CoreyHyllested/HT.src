@@ -61,11 +61,11 @@ h3 {
 }
 
 .success{
-	color: green;
+	color: hsla(180, 30%, 50%, 1);
 }
 
 .error{
-	color: red;
+	color: #e75f63;
 }
 
 .span1 {
@@ -512,8 +512,7 @@ select {
 
 /* MODAL WINDOWS */
 
-
-/* Full-size modal window */
+/* Full-size modal window - 960w */
 .modalOverlay {
 	opacity: 0;
 	-moz-transition: opacity 0.3s;
@@ -544,7 +543,7 @@ select {
 	top: 0;
 	left: 0;
 	right: 0;
-	width: 960px;
+	width: 980px;
 	margin: 0 auto;
 	-moz-transition: opacity 0.3s;
 	-o-transition: opacity 0.3s;
@@ -566,7 +565,7 @@ select {
 	display: none;
 	position: absolute;
 	top: 5px;
-	right: -8px;
+	right: 8px;
 	cursor: pointer;
 	font-size: 1.3em;
 	z-index: 99999;
@@ -583,6 +582,13 @@ select {
 
 .modalContent {
 
+}
+
+
+/* Smaller modal window */
+
+.modalWindowWrap.small {
+	width: 340px;
 }
 
 /* Small alert window */

@@ -5,37 +5,37 @@ b) 350px - ... (everything else)
 
 /* COMMON ELEMENTS */
 
-	.recoveryLink {
-		clear: both;
-		display: block;
-		font-size: 0.9em;
-		margin-top: 5px;
-		text-align: center;
-	}
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
+}
 
-	.recoveryLink:hover {
-		text-decoration: underline;
-	}
+.recoveryLink:hover {
+	text-decoration: underline;
+}
 
-	.recoveryContentWrapper input[type="email"], input[type="password"] {
-		border-radius: 5px;
-		-moz-box-sizing: border-box;
-		-webkit-box-sizing: border-box;
-		box-sizing: border-box;
-		margin: 20px 0 20px;
-		width: 100%;
-	}
+.recoveryContentWrapper input[type="email"], input[type="password"] {
+	border-radius: 5px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 20px 0 20px;
+	width: 100%;
+}
 
-	.recoveryContentWrapper input[type="submit"] {
-		margin-bottom: 15px;
-		width: 100%;
-	}
+.recoveryContentWrapper input[type="submit"] {
+	margin-bottom: 15px;
+	width: 100%;
+}
 
-	.recoveryInstructions {
-		font-size: 0.9em;
-		line-height: 1.35em;
-		text-align: center;
-	}
+.recoveryInstructions {
+	font-size: 0.9em;
+	line-height: 1.35em;
+	text-align: center;
+}
 
 
 /* PHONE DESIGN */
@@ -64,18 +64,18 @@ b) 350px - ... (everything else)
 @media only screen and (min-width: 350px) {
 
 	/* Recovery panel slides into view */
-	@-moz-keyframes loginAppear {
-		0% {opacity: 0; margin-top: 300px;}
+	@-moz-keyframes modalAppear {
+		0% {opacity: 0; margin-top: 200px;}
 		100% {opacity: 1; margin-top: 40px;}
 	}
 
-	@-webkit-keyframes loginAppear {
-		0% {opacity: 0; margin-top: 300px;}
+	@-webkit-keyframes modalAppear {
+		0% {opacity: 0; margin-top: 200px;}
 		100% {opacity: 1; margin-top: 40px;}
 	}
 
-	@keyframes loginAppear {
-		from {opacity: 0; margin-top: 300px;}
+	@keyframes modalAppear {
+		from {opacity: 0; margin-top: 200px;}
 		to {opacity: 1; margin-top: 40px;}
 	}
 
@@ -90,8 +90,10 @@ b) 350px - ... (everything else)
 	}
 
 	.recoveryContentWrapper {
-		-webkit-animation: loginAppear 1s;
-		animation: loginAppear 1s;
+/*		-moz-animation: modalAppear 1s;
+		-o-animation: modalAppear 1s;
+		-webkit-animation: modalAppear 1s;
+		animation: modalAppear 1s;*/
 		background-color: white;
 		border-radius: 6px;
 		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);

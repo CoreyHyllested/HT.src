@@ -403,11 +403,11 @@ function showErrors(errors) {
 			$(element).prevAll(".formFieldError").html(error).slideDown();
 		}
 
-		$(element).css("border-color", "red");
+		$(element).css("border-color", "#e75f63");
 
 		$("#"+page).find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 
-		$(navItem).css("color", "red");
+		$(navItem).css("color", "#e75f63");
 		$(navItem).children("i.progress").hide();
 
 	});

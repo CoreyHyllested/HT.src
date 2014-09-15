@@ -483,8 +483,9 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 
 
 
-def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
-	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
+def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
+	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name
+	
 	ba = Account.query.filter_by(userid=uid).all()[0]
 
 	if (not check_password_hash(ba.pwhash, current_pw)):
@@ -497,6 +498,10 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	if (new_mail != None):
 		print "update email", ba.email, "to", new_mail
 		ba.email = new_mail
+
+	if (new_name != None):
+		print "update name", ba.name, "to", new_name
+		ba.name = new_name
 
 	try:
 		db_session.add(ba)
@@ -581,13 +586,21 @@ def ht_get_active_lessons(profile):
 
 def ht_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
+	print "ht_email_verify: begin"
+	print "ht_email_verify: challengeHash is ", challengeHash
+	print "ht_email_verify: email is ", email
+	print "ht_email_verify: nexturl is ", nexturl
+
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
-			session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
-			return redirect(url_for('insprite.render_login'))
+		print "ht_email_verify: error - challenge hash not found in accounts."
+		session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
+		return redirect(url_for('insprite.render_login'))
+	else:
+		print "ht_email_verify: success - challenge hash found."
 
 	try:
-		print 'updating account'
+		print 'ht_email_verify: updating account'
 		account = accounts[0]
 		account.set_email(email)
 		account.set_sec_question("")
@@ -595,8 +608,9 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 		db_session.add(account)
 		db_session.commit()
+		print 'ht_email_verify: committed.'
 	except Exception as e:
-		print type(e), e
+		print "ht_email_verify: Exception: ", type(e), e
 		db_session.rollback()
 
 	# bind session cookie to this user's profile
@@ -604,7 +618,7 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 	ht_bind_session(profile)
 	if (nexturl is not None):
 		# POSTED from jquery in /settings:verify_email not direct GET
-		return make_response(jsonify(usrmsg="Account Updated."), 200)
+		return make_response(jsonify(usrmsg="Email successfully verified."), 200)
 
 	session['messages'] = 'Great! You\'ve verified your email'
 	return redirect(url_for('insprite.render_dashboard'))
