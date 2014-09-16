@@ -20,7 +20,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm
+from ..forms import ProfileForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -56,7 +56,7 @@ def render_dashboard(usrmsg=None):
 		unread_msgs = ht_get_unread_messages(bp)
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
-		print type(e), e
+		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
 	if (usrmsg is None and insprite_msg):
@@ -1046,6 +1046,19 @@ def api_get_images_for_lesson(lesson_id):
 	return jsonify(portfolio=images)
 
 
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/retrieve", methods=['GET'])
+def ht_api_retrieve_lesson(lesson_id):
+	# move this to API.
+	lesson = Lesson.get_by_id(lesson_id)
+	# print "ht_api_retrieve_lesson: lesson: "+pprint(lesson)
+	return jsonify(lesson=lesson.serialize)
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
 
 
 @req_authentication
@@ -1156,34 +1169,96 @@ def api_lesson_image_update(lesson_id):
 
 
 
-
 @insprite_views.route('/schedule', methods=['GET','POST'])
 @req_authentication
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+
+	form = ProposalForm(request.form)
+
 	try:
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
-		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		mentor = Profile.get_by_prof_id(request.values.get('mentor'))
+		lesson = Lesson.get_by_id(request.values.get('lesson'))
+		avail = Availability.get_by_prof_id(mentor.prof_id)	
+
+		print 'render_schedule() mentor:', mentor
+		print 'render_schedule() lesson:', lesson
+
+
+		form.prop_lesson.choices = Lesson.get_enum_active_by_prof_id(mentor.prof_id)
+		form.prop_lesson.choices.insert(0, ('-1', 'No specific lesson - Request a meeting'))
+		
+		if (lesson):
+			form.prop_lesson.default = lesson.lesson_id		
+
+		form.process()
+
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
-	if (hp is None):
+	if (mentor is None):
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
 		session['messages'] = 'We require a verified email prior to scheduling'
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
 
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-	print 'render_schedule()\tusing STRIPE: ', ht_server.config['STRIPE_SECRET']
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
+	form.prop_mentor.data = mentor.prof_id
 
+	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
+
+	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
+
+
+@insprite_views.route('/schedule/getdays', methods=['GET'])
+@req_authentication
+def get_schedule_days():
+	print "get_schedule_days: start"
+	mentor_id = request.values.get('mentor_id')
+	availdays = []
+	print "get_schedule_days: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	try:
+		availdays = Availability.get_avail_days(mentor_id)
+		if (len(availdays) > 0):
+			print "get_schedule_days: user available on days ", str(availdays)
+		else:
+			print "get_schedule_days: user availability not found"
+
+	except Exception as e:
+		print "get_schedule_days: exception:", e
+		print "get_schedule_days: Couldn't find availability for that user."
+
+	return jsonify(availdays=availdays), 200	
+
+
+@insprite_views.route('/schedule/gettimes', methods=['GET'])
+@req_authentication
+def get_schedule_times():
+	print "get_schedule_times: start"
+	day = request.values.get('day')
+	mentor_id = request.values.get('mentor_id')
+	print "get_schedule_times: day:", day
+	print "get_schedule_times: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	try:
+		start, finish = Availability.get_avail_by_day(mentor_id, day)
+		print "get_schedule_times: start:", start
+		print "get_schedule_times: finish:", finish
+
+		return jsonify(start=str(start), finish=str(finish)), 200
+
+	except Exception as e:
+		print "get_schedule_times: exception:", e
+		print "get_schedule_times: Couldn't find availability for that day."
 
 
 

@@ -1,3 +1,5 @@
+// TODO - probably obsolete, can remove
+
 //adding times to the dropdown menu when creating a new timeslot
 $(function add_start_times() {
 	$("#newslot_starttime").empty();

@@ -1,11 +1,13 @@
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
-from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField
+from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField, DateField
 from wtforms import IntegerField, validators
 from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
 from cgi import escape
 from wtforms.validators import Required
 from flask.ext.wtf import Form
 from server.models import *
+from wtforms_components import DateTimeField, DateRange, Email
+from werkzeug.datastructures import MultiDict
 
 
 class MultiCheckboxField(SelectMultipleField):
@@ -121,6 +123,30 @@ NTS_times_end = NTS_times[:]
 NTS_times_start.insert(0, ('', 'Start Time'))
 NTS_times_end.insert(0, ('', 'End Time'))
 
+avail_times = [ ('00:00:00', '12:00 AM'), ('00:30:00', '12:30 AM'),
+('01:00:00', '1:00 AM'), ('01:30:00', '1:30 AM'), ('02:00:00', '2:00 AM'), 
+('02:30:00', '2:30 AM'), ('03:00:00', '3:00 AM'), ('03:30:00', '3:30 AM'), 
+('04:00:00', '4:00 AM'), ('04:30:00', '4:30 AM'), ('05:00:00', '5:00 AM'), 
+('05:30:00', '5:30 AM'), ('06:00:00', '6:00 AM'), ('06:30:00', '6:30 AM'), 
+('07:00:00', '7:00 AM'), ('07:30:00', '7:30 AM'), ('08:00:00', '8:00 AM'),
+('08:30:00', '8:30 AM'), ('09:00:00', '9:00 AM'), ('09:30:00', '9:30 AM'),
+('10:00:00', '10:00 AM'), ('10:30:00', '10:30 AM'), ('11:00:00', '11:00 AM'),
+('11:30:00', '11:30 AM'), ('12:00:00', '12:00 PM'), ('12:30:00', '12:30 PM'),
+('13:00:00', '1:00 PM'), ('13:30:00', '1:30 PM'), ('14:00:00', '2:00 PM'),
+('14:30:00', '2:30 PM'), ('15:00:00', '3:00 PM'), ('15:30:00', '3:30 PM'),
+('16:00:00', '4:00 PM'), ('16:30:00', '4:30 PM'), ('17:00:00', '5:00 PM'),
+('17:30:00', '5:30 PM'), ('18:00:00', '6:00 PM'), ('18:30:00', '6:30 PM'),
+('19:00:00', '7:00 PM'), ('19:30:00', '7:30 PM'), ('20:00:00', '8:00 PM'),
+('20:30:00', '8:30 PM'), ('21:00:00', '9:00 PM'), ('21:30:00', '9:30 PM'),
+('22:00:00', '10:00 PM'), ('22:30:00', '10:30 PM'), ('23:00:00', '11:00 PM'),
+('23:30:00', '11:30 PM')]
+
+avail_times_start = NTS_times[:]
+avail_times_end = NTS_times[:]
+
+# avail_times_start.insert(0, ('', 'Start Time'))
+# avail_times_end.insert(0, ('', 'End Time'))
+
 States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 ("CA","California"),("CO","Colorado"),("CT","Connecticut"),("DE","Delaware"),
 ("DC","District of Columbia"),("FL","Florida"),("GA","Georgia"),("HI","Hawaii"),
@@ -168,7 +194,7 @@ class LessonForm(Form):
 	lessonAddressDetails = TextField('Details', None)
 	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
-	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible - I will arrange with student'), (1,'Student\'s place'), (2, 'My Place: ')])
+	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
 	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
@@ -211,24 +237,18 @@ class ProfileForm(Form):
 	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
 	edit_avail_time_sun_end		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
 
+class ProposalForm(Form):
+	
+	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
+	prop_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
+	prop_location    = TextField('Location')
+	prop_lesson      = SelectField('Lesson', coerce=str)
+	prop_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
+	prop_starttime   = SelectField('Choose Start Time', coerce=str, choices=NTS_times_start)
+	prop_finishtime     = SelectField('Choose End Time', coerce=str, choices=NTS_times_end)
+	prop_date 		 = DateField('Date')
 
-
-class NTSForm(Form):
-	hero                = HiddenField("Hero",	[validators.Required(), validators.length(min=1, max=40)])
-	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
-	newslot_location    = TextField('Location', [validators.Required(), validators.length(min=1)])
-	newslot_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
-	datepicker  = TextField('start-date')	#cannot be earlier than today
-	datepicker1 = TextField('end-date')
-	newslot_starttime   = SelectField('st', coerce=str, choices=NTS_times)
-	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
-
-	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
-	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional()])
-	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
-	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
-
-#
+	# prop_date = DateTimeField('Date', validators=[DateRange(min=datetime(2000, 1, 1), max=datetime(2000, 10, 10))])
 
 class SearchForm(Form):
 	keywords_field = TextField('keywords-field')
@@ -277,6 +297,21 @@ def checkfile(form,field):
 		else:
 			raise ValidationError('field not Present') # I added this justfor some debugging.
 
+
+# class NTSForm(Form):
+# 	mentor                = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
+# 	newslot_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
+# 	newslot_location    = TextField('Location', [validators.Required(), validators.length(min=1)])
+# 	newslot_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
+# 	datepicker  = TextField('start-date')	#cannot be earlier than today
+# 	datepicker1 = TextField('end-date')
+# 	newslot_starttime   = SelectField('st', coerce=str, choices=NTS_times)
+# 	newslot_endtime     = SelectField('et', coerce=str, choices=NTS_times)
+
+# 	newslot_ccname		= TextField('ccname',		[validators.Optional(), validators.length(min=1)])
+# 	newslot_ccnbr		= TextField('ccnbr',		[validators.Optional()])
+# 	newslot_ccexp		= TextField('ccexp',		[validators.Optional()])
+# 	newslot_cccvv		= TextField('cccvv',		[validators.Optional()])
 
 #class StripePaymentForm(CardForm):
 #	def __init__(self, *args, **kwargs):

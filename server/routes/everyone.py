@@ -18,7 +18,7 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
+from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
 
 

@@ -4,7 +4,7 @@
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
 	{% assets "sass_lesson" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
+		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
 	{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
@@ -112,7 +112,7 @@
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
 				<div class="lessonDescBody">
-				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration()}} {% else %}Flexible - no set duration{% endif %}				
+				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration_string()}} {% else %}Flexible - no set duration{% endif %}				
 				
 				</div>				
 			</div>
@@ -143,8 +143,10 @@
 				{% for review in reviews %}
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
-						</div>
+						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
+						  <div class="imageHexTop"></div>
+						  <div class="imageHexBottom"></div>
+						</div>					
 					</div>
 					<div class="reviewerInfo">
 						<div class="reviewerName">
@@ -162,9 +164,11 @@
 
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
-						</div>
-					</div>
+						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
+						  <div class="imageHexTop"></div>
+						  <div class="imageHexBottom"></div>
+						</div>					
+					</div>				
 					<div class="reviewerInfo">
 						<div class="reviewerName">
 							Frank Underwood
@@ -180,9 +184,11 @@
 
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
-						</div>
-					</div>
+						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
+						  <div class="imageHexTop"></div>
+						  <div class="imageHexBottom"></div>
+						</div>					
+					</div>					
 					<div class="reviewerInfo">
 						<div class="reviewerName">
 							Mike Gordon
@@ -209,8 +215,11 @@
 	<div class="lessonRightColumnContainer">
 		<div class="lessonRightColumn">
 			<div class="lessonMentorBox">
+
 				<div class="mentorPhotoContainer">
-					<div class="mentorPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{ mentor.prof_img }})">
+					<div class="imageHexagon" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.prof_img}})">
+					  <div class="imageHexTop"></div>
+					  <div class="imageHexBottom"></div>
 					</div>
 				</div>
 
@@ -234,16 +243,18 @@
 				{% if bp.prof_id == mentor.prof_id %}
 					<a href="/lesson/edit/{{lesson.lesson_id}}"><button class="button teal">Edit Lesson</button></a>
 				{% else %}
-					<a href="/schedule?hp={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
+					<a href="/schedule?mentor={{mentor.prof_id}}&lesson={{lesson.lesson_id}}"><button class="button teal">Book Lesson</button></a>
 					<button type="button" id="sendModalMessage" class="button teal light sendModalMessage">Send Message</button>
 				{% endif %}
 			</div>
 			
+			{% if mentor.location != "" %}
 			<div class="lessonMapContainer">
 				<div class="lessonMap">
-		            <a href="http://maps.google.com/?q=Berkeley,%20CA"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7CBerkeley,CA&sensor=false"></a>
+		            <a href="http://maps.google.com/?q={{mentor.location}}"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
 	            </div>				
-            </div>				
+            </div>
+            {% endif %}				
 
 
 			</div>
@@ -257,7 +268,6 @@
 
 <script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
 <script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
