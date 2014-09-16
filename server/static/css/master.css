@@ -121,7 +121,7 @@ h3 {
 /* LINKS */
 
 a {
-	color: #1488CC; 
+	color: #e75f63; 
 	text-decoration: none;
 	-moz-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
@@ -129,13 +129,13 @@ a {
 	transition: 0.5s ease;	
 }
 a:hover {
-	color: #7dc7f2;
+	color: #773339;
 }
 a.blend {
 	color: inherit; 
 }
 a.blend:hover {
-	color: #1488CC;
+	color: #e75f63;
 }
 
 /* FORMS */
@@ -237,6 +237,16 @@ label {
 	background-color: white;
 	border: 1px solid hsla(180, 30%, 27%, 1);
 	color: hsla(180, 30%, 27%, 1);
+}
+
+
+.button.red {
+	background-color: hsla(358, 74%, 64%, 1);
+	border: 1px solid hsla(358, 74%, 64%, 1);
+}
+.button.red:hover {
+	background-color: hsla(358, 74%, 44%, 1);
+	border: 1px solid hsla(358, 74%, 44%, 1);
 }
 
 
