@@ -3,126 +3,121 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/index.css">
-<!-- 	<link type="text/css" rel="stylesheet" href="/static/css/master.css"> -->
 {% endblock %}
 
 {% block content %}
 
-<div class="indexCover">
-
-	<div class="indexCoverContentWrapper">
-
-		<div class="indexCoverHeading">
-<!-- 			<h1>NEED A HAND?</h1> -->
-			<h2>Discover, meet and learn from makers, craftspeople<br>
-			and DIY enthusiasts in your community.</h2>
+<div class="cover">
+	<div class="coverContentWrapper">
+		<div class="coverHeader">
+			<header>Discover, meet and learn from makers, craftspeople and DIY enthusiasts in your community.</header>
 		</div>
 
-		<div class="indexCoverSearch">
-			<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
-				<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
+		<div class="coverSearch">
+			<form name="indexSearch" id="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
+				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 				<input name="search" type="text" autocomplete="off" placeholder="Search">
 				<input class="button teal" type="submit" value="Search for what you want to learn">
 			</form>
+			<div class="coverSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
 		</div>
+
+		<div class="coverButtons">
+			<a href="/signup"><button class="button red coverSignup">Sign Up</button></a>
+			<a href="/login"><button class="button red coverLogin">Log In</button></a>
+		</div>
+
 	</div>
 </div>
 
-<div class="indexMobileSearch">
-	<form name="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
-		<input name="csrf_token" type="hidden" value="1397006779.97##4301cfaf7ddcbe44d1ceed578cd9b839dd677edc">
-		<input name="search" type="text" autocomplete="off" placeholder="Search for the expertise you need">
-		<input class="blueButton" type="submit" value="Search">
-	</form>
-</div>
-
-<div class="indexContentWrapper">
-	<div class="indexSharePassion">Explore the unique creative-living lessons near you. <!-- <a href="/signup">Teach others your craft&mdash;and get paid for it!</a> --></div>
-	<div class="indexFeatures">
-		<div class="indexFeature">
+<div class="features">
+	<div class="featuresHeader">Explore the unique creative-living lessons near you.</div>
+	<div class="featuresContainer">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/ceramics-2.jpg">
+				<img class="featurePic" src="/static/img/ceramics-2.jpg">
 				<h2>Ceramics</h2>
 			</a>
 			<!-- <p>Every artist in the world was first an amateur. Take your first steps.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/fiber-art.jpg">
+				<img class="featurePic" src="/static/img/fiber-art.jpg">
 				<h2>Fiber Art</h2>
 			</a>
 			<!-- <p>Take a cue from Madonna, express yourself.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/home-decorations.jpg">
+				<img class="featurePic" src="/static/img/home-decorations.jpg">
 				<h2>Home Decor</h2>
 			</a>
 			<!-- <p>Improve your skills and kitchen know-how.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/jewelry-design.jpg">
+				<img class="featurePic" src="/static/img/jewelry-design.jpg">
 				<h2>Jewelry Design</h2>
 			</a>
 			<!-- <p>Improve your skills and kitchen know-how.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/needlecraft-2.jpg">
+				<img class="featurePic" src="/static/img/needlecraft-2.jpg">
 				<h2>Needlecraft</h2>
 			</a>
 			<!-- <p>Find your inner Beethoven.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/lino-cut.jpg">
+				<img class="featurePic" src="/static/img/lino-cut.jpg">
 				<h2>Printmaking</h2>
 			</a>
 			<!-- <p>Stretch and reach your goals.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/textiles.jpg">
+				<img class="featurePic" src="/static/img/textiles.jpg">
 				<h2>Textiles</h2>
 			</a>
 			<!-- <p>Software is eating the world. Join the feast.</p> -->
 		</div>
 
-		<div class="indexFeature">
+		<div class="feature">
 			<a href="/search">
-				<img class="indexFeaturePic" src="/static/img/woodwork.jpg">
+				<img class="featurePic" src="/static/img/woodwork.jpg">
 				<h2>Woodworking</h2>
 			</a>
 			<!-- <p>Search for your calm inner spirit.</p> -->
 		</div>
+		<div class="clear"></div>
 	</div>
+	<div class="featuresFooter"><a href="/search" class="blend">And More...</a></div>
+	<div class="clear"></div>
 </div>
 
 <div class="about">
 	<div class="aboutHeader">How it Works</div>
 	<div class="aboutItem">
 		<div class="aboutItemIcon"><img src="/static/img/discover_mglass.png" alt="Discover"></div>
-			<div class="aboutItemTitle">Discover</div>
-			<div class="aboutItemCaption">1. Find unique arts and crafts opportunities taught by vetted local mentors. 
-			</div>
+		<div class="aboutItemTitle">Discover</div>
+		<div class="aboutItemCaption">1. Find unique arts and crafts opportunities taught by vetted local mentors. </div>
 	</div>
 	<div class="aboutItem">
 		<div class="aboutItemIcon"><img src="/static/img/book.png" alt="Experience"></div>
-			<div class="aboutItemTitle">Schedule</div>
-			<div class="aboutItemCaption">2. Book a paid one-on-one or group lesson with a creative mentor at a time that is convenient for you.</div>
+		<div class="aboutItemTitle">Schedule</div>
+		<div class="aboutItemCaption">2. Book a paid one-on-one or group lesson with a creative mentor at a time that is convenient for you.</div>
 	</div>
 	<div class="aboutItem">
 		<div class="aboutItemIcon"><img src="/static/img/meet.png" alt="Meet"></div>
-			<div class="aboutItemTitle">Experience</div>
-			<div class="aboutItemCaption">3. Meet your creative mentor in person and start learning.</div>
-		</div>
+		<div class="aboutItemTitle">Experience</div>
+		<div class="aboutItemCaption">3. Meet your creative mentor in person and start learning.</div>
 	</div>
 </div>
 
@@ -134,17 +129,18 @@
 		Mentors are the creative engine of the Insprite community. They are painters, potters, crafters, knitters, woodworkers, and DIY enthusiasts&mdash;just about anything creative that you can think of&mdash;who are eager to spread their passions with others, while earning money on the side for their creative know-how.
 	</div>
 	<div class="mentorCloser">	
-		Think you fit the bill? <a href="" class="scrollLink teal" data-target="lowerRegistration">Sign up and let us know!</a>
+		Think you fit the bill? <a href="/signup">Sign up and create your profile!</a>
 	</div>
 </div>
 
 
-
-<div class="clear"></div>
-
 <script>
 
 $(document).ready(function() {
+
+	$("#searchIcon").click(function () {
+		$("#indexSearch").submit();
+	});
 
 	// [Login] On load, show full content on high resolutions
 	if ($('.loginSwitch').css('display') == 'none') {

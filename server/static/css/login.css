@@ -347,7 +347,7 @@ c) 890px - ... (desktops)
 	}
 
 	.pageWrapper {
-		background: url('../img/silk-thread-shaded.jpg') no-repeat center center;
+		background: url('../img/backgrounds/silk-thread-shaded.jpg') no-repeat center center;
 		background-position: 100% 30%;
 		-o-background-size: cover;
 		-webkit-background-size: cover;		

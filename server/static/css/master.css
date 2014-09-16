@@ -240,6 +240,16 @@ label {
 }
 
 
+.button.red {
+	background-color: hsla(358, 74%, 64%, 1);
+	border: 1px solid hsla(358, 74%, 64%, 1);
+}
+.button.red:hover {
+	background-color: hsla(358, 74%, 44%, 1);
+	border: 1px solid hsla(358, 74%, 44%, 1);
+}
+
+
 .blueButton {
 	-moz-appearance: none;
 	-o-appearance: none;

@@ -334,7 +334,7 @@ c) 890px - ... (desktops)
 	}
 
 	.pageWrapper {
-		background: url('../img/pottery_bg_flip.jpg') no-repeat center center;
+		background: url('../img/backgrounds/pottery_bg_flip.jpg') no-repeat center center;
 		-o-background-size: cover;
 		-webkit-background-size: cover;		
 		background-size: cover;
