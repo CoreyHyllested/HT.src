@@ -168,10 +168,11 @@
 .featuresHeader {
 	color: hsla(180, 30%, 60%, 1);
 	font-family: 'Lobster Two' cursive;
-	font-size: 2.4em;
+	font-size: 3em;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	height: 50px;
 	margin-top: 36px;
+	margin-bottom: 24px;
 	text-align: center;
 	width: 100%;
 }
@@ -190,7 +191,7 @@
 }	
 
 .featuresContainer h2 {
-	color: #1488CC;
+
 }
 
 .feature {
@@ -208,7 +209,7 @@
 	margin-top: 10px;
 	font-family: 'Lato', sans-serif;
 	font-weight: bold;
-	color: hsla(180, 30%, 40%, 1);
+	color: inherit;
 }
 
 .feature p {
@@ -225,10 +226,10 @@
 	width: 100%;
 	height: 40px;
 	text-align: center;
-	font-size: 1.6em;
+	font-size: 2.6em;
 	color: hsla(180, 30%, 40%, 1);
-	font-weight: 600;
 	margin-top: 24px;
+	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);	
 }
 
 .about {
@@ -257,7 +258,7 @@
 	text-align: center;
 	color: #e75f63;
 	font-family: 'Lobster Two' cursive;
-	font-size: 2.4em;
+	font-size: 3em;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	height: 50px;
 	line-height: 40px;
@@ -310,7 +311,7 @@
 .mentorIntroduction {
 	width: 70%;
 	margin: 16px auto 52px auto;
-	font-size: 2.8em;
+	font-size: 3em;
 	line-height: 1.4em;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	font-family: 'Lobster Two', cursive;
@@ -329,7 +330,7 @@
 .mentorCloser {
 	width: 70%;
 	margin: 48px auto 18px auto;
-	font-size: 1.8em;
+	font-size: 2.4em;
 	line-height: 1.4em;
 	text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 	font-weight: 600;

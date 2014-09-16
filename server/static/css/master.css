@@ -26,6 +26,15 @@ html, body {
 	font-family: "Garamond", "EB Garamond", "Georgia", serif;
 }
 
+.fancy {
+	font-family: 'Lobster Two' cursive;
+}
+
+.alt {
+	font-family: 'Lato', sans-serif;
+	/*font-family: "Helvetica Neue", "Open Sans", "Arial", sans-serif;*/
+}
+
 strong {
 	font-weight: bold;
 }
@@ -145,7 +154,7 @@ h3 {
 /* LINKS */
 
 a {
-	color: #e75f63; 
+	color: hsla(180, 30%, 40%, 1); 
 	text-decoration: none;
 	-moz-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
@@ -153,13 +162,19 @@ a {
 	transition: 0.5s ease;	
 }
 a:hover {
-	color: #773339;
+	color: hsla(180, 30%, 27%, 1);
 }
 a.blend {
 	color: inherit; 
 }
 a.blend:hover {
-	color: #e75f63;
+	color: hsla(180, 30%, 27%, 1);
+}
+a.red {
+	color: hsla(358, 74%, 64%, 1);
+}
+a.red:hover {
+	color: hsla(358, 74%, 40%, 1);
 }
 
 /* FORMS */
@@ -257,8 +272,8 @@ label {
 }
 
 .button.teal {
-	background-color: hsla(180, 30%, 50%, 1);
-	border: 1px solid hsla(180, 30%, 50%, 1);
+	background-color: hsla(180, 30%, 40%, 1);
+	border: 1px solid hsla(180, 30%, 40%, 1);
 }
 .button.teal:hover {
 	background-color: hsla(180, 30%, 27%, 1);
@@ -266,8 +281,8 @@ label {
 }
 .button.teal.light {
 	background-color: white;
-	border: 1px solid hsla(180, 30%, 50%, 1);
-	color: hsla(180, 30%, 50%, 1);
+	border: 1px solid hsla(180, 30%, 40%, 1);
+	color: hsla(180, 30%, 40%, 1);
 }
 .button.teal.light:hover {
 	background-color: white;
