@@ -21,7 +21,7 @@ LOCAL_DB	= os.environ.get('INSPRITE_DB', None)
 class Config:
 	# Flask Config Options
 	CSRF_ENABLED = True
-	MAX_CONTENT_LENGTH = 2**23
+	MAX_CONTENT_LENGTH = 2**23			# Maxiumum size of request cannot exeed 8MB.
 	SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta3.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
@@ -94,7 +94,7 @@ class TestingConfig(Config):
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
 	if (LOCAL_DB):
-		#'postgresql://htdb:pass@localhost:5432/beta4')
+		#'postgresql://htdb:pass@localhost:5432/beta4'
 		print 'setting DB URI =', LOCAL_DB
 		SQLALCHEMY_DATABASE_URI = LOCAL_DB
 
