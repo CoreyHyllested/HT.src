@@ -90,7 +90,8 @@ class TestingConfig(Config):
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
 	# maybe we don't use this
-	SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/insprite.db'
+	#SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/insprite.db'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:pass@localhost:5432/beta4'
 
 	def __init__ (self):
 		print 'creating testing config'
