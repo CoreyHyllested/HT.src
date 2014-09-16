@@ -15,7 +15,7 @@
 import os
 
 HT_BASEDIR	= os.path.abspath(os.path.dirname(__file__))
-LOCAL_MODE	= os.environ.get("LOCAL", None)
+LOCAL_DB	= os.environ.get('INSPRITE_DB', None)
 
 
 class Config:
@@ -60,6 +60,10 @@ class DevelopmentConfig(Config):
 	# RedisToGo.com :: herotime/'coming in Nov 2013'/corey@herotime.co
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
+	if (LOCAL_DB):
+		#'postgresql://htdb:pass@localhost:5432/beta4')
+		SQLALCHEMY_DATABASE_URI = LOCAL_DB
+
 
 
 
@@ -89,9 +93,11 @@ class TestingConfig(Config):
 	WTF_CSRF_ENABLED = False	# Boo. Hiss.  But means we don't have to parse the page much.
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
-	# maybe we don't use this
-	#SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/insprite.db'
-	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:pass@localhost:5432/beta4'
+	if (LOCAL_DB):
+		#'postgresql://htdb:pass@localhost:5432/beta4')
+		print 'setting DB URI =', LOCAL_DB
+		SQLALCHEMY_DATABASE_URI = LOCAL_DB
+
 
 	def __init__ (self):
 		print 'creating testing config'
