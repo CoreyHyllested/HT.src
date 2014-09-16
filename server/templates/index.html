@@ -16,8 +16,7 @@
 		<div class="coverSearch">
 			<form name="indexSearch" id="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-				<input name="search" type="text" autocomplete="off" placeholder="Search">
-				<input class="button teal" type="submit" value="Search for what you want to learn">
+				<input name="search" type="text" autocomplete="off" placeholder="What do you want to learn?">
 			</form>
 			<div class="coverSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
 		</div>
