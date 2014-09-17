@@ -176,6 +176,12 @@ a.red {
 a.red:hover {
 	color: hsla(358, 74%, 40%, 1);
 }
+a.white {
+	color: hsla(0, 0%, 100%, 1)
+}
+a.white:hover {
+	color: hsla(0, 0%, 94%, 1)
+}
 
 /* FORMS */
 

@@ -7,7 +7,7 @@
 
 {% block content %}
 
-<div class="cover">
+<div id="cover" class="cover">
 	<div class="coverContentWrapper">
 		<div class="coverHeader">
 			<header>Discover, meet and learn from makers, craftspeople and DIY enthusiasts in your community.</header>
@@ -26,10 +26,18 @@
 			<a href="/login"><button class="button red coverLogin">Log In</button></a>
 		</div>
 
+		<div class="coverMentor">
+			<a href="" class="white scrollLink" data-target="mentor">Want to be a <strong>Creative Mentor?</strong></a>
+		</div>
+
+		<div class="coverChevron">
+			<i class="fa fa-fw fa-chevron-circle-down scrollLink" data-target="features"></i>
+		</div>
+
 	</div>
 </div>
 
-<div class="features">
+<div id="features" class="features">
 	<div class="featuresHeader">Explore the unique creative-living lessons near you.</div>
 	<div class="featuresContainer">
 		<div class="feature">
@@ -101,22 +109,24 @@
 	<div class="clear"></div>
 </div>
 
-<div class="about">
-	<div class="aboutHeader">How it Works</div>
-	<div class="aboutItem">
-		<div class="aboutItemIcon"><img src="/static/img/discover_mglass.png" alt="Discover"></div>
-		<div class="aboutItemTitle">Discover</div>
-		<div class="aboutItemCaption">1. Find unique arts and crafts opportunities taught by vetted local mentors. </div>
-	</div>
-	<div class="aboutItem">
-		<div class="aboutItemIcon"><img src="/static/img/book.png" alt="Experience"></div>
-		<div class="aboutItemTitle">Schedule</div>
-		<div class="aboutItemCaption">2. Book a paid one-on-one or group lesson with a creative mentor at a time that is convenient for you.</div>
-	</div>
-	<div class="aboutItem">
-		<div class="aboutItemIcon"><img src="/static/img/meet.png" alt="Meet"></div>
-		<div class="aboutItemTitle">Experience</div>
-		<div class="aboutItemCaption">3. Meet your creative mentor in person and start learning.</div>
+<div id="about" class="about">
+	<div class="aboutItemContainer">
+		<div class="aboutHeader">How it Works</div>
+		<div class="aboutItem aboutDiscover">
+			<div class="aboutItemIcon"><img src="/static/img/discover_mglass.png" alt="Discover"></div>
+			<div class="aboutItemTitle">Discover</div>
+			<div class="aboutItemCaption">1. Find unique arts and crafts opportunities taught by vetted local mentors. </div>
+		</div>
+		<div class="aboutItem aboutExperience">
+			<div class="aboutItemIcon"><img src="/static/img/book.png" alt="Experience"></div>
+			<div class="aboutItemTitle">Schedule</div>
+			<div class="aboutItemCaption">2. Book a paid one-on-one or group lesson with a creative mentor at a time that is convenient for you.</div>
+		</div>
+		<div class="aboutItem aboutMeet">
+			<div class="aboutItemIcon"><img src="/static/img/meet.png" alt="Meet"></div>
+			<div class="aboutItemTitle">Experience</div>
+			<div class="aboutItemCaption">3. Meet your creative mentor in person and start learning.</div>
+		</div>
 	</div>
 </div>
 
@@ -132,7 +142,7 @@
 	</div>
 </div>
 
-
+<script src="/static/js/waypoints.min.js"></script>	
 <script>
 
 $(document).ready(function() {
@@ -144,123 +154,40 @@ $(document).ready(function() {
 
 	$("#indexSearch").submit(function() {
 		return submitSearch($(this));
-	});	
+	});
 
-	// // [Login] On load, show full content on high resolutions
-	// if ($('.loginSwitch').css('display') == 'none') {
-	// 	$('.loginEmail').show();
-	// 	$('.loginSocial').show();
-	// }
+	$(".scrollLink").click(function(e){
+		e.preventDefault();
+		var target = $(this).data('target');
+		
+        $('html,body').animate({
+			scrollTop: $("#"+target).offset().top
+        }, 800, function() {
+        	if (target == "lowerRegistration"){
+        		$("#lowerRegistrationForm #input_reg_email").focus();
+        		$('#input_reg_teacher, #input_reg_teacher_lower').attr('checked', true);
+        	}
+    	});
 
-	// // [Login] On resize, show full content on high resolutions
-	// $(window).resize(function() {	
-	// 	if ($('.loginSwitch').css('display') == 'none') {
-	// 		$('.loginEmail').show();
-	// 		$('.loginSocial').show();
-	// 	}
+	});
 
-	// 	else if ($('.loginSwitch').css('display') !== 'none') {
-	// 		$('.loginEmail').show();
-	// 		$('.loginSocial').hide();
-	// 	}
-	// });
+	// Waypoint Animations
 
+	$('.about').waypoint(function(direction) {
+		if (direction == "down") {
 
-	// // [Login] Switch to email login
-	// $('.loginSwitchEmail').click(function() {
-
-	// 	// If not highlighted, make it so
-	// 	if (!$(this).hasClass('loginSwitchActive')) {
-	// 		$(this).toggleClass('loginSwitchActive');
-	// 	}
-
-	// 	// Take away the highlight from the other tab
-	// 	if ($('.loginSwitchSocial').hasClass('loginSwitchActive')) {
-	// 		$('.loginSwitchSocial').toggleClass('loginSwitchActive');
-	// 	}
-
-	// 	// Hide the social login and show email login
-	// 	$('.loginSocial').hide();
-	// 	$('.loginEmail').show();	
-	// });
-
-
-	// // [Login] Switch to social login
-	// $('.loginSwitchSocial').click(function() {
-
-	// 	// If not highlighted, make it so
-	// 	if (!$(this).hasClass('loginSwitchActive')) {
-	// 		$(this).toggleClass('loginSwitchActive');
-	// 	}
-	// 	// Take away the highlight from the other tab
-	// 	if ($('.loginSwitchEmail').hasClass('loginSwitchActive')) {
-	// 		$('.loginSwitchEmail').toggleClass('loginSwitchActive');
-	// 	}
-
-	// 	// Hide the email login and show social login
-	// 	$('.loginEmail').hide();
-	// 	$('.loginSocial').show();
-
-	// });
-
-
-	// // [Signup] On load, show full content on high resolutions
-	// if ($(".signupSwitch").css("display") == "none") {
-	// 	$('.signupEmail').show();
-	// 	$('.signupSocial').show();
-	// }
-
-	// // [Signup] On resize, show full content on high resolutions
-	// $(window).resize(function() {	
-	// 	if ($(".signupSwitch").css("display") == "none") {
-	// 		$('.signupEmail').show();
-	// 		$('.signupSocial').show();
-	// 	}
-
-	// 	else if ($(".signupSwitch").css("display") !== "none") {
-	// 		$('.signupEmail').show();
-	// 		$('.signupSocial').hide();
-	// 	}
-	// });
-
-
-	// // [Signup] Switch to email signup
-	// $('.signupSwitchEmail').click(function() {
-
-	// 	// If not highlighted, make it so
-	// 	if (!$(this).hasClass('signupSwitchActive')) {
-	// 		$(this).toggleClass('signupSwitchActive');
-	// 	}
-
-	// 	// Take away the highlight from the other tab
-	// 	if ($('.signupSwitchSocial').hasClass('signupSwitchActive')) {
-	// 		$('.signupSwitchSocial').toggleClass('signupSwitchActive');
-	// 	}
-
-	// 	// Hide the social signup and show email signup
-	// 	$('.signupSocial').hide();
-	// 	$('.signupEmail').show();
-				
-	// });
-
-
-	// // [Signup] Switch to social signup
-	// $('.signupSwitchSocial').click(function() {
-
-	// 	// If not highlighted, make it so
-	// 	if (!$(this).hasClass('signupwitchActive')) {
-	// 		$(this).toggleClass('signupSwitchActive');
-	// 	}
-	// 	// Take away the highlight from the other tab
-	// 	if ($('.signupSwitchEmail').hasClass('signupSwitchActive')) {
-	// 		$('.signupSwitchEmail').toggleClass('signupSwitchActive');
-	// 	}
-
-	// 	// Hide the email signup and show social signup
-	// 	$('.signupEmail').hide();
-	// 	$('.signupSocial').show();
-
-	// });
+			$('.aboutItem.aboutDiscover').fadeIn(1000);
+			setTimeout(function() {
+				$('.aboutItem.aboutExperience').fadeIn(1000);
+			}, 300);				
+			setTimeout(function() {
+				$('.aboutItem.aboutMeet').fadeIn(1000);
+			}, 600);			
+		}
+	}, { 
+		offset: 300,
+		triggerOnce: true
+	});
 
 });
 
