@@ -272,6 +272,10 @@ def ht_send_meeting_reminders(meet_id):
 	print 'ht_send_meeting_reminders() --  sending appointment reminder emails now for ' + meet_id
 	meeting = Meeting.get_by_id(meet_id)
 
+	if (not meeting):
+		print 'ht_send_meeting_reminders(' + str(meet_id) + ') doesn\'t exist'
+		return
+
 	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.
 		print 'ht_send_meeting_reminders() --  meetin canceled ' + meet_id
