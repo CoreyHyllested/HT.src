@@ -112,7 +112,7 @@
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
 				<div class="lessonDescBody">
-				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration()}} {% else %}Flexible - no set duration{% endif %}				
+				{% if lesson.lesson_duration > 0 %}Lessons will last {{lesson.get_duration_string()}} {% else %}Flexible - no set duration{% endif %}				
 				
 				</div>				
 			</div>
