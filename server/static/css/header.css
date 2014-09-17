@@ -77,7 +77,7 @@ New muted blues for links:
 
 /* Header Search */
 
-#headerSearch {
+#headerSearchField {
 	float: left;
 	background: #fff;
 	border-radius: 2px;
@@ -108,7 +108,7 @@ New muted blues for links:
 	margin-left: -23px;
 }
 
-.headerSearchBarIcon i.searchIcon {
+.headerSearchBarIcon i.headerSearchIcon {
 	color: #000;
 	opacity: 0.7;
 	cursor: pointer;
@@ -117,7 +117,7 @@ New muted blues for links:
 	-o-transition: all 0.3s ease-in;
 	-webkit-transition: all 0.3s ease-in;
 }	
-.headerSearchBarIcon i.searchIcon:hover {
+.headerSearchBarIcon i.headerSearchIcon:hover {
 	opacity: 1;
 }
 
@@ -374,7 +374,7 @@ a.headerLogoLink {
 		width: 200px;
 	}
 
-	#menuSearch {
+	#mobileSearchForm {
 		background: url("../img/search.svg") #282c34 no-repeat 152px;
 		border-style: none;
 		border-radius: 2px;

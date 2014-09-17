@@ -14,9 +14,9 @@
 		</div>
 
 		<div class="coverSearch">
-			<form name="indexSearch" id="indexSearch" action="search" method="POST" onsubmit="return searchBar()">
+			<form name="indexSearch" id="indexSearch" action="/search" method="POST">
 				<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-				<input name="search" type="text" autocomplete="off" placeholder="What do you want to learn?">
+				<input name="keywords_field" class="keywordsField" id="indexSearchField" type="text" autocomplete="off" placeholder="What do you want to learn?">
 			</form>
 			<div class="coverSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
 		</div>
@@ -137,125 +137,130 @@
 
 $(document).ready(function() {
 
-	$("#searchIcon").click(function () {
+	$(".searchIcon").click(function () {
 		$("#indexSearch").submit();
 	});
 
-	// [Login] On load, show full content on high resolutions
-	if ($('.loginSwitch').css('display') == 'none') {
-		$('.loginEmail').show();
-		$('.loginSocial').show();
-	}
 
-	// [Login] On resize, show full content on high resolutions
-	$(window).resize(function() {	
-		if ($('.loginSwitch').css('display') == 'none') {
-			$('.loginEmail').show();
-			$('.loginSocial').show();
-		}
+	$("#indexSearch").submit(function() {
+		return submitSearch($(this));
+	});	
 
-		else if ($('.loginSwitch').css('display') !== 'none') {
-			$('.loginEmail').show();
-			$('.loginSocial').hide();
-		}
-	});
+	// // [Login] On load, show full content on high resolutions
+	// if ($('.loginSwitch').css('display') == 'none') {
+	// 	$('.loginEmail').show();
+	// 	$('.loginSocial').show();
+	// }
 
+	// // [Login] On resize, show full content on high resolutions
+	// $(window).resize(function() {	
+	// 	if ($('.loginSwitch').css('display') == 'none') {
+	// 		$('.loginEmail').show();
+	// 		$('.loginSocial').show();
+	// 	}
 
-	// [Login] Switch to email login
-	$('.loginSwitchEmail').click(function() {
-
-		// If not highlighted, make it so
-		if (!$(this).hasClass('loginSwitchActive')) {
-			$(this).toggleClass('loginSwitchActive');
-		}
-
-		// Take away the highlight from the other tab
-		if ($('.loginSwitchSocial').hasClass('loginSwitchActive')) {
-			$('.loginSwitchSocial').toggleClass('loginSwitchActive');
-		}
-
-		// Hide the social login and show email login
-		$('.loginSocial').hide();
-		$('.loginEmail').show();	
-	});
+	// 	else if ($('.loginSwitch').css('display') !== 'none') {
+	// 		$('.loginEmail').show();
+	// 		$('.loginSocial').hide();
+	// 	}
+	// });
 
 
-	// [Login] Switch to social login
-	$('.loginSwitchSocial').click(function() {
+	// // [Login] Switch to email login
+	// $('.loginSwitchEmail').click(function() {
 
-		// If not highlighted, make it so
-		if (!$(this).hasClass('loginSwitchActive')) {
-			$(this).toggleClass('loginSwitchActive');
-		}
-		// Take away the highlight from the other tab
-		if ($('.loginSwitchEmail').hasClass('loginSwitchActive')) {
-			$('.loginSwitchEmail').toggleClass('loginSwitchActive');
-		}
+	// 	// If not highlighted, make it so
+	// 	if (!$(this).hasClass('loginSwitchActive')) {
+	// 		$(this).toggleClass('loginSwitchActive');
+	// 	}
 
-		// Hide the email login and show social login
-		$('.loginEmail').hide();
-		$('.loginSocial').show();
+	// 	// Take away the highlight from the other tab
+	// 	if ($('.loginSwitchSocial').hasClass('loginSwitchActive')) {
+	// 		$('.loginSwitchSocial').toggleClass('loginSwitchActive');
+	// 	}
 
-	});
-
-
-	// [Signup] On load, show full content on high resolutions
-	if ($(".signupSwitch").css("display") == "none") {
-		$('.signupEmail').show();
-		$('.signupSocial').show();
-	}
-
-	// [Signup] On resize, show full content on high resolutions
-	$(window).resize(function() {	
-		if ($(".signupSwitch").css("display") == "none") {
-			$('.signupEmail').show();
-			$('.signupSocial').show();
-		}
-
-		else if ($(".signupSwitch").css("display") !== "none") {
-			$('.signupEmail').show();
-			$('.signupSocial').hide();
-		}
-	});
+	// 	// Hide the social login and show email login
+	// 	$('.loginSocial').hide();
+	// 	$('.loginEmail').show();	
+	// });
 
 
-	// [Signup] Switch to email signup
-	$('.signupSwitchEmail').click(function() {
+	// // [Login] Switch to social login
+	// $('.loginSwitchSocial').click(function() {
 
-		// If not highlighted, make it so
-		if (!$(this).hasClass('signupSwitchActive')) {
-			$(this).toggleClass('signupSwitchActive');
-		}
+	// 	// If not highlighted, make it so
+	// 	if (!$(this).hasClass('loginSwitchActive')) {
+	// 		$(this).toggleClass('loginSwitchActive');
+	// 	}
+	// 	// Take away the highlight from the other tab
+	// 	if ($('.loginSwitchEmail').hasClass('loginSwitchActive')) {
+	// 		$('.loginSwitchEmail').toggleClass('loginSwitchActive');
+	// 	}
 
-		// Take away the highlight from the other tab
-		if ($('.signupSwitchSocial').hasClass('signupSwitchActive')) {
-			$('.signupSwitchSocial').toggleClass('signupSwitchActive');
-		}
+	// 	// Hide the email login and show social login
+	// 	$('.loginEmail').hide();
+	// 	$('.loginSocial').show();
 
-		// Hide the social signup and show email signup
-		$('.signupSocial').hide();
-		$('.signupEmail').show();
+	// });
+
+
+	// // [Signup] On load, show full content on high resolutions
+	// if ($(".signupSwitch").css("display") == "none") {
+	// 	$('.signupEmail').show();
+	// 	$('.signupSocial').show();
+	// }
+
+	// // [Signup] On resize, show full content on high resolutions
+	// $(window).resize(function() {	
+	// 	if ($(".signupSwitch").css("display") == "none") {
+	// 		$('.signupEmail').show();
+	// 		$('.signupSocial').show();
+	// 	}
+
+	// 	else if ($(".signupSwitch").css("display") !== "none") {
+	// 		$('.signupEmail').show();
+	// 		$('.signupSocial').hide();
+	// 	}
+	// });
+
+
+	// // [Signup] Switch to email signup
+	// $('.signupSwitchEmail').click(function() {
+
+	// 	// If not highlighted, make it so
+	// 	if (!$(this).hasClass('signupSwitchActive')) {
+	// 		$(this).toggleClass('signupSwitchActive');
+	// 	}
+
+	// 	// Take away the highlight from the other tab
+	// 	if ($('.signupSwitchSocial').hasClass('signupSwitchActive')) {
+	// 		$('.signupSwitchSocial').toggleClass('signupSwitchActive');
+	// 	}
+
+	// 	// Hide the social signup and show email signup
+	// 	$('.signupSocial').hide();
+	// 	$('.signupEmail').show();
 				
-	});
+	// });
 
 
-	// [Signup] Switch to social signup
-	$('.signupSwitchSocial').click(function() {
+	// // [Signup] Switch to social signup
+	// $('.signupSwitchSocial').click(function() {
 
-		// If not highlighted, make it so
-		if (!$(this).hasClass('signupwitchActive')) {
-			$(this).toggleClass('signupSwitchActive');
-		}
-		// Take away the highlight from the other tab
-		if ($('.signupSwitchEmail').hasClass('signupSwitchActive')) {
-			$('.signupSwitchEmail').toggleClass('signupSwitchActive');
-		}
+	// 	// If not highlighted, make it so
+	// 	if (!$(this).hasClass('signupwitchActive')) {
+	// 		$(this).toggleClass('signupSwitchActive');
+	// 	}
+	// 	// Take away the highlight from the other tab
+	// 	if ($('.signupSwitchEmail').hasClass('signupSwitchActive')) {
+	// 		$('.signupSwitchEmail').toggleClass('signupSwitchActive');
+	// 	}
 
-		// Hide the email signup and show social signup
-		$('.signupEmail').hide();
-		$('.signupSocial').show();
+	// 	// Hide the email signup and show social signup
+	// 	$('.signupEmail').hide();
+	// 	$('.signupSocial').show();
 
-	});
+	// });
 
 });
 
