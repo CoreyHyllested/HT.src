@@ -120,6 +120,9 @@ class Meeting(Base):
 	meet_groupsize = Column(Integer, default=1)
 
 
+	# Lesson and Groupsize need defaults.
+	# Lesson == None
+	# Groupsize = 1.
 	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, lesson, groupsize, token=None, customer=None, card=None, flags=None):
 		self.meet_id	= str(uuid.uuid4())
 		self.meet_sellr	= str(sellr_id)
