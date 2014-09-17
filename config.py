@@ -74,6 +74,10 @@ class DevelMoneyConfig(Config):
 	STRIPE_PUBLIC =	'pk_live_uln2RsRFAILYDVG2ZMJj52JZ'
 	STRIPE_SECRET = 'sk_live_PkVMnc27rXEeb63WxO514N9X'
 
+	if (LOCAL_DB):
+		#'postgresql://htdb:pass@localhost:5432/beta4')
+		SQLALCHEMY_DATABASE_URI = LOCAL_DB
+
 
 
 
