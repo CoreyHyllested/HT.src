@@ -52,9 +52,9 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardLeftColumn h1 {
-	border-bottom: 1px solid #b0b4b7;
+	border-bottom: 1px dotted rgba(0,0,0,.08);
 	color: black;
-	font-size: 2em;
+	font-size: 1.6em;
 	padding-bottom: 15px;
 	width: 100%;
 }
@@ -170,7 +170,7 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardLesson {
-	border-bottom: 1px solid #cfd7db;
+	border-bottom: 1px dotted rgba(0,0,0,.05);
 	display: block;
 	margin-top: 8px;
 	padding-bottom: 8px;
@@ -231,7 +231,7 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardOffer {
-	border-bottom: 1px solid #cfd7db;
+	/*border-bottom: 1px solid #cfd7db;*/
 	display: block;
 	margin-top: 20px;
 	padding-bottom: 20px;
