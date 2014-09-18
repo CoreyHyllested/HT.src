@@ -243,7 +243,7 @@ def render_edit_profile():
 
 	# StripeConnect req'd for payments
 	pi = Oauth.get_stripe_by_uid(session['uid'])
-	stripe = 'No Stripe Account Found.'
+	stripe = ''
 	if (pi is not None): stripe = pi.oa_account
 	
 	# session_form = session.pop('form', None)

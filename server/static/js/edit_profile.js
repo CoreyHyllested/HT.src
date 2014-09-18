@@ -391,16 +391,17 @@ function showErrors(errors) {
 		var page = $(element).parents(".editProfFormPage").attr("id");
 		var navItem = ".editProfNavItem[data-target-page='" + page + "']";
 
-		// console.log("showErrors: element: "+element);
-		// console.log("showErrors: page: "+page);
-		// console.log("showErrors: navItem: "+navItem);		
+		console.log("showErrors: element: "+element);
+		console.log("showErrors: page: "+page);
+		console.log("showErrors: navItem: "+navItem);		
 
 		if ($(element).parents(".editProfAvailDay").length > 0) {
 			// This is a timeslot element - display the error inline
 			$(element).siblings(".formFieldError").html(error).fadeIn();
+		
 		} else {
 			// Display the error above the field
-			$(element).prevAll(".formFieldError").html(error).slideDown();
+			$(element).prevAll(".formFieldError:first").html(error).fadeIn();
 		}
 
 		$(element).css("border-color", "#e75f63");

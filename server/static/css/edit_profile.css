@@ -326,7 +326,7 @@
 .formFieldError {
 	display: none;
 	font-size: .7em;
-	color: red;
+	color: #e75f63;
 }
 
 .formFieldError.inline {
@@ -509,7 +509,7 @@ textarea.formField {
 	display: inline-block;
 	-webkit-font-smoothing: antialiased;
 	height: 40px;
-	margin-top: 15px;
+	margin-top: 6px;
 	padding: 1px;
 	text-decoration: none;
 	-moz-user-select: none;

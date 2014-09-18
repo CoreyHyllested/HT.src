@@ -248,15 +248,12 @@
 					<span class="formFieldCaption"></span>
 
 					<br><br>
-					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
-					<br><br>
-					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+					<div class="formFieldInfo">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
 					</div>
 
 					<div class="formFieldError"></div>
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					
-					{{form.edit_oauth_stripe(class="formField span4", readonly=true)}} <span class="formFieldCaption"></span>
+					{{form.edit_oauth_stripe(class="formField span4", readonly=true, placeholder='No Stripe Account Found.')}}<span class="formFieldCaption"></span>
 
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
