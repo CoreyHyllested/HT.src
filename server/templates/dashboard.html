@@ -291,16 +291,16 @@ $(document).ready(function() {
     });
 
 
-   $('.offerCancel').click(function () {
-        var id = this.id;
-        var fd = new FormData();
+	$('.offerCancel').click(function () {
+		var id = this.id;
+		var fd = new FormData();
 		var sid = "#appt-" + id;
-        fd.append('meet_id', id);
+		fd.append('meet_id', id);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "/meeting/cancel", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-        xhr.send(fd);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "/meeting/cancel", true);
+		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
+		xhr.send(fd);
 
         //catch response. make modificaitons.
         xhr.onreadystatechange = function(e) {
