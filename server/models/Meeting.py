@@ -399,15 +399,24 @@ class Meeting(Base):
 			print 'ht_charge_creditcard: cost (pennies)  ' +  str(self.meet_cost * 100)
 			print 'ht_charge_creditcard: application fee ' +  str(fee)
 			print 'ht_charge_creditcard: email_address   ' +  str(sellr_account.email)
-			charge = stripe.Charge.create(
+			print 'ht_charge_creditcard: create token'
+			token = stripe.Token.create(
 				customer=self.charge_customer_id,		# customer.id is the second one passed in
-				capture=False,							# Capture later.
+				card=self.charge_credit_card,
+				api_key=str(o_auth.oa_secret),
+			)
+
+			print 'ht_charge_creditcard: created token, create charge'
+			charge = stripe.Charge.create(
 				amount=(self.meet_cost * 100),			# charged in pennies.
+				card=token,
 				currency='usd',
+				capture=False,							# Capture later.
 				description=self.meet_details,
 				application_fee=fee,
 				api_key=str(o_auth.oa_secret),
 				receipt_email=str(sellr_account.email)
+#				statement_description='Insprite.co',
 			)
 
 			pp(charge)
