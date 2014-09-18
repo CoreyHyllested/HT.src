@@ -235,10 +235,12 @@ $(document).ready(function() {
 	$(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
 
 	// When loading form - activate times when date is selected
-	// $.each(".daySelector", function() {
-
-
-	// });
+	
+	$(".daySelector").each(function() {
+		if ($(this).prop("checked")) {
+			$(this).siblings(".timeSelector").css("opacity", 1).removeAttr("disabled");
+		}	
+	});
 
 	$(".daySelector").change(function() {
 		if ($(this).prop("checked")) {

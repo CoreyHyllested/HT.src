@@ -257,14 +257,17 @@ def normalize_oa_account_data(provider, oa_data):
 def htdb_get_composite_meetings(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
+	lesson = aliased(Lesson, name='lesson')
 
-	meetings	= db_session.query(Meeting, user, hero)																	\
+	meetings	= db_session.query(Meeting, user, hero, lesson)															\
 							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
 							.join(user, user.prof_id == Meeting.meet_buyer)												\
-							.join(hero, hero.prof_id == Meeting.meet_sellr).all();
+							.join(hero, hero.prof_id == Meeting.meet_sellr)												\
+							.join(lesson, lesson.lesson_id == Meeting.meet_lesson).all();
 
 	map(lambda composite_meeting: meeting_timedout(composite_meeting, profile), meetings)
 	map(lambda composite_meeting: display_meeting_partner(composite_meeting, profile), meetings)
+	map(lambda composite_meeting: display_meeting_lesson(composite_meeting, lesson), meetings)
 	return meetings
 
 
@@ -430,11 +433,16 @@ def display_review_partner(r, prof_id):
 	setattr(r, 'display', display_attr)
 
 
-
 def display_meeting_partner(composite_meeting, profile):
 	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
 	setattr(composite_meeting, 'display', display_partner)
 	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
+	setattr(composite_meeting, 'buyer', (profile == composite_meeting.user))
+
+
+def display_meeting_lesson(composite_meeting, lesson):
+	lesson = composite_meeting.lesson
+	setattr(composite_meeting, 'lesson', lesson)
 
 
 

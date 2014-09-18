@@ -9,8 +9,7 @@
 	{% block head %}
 
 	<!-- Import Google Fonts -->
-	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-	<link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Noto+Serif:400italic'>
+	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|Noto+Serif:400italic|Lobster+Two:400,700|Lato:100,300,400,700,900">
 
 	<!-- Import FontAwesome Icons -->
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
@@ -22,8 +21,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
-
 
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -134,9 +131,9 @@
 
 	<!-- hidden menu that only shows up on mobile -->
 	<div class="menu">
-		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+		<form name="mobileSearchForm" id="mobileSearchForm" action="search" method="POST">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-			<input name="keywords_field" id="menuSearch" type="text" autocomplete="off">
+			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off">
 		</form>
 		<ul>
 
@@ -177,11 +174,11 @@
 					<img src="/static/img/insprite_small2.png" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
-					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+					<form name="headerSearchForm" id="headerSearchForm" action="search" method="POST">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<input name="keywords_field" id="headerSearch" type="text" autocomplete="off">
+						<input name="keywords_field" class="keywordsField" id="headerSearchField" type="text" autocomplete="off">
 					</form>
-					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
+					<div class="headerSearchBarIcon"><i class="fa fa-search headerSearchIcon"></i></div>
 				</div>
 
 
@@ -274,16 +271,28 @@
 	<script>
 
 	$(document).ready(function() {
-		$(".searchIcon").click(function() {
-			$("#srchForm").submit();
+
+		$(".headerSearchIcon").click(function() {
+			$("#headerSearchForm").submit();
 		});
 
-		function searchBar() {
-			var x=document.forms["srchForm"]["keywords_field"].value;
-			if (x==null || x=="") { return false; }
-			return true;
-		}
+		$("#headerSearchForm, #mobileSearchForm").submit(function() {
+			return submitSearch($(this));
+		});		
+
 	});
+
+	function submitSearch(form) {
+		var query = $(form).find(".keywordsField").val().trim();
+		console.log("query: "+query);
+		if (query != "" && query != null) { 
+			return true;
+		} else {
+			console.log("Search field was blank.");
+			return false;
+		}		
+	}
+
 	</script>
 
 </body>

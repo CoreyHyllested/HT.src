@@ -355,29 +355,6 @@
 	margin-bottom: -1px;
 }
 
-.span1 {
-	width: 8.33%;
-}
-.span2 {
-	width: 16.66%;
-}
-.span3 {
-	width: 25%;
-}
-.span4 {
-	width: 33%;
-}
-
-.span6 {
-	width: 50%;
-}
-.span9 {
-	width: 75%;
-}
-.span12 {
-	width: 100%;
-}
-
 
 .formField.stack:first-of-type {
 	border-radius: 5px 5px 0 0;

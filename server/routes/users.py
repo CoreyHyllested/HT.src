@@ -20,7 +20,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, NTSForm, ReviewForm, LessonForm
+from ..forms import ProfileForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -56,7 +56,7 @@ def render_dashboard(usrmsg=None):
 		unread_msgs = ht_get_unread_messages(bp)
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	except Exception as e:
-		print type(e), e
+		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
 	if (usrmsg is None and insprite_msg):
@@ -250,7 +250,7 @@ def render_edit_profile():
 	# session_errmsg = session.pop('errmsg', None)
 	
 	# Set session next_url here
-	session['next_url'] = '/profile/edit#payment'
+	# session['next_url'] = '/profile/edit#payment'
 
 	form = ProfileForm(request.form)
 	x = 0
@@ -276,27 +276,52 @@ def render_edit_profile():
 		print "start is", timeslot.avail_start
 		print "finish is", timeslot.avail_finish
 		
-		day = d[timeslot.avail_weekday]
+		day = timeslot.avail_weekday
 
-		slotdays.append(day)
+		# # Create variable strings for each start/end time and the day, define them as variables with vars(), and set their values. 
+		# start = "form.edit_avail_time_"+day+"_start.data"
+		# finish = "form.edit_avail_time_"+day+"_end.data"
+		# day = "form.edit_avail_day_"+day+".data"
 
-		start = "form.edit_avail_time_"+day+"_start.data"
-		finish = "form.edit_avail_time_"+day+"_end.data"
+		if (day == 0):
+			form.edit_avail_time_sun_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_sun_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_sun.data = 'y'
 
-		vars()[start] = timeslot.avail_start
-		vars()[finish] = timeslot.avail_finish
+		if (day == 1):
+			form.edit_avail_time_mon_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_mon_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_mon.data = 'y'		
 
-		print "render_edit_profile(): edit_avail_start: ", day, vars()[start]
-		print "render_edit_profile(): edit_avail_day: ", day, vars()[finish]
+		if (day == 2):
+			form.edit_avail_time_tue_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_tue_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_tue.data = 'y'
 
-	form.edit_avail_day.data = slotdays
-	print "render_edit_profile(): edit_avail_day final is: ", form.edit_avail_day.data
+		if (day == 3):
+			form.edit_avail_time_wed_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_wed_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_wed.data = 'y'
+
+		if (day == 4):
+			form.edit_avail_time_thu_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_thu_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_thu.data = 'y'
+
+		if (day == 5):
+			form.edit_avail_time_fri_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_fri_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_fri.data = 'y'
+
+		if (day == 6):
+			form.edit_avail_time_sat_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_sat_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_sat.data = 'y'
 
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
 
 	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-
 
 
 	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
@@ -405,26 +430,53 @@ def ht_validate_profile(bp, form, form_page):
 		# 2. day was selected without specifying time
 		# 3. end time was before start time on any day
 
-		days = request.form.getlist('edit_avail_day')
-		for day in days:
-			print "ht_validate_profile: day is: ", day
-			start = eval("form.edit_avail_time_"+day+"_start.data")
-			finish = eval("form.edit_avail_time_"+day+"_end.data")
-			
-			# print "start is", start
-			# print "finish is", finish
+		print "ht_validate_profile: validating schedule page"
 
-			if (start == '' or finish == ''):
-				errors[day] = "Select both a start and end time."
+		new_avail = request.values.get("edit_availability")
+		print "ht_validate_profile: new_avail: ", new_avail
+		print "ht_validate_profile: edit_avail_day_tue: ", request.values.get("edit_avail_day_tue")
 
-			else:
-				try: 
-					starttime = datetime.strptime(start, '%H:%M')
-					finishtime = datetime.strptime(finish, '%H:%M')
-					if (finishtime <= starttime):
-						errors[day] = "End time must be later than start time."
-				except:
-					errors[day] = "Hmm... unknown error here."
+		if (new_avail == "2"):
+			days = []
+			if (request.values.get("edit_avail_day_sun") == 'y'):
+				days.append("sun")
+			if (request.values.get("edit_avail_day_mon") == 'y'):
+				days.append("mon")
+			if (request.values.get("edit_avail_day_tue") == 'y'):
+				days.append("tue")
+			if (request.values.get("edit_avail_day_wed") == 'y'):
+				days.append("wed")
+			if (request.values.get("edit_avail_day_thu") == 'y'):
+				days.append("thu")
+			if (request.values.get("edit_avail_day_fri") == 'y'):
+				days.append("fri")
+			if (request.values.get("edit_avail_day_sat") == 'y'):
+				days.append("sat")
+
+			print "ht_validate_profile: days: ", pprint(days)	
+
+			for day in days:
+				print "ht_validate_profile: day is: ", day
+				start = eval("form.edit_avail_time_"+day+"_start.data")
+				finish = eval("form.edit_avail_time_"+day+"_finish.data")
+				
+				# print "start is", start
+				# print "finish is", finish
+
+				if (start == '' or finish == ''):
+					errors[day] = "Please select both a start and end time."
+
+				else:
+					try: 
+						starttime = datetime.strptime(start, '%H:%M')
+						finishtime = datetime.strptime(finish, '%H:%M')
+						if (finishtime <= starttime):
+							errors[day] = "End time must be later than start time."
+					except:
+						errors[day] = "Hmm... unknown error here."
+
+			if (len(days) == 0):
+				errors["edit_availability"] = "Please select the specific days and times you will be available"
 
 
 	if (form_page == "payment" or form_page == "full"):
@@ -471,6 +523,7 @@ def ht_update_avail_timeslots(bp, form):
 	# First delete the existing entries in the Availability table for this profile.
 	avail = Availability.get_by_prof_id(bp.prof_id)
 	for o in avail:
+		print "ht_update_avail_timeslots: deleting a slot."
 		db_session.delete(o)
 
 	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
@@ -481,11 +534,29 @@ def ht_update_avail_timeslots(bp, form):
 		print "ht_update_avail_timeslots: availability is specific - extract preferences."
 
 		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
-		days = request.form.getlist('edit_avail_day')
+		
+		days = []
+
+		if (request.values.get("edit_avail_day_sun") == 'y'):
+			days.append("sun")
+		if (request.values.get("edit_avail_day_mon") == 'y'):
+			days.append("mon")
+		if (request.values.get("edit_avail_day_tue") == 'y'):
+			days.append("tue")
+		if (request.values.get("edit_avail_day_wed") == 'y'):
+			days.append("wed")
+		if (request.values.get("edit_avail_day_thu") == 'y'):
+			days.append("thu")
+		if (request.values.get("edit_avail_day_fri") == 'y'):
+			days.append("fri")
+		if (request.values.get("edit_avail_day_sat") == 'y'):
+			days.append("sat")
+
 		print "ht_update_avail_timeslots: avail days: ", days
 		for day in days:
+			# generate the variable name string, and extract its value using eval
 			start = eval("form.edit_avail_time_"+day+"_start.data")
-			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			finish = eval("form.edit_avail_time_"+day+"_finish.data")
 			print "-"*24
 			print "ht_update_avail_timeslots: adding slot on", day
 
@@ -1046,6 +1117,19 @@ def api_get_images_for_lesson(lesson_id):
 	return jsonify(portfolio=images)
 
 
+@req_authentication
+@insprite_views.route("/lesson/<lesson_id>/retrieve", methods=['GET'])
+def ht_api_retrieve_lesson(lesson_id):
+	# move this to API.
+	lesson = Lesson.get_by_id(lesson_id)
+	# print "ht_api_retrieve_lesson: lesson: "+pprint(lesson)
+	return jsonify(lesson=lesson.serialize)
+
+
+def ht_get_serialized_images_for_lesson(lesson_id):
+	# json_serialize all images assoicated with the lesson.
+	images = LessonImageMap.get_images_for_lesson(lesson_id)
+	return [img.serialize for img in images]
 
 
 @req_authentication
@@ -1156,34 +1240,96 @@ def api_lesson_image_update(lesson_id):
 
 
 
-
 @insprite_views.route('/schedule', methods=['GET','POST'])
 @req_authentication
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
+
+	form = ProposalForm(request.form)
+
 	try:
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
-		hp = Profile.get_by_prof_id(request.values.get('hp', None))
+		mentor = Profile.get_by_prof_id(request.values.get('mentor'))
+		lesson = Lesson.get_by_id(request.values.get('lesson'))
+		avail = Availability.get_by_prof_id(mentor.prof_id)	
+
+		print 'render_schedule() mentor:', mentor
+		print 'render_schedule() lesson:', lesson
+
+
+		form.prop_lesson.choices = Lesson.get_enum_active_by_prof_id(mentor.prof_id)
+		form.prop_lesson.choices.insert(0, ('-1', 'No specific lesson - Request a meeting'))
+		
+		if (lesson):
+			form.prop_lesson.default = lesson.lesson_id		
+
+		form.process()
+
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
 
-	if (hp is None):
+	if (mentor is None):
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
 		session['messages'] = 'We require a verified email prior to scheduling'
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?hp='+request.args.get('hp'))))
+		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
 
-	nts = NTSForm(request.form)
-	nts.hero.data = hp.prof_id
-	print 'render_schedule()\tusing STRIPE: ', ht_server.config['STRIPE_SECRET']
 
-	return make_response(render_template('schedule.html', bp=bp, hp=hp, form=nts, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, errmsg=usrmsg))
+	form.prop_mentor.data = mentor.prof_id
 
+	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
+
+	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
+
+
+@insprite_views.route('/schedule/getdays', methods=['GET'])
+@req_authentication
+def get_schedule_days():
+	print "get_schedule_days: start"
+	mentor_id = request.values.get('mentor_id')
+	availdays = []
+	print "get_schedule_days: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	try:
+		availdays = Availability.get_avail_days(mentor_id)
+		if (len(availdays) > 0):
+			print "get_schedule_days: user available on days ", str(availdays)
+		else:
+			print "get_schedule_days: user availability not found"
+
+	except Exception as e:
+		print "get_schedule_days: exception:", e
+		print "get_schedule_days: Couldn't find availability for that user."
+
+	return jsonify(availdays=availdays), 200	
+
+
+@insprite_views.route('/schedule/gettimes', methods=['GET'])
+@req_authentication
+def get_schedule_times():
+	print "get_schedule_times: start"
+	day = request.values.get('day')
+	mentor_id = request.values.get('mentor_id')
+	print "get_schedule_times: day:", day
+	print "get_schedule_times: mentor_id:", mentor_id
+	avail = Availability.get_by_prof_id(mentor_id)
+
+	try:
+		start, finish = Availability.get_avail_by_day(mentor_id, day)
+		print "get_schedule_times: start:", start
+		print "get_schedule_times: finish:", finish
+
+		return jsonify(start=str(start), finish=str(finish)), 200
+
+	except Exception as e:
+		print "get_schedule_times: exception:", e
+		print "get_schedule_times: Couldn't find availability for that day."
 
 
 

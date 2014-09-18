@@ -14,7 +14,7 @@
 
 from flask import render_template
 from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
-from ..forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
+from ..forms import SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm, ProposalForm
 from .helpers import *
 from server.controllers import *
 from server.ht_utils import *
@@ -35,6 +35,8 @@ def ht_api_meeting_create():
 		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
 		return se.api_response(request.method)
 
+
+	# TODO - change nexturl to depend on passed variable, go to user profile if needed
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
@@ -100,7 +102,7 @@ def ht_api_meeting_reject():
 
 
 
-@insprite_views.route('/meeting/cancel', methods=['POST'])
+@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
