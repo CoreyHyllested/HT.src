@@ -250,7 +250,7 @@ def render_edit_profile():
 	# session_errmsg = session.pop('errmsg', None)
 	
 	# Set session next_url here
-	session['next_url'] = '/profile/edit#payment'
+	# session['next_url'] = '/profile/edit#payment'
 
 	form = ProfileForm(request.form)
 	x = 0
@@ -430,26 +430,53 @@ def ht_validate_profile(bp, form, form_page):
 		# 2. day was selected without specifying time
 		# 3. end time was before start time on any day
 
-		days = request.form.getlist('edit_avail_day')
-		for day in days:
-			print "ht_validate_profile: day is: ", day
-			start = eval("form.edit_avail_time_"+day+"_start.data")
-			finish = eval("form.edit_avail_time_"+day+"_end.data")
-			
-			# print "start is", start
-			# print "finish is", finish
+		print "ht_validate_profile: validating schedule page"
 
-			if (start == '' or finish == ''):
-				errors[day] = "Select both a start and end time."
+		new_avail = request.values.get("edit_availability")
+		print "ht_validate_profile: new_avail: ", new_avail
+		print "ht_validate_profile: edit_avail_day_tue: ", request.values.get("edit_avail_day_tue")
 
-			else:
-				try: 
-					starttime = datetime.strptime(start, '%H:%M')
-					finishtime = datetime.strptime(finish, '%H:%M')
-					if (finishtime <= starttime):
-						errors[day] = "End time must be later than start time."
-				except:
-					errors[day] = "Hmm... unknown error here."
+		if (new_avail == "2"):
+			days = []
+			if (request.values.get("edit_avail_day_sun") == 'y'):
+				days.append("sun")
+			if (request.values.get("edit_avail_day_mon") == 'y'):
+				days.append("mon")
+			if (request.values.get("edit_avail_day_tue") == 'y'):
+				days.append("tue")
+			if (request.values.get("edit_avail_day_wed") == 'y'):
+				days.append("wed")
+			if (request.values.get("edit_avail_day_thu") == 'y'):
+				days.append("thu")
+			if (request.values.get("edit_avail_day_fri") == 'y'):
+				days.append("fri")
+			if (request.values.get("edit_avail_day_sat") == 'y'):
+				days.append("sat")
+
+			print "ht_validate_profile: days: ", pprint(days)	
+
+			for day in days:
+				print "ht_validate_profile: day is: ", day
+				start = eval("form.edit_avail_time_"+day+"_start.data")
+				finish = eval("form.edit_avail_time_"+day+"_finish.data")
+				
+				# print "start is", start
+				# print "finish is", finish
+
+				if (start == '' or finish == ''):
+					errors[day] = "Please select both a start and end time."
+
+				else:
+					try: 
+						starttime = datetime.strptime(start, '%H:%M')
+						finishtime = datetime.strptime(finish, '%H:%M')
+						if (finishtime <= starttime):
+							errors[day] = "End time must be later than start time."
+					except:
+						errors[day] = "Hmm... unknown error here."
+
+			if (len(days) == 0):
+				errors["edit_availability"] = "Please select the specific days and times you will be available"
 
 
 	if (form_page == "payment" or form_page == "full"):
@@ -507,11 +534,29 @@ def ht_update_avail_timeslots(bp, form):
 		print "ht_update_avail_timeslots: availability is specific - extract preferences."
 
 		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
-		days = request.form.getlist('edit_avail_day')
+		
+		days = []
+
+		if (request.values.get("edit_avail_day_sun") == 'y'):
+			days.append("sun")
+		if (request.values.get("edit_avail_day_mon") == 'y'):
+			days.append("mon")
+		if (request.values.get("edit_avail_day_tue") == 'y'):
+			days.append("tue")
+		if (request.values.get("edit_avail_day_wed") == 'y'):
+			days.append("wed")
+		if (request.values.get("edit_avail_day_thu") == 'y'):
+			days.append("thu")
+		if (request.values.get("edit_avail_day_fri") == 'y'):
+			days.append("fri")
+		if (request.values.get("edit_avail_day_sat") == 'y'):
+			days.append("sat")
+
 		print "ht_update_avail_timeslots: avail days: ", days
 		for day in days:
+			# generate the variable name string, and extract its value using eval
 			start = eval("form.edit_avail_time_"+day+"_start.data")
-			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			finish = eval("form.edit_avail_time_"+day+"_finish.data")
 			print "-"*24
 			print "ht_update_avail_timeslots: adding slot on", day
 
