@@ -3,16 +3,11 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
-	{% assets "sass_lesson" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
-	{% endassets %}
+	{% assets "sass_lesson" %}<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
-	
 	<script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
 	<link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
-	
-
 {% endblock %}
 
 
@@ -64,8 +59,10 @@
 
 			<div class="lessonTitleBox">
 				<div class="lessonTitle"><h1>{{lesson.lesson_title}}</h1></div>
-				<div class="lessonRate"><div class="rateAmount">${{lesson.lesson_rate}}</div>
-				<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div></div>
+				<div class="lessonRate">
+					<div class="rateAmount">${{lesson.lesson_rate}}</div>
+					<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div>
+				</div>
 				<div class="lessonRating">
 
 					{% if mentor.reviews == 0 %}
@@ -75,20 +72,13 @@
 						Mentor Rating: <span class="ratingStars"></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">({{mentor.reviews}} Review{% if mentor.reviews > 1 %}s{% endif %})</a>
 					{% endif %}
 
-
-					
 				</div>				
-				<div class="lessonCategory">
-					Category: {{industry}}
-				</div>				
-
+				<div class="lessonCategory">Category: {{industry}}</div>
 			</div>
 
 			<div id="overview" class="lessonDescBox">
 				<div class="lessonDescHeader"><h2>Overview</h2></div>			
-				<div class="lessonDescBody">{{lesson.lesson_description}}
-				</div>
-
+				<div class="lessonDescBody">{{lesson.lesson_description}}</div>
 				<div class="lessonDescHeader"><h2>Rates</h2></div>			
 				<div class="lessonDescBody">
 					Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
@@ -251,8 +241,10 @@
 			{% if mentor.location != "" %}
 			<div class="lessonMapContainer">
 				<div class="lessonMap">
-		            <a href="http://maps.google.com/?q={{mentor.location}}"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
-	            </div>				
+					<a href="https://maps.google.com/?q={{mentor.location}}">
+						<img src="https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false">
+					</a>
+				</div>
             </div>
             {% endif %}				
 
