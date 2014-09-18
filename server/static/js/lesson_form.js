@@ -140,7 +140,7 @@ $(document).ready(function() {
 
 	$("#addressFields").css("opacity", .4).attr("disabled", "disabled");
 
-	if ($('#lessonPlace-2').is(":checked")) {
+	if ($('#lessonPlace-1').is(":checked")) {
 		$("#addressFields").css("opacity", 1).removeAttr("disabled");
 	}
 

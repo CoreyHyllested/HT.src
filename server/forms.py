@@ -179,9 +179,7 @@ class LoginForm(Form):
 
 class LessonForm(Form):
 
-	duration = ['No Set Duration', '30 minutes', '45 minutes', '1 hour', '1 hour 30 minutes']
-	duratime = [-1, 30, 45, 60, 90 ]
-	enumDura = zip(duratime, duration)
+	Durations = [ (-1, 'No Set Duration'), (30, '30 minutes'), (45, '45 minutes'), (60, '1 hour'), (75, '1 hour 15 minutes'), (90, '1 hour 30 minutes'), (105, '1 hour 45 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
 
 	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
 	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
@@ -196,7 +194,7 @@ class LessonForm(Form):
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
-	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(enumDura))
+	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(Durations))
 	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
 	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
