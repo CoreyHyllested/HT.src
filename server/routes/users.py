@@ -30,6 +30,7 @@ from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
 import os
+from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -235,6 +236,10 @@ def render_edit_profile():
 
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
+
+	# Days array for avail
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
 
 	# StripeConnect req'd for payments
 	pi = Oauth.get_stripe_by_uid(session['uid'])
@@ -257,20 +262,40 @@ def render_edit_profile():
 	form.edit_name.data     = bp.prof_name
 	form.edit_location.data = bp.location	
 	form.edit_bio.data      = bp.prof_bio
-
 	form.edit_headline.data = bp.headline
 	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url #replace.httpX://www.
-
+	form.edit_url.data      = bp.prof_url
 	form.edit_rate.data     = bp.prof_rate
-	form.edit_oauth_stripe.data      = ba.stripe_cust
 	form.edit_availability.data      = bp.availability
 	form.edit_oauth_stripe.data 	 = stripe
+
+	slotdays = []
+
+	for timeslot in avail:
+		print "weekday is", timeslot.avail_weekday
+		print "start is", timeslot.avail_start
+		print "finish is", timeslot.avail_finish
+		
+		day = d[timeslot.avail_weekday]
+
+		slotdays.append(day)
+
+		start = "form.edit_avail_time_"+day+"_start.data"
+		finish = "form.edit_avail_time_"+day+"_end.data"
+
+		vars()[start] = timeslot.avail_start
+		vars()[finish] = timeslot.avail_finish
+
+		print "render_edit_profile(): edit_avail_start: ", day, vars()[start]
+		print "render_edit_profile(): edit_avail_day: ", day, vars()[finish]
+
+	form.edit_avail_day.data = slotdays
+	print "render_edit_profile(): edit_avail_day final is: ", form.edit_avail_day.data
 
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
 
-	photoURL 				= 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
 
 
 
@@ -287,6 +312,7 @@ def api_update_profile(usrmsg=None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	ba = Account.get_by_uid(uid)
+	
 
 	form_mode = request.values.get('formMode');
 	form_page = request.values.get('formPage');
@@ -378,7 +404,28 @@ def ht_validate_profile(bp, form, form_page):
 		# 1. specific was selected without specifying times
 		# 2. day was selected without specifying time
 		# 3. end time was before start time on any day
-		pass
+
+		days = request.form.getlist('edit_avail_day')
+		for day in days:
+			print "ht_validate_profile: day is: ", day
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			
+			# print "start is", start
+			# print "finish is", finish
+
+			if (start == '' or finish == ''):
+				errors[day] = "Select both a start and end time."
+
+			else:
+				try: 
+					starttime = datetime.strptime(start, '%H:%M')
+					finishtime = datetime.strptime(finish, '%H:%M')
+					if (finishtime <= starttime):
+						errors[day] = "End time must be later than start time."
+				except:
+					errors[day] = "Hmm... unknown error here."
+
 
 	if (form_page == "payment" or form_page == "full"):
 		prof_rate = request.values.get("edit_rate")
@@ -415,6 +462,71 @@ def ht_validate_profile(bp, form, form_page):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+def ht_update_avail_timeslots(bp, form):
+	print "ht_update_avail_timeslots: begin"
+	update = False
+	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
+
+	# First delete the existing entries in the Availability table for this profile.
+	avail = Availability.get_by_prof_id(bp.prof_id)
+	for o in avail:
+		db_session.delete(o)
+
+	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
+		print "ht_update_avail_timeslots: availability is flexible - remove existing timeslots."
+		db_session.commit()
+		return True
+	elif (bp.availability == 2): # They chose timeslot scheduling - need to parse and insert.
+		print "ht_update_avail_timeslots: availability is specific - extract preferences."
+
+		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
+		days = request.form.getlist('edit_avail_day')
+		print "ht_update_avail_timeslots: avail days: ", days
+		for day in days:
+			start = eval("form.edit_avail_time_"+day+"_start.data")
+			finish = eval("form.edit_avail_time_"+day+"_end.data")
+			print "-"*24
+			print "ht_update_avail_timeslots: adding slot on", day
+
+			try:
+				# Initialize the avail timeslot
+				print "ht_update_avail_timeslots: initializing timeslot"
+				newavail = ht_create_avail_timeslot(bp)
+				if (newavail):
+					print "ht_update_avail_timeslots: initializing timeslot successful"
+					
+					# Add the new fields
+					for k, v in d.iteritems():
+						if v == day:
+							thisday = v
+							newavail.avail_weekday = k
+
+					newavail.avail_start = start
+					newavail.avail_finish = finish
+
+					print "ht_update_avail_timeslots: db add for new timeslot:", newavail.avail_weekday, "(", thisday, ") -", newavail.avail_start, "=>", newavail.avail_finish
+					db_session.add(newavail)
+					update = True
+				else:
+					print "ht_update_avail_timeslots: initializing timeslot FAILED"
+			except:
+				print "ht_update_avail_timeslots: Error - something went wrong."
+				update = False
+
+		if (update == True):	
+			print "ht_update_avail_timeslots: commit"	
+			db_session.commit()
+			return True
+		else:
+			print "ht_update_avail_timeslots: fail"	
+			db_session.rollback()
+			return False
+	else:
+		print "ht_update_avail: Availability wasn't set - something screwed up."
+		db_session.rollback()
+		return False
+
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
 	print 'ht_update_profile: form_page: ', form_page
@@ -443,8 +555,17 @@ def ht_update_profile(ba, bp, form, form_page):
 		ba.stripe_cust = form.edit_oauth_stripe.data
 		return True
 
-	if (form_page == 'schedule' or form_page == 'full'):	
-		bp.availability  = form.edit_availability.data
+	if (form_page == 'schedule' or form_page == 'full'):
+
+		bp.availability = form.edit_availability.data
+
+		# Send to ht_update_avail_timeslots to update the user's availability, and their time slots in the Availability table.
+		avail_update = ht_update_avail_timeslots(bp, form)
+		if (avail_update):
+			print 'ht_update_profile: avail timeslot update successful.'
+		else:
+			print 'ht_update_profile: avail update failed.'
+
 		return True
 
 	if (form_page == 'mentor'):
@@ -568,7 +689,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 	# Form will be none unless we are here after an unsuccessful form validation.
 	if (form == None):
 		print "render_new_lesson: no form submitted"
-		
+
+
 		# In case the user went back in their browser to this page, after submitting
 		form = LessonForm(request.form)
 		form.lessonTitle.data = lesson.lesson_title
@@ -586,6 +708,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
 		form.lessonAvail.data = lesson.lesson_avail
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed		
 		form.lessonMakeLive.data = 'y'
 
 		if (form.lessonRate.data <= 0):
@@ -641,6 +765,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonPlace.data = lesson.lesson_loc_option
 		form.lessonIndustry.data = lesson.lesson_industry
 		form.lessonDuration.data = lesson.lesson_duration
+		form.lessonMaterialsProvided.data = lesson.lesson_materials_provided
+		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed
 		form.lessonAvail.data = lesson.lesson_avail
 		form.lessonMakeLive.data = 'y'
 
@@ -837,6 +963,16 @@ def ht_update_lesson(lesson, form, saved):
 		lesson.lesson_avail = form.lessonAvail.data
 		update = True
 
+	if (lesson.lesson_materials_provided != form.lessonMaterialsProvided.data):
+		print '\tUpdate lesson_materials_provided (' + str(lesson.lesson_materials_provided) + ') => ' + str(form.lessonMaterialsProvided.data)
+		lesson.lesson_materials_provided = form.lessonMaterialsProvided.data
+		update = True
+
+	if (lesson.lesson_materials_needed != form.lessonMaterialsNeeded.data):
+		print '\tUpdate lesson_materials_needed (' + str(lesson.lesson_materials_needed) + ') => ' + str(form.lessonMaterialsNeeded.data)
+		lesson.lesson_materials_needed = form.lessonMaterialsNeeded.data
+		update = True
+
 	# If user pressed 'save', we already took care of state when validating.
 	if (saved != "true"): 
 		lesson_state = lesson.get_state()
@@ -860,6 +996,7 @@ def ht_update_lesson(lesson, form, saved):
 def render_lesson_page(lesson_id):
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
 
 	if (lesson_id is None):
 		return make_response(render_dashboard(usrmsg='Need to specify a lesson...'))
@@ -868,18 +1005,30 @@ def render_lesson_page(lesson_id):
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
+
+
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		mentor = Profile.get_by_prof_id(lesson.lesson_profile)
+		reviews = htdb_get_composite_reviews(mentor)
+
+		x = 0
+		print "render_lesson_page(): getting industry"
+		for x in range(len(Industry.industries)):
+			if (x == int(lesson.lesson_industry)):
+				industry = str(Industry.industries[x])
+				print "render_lesson_page(): industry is ", industry
+				break
 
 		print "render_lesson_page(): mentor:", mentor
 		print "render_lesson_page(): Lesson String:", pprint(lesson)
 	except Exception as e:
 		print 'render_lesson_page(): Exception Error:', e
-		return make_response(render_dashboard(usrmsg='Can\'t find that lesson...'))
+		return redirect(url_for('insprite.render_dashboard', usrmsg='Sorry, We encountered an error loading that lesson.'))
 
-		
-	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor))
+	lesson_reviews = ht_filter_composite_reviews(reviews, 'REVIEWED', mentor, dump=False)
+	show_reviews = ht_filter_composite_reviews(lesson_reviews, 'VISIBLE', None, dump=False)
+	return make_response(render_template('lesson.html', bp=bp, lesson=lesson, portfolio=portfolio, mentor=mentor, industry=industry, reviews=show_reviews, avail=avail))
 
 
 
@@ -1089,90 +1238,22 @@ def render_review_meeting_page(review_id):
 @req_authentication
 def render_settings():
 	print 'render_settings()\t enter'
-	""" Provides users the ability to modify their settings."""
+	""" Provides form for the user to change their settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
-	pi	= Oauth.get_stripe_by_uid(uid)
-
-
-	# StripeConnect allows a user to charge customers.
-	stripe_connect = 'StripeConnect account not found.'
-	if (pi is not None): stripe_connect = pi.oa_account
 
 	errmsg = None
 	insprite_msg = session.pop('messages', None)
 
 	form = SettingsForm(request.form)
-	if form.validate_on_submit():
-		print 'render_settings()\tvalid submit'
-		update_acct = False		# requires current_pw_set, 					Sends email
-		update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
-		update_mail = None
-		update_name = None
-
-		update_prop = None
-		update_vnty = None
-		update_fail = False
-
-		if (form.set_input_name.data != ba.name):
-			print 'render_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
-			update_acct = True
-			update_name = form.set_input_name.data
-
-		if (form.set_input_newpass.data != ""):
-			print 'render_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
-			update_acct = True
-			update_pass = form.set_input_newpass.data
-
-		if (ba.email != form.set_input_email.data):
-			print 'render_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
-			update_acct = True
-			update_mail = form.set_input_email.data
-
-		if (update_acct):
-			print 'render_settings()\tupdate account'
-			if (update_pass):
-				pwd = form.set_input_curpass.data
-			else:
-				pwd = form.set_input_email_pass.data
-			print 'render_settings()\tnow call modify account()'
-			(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail)
-			print("render_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
-			if (rc == False):
-				errmsg = str(errno)
-				errmsg = error_sanitize(errmsg)
-				form.set_input_curpass.data = ''
-				form.set_input_newpass.data = ''
-				form.set_input_verpass.data = ''
-				return make_response(render_template('settings.html', form=form, bp=bp, errmsg=errmsg))
-			else:
-				print "render_settings() Update should be complete"
-
-		if (update_mail):
-			# user changed email; for security, send confimration email to last email addr.
-			ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
-			errmsg = "Your email has been updated."
-
-		#change pass send email
-		if (update_pass):
-			send_passwd_change_email(ba.email)
-			errmsg = "Password successfully updated."
-
-		print 'render_settings() Finished Handling POST.'
-	elif request.method == 'GET':
-		print 'render_settings()\t GET'
-	else:
-		print 'render_settings()\t invalid submit' , form.errors
-		errmsg = "Passwords must match."
-
 
 	email_unver = False
 	if (ba.status == Account.USER_UNVERIFIED):
 		email_unver = True
+
 	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
 
-	form.oauth_stripe.data	= stripe_connect
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
 	nexturl = "/settings"
@@ -1182,6 +1263,107 @@ def render_settings():
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 
+
+
+@insprite_views.route('/settings/update', methods=['GET','POST'])
+@req_authentication
+def ht_api_update_settings():
+	# Process the edit settings form
+
+	print "ht_api_update_settings: beginning update"
+
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	ba = Account.get_by_uid(uid)
+
+	form = SettingsForm(request.form)
+
+	try:
+		if form.validate_on_submit():
+			print 'ht_api_update_settings()\tvalid submit'
+			update_acct = False		# requires current_pw_set, 					Sends email
+			update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
+			update_mail = None
+			update_name = None
+
+			update_prop = None
+			update_vnty = None
+			update_fail = False
+
+			if (form.set_input_name.data != ba.name):
+				print 'ht_api_update_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
+				update_acct = True
+				update_name = form.set_input_name.data
+
+			if (form.set_input_newpass.data != ""):
+				print 'ht_api_update_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
+				update_acct = True
+				update_pass = form.set_input_newpass.data
+
+			if (ba.email != form.set_input_email.data):
+				print 'ht_api_update_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
+				update_acct = True
+				update_mail = form.set_input_email.data
+
+			if (update_acct):
+				print 'ht_api_update_settings()\tupdate account'
+				pwd = form.set_input_curpass.data
+				
+				print 'ht_api_update_settings()\tnow call modify account()'
+				(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
+				print("ht_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
+				
+				if (rc == False):
+					errmsg = str(errno)
+					errmsg = error_sanitize(errmsg)
+					form.set_input_curpass.data = ''
+					form.set_input_newpass.data = ''
+					form.set_input_verpass.data = ''
+					print "update was false - errmsg:", errmsg
+					errors = {}
+					errors["set_input_curpass"] = "This didn't match the password in your account."
+
+					return jsonify(usrmsg="Hmm... something went wrong.", errors=errors), 500
+				else:
+					print "ht_api_update_settings() Update should be complete"
+					return jsonify(usrmsg="Settings updated"), 200
+			else:
+				# User didn't change anything.
+				return jsonify(usrmsg="Cool... Nothing changed."), 200
+
+			if (update_name):
+				usrmsg = "Your account name has been updated."
+
+			if (update_mail):
+				# user changed email; for security, send confimration email to last email addr.
+				ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
+				usrmsg = "Your email has been updated."
+
+			#change pass send email
+			if (update_pass):
+				send_passwd_change_email(ba.email)
+				usrmsg = "Password successfully updated."
+
+			print 'ht_api_update_settings() Finished Handling POST.'
+		
+		return jsonify(usrmsg='Sorry, there was a problem with the form.', errors=form.errors), 500
+		
+	except AttributeError as ae:
+		print 'ht_api_update_settings: AttributeError: ', ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+
+	except Exception as e:
+		print 'ht_api_update_settings: Exception: ', e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500	
+
+
+	print "ht_api_update_settings: Something went wrong - Fell Through."
+	print "here is the form object:"
+	print str(form)
+
+	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
 
 
 

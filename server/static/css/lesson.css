@@ -172,12 +172,16 @@
                     .lessonRightColumn .lessonMentorBox .mentorInfo .mentorLocation {
                       font-size: 0.9em;
                       font-weight: 300; }
-            .lessonRightColumn .lessonButtons {
+            .lessonRightColumn .lessonState {
               float: left;
-              width: 100%; }
-              .lessonRightColumn .lessonButtons button {
-                margin: 12px 0px; }
+              font-size: 0.9em; }
+              .lessonRightColumn .lessonButtons {
+                float: left;
+                width: 100%; }
+                .lessonRightColumn .lessonButtons button {
+                  margin: 12px 0px; }
             .lessonRightColumn .lessonMapContainer {
+              float: left;
               width: 100%;
               overflow: hidden; }
 
@@ -197,7 +201,7 @@
           font-weight: 700; }
           .lessonTitleBox .lessonRate .rateInfo {
             font-size: 0.8em; }
-    .lessonTitleBox .lessonState {
+    .lessonTitleBox .lessonCategory {
       font-size: 0.9em; }
       .lessonTitleBox .lessonRating {
         font-size: 0.9em; }
@@ -215,7 +219,6 @@
         margin-left: 20px; }
 
   .lessonReviewsBox {
-    float: left;
     padding: 12px 0px; }
     .lessonReviewsBox .lessonReview {
       float: left;

@@ -321,7 +321,7 @@ function saveProfile(formPage) {
 	// Remove error indicators
 	$(".formFieldError").slideUp().html("");
 	$(".formField").css("border-color", "#e1e8ed");
-	$(".editProfNavItem").each(function() {
+	$(".editProfNavItem:not(.disabled)").each(function() {
 		var navDefaultIcon = $(this).attr("data-default-icon");
 		$(this).css("color", "rgba(0, 0, 0, 0.7)").children("i.icon").attr("class", "fa fa-fw "+navDefaultIcon);		
 	});
@@ -391,17 +391,23 @@ function showErrors(errors) {
 		var page = $(element).parents(".editProfFormPage").attr("id");
 		var navItem = ".editProfNavItem[data-target-page='" + page + "']";
 
-		console.log("showErrors: element: "+element);
-		console.log("showErrors: page: "+page);
-		console.log("showErrors: navItem: "+navItem);
+		// console.log("showErrors: element: "+element);
+		// console.log("showErrors: page: "+page);
+		// console.log("showErrors: navItem: "+navItem);		
 
-		$(element).css("border-color", "red");
-		$(element).prevAll(".formFieldError").html(error).slideDown();
+		if ($(element).parents(".editProfAvailDay").length > 0) {
+			// This is a timeslot element - display the error inline
+			$(element).siblings(".formFieldError").html(error).fadeIn();
+		} else {
+			// Display the error above the field
+			$(element).prevAll(".formFieldError").html(error).slideDown();
+		}
 
+		$(element).css("border-color", "#e75f63");
 
 		$("#"+page).find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 
-		$(navItem).css("color", "red");
+		$(navItem).css("color", "#e75f63");
 		$(navItem).children("i.progress").hide();
 
 	});

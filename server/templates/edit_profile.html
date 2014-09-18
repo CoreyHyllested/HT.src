@@ -185,69 +185,51 @@
 					<br><br>
 					<div class="formFieldError"></div>
 					<fieldset id="editProfAvailTimes">
+
 					<div class="editProfAvailDay">
-						<input type="checkbox" name="editProfAvailTimesMon" id="editProfAvailTimesMon" class="daySelector">
-						<label for="editProfAvailTimesMon">Monday</label> 						
-						<select name="editProfAvailTimesMonStart" id="editProfAvailTimesMonStart" class="formField timeSelector span2">
-							<option value="">Start Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>  					
-						<select name="editProfAvailTimesMonEnd" id="editProfAvailTimesMonEnd" class="formField timeSelector span2">
-							<option value="">End Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>
-						<div class="formFieldError"></div>
-					</div> 					
+						{{form.edit_avail_day(id="sun", class="daySelector", value="sun")}} <label for="sun">Sunday</label>
+						{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_sun_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
 					<div class="editProfAvailDay">
-						<input type="checkbox" name="editProfAvailTimesTue" id="editProfAvailTimesTue" class="daySelector">
-						<label for="editProfAvailTimesTue">Tuesday</label> 						
-						<select name="editProfAvailTimesTueStart" id="editProfAvailTimesTueStart" class="formField timeSelector span2">
-							<option value="">Start Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>  					
-						<select name="editProfAvailTimesTueEnd" id="editProfAvailTimesTueEnd" class="formField timeSelector span2">
-							<option value="">End Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>
-						<div class="formFieldError"></div>
-					</div> 					
+						{{form.edit_avail_day(id="mon", class="daySelector", value="mon")}} <label for="mon">Monday</label>
+						{{form.edit_avail_time_mon_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_mon_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
 					<div class="editProfAvailDay">
-						<input type="checkbox" name="editProfAvailTimesWed" id="editProfAvailTimesWed" class="daySelector">
-						<label for="editProfAvailTimesWed">Wednesday</label> 						
-						<select name="editProfAvailTimesWedStart" id="editProfAvailTimesWedStart" class="formField timeSelector span2">
-							<option value="">Start Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>  					
-						<select name="editProfAvailTimesWedEnd" id="editProfAvailTimesWedEnd" class="formField timeSelector span2">
-							<option value="">End Time</option>
-							<option value="0600">6:00am</option>
-							<option value="0700">7:00am</option>
-							<option value="0800">8:00am</option>
-							<option value="0900">9:00am</option>
-							<option value="1000">10:00am</option>
-						</select>
-						<div class="formFieldError"></div>
-					</div>  					
+						{{form.edit_avail_day(id="tue", class="daySelector", value="tue")}} <label for="tue">Tuesday</label>
+						{{form.edit_avail_time_tue_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_tue_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 						
+					<div class="editProfAvailDay">
+						{{form.edit_avail_day(id="wed", class="daySelector", value="wed")}} <label for="wed">Wednesday</label>
+						{{form.edit_avail_time_wed_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_wed_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
+					<div class="editProfAvailDay">
+						{{form.edit_avail_day(id="thu", class="daySelector", value="thu")}} <label for="thu">Thursday</label>
+						{{form.edit_avail_time_thu_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_thu_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
+					<div class="editProfAvailDay">
+						{{form.edit_avail_day(id="fri", class="daySelector", value="fri")}} <label for="fri">Friday</label>
+						{{form.edit_avail_time_fri_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_fri_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
+					<div class="editProfAvailDay">
+						{{form.edit_avail_day(id="sat", class="daySelector", value="sat")}} <label for="sat">Saturday</label>
+						{{form.edit_avail_time_sat_start(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_sat_end(class="formField timeSelector span2")}}
+						<div class="formFieldError inline"></div>
+					</div> 	
+
+
 					</fieldset>
 
 					<div class="editProfFormPageFooter">

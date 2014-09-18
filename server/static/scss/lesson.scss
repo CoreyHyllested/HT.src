@@ -282,7 +282,10 @@ Saving for later
 		}
 
 	}
-
+	.lessonState {
+		float: left;
+		font-size: 0.9em;
+	}
 	.lessonButtons {
 		float: left;
 		width: 100%;
@@ -292,6 +295,7 @@ Saving for later
 		}
 	}
 	.lessonMapContainer {
+		float: left;
 		width: 100%;
 		overflow: hidden;
 		.lessonMap {
@@ -330,7 +334,7 @@ Saving for later
 
 	}
 
-	.lessonState {
+	.lessonCategory {
 		font-size: 0.9em;
 	}
 
@@ -355,6 +359,10 @@ Saving for later
 	.lessonDescBody {
 		margin-bottom: 18px;
 
+		.lessonAvailDay {
+			
+		}
+
 		ul {
 			list-style-type: disc;
 			margin-left: 20px;
@@ -365,10 +373,11 @@ Saving for later
 		}
 
 	}
+
+
 }
 
 .lessonReviewsBox {
-	float: left;
 	padding: 12px 0px;
 	/*border-bottom: 1px solid $cloudy-gray;*/
 

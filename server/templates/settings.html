@@ -2,8 +2,11 @@
 
 {% block head %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/settings.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
+	<!-- <link type="text/css" rel="stylesheet" href="/static/css/recovery.css"> -->
+
+	{% assets "sass_settings" %}
+		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
+	{% endassets %}	
 {% endblock %}
 
 {% block content %}
@@ -16,88 +19,228 @@
 	</script>
 	{% endif %}
 
-	<form action=settings method=POST>
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+	<form id="editSettingsForm">
+		<input type="hidden" id="csrf" name="csrf_token" value="{{ csrf_token() }}">
+		<input type="hidden" id="nexturl" value="{{ nexturl }}">
 
-		<div class="settingsLeftSideWrapper">
-			<div class="settingsName">
-				<h2>Change Name</h2>
-				{{form.set_input_name(placeholder="Current Name")}}
+		<div class="formContainer">
+
+			<div class="formInstruction">Account Settings</div>
+			
+			<div class="formFieldContainer">
+				<div class="formFieldInfo first">Your legal name (different from your public profile name - this is kept private)</div>
+				<div class="formFieldError"></div>
+				{{form.set_input_name(placeholder="Your Name", class="formField span12")}}
 			</div>
 
-			<div class="settingsEmail">
-				<h2>Change Email</h2>
-				{{form.set_input_email(placeholder="Current email")}}
-				{{form.set_input_email_pass(placeholder="Current password")}}
-				{% if unverified_email == True %}
-				<div>
-					Your email is unverified.
-					<button class="whiteButton" id="verify-email">Verify email</button>
+			<div class="formFieldContainer">
+				<div class="formFieldInfo">Your email address</div>
+				<div class="formFieldError"></div>
+				{{form.set_input_email(placeholder="Your Email", class="formField span8 left")}}
+			
+				<div class="formFieldAction emailVerifyStatus span3">
+					{% if unverified_email == True %}
+						<button id="verifySend" class="whiteButton small">Get Verified</button>					
+					{% else %}
+						<div class="verifySuccess"><i class="fa fa-fw fa-check"></i>Email verified.</div>
+					{% endif %}
+
 				</div>
-				<br>
-				{% else %}
-				<input class="whiteButton" id="set-save" type="submit" value="Change email" />
-				{% endif %}
 			</div>
 
-			<div class="settingsPassword">
+			<div class="formFieldContainer emailVerifyInput">
+				<div class="emailVerifyText"></div>
+					<input type="text" id="challenge" value="" placeholder="Enter your verification code here." class="formField span8 left">
+					<div class="formFieldAction span3">
+						<button id="verifySubmit" class="whiteButton small">Submit Code</button>
 
-				<h2>Change Password</h2>
-				{{form.set_input_curpass(placeholder="Current password", autocomplete="off")}}
-				{{form.set_input_newpass(placeholder="New password")}}
-				{{form.set_input_verpass(placeholder="Verify password")}}
-				<input class="whiteButton" id="set-save" type="submit" value="Save password" />
+					</div>	
 			</div>
-		</div>
 
-		<div class="settingsPayout">
-			<h2>Payment Information</h2>
+			<div class="formFieldContainer">
+				<div class="formFieldInfo">Change your password</div>
+				<div class="formFieldError"></div>
+				{{form.set_input_newpass(placeholder="New password", class="formField span12", autocomplete="off")}}
+				{{form.set_input_verpass(placeholder="Verify password", class="formField span12", autocomplete="off")}}
+				<div id="passMeter"></div>
+			</div>
 
-			<p>We use <a href="https://stripe.com" target="_blank">Stripe</a> to pay you for the services you sell. Stripe provides a secure way for individuals and businesses to accept payments over the Internet.</p>
+			<div class="formFieldContainer">
+				<div class="formFieldInfo notice">Enter current password to save changes.</div>
+				<div class="formFieldError"></div>
+				{{form.set_input_curpass(placeholder="Current password", class="formField span12", autocomplete="off")}}
+			</div>
 
-			<p><a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here for the list of supported countries.</a></p>
+			<div class="settingsFormPageFooter">
+				<div class="settingsFormButtonContainer">
+					<button class="blueButton settingsFormButton" id="set-save">Save Settings</button>
 
-			<label for="oauth_stripe">Your StripeConnect ID</label>
-			{{form.oauth_stripe(readonly=readonly)}}
+					<button class="whiteButton settingsCancelButton">Cancel</button>
+				</div>
+				<div class="settingsFormStatus"></div>
+				<div class="settingsFooter">
+					<a href="/dashboard">Go Back to Dashboard</a>
+				</div>
+			</div>	
 
-			<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
 
-			<!--<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=register&stripe_user[email]={{form.set_input_email.data}}&stripe_user[business_name]={{bp.name|urlencode}}" class="whiteButton" id="set-stripe-register">Register</a>
-			-->
-		</div>
-		
-		<div class="settingsPayout">
-		<h2>Privacy</h2>
-			<input type="checkbox" name="privacy-settings" value="search-listing">I want my profile listed in search.<br><br>
-			<input class="whiteButton" id="set-save" type="submit" value="Save Privacy Settings" />
-		</div>
-		
-		<div class="settingsPayout">
-		<h2>Notifications</h2>
-			<input type="checkbox" name="notifications" value="receive-message">I received a message from someone.<br>
-			<input type="checkbox" name="notifications" value="upcoming-appt">I have an upcoming appointment.<br>
-			<input type="checkbox" name="notifications" value="request-status">My proposal is accepted or declined.<br>
-			<input type="checkbox" name="notifications" value="new-review">I have received a new review.<br><br>
-			<input class="whiteButton" id="set-save" type="submit" value="Save Notifications" />
 		</div>
 	</form>
+
 	<div class="clear"></div>
 </div>
 <div class="clear"></div>
 
-
+<script type="text/javascript" src="/static/js/sendmsg.js"></script>
+<script type="text/javascript" src="/static/js/zxcvbn.js"></script>
+<script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
 <script>
 $(document).ready(function() {
-	$('#verify-email').on("click", function(e) {
+	// Jquery Password Strength Plugin - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
+
+	var unverifiedEmail = "{{unverified_email}}";
+	console.log("unverified email val:"+unverifiedEmail);
+
+	if (unverifiedEmail != "True") {
+		$("#verifySend").hide();
+		$(".verifySuccess").show();
+	} else {
+		$("#verifySend").show();
+		$(".verifySuccess").hide();		
+	}
+
+	$('#verifySubmit').on('click', function(e) {
 		e.preventDefault();
-		var dataObj = new Object();
-		dataObj.hero = "{{bp.prof_id}}";
-		dataObj.next = "modal";
-		dataObj.nexturl = "{{ nexturl }}";
-		$.each(dataObj, function(k, v) { console.log(k+ ": " + v); });
-		openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj));
+		verify_email_js();
 	});
+
+	$('#verifySend').on('click', function(e) {
+		e.preventDefault();
+		var myEmail = $("#set_input_email").val();
+		$(".emailVerifyText").html("Verification code sent to "+myEmail);
+		$(".emailVerifyInput").slideDown();
+		send_verification_email();
+	});
+
+	$("#set_input_verpass").keyup(function(){
+		initializeStrengthMeter();
+	});
+
+	$("#set_input_newpass").keyup(function(){
+		if ($("#set_input_verpass").val() != "") {
+			initializeStrengthMeter();
+		}
+	});
+
+	// $('#verify-email').on("click", function(e) {
+	// 	e.preventDefault();
+
+			
+	// 	send_verification_email();
+
+	// 	var dataObj = new Object();
+	// 	dataObj.hero = "{{bp.prof_id}}";
+	// 	dataObj.next = "modal";
+	// 	dataObj.nexturl = "{{ nexturl }}";
+	// 	$.each(dataObj, function(k, v) { console.log(k+ ": " + v); });
+	// 	openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj), 'small');			
+	
+	// });
+
+	$(".settingsCancelButton").click(function(e){
+		e.preventDefault();
+		window.location.href = "/dashboard";
+	});
+
+	$(".settingsFormButton").click(function(e){
+		e.preventDefault();
+		saveSettings();
+	});
+
 });
+
+
+function saveSettings() {
+
+	var fd = new FormData($('#editSettingsForm')[0]);
+
+	$(".settingsFormStatus").html("Saving...").fadeIn();
+
+	// Remove error indicators
+
+	$("#passMeter").slideUp().html("");
+	$(".formFieldError").slideUp().html("");
+	$(".formField").css("border-color", "#e1e8ed");
+
+	$.ajax({ url	: "/settings/update",
+			type	: "POST",
+			data : fd,
+			processData: false,
+  			contentType: false,
+			success : function(response) {
+
+			 	console.log("AJAX Success - settings saved.");		 	
+
+			 	$("#set_input_newpass, #set_input_verpass, #set_input_curpass").val('');
+			 	$("#passMeter").slideUp().html("");
+				$(".settingsFormStatus").html("<span class='success'>"+response.usrmsg+"</span>").fadeIn(400);
+
+				setTimeout(function() {
+					$('.settingsFormStatus').fadeOut(400);
+				}, 1600 );
+			}, 
+			error: function(xhr, status, error) {
+				console.log("AJAX Error - settings not saved.");
+
+				var err = JSON.parse(xhr.responseText);
+				var errors = err.errors;
+				
+				console.log("FORM ERRORS:");
+
+				console.log(JSON.stringify(errors));
+
+				showErrors(errors);
+
+			}
+	});
+	return false;
+
+}
+
+function showErrors(errors) {
+
+	$(".settingsFormStatus").empty();
+
+	// iterate thru errors, create status messages, highlight form elements.
+	$.each(errors, function(e, error){
+		// "e" here would be the form element name that has the error, e.g. "prof_name"
+		var element = "#"+e;
+		console.log("showErrors: element: "+element);
+
+		if (element == "#set_input_verpass") {
+			$("#set_input_newpass").prev(".formFieldError").html(error).slideDown();
+			$("#set_input_newpass, #set_input_verpass").css("border-color", "#e75f63");
+
+		} else {
+			$(element).prev(".formFieldError").html(error).slideDown();
+			$(element).css("border-color", "#e75f63");
+		}
+
+	});
+
+	$(".settingsFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
+
+}
+
+function initializeStrengthMeter() {
+	$("#passMeter").PasswordStrengthManager({
+		password: $("#set_input_newpass").val(),
+		confirm_pass : $("#set_input_verpass").val(),
+		blackList : ["efewf"], 
+		minChars : '5',
+		maxChars : '25',
+		advancedStrength : false
+	});
+}
 </script>
 {% endblock %}
-

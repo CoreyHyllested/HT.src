@@ -38,10 +38,6 @@ def render_landingpage():
 @ht_csrf.exempt
 @insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
-	""" Provides users ability to modify their information.
-		- Pre-fill all fields with prior information.
-		- Ensure all necessary fields are still populated when submit is hit.
-	"""
 
 	bp = None 
 	if (session.get('uid') is not None):
@@ -75,14 +71,19 @@ def render_profile(usrmsg=None):
 		else:
 			print "no lessons found."
 
+		avail = Availability.get_by_prof_id(hp.prof_id)	
+
+
+
 	except Exception as e:
 		print e
 		db_session.rollback()
 
+
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs, avail=avail))
 
 
 
@@ -256,11 +257,13 @@ def render_password_reset_page(challengeHash):
 # related to authentication
 @insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
-	print operation, data
+	print "ht_email_operations: begin"
+	print "ht_email_operations: operation: ", operation
+	print "ht_email_operations: data: ", data
 	if (operation == 'verify'):
 		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
-		print 'verify: data  = ', data, 'email =', email
+		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')

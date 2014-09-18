@@ -21,6 +21,7 @@ from datetime import datetime as dt, timedelta
 from pytz import timezone
 import datetime
 import uuid
+import math
 
 
 
@@ -114,7 +115,15 @@ class Lesson(Base):
 	# Lesson Cost
 	lesson_rate = Column(Integer)
 	lesson_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_rate = Column(Integer)
+	lesson_group_rate_unit = Column(Integer, default=LESSON_RATE_PERHOUR)
+	lesson_group_maxsize = Column(Integer)
 
+	# Lesson Materials
+	lesson_materials_needed = Column(String(5000))
+	lesson_materials_provided = Column(String(5000))
+
+	meetings = relationship('Meeting', backref="parent")
 
 	def __init__ (self, profile_id):
 		self.lesson_id	= str(uuid.uuid4())
@@ -159,6 +168,23 @@ class Lesson(Base):
 		cur_state = (int(self.lesson_flags) & LESSON_STATE_MASK)
 		cstate_str = LESSON_STATE_LOOKUP_TABLE[cur_state]
 		return str(cstate_str)
+
+	def get_duration_string(self):
+		raw_duration = int(self.lesson_duration)
+		if (raw_duration > 60):
+			hours = math.floor(raw_duration / 60)
+			minutes = int(math.fmod(raw_duration, 60))
+			if (hours > 1):
+				duration_str = str(hours) + " hours"
+			else:
+				duration_str = "1 hour"
+			
+			if (minutes > 0):
+				duration_str += " and " + str(minutes) + " minutes"
+		else:
+			duration_str = str(raw_duration) + " minutes"
+
+		return str(duration_str)
 
 	################################################################################
 	### LESSON STATE-CHANGE FUNCTIONS. #############################################
@@ -231,4 +257,22 @@ class Lesson(Base):
 		return lesson
 
 
+	@staticmethod
+	def get_active_by_prof_id(profile_id):
+		lessons = None
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+		except NoResultFound as nrf:
+			pass
+		return lessons
 
+	@staticmethod
+	def get_enum_active_by_prof_id(profile_id):
+		enumLessons = []
+		try:
+			lessons = Lesson.query.filter_by(lesson_profile=profile_id, lesson_flags=3).all()
+			for lesson in lessons:
+				enumLessons.append((lesson.lesson_id, lesson_info))
+		except NoResultFound as nrf:
+			pass
+		return enumLessons

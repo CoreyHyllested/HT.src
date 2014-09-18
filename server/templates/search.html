@@ -65,9 +65,9 @@
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
+<!--
 			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
 			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
-<!--
 			<select id="searchOptionsIndustry" name="{{form.industry_field.name}}">
 				{% for option in form.industry_field %}
 					{% if loop.index0 == 0 %}

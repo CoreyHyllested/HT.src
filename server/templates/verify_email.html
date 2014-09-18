@@ -1,15 +1,7 @@
-{% extends "ht_header.html" %}
 
-{% block head %}
-	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
-{% endblock %}
-
-
-{% block content %}
 <div class="recoveryContentWrapper">
 	<h2>Email Verification</h2>
-	<input type="hidden" id="csrf" value="{{ csrf_token() }}">
+	<input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
 	<input type="hidden" id="nexturl" value="{{ nexturl }}">
 	<div class="recoveryInstructions">Enter challenge number sent via email.</div>
 	<input type="text" id="challenge" value="">
@@ -17,4 +9,4 @@
 	<br>
 	<button id="rec_submit" class="blueButton">Verify Email Address</button>
 </div>
-{% endblock %}
+
