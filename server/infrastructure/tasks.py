@@ -178,9 +178,11 @@ def ht_meeting_reject(meet_id, profile):
 
 
 def ht_get_stripe_customer(account, cc_token=None, cc_card=None, cust=None):
+	""" returns Customer ID (cus_<HASH>); if customer doesn't exist, create Insprite Customer"""
+
 	print 'ht_get_stripe_customer_id(): enter'
 	if (account.stripe_cust is not None):
-		print 'ht_get_stripe_customer_id(): found!'
+		print 'ht_get_stripe_customer_id(): found!', account.stripe_cust
 		return account.stripe_cust
 		
 
