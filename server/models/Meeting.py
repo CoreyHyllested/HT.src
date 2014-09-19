@@ -199,13 +199,13 @@ class Meeting(Base):
 		cstate_str = MeetingState.state_name(cur_state)
 		nstate_str = MeetingState.state_name(nxt_state)
 
-		transitions = self.STATE_TRANSITION_MATRIX[cur_state]
-		transition = transitions.get(nxt_state)
-		if (transition is None):
+		transition_options = self.STATE_TRANSITION_MATRIX[cur_state]
+		transition_process = transition_options.get(nxt_state)
+		if (transition_process is None):
 			raise StateTransitionError(self.__class__, self.meet_id, cur_state, nxt_state, self.meet_flags, user_msg='Meeting cannot perform that action')
 
 		# attempt transition to next state, raising Exception if problem arises.
-		successful_transition = transition(self, profile, cur_state, nxt_state)
+		successful_transition = transition_process(self, profile, cur_state, nxt_state)
 		if (successful_transition):
 			self.meet_state = nxt_state
 			self.meet_updated = dt.utcnow()
@@ -302,17 +302,17 @@ class Meeting(Base):
 
 
 	def __transition_accepted_to_chargecc(self, profile, cur, nxt):
-		#print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tENTER'
+		print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tENTER'
 		self.ht_charge_creditcard()
 
 		# if review_time is 'in the past' (used during testing); set for five mins.
-		review_time = timezone('UTC').localize(self.meet_ts) + timedelta(hours=2)
+		review_time = self.meet_ts.astimezone(timezone('UTC')) + timedelta(hours=2)
 		in_five_min = dt.now(timezone('UTC'))  + timedelta(minutes=2)
 		if (in_five_min > review_time): review_time = in_five_min
 
 		# create transition-state event; creates both review and capture events
 		meeting_event_occurred.apply_async(args=[self.meet_id], eta=review_time)
-		#print '\tMeeting evt occurs @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
+		print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tCAPTURE@', review_time.strftime('%A, %b %d, %Y %H:%M %p')
 		return True
 
 
@@ -378,19 +378,20 @@ class Meeting(Base):
 
 
 	def ht_charge_creditcard(self):
-		print
-		print 'ht_charge_creditcard: enter (' + self.meet_id + ', ' + str(self.meet_state) + ')  $' + str(self.meet_cost) + ' from cust. ' + self.charge_customer_id
+		print 'ht_charge_creditcard: enter (' + self.meet_id + ', ' + str(self.meet_state) + ', ' + str(self.meet_details[:20]) + ')  for $' + str(self.meet_cost)
 
 		if (not self.accepted()):
 			raise StateTransitionError(self.__class__, self.meet_id, self.meet_state, MEET_STATE_CHARGECC, self.meet_flags, user_msg='Currently cannot perform that action')
 
 		try:
+			buyer_profile = Profile.get_by_prof_id(self.meet_buyer)
 			sellr_profile = Profile.get_by_prof_id(self.meet_sellr)
 			sellr_account = Account.get_by_uid(sellr_profile.account)
 			o_auth = Oauth.get_stripe_by_uid(sellr_profile.account)
 			if (o_auth is None): raise NoOauthFound(sellr_profile.account)
 
-			print 'ht_charge_creditcard: on behalf of ' +  str(sellr_profile.prof_name) + ', ' + str(o_auth.oa_secret)
+			print 'ht_charge_creditcard: seller (' + str(sellr_profile.prof_name) + ', ' + str(o_auth.oa_secret) + ')'
+			print 'ht_charge_creditcard: buyer  (' + str(buyer_profile.prof_name) + ', ' + str(self.charge_customer_id) + ')'
 
 			fee = 0
 			if (self.meet_cost > 5 and not self.test_flag(MEET_FLAG_WAIVE_FEE)):
@@ -426,8 +427,6 @@ class Meeting(Base):
 			self.charge_transaction = charge['id']		 #once upon a time, this was the idea::proposal.charge_transaction = charge['balance_transaction']
 
 			#print 'ht_charge-post: review_time will be ', self.get_meet_ts()  works
-			db_session.add(self)
-			db_session.commit()
 			#print 'committed-post: review_time will be ', self.get_meet_ts() #fails
 
 			print 'ht_charge_creditcard: successfully committed meeting'
@@ -435,7 +434,6 @@ class Meeting(Base):
 			# cannot apply application_fee if fee is negative
 			# cannot apply application_fee if the given key is not a StripeConnect
 			print 'ht_charge_creditcard: Exception', type(e), e
-			db_session.rollback()
 			dump_error(e)
 			ht_sanitize_error(e)
 		print 'ht_charge_creditcard: failure_code=' + str(charge['failure_code']) + ', failure_message=' + str(charge['failure_message'])
@@ -564,6 +562,8 @@ def meeting_event_chargecc(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.CHARGECC)
+		db_session.add(meeting)
+		db_session.commit()
 	except AttributeError as ae:
 		pass
 	except Exception as e:
@@ -577,6 +577,8 @@ def meeting_event_occurred(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.OCCURRED)
+		db_session.add(meeting)
+		db_session.commit()
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
@@ -589,6 +591,8 @@ def meeting_event_complete(meet_id):
 	try:
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.COMPLETE)
+		db_session.add(meeting)
+		db_session.commit()
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
