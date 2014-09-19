@@ -285,14 +285,16 @@ Saving for later
 	}
 	.lessonState {
 		float: left;
-		font-size: 0.9em;
+		font-size: 0.8em;
+		text-align: center;
+		width: 100%;
 	}
 	.lessonButtons {
 		float: left;
 		width: 100%;
 		
 		button {
-			margin: 12px 0px;
+			margin: 6px 0px 12px;
 		}
 	}
 	.lessonMapContainer {

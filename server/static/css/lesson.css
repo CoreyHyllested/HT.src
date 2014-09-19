@@ -88,7 +88,7 @@
 
   .lessonNavBarContainer {
     width: 100%;
-    background-color: #e75f63;
+    background-color: #e75f64;
     height: 40px; }
     .lessonNavBarContainer .lessonNavBar {
       margin: 0px auto;
@@ -174,12 +174,14 @@
                       font-weight: 300; }
             .lessonRightColumn .lessonState {
               float: left;
-              font-size: 0.9em; }
+              font-size: 0.8em;
+              text-align: center;
+              width: 100%; }
               .lessonRightColumn .lessonButtons {
                 float: left;
                 width: 100%; }
                 .lessonRightColumn .lessonButtons button {
-                  margin: 12px 0px; }
+                  margin: 6px 0px 12px; }
             .lessonRightColumn .lessonMapContainer {
               float: left;
               width: 100%;
