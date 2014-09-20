@@ -333,7 +333,7 @@ class Meeting(Base):
 			review_time = in_five_min
 
 		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
-		ht_capture_creditcard.apply_async(args=[meeting.meet_id], eta=capture_time)
+		ht_capture_creditcard.apply_async(args=[self.meet_id], eta=capture_time)
 		ht_enable_reviews.apply_async(args=[self.meet_id], eta=review_time)
 		return True
 
