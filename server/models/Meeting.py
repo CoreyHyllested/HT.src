@@ -123,11 +123,11 @@ class Meeting(Base):
 	# Lesson and Groupsize need defaults.
 	# Lesson == None
 	# Groupsize = 1.
-	def __init__(self, sellr_id, buyer_id, datetime_s, datetime_f, cost, location, description, lesson, groupsize, token=None, customer=None, card=None, flags=None):
+	def __init__(self, sellr_prof_id, buyer_prof_id, datetime_s, datetime_f, cost, location, description, lesson, groupsize, token=None, customer=None, card=None, flags=None):
 		self.meet_id	= str(uuid.uuid4())
-		self.meet_sellr	= str(sellr_id)
-		self.meet_owner	= str(sellr_id)
-		self.meet_buyer	= str(buyer_id)
+		self.meet_sellr	= str(sellr_prof_id)
+		self.meet_owner	= str(sellr_prof_id)
+		self.meet_buyer	= str(buyer_prof_id)
 		self.meet_cost	= int(cost)
 		self.meet_flags	= 0
 		if (flags is not None): self.meet_flags = flags
@@ -450,19 +450,18 @@ def ht_capture_creditcard(meet_id):
 	"""
 	print 'ht_capture_cc: enter(' + meet_id + ')'
 	meeting = Meeting.get_by_id(meet_id)
-	(ha, hp) = get_account_and_profile(proposal.meet_sellr)	# hack, remove me...
+	sellr_prof = Profile.get_by_prof_id(meeting.meet_sellr)
+	print 'ht_capture_cc: charge_id=' + str(meeting.charge_transaction)
 
-	print 'ht_capture_cc: charge_id=' + str(proposal.charge_transaction)
-
-	if (meeting.meet_state != MEET_STATE_OCCURRED): # and (proposal.test_flag(APPT_FLAG_MONEY_CAPTURED))):
-		# update must set update_time. (if proposal.prop_updated > prev_known_update_time): corruption.
-		print 'ht_capture_cc: proposal (' + meeting.meet_id + ') is not in OCCURRED state(' + str(MEET_STATE_OCCURRED) + '), in state ' + str(meeting.meet_state)
+	if (meeting.meet_state != MEET_STATE_OCCURRED): # and (meeting.test_flag(APPT_FLAG_MONEY_CAPTURED))):
+		# update must set update_time. (if meeting.meet_updated > prev_known_update_time): corruption.
+		print 'ht_capture_cc: meeting (' + meeting.meet_id + ') is not in OCCURRED state(' + str(MEET_STATE_OCCURRED) + '), in state ' + str(meeting.meet_state)
 		return meeting.meet_state
 
 
 	try:
 		print 'ht_capture_cc: initialize stripe with their Key() -- get o_auth'
-		o_auth = Oauth.get_stripe_by_uid(hp.account)
+		o_auth = Oauth.get_stripe_by_uid(sellr_prof.account)
 		print 'ht_capture_cc: initialize stripe with their Key() -- o_auth.' + o_auth.oa_secret
 		stripe.api_key = o_auth.oa_secret
 
@@ -565,6 +564,7 @@ def meeting_event_chargecc(meet_id):
 		db_session.add(meeting)
 		db_session.commit()
 	except AttributeError as ae:
+		print 'meeting_event_chargecc(' + str(meet_id) + ')\t'+ str(type(e)) + str(e)
 		pass
 	except Exception as e:
 		print 'meeting_event_chargecc(' + str(meet_id) + ')\t'+ str(type(e)) + str(e)
