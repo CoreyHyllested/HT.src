@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 import os, sys
 from server import  initialize_server
+from config import	server_configuration
 from flask.ext.script import Manager, Shell
 from OpenSSL import SSL
 
 
-application = initialize_server(os.getenv('INSPRITE_CONFIG') or 'default')
+ENV_CONFIG	= os.getenv('INSPRITE_CONFIG')
+if (ENV_CONFIG == 'devel_money'):
+	print "\n\n\n\nI too like to live dangerously.\n Serious.\nYou're entering the DangerZone"
+application = initialize_server(ENV_CONFIG or 'default')
 manager = Manager(application)
 
 
@@ -26,6 +30,7 @@ def main():
 @manager.command
 def test():
 	"""Run unit tests"""
+	if (ENV_CONFIG != 'testing'): raise Exception('\nFailure: Running with incorrect CONFIG(' + str(ENV_CONFIG) + ') rerun as:\nINSPRITE_CONFIG=testing python ./application.py test')
 	import unittest
 	all_tests = unittest.TestLoader().discover('tests')
 	unittest.TextTestRunner(verbosity=2).run(all_tests)

@@ -3,13 +3,13 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/login.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<script type="text/javascript" src="/static/js/login.js"></script>
 {% endblock %}
 
 {% block content %}
 
 <div class="loginContentWrapper">
-
 	<h2>Login to Insprite</h2>
 
 	<div class="loginSwitch">
@@ -31,12 +31,13 @@
 			{% endif %}
 
 			<div class="loginEmailSubmitWrapper">
-				<input type="submit" value="Log in" class="blueButton">
+				<input type="submit" value="Log in" class="button teal">
 			</div>
 		</form>
 
 	</div>
 
+	<!--
 	<h2>Or use these</h2> 
 	<div class="loginSocial">
 		<form method="link" action="/login/linkedin">
@@ -51,6 +52,7 @@
 			By clicking any of the buttons above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
 	</div>
+	-->
 	
 	<a class="loginLink" href="/signup">Join Insprite</a>
 	<a class="loginLink" href="/password/recover">Forgot your password?</a>

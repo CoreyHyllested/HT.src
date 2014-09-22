@@ -4,13 +4,12 @@
 	<title>Insprite {{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-	<link rel="icon" type="image/ico" href="/static/img/favicon.png">
+	<link rel="icon" type="image/png" href="/static/img/favicon.png">
 
 	{% block head %}
 
 	<!-- Import Google Fonts -->
-	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
-	<link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Noto+Serif:400italic'>
+	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|Noto+Serif:400italic|Lobster+Two:400,700|Lato:100,300,400,700,900">
 
 	<!-- Import FontAwesome Icons -->
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
@@ -22,26 +21,17 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
-
 
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-	<!--script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyCw0tT-P7_E_rfkEsdY-w7MMLCy84Jthtg&sensor=false&libraries=places"></script-->
 
 	<script src="/static/js/modal_windows.js"></script>	
-
 	{% endblock %}
 
-	{% if jsfiles %}
-	{% for file in jsfiles %}<script type="text/javascript" src="{{file}}"></script>{% endfor %}
-	{% endif %}
-
 	<script>
-
-		// [All pages] Sticky footer (Mar 2014, replaces whatever else we had before)
+		// [All pages] Sticky footer
 
 		// Window load event used just in case window height is dependant upon images
 		$(window).bind("load", function() { 
@@ -115,9 +105,7 @@
 </head>
 
 <body>
-	<!-- MODAL WINDOWS -->
-	<!-- When a model window is open, the user can click the transparent black overlay to close it. -->
-			
+	<!-- MODAL WINDOWS; when model window is open, users can click the transparent black overlay to close. -->
 	<!-- Alert Modal -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
@@ -141,11 +129,11 @@
 	</div>
 
 
-	<!-- This is the hidden menu that only shows up on mobile -->
+	<!-- hidden menu that only shows up on mobile -->
 	<div class="menu">
-		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+		<form name="mobileSearchForm" id="mobileSearchForm" action="search" method="POST">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-			<input name="search" id="menuSearch" type="text" autocomplete="off">
+			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off">
 		</form>
 		<ul>
 
@@ -155,7 +143,7 @@
 			{% if bp.availability > 0 %}
 				<li><a href="/lesson/new">Create Lesson</a></li>
 			{% else %}
-				<li><a href="/teacher/signup">Sign Up to Teach</a></li>
+				<a href="/profile/upgrade"><li>Become a Mentor</li></a>
 			{% endif %}
 			<li><a href="/dashboard">Dashboard</a></li>
 			<li><a href="/profile">Profile</a></li>
@@ -172,7 +160,6 @@
 
 	<div class="pageWrapper"><!-- Page wrapper starts here -->
 
-		<!-- HEADER -->
 		<!-- Header starts here -->
 		<div class="headerBackground">
 			<!-- Content wrapper contains all header elements in necessary width -->
@@ -180,20 +167,18 @@
 
 				<!-- HEADER LOGO -->
 				<div class="headerLogo">
-					<!-- If the user is logged in, open Dashboard; otherwise, open home page -->
-					{% if bp %}
-						<a href="/dashboard" class="headerLogoLink">
-					{% else %}
-						<a href="/" class="headerLogoLink">
+					<!-- If user is logged in, open Dashboard; otherwise, open home page -->
+					{% if bp %}<a href="/dashboard" class="headerLogoLink">
+					{% else %}<a href="/" class="headerLogoLink">
 					{% endif %}
-					<img src="/static/img/insprite-small.png" class="headerLogoImg"></a>
+					<img src="/static/img/insprite_small2.png" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
-					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+					<form name="headerSearchForm" id="headerSearchForm" action="search" method="POST">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<input name="search" id="headerSearch" type="text" autocomplete="off">
+						<input name="keywords_field" class="keywordsField" id="headerSearchField" type="text" autocomplete="off">
 					</form>
-					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
+					<div class="headerSearchBarIcon"><i class="fa fa-search headerSearchIcon"></i></div>
 				</div>
 
 
@@ -206,13 +191,13 @@
 						<li class="headerDropdownMenuName">{{bp.prof_name}}
 							<ul class="headerDropdownMenuActive">
 								{% if bp.availability > 0 %}
-									<a href="/teacher/signup"><li>Edit Teaching Info</li></a>
 									<a href="/lesson/new"><li>Create Lesson</li></a>
 								{% else %}
-									<a href="/teacher/signup"><li>Sign Up to Teach</li></a>
+									<a href="/profile/upgrade"><li>Become a Mentor</li></a>
 								{% endif %}
 								<a href="/dashboard"><li>Dashboard</li></a>
 								<a href="/profile"><li>Profile</li></a>
+								<a href="/profile/edit"><li>Edit Profile</li></a>
 								<a href="/inbox"><li>Messages</li></a>
 								<a href="/settings"><li>Settings</li></a>
 								<a href="/logout"><li>Log Out</li></a>
@@ -222,9 +207,9 @@
 				</div>
 				<div class="headerIcons">
 					{% if bp.availability == 0 %}
-						<a class="teacherSignupLink blend" href="/teacher/signup">Sign up to teach</a>
+						<a class="teacherSignupLink blend" href="/profile/upgrade">Become a Mentor</a>
 					{% endif %}
-					<a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a>
+					<!--a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a-->
 					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"></i></a>
 				</div>
 
@@ -257,14 +242,14 @@
 				<ul>
 					<li><a href="/about">About</a> |</li>
 					<li><a href="/terms">Terms &amp; Privacy</a> |</li>
-					<li><a href="mailto:team@herotime.co">Contact</a></li>
+					<li><a href="mailto:thegang@insprite.co">Contact</a></li>
 				</ul>
 			</div>
 				<!-- <ul>
-					<li><a href="http://www.linkedin.com/company/herotime">LinkedIn</a> |</li>
-					<li><a href="https://www.facebook.com/pages/HeroTime/545914632110849">Facebook</a> |</li>
+					<li><a href="http://www.linkedin.com/company/Insprite">LinkedIn</a> |</li>
+					<li><a href="https://www.facebook.com/pages/Insprite/545914632110849">Facebook</a> |</li>
 					<li><a href="https://plus.google.com/u/0/117608740634064140119">Google+</a> |</li>
-					<li><a href="https://twitter.com/HeroTimeCo">Twitter</a> |</li>
+					<li><a href="https://twitter.com/Insprite">Twitter</a> |</li>
 					<li><a href="http://www.youtube.com/channel/UCIgliSHZYHZNAdJqpjeUTVw/feed?view_as=public">YouTube</a></li>
 				</ul> -->
 			<div class="footerCopyright">
@@ -272,25 +257,42 @@
 			</div>
 		</div>
 	</div><!-- Footer ends here -->
-
+	<!-- Google Analytics -->
 	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54046005-2', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+	<script>
+
 	$(document).ready(function() {
 
-		$(".searchIcon").click(function() {
-			$("#srchForm").submit();
+		$(".headerSearchIcon").click(function() {
+			$("#headerSearchForm").submit();
 		});
 
-		function rp(id) {
-			document.getElementById('h').value=id;
-			document.p.submit();
-		}
+		$("#headerSearchForm, #mobileSearchForm").submit(function() {
+			return submitSearch($(this));
+		});		
 
-		function searchBar() {
-			var x=document.forms["srchForm"]["search"].value;
-			if (x==null || x=="") { return false; }
-			return true;
-		}
 	});
+
+	function submitSearch(form) {
+		var query = $(form).find(".keywordsField").val().trim();
+		console.log("query: "+query);
+		if (query != "" && query != null) { 
+			return true;
+		} else {
+			console.log("Search field was blank.");
+			return false;
+		}		
+	}
+
 	</script>
 
 </body>

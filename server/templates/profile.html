@@ -6,6 +6,8 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/profile.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/dropzone.css">
+
+
 {% endblock %}
 
 
@@ -14,35 +16,44 @@
 	
 	<div class="profileHeaderColumn">
 		<div class="profilePicContainer">
-			<img class="profilePic" src="{{profile_img}}">
+			<img class="profilePic" src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hp.prof_img}}">
 		</div>
 	</div>
 
 
 	<div class="profileLeftColumn">
-		<div class="profileNameHeadline">
-			<h1>{{hp.prof_name}}</h1>
-			<h2>{{hp.headline| default('No headline')}}</h2>
-			<h3>${{hp.prof_rate}}</h3>
+		<div class="profileMainInfo">
+			<div class="profileName">
+				{{hp.prof_name}}
+			</div>
+			{% if hp.availability > 0 %}
+			<div class="profileHeadline">
+				{{hp.headline}}
+			</div>	
+			{% endif %}	
+			{% if hp.location %}			
+			<div class="profileLocation">
+				{{hp.location}}
+			</div>		
+			{% endif %}
+
+			<div class="profileRating">
+				{% if hp.reviews == 0 %}
+					Not yet rated
+				{% elif hp.reviews == 1 %}
+					{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Review)</a>
+				{% else %}
+					{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
+				{% endif %}
+			</div>
 		</div>
+
 		<div class="profileMobileBlock">
-			{% if hp is sameas bp %}
-			<form method="link" action="/edit">
-				<input type="submit" class="whiteButton" value="Edit Profile">
-			</form>
 
-			{% else %}
-
-			<form method="link" action="/schedule" method="POST">
-				<input type="hidden" name="hp" value="{{hp.prof_id}}">
-				<input type="submit" class="blueButton" value="Schedule meeting...">
-			</form>
-
+			{% if hp is not sameas bp and hp.availability > 0 %}
+				<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
 			{% endif %}
 			<div class="profileBasicInfo">
-				<div class="profileInfoBox"><img src="/static/img/facebook_thumbnails.jpg"></div>
-				<div class="profileInfoBox">{{hp.location}}</div>
-				<div class="profileInfoBox">{{hp.industry}}</div>
 				<div class="profileInfoBox">
 					{% if hp.reviews == 0 %}
 						No Reviews
@@ -52,198 +63,213 @@
 						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
 					{% endif %}
 				</div>
-				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
 			</div>
 		</div>
+
+		{% if hp.prof_bio != "About me" and hp.prof_bio != "" %}
 		<div class="profileAboutMe italic">{{hp.prof_bio}}</div>
+		{% endif %}
 
-		{% if revs|count == 0 %}
-		<h3>There are no reviews for this person yet.</h3>
-
+		{% if hp.availability > 0 %}
+		<div class="profileLessons">
+		{% if lessons|count == 0 %}
+			This person has not created any lessons yet.
 		{% else %}
+			<div class="profileLessonsHeader">Lessons & Experiences</div>
+			{% for lesson in lessons %}
+				<div class="profileLesson"><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></div>
+			{% endfor %}
+		{% endif %}
+		</div>
+		{% endif %}
+
+		{% if hp.availability > 0 %}
+		<div class="profileAvail">
+			<div class="profileAvailHeader">Availability</div>
+			{% if hp.availability == 1 %}
+				This mentor has flexible availability - let them know what works for you.
+			{% else %}
+				
+				{% for timeslot in avail %}
+					<div class="profileAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+				{% endfor %}
+
+			{% endif %}
+		</div>
+		{% endif %}
+
 		<div class="profileReviews" id="reviews">
-				<div class="profileReviewsInfo">
-				<h3>Reviews ({{revs|length}})</h3>
-			</div>
-			<div class="profileLatestReviews">
+			<div class="profileReviewsHeader">Reviews</div>
+			{% if reviews|count == 0 %}
+			There are no reviews for this person yet.
+			{% else %}		
 
-				{% for review in revs %}
-				<!-- The individual review box starts here -->
-				<div class="profileReviewBox">
-					<div class="profileReviewLeft">
-						<div class="profileReviewImageWrap">
-							<!-- Social Media icon. -->
-							{% if loop.index == 1 %}
-							<div class="profileReviewImageFacebook"></div>
-							{% endif %}
-							<a href="/profile?hero={{review.display.prof_id}}">
-								<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
-							</a>
-						</div>
-						
-						<div class="profileReviewLeftNameHeadline">
-							<a href="/profile?hero={{review.display.prof_id}}">
-								<h3>{{review.display.prof_name}}</h3>
-								<h4>{{review.display.headline}}</h4>
-							</a>
-						</div>
-					</div>
-					<div class="profileReviewRight">
-						<div class="profileReviewRating">
-							<div class="profileReviewRatingLabels">
-								Overall Value<br>
-								Promptness<br>
-								Communication
+				<div class="profileLatestReviews">
+
+					{% for review in reviews %}
+					<!-- The individual review box starts here -->
+					<div class="profileReviewBox">
+						<div class="profileReviewLeft">
+							<div class="profileReviewImageWrap">
+								<a href="/profile?hero={{review.display.prof_id}}">
+									<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}">
+								</a>
 							</div>
-							<div class="profileReviewRatingDivider"></div>
-							<div class="profileReviewRatingBars">
-
-								<!-- Overall Value -->
-								<div class="profileReviewRatingBar">
-									{% if review.Review.appt_score == 1 %}
-										<div class="profileReviewRatingBarFillOne"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-									{% elif review.Review.appt_score == 2 %}
-										<div class="profileReviewRatingBarFillTwo"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-									{% elif review.Review.appt_score == 3 %}
-										<div class="profileReviewRatingBarFillThree"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-									{% elif review.Review.appt_score == 4 %}
-										<div class="profileReviewRatingBarFillTwo"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-									{% elif review.Review.appt_score == 5 %}
-										<div class="profileReviewRatingBarFillFive"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
-									{% endif %}
-								</div>
-
-								<!-- Promptness goes here -->
-								<div class="profileReviewRatingBar">
-									{% if not review.Review.score_attr_time %}
-										<div class="profileReviewRatingBarFillZero"></div>
-										<div class="profileReviewRatingNumerical">n/a</div>
-									{% elif review.Review.score_attr_time == 1 %}
-										<div class="profileReviewRatingBarFillOne"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-									{% elif review.Review.score_attr_time == 2 %}
-										<div class="profileReviewRatingBarFillTwo"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-									{% elif review.Review.score_attr_time == 3 %}
-										<div class="profileReviewRatingBarFillThree"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-									{% elif review.Review.score_attr_time == 4 %}
-										<div class="profileReviewRatingBarFillFour"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-									{% elif review.Review.score_attr_time == 5 %}
-										<div class="profileReviewRatingBarFillFive"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
-									{% else %}
-										<div class="profileReviewRatingNumerical"> SubZero </div>
-									{% endif %}
-								</div>
-
-								<!-- Communication -->
-								<div class="profileReviewRatingBar">
-									{% if not review.Review.score_attr_comm %}
-									  <div class="profileReviewRatingBarFillZero"></div>
-									  <div class="profileReviewRatingNumerical"> n/a </div>
-									{% elif review.Review.score_attr_comm == 1 %} 
-										<div class="profileReviewRatingBarFillOne"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-									{% elif review.Review.score_attr_comm == 2 %} 
-										<div class="profileReviewRatingBarFillTwo"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-									{% elif review.Review.score_attr_comm == 3 %} 
-										<div class="profileReviewRatingBarFillThree"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-									{% elif review.Review.score_attr_comm == 4 %} 
-										<div class="profileReviewRatingBarFillFour"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-									{% elif review.Review.score_attr_comm == 5 %} 
-										<div class="profileReviewRatingBarFillFive"></div>
-										<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
-									{% endif %}
-								</div>
-								<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
+							
+							<div class="profileReviewLeftNameHeadline">
+								<a href="/profile?hero={{review.display.prof_id}}">
+									<h3>{{review.display.prof_name}}</h3>
+									
+								</a>
 							</div>
 						</div>
-						<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
+						<div class="profileReviewRight">
+							<div class="profileReviewRating">
+								<div class="profileReviewRatingLabels">
+									Overall Value<br>
+									Promptness<br>
+									Communication
+								</div>
+								<div class="profileReviewRatingDivider"></div>
+								<div class="profileReviewRatingBars">
+
+									<!-- Overall Value -->
+									<div class="profileReviewRatingBar">
+										{% if review.Review.appt_score == 1 %}
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 2 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 3 %}
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 4 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% elif review.Review.appt_score == 5 %}
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.appt_score}}/5</div>
+										{% endif %}
+									</div>
+
+									<!-- Promptness goes here -->
+									<div class="profileReviewRatingBar">
+										{% if not review.Review.score_attr_time %}
+											<div class="profileReviewRatingBarFillZero"></div>
+											<div class="profileReviewRatingNumerical">n/a</div>
+										{% elif review.Review.score_attr_time == 1 %}
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 2 %}
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 3 %}
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 4 %}
+											<div class="profileReviewRatingBarFillFour"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% elif review.Review.score_attr_time == 5 %}
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_time}}/5</div>
+										{% else %}
+											<div class="profileReviewRatingNumerical"> SubZero </div>
+										{% endif %}
+									</div>
+
+									<!-- Communication -->
+									<div class="profileReviewRatingBar">
+										{% if not review.Review.score_attr_comm %}
+										  <div class="profileReviewRatingBarFillZero"></div>
+										  <div class="profileReviewRatingNumerical"> n/a </div>
+										{% elif review.Review.score_attr_comm == 1 %} 
+											<div class="profileReviewRatingBarFillOne"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 2 %} 
+											<div class="profileReviewRatingBarFillTwo"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 3 %} 
+											<div class="profileReviewRatingBarFillThree"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 4 %} 
+											<div class="profileReviewRatingBarFillFour"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% elif review.Review.score_attr_comm == 5 %} 
+											<div class="profileReviewRatingBarFillFive"></div>
+											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
+										{% endif %}
+									</div>
+									<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
+								</div>
+							</div>
+							<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
+						</div>
+						<div class="clear"></div>
 					</div>
-					<div class="clear"></div>
+					{% endfor %}
+
 				</div>
+				<div class="profileReviewsInfo"></div>
+			{% endif %}
+		</div>
+		
+	</div>
+
+
+	<div class="profileRightColumn">
+
+		{% if hp.availability > 0 %}
+			<div class="profilePriceBox">
+				<span class="dollar">$</span>
+				<span class="profilePriceBoxRate">{{hp.prof_rate}}</span>
+				<div class="perHour">per<br>hour</div>
+			</div>
+
+
+			{% if hp is not sameas bp %}
+
+			<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Send Message</button>
+
+
+			<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
+
+			{% endif %}
+
+			{% if hp.prof_url != "http://herotime.co" %}
+			<div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div>
+			{% endif %}
+
+
+			<div class="profilePortfolio">
+				
+				{% for img in portfolio %}
+					<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
+
 				{% endfor %}
 
 			</div>
-			<div class="profileReviewsInfo"></div>
-		</div>
 		{% endif %}
-	</div>
-
-	<div class="profileRightColumn">
-		<div class="profilePriceBox">
-			<span>$</span>
-			<h1 id="profilePriceBoxRate">{{hp.prof_rate}}</h1>
-			<div class="perHour">per<br>hour</div>
-		</div>
-		{% if hp is sameas bp %}
-			<a href="/edit"><button id="editProfileButton" class="whiteButton">Edit Profile</button></a>
-		{% else %}
-
-		<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Message Me</button>
-
-		<form method="link" action="/schedule" method="POST">
-			<input type="hidden" name="hp" value="{{hp.prof_id}}">
-			<input type="submit" class="blueButton scheduleMtgButton" value="Schedule Meeting...">
-		</form>
-
-		{% endif %}
-		<div class="profileBasicInfo">
-				<!-- <div class="profileInfoBox profileInfoFacebookSocial"><img src="/static/img/facebook_thumbnails.jpg"></div> -->
-				<div class="profileInfoBox profileInfoLocation">{{hp.location}}</div>
-				<div class="profileInfoBox profileInfoIndustry">{{hp.industry}}</div>
-				<div class="profileInfoBox profileInfoRating">
-					{% if hp.reviews == 0 %}
-						No Reviews
-					{% elif hp.reviews == 1 %}
-						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Review)</a>
-					{% else %}
-						{{ '%0.1f' | format(hp.rating|float) }} out of 5 stars <a href="#reviews">({{hp.reviews}} Reviews)</a>
-					{% endif %}
-				</div>
-				<!-- <div class="profileInfoBox"><a href="{{hp.prof_url}}" target="_blank">Personal Website</a></div> -->
-		</div>
-
-<!-- 		{% if hp is sameas bp %}
-		<div class="portfolioButtons">
-			{% if portfolio|length == 0 %}	
-				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
-			{% else %}
-				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
-			{% endif %}
-		</div>
-		{% endif %} -->
-
-		<div class="profilePortfolio">
-			
-			<!--a href="/static/img/portfolio_acroyoga.jpg" data-lightbox="portfolio" data-title="I've been a certified acroyoga instructor for 10 years now." class="profilePortfolioImage acroyoga"></a-->
-			{% for img in portfolio %}
-				<a href="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}" style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{img.img_id}}') no-repeat center center; background-size:cover;" data-lightbox="portfolio" data-title="{{img.img_comment}}" class="profilePortfolioImage" ></a></li>
-
-			{% endfor %}
-		</div>
 
 	</div>
 
 	<div class="clear"></div>
 </div>
 
+<script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/dropzone.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
 
 $(document).ready(function() {
+
+	$(".profileAvailDay").each(function() {
+		var weekday = $(this).data("weekday");
+		var start = $(this).data("start");
+		var finish = $(this).data("finish");
+		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + " until " + moment(finish, "HH:mm:ss").format("h:mm a"));
+	});
 
 	$('#sendModalMessage').click(function(e) {
 		e.preventDefault();
@@ -252,7 +278,7 @@ $(document).ready(function() {
 		dataObj.next = "modal";
 
 		var myString = JSON.stringify(dataObj);
-		openModalWindow("/compose", ".composeWrapper", myString);	
+		openModalWindow("/compose", ".composeWrapper", myString, '');	
 
 	});
 

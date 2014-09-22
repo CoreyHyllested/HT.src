@@ -1,6 +1,20 @@
+#################################################################################
+# Copyright (C) 2014 Insprite, LLC.
+# All Rights Reserved.
+#
+# All information contained is the property of Insprite, LLC.  Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents.  All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Insprite, LLC.
+#################################################################################
+
+
 from flask import render_template
 from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
-from ..forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
+from ..forms import SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm, ProposalForm
 from .helpers import *
 from server.controllers import *
 from server.ht_utils import *
@@ -8,147 +22,107 @@ from . import insprite_views
 
 
 
-@insprite_views.route('/proposal/create', methods=['POST'])
+@insprite_views.route('/meeting/create', methods=['POST'])
 @req_authentication
-def ht_api_proposal_create():
-	user_message = 'Interesting'
+def ht_api_meeting_create():
+	print 'ht_api_meeting_create()'
+	resp_message = 'Meeting proposal created'
+	resp_code = 200
 
 	try:
-		print 'ht_api_proposal_create'
-		proposal = ht_proposal_create(request.values, session['uid'])
-		if (proposal is not None): user_message = 'Successfully created proposal'
-	except Sanitized_Exception as se:
-		user_message = se.get_sanitized_msg()
-		return make_response(jsonify(usrmsg=user_message), se.httpRC())
-	except Exception as e:
-		print type(e), e
-		return make_response(jsonify(usrmsg='Something bad'), 500)
-	return make_response(jsonify(usrmsg=user_message, nexturl="/dashboard"), 200)
+		ht_meeting_create(request.values, session['uid'])
+	except SanitizedException as se:
+		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
+		return se.api_response(request.method)
+
+
+	# TODO - change nexturl to depend on passed variable, go to user profile if needed
+	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
 
 
-@insprite_views.route('/proposal/accept', methods=['POST'])
+@insprite_views.route('/meeting/accept', methods=['GET','POST'])
 @req_authentication
-def ht_api_proposal_accept():
-	print "ht_api_proposal_accept: enter"
-	form = ProposalActionForm(request.form)
-#	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-#	log_uevent(session['uid'], pstr)
-
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=msg), 400
+def ht_api_meeting_accept():
+	meet_id = request.values.get('meet_id', None)
+	print 'ht_api_meeting_accept(' + meet_id + ')\tenter'
+	resp_code = 200
+	resp_message = 'Proposed meeting accepted.'
 
 	try:
-		print "ht_api_proposal_accept: validated form. Accept proposal."
-		ht_proposal_accept(form.proposal_id.data, session['uid'])
-	except Sanitized_Exception as se:
-		print "ht_api_proposal_accept: sanitized exception", se
-		return jsonify(usrmsg=se.get_sanitized_msg()), 500
-	except Exception as e:
-		print "ht_api_proposal_accept: exception", type(e), e
-		db_session.rollback()
-		return jsonify(usrmsg=str(e)), 500
-	print "ht_api_proposal_accept: success"
-	return make_response(redirect('/dashboard'))
+		profile = Profile.get_by_uid(session['uid'])
+		ht_meeting_accept(meet_id, profile)
+		print 'ht_api_meeting_accept\t success'
+	except SanitizedException as se:
+		print "ht_api_meeting_accept: sanitized exception", se
+		return se.api_response(request.method)
+
+	if (request.method == 'GET'):
+		# user accepted proposal from an email.
+		if (resp_code == 200): session['messages'] = resp_message
+	return make_response(redirect(url_for('insprite.render_dashboard')))
 
 
 
 
-@insprite_views.route('/proposal/negotiate', methods=['POST'])
+@insprite_views.route('/meeting/negotiate', methods=['POST'])
 @req_authentication
-def ht_api_proposal_negotiate():
-	#the_proposal = Proposal.get_by_id(form.proposal_id.data)
-	#the_proposal.set_state(APPT_STATE_RESPONSE)
-	#the_proposal.prop_count = the_proposal.prop_count + 1
-	#the_proposal.prop_updated = dt.now()
+def ht_api_meeting_negotiate():
+	#meeting = Proposal.get_by_id(form.proposal_id.data)
+	#meeting.set_state(APPT_STATE_RESPONSE)
+	#meeting.prop_count = meeting.prop_count + 1
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
 
 
 
-@insprite_views.route('/proposal/reject', methods=['POST'])
+@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
 @req_authentication
-def ht_api_proposal_reject():
-	form = ProposalActionForm(request.form)
-	pstr = "wants to %s proposal (%s); challenge_hash = %s" % (form.proposal_stat.data, form.proposal_id.data, form.proposal_challenge.data)
-	log_uevent(session['uid'], pstr)
-
-
-	if not form.validate_on_submit():
-		msg = "invalid form: " + str(form.errors)
-		log_uevent(session['uid'], msg) 
-		return jsonify(usrmsg=str(msg)), 504
+def ht_api_meeting_reject():
+	# cannot use form to validate inputs. do manually
+	meet_id = request.values.get('meet_id', None)
+	resp_code = 200
+	resp_message = 'Proposed meeting rejected.'
 
 	try:
-		rc, msg = ht_proposal_reject(form.proposal_id.data, session['uid'])
-	except NoProposalFound as npf:
-		print rc, msg
-		return jsonify(usrmsg="Weird, proposal doesn\'t exist"), 505
-	except StateTransitionError as ste:
-		db_session.rollback()
-		print ste, ste.get_sanitized_msg()
-		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
-	except DB_Error as ste:
-		db_session.rollback()
-		print ste
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
-	except Exception as e:
-		print e
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some unknown issue: "+ str(e)), 505
-	print rc, msg
-	return jsonify(usrmsg="Proposal Deleted"), 200
+		profile = Profile.get_by_uid(session['uid'])
+		ht_meeting_reject(meet_id, profile)
+		print 'ht_api_meeting_reject()\tsuccess'
+	except SanitizedException as se:
+		print "ht_api_proposal_reject(): sanitized exception", se
+		return se.api_response(request.method)
+
+	if (request.method == 'GET'):
+		# from email, send to /dashboard.
+		session['messages'] = resp_message
+		return make_response(redirect(url_for('insprite.render_dashboard')))
+	return jsonify(usrmsg=resp_message), resp_code
 
 
 
 
-@insprite_views.route('/appointment/cancel', methods=['POST'])
-@dbg_enterexit
+@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @req_authentication
-def ht_api_appt_cancel():
-	""" Cancels a logged in user's appointment. """
-
-	uid = session['uid']
-	print 'apptid = ', request.values.get('appt_id', 'Nothing found here, sir')
+def ht_api_meeting_cancel():
+	# cannot use form to validate inputs. do manually
+	meet_id = request.values.get('meet_id', None)
+	resp_code = 200
+	resp_message = 'Canceled meeting.'
 
 	try:
-		the_proposal = Proposal.get_by_id(request.values.get('appt_id'))
-		the_proposal.set_state(APPT_STATE_CANCELED)
-		db_session.add(the_proposal)
-		db_session.commit()
-		print the_proposal
-
-		#send emails notifying users.
-		print "success, canceled appt"
-	except DB_Error as dbe:
-		print dbe
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some DB problem, try again"), 505
-	except StateTransitionError as ste:
-		print ste
-		db_session.rollback()
-		return jsonify(usrmsg=ste.get_sanitized_msg()), 500
-	except NoResourceFound as nre:
-		print nre
-		return jsonify(usrmsg=nre), 400
-	except Exception as e:
-		print e
-		db_session.rollback()
-		return jsonify(usrmsg='Bizarre, something failed'), 500
-
-	return jsonify(usrmsg="succesfully canceled proposal"), 200
-
-
+		bp = Profile.get_by_uid(session['uid'])
+		ht_meeting_cancel(meet_id, bp)
+	except SanitizedException as se:
+		print "ht_api_meeting_cancel()\t EXCEPTION", se
+		return se.api_response(request.method)
+	return jsonify(usrmsg=resp_message), resp_code
 
 
 
 
 @req_authentication
-@ht_server.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
+@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 def ht_api_get_message_thread(msg_thread):
 	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
@@ -212,8 +186,6 @@ def ht_api_get_message_thread(msg_thread):
 def ht_api_send_message():
 	""" Send a user message. """
 
-	uid = session['uid']
-
 	try:
 		bp = Profile.get_by_uid(session['uid'])
 
@@ -225,8 +197,7 @@ def ht_api_send_message():
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
 
-		print
-		print "/sendmsg - MESSAGE DETAILS"
+		print "ht_api_send_message() - MESSAGE DETAILS"
 		print 'message from ' + bp.prof_name
 		print 'message to ' + msg_to
 		print 'subject=', subject
@@ -252,24 +223,18 @@ def ht_api_send_message():
 			db_session.add(msg_thread_leader)
 
 		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
-		
 		db_session.add(message)
 		db_session.commit()
 
 		hp = Profile.get_by_prof_id(msg_to)
-		email_user_to_user_message(bp, hp, subject, thread, message)
+		ht_send_peer_message(bp, hp, subject, thread, message)
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
-	except DB_Error as dbe:
-		print dbe
-		db_session.rollback()
-		return jsonify(usrmsg="Weird, some DB problem, try again", next=next, valid="true"), 505
 	except NoResourceFound as nre:
 		print nre
 		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
 	except Exception as e:
-		print type(e)
-		print e
+		print type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 

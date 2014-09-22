@@ -1,0 +1,96 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/settings.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="settingsContentWrapper">
+
+	{% if errmsg != none %}
+	<script>
+		openAlertWindow('{{errmsg}}');
+	</script>
+	{% endif %}
+
+	<form action=settings method=POST>
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+		<div class="settingsLeftSideWrapper">
+			<div class="settingsName">
+				<h2>Legal Name</h2>
+				{{form.set_input_name(placeholder="Current Name")}}
+			</div>
+
+			<div class="settingsEmail">
+				<h2>Email</h2>
+				{{form.set_input_email(placeholder="Current email")}}
+				{{form.set_input_email_pass(placeholder="Current password")}}
+				{% if unverified_email == True %}
+				<div>
+					Your email is unverified.
+					<button class="whiteButton" id="verify-email">Verify email</button>
+				</div>
+				<br>
+				{% else %}
+				<input class="whiteButton" id="set-save" type="submit" value="Change email" />
+				{% endif %}
+			</div>
+
+			<div class="settingsPassword">
+
+				<h2>Change Password</h2>
+				{{form.set_input_curpass(placeholder="Current password", autocomplete="off")}}
+				{{form.set_input_newpass(placeholder="New password")}}
+				{{form.set_input_verpass(placeholder="Verify password")}}
+				<input class="whiteButton" id="set-save" type="submit" value="Save password" />
+			</div>
+		</div>
+
+		<!--div class="settingsPayout">
+			<h2>Payment Information</h2>
+			<p>We use <a href="https://stripe.com" target="_blank">Stripe</a> to pay you for the services you sell. Stripe provides a secure way for individuals and businesses to accept payments over the Internet.</p>
+			<p><a href="https://support.stripe.com/questions/what-countries-does-stripe-support" target="_blank">Click here for the list of supported countries.</a></p>
+			<label for="oauth_stripe">Your StripeConnect ID</label>
+			{{form.oauth_stripe(readonly=readonly)}}
+			<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
+		</div-->
+		
+		<!--div class="settingsPayout">
+			<h2>Privacy</h2>
+			<input type="checkbox" name="privacy-settings" value="search-listing">List my profile in search.<br><br>
+			<input class="whiteButton" id="set-save" type="submit" value="Save Privacy Settings" />
+		</div-->
+		
+		<!--div class="settingsPayout">
+			<h2>Notifications</h2>
+			<input type="checkbox" name="notifications" value="receive-message">Notify me when I receive a message from another user.<br>
+			<input type="checkbox" name="notifications" value="upcoming-appt">Notify me of upcoming appointments.<br>
+			<input type="checkbox" name="notifications" value="request-status">Notify me when my proposal is declined.<br>
+			<input type="checkbox" name="notifications" value="new-review">Notify me when reviews are posted.<br><br>
+			<input class="whiteButton" id="set-save" type="submit" value="Save Notifications" />
+		</div-->
+	</form>
+	<div class="clear"></div>
+</div>
+<div class="clear"></div>
+
+
+<script>
+$(document).ready(function() {
+	$('#verify-email').on("click", function(e) {
+		e.preventDefault();
+		var dataObj = new Object();
+		dataObj.hero = "{{bp.prof_id}}";
+		dataObj.next = "modal";
+		dataObj.nexturl = "{{ nexturl }}";
+		$.each(dataObj, function(k, v) { console.log(k+ ": " + v); });
+		openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj));
+	});
+});
+</script>
+{% endblock %}
+

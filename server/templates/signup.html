@@ -3,6 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<script type="text/javascript" src="/static/js/signup.js"></script>
 
 {% endblock %}
@@ -43,7 +44,7 @@
 			</div>
 
 			<div class="signupEmailSubmitWrapper">
-				<input type="submit" value="Join now" class="blueButton">
+				<input type="submit" value="Join now" class="button teal">
 			</div>
 
 		</form>	
@@ -55,8 +56,8 @@
 		</script>
 	{% endif %}
 
+	<!--
 	<h2>Or use these</h2>
-
 	<div class="signupSocial">
 		<form method="link" action="/signup/linkedin">
 			<input type="submit" class="signupLinkedIn" name="signupLinkedIn" value="LinkedIn" target="_blank"> 
@@ -69,8 +70,8 @@
 		<div class="signupLinkedInNotice">			
 			By clicking any of the buttons above, you confirm that you have read the <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
 		</div>
-
 	</div>
+	-->
 
 	<a class="signupLink" href="/login">Already a member?</a>
 
@@ -83,12 +84,14 @@
 
 // Jquery Password Strength Plugin - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
 $(function() {
-	$("#input_signup_password").keyup(function(){
+	$("#input_signup_confirm").keyup(function(){
 		initializeStrengthMeter();
 	});
 
-	$("#input_signup_confirm").keyup(function(){
-		initializeStrengthMeter();
+	$("#input_signup_password").keyup(function(){
+		if ($("#input_signup_confirm").val() != "") {
+			initializeStrengthMeter();
+		}
 	});
 });
 

@@ -15,12 +15,13 @@
 import os
 
 HT_BASEDIR	= os.path.abspath(os.path.dirname(__file__))
-LOCAL_MODE	= os.environ.get("LOCAL", None)
+LOCAL_DB	= os.environ.get('INSPRITE_DB', None)
 
 
 class Config:
 	# Flask Config Options
 	CSRF_ENABLED = True
+	MAX_CONTENT_LENGTH = 2**23
 	SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta3.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
@@ -50,7 +51,6 @@ class Config:
 
 	@staticmethod
 	def init_app(app):
-		print 'SQLALCHEMY_DB: ' + str(SQLALCHEMY_DATABASE_URI)
 		pass
 
 
@@ -59,6 +59,21 @@ class DevelopmentConfig(Config):
 	# https://redistogo.com/instances/292777?language=en
 	# RedisToGo.com :: herotime/'coming in Nov 2013'/corey@herotime.co
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
+
+	if (LOCAL_DB):
+		#'postgresql://htdb:pass@localhost:5432/beta4')
+		SQLALCHEMY_DATABASE_URI = LOCAL_DB
+
+
+
+
+class DevelMoneyConfig(Config):
+	# https://redistogo.com/instances/292777?language=en
+	# RedisToGo.com :: herotime/'coming in Nov 2013'/corey@herotime.co
+	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
+	STRIPE_PUBLIC =	'pk_live_uln2RsRFAILYDVG2ZMJj52JZ'
+	STRIPE_SECRET = 'sk_live_PkVMnc27rXEeb63WxO514N9X'
+
 
 
 
@@ -78,9 +93,11 @@ class TestingConfig(Config):
 	WTF_CSRF_ENABLED = False	# Boo. Hiss.  But means we don't have to parse the page much.
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
 
-	# maybe we don't use this
-	if (LOCAL_MODE == True):
-		SQLALCHEMY_DATABASE_URI = 'sqlite:///' + HT_BASEDIR + '/ht.db'
+	if (LOCAL_DB):
+		#'postgresql://htdb:pass@localhost:5432/beta4')
+		print 'setting DB URI =', LOCAL_DB
+		SQLALCHEMY_DATABASE_URI = LOCAL_DB
+
 
 	def __init__ (self):
 		print 'creating testing config'
@@ -91,6 +108,7 @@ server_configuration = {
 	'default'		: DevelopmentConfig,
 
 	'development'	: DevelopmentConfig,
+	'devel_money'	: DevelMoneyConfig,
 	'production'	: ProductionConfig,
 	'testing'		: TestingConfig
 }

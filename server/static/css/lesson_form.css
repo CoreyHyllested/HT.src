@@ -1,0 +1,508 @@
+.debug {
+	display: none;
+}
+
+/* Animations */
+
+/* Signup panel slides into view */
+@-moz-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@-webkit-keyframes signupAppear {
+	0% {opacity: 0; margin-top: 300px;}
+	100% {opacity: 1; margin-top: 40px;}
+}
+
+@keyframes signupAppear {
+	from {opacity: 0; margin-top: 300px;}
+	to {opacity: 1; margin-top: 40px;}
+}
+
+/* Basic Layout */
+
+.pageWrapper {
+	background: url('../img/background-blurred.jpg') no-repeat center right;
+	background-position: 100% 30%;
+	background-size: cover;
+	height: 100%;
+	min-height: 620px;
+	overflow-x: hidden;
+	-moz-transition: 0.15s ease;
+	-o-transition: 0.15s ease;
+	-webkit-transition: 0.15s ease;
+	transition: 0.15s ease;
+	width: 100%;
+}
+
+.lessonContentWrapper {
+	background-color: white;
+	border-radius: 6px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 12px auto 12px;
+	padding: 41px;
+	position: relative;
+	overflow: auto;
+	width: 980px;
+	min-height: 600px;
+	z-index: 30;
+}
+
+/* Header and Top Navigation */
+
+.lessonTitle {
+	width: 100%;
+	font-size: 2em;
+	margin: 20px 0px;
+	text-align: center;
+}
+
+.lessonHeader {
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 15px;		
+	margin-bottom: 10px;
+	width: 100%;
+	/*color: black;*/
+	float: left;
+}
+
+.lessonHeaderLeft {
+    float: left;
+	width: 25%;
+}
+
+.lessonHeaderCenter {
+	float: left;
+	width: 60%;
+}
+
+.lessonHeaderRight {
+	float: right;
+	width: 15%;
+	text-align: right;
+}
+
+.lessonTopLeftNavigation {
+	font-size: 1.1em;
+}
+
+.lessonTopLeftNavigation .navItem {
+	cursor: pointer;
+	padding-right: 36px;
+
+}
+
+.lessonTopLeftNavigation i {
+	font-size: .9em;
+}
+
+.lessonHeaderPageName {
+	color: rgba(0,0,0, 0.9);
+	font-size: 1.8em;
+	font-weight: 400;
+/*	line-height: 1.2em;*/
+	margin-bottom: 12px;
+}
+
+.lessonHeaderPageStatus {
+	margin-top: 8px;
+	font-size: .9em;
+	color: rgba(0,0,0,0.6);
+}
+
+.lessonSave {
+	width: 80px;
+	font-size: .8em;
+}
+
+
+/* Main Content Areas */
+
+.lessonContentContainer {
+
+}
+
+.lessonLeftColumn {
+    float: left;
+    text-align: left;
+	width: 25%;
+}
+
+.lessonRightColumn {
+	float: right;
+	width: 75%;
+}
+
+/* Left Navigation */
+
+.lessonNavContainer {
+	padding-right: 38px;
+	margin-bottom: 36px;
+}	
+
+.lessonNavList {
+
+}
+.lessonNavListHeader {
+	color: rgba(0, 0, 0, 0.4);
+	font-size: .8em;
+	padding: 0px 0px 4px 4px;
+}
+
+.lessonNavItem {
+	color: rgba(0, 0, 0, 0.7);
+	position: relative;
+	height: 30px;
+	line-height: 30px;
+	font-size: 1em;
+	border-bottom: 1px dotted rgba(0, 0, 0, 0.3);	
+	cursor: pointer;
+	-moz-transition: 0.2s ease;
+	-o-transition: 0.2s ease;
+	-webkit-transition: 0.2 ease;
+	transition: 0.2s ease;	
+	padding: 4px;
+}
+
+.lessonNavItem:hover {
+	background-color: rgba(0, 0, 0, 0.1);
+}
+.lessonNavItem.active {
+	background-color: rgba(0, 0, 0, 0.05);
+	font-weight: bold;
+}
+
+.lessonNavItem i {
+	font-size: .9em;
+	margin-left: 6px;
+	position: absolute;
+	right: 4px;
+	top: 33%;
+}
+
+
+/* Styles for the form container and pages */
+
+.lessonFormPageContainer {
+}
+
+.lessonFormButtonContainer {
+	text-align: left;
+	float: left;
+	width: 100%;
+}
+
+.lessonFormPreviousContainer {
+	text-align: left;
+	float: left;
+	width: 100%;	
+}
+
+.lessonFormButton {
+	width: 150px;
+	margin: 12px 0 12px 0;
+}
+
+.lessonFormButtonSubmitContainer {
+	width: 100%;
+	float: left;
+}
+
+.lessonFormButtonSubmit {
+	float: left;
+	width: 250px;
+	margin: 12px 12px 12px 0;
+}
+
+.lessonFormButtonSave {
+	float: left;
+	width: 250px;
+	margin: 12px 0 12px 12px;
+}
+
+.lessonFormButtonOptions {
+	float: left;
+	width: 100%;
+}
+
+.lessonFormButtonOptions input[type="checkbox"] {
+	float: left;
+}
+
+.lessonFormButtonOptions label {
+	float: left;
+	font-size: 1em;
+	padding-left: 6px;
+	font-weight: 600;
+	height: 30px;
+	line-height: 40px;
+}
+
+
+.lessonFormPrevious {
+	cursor: pointer;
+	float: left;
+}
+
+.lessonFormPage {
+	padding-top: 8px;
+	display: none;
+}
+
+.formElement {
+	float: left;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
+.formInstruction {
+	color: rgba(0,0,0, 0.9);
+	font-size: 1.5em;
+	font-weight: 400;
+	line-height: 1.2em;
+	margin-bottom: 12px;
+}
+
+.formDescription {
+
+	margin-bottom: 12px;
+}
+
+.formField {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-bottom: 6px;
+}
+
+.formFieldInfo {
+	color: rgba(0,0,0,0.4);
+	font-size: .9em;
+	padding-bottom: 6px;
+	padding-top: 20px;
+}
+
+.formFieldInfo.first {
+	padding-top: 0px;
+		
+}
+
+.formFieldCaption {
+	font-size: .9em;
+	margin-left: 8px;
+}
+
+.formChoice {
+	float: left;
+}
+
+.formChoice input {
+	float: left;
+}
+
+.formChoice label {
+	float: left;
+	font-size: .9em;
+	line-height: 36px;
+	height: 30px;
+	padding-left: 10px;	
+}
+
+.formFieldErrors {
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: red;
+	width: 100%;
+}
+.formFieldErrors label {
+	font-size: .9em;
+	font-weight: bold;
+	color: red;
+}
+
+.formFieldError {
+	float: left;
+	width: 100%;
+}
+
+
+.span3 {
+	width: 25%;
+}
+.span6 {
+	width: 50%;
+}
+.span9 {
+	width: 75%;
+}
+.span12 {
+	width: 100%;
+}
+
+input[type="text"].formField, select.formField {
+	height: 40px;
+}
+input[type="checkbox"], input[type="radio"] {
+	height: 30px;
+}
+input[type="checkbox"] {
+	display: inline-block;
+}
+input.formField:focus, select.formField:focus, textarea.formField:focus {
+	border: 1px #cccccc solid;
+}
+
+textarea.formField {
+	resize: none;
+}
+
+/* Form Element Styles */
+
+
+
+.multipleUploadButton {
+	opacity: .4;
+	margin: 12px 0 12px 0;
+	width: 150px;
+}
+.updateLessonPortfolioButton {
+	width: 150px;
+}
+
+.lessonEditPhotosContainer {
+	max-height: 600px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	margin-bottom: 20px;
+}
+
+
+li.editPortfolioListItem {
+	display: inline;
+	float: left;
+	margin-bottom: 10px;
+	width: 50%
+}
+
+#editPortfolioDoneContinueButton, #multipleUploadContinueButton {
+	display: none;
+}
+
+.editPortfolioDoneButton {
+	margin: 12px 0 12px 0;
+}
+
+.lessonReviewContainer {
+	margin-top: 12px;
+	float: left;
+}
+
+.lessonReviewField {
+	float: left;
+	width: 100%;
+	min-height: 30px;
+	padding-top: 8px;
+	border-bottom: 1px dotted #f0f0f0;
+}
+
+.lessonReviewFieldName {
+	float: left;
+	width: 20%;
+	font-weight: bold;
+}
+
+.lessonReviewData {
+	float: right;
+	width: 80%;
+	padding-bottom: 8px;
+}
+
+
+.lessonReviewDataDetails {
+	float: right;
+	width: 80%;
+	margin-top: 8px;	
+}
+
+.lessonReviewPortfolio {
+	float: left;
+	margin-top: 8px;
+	width: 100%;
+}
+
+.lessonReviewPortfolioLeftCol {
+	float: left;
+	width: 50%;	
+}
+
+.lessonReviewPortfolioRightCol {
+	float: right;
+	width: 50%;	
+}
+
+/* Contains the image wrapper and the caption. height-restricted */
+.lessonReviewPortfolio .portfolioImageBox {
+	float: left;
+	padding: 4px;
+	background: rgb(255, 255, 255);
+	border: 1px solid rgb(181, 182, 184);
+	border-radius: 3px;
+	-webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.16);
+	box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.16);
+	margin: 6px;
+	width: 45%;
+	
+}
+
+.lessonReviewPortfolio .portfolioImageWrapper {
+	float: left;
+/*	padding: 4px;
+	margin: 6px;*/
+	max-height: 250px;
+	overflow: hidden;
+}
+
+.lessonReviewPortfolio .portfolioImage {
+	border: 1px solid rgb(226, 228, 230);
+	border-radius: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	float: left;
+	margin-bottom: 11px;
+	width: 100%;
+}
+
+.lessonReviewPortfolio .portfolioImageCaption {
+	float: left;
+	width: 100%;
+	text-align: center;
+	font-size: .8em;
+}
+
+#lessonMakeLive {
+	display: none;
+}
+
+/* Dropzone Styles (Overrides) */
+
+.dropzone-content-submit {
+	float: left;
+
+}
+
+.dz-preview:hover, .dz-details:hover, .data-dz-thumbnail:hover, .dz-details img {
+	cursor: pointer;
+}
+
+.dropzone .dz-preview .dz-details img,
+.dropzone-previews .dz-preview .dz-details img {
+	cursor: pointer;
+}
+
