@@ -83,7 +83,8 @@ MEET_BIT_DIGITAL		=	30		# Meeting was digital
 MEET_BIT_RUNOVER		=	31
 ################################################################################
 
-MEET_FLAG_WAIVE_FEE		= (0x1 << MEET_BIT_WAIVE_FEE)
+MEET_FLAG_WAIVE_FEE			= (0x1 << MEET_BIT_WAIVE_FEE)
+MEET_FLAG_MONEY_CAPTURED	= (0x1 << MEET_BIT_MONEY_CAPTURED)
 
 
 
@@ -319,21 +320,21 @@ class Meeting(Base):
 
 	def __transition_chargecc_to_occurred(self, profile, cur, nxt):
 		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tENTER'
-		capture_time = self.meet_tf + timedelta(days=2)
-		capture_time = dt.now(timezone('UTC')) + timedelta(minutes=5)	#remove when done testing
+		#capture_time = self.meet_tf + timedelta(days=2)
+		#capture_time = dt.now(timezone('UTC')) + timedelta(minutes=5)	#remove when done testing
 		review_time	 = self.meet_tf.astimezone(timezone('UTC')) + timedelta(hours=2)
 		in_five_min  = dt.now(timezone('UTC')) + timedelta(minutes=5)	#remove when done testing
 
-		if (capture_time < in_five_min):
-			print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tcapture_time too soon, set to 5 min'
-			review_time = in_five_min
+		#if (capture_time < in_five_min):
+		#	print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tcapture_time too soon, set to 5 min'
+		#	review_time = in_five_min
 
 		if (review_time < in_five_min):
 			print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tReview_time too soon, set to 5 min'
 			review_time = in_five_min
 
 		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
-		ht_capture_creditcard.apply_async(args=[self.meet_id], eta=capture_time)
+		ht_capture_creditcard(self.meet_id)
 		ht_enable_reviews.apply_async(args=[self.meet_id], eta=review_time)
 		return True
 
@@ -441,63 +442,53 @@ class Meeting(Base):
 
 
 
+	def ht_capture_creditcard(self):
+		""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
+			ht_capture_cc() is delayed. That is why we must pass in meet_id, and get info from DB rather than pass in proposal.
+		"""
+		print 'ht_capture_cc: enter(' + meet_id + ')'
+		sellr_prof = Profile.get_by_prof_id(self.meet_sellr)
+		print 'ht_capture_cc: charge_id=' + str(self.charge_transaction)
+
+		# Meeting must be in this CHARGECC state to have this method be called get called
+		#if (self.meet_state != MeetingState.CHARGECC): # and (self.test_flag(MEET_BIT_MONEY_CAPTURED))):
+		#	# update must set update_time. (if self.meet_updated > prev_known_update_time): corruption.
+		#	print 'ht_capture_cc: meeting (' + self.meet_id + ') is not in OCCURRED state(' + str(MeetingState.OCCURRED) + '), in state ' + str(self.meet_state)
+		#	raise StateTransitionError(self.__class__, self.meet_id, cur_state, nxt_state, self.meet_flags, user_msg='Meeting cannot perform that action')
 
 
-@mngr.task
-def ht_capture_creditcard(meet_id):
-	""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
-		ht_capture_cc() is delayed. That is why we must pass in meet_id, and get info from DB rather than pass in proposal.
-	"""
-	print 'ht_capture_cc: enter(' + meet_id + ')'
-	meeting = Meeting.get_by_id(meet_id)
-	sellr_prof = Profile.get_by_prof_id(meeting.meet_sellr)
-	print 'ht_capture_cc: charge_id=' + str(meeting.charge_transaction)
+		try:
+			print 'ht_capture_cc: initialize stripe with their Key() -- get o_auth'
+			o_auth = Oauth.get_stripe_by_uid(sellr_prof.account)
+			print 'ht_capture_cc: initialize stripe with their Key() -- o_auth.' + o_auth.oa_secret
+			stripe.api_key = o_auth.oa_secret
 
-	if (meeting.meet_state != MEET_STATE_OCCURRED): # and (meeting.test_flag(APPT_FLAG_MONEY_CAPTURED))):
-		# update must set update_time. (if meeting.meet_updated > prev_known_update_time): corruption.
-		print 'ht_capture_cc: meeting (' + meeting.meet_id + ') is not in OCCURRED state(' + str(MEET_STATE_OCCURRED) + '), in state ' + str(meeting.meet_state)
-		return meeting.meet_state
+			print 'ht_capture_cc: go get the charge'
+			stripe_charge = stripe.Charge.retrieve(self.charge_transaction)
+
+			print 'ht_capture_cc: initialize stripe with our Key() -- ready, set, capture'
+			charge = stripe_charge.capture()
+
+			print 'ht_capture_cc: Post Charge'
+			pp(charge)
+
+			if charge['captured'] == True:
+				print 'ht_capture_cc: That\'s all folks, it worked!'
+
+			self.meet_flags = self.meet_flags | MEET_FLAG_MONEY_CAPTURED
+			self.meet_charged = dt.utcnow()  #appt_charged has no timezone, dumb, dumb, dumb
+			print 'ht_capture_cc: keep the balance transaction? ' + str(charge['balance_transaction'])
+		except Exception as e:
+			# cannot apply application_fee when the key given is not a Stripe Connect OAuth key.
+			print 'ht_capture_cc: charge[failure_code] = ' + str(charge['failure_code'])
+			print 'ht_capture_cc: charge[failure_message] ' + str(charge['failure_message'])
+			print 'ht_capture_cc: Exception', type(e), e
+			raise e
+
+		print 'ht_capture_cc: returning successful.'
 
 
-	try:
-		print 'ht_capture_cc: initialize stripe with their Key() -- get o_auth'
-		o_auth = Oauth.get_stripe_by_uid(sellr_prof.account)
-		print 'ht_capture_cc: initialize stripe with their Key() -- o_auth.' + o_auth.oa_secret
-		stripe.api_key = o_auth.oa_secret
 
-		print 'ht_capture_cc: go get the charge'
-		stripe_charge = stripe.Charge.retrieve(meeting.charge_transaction)
-
-		print 'ht_capture_cc: initialize stripe with our Key() -- ready, set, capture'
-		charge = stripe_charge.capture()
-
-		print 'ht_capture_cc: Post Charge'
-		pp(charge)
-
-		if charge['captured'] == True:
-			print 'ht_capture_cc: That\'s all folks, it worked!'
-
-		meeting.set_flag(APPT_FLAG_MONEY_CAPTURED)
-		meeting.meet_charged = dt.utcnow()  #appt_charged has no timezone, dumb, dumb, dumb
-		print 'ht_capture_cc: keep the balance transaction? ' + str(charge['balance_transaction'])
-		print 'ht_capture_cc: adding modified meeting'
-		db_session.add(meeting)
-		db_session.commit()
-		print 'ht_capture_cc: successfully committed meeting'
-
-	except StateTransitionError as ste:
-		print 'ht_capture_cc: StateTransitionError', e
-		db_session.rollback()
-		raise e
-	except Exception as e:
-		#Cannot apply an application_fee when the key given is not a Stripe Connect OAuth key.
-		print 'ht_capture_cc: Exception', type(e), e
-		raise e
-
-	print 'ht_capture_cc: charge[failure_code] = ' + str(charge['failure_code'])
-	print 'ht_capture_cc: charge[balance_transaction] ' + str(charge['balance_transaction'])
-	print 'ht_capture_cc: charge[failure_message] ' + str(charge['failure_message'])
-	print 'ht_capture_cc: returning successful.'
 
 
 
@@ -559,6 +550,7 @@ def ht_enable_reviews(meet_id):
 def meeting_event_chargecc(meet_id):
 	print 'meeting_event_chargecc(' + str(meet_id) + ')'
 	try:
+		# TODO: make transaction for atomicity
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.CHARGECC)
 		db_session.add(meeting)
@@ -575,6 +567,7 @@ def meeting_event_chargecc(meet_id):
 @mngr.task
 def meeting_event_occurred(meet_id):
 	try:
+		# TODO: make transaction for atomicity
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.OCCURRED)
 		db_session.add(meeting)
@@ -589,6 +582,7 @@ def meeting_event_occurred(meet_id):
 def meeting_event_complete(meet_id):
 	#30 days after enable, shut it down!
 	try:
+		# TODO: make transaction for atomicity
 		meeting = Meeting.get_by_id(meet_id)
 		meeting.set_state(MeetingState.COMPLETE)
 		db_session.add(meeting)
@@ -596,6 +590,7 @@ def meeting_event_complete(meet_id):
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
+
 
 
 
