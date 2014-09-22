@@ -144,7 +144,8 @@ def render_search(page = 1):
 		rateFrom	= rate_temp
 
 	try:
-		results = db_session.query(Profile) #.order_by(Profile.created)
+		# Only return profiles for mentors, not regular users.
+		results = db_session.query(Profile).filter(Profile.availability > 0) #.order_by(Profile.created)
 		results_industry = results #.all();
 		print 'Total Profiles:', len(results.all())
 		if (industry != -1):
