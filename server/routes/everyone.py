@@ -190,7 +190,7 @@ def render_search(page = 1):
 	if (trc_end_pg > (len(total_results))):
 		trc_end_pg = len(total_results)
 	new_results = total_results[trc_start_pg:trc_end_pg]
-	paginate = Pagination(q_rc, page, per_page=3, total=page_total, items=q_rc.all())
+	paginate = Pagination(q_rc, page, per_page=10, total=page_total, items=q_rc.all())
 	print 'page_items', page_items
 	print 'page_total', page_total
 	print 'page_heros', paginate.items
