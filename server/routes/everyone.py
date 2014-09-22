@@ -182,7 +182,7 @@ def render_search(page = 1):
 	page_items = []
 	page_total = []
 	total_results = q_rc.all();
-	per_page = 3
+	per_page = 10
 	trc_start_pg = (page - 1) * per_page
 	trc_end_pg = (page * per_page)
 	if (trc_start_pg) > (len(total_results)):
