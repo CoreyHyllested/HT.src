@@ -92,12 +92,12 @@
 				{% if mentor.availability == 1 %}
 					This mentor has flexible availability - let them know what works for you.
 				{% else %}
-					
-					{% for timeslot in avail %}
-						<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
-					{% endfor %}
-
-				{% endif %}				
+					{% if bp %}
+						{% for timeslot in avail %}
+							<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+						{% endfor %}
+					{% endif %}
+				{% endif %}
 
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
