@@ -15,7 +15,8 @@
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.errors		 import *
-from server.models import Account, Profile, Oauth, Review
+from server.models	import Account, Profile, Oauth, Review
+from server.email	import ht_send_review_reminder
 from sqlalchemy import ForeignKey, LargeBinary
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy.orm	import relationship, backref
@@ -505,7 +506,7 @@ def ht_enable_reviews(meet_id):
 	meeting = Meeting.get_by_id(meet_id)
 	if (not meeting or not meeting.occurred()):
 		#TODO turn this into a Meeting method!
-		print 'ht_enable_reviews(): ' +  meeting.meet_id + ' is not in ACCEPTED state =' + meeting.meet_state
+		print 'ht_enable_reviews(): ' +  meeting.meet_id + ' is not in OCCURRED state =' + meeting.meet_state
 		print 'ht_enable_reviews(): continuing; we might want to stop... depends on if we lost a race; prop implemnt OCCURRED_event'
 		# check to see if reviews_enabled already [If it lost a race]
 		# currently spaced it out (task-timeout pops 2 hours; dashboard-timeout must occur after 4)
@@ -519,6 +520,7 @@ def ht_enable_reviews(meet_id):
 	buyer_account = Account.get_by_uid(buyer_profile.account)
 
 	try:
+		print 'ht_enable_reviews(): create reviews!'
 		review_hp = Review(meeting.meet_id, sellr_profile.prof_id, buyer_profile.prof_id)
 		review_bp = Review(meeting.meet_id, buyer_profile.prof_id, sellr_profile.prof_id)
 		print 'ht_enable_reviews()  review_hp: ' + str(review_hp.review_id)
@@ -528,7 +530,7 @@ def ht_enable_reviews(meet_id):
 		db_session.add(review_bp)
 		db_session.commit()
 
-		print 'ht_enable_reviews()  modify Meeting.  Set state to OCCURRED.'
+		print 'ht_enable_reviews()  modify meeting w/ review info'
 		meeting.review_user = review_bp.review_id
 		meeting.review_hero = review_hp.review_id
 		print 'ht_enable_reviews()  calling Meeting.writing.'
