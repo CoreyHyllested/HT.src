@@ -209,6 +209,7 @@ def ht_send_meeting_canceled_notifications(meeting):
 
 		# email seller that meeting has been canceled.
 		print 'ht_send_meeting_canceled_notifications\t create seller_msg'
+		sellr_msg_html = email_body_cancellation_from_seller_to_seller(sellr_name, sellr_profile, buyer_name, buyer_profile)
 		sellr_msg = create_msg('Meeting with ' + str(buyer_name) + ' canceled', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 		sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 		ht_send_email(sellr_email_addr, sellr_msg)
