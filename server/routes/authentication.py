@@ -298,8 +298,8 @@ def settings_verify_stripe():
 	edesc = rc.get('error_description', 	 'None') 
 	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
-	pkey  = rc.get('stripe_publishable_key', 'None')
-	user  = rc.get('stripe_user_id',		 'None')
+	pkey  = rc.get('stripe_publishable_key', 'None')	# users?!? PK
+	user  = rc.get('stripe_user_id',		 'None')	# Insprite Customer ID.
 	rfrsh = rc.get('refresh_token')
 
 	if error != 'None':
