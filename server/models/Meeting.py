@@ -314,7 +314,7 @@ class Meeting(Base):
 
 		# create transition-state event; creates both review and capture events
 		meeting_event_occurred.apply_async(args=[self.meet_id], eta=review_time)
-		print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tCAPTURE@', review_time.strftime('%A, %b %d, %Y %H:%M %p')
+		print '\tMeeting will transition to occurred @' + str(review_time.strftime('%A, %b %d, %Y %H:%M %p'))
 		return True
 
 
@@ -334,7 +334,7 @@ class Meeting(Base):
 			print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tReview_time too soon, set to 5 min'
 			review_time = in_five_min
 
-		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
+		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tsend review @ ' + str(review_time.strftime('%A, %b %d, %Y %H:%M %p'))
 		self.ht_capture_creditcard()
 		ht_enable_reviews.apply_async(args=[self.meet_id], eta=review_time)
 		return True
@@ -446,7 +446,7 @@ class Meeting(Base):
 		""" HT_capture_cc() captures money reserved. Basically, it charges the credit card. This is a big deal, don't fuck it up.
 			ht_capture_cc() is delayed. That is why we must pass in meet_id, and get info from DB rather than pass in proposal.
 		"""
-		print 'ht_capture_cc: enter(' + meet_id + ')'
+		print 'ht_capture_cc: enter(' + self.meet_id + ')'
 		sellr_prof = Profile.get_by_prof_id(self.meet_sellr)
 		print 'ht_capture_cc: charge_id=' + str(self.charge_transaction)
 
