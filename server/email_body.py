@@ -121,7 +121,7 @@ def email_body_cancellation_from_buyer_within_24_hours(sellr_name, cost):
 
 
 
-def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, buyer_profile cost):
+def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, buyer_profile, cost):
 	""" generate email body (HTML).  Buyer cancels the meeting within 24 hours and seller receives this email. sent via ht_send_meeting_canceled_notifications """
 	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n"https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> cancelled the lesson appointment.<br><br>\nSometimes things come up in life, but your time and talent are still valuable. You will receive ' + str(cost) +' from <a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> for the cancelled booking.\n</font>\n</td>\n</tr>\n</table>' + footer
 
