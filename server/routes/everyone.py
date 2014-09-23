@@ -115,81 +115,90 @@ def render_about_page():
 @insprite_views.route('/search',  methods=['GET', 'POST'])
 @insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
-	""" Provides ability to everyone to search for Heros.  """
+	""" Provides ability to find Mentors. """
 	bp = None
 
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 
-	# get all the search 'keywords'
+	# show all the 'keywords'
 	#for key in request.values:
 	#	print key, '=', request.values.get(key)
 
-	keywords = request.values.get('keywords_field')
-	industry = request.values.get('industry_field', -1, type=int)
-	rateFrom = request.values.get('rate_from_field', 0, type=int)
-	rateTo =   request.values.get('rate_to_field', 9999, type=int)
+	find_keywords = request.values.get('keywords_field')
+	#find_industry = request.values.get('industry_field', -1, type=int)
+	find_rateFrom = request.values.get('rate_from_field', 0, type=int)
+	find_rateTo =   request.values.get('rate_to_field', 9999, type=int)
 	form = SearchForm(request.form)
 
-	if (rateTo < rateFrom):
-		rate_temp	= rateTo
-		rateTo		= rateFrom
-		rateFrom	= rate_temp
+	if (find_rateTo < find_rateFrom):
+		tmp				= find_rateTo
+		find_rateTo		= find_rateFrom
+		find_rateFrom	= tmp
 
 	try:
-		# Only return profiles for mentors, not regular users.
-		results = db_session.query(Profile).filter(Profile.availability > 0) #.order_by(Profile.created)
-		results_industry = results #.all();
-		print 'Total Profiles:', len(results.all())
-		if (industry != -1):
-			industry_str = Industry.industries[industry]
-			results_industry = results.filter(Profile.industry == industry_str)
-			print '\tProfiles in ', Industry.industries[industry], 'industry =', len(results_industry.all())
-			for profile in results_industry.all(): print '\t\t' + str(profile)
-			
-		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
-		print '\tProfiles w rates between $' + str(rateFrom) + ' - $' + str(rateTo) + ':', len(results_rate.all())
-				
-		if (keywords is not None):
-			print "keywords = ", keywords
-			results_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-			print 'results for name', len(results_name.all())
-			results_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
-			print 'results for desc', len(results_desc.all())
-			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-			print 'results for hdln', len(rc_hdln.all())
+		# find all mentor profiles
+		mentors = db_session.query(Profile)										\
+							.filter(Profile.availability > PROF_MENTOR_NONE) 	\
+							.filter(Profile.prof_rate.between(find_rateFrom, find_rateTo))
+							#.order_by(Profile.created)
+		all_mentors = mentors.all()
+		print '\tMentors matching rates between $' + str(find_rateFrom) + ' - $' + str(find_rateTo) + ':', len(all_mentors)
 
-			print len(results_name.all()), len(rc_hdln.all()), len(results_desc.all())
-	
+		#results_industry = mentors #.all();
+		#if (find_industry != -1):
+		#	industry_str = Industry.industries[find_industry]
+		#	results_industry = mentors.filter(Profile.industry == industry_str)
+		#	print '\tProfiles in ', Industry.industries[find_industry], 'industry =', len(results_industry.all())
+		#	for profile in results_industry.all(): print '\t\t' + str(profile)
+
+
+		for mentor in all_mentors:
+			print mentor
+			for lesson in mentor.lessons:
+				print mentor, lesson
+#				match_l_name = lesson.filter(Lesson.lesson_title.ilike('%'+find_keywords+'%'))
+#				match_l_desc = lesson.filter(Lesson.lesson_description.ilike('%'+find_keywords+'%'))
+#				print 'results for lesson name', len(match_l_name) + ', desc', len(match_l_desc)
+
+		if (find_keywords is not None):
+			print "keywords = ", str(find_keywords)
+			matched_name = mentors.filter(Profile.prof_name.ilike("%"+find_keywords+"%"))
+			matched_hdln = mentors.filter(Profile.headline.ilike("%"+find_keywords+"%"))
+			matched_bio  = mentors.filter(Profile.prof_bio.ilike("%"+find_keywords+"%"))
+			print 'results for name', str(len(matched_name.all())) + ', headline', str(len(matched_hdln.all())) + ', bio', str(len(matched_bio.all()))
+
 			# filter by location, use IP as a tell
-			rc_keys = results_desc.union(rc_hdln).union(results_name) #.all() #paginate(page, 4, False)
-			#rc_keys = results_desc.union(rc_hdln).union(results_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
+			matched_prof = matched_bio.union(matched_hdln).union(matched_name) #.all() #paginate(page, 4, False)
+			#matched_prof = matched_bio.union(matched_hdln).union(matched_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
 		else:
-			print 'returning all all'
-			rc_keys = results #.all() #(page, 4, False)
+			print 'returning all mentors'
+			matched_prof = mentors #.all() #(page, 4, False)
 
-		q_rc = rc_keys.intersect(results_rate).intersect(results_industry).order_by(Profile.created)
+		matched_results = matched_prof.order_by(Profile.created)
+		#matched_results = matched_prof.intersect(results_industry).order_by(Profile.created)
 	except Exception as e:
 		print e
 		db_session.rollback()
 
-	page_items = []
-	page_total = []
-	total_results = q_rc.all();
-	per_page = 10
-	trc_start_pg = (page - 1) * per_page
-	trc_end_pg = (page * per_page)
-	if (trc_start_pg) > (len(total_results)):
-		trc_start_pg = len(total_results) - per_page
-	if (trc_end_pg > (len(total_results))):
-		trc_end_pg = len(total_results)
-	new_results = total_results[trc_start_pg:trc_end_pg]
-	paginate = Pagination(q_rc, page, per_page=10, total=page_total, items=q_rc.all())
-	print 'page_items', page_items
-	print 'page_total', page_total
-	print 'page_heros', paginate.items
+	total_results = matched_results.all();
+	PER_PAGE = 10
+	start_pg = (page - 1) * PER_PAGE
+	end_pg = (page * PER_PAGE)
+	if (start_pg) > (len(total_results)):
+		start_pg = len(total_results) - PER_PAGE
+	if (end_pg > (len(total_results))):
+		end_pg = len(total_results)
+	page_mentors = total_results[start_pg:end_pg]
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(new_results), heroes=new_results))
+	#page_items = []
+	#page_total = []
+	#paginate = Pagination(matched_results, page, per_page=PER_PAGE, total=page_total, items=matched_results.all())
+	#print 'page_items', page_items
+	#print 'page_total', page_total
+	#print 'page_heros', paginate.items
+
+	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(page_mentors), heroes=page_mentors))
 
 
 
