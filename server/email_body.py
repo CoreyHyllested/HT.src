@@ -160,7 +160,7 @@ def email_body_cancellation_from_seller_to_seller(sellr_name, sellr_profile, buy
 
 def email_body_meeting_reminder(meeting):
 	""" generate email body (HTML). Both parties should receive 24 hours in advance of the meeting; sent by ht_send_meeting_reminder() """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou have an lesson with X tomorrow.<br><br>\nAs promised, we’re sending you the details now so you don’t have to worry about it later on.<br><br>\n<b>Date:</b><br>\n<b>Start Time:' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '</b><br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<b>Description:</b>' + meeting.get_description_html() + '<br><br>\nEnjoy!\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou have an lesson with X tomorrow.<br><br>\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.<br><br>\n<b>Date:</b><br>\n<b>Start Time:' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '</b><br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<b>Description:</b>' + meeting.get_description_html() + '<br><br>\nEnjoy!\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -211,7 +211,7 @@ def email_body_beta_email(referral_code):
 ###############################################################################
 
 
-# def email_body_welcome_email():
+# def email_body_welcome_mentor_email():
 # 	""" HTML for sending the beta email """
 
 # 	msg = header + '<table cellspacing=0 width=80% align=center>\n<tr>\n<td style=padding-top:50px;padding-bottom:10px align=left valign=top>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">Welcome to Insprite! We\'re thrilled that you\'ve joined us.<br><br>Insprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Enjoy exploring our growing community, and the cool things you never knew could experience around you.<br><br>Questions? <a href="mailto:thegang@insprite.co">Drop us a line</a> or check out our FAQ.<br><br>\nSpritely yours,<br>\nThe Insprite Gang\n</font>\n</td>\n</tr>\n</table>\n' + footer
