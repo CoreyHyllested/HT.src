@@ -206,6 +206,7 @@ class Meeting(Base):
 			raise StateTransitionError(self.__class__, self.meet_id, cur_state, nxt_state, self.meet_flags, user_msg='Meeting cannot perform that action')
 
 		# attempt transition to next state, raising Exception if problem arises.
+		print 'Meeting.set_state(' + nstate_str + ')'
 		successful_transition = transition_process(self, profile, cur_state, nxt_state)
 		if (successful_transition):
 			self.meet_state = nxt_state
@@ -334,7 +335,7 @@ class Meeting(Base):
 			review_time = in_five_min
 
 		print '\tMeeting.transition_CHARGECC_to_OCCURRED()\tsend review @ ', review_time.strftime('%A, %b %d, %Y %H:%M %p')
-		ht_capture_creditcard(self.meet_id)
+		self.ht_capture_creditcard()
 		ht_enable_reviews.apply_async(args=[self.meet_id], eta=review_time)
 		return True
 
@@ -435,10 +436,9 @@ class Meeting(Base):
 			# cannot apply application_fee if fee is negative
 			# cannot apply application_fee if the given key is not a StripeConnect
 			print 'ht_charge_creditcard: Exception', type(e), e
+			print 'ht_charge_creditcard: charge.failure_code =' + str(charge.get('failure_code')) + ', failure_message=' + str(charge.get('failure_message'))
 			dump_error(e)
 			ht_sanitize_error(e)
-		print 'ht_charge_creditcard: failure_code=' + str(charge['failure_code']) + ', failure_message=' + str(charge['failure_message'])
-
 
 
 
