@@ -240,3 +240,10 @@ function initialize_all_dashboard_maps() {
 		init_canvas(map, mapOptions, maps_search_input);
 	});
 }
+
+function initialize_lesson_map() {
+	$.each($('.lessonMap'), function(idx, map) {
+		if (DEBUG) { console.log('initialize_lesson_map()\t initialize canvas ('+idx+')'); }
+		init_canvas(map, mapOptions, null);
+	});
+}

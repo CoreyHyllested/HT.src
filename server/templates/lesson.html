@@ -5,9 +5,9 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
 	{% assets "sass_lesson" %}<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
 	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
 	<script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
-	<link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
 {% endblock %}
 
 
@@ -240,24 +240,18 @@
 			
 			{% if mentor.location != "" %}
 			<div class="lessonMapContainer">
-				<div class="lessonMap">
-					<a href="https://maps.google.com/?q={{mentor.location}}">
-						<img src="https://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false">
-					</a>
-				</div>
-            </div>
-            {% endif %}				
+				<div class="lessonMap" id="map-canvas" data-uuid="{{lesson.lesson_id}}" data-location="{{mentor.location}}"></div>
+			</div>
+			{% endif %}
 
 
 			</div>
-
-
 		</div>
 	</div>
-
 	<div class="clear"></div>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
 <script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/maps.js"></script>
@@ -319,7 +313,7 @@ if ($(".galleria").length) {
 
 
 $(document).ready(function() {
-	// google.maps.event.addDomListener(window, 'load', initialize);
+	google.maps.event.addDomListener(window, 'load', initialize_lesson_map);
 
 	// generateStatus({{lesson.lesson_flags}});
 
