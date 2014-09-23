@@ -9,9 +9,8 @@
 	{% block head %}
 
 	<!-- Import Fonts from Google, FontAwesome-->
-	<link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
-	<link type='text/css' rel='stylesheet' href='https://fonts.googleapis.com/css?family=Noto+Serif:400italic'>
-	<link type='text/css' rel='stylesheet' href='//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css'>
+	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|Noto+Serif:400italic|Lobster+Two:400,700|Lato:100,300,400,700,900">
+	<link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
 
 	<!-- CSS reset -->
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
@@ -20,8 +19,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/header.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/footer.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/calendar.css">
-
 
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -71,15 +68,11 @@
 		               
 		       }
 
-		       $(window)
-		               .scroll(positionFooter)
-		               .resize(positionFooter)
-		               
+		       $(window).scroll(positionFooter).resize(positionFooter)
 		});
 
 		
 		$(document).ready(function() {
-
 			// [All pages] Off-canvas navigation slider
 			$('.headerGraphicalMenu').click(function() {
 				$('.pageWrapper').toggleClass('pageWrapperSlide');
@@ -104,8 +97,7 @@
 </head>
 
 <body>
-	<!-- MODAL WINDOWS; when model window is open, users can click the transparent black overlay to close. -->
-	<!-- Alert Modal -->
+	<!-- MODAL WINDOWS; users can click the overlay to close. -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
 	<div class="alertWindowWrap">
@@ -128,11 +120,10 @@
 	</div>
 
 
-	<!-- hidden menu that only shows up on mobile -->
-	<div class="menu">
-		<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+	<div class="menu"> <!-- hidden menu that only shows up on mobile -->
+		<form name="mobileSearchForm" id="mobileSearchForm" action="search" method="POST">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-			<input name="keywords_field" id="menuSearch" type="text" autocomplete="off">
+			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off">
 		</form>
 		<ul>
 
@@ -173,11 +164,11 @@
 					<img src="/static/img/insprite_small2.png" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
-					<form name="srchForm" id="srchForm" action="search" method="POST" onsubmit="return searchBar()">
+					<form name="headerSearchForm" id="headerSearchForm" action="search" method="POST">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-						<input name="keywords_field" id="headerSearch" type="text" autocomplete="off">
+						<input name="keywords_field" class="keywordsField" id="headerSearchField" type="text" autocomplete="off">
 					</form>
-					<div class="headerSearchBarIcon"><i class="fa fa-search searchIcon"></i></div>
+					<div class="headerSearchBarIcon"><i class="fa fa-search headerSearchIcon"></i></div>
 				</div>
 
 
@@ -256,8 +247,9 @@
 			</div>
 		</div>
 	</div><!-- Footer ends here -->
-	<!-- Google Analytics -->
-	<script>
+
+
+	<script>	<!--Google Analytics-->
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -265,21 +257,30 @@
 
 	  ga('create', 'UA-54046005-2', 'auto');
 	  ga('send', 'pageview');
-
 	</script>
-	<script>
 
+
+	<script>
 	$(document).ready(function() {
-		$(".searchIcon").click(function() {
-			$("#srchForm").submit();
+		$(".headerSearchIcon").click(function() {
+			$("#headerSearchForm").submit();
 		});
 
-		function searchBar() {
-			var x=document.forms["srchForm"]["keywords_field"].value;
-			if (x==null || x=="") { return false; }
-			return true;
-		}
+		$("#headerSearchForm, #mobileSearchForm").submit(function() {
+			return submitSearch($(this));
+		});		
 	});
+
+	function submitSearch(form) {
+		var query = $(form).find(".keywordsField").val().trim();
+		console.log("query: "+query);
+		if (query != "" && query != null) { 
+			return true;
+		} else {
+			console.log("Search field was blank.");
+			return false;
+		}		
+	}
 	</script>
 
 </body>

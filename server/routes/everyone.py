@@ -18,7 +18,7 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
+from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
 
 
@@ -144,7 +144,8 @@ def render_search(page = 1):
 		rateFrom	= rate_temp
 
 	try:
-		results = db_session.query(Profile) #.order_by(Profile.created)
+		# Only return profiles for mentors, not regular users.
+		results = db_session.query(Profile).filter(Profile.availability > 0) #.order_by(Profile.created)
 		results_industry = results #.all();
 		print 'Total Profiles:', len(results.all())
 		if (industry != -1):
@@ -182,7 +183,7 @@ def render_search(page = 1):
 	page_items = []
 	page_total = []
 	total_results = q_rc.all();
-	per_page = 3
+	per_page = 10
 	trc_start_pg = (page - 1) * per_page
 	trc_end_pg = (page * per_page)
 	if (trc_start_pg) > (len(total_results)):
@@ -190,7 +191,7 @@ def render_search(page = 1):
 	if (trc_end_pg > (len(total_results))):
 		trc_end_pg = len(total_results)
 	new_results = total_results[trc_start_pg:trc_end_pg]
-	paginate = Pagination(q_rc, page, per_page=3, total=page_total, items=q_rc.all())
+	paginate = Pagination(q_rc, page, per_page=10, total=page_total, items=q_rc.all())
 	print 'page_items', page_items
 	print 'page_total', page_total
 	print 'page_heros', paginate.items

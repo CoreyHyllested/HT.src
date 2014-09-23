@@ -1,6 +1,3 @@
-// Script #1
-// Removed - no datepicker2 stuff. 
-
 // Script #2
 
 //var jq = $.noConflict();

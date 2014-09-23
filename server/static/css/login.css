@@ -347,7 +347,7 @@ c) 890px - ... (desktops)
 	}
 
 	.pageWrapper {
-		background: url('../img/background-login.jpg') no-repeat center center;
+		background: url('../img/backgrounds/silk-thread-shaded.jpg') no-repeat center center;
 		background-position: 100% 30%;
 		-o-background-size: cover;
 		-webkit-background-size: cover;		
@@ -365,7 +365,7 @@ c) 890px - ... (desktops)
 		border-radius: 6px;
 		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);		
 		margin: 40px 0 30px 7.5%; /* Fallback w/o calc() support*/
-		margin: 40px 0 30px calc((100% - 768px)/2);
+		margin: 40px 80px 40px 80px;
 		padding: 10px;
 		width: 300px;
 	}

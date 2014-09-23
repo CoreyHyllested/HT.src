@@ -302,7 +302,6 @@ class Meeting(Base):
 		return True
 
 
-
 	def __transition_accepted_to_chargecc(self, profile, cur, nxt):
 		print '\tMeeting.transition_ACCEPTED_to_CHARGECC()\tENTER'
 		self.ht_charge_creditcard()
@@ -340,6 +339,10 @@ class Meeting(Base):
 		return True
 
 
+	def __transition_proposed_to_canceled(self, profile, cur, nxt):
+		# Should this STATE-exist?  The Mentee tries to cancel.
+		#print '\tMeeting.transition_PROPOSED_to_CANCELED()\tEXIT'
+		return True
 
 	def __transition_accepted_to_canceled(self, profile, cur, nxt):
 		#print '\tMeeting.transition_ACCEPTED_to_CANCELED()\tENTER'
@@ -367,7 +370,8 @@ class Meeting(Base):
 
 	STATE_TRANSITION_MATRIX =	{	MeetingState.PROPOSED	: { MeetingState.ACCEPTED	: __transition_proposed_to_accepted,
 																MeetingState.REJECTED	: __transition_proposed_to_rejected,
-																MeetingState.TIMEDOUT	: __transition_proposed_to_rejected, },
+																MeetingState.TIMEDOUT	: __transition_proposed_to_rejected,
+																MeetingState.CANCELED	: __transition_proposed_to_canceled, },
 									MeetingState.ACCEPTED	: { MeetingState.CHARGECC	: __transition_accepted_to_chargecc,
 																MeetingState.CANCELED	: __transition_accepted_to_canceled, },
 									MeetingState.CHARGECC	: { MeetingState.OCCURRED	: __transition_chargecc_to_occurred,
