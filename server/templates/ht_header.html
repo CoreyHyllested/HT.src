@@ -8,11 +8,9 @@
 
 	{% block head %}
 
-	<!-- Import Google Fonts -->
+	<!-- Import Fonts from Google, FontAwesome-->
 	<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans|Noto+Serif:400italic|Lobster+Two:400,700|Lato:100,300,400,700,900">
-
-	<!-- Import FontAwesome Icons -->
-	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
 
 	<!-- CSS reset -->
 	<link type="text/css" rel="stylesheet" href="/static/css/reset.css">
@@ -25,8 +23,6 @@
 	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-
 	<script src="/static/js/modal_windows.js"></script>	
 	{% endblock %}
 
@@ -72,15 +68,11 @@
 		               
 		       }
 
-		       $(window)
-		               .scroll(positionFooter)
-		               .resize(positionFooter)
-		               
+		       $(window).scroll(positionFooter).resize(positionFooter)
 		});
 
 		
 		$(document).ready(function() {
-
 			// [All pages] Off-canvas navigation slider
 			$('.headerGraphicalMenu').click(function() {
 				$('.pageWrapper').toggleClass('pageWrapperSlide');
@@ -105,8 +97,7 @@
 </head>
 
 <body>
-	<!-- MODAL WINDOWS; when model window is open, users can click the transparent black overlay to close. -->
-	<!-- Alert Modal -->
+	<!-- MODAL WINDOWS; users can click the overlay to close. -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
 			
 	<div class="alertWindowWrap">
@@ -129,8 +120,7 @@
 	</div>
 
 
-	<!-- hidden menu that only shows up on mobile -->
-	<div class="menu">
+	<div class="menu"> <!-- hidden menu that only shows up on mobile -->
 		<form name="mobileSearchForm" id="mobileSearchForm" action="search" method="POST">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off">
@@ -257,8 +247,9 @@
 			</div>
 		</div>
 	</div><!-- Footer ends here -->
-	<!-- Google Analytics -->
-	<script>
+
+
+	<script>	<!--Google Analytics-->
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
@@ -266,12 +257,11 @@
 
 	  ga('create', 'UA-54046005-2', 'auto');
 	  ga('send', 'pageview');
-
 	</script>
+
+
 	<script>
-
 	$(document).ready(function() {
-
 		$(".headerSearchIcon").click(function() {
 			$("#headerSearchForm").submit();
 		});
@@ -279,7 +269,6 @@
 		$("#headerSearchForm, #mobileSearchForm").submit(function() {
 			return submitSearch($(this));
 		});		
-
 	});
 
 	function submitSearch(form) {
@@ -292,7 +281,6 @@
 			return false;
 		}		
 	}
-
 	</script>
 
 </body>
