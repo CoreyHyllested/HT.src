@@ -19,6 +19,18 @@ Saving for later
 }
 */
 
+.lessonMap {
+	background-color: rgba(0,0,0, 0.05);
+	border: 1px #e1e8ed solid;
+	border-radius: 0 0 3px 3px;
+	border-top: none;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	height: 205px;
+	width: 100%;
+}
+
 /* Nav and Layout */
 
 .pageWrapper {
