@@ -69,8 +69,10 @@ c) 890px - ... (desktops)
 	text-decoration: underline;
 }
 
+
+
+
 .signupLink {
-	clear: both;
 	display: block;
 	font-size: 0.9em;
 	margin-top: 5px;
@@ -114,6 +116,30 @@ c) 890px - ... (desktops)
 	text-align: center;
 }
 
+.formCheck {
+	display: none;
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: hsla(358, 74%, 64%, 1);
+	width: 100%;
+	text-align: center;
+}
+.formError {
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: hsla(358, 74%, 64%, 1);
+	width: 100%;
+	text-align: center;
+}
+
+.formFieldError::-webkit-input-placeholder {
+    color: red;
+}
+
 /* Email signup */
 
 .signupEmail {
@@ -150,6 +176,10 @@ c) 890px - ... (desktops)
 	font-size: 0.9em;
 	margin-top: 10px;
 }
+/*
+.signupAcceptTOS label {
+	display: inline;
+}*/
 
 .signupEmailSubmitWrapper {
 	margin: 20px 0 20px;
