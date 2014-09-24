@@ -409,18 +409,18 @@ def ht_get_active_author_reviews(profile):
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
+	appt = aliased(Meeting, name='appt')
 
 	# COMPOSITE REVIEW OBJECT
 	# OBJ.Review	# Review
 	# OBJ.hero		# Profile of seller
 	# OBJ.user		# Profile of buyer
-	# OBJ.appt 		# Proposal object
+	# OBJ.appt 		# Meeting object
 	# OBJ.display	# <ptr> Profile of other person (not me)
 
 	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
 								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(appt, appt.meet_id == Review.rev_appt)													\
 								.join(user, user.prof_id == Review.prof_authored)												\
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
 	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
