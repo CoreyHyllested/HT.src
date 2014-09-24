@@ -278,8 +278,12 @@ def ht_send_meeting_reminders(meet_id):
 		print 'ht_send_meeting_reminders() --  meetin canceled ' + meet_id
 		return
 
+	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
+	(buyer_acct, buyer_prof) = get_account_and_profile(meeting.meet_buyer)
 	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
-	msg_html = email_body_meeting_reminder()
+
+	msg_html_buyer = email_body_meeting_reminder(sellr_prof, meeting)
+	msg_html_sellr = email_body_meeting_reminder(buyer_prof, meeting)
 
 	msg_buyer = create_notification('You Have an Appointment Tomorrow with ' + sellr_name, buyer_email_addr, buyer_name)
 	msg_buyer.attach(MIMEText(msg_html, 'html', 'UTF-8'))
