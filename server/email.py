@@ -106,7 +106,7 @@ def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
 
 
 def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
-	print "ht_send_meeting_proposed_notification (to seller) (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_sellr: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
 	msg_subj = "Proposal to meet " + buyer_name
@@ -119,7 +119,7 @@ def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_n
 
 
 def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
-	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_buyer: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	#msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
 	#msg_subj = "Proposal to meet " + sellr_name
@@ -271,6 +271,10 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 def ht_send_meeting_reminders(meet_id):
 	print 'ht_send_meeting_reminders() --  sending appointment reminder emails now for ' + meet_id
 	meeting = Meeting.get_by_id(meet_id)
+
+	if (not meeting):
+		print 'ht_send_meeting_reminders(' + str(meet_id) + ') doesn\'t exist'
+		return
 
 	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.
