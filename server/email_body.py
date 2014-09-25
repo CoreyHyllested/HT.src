@@ -37,7 +37,7 @@ def email_body_verify_account(verify_email_url):
 
 def email_body_recover_your_password(url):
 	""" HTML for sending the password recovery email; ht_send_password_recovery_link() """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nPasswords can be tough to remember. No biggie, simply <a href="' + url + '" style="color:#e75f63">follow the instructions to change it</a> and you will be good to go.<br><br>\nDid not request for a password reset? <a href="mailto@thegang@insprite.co" style="color:#e75f63">Let us know ASAP</a>.</font>\n</font>\n</td>\n</tr>\n</table>' +footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nPasswords can be tough to remember. No biggie, simply <a href="' + url + '" style="color:#e75f63">follow the instructions to change it</a> and you will be good to go.<br><br>\nDid not request for a password reset? <a href="mailto@thegang@insprite.co" style="color:#e75f63">Let us know ASAP</a>.</font>\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -50,7 +50,7 @@ def email_body_password_changed_confirmation(url):
 
 def email_body_verify_email_address(url, code):  
 	"""HTML for email address verification; sent via  ht_send_email_address_verify_link() """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nBefore booking a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings : ' + str(account.sec_question) + '<br><br>\nOr, click on this link: " + verify_email_url\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nBefore you book a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings: ' + str(account.sec_question) + '<br><br>\nOr, click on this link: ' + verify_email_url + '\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -68,9 +68,9 @@ def email_body_email_address_changed_confirmation(url, new_email):
 ################################################################################
 
 
-def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_profile_id):
+def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id):
 	""" generate email body (HTML).  Notification when seller receives a new meeting proposal.  Sent via ht_send_sellr_proposal_update(). """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a new lesson proposal from <a href="https://127.0.0.1:5000/profile?hero=' + buyer_profile_id + '" style="color:#e75f63">'+ buyer_name + '</a>. <br><br>\n<br>\n<b>Date:</b>' + meeting.meet_ts.strftime('%A, %b %d, %Y') + '<br>\n<b>Start Time:</b>' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>\n<b>Duration:</b>' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b>' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + ' <br>\n<b>Description:</b> ' + meeting.get_description_html() + '\n<br>\n</font>\n</td>\n</tr>\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:10px solid #fff;padding-top:10px" align="left" valign="top">\n<a href="'+ meeting.accept_url() +'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#29abe1;font-size:14px;border-radius:3px;border:1px solid #29abe1;font-family:Helvetica Neue,Arial,sans-serif;width:50px;text-align:center" target="_blank">Accept</a>\n<a href="'+ meeting.reject_url() +'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#e55e62;font-size:14px;border-radius:3px;border:1px solid #e55e62;font-family:Helvetica Neue,Arial,sans-serif;width:50px;text-align:center" target="_blank">Reject</a>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a new lesson proposal from <a href="https://127.0.0.1:5000/profile?hero=' + buyer_prof_id + '" style="color:#e75f63">'+ buyer_name + '</a>. <br><br>\n<br>\n<b>Date:</b>' + meeting.meet_ts.strftime('%A, %b %d, %Y') + '<br>\n<b>Start Time:</b>' + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + '<br>\n<b>Duration:</b>' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b>' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + ' <br>\n<b>Description:</b> ' + meeting.get_description_html() + '\n<br>\n</font>\n</td>\n</tr>\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:10px solid #fff;padding-top:10px" align="left" valign="top">\n<a href="'+ meeting.accept_url() +'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#29abe1;font-size:14px;border-radius:3px;border:1px solid #29abe1;font-family:Helvetica Neue,Arial,sans-serif;width:50px;text-align:center" target="_blank">Accept</a>\n<a href="'+ meeting.reject_url() +'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#e55e62;font-size:14px;border-radius:3px;border:1px solid #e55e62;font-family:Helvetica Neue,Arial,sans-serif;width:50px;text-align:center" target="_blank">Reject</a>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -124,7 +124,7 @@ def email_body_cancellation_from_buyer_within_24_hours(sellr_name, cost):
 
 def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, buyer_profile, cost):
 	""" generate email body (HTML).  Buyer cancels the meeting within 24 hours and seller receives this email. sent via ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n"https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> cancelled the lesson appointment.<br><br>\nSometimes things come up in life, but your time and talent are still valuable. You will receive ' + str(cost) +' from <a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> for the cancelled booking.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> cancelled the lesson appointment.<br><br>\nSometimes things come up in life, but your time and talent are still valuable. You will receive ' + str(cost) +' from <a href="https://127.0.0.1:5000/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> for the cancelled booking.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -147,7 +147,7 @@ def email_body_cancellation_from_seller_to_buyer(sellr_name, sellr_profile):
 
 
 
-def email_body_cancellation_from_seller_to_seller(sellr_name, sellr_profile, buyer_name, buyer_profile):
+def email_body_cancellation_from_seller(sellr_name, sellr_profile, buyer_name, buyer_profile):
 	""" generate email body (HTML).  Seller cancels the meeting, sends this email to seller; sent via ht_send_meeting_canceled_notifications"""
 	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n You cancelled your lesson with <a href="https://127.0.0.1:5000/profile?'+ buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a>.<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
 	
@@ -168,7 +168,7 @@ def email_body_meeting_reminder(partner_prof, meeting):
 
 def email_body_review_reminder(partner_prof, profile):
 	""" generate email body (HTML).  Rate and review email, both buyer and seller; called from ht_send_review_reminder."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="https://127.0.0.1:5000/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="#" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="https://127.0.0.1:5000/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
