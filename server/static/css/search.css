@@ -430,7 +430,7 @@ c) 980px - ... (desktops)
 
 	.searchListing {
 		margin: 10px 0 20px;
-		height: 133px;
+		height: 205px;
 		position: relative;
 	}
 
@@ -441,7 +441,7 @@ c) 980px - ... (desktops)
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;	
 		display: block;
-		height: 133px;
+		height: 205px;
 		width: 216px;
 	}
 
@@ -457,7 +457,7 @@ c) 980px - ... (desktops)
 		-moz-box-sizing: border-box;
 		-webkit-box-sizing: border-box;
 		box-sizing: border-box;
-		height: 133px;
+		height: 205px;
 		right: 1px;
 		position: absolute;
 		top: 0;
