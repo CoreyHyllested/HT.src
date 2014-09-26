@@ -463,6 +463,7 @@ def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
 			lesson_hits.append(lesson)
 
 	lesson_hits.sort(key=lambda x: x.less_score, reverse=True)
+	lesson_hits = lesson_hits[0:3]
 	setattr(mentor[0], 'lesson_hits', lesson_hits)
 	setattr(mentor[0], 'total_score', total_score)
 	print '\tht_score_mentor: Profile[' + str(mentor[0].prof_score) + '|' + str(total_score) + ']\t'+ mentor[0].Profile.prof_name  + '\t' + str(len(lesson_hits))
