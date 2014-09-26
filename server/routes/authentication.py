@@ -71,8 +71,9 @@ def render_signup_page(usrmsg = None):
 				return redirect('/dashboard')
 			else:
 				usrmsg = 'Something went wrong.  Please try again'
+	
 	elif request.method == 'POST':
-		usrmsg = 'Form isn\'t filled out properly, ', str(form.errors)
+		usrmsg = 'Sorry, the form isn\'t filled out properly.'
 		trace("/signup form isn't valid" + str(form.errors))
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))

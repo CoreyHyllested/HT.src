@@ -162,12 +162,15 @@ States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 
 Days = [(0,'sun'),(1,'mon'),(2,'tue'),(3,'wed'),(4,'thu'),(5,'fri'),(6,'sat')]
 
+Location = [('', "Your Location"), ('location_berkeley', "Berkeley, CA"), ('location_other', "Other")]
+
 class NewAccountForm(Form):
 	#names below (LHS) match what's on the HTML page.  
 	input_signup_name   = TextField('Name',  [validators.Required(), validators.length(min=4, max=120)])
+	input_signup_location = SelectField("Location", coerce=str, choices=(Location))
 	input_signup_email  = TextField('Email', [validators.Required(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
 	input_signup_password = PasswordField('Password', [validators.Required(), validators.EqualTo('input_signup_confirm', message='Passwords must match')])
-	input_signup_confirm  = PasswordField('Repeat Password')
+	input_signup_confirm  = PasswordField('Confirm Password')
 	accept_tos = BooleanField('TOS', [validators.Required()])
 
 class LoginForm(Form):
@@ -179,7 +182,7 @@ class LoginForm(Form):
 
 class LessonForm(Form):
 
-	Durations = [ (-1, 'No Set Duration'), (30, '30 minutes'), (45, '45 minutes'), (60, '1 hour'), (75, '1 hour 15 minutes'), (90, '1 hour 30 minutes'), (105, '1 hour 45 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
+	Durations = [ (30, '30 minutes'), (45, '45 minutes'), (60, '1 hour'), (75, '1 hour 15 minutes'), (90, '1 hour 30 minutes'), (105, '1 hour 45 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
 
 	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
 	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
@@ -194,7 +197,7 @@ class LessonForm(Form):
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
 	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
-	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=0, choices=(Durations))
+	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=60, choices=(Durations))
 	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
 	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
