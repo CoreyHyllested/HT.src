@@ -1062,22 +1062,21 @@ def ht_update_lesson(lesson, form, saved):
 
 
 # View the lesson page
-@req_authentication
 @insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
 def render_lesson_page(lesson_id):
-	uid = session['uid']
-	bp = Profile.get_by_uid(session['uid'])
-	avail = Availability.get_by_prof_id(bp.prof_id)
+	avail = None
+	bp = None
 
 	if (lesson_id is None):
 		return make_response(render_dashboard(usrmsg='Need to specify a lesson...'))
 
-	print "-"*36
+	if ('uid' in session):
+		bp = Profile.get_by_uid(session['uid'])
+		avail = Availability.get_by_prof_id(bp.prof_id)
+
 	print "render_lesson_page(): Lesson ID:", lesson_id
 
 	try:
-
-
 		lesson = Lesson.get_by_id(lesson_id)
 		portfolio = ht_get_serialized_images_for_lesson(lesson_id)
 		mentor = Profile.get_by_prof_id(lesson.lesson_profile)

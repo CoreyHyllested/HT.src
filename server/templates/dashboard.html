@@ -168,15 +168,15 @@
 					<a href="/profile?hero={{review.display.prof_id}}">
 						<h3>{{review.display.prof_name}}</h3>
 					</a>
-					<div class="appointmentIntro italic">{{review.appt.prop_desc}}</div>
+					<div class="appointmentIntro italic">{{review.meet.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
 					<div class="dashboardApptRightColumnElement apptDate">
-						{{review.appt.prop_ts.strftime('%A, %b %d')}}
+						{{review.meet.meet_ts.strftime('%A, %b %d')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptTime">
-						{{review.appt.prop_ts.strftime('%H:%M %p')}} - {{review.appt.prop_tf.strftime('%H:%M %p')}}
+						{{review.meet.meet_ts.strftime('%H:%M %p')}} - {{review.meet.meet_tf.strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptCost"> </div>
@@ -292,16 +292,16 @@ $(document).ready(function() {
     });
 
 
-   $('.offerCancel').click(function () {
-        var id = this.id;
-        var fd = new FormData();
+	$('.offerCancel').click(function () {
+		var id = this.id;
+		var fd = new FormData();
 		var sid = "#appt-" + id;
-        fd.append('meet_id', id);
+		fd.append('meet_id', id);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "/meeting/cancel", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-        xhr.send(fd);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "/meeting/cancel", true);
+		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
+		xhr.send(fd);
 
         //catch response. make modificaitons.
         xhr.onreadystatechange = function(e) {

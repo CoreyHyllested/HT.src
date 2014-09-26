@@ -409,18 +409,18 @@ def ht_get_active_author_reviews(profile):
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
+	meet = aliased(Meeting, name='meet')
 
 	# COMPOSITE REVIEW OBJECT
 	# OBJ.Review	# Review
 	# OBJ.hero		# Profile of seller
 	# OBJ.user		# Profile of buyer
-	# OBJ.appt 		# Proposal object
+	# OBJ.meet		# Meeting object
 	# OBJ.display	# <ptr> Profile of other person (not me)
 
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+	all_reviews = db_session.query(Review, meet, hero, user).distinct(Review.review_id)											\
 								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(meet, meet.meet_id == Review.rev_appt)													\
 								.join(user, user.prof_id == Review.prof_authored)												\
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
 	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
@@ -568,13 +568,16 @@ def ht_create_avail_timeslot(profile):
 	return avail
 
 
+
 def htdb_get_lesson_images(lesson_id):
 	try:
-		lesson_images	= db_session.query(LessonImageMap)								\
+		lesson_images = db_session.query(LessonImageMap)								\
 									.filter(LessonImageMap.map_lesson == lesson_id).order_by(LessonImageMap.map_order).all()
 	except Exception as e:
 		print type(e), e
 	return lesson_images
+
+
 
 def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
