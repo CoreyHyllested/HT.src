@@ -12,14 +12,13 @@
 
 	<div class="searchResults">
 		<div class="searchResultsHeading">
-			<h2>{{heroes|length}} Mentors Found</h2>
+			<h2>{{mentors|length}} Mentors Found</h2>
 			<div class="searchOptionsMenu">Filter</div>
 		</div>
 
-		{% for mentor in heroes %}
+		{% for mentor in mentors %}
 		<div class="searchListing">
-			
-			<a class="searchListingImage" href='/profile?hero={{mentor.Profile.prof_id}}' style="	background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.Profile.prof_img}}') no-repeat center center; background-size: cover;">
+			<a class="searchListingImage" href='/profile?hero={{mentor.Profile.prof_id}}' style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.Profile.prof_img}}') no-repeat center center; background-size: cover;">
 			</a>
 
 			<div class="searchListingInfo">

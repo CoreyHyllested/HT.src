@@ -125,63 +125,44 @@ def render_search(page = 1):
 	#for key in request.values:
 	#	print key, '=', request.values.get(key)
 
-	find_keywords = request.values.get('keywords_field')
+	find_keywords = request.values.get('keywords_field', '').split()
 	#find_industry = request.values.get('industry_field', -1, type=int)
-	find_rateFrom = request.values.get('rate_from_field', 0, type=int)
-	find_rateTo =   request.values.get('rate_to_field', 9999, type=int)
+	find_cost_min = request.values.get('rate_from_field', 0, type=int)
+	find_cost_max = request.values.get('rate_to_field', 9999, type=int)
 	form = SearchForm(request.form)
 
-	if (find_rateTo < find_rateFrom):
-		tmp				= find_rateTo
-		find_rateTo		= find_rateFrom
-		find_rateFrom	= tmp
-
-	try:
-		# find all mentor profiles
-		mentors = db_session.query(Profile)										\
-							.filter(Profile.availability > PROF_MENTOR_NONE) 	\
-							.filter(Profile.prof_rate.between(find_rateFrom, find_rateTo))
-							#.order_by(Profile.created)
-		all_mentors = mentors.all()
-		print '\tMentors matching rates between $' + str(find_rateFrom) + ' - $' + str(find_rateTo) + ':', len(all_mentors)
+	if (find_cost_max < find_cost_min):
+		tmp				= find_cost_max
+		find_cost_max	= find_cost_min
+		find_cost_min	= tmp
 
 		#results_industry = mentors #.all();
 		#if (find_industry != -1):
 		#	industry_str = Industry.industries[find_industry]
 		#	results_industry = mentors.filter(Profile.industry == industry_str)
 		#	print '\tProfiles in ', Industry.industries[find_industry], 'industry =', len(results_industry.all())
-		#	for profile in results_industry.all(): print '\t\t' + str(profile)
 
-
-		for mentor in all_mentors:
-			print mentor
-			for lesson in mentor.lessons:
-				print mentor, lesson
-#				match_l_name = lesson.filter(Lesson.lesson_title.ilike('%'+find_keywords+'%'))
-#				match_l_desc = lesson.filter(Lesson.lesson_description.ilike('%'+find_keywords+'%'))
-#				print 'results for lesson name', len(match_l_name) + ', desc', len(match_l_desc)
-
-		if (find_keywords is not None):
-			print "keywords = ", str(find_keywords)
-			matched_name = mentors.filter(Profile.prof_name.ilike("%"+find_keywords+"%"))
-			matched_hdln = mentors.filter(Profile.headline.ilike("%"+find_keywords+"%"))
-			matched_bio  = mentors.filter(Profile.prof_bio.ilike("%"+find_keywords+"%"))
-			print 'results for name', str(len(matched_name.all())) + ', headline', str(len(matched_hdln.all())) + ', bio', str(len(matched_bio.all()))
+#		if (find_keywords is not None):
+#			print "keywords = ", str(find_keywords)
+#			matched_name = mentors.filter(Profile.prof_name.ilike("%"+find_keywords+"%"))
+#			match_l_desc = lessons.filter(Lesson.lesson_description.ilike('%'+find_keywords+'%'))
+#			print 'results for name', str(len(matched_name.all())) + ', headline', str(len(matched_hdln.all())) + ', bio', str(len(matched_bio.all()))
+#			print 'results for lesson name', str(len(match_l_name.all())) + ', desc', str(len(match_l_desc.all()))
 
 			# filter by location, use IP as a tell
-			matched_prof = matched_bio.union(matched_hdln).union(matched_name) #.all() #paginate(page, 4, False)
+#			matched_prof = matched_bio.union(matched_hdln).union(matched_name) #.all() #paginate(page, 4, False)
 			#matched_prof = matched_bio.union(matched_hdln).union(matched_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
-		else:
-			print 'returning all mentors'
-			matched_prof = mentors #.all() #(page, 4, False)
+#		else:
+#			print 'returning all mentors'
+#			matched_prof = mentors #.all() #(page, 4, False)
+#		matched_results = matched_prof.intersect(results_industry).order_by(Profile.created)
 
-		matched_results = matched_prof.order_by(Profile.created)
-		#matched_results = matched_prof.intersect(results_industry).order_by(Profile.created)
+	try:
+		total_results = htdb_search_mentors_and_lessons(find_keywords, find_cost_min, find_cost_max)
 	except Exception as e:
-		print e
+		print e, type(e)
 		db_session.rollback()
 
-	total_results = matched_results.all();
 	PER_PAGE = 10
 	start_pg = (page - 1) * PER_PAGE
 	end_pg = (page * PER_PAGE)
@@ -198,7 +179,7 @@ def render_search(page = 1):
 	#print 'page_total', page_total
 	#print 'page_heros', paginate.items
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(page_mentors), heroes=page_mentors))
+	return make_response(render_template('search.html', bp=bp, form=form, mentors=page_mentors))
 
 
 
