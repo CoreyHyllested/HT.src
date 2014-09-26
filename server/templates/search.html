@@ -19,23 +19,22 @@
 		{% for hero in heroes %}
 		<div class="searchListing">
 			
-			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="	background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;">
+			<a class="searchListingImage" href='/profile?hero={{hero.Profile.prof_id}}' style="	background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.Profile.prof_img}}') no-repeat center center; background-size: cover;">
 			</a>
 
 			<div class="searchListingInfo">
 				<table class="searchListingTable">
 					<tr>
 						<td colspan="2">
-							<a href='/profile?hero={{hero.prof_id}}'><h3>{{hero.prof_name}}</h3></a>
-							<span class="searchListingTableHeading">{{hero.headline}}</span>
+							<a href='/profile?hero={{hero.Profile.prof_id}}'><h3>{{hero.Profile.prof_name}}</h3></a>
+							<span class="searchListingTableHeading">{{hero.Profile.headline}}</span>
 						</td>
 					</tr>
 
 					<tr>
 						<td class="searchListingTableReviews" colspan="2">
-							{% if hero.reviews %}
-									{{'%0.1f' | format(hero.rating|float)}} out of 5 stars <a href="/profile?hero={{hero.prof_id}}">({{hero.reviews}} reviews)</a>
-							
+							{% if hero.Profile.reviews %}
+									{{'%0.1f' | format(hero.Profile.rating|float)}} out of 5 stars <a href="/profile?hero={{hero.Profile.prof_id}}">({{hero.Profile.reviews}} reviews)</a>
 							{% else %}
 								No reviews
 							{% endif %}
@@ -43,8 +42,8 @@
 					</tr>
 
 					<tr class="searchListingTableLastRow">
-						<td>{{hero.industry}}</td>
-						<td class="searchListingTablePrice"><strong>${{hero.prof_rate}}</strong> / hour</td>
+						<td>{{hero.Profile.industry}}</td>
+						<td class="searchListingTablePrice"><strong>${{hero.Profile.prof_rate}}</strong> / hour</td>
 					</tr>
 				</table>
 			</div>
