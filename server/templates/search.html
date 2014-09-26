@@ -6,8 +6,7 @@
 {% endblock %}
 
 {% block content %}
-
-<script src="static/js/format.js"></script>
+<script src="/static/js/format.js"></script>
 
 <div class="searchWrapper">
 
@@ -20,14 +19,11 @@
 		{% for hero in heroes %}
 		<div class="searchListing">
 			
-			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="		background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;">
-				
+			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="	background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;">
 			</a>
-
 
 			<div class="searchListingInfo">
 				<table class="searchListingTable">
-					
 					<tr>
 						<td colspan="2">
 							<a href='/profile?hero={{hero.prof_id}}'><h3>{{hero.prof_name}}</h3></a>
@@ -35,7 +31,6 @@
 						</td>
 					</tr>
 
-					
 					<tr>
 						<td class="searchListingTableReviews" colspan="2">
 							{% if hero.reviews %}
@@ -46,12 +41,11 @@
 							{% endif %}
 						</td>
 					</tr>
-					
+
 					<tr class="searchListingTableLastRow">
 						<td>{{hero.industry}}</td>
 						<td class="searchListingTablePrice"><strong>${{hero.prof_rate}}</strong> / hour</td>
 					</tr>
-
 				</table>
 			</div>
 
