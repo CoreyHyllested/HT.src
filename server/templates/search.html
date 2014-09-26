@@ -34,7 +34,7 @@
 					<tr>
 						<td class="searchListingTableReviews" colspan="2">
 							{% for mentor_lesson in mentor.lesson_hits %}
-								{{ mentor_lesson.lesson.lesson_title }}
+								<a href="/lesson/{{mentor_lesson.lesson.lesson_id}}">{{ mentor_lesson.lesson.lesson_title }}</a><br>
 							{% endfor %}
 						</td>
 					</tr>
