@@ -26,6 +26,10 @@ import uuid, factory
 
 
 # Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
+PROF_MENTOR_NONE = 0
+PROF_MENTOR_FLEX = 1
+PROF_MENTOR_SPEC = 2
+
 PROF_FLAG_AVAIL_NONE = 0
 PROF_FLAG_AVAIL_FLEX = 1
 PROF_FLAG_AVAIL_SPEC = 2
