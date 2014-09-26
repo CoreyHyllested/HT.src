@@ -31,6 +31,16 @@
 						</td>
 					</tr>
 
+					{% if hero.lesson_hits %}
+					<tr>
+						<td class="searchListingTableReviews" colspan="2">
+							{% for mentor_lesson in hero.lesson_hits %}
+								{{ mentor_lesson.lesson.lesson_title }}
+							{% endfor %}
+						</td>
+					</tr>
+					{% endif %}
+
 					<tr>
 						<td class="searchListingTableReviews" colspan="2">
 							{% if hero.Profile.reviews %}
