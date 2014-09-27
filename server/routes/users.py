@@ -1406,7 +1406,7 @@ def render_settings():
 
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
-	nexturl = "ajax"
+	nexturl = None
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
 	if (errmsg is None): errmsg = insprite_msg
