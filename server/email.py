@@ -58,7 +58,7 @@ def ht_send_password_recovery_link(account):
 
 def ht_send_password_changed_confirmation(user_email):
 	""" email user 'password changed' confirmation notice. """
-	msg_html = email_body_password_changed_confirmation('url')
+	msg_html = email_body_password_changed_confirmation()
 	msg_text = "We are sending you a reminder: You changed your password.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 
 	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
@@ -86,7 +86,7 @@ def ht_send_email_address_verify_link(user_email, account, nexturl):
 def ht_send_email_address_changed_confirmation(user_email, new_email):
 	""" email user 'email address changed' confirmation noticed. """
 	msg_html = email_body_email_address_changed_confirmation('url', new_email)
-	msg_text = "We are sending you a reminder: You changed your email address.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text = "We are sending you a reminder: You changed your email address.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 
 
 	msg = create_msg('Your Insprite email address has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')

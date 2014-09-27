@@ -1447,15 +1447,23 @@ def ht_api_update_settings():
 				update_acct = True
 				update_name = form.set_input_name.data
 
+
 			if (form.set_input_newpass.data != ""):
 				print 'ht_api_update_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
 				update_acct = True
 				update_pass = form.set_input_newpass.data
+				if (update_pass):
+					print "ht_api_update_settings(): sending password update email"
+					ht_send_password_changed_confirmation(ba.email)			
 
 			if (ba.email != form.set_input_email.data):
 				print 'ht_api_update_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
 				update_acct = True
 				update_mail = form.set_input_email.data
+				if (update_mail):
+					print "ht_api_update_settings(): sending email change email"
+					# user changed email; for security, send confirmation email to last email addr.
+					ht_send_email_address_changed_confirmation(ba.email, update_mail)			
 
 			if (update_acct):
 				print 'ht_api_update_settings()\tupdate account'
@@ -1478,23 +1486,16 @@ def ht_api_update_settings():
 					return jsonify(usrmsg="Hmm... something went wrong.", errors=errors), 500
 				else:
 					print "ht_api_update_settings() Update should be complete"
-					return jsonify(usrmsg="Settings updated"), 200
+					return jsonify(usrmsg="Your settings were updated."), 200
 			else:
 				# User didn't change anything.
 				return jsonify(usrmsg="Cool... Nothing changed."), 200
 
-			if (update_name):
-				usrmsg = "Your account name has been updated."
 
-			if (update_mail):
-				# user changed email; for security, send confimration email to last email addr.
-				ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
-				usrmsg = "Your email has been updated."
 
-			#change pass send email
-			if (update_pass):
-				send_passwd_change_email(ba.email)
-				usrmsg = "Password successfully updated."
+
+
+
 
 			print 'ht_api_update_settings() Finished Handling POST.'
 		
