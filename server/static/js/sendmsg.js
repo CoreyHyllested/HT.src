@@ -24,15 +24,8 @@ function verify_email_js() {
 
 	var fd = {};
 	var challenge = $('#challenge').val();
-	
 	var email = $('#set_input_email').val();
-
-	// Could prevent ajax from turning plus sign into spaces?
-	// var email_encoded = encodeURIComponent(email);
-
 	fd.email = email;
-
-	// fd.email = $('#set_input_email').val();
 	fd.csrf_token = $('#csrf').val();
 
 	if ($('#nexturl').val() == ""){

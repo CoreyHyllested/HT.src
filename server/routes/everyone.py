@@ -280,6 +280,7 @@ def ht_email_operations(operation, data):
 		return jsonify(rc=200), 200
 
 	elif (operation == 'request-verification-auto') and ('uid' in session):
+		# This is an attempt to set up a route to automatically send verification email, rather than going to settings. E.g. triggered when clicking on schedule button when unverified. Not implemented yet.
 		nexturl = request.values.get('nexturl')
 		profile = Profile.get_by_uid(session.get('uid'))
 		account = Account.get_by_uid(session.get('uid'))
@@ -291,7 +292,7 @@ def ht_email_operations(operation, data):
 		usrmsg = 'We require a verified email prior to scheduling. We just sent a message with verification instructions to '+account.email+' - Please check it before proceeding.'
 
 		return make_response(jsonify(usrmsg=usrmsg), 200)
-		
+
 		# return redirect(url_for('insprite.render_dashboard', usrmsg='Sorry, We encountered an error loading that lesson.'))
 
 
