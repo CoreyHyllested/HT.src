@@ -28,6 +28,10 @@ header = '<!DOCTYPE html>\n<html>\n<body style=margin:0px>\n<table cellspacing=0
 footer = '<table cellspacing=0 cellpadding=0 width=100% style=padding-top:80px>\n<tr>\n<td style=padding-bottom:5px align=center valign=middle>\n<a href=http://www.facebook.com/insprite><img style=padding-right:12px src=http://insprite.co/static/img/email/facebookIcon.png></a>\n<a href=http://www.twitter.com/inspriting><img style=padding-right:12px src=http://insprite.co/static/img/email/twitterIcon.png></a>\n<a href=http://www.instagram.com/inspriting><img style=padding-right:12px src=http://insprite.co/static/img/email/instagramIcon.png></a>\n<a href=http://www.pinterest.com/insprite><img src=http://insprite.co/static/img/email/pinterestIcon.png></a>\n</td>\n</tr>\n</table>\n<table cellspacing=0 cellpadding=0 width=100%>\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:5px solid #fff" align=center valign=middle>\n<img src=http://insprite.co/static/img/email/spacer-2.png>\n</td>\n</tr>\n</table>\n<table cellspacing=0 cellpadding=0 width=100%>\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:10px solid #fff" align=center valign=middle>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:10px"> <a href=mailto:thegang@insprite.co style=color:#1488CC>Contact Us</a> | Sent by <a href=http://www.insprite.co style=color:#1488CC>Insprite.co</a>, Berkeley, California, USA.</font>\n</td>\n</tr>\n</table>\n<table cellspacing=0 cellpadding=0 width=100% background=http://insprite.co/static/img/email/footerImage.png bgcolor=#e75f63>\n<tr>\n<td align=center valign=middle style=height:80px>\n</td>\n</tr>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</body>\n</html>'
 
 
+################################################################################
+### ACCOUNT SETTINGS AND ADMINISTRATION ########################################
+################################################################################
+
 def email_body_verify_account(verify_email_url):
 	""" HTML for verifying user account; called by ht_email_welcome_message() """
 	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWelcome to Insprite! We\'re thrilled that you\'ve joined us.<br><br>Insprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Please verify your email account before you start exploring the cool, creative experiences nearby.<br><br> If you are getting this message by mistake and did not create an account, <a href="mailto@thegang@insprite.co" style="color:#e75f63">let us know</a> and we will get on it ASAP.\n</font>\n</td>\n</tr>\n</table>\n<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:10px solid #fff;padding-top:0" align="center" valign="top">\n<a href="'+verify_email_url+'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#29abe1;font-size:14px;border-radius:999em;margin-top:15px;margin-left:5px;font-family:Helvetica Neue,Arial,sans-serif" target="_blank">Verify your account</a>\n</td>\n</tr>\n</table>' + footer
@@ -48,9 +52,9 @@ def email_body_password_changed_confirmation(url):
 	return msg
  
 
-def email_body_verify_email_address(url, code):  
+def email_body_verify_email_address(verify_email_url, code):  
 	"""HTML for email address verification; sent via  ht_send_email_address_verify_link() """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nBefore you book a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings: ' + str(account.sec_question) + '<br><br>\nOr, click on this link: ' + verify_email_url + '\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nBefore you do certain things on Insprite, we ask that you verify your email address. Please verify your account by clicking the button below.\n</font>\n</td>\n</tr>\n</table>\n<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="background-color:#fff;border-top:0 solid #333;border-bottom:10px solid #fff;padding-top:0" align="center" valign="top">\n<a href="'+verify_email_url+'" style="color:#fff;text-decoration:none;display:inline-block;min-height:38px;line-height:39px;padding-right:16px;padding-left:16px;background:#29abe1;font-size:14px;border-radius:999em;margin-top:15px;margin-left:5px;font-family:Helvetica Neue,Arial,sans-serif" target="_blank">Verify your account</a>\n</td>\n</tr>\n</table>\n<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">If you have trouble with that link, enter this security code into the verification box in Account Settings:<br><br>' + code + '<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -137,8 +141,6 @@ def email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name, buy
 	return msg
 
 
-
-
 def email_body_cancellation_from_seller_to_buyer(sellr_name, sellr_profile):
 	""" generate email body (HTML).  Seller cancels the meeting, sends this email to buyer; sent via ht_send_meeting_canceled_notifications"""
 	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a> cancelled your lesson.<br><br>\nCheck out <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>\'s availability, and send a new lesson proposal. (Sometimes, a little reshuffling can really make things happen.)\n</font>\n</td>\n</tr>\n</table>' + footer
@@ -185,8 +187,6 @@ def email_body_to_user_sending_msg(profile, message):
 	return msg
 
 
-
-
 def email_body_to_user_receiving_msg(profile, message):
 	""" generate email body (HTML).  When a user sends a message to a peer-user; sent via ht_send_peer_message()."""
 	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a message from <a href=\"https://127.0.0.1:5000/profile?hero=' + str(profile.prof_id) + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a>. <br><br>\n<br>\n<i>' + message.msg_content + '</i>\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
@@ -206,14 +206,15 @@ def email_body_beta_email(referral_code):
 
 	return msg
 
+
 ###############################################################################
-### Mentor Welcome Message ####################################################
+### BETA Mentor Welcome Message ###############################################
 ###############################################################################
 
 
-# def email_body_welcome_mentor_email():
-# 	""" HTML for sending the beta email """
+def email_body_beta_mentor_email(referral_code):
+	""" HTML for sending the beta email to people who indicate they want to be mentors """
 
-# 	msg = header + '<table cellspacing=0 width=80% align=center>\n<tr>\n<td style=padding-top:50px;padding-bottom:10px align=left valign=top>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">Welcome to Insprite! We\'re thrilled that you\'ve joined us.<br><br>Insprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Enjoy exploring our growing community, and the cool things you never knew could experience around you.<br><br>Questions? <a href="mailto:thegang@insprite.co">Drop us a line</a> or check out our FAQ.<br><br>\nSpritely yours,<br>\nThe Insprite Gang\n</font>\n</td>\n</tr>\n</table>\n' + footer
+	msg = header + '<table cellspacing=0 width=80% align=center>\n<tr>\n<td style=padding-top:50px;padding-bottom:10px align=left valign=top>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">Thanks for signing up for Insprite! We are excited that you\'re interested in what we are doing over here. We are creating Insprite to be a vibrant, friendly community where you can both learn from creative people in your area, and teach your passions to others. We are planning to launch in late 2014 -- we can\'t wait to show you what we\'ve been working on. You\'re going to love it.<br><br>\nWe see that you\'ve expressed interest in becoming an inaugural <strong>Insprite mentor</strong>. Awesome! <strong>We\'d love to learn more about you</strong>, and hear your thoughts about how we can make Insprite the best community resource it can be. Please just reply to this email!<br><br>\nFinally, if you know someone that might want to join our community, <strong>please share this personalized link</strong>, and we\'ll know you sent them!<br><br>Your referral link: <a href="http://www.insprite.co?ref='+referral_code+'" style=color:#1488CC>http://www.insprite.co?ref='+referral_code+'</a>\n<br><br>\nSpritely yours,<br>\nThe Insprite Gang\n</font>\n</td>\n</tr>\n</table>\n' + footer
 
-# 	return msg
+	return msg

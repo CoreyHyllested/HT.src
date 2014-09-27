@@ -79,7 +79,11 @@
 				</div>
 				<div class="settingsFormStatus"></div>
 				<div class="settingsFooter">
-					<a href="/dashboard">Go Back to Dashboard</a>
+					{% if nexturl != none %}
+						<a href="{{nexturl}}">Continue where you were going...</a>
+					{% else %}
+						<a href="/dashboard">Go Back to Dashboard</a>
+					{% endif %}
 				</div>
 			</div>	
 

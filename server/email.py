@@ -30,8 +30,8 @@ import json, smtplib, urllib
 
 
 def ht_email_welcome_message(user_email, user_name, challenge_hash):
-	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)     
-	msg_text = "Welcome to Insprite! We're thrilled that you've joined us.\n\nInsprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Please verify your email account by clicking this link " + verify_email_url + " before you start exploring the cool, creative experiences nearby.\n\n If you are getting this message by mistake and did not create an account, email thegang@insprite.co and we will get on it ASAP.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."     
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email) + "&nexturl=dashboard"    
+	msg_text = "Welcome to Insprite! We're thrilled that you've joined us.\n\nInsprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Please verify your email account by clicking this link " + verify_email_url + " before you start exploring the cool, creative experiences nearby.\n\nIf you are getting this message by mistake and did not create an account, email thegang@insprite.co and we will get on it ASAP.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."     
 	msg_html = email_body_verify_account(verify_email_url)
 
 	msg = create_msg('Welcome to Insprite!', user_email, user_name, 'noreply@insprite.co', u'Insprite')
@@ -45,7 +45,7 @@ def ht_email_welcome_message(user_email, user_name, challenge_hash):
 def ht_send_password_recovery_link(account):
 	""" Emails the password recovery link to a user """
 	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
-	msg_text = "Passwords can be tough to remember.\n\nNo biggie, simply follow the instructions at this link " + url + " to change it, and you'll be good to go.\n\nDid not request for a password reset? Email thegang@insprite.co ASAP.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text = "Passwords can be tough to remember.\n\nNo biggie, simply follow the instructions at this link " + url + " to change it, and you'll be good to go.\n\nDid not request for a password reset? Email thegang@insprite.co ASAP.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_html = email_body_recover_your_password(url)
 
 	msg = create_msg('Reset your Insprite password', account.email, account.name, 'noreply@insprite.co', u'Insprite')
@@ -59,7 +59,7 @@ def ht_send_password_recovery_link(account):
 def ht_send_password_changed_confirmation(user_email):
 	""" email user 'password changed' confirmation notice. """
 	msg_html = email_body_password_changed_confirmation('url')
-	msg_text = "We are sending you a reminder: You changed your password.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text = "We are sending you a reminder: You changed your password.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 
 	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
@@ -68,12 +68,14 @@ def ht_send_password_changed_confirmation(user_email):
 
 
 
-def ht_send_email_address_verify_link(user_email, account):
-	print 'send a verify this email account to ' + str(user_email)
-
-	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
-	msg_text = "Before you book a lesson, you must verify your email address.\n\nPlease enter this security code into the verification box in Account Settings:" + str(account.sec_question) + "\n\nOr, click on this link: " + verify_email_url + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA.
-	msg_html = email_body_verify_email_address('url', 'abcd')  
+def ht_send_email_address_verify_link(user_email, account, nexturl):
+	""" sends a 'verify this email account' message to user """
+	if (nexturl is None):
+		nexturl = "settings"
+	code = str(account.sec_question)
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + code + "?email="+ urllib.quote_plus(user_email) + "&nexturl=" + nexturl
+	msg_text = "Before you do certain things on Insprite, we ask that you verify your email address.\n\nPlease click on this link: " + verify_email_url + "\n\nIf you have trouble with the link, enter this security code into the verification box in Account Settings:\n\n" + code + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_html = email_body_verify_email_address(verify_email_url, code)  
 
 	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
@@ -97,20 +99,19 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 
 
 ################################################################################
-### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
+### MEETING EMAILS (PROPOSED/ACCEPTED/REJECTED/CANCELED) #######################
 ################################################################################
 
 def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
 	ht_send_meeting_proposed_notification_to_sellr(meeting, sa.email, sp.prof_name.encode('utf8', 'ignore'), bp.prof_name.encode('utf8', 'ignore'), bp.prof_id)
-	ht_send_meeting_proposed_notification_to_buyer(meeting, ba.email, bp.prof_name.encode('utf8', 'ignore'), sp.prof_name.encode('utf8', 'ignore'), sp.prof_id)
-
+	# ht_send_meeting_proposed_notification_to_buyer(meeting, ba.email, bp.prof_name.encode('utf8', 'ignore'), sp.prof_name.encode('utf8', 'ignore'), sp.prof_id)
 
 
 def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
 	print "ht_send_meeting_proposed_notification (to seller) (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
-	msg_text = "You received a lesson proposal from " + buyer_name + ".\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nTo accept the lesson, click here: " + meeting.accept_url() + "\n\n To reject the lesson, " + meeting.reject_url() + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text = "You received a lesson proposal from " + buyer_name + ".\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nTo accept the lesson, click here: " + meeting.accept_url() + "\n\n To reject the lesson, " + meeting.reject_url() + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_subj = "You've received a lesson proposal from " + buyer_name
 	if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
 
@@ -169,7 +170,7 @@ def ht_send_meeting_rejected_notifications(meeting):
 
 
 
-def ht_send_meeting_accepted_notification(meeting):
+def ht_send_meeting_accepted_notifications(meeting):
 	""" email meeting accepted emails to both buyer and seller."""
 	try:
 		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
@@ -177,7 +178,7 @@ def ht_send_meeting_accepted_notification(meeting):
 		buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
 
 		sellr_msg_html = email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile)
-		sellr_msg_text = "Fantastic! You\'ve accepted " + buyer_profile.prof_name + "\'s lesson proposal.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+		sellr_msg_text = "Fantastic! You\'ve accepted " + buyer_profile.prof_name + "\'s lesson proposal.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s lesson proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 		sellr_msg.attach(MIMEText(sellr_msg_text, 'plain'))
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'html', 'UTF-8'))
@@ -185,7 +186,7 @@ def ht_send_meeting_accepted_notification(meeting):
 
 		# email buyer that seller accepted their proposal.
 		buyer_msg_html = email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_profile)
-		buyer_msg_text = "Fantastic! You\'ve accepted " + sellrS_profile.prof_name + "\'s lesson proposal.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+		buyer_msg_text = sellr_profile.prof_name + " accepted your lesson proposal!\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		buyer_msg = create_msg(str(sellr_name) + ' accepted your lesson proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 		buyer_msg.attach(MIMEText(buyer_msg_text, 'plain'))
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'html', 'UTF-8'))
@@ -204,9 +205,9 @@ def ht_send_meeting_canceled_notifications(meeting):
 	try:
 		(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
 
-		# if canceled by seller.
+		# TODO - if canceled by seller. Email template already there.
 			# only send meeting notice to buyer?
-			#email_body_cancellation_from_seller_to_buyer():
+			#buyer_msg_html = email_body_cancellation_from_seller_to_buyer():
 
 
 		print 'ht_send_meeting_canceled_notifications\t check if meeting occurs in 48 hours'
@@ -215,7 +216,7 @@ def ht_send_meeting_canceled_notifications(meeting):
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in more than 48 hours'
 			sellr_msg_html = email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name)
-			sellr_msg_text = "" + buyer_name + " canceled the lesson appointment.\n\nMessage " + buyer_name + " at https://127.0.0.1:5000/profile?" + buyer_profile.prof_id + " to see if you can work out a new date and time.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+			sellr_msg_text = "" + buyer_name + " canceled the lesson appointment.\n\nMessage " + buyer_name + " at https://127.0.0.1:5000/profile?" + buyer_profile.prof_id + " to see if you can work out a new date and time.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		else:
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
@@ -226,7 +227,7 @@ def ht_send_meeting_canceled_notifications(meeting):
 		print 'ht_send_meeting_canceled_notifications\t create seller_msg'
 		sellr_msg_html = email_body_cancellation_from_seller_to_seller(sellr_name, sellr_profile, buyer_name, buyer_profile)
 		sellr_msg = create_msg('Lesson with ' + str(buyer_name) + ' has been canceled', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
-		sellr_msg.attach(MIMEText(sellr_msg_text, 'plain', 'UTF-8'))
+		sellr_msg.attach(MIMEText(sellr_msg_text, 'plain'))
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'html', 'UTF-8'))
 		ht_send_email(sellr_email_addr, sellr_msg)
 
@@ -238,7 +239,7 @@ def ht_send_meeting_canceled_notifications(meeting):
 			buyer_msg_html = email_body_cancellation_from_buyer_within_24_hours(sellr_name, str(meeting.meet_cost))
 		else:
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in > 24 hours'
-			buyer_msg_text = "You canceled your lesson with " + sellr_name + ". You will not be charged for the cancellation.\n\nNeed to reschedule with " + sellr_name + "? Message " + sellr_profile.prof_name + " at " + msg_user_link ".\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+			buyer_msg_text = "You canceled your lesson with " + sellr_name + ". You will not be charged for the cancellation.\n\nNeed to reschedule with " + sellr_name + "? Message " + sellr_profile.prof_name + " at " + msg_user_link + ".\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 			buyer_msg_html = email_body_cancellation_from_buyer_outside_24_hours (buyer_name, sellr_name, msg_user_link='https://INSPRITE.co/message/USER')
 		print 'ht_send_meeting_canceled_notifications\t meeting create buyer_msg'
 		buyer_msg = create_msg('Lesson with ' + str(sellr_name) + ' has been canceled', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
@@ -276,6 +277,7 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 	msg_to_recvr.attach(MIMEText(msg_to_recvr_html, 'html', 'UTF-8'))
 	ht_send_email(recv_account.email, msg_to_recvr)
 
+	# TODO - is this necessary or too spammy? Also, may not be 'starting a conversation' as implied in the text.
 	msg_to_sendr_html = email_body_to_user_sending_msg(send_profile, message)
 	msg_to_senr_text = "Way to get the conversation started! You messaged " + profile.prof_name.encode('utf8', 'ignore') + " and should get a response soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_to_sendr = create_msg(msg_subject, send_account.email, send_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
@@ -298,7 +300,7 @@ def ht_send_meeting_reminders(meet_id):
 
 	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.
-		print 'ht_send_meeting_reminders() --  meetin canceled ' + meet_id
+		print 'ht_send_meeting_reminders() --  meeting canceled ' + meet_id
 		return
 
 	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
@@ -307,8 +309,8 @@ def ht_send_meeting_reminders(meet_id):
 
 	msg_html_buyer = email_body_meeting_reminder(sellr_prof, meeting)
 	msg_html_sellr = email_body_meeting_reminder(buyer_prof, meeting)
-	msg_text_buyer = "You have an lesson with " + partner_prof.prof_name + " tomorrow.\n\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\n\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nEnjoy!\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
-	msg_text_sellr = "You have an lesson with " + partner_prof.prof_name + " tomorrow.\n\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\n\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nEnjoy!\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text_buyer = "You have a lesson with " + partner_prof.prof_name + " tomorrow.\n\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\n\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nEnjoy!\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_text_sellr = "You have a lesson with " + partner_prof.prof_name + " tomorrow.\n\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.\n\nDate:" + meeting.meet_ts.strftime('%A, %b %d, %Y') + "\n\nStart Time:" + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nEnjoy!\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	
 
 	msg_buyer = create_notification('You have a lesson tomorrow with ' + sellr_name, buyer_email_addr, buyer_name)
@@ -327,6 +329,9 @@ def ht_send_meeting_reminders(meet_id):
 @mngr.task
 def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 	print 'ht_send_review_reminder()  sending meeting review emails now for ' + meet_id
+
+	# TODO - need a url to send them to.
+
 	meeting = Meeting.get_by_id(meet_id)
 	if (meeting.canceled()):
 		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + meet_id
@@ -341,7 +346,7 @@ def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 	msg_html = email_body_review_reminder()
 	msg_text = "We hope you had a great lesson with " +  partner_prof.prof_name + ".\n\nYour opinion goes a long way -- write a review so others can learn from your experience.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg = create_notification('Review your Lesson with ' + partner_prof.prof_name, user_email, user_name)
-	msg.attach(MIMEText(msg_text, 'plain', 'UTF-8'))
+	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
 
@@ -396,6 +401,6 @@ def ht_send_email(email_addr, msg):
 	# open conn to SendGrid. Login send email.
 	s = smtplib.SMTP('smtp.sendgrid.net', 587)
 	s.login(username, password)
-	s.sendmail('noreply@herotime.co', email_addr, msg.as_string())
+	s.sendmail('noreply@insprite.co', email_addr, msg.as_string())
 	s.quit()
 

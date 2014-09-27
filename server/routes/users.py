@@ -249,8 +249,8 @@ def render_edit_profile():
 	# session_form = session.pop('form', None)
 	# session_errmsg = session.pop('errmsg', None)
 	
-	# Set session next_url here
-	# session['next_url'] = '/profile/edit#payment'
+	# Set session nexturl here
+	# session['nexturl'] = '/profile/edit#payment'
 
 	form = ProfileForm(request.form)
 	x = 0
@@ -1243,7 +1243,7 @@ def api_lesson_image_update(lesson_id):
 @insprite_views.route('/schedule', methods=['GET','POST'])
 @req_authentication
 def render_schedule_page():
-	""" Schedule a new appointment appointment. """
+	""" Schedule a new appointment. """
 
 	usrmsg = None
 
@@ -1276,9 +1276,13 @@ def render_schedule_page():
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
 	if (ba.status == Account.USER_UNVERIFIED):
-		session['messages'] = 'We require a verified email prior to scheduling'
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
 
+		nexturl = "/schedule?mentor="+request.values.get('mentor')
+		if (lesson is not None):
+			nexturl += "&lesson="+request.values.get('lesson')
+
+		session['messages'] = 'We require a verified email prior to scheduling. Please verify your email before proceeding.'
+		return make_response(redirect(url_for('insprite.render_settings', nexturl=nexturl)))
 
 	form.prop_mentor.data = mentor.prof_id
 
@@ -1402,10 +1406,12 @@ def render_settings():
 
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
-	nexturl = "/settings"
+	nexturl = "ajax"
 	if (request.values.get('nexturl') is not None):
 		nexturl = request.values.get('nexturl')
 	if (errmsg is None): errmsg = insprite_msg
+
+	print 'render_settings(): nexturl:', nexturl
 
 	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
 

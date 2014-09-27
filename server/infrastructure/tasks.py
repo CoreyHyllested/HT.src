@@ -138,7 +138,7 @@ def ht_meeting_accept(meet_id, profile):
 		print 'ht_meeting_accept: EXCEPTION', type(e), e
 		ht_sanitize_error(e, reraise=False)
 
-	ht_send_meeting_accepted_notification(meeting)
+	ht_send_meeting_accepted_notifications(meeting)
 	return (200, 'Proposed meeting accepted')
 
 
