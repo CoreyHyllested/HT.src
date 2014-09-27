@@ -69,12 +69,18 @@ def ht_meeting_create(values, uid):
 		prop_f_time = values.get('prop_f_time')
 		dt_start = dt.strptime(prop_s_date  + " " + prop_s_time, '%A, %b %d, %Y %H:%M')
 		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_time, '%A, %b %d, %Y %H:%M')
+		print "ht_meeting_create: prop_s_time:", prop_s_time
+		print "ht_meeting_create: prop_f_time:", prop_f_time
+		print "ht_meeting_create: dt_start:", dt_start
+		print "ht_meeting_create: dt_finsh:", dt_finsh
 
 		# convert to user's local TimeZone.
 		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
 		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
 
-
+		print "ht_meeting_create: dt_start_pacific:", dt_start_pacific
+		print "ht_meeting_create: dt_finsh_pacific:", dt_finsh_pacific
+		
 		print 'ht_meeting_create: (from stripe) token =', stripe_tokn, 'card =', stripe_card, 'cust =', stripe_cust
 		hp	= Profile.get_by_prof_id(prop_mentor)
 		bp	= Profile.get_by_uid(uid)
