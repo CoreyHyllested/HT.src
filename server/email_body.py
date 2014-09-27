@@ -188,8 +188,11 @@ def email_body_to_user_sending_msg(profile, message):
 
 
 def email_body_to_user_receiving_msg(profile, message):
+
+	messages_url = "https://127.0.0.1:5000/inbox"
+
 	""" generate email body (HTML).  When a user sends a message to a peer-user; sent via ht_send_peer_message()."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a message from <a href=\"https://127.0.0.1:5000/profile?hero=' + str(profile.prof_id) + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a>. <br><br>\n<br>\n<i>' + message.msg_content + '</i>\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a message from <a href=\"https://127.0.0.1:5000/profile?hero=' + str(profile.prof_id) + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a>. <br><br><br>\n<i>' + message.msg_content + '</i>\n<br><br><br><a href="' + messages_url +'" style="color:#e75f63">Go to your Insprite Inbox</a>\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 

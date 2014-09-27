@@ -188,6 +188,7 @@ def ht_api_send_message():
 
 	try:
 		bp = Profile.get_by_uid(session['uid'])
+		print "ht_api_send_message(): bp:", bp
 
 		msg_from = bp.prof_id
 		msg_to	= request.values.get('hp')
@@ -231,10 +232,10 @@ def ht_api_send_message():
 		return make_response(jsonify(usrmsg="Message sent.", next=next, valid="true"), 200)
 
 	except NoResourceFound as nre:
-		print nre
+		print "ht_api_send_message(): No resource found:", nre
 		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
 	except Exception as e:
-		print type(e), e
+		print "ht_api_send_message(): Exception:", type(e), e
 		db_session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 

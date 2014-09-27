@@ -264,27 +264,31 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 		recv_account = Account.get_by_uid(recv_profile.account)
 		send_account = Account.get_by_uid(send_profile.account)
 	except Exception as e:
-		print type(e), e
+		print "ht_send_peer_message: Exception:", type(e), e
 		db_session.rollback()
 
 	if (message.msg_flags & MSG_STATE_THRD_UPDATED):
 		msg_subject = msg_subject + " (updated)"
 
-	msg_to_recvr_html = email_body_to_user_receiving_msg(recv_profile, message)
-	msg_to_recvr_text = "You received a message from " + profile.prof_name.encode('utf8', 'ignore') + ".\n\n " + message.msg_content + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	messages_url = "https://127.0.0.1:5000/inbox"
+
+	msg_to_recvr_html = email_body_to_user_receiving_msg(send_profile, message)
+	msg_to_recvr_text = "You received a message from " + send_profile.prof_name.encode('utf8', 'ignore') + ".\n\n " + message.msg_content + "\n\nGo to your Insprite Inbox: " + messages_url + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_to_recvr = create_msg(msg_subject, recv_account.email, recv_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
 	msg_to_recvr.attach(MIMEText(msg_to_recvr_text, 'plain'))
 	msg_to_recvr.attach(MIMEText(msg_to_recvr_html, 'html', 'UTF-8'))
 	ht_send_email(recv_account.email, msg_to_recvr)
 
 	# TODO - is this necessary or too spammy? Also, may not be 'starting a conversation' as implied in the text.
-	msg_to_sendr_html = email_body_to_user_sending_msg(send_profile, message)
-	msg_to_senr_text = "Way to get the conversation started! You messaged " + profile.prof_name.encode('utf8', 'ignore') + " and should get a response soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_to_sendr_html = email_body_to_user_sending_msg(recv_profile, message)
+	msg_to_sendr_text = "Way to get the conversation started! You messaged " + recv_profile.prof_name.encode('utf8', 'ignore') + " and should get a response soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_to_sendr = create_msg(msg_subject, send_account.email, send_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
 	msg_to_sendr.attach(MIMEText(msg_to_sendr_text, 'plain'))
 	msg_to_sendr.attach(MIMEText(msg_to_sendr_html, 'html', 'UTF-8'))
 	ht_send_email(send_account.email, msg_to_sendr)
 
+	print "ht_send_peer_message: msg_to_recvr_text:", msg_to_recvr_text
+	print "ht_send_peer_message: msg_to_sendr_text:", msg_to_sendr_text
 
 
 
@@ -395,6 +399,7 @@ def create_notification(subject, email_to, name_to):
 
 def ht_send_email(email_addr, msg):
 	# SendGrid login; TODO, move into config file.
+	print "ht_send_email: begin"
 	username = 'radnovic'
 	password = "HeroTime"
 
@@ -402,5 +407,6 @@ def ht_send_email(email_addr, msg):
 	s = smtplib.SMTP('smtp.sendgrid.net', 587)
 	s.login(username, password)
 	s.sendmail('noreply@insprite.co', email_addr, msg.as_string())
+	print "ht_send_email: email sent to", email_addr
 	s.quit()
 
