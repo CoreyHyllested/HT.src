@@ -335,6 +335,7 @@ def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 	print 'ht_send_review_reminder()  sending meeting review emails now for ' + meet_id
 
 	# TODO - need a url to send them to.
+	url = "/review/new/"+review_id
 
 	meeting = Meeting.get_by_id(meet_id)
 	if (meeting.canceled()):
@@ -347,7 +348,7 @@ def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 	if (sellr_acct.email == user_email):
 		partner_prof = buyer_prof
 
-	msg_html = email_body_review_reminder()
+	msg_html = email_body_review_reminder(url)
 	msg_text = "We hope you had a great lesson with " +  partner_prof.prof_name + ".\n\nYour opinion goes a long way -- write a review so others can learn from your experience.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg = create_notification('Review your Lesson with ' + partner_prof.prof_name, user_email, user_name)
 	msg.attach(MIMEText(msg_text, 'plain'))
