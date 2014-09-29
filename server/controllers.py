@@ -289,11 +289,11 @@ def meeting_timedout(composite_meeting, profile):
 		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
 		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
-		if (meeting.meet_state == APPT_STATE_PROPOSED):
+		if (meeting.meet_state == MeetingState.PROPOSED):
 			print '\t\t\tPROPOSED Meeting...'
 			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				meeting.set_state(MEET_STATE_TIMEDOUT, profile)
+				meeting.set_state(MeetingState.TIMEDOUT, profile)
 				db_session.add(meeting)
 				db_session.commit()
 			else:
@@ -305,7 +305,7 @@ def meeting_timedout(composite_meeting, profile):
 			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
 				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\tFILTER Event out manually.  The events are working!!!'
-				meeting.set_state(APPT_STATE_OCCURRED)	# Hack, see above
+				meeting.set_state(MeetingState.OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
