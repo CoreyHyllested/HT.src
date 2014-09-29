@@ -71,6 +71,11 @@ def email_body_email_address_changed_confirmation(url, new_email):
 ### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
 ################################################################################
 
+def email_send_meeting_proposed_notification_to_buyer(meeting, seller_name, sellr_profile):
+	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_proposed_notification_to_buyer. """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\nYou sent a lesson proposal to <a href="https://127.0.0.1:5000/profile?hero=' + sellr_profile.prof_id + '" style="color:#e75f63">'+ sellr_name + '</a>. <br><br>\n<br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;' + meeting.get_meet_tf().strftime('%I:%M %p') + '<br>\n<b>Duration: </b>' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b>' + str(meeting.meet_location) + '<br>\n<b>Total Cost: </b> $' + str(meeting.meet_cost) + ' <br>\n<b>Description: </b> ' + meeting.get_description_html() + '\n<br><br>\nStand by, and <a href="https://127.0.0.1:5000/profile?hero=' + sellr_profile.prof_id + '" style="color:#e75f63">'+ sellr_name + '</a> will respond to your request soon.</font>\n</td>\n</tr>\n</table>' + footer
+
+	return msg
 
 def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id):
 	""" generate email body (HTML).  Notification when seller receives a new meeting proposal.  Sent via ht_send_sellr_proposal_update(). """
@@ -108,6 +113,12 @@ def email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr
 
 	return msg
 
+
+def email_body_cancellation_from_buyer_before_acceptance(buyer_name, sellr_name):
+	""" generate email body (HTML).  The buyer cancels the appointment before seller accpets. sent via ht_send_meeting_canceled_notifications """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou cancelled your lesson with <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>.<br><br>\nNeed to reschedule with <a href="https://127.0.0.1:5000/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>? <a href="https://127.0.0.1:5000/dashboard" style="color:#e75f63">Go for it</a>, or <a href="'+msg_url+'" style="color:#e75f63">send ' + sellr_profile.prof_name + ' a message</a>. <br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+	
+	return msg
 
 
 def email_body_cancellation_from_buyer_outside_24_hours(buyer_name, sellr_name):
@@ -168,9 +179,9 @@ def email_body_meeting_reminder(partner_prof, meeting):
 
 
 
-def email_body_review_reminder(partner_prof, profile):
+def email_body_review_reminder(partner_prof, profile, url):
 	""" generate email body (HTML).  Rate and review email, both buyer and seller; called from ht_send_review_reminder."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="https://127.0.0.1:5000/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="https://127.0.0.1:5000/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="'+ url + '" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -182,7 +193,7 @@ def email_body_review_reminder(partner_prof, profile):
 
 def email_body_to_user_sending_msg(profile, message):
 	""" generate email body (HTML).  When a user sends a message to a peer-user; send via ht_send_peer_message()."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWay to get the conversation started! You messaged <a href="https://127.0.0.1:5000/profile?hero=' + profile.prof_id + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou messaged <a href="https://127.0.0.1:5000/profile?hero=' + profile.prof_id + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -215,9 +226,9 @@ def email_body_beta_email(referral_code):
 ###############################################################################
 
 
-def email_body_beta_mentor_email(referral_code):
+def email_body_beta_mentor_email():
 	""" HTML for sending the beta email to people who indicate they want to be mentors """
 
-	msg = header + '<table cellspacing=0 width=80% align=center>\n<tr>\n<td style=padding-top:50px;padding-bottom:10px align=left valign=top>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">Thanks for signing up for Insprite! We are excited that you\'re interested in what we are doing over here. We are creating Insprite to be a vibrant, friendly community where you can both learn from creative people in your area, and teach your passions to others. We are planning to launch in late 2014 -- we can\'t wait to show you what we\'ve been working on. You\'re going to love it.<br><br>\nWe see that you\'ve expressed interest in becoming an inaugural <strong>Insprite mentor</strong>. Awesome! <strong>We\'d love to learn more about you</strong>, and hear your thoughts about how we can make Insprite the best community resource it can be. Please just reply to this email!<br><br>\nFinally, if you know someone that might want to join our community, <strong>please share this personalized link</strong>, and we\'ll know you sent them!<br><br>Your referral link: <a href="http://www.insprite.co?ref='+referral_code+'" style=color:#1488CC>http://www.insprite.co?ref='+referral_code+'</a>\n<br><br>\nSpritely yours,<br>\nThe Insprite Gang\n</font>\n</td>\n</tr>\n</table>\n' + footer
+	msg = header + '<table cellspacing=0 width=80% align=center>\n<tr>\n<td style=padding-top:50px;padding-bottom:10px align=left valign=top>\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">Congrats! You\'re now an Insprite mentor.<br><br>\nImpart your creative know-how in-person to those who want to learn from you&mdash;and get paid for it! Simply <a href="insert url for lesson">create a lesson</a> if you haven\'t already, and let the community know what you can offer.<br><br>\nQuestions? Learn more from our "Become a Mentor" FAQ or <a href="mailto:thegang@insprite.co" style=color:#e75f63">drop us a line</a> for more info.<br><br>\nSpritely yours,<br>\nThe Insprite Gang\n</font>\n</td>\n</tr>\n</table>\n' + footer
 
 	return msg

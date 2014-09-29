@@ -40,7 +40,14 @@ def ht_email_welcome_message(user_email, user_name, challenge_hash):
 	ht_send_email(user_email, msg)
 
 
+def ht_email_body_beta_mentor_email():
+	msg_text = "Congrats! You\'re now an Insprite mentor.\nImpart your creative know-how in-person to those who want to learn from you&mdash;and get paid for it! Simply <a href="insert url for lesson">create a lesson</a> if you haven\'t already, and let the community know what you can offer.\nQuestions? Learn more from our Become a Mentor FAQ or drop us a line at thegang@insprite.co.\nSpritely yours,\nThe Insprite Gang\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_html = email_body_verify_account(verify_email_url)
 
+	msg = create_msg('Congrats! You\'re an Insprite mentor, user_email, user_name, 'noreply@insprite.co', u'Insprite')
+	msg.attach(MIMEText(msg_text, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html' ))
+	ht_send_email(user_email, msg)
 
 def ht_send_password_recovery_link(account):
 	""" Emails the password recovery link to a user """
@@ -122,18 +129,18 @@ def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_n
 
 
 
-# def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
-# 	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
+	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
 
-# 	msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
-# 	msg_text =
-# 	msg_subj = "Proposal to meet " + sellr_name
-# 	if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
+	msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
+	msg_text = "You sent a lesson proposal to " + sellr_name + ".\n\nDate:" + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime:" + meeting.get_meet_ts().strftime('%I:%M %p') + '--' + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + "\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\nf\nStand by, and " + sellr_name + " will respond to your request soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_subj = "You sent" + sellr_name + "a lesson proposal"
+	if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
 
-# 	msg = create_msg(msg_subj, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
-# 	msg.attach(MIMEText(msg_html, 'plain'))
-# 	msg.attach(MIMEText(msg_html, 'html'))
-# 	ht_send_email(buyer_email, msg)
+	msg = create_msg(msg_subj, buyer_email, buyer_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg.attach(MIMEText(msg_html, 'plain'))
+	msg.attach(MIMEText(msg_html, 'html'))
+	ht_send_email(buyer_email, msg)
 
 
 
@@ -281,7 +288,7 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 
 	# TODO - is this necessary or too spammy? Also, may not be 'starting a conversation' as implied in the text.
 	msg_to_sendr_html = email_body_to_user_sending_msg(recv_profile, message)
-	msg_to_sendr_text = "Way to get the conversation started! You messaged " + recv_profile.prof_name.encode('utf8', 'ignore') + " and should get a response soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_to_sendr_text = "You messaged " + recv_profile.prof_name.encode('utf8', 'ignore') + " and should get a response soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_to_sendr = create_msg(msg_subject, send_account.email, send_profile.prof_name, 'messages-'+str(message.msg_thread)+'@insprite.co', u'Insprite Messages')
 	msg_to_sendr.attach(MIMEText(msg_to_sendr_text, 'plain'))
 	msg_to_sendr.attach(MIMEText(msg_to_sendr_html, 'html', 'UTF-8'))
@@ -349,8 +356,8 @@ def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 		partner_prof = buyer_prof
 
 	msg_html = email_body_review_reminder(url)
-	msg_text = "We hope you had a great lesson with " +  partner_prof.prof_name + ".\n\nYour opinion goes a long way -- write a review so others can learn from your experience.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
-	msg = create_notification('Review your Lesson with ' + partner_prof.prof_name, user_email, user_name)
+	msg_text = "We hope you had a great lesson with " +  partner_prof.prof_name + ".\n\nYour opinion goes a long way -- <a href=" + url + ">write a review</a> so others can learn from your experience.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg = create_notification('Review your lesson with ' + partner_prof.prof_name, user_email, user_name)
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
