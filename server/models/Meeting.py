@@ -402,7 +402,7 @@ class Meeting(Base):
 
 			fee = 0
 			if (self.meet_cost > 5 and not self.test_flag(MEET_FLAG_WAIVE_FEE)):
-				fee = int((self.meet_cost * 7.1)-30),
+				fee = int((self.meet_cost * 7.1)-30)
 
 			print 'ht_charge_creditcard: cost (pennies)  ' +  str(self.meet_cost * 100)
 			print 'ht_charge_creditcard: application fee ' +  str(fee)
