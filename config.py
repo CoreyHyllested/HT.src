@@ -59,9 +59,9 @@ class DevelopmentConfig(Config):
 	# https://redistogo.com/instances/292777?language=en
 	# RedisToGo.com :: herotime/'coming in Nov 2013'/corey@herotime.co
 	REDIS_URL='redis://redistogo:5f32a6ca8a924e770643fdcc192c6320@grideye.redistogo.com:9056/'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:pass@localhost:5432/insprite_test'
 
 	if (LOCAL_DB):
-		#'postgresql://htdb:pass@localhost:5432/beta4')
 		SQLALCHEMY_DATABASE_URI = LOCAL_DB
 
 
