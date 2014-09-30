@@ -12,13 +12,12 @@
 #################################################################################
 
 
+from . import insprite_views
 from flask import render_template
-from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
-from ..forms import SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm, ProposalForm
+from ..forms import ReviewForm
 from .helpers import *
 from server.controllers import *
 from server.ht_utils import *
-from . import insprite_views
 
 
 
