@@ -340,10 +340,9 @@ def ht_post_review(review):
 
 	review_twin_id = (review.review_id == rev_sellr_id) and rev_buyer_id or rev_sellr_id
 	review_twin = Review.get_by_id(review_twin_id)
-	print 'ht_posting_review_update_proposal()\treview: ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
-	if (review_twin is None):
-		print 'ht_posting_review_update_proposal():  WTF, major error'
-		raise Exception('major error finding review')
+	print 'ht_post_review(): ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
+	if (review_twin is None): raise NoReviewFound(review_twin_id) 
+
 	if (review_twin.completed()):
 		try:
 			print 'ht_posting_review_update_proposal():  make both reviews live'
