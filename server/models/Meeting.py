@@ -12,11 +12,11 @@
 #################################################################################
 
 
+print '\t->', __name__
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.errors		 import *
 from server.models	import Account, Profile, Oauth, Review
-from server.email	import ht_send_review_reminder
 from sqlalchemy import ForeignKey, LargeBinary
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy.orm	import relationship, backref
@@ -645,3 +645,4 @@ class MeetingFactory(SQLAlchemyModelFactory):
 		obj.meet_id = id #over-riding for clarity when reading the log-output
 		obj.meet_flags = obj.meet_flags | MEET_FLAG_WAIVE_FEE
 		return obj
+print '\t<-', __name__
