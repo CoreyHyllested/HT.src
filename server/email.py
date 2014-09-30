@@ -72,7 +72,7 @@ def ht_send_email_address_verify_link(user_email, account):
 	print 'send a verify this email account to ' + str(user_email)
 
 	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
-	msg_text = "Before you book a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings:" + str(account.sec_question) + "<br><br>\nOr, click on this link: " + verify_email_url + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA.
+	msg_text = "Before you book a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings:" + str(account.sec_question) + "<br><br>\nOr, click on this link: " + verify_email_url + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_html = email_body_verify_email_address('url', 'abcd')  
 
 	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
@@ -146,7 +146,6 @@ def ht_send_meeting_rejected_notifications(meeting):
 
 		print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
 		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name)
-		buyer_msg_text = 
 		buyer_msg = create_notification(str(sellr_name) + ' rejected your lesson proposal', buyer_email_addr, buyer_name)
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'html'))
@@ -207,7 +206,7 @@ def ht_send_meeting_canceled_notifications(meeting):
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in more than 48 hours'
 			sellr_html = email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name)
-			seller_text = <a href="" + buyer_name + " cancelled the lesson appointment.\n\nMessage " + buyer_name + " at https://127.0.0.1:5000/profile?" + buyer_profile.prof_id + " to see if you can work out a new date and time.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+			seller_text = "<a href=" + buyer_name + " cancelled the lesson appointment.\n\nMessage " + buyer_name + " at https://127.0.0.1:5000/profile?" + buyer_profile.prof_id + " to see if you can work out a new date and time.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		else:
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
