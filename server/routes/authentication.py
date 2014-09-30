@@ -71,8 +71,9 @@ def render_signup_page(usrmsg = None):
 				return redirect('/dashboard')
 			else:
 				usrmsg = 'Something went wrong.  Please try again'
+	
 	elif request.method == 'POST':
-		usrmsg = 'Form isn\'t filled out properly, ', str(form.errors)
+		usrmsg = 'Sorry, the form isn\'t filled out properly.'
 		trace("/signup form isn't valid" + str(form.errors))
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))
@@ -298,8 +299,8 @@ def settings_verify_stripe():
 	edesc = rc.get('error_description', 	 'None') 
 	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
-	pkey  = rc.get('stripe_publishable_key', 'None')
-	user  = rc.get('stripe_user_id',		 'None')
+	pkey  = rc.get('stripe_publishable_key', 'None')	# users?!? PK
+	user  = rc.get('stripe_user_id',		 'None')	# Insprite Customer ID.
 	rfrsh = rc.get('refresh_token')
 
 	if error != 'None':

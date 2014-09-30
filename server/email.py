@@ -115,7 +115,7 @@ def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
 
 
 def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
-	print "ht_send_meeting_proposed_notification (to seller) (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_sellr: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
 	msg_text = "You received a lesson proposal from " + buyer_name + ".\n\nDate: " + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime: " + meeting.get_meet_ts().strftime('%I:%M %p') + "--" + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration: " + meeting.get_duration_in_hours() + "\nLocation: " + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription: " + meeting.get_description_html() + "\n\nTo accept the lesson, click here: " + meeting.accept_url() + "\n\nTo reject the lesson, click here: " + meeting.reject_url() + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
@@ -130,7 +130,7 @@ def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_n
 
 
 def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
-	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_buyer: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
 	msg_text = "You sent a lesson proposal to " + sellr_name + ".\n\nDate:" + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime:" + meeting.get_meet_ts().strftime('%I:%M %p') + '--' + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + "\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\nf\nStand by, and " + sellr_name + " will respond to your request soon.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
@@ -308,6 +308,10 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 def ht_send_meeting_reminders(meet_id):
 	print 'ht_send_meeting_reminders() --  sending appointment reminder emails now for ' + meet_id
 	meeting = Meeting.get_by_id(meet_id)
+
+	if (not meeting):
+		print 'ht_send_meeting_reminders(' + str(meet_id) + ') doesn\'t exist'
+		return
 
 	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.

@@ -21,10 +21,9 @@ from .Industry			import *
 from .LessonImageMap	import *
 from .Lesson			import *
 from .Oauth				import *
-from .Proposal			import *
+from .Review			import *
 from .Meeting			import *
 from .Registrant		import *
-from .Review			import *
 from .Skills			import *
 from .UserMessage		import *
 

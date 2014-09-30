@@ -2,13 +2,11 @@
 
 {% block head %}
 	{{ super() }}
-	<!-- <link type="text/css" rel="stylesheet" href="/static/css/dropzone.css"> -->
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_profile.css"><!-- contains dropzone overrides -->
-
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div class="editProfContentWrapper">
 
 	<div class="editProfFlags" data-flags="{{flags}}">{{flags}}</div>
@@ -253,9 +251,9 @@
 					</div>
 
 					<div class="formFieldError"></div>
+					<!-- ca_2lJc0Fr8dOo2O5L8Lds3xwOqnGspvo8l -->
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					
-					{{form.edit_oauth_stripe(class="formField span4", readonly=true)}} <span class="formFieldCaption"></span>
+					{{form.edit_oauth_stripe(class="formField span4", readonly=true, placeholder='No Stripe Account Found.')}}<span class="formFieldCaption"></span>
 
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">

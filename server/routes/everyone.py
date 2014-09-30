@@ -35,6 +35,7 @@ def render_landingpage():
 
 
 
+
 @ht_csrf.exempt
 @insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
@@ -65,25 +66,17 @@ def render_profile(usrmsg=None):
 		# complicated search queries can fail and lock up DB.
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
-		lessons = ht_get_active_lessons(hp)
-		if lessons:
-			print "found lessons."
-		else:
-			print "no lessons found."
-
+		hp_lessons = ht_get_active_lessons(hp)
 		avail = Availability.get_by_prof_id(hp.prof_id)	
-
-
-
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 
 
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs, avail=avail))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=avail))
 
 
 
@@ -144,7 +137,8 @@ def render_search(page = 1):
 		rateFrom	= rate_temp
 
 	try:
-		results = db_session.query(Profile) #.order_by(Profile.created)
+		# Only return profiles for mentors, not regular users.
+		results = db_session.query(Profile).filter(Profile.availability > 0) #.order_by(Profile.created)
 		results_industry = results #.all();
 		print 'Total Profiles:', len(results.all())
 		if (industry != -1):
@@ -182,7 +176,7 @@ def render_search(page = 1):
 	page_items = []
 	page_total = []
 	total_results = q_rc.all();
-	per_page = 3
+	per_page = 10
 	trc_start_pg = (page - 1) * per_page
 	trc_end_pg = (page * per_page)
 	if (trc_start_pg) > (len(total_results)):
@@ -190,7 +184,7 @@ def render_search(page = 1):
 	if (trc_end_pg > (len(total_results))):
 		trc_end_pg = len(total_results)
 	new_results = total_results[trc_start_pg:trc_end_pg]
-	paginate = Pagination(q_rc, page, per_page=3, total=page_total, items=q_rc.all())
+	paginate = Pagination(q_rc, page, per_page=10, total=page_total, items=q_rc.all())
 	print 'page_items', page_items
 	print 'page_total', page_total
 	print 'page_heros', paginate.items

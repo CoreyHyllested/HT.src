@@ -3,16 +3,11 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
-	{% assets "sass_lesson" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
-	{% endassets %}
+	{% assets "sass_lesson" %}<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">{% endassets %}
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
+	<link type="text/css" rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
 	<script src="/static/js/galleria/galleria-1.4.2.min.js"></script>
-	
 	<script src="/static/js/galleria/themes/classic/galleria.classic.min.js"></script>
-	<link rel="stylesheet" href="/static/js/galleria/themes/classic/galleria.classic.css">
-	
-
 {% endblock %}
 
 
@@ -64,8 +59,10 @@
 
 			<div class="lessonTitleBox">
 				<div class="lessonTitle"><h1>{{lesson.lesson_title}}</h1></div>
-				<div class="lessonRate"><div class="rateAmount">${{lesson.lesson_rate}}</div>
-				<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div></div>
+				<div class="lessonRate">
+					<div class="rateAmount">${{lesson.lesson_rate}}</div>
+					<div class="rateInfo">{% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</div>
+				</div>
 				<div class="lessonRating">
 
 					{% if mentor.reviews == 0 %}
@@ -75,20 +72,13 @@
 						Mentor Rating: <span class="ratingStars"></span>&nbsp;&nbsp;<a class="navElement blend" href="" data-target="reviews">({{mentor.reviews}} Review{% if mentor.reviews > 1 %}s{% endif %})</a>
 					{% endif %}
 
-
-					
 				</div>				
-				<div class="lessonCategory">
-					Category: {{industry}}
-				</div>				
-
+				<div class="lessonCategory">Category: {{industry}}</div>
 			</div>
 
 			<div id="overview" class="lessonDescBox">
 				<div class="lessonDescHeader"><h2>Overview</h2></div>			
-				<div class="lessonDescBody">{{lesson.lesson_description}}
-				</div>
-
+				<div class="lessonDescBody">{{lesson.lesson_description}}</div>
 				<div class="lessonDescHeader"><h2>Rates</h2></div>			
 				<div class="lessonDescBody">
 					Individuals: ${{lesson.lesson_rate}} {% if lesson.lesson_rate_unit == 0 %}per hour{% else %}per lesson{% endif %}</li>
@@ -102,12 +92,12 @@
 				{% if mentor.availability == 1 %}
 					This mentor has flexible availability - let them know what works for you.
 				{% else %}
-					
-					{% for timeslot in avail %}
-						<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
-					{% endfor %}
-
-				{% endif %}				
+					{% if bp %}
+						{% for timeslot in avail %}
+							<div class="lessonAvailDay" data-weekday="{{timeslot.avail_weekday}}" data-start="{{timeslot.avail_start}}" data-finish="{{timeslot.avail_finish}}"></div>
+						{% endfor %}
+					{% endif %}
+				{% endif %}
 
 				</div>
 				<div class="lessonDescHeader"><h2>Duration</h2></div>			
@@ -143,9 +133,7 @@
 				{% for review in reviews %}
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
-						  <div class="imageHexTop"></div>
-						  <div class="imageHexBottom"></div>
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}})">
 						</div>					
 					</div>
 					<div class="reviewerInfo">
@@ -164,9 +152,7 @@
 
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
-						  <div class="imageHexTop"></div>
-						  <div class="imageHexBottom"></div>
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/869d0fc19f2922f5a5979ea217d26010629b5674.jpg)">
 						</div>					
 					</div>				
 					<div class="reviewerInfo">
@@ -184,9 +170,7 @@
 
 				<div class="lessonReview">	
 					<div class="reviewerPhotoContainer">
-						<div class="imageHexagonSmall" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
-						  <div class="imageHexTop"></div>
-						  <div class="imageHexBottom"></div>
+						<div class="reviewerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/e6a95afb16e90d4dfc9682420e9aea4a767f8b2f.jpg)">
 						</div>					
 					</div>					
 					<div class="reviewerInfo">
@@ -217,9 +201,7 @@
 			<div class="lessonMentorBox">
 
 				<div class="mentorPhotoContainer">
-					<div class="imageHexagon" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.prof_img}})">
-					  <div class="imageHexTop"></div>
-					  <div class="imageHexBottom"></div>
+					<div class="mentorPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.prof_img}})">
 					</div>
 				</div>
 
@@ -250,22 +232,18 @@
 			
 			{% if mentor.location != "" %}
 			<div class="lessonMapContainer">
-				<div class="lessonMap">
-		            <a href="http://maps.google.com/?q={{mentor.location}}"><img src="http://maps.googleapis.com/maps/api/staticmap?zoom=13&size=300x300&maptype=roadmap&markers=color:blue%7C{{mentor.location}}&sensor=false"></a>
-	            </div>				
-            </div>
-            {% endif %}				
+				<div class="lessonMap" id="map-canvas" data-uuid="{{lesson.lesson_id}}" data-location="{{mentor.location}}"></div>
+			</div>
+			{% endif %}
 
 
 			</div>
-
-
 		</div>
 	</div>
-
 	<div class="clear"></div>
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
 <script src="/static/js/moment.min.js"></script>
 <script src="/static/js/lightbox.min.js"></script>
 <script src="/static/js/maps.js"></script>
@@ -327,7 +305,7 @@ if ($(".galleria").length) {
 
 
 $(document).ready(function() {
-	// google.maps.event.addDomListener(window, 'load', initialize);
+	google.maps.event.addDomListener(window, 'load', initialize_lesson_map);
 
 	// generateStatus({{lesson.lesson_flags}});
 

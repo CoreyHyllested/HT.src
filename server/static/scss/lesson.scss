@@ -19,6 +19,18 @@ Saving for later
 }
 */
 
+.lessonMap {
+	background-color: rgba(0,0,0, 0.05);
+	border: 1px #e1e8ed solid;
+	border-radius: 0 0 3px 3px;
+	border-top: none;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	height: 205px;
+	width: 100%;
+}
+
 /* Nav and Layout */
 
 .pageWrapper {
@@ -250,6 +262,7 @@ Saving for later
 	            height:100px;
 	            background-repeat: no-repeat center;
 				background-size: cover;
+				background-position: center;
 				border-radius: 50%;
 				-webkit-border-radius: 50%;
 				-moz-border-radius: 50%;
@@ -285,14 +298,16 @@ Saving for later
 	}
 	.lessonState {
 		float: left;
-		font-size: 0.9em;
+		font-size: 0.8em;
+		text-align: center;
+		width: 100%;
 	}
 	.lessonButtons {
 		float: left;
 		width: 100%;
 		
 		button {
-			margin: 12px 0px;
+			margin: 6px 0px 12px;
 		}
 	}
 	.lessonMapContainer {
@@ -404,6 +419,7 @@ Saving for later
 	            width:80px;
 	            height:80px;
 	            background-repeat: no-repeat center;
+	            background-position: center;
 				background-size: cover;
 				border-radius: 50%;
 				-webkit-border-radius: 50%;

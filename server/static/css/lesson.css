@@ -88,7 +88,7 @@
 
   .lessonNavBarContainer {
     width: 100%;
-    background-color: #e75f63;
+    background-color: #e75f64;
     height: 40px; }
     .lessonNavBarContainer .lessonNavBar {
       margin: 0px auto;
@@ -153,6 +153,7 @@
                     height: 100px;
                     background-repeat: no-repeat center;
                     background-size: cover;
+                    background-position: center;
                     border-radius: 50%;
                     -webkit-border-radius: 50%;
                     -moz-border-radius: 50%;
@@ -174,12 +175,14 @@
                       font-weight: 300; }
             .lessonRightColumn .lessonState {
               float: left;
-              font-size: 0.9em; }
+              font-size: 0.8em;
+              text-align: center;
+              width: 100%; }
               .lessonRightColumn .lessonButtons {
                 float: left;
                 width: 100%; }
                 .lessonRightColumn .lessonButtons button {
-                  margin: 12px 0px; }
+                  margin: 6px 0px 12px; }
             .lessonRightColumn .lessonMapContainer {
               float: left;
               width: 100%;
@@ -235,6 +238,7 @@
             width: 80px;
             height: 80px;
             background-repeat: no-repeat center;
+            background-position: center;
             background-size: cover;
             border-radius: 50%;
             -webkit-border-radius: 50%;

@@ -1,17 +1,15 @@
-//creating a Google API Map on the page
+// Insprite's GoogleMap API Wrapper.
 
-var DEBUG = 0; // set to 1 to display console logs.
+var DEBUG = 0;
 
-if (DEBUG) { console.log('maps.js\tenter'); }
+if (DEBUG) { console.log('loading maps.js...'); }
 var geocoder1;
 var map1;
-if (DEBUG) { console.log('maps.js\tdefine infowindow'); }
 var infowindow = new google.maps.InfoWindow();
-var markers = [];
 var geocoder = new google.maps.Geocoder();
+var markers = [];
 
 
-if (DEBUG) { console.log('maps.js\tdefine cal_map'); }
 function cal_map(address, id) {
 	if (DEBUG) { console.log('cal_map(' + address + ',' + id + ')\tenter'); }
     geocoder1 = new google.maps.Geocoder();
@@ -36,10 +34,8 @@ function cal_map(address, id) {
     });
 }
 
-if (DEBUG) { console.log('maps.js\tdefine initialize'); }
-function initialize() {
-	if (DEBUG) { console.log('initialize() enter'); }
 
+function initialize() {
 	if (DEBUG) { console.log('initialize()\tdefine mapOptions'); }
 	var mapOptions = {
 		zoom: 6,
@@ -54,7 +50,7 @@ function initialize() {
 		if (DEBUG) { console.log('initialize()\tmap-canvas not null'); }
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-		// Create the search box and link it to the UI element.
+		// Create search box and link it to the UI element.
 		if (DEBUG) { console.log('initialize()\tderp-derp.  Use prop_location'); }
 		var input = document.getElementById('prop_location');
 		var searchBox = new google.maps.places.SearchBox(input);
@@ -228,7 +224,6 @@ function init_canvas(map_canvas, map_options, map_searchbox) {
 }
 
 
-if (DEBUG) { console.log('maps.js()\tdefine mapOptions'); }
 var mapOptions = {
 	zoom: 6,
 	mapTypeControl: false,
@@ -238,12 +233,17 @@ var mapOptions = {
 }
 
 
-if (DEBUG) { console.log('maps.js\tdefine initialize_all_dashboard_maps()'); }
 function initialize_all_dashboard_maps() {
 	$.each($('.scheduleMap'), function(idx, map) {
 		if (DEBUG) { console.log('initialize_all_dashboard_maps()\t initialize canvas ('+idx+')'); }
-
 		maps_search_input = null
 		init_canvas(map, mapOptions, maps_search_input);
+	});
+}
+
+function initialize_lesson_map() {
+	$.each($('.lessonMap'), function(idx, map) {
+		if (DEBUG) { console.log('initialize_lesson_map()\t initialize canvas ('+idx+')'); }
+		init_canvas(map, mapOptions, null);
 	});
 }

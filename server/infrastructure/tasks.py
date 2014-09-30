@@ -32,8 +32,7 @@ import stripe
 
 
 def ht_meeting_create(values, uid):
-	""" Creates a PROPOSED MEETING
-	"""
+	""" Create a PROPOSED Meeting. """
 
 	print 'ht_meeting_create: enter()'
 	#	Stripe fields should be validated.
@@ -42,7 +41,6 @@ def ht_meeting_create(values, uid):
 	#	v3 - place doesn't matter as much..
 	#	v4 - cost..
 	try:
-		print 'ht_meeting_create: validate input'
 		stripe_tokn = values.get('stripe_tokn')		# used to charge
 		stripe_card = values.get('stripe_card')		# card to add to insprite_customer.
 		stripe_cust = values.get('stripe_cust')
@@ -80,17 +78,18 @@ def ht_meeting_create(values, uid):
 
 		print "ht_meeting_create: dt_start_pacific:", dt_start_pacific
 		print "ht_meeting_create: dt_finsh_pacific:", dt_finsh_pacific
-		
 		print 'ht_meeting_create: (from stripe) token =', stripe_tokn, 'card =', stripe_card, 'cust =', stripe_cust
+
 		hp	= Profile.get_by_prof_id(prop_mentor)
 		bp	= Profile.get_by_uid(uid)
 		ba  = Account.get_by_uid(uid)
 		ha  = Account.get_by_uid(hp.account)
-		print 'ht_meeting_create: lookup buyer\'s stripe customer id'
 		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
-		print "ht_meeting_create: buyer: ", bp.prof_name, ':', stripe_cust
+		print 'ht_meeting_create: Mentee (' + str(bp.prof_name) + ', ' + str(stripe_cust) + ')'
+		print 'ht_meeting_create: Mentor (' + str(hp.prof_name) + ')'
 
 		meeting = Meeting(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_location), str(prop_desc), str(prop_lesson), prop_groupsize, token=stripe_tokn, customer=stripe_cust, card=stripe_card)
+
 		db_session.add(meeting)
 		db_session.commit()
 		print "ht_meeting_create: successfully committed meeting"
@@ -193,11 +192,15 @@ def ht_meeting_reject(meet_id, profile):
 
 
 def ht_get_stripe_customer(account, cc_token=None, cc_card=None, cust=None):
-	print 'ht_get_stripe_customer_id(): enter'
+	""" returns Customer ID (cus_<HASH>); if customer doesn't exist, create Insprite Customer. """
+
 	if (account.stripe_cust is not None):
-		print 'ht_get_stripe_customer_id(): found!'
+		print 'ht_get_stripe_customer_id(): found customer', account.stripe_cust
+		stripe.api_key = ht_server.config['STRIPE_SECRET']
+		stripe_cust = stripe.Customer.retrieve(account.stripe_cust)
+		print 'ht_get_stripe_customer_id(): update customer,' + str(stripe_cust.get('email')) + ', w/ info(' + str(cc_token) + ', ' + str(cc_card) + ')'
+		stripe_cust.cards.create(card=cc_token)
 		return account.stripe_cust
-		
 
 	print 'ht_get_stripe_customer_id: customer does not exist, create'
 	try:

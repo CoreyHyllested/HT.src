@@ -29,9 +29,7 @@
 
 					<div class="partnerInfoBox">
 						<div class="partnerPhotoContainer">
-							<div class="imageHexagon" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})">
-							  <div class="imageHexTop"></div>
-							  <div class="imageHexBottom"></div>
+							<div class="partnerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})">
 							</div>
 						</div>
 
@@ -170,15 +168,15 @@
 					<a href="/profile?hero={{review.display.prof_id}}">
 						<h3>{{review.display.prof_name}}</h3>
 					</a>
-					<div class="appointmentIntro italic">{{review.appt.prop_desc}}</div>
+					<div class="appointmentIntro italic">{{review.meet.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
 					<div class="dashboardApptRightColumnElement apptDate">
-						{{review.appt.prop_ts.strftime('%A, %b %d')}}
+						{{review.meet.meet_ts.strftime('%A, %b %d')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptTime">
-						{{review.appt.prop_ts.strftime('%H:%M %p')}} - {{review.appt.prop_tf.strftime('%H:%M %p')}}
+						{{review.meet.meet_ts.strftime('%H:%M %p')}} - {{review.meet.meet_tf.strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptCost"> </div>
@@ -218,11 +216,14 @@
 	<div class="dashboardRightColumn">
 		<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
 		<a href="/profile"><h3>{{bp.prof_name}}</h3></a>
-		<h4>{{bp.headline}}</h4>
-		<div class="dashboardBasicInfo">
-			<div class="dashboardInfoBox">{{bp.location}}</div>
-			<div class="dashboardInfoBox">{{bp.industry}}</div>
-			<div class="dashboardInfoBox">
+		<div class="dashboardInfoHeadline">{{bp.headline}}</div>
+		<div class="dashboardInfoBox">
+			<div class="dashboardInfoLocation">
+				<i class="fa fa-fw fa-map-marker"></i>
+				{{bp.location}}
+			</div>
+			<div class="dashboardInfoRating">
+				<i class="fa fa-fw fa-star-o"></i>
 				{% if bp.reviews == 0 %}
 					No Reviews
 				{% elif bp.reviews == 1 %}
@@ -247,6 +248,7 @@
 
 </div>
 
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
 <script src="/static/js/maps.js"></script>
 <script src="/static/js/sendmsg.js"></script>
 <script>
@@ -291,16 +293,16 @@ $(document).ready(function() {
     });
 
 
-   $('.offerCancel').click(function () {
-        var id = this.id;
-        var fd = new FormData();
+	$('.offerCancel').click(function () {
+		var id = this.id;
+		var fd = new FormData();
 		var sid = "#appt-" + id;
-        fd.append('meet_id', id);
+		fd.append('meet_id', id);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "/meeting/cancel", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-        xhr.send(fd);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "/meeting/cancel", true);
+		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
+		xhr.send(fd);
 
         //catch response. make modificaitons.
         xhr.onreadystatechange = function(e) {
