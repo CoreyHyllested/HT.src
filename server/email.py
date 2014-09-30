@@ -26,8 +26,8 @@ from server.email_body import *
 from pprint import pprint as pp
 import json, smtplib, urllib
 
-
-
+site_url = "https://127.0.0.1:5000"
+# site_url = "https://www.insprite.co"
 
 def ht_email_welcome_message(user_email, user_name, challenge_hash):
 	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email) + "&nexturl=dashboard"    
@@ -40,11 +40,12 @@ def ht_email_welcome_message(user_email, user_name, challenge_hash):
 	ht_send_email(user_email, msg)
 
 
-def ht_email_body_beta_mentor_email():
-	msg_text = "Congrats! You\'re now an Insprite mentor.\nImpart your creative know-how in-person to those who want to learn from you&mdash;and get paid for it! Simply <a href="insert url for lesson">create a lesson</a> if you haven\'t already, and let the community know what you can offer.\nQuestions? Learn more from our Become a Mentor FAQ or drop us a line at thegang@insprite.co.\nSpritely yours,\nThe Insprite Gang\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
-	msg_html = email_body_verify_account(verify_email_url)
+def ht_send_mentor_welcome_message(user_email, user_name):
+	new_lesson_url = "https://127.0.0.1:5000/lesson/new"
+	msg_text = "Congrats! You\'re now an Insprite mentor.\nImpart your creative know-how in-person to those who want to learn from you&mdash;and get paid for it! Simply <a href='" + new_lesson_url + "''>create a lesson</a> if you haven\'t already, and let the community know what you can offer.\nQuestions? Learn more from our Become a Mentor FAQ or drop us a line at thegang@insprite.co.\nSpritely yours,\nThe Insprite Gang\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_html = email_body_mentor_welcome_message(new_lesson_url)
 
-	msg = create_msg('Congrats! You\'re an Insprite mentor, user_email, user_name, 'noreply@insprite.co', u'Insprite')
+	msg = create_msg('Congrats! You\'re an Insprite mentor', user_email, user_name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
