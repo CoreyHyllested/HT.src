@@ -27,7 +27,7 @@ mngr.conf.update(
 	# where event/messages are sent to become tasks 
 	BROKER_URL = 'amqp://guest:guest@darknight.local:5672/',
 	CELERY_CREATE_MISSING_QUEUES = True,
-	CELERY_INCLUDE = ['server.infrastructure.tasks'],
+	CELERY_INCLUDE = ['server.infrastructure.tasks', 'server.models', 'server.email'],
 
 	# where task results are stored (could also be Redis)
 	CELERY_RESULT_BACKEND = 'amqp://guest:guest@darknight.local:5672/',
