@@ -20,6 +20,8 @@ if (ENV_CONFIG== 'production' or ENV_CONFIG== 'devel_money'):
 # must init db_session, Base prior to importing event manager
 initialize_database(ht_unused.config)
 from server.infrastructure.srvc_events   import mngr
+from server.models import *
+
 
 if __name__ == "__main__":
 	print 'start manager'
