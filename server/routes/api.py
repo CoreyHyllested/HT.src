@@ -343,30 +343,31 @@ def ht_post_review(review):
 	print 'ht_post_review(): ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
 	if (review_twin is None): raise NoReviewFound(review_twin_id) 
 
-	if (review_twin.completed()):
-		try:
-			print 'ht_posting_review_update_proposal():  make both reviews live'
-			review.set_state(REV_STATE_VISIBLE)
-			review.updated = dt.utcnow()
-			review_twin.set_state(REV_STATE_VISIBLE)
-			review_twin.updated = dt.utcnow()
-
-			print 'ht_posting_review_update_proposal():  commit to DB'
-			db_session.add(review)
-			db_session.add(review_twin)
-		except Exception as e:
-			print 'ht_posting_review_update_proposal(): ', type(e), e
-			db_session.rollback()
-
-		print 'ht_posting_review_update_proposal(): update profiles'
-		profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
-		profile_buyer = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
-		print 'ht_posting_review_update_proposal(): profile', profile_sellr.prof_name
-		print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
-		ht_profile_update_reviews(profile_sellr)
-		ht_profile_update_reviews(profile_buyer)
-	else:
+	if (not review_twin.completed()):
 		print 'ht_posting_review_update_proposal():  just this review is available.'
+		return
+
+	try:
+		print 'ht_posting_review_update_proposal():  make both reviews live'
+		review.set_state(REV_STATE_VISIBLE)
+		review.updated = dt.utcnow()
+		review_twin.set_state(REV_STATE_VISIBLE)
+		review_twin.updated = dt.utcnow()
+
+		print 'ht_posting_review_update_proposal():  commit to DB'
+		db_session.add(review)
+		db_session.add(review_twin)
+	except Exception as e:
+		print 'ht_posting_review_update_proposal(): ', type(e), e
+		db_session.rollback()
+
+	print 'ht_posting_review_update_proposal(): update profiles'
+	profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
+	profile_buyer = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+	print 'ht_posting_review_update_proposal(): profile', profile_sellr.prof_name
+	print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
+	ht_profile_update_reviews(profile_sellr)
+	ht_profile_update_reviews(profile_buyer)
 
 
 
