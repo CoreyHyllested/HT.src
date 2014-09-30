@@ -13,13 +13,14 @@
 
 
 from __future__ import absolute_import
+
+print '\t->', __name__
 from datetime import datetime as dt, timedelta
 from email.mime.multipart	import MIMEMultipart
 from email.mime.text		import MIMEText
 from email.header			import Header
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
-from server.models		 import *
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from server.email_body import *
@@ -295,27 +296,6 @@ def ht_send_meeting_reminders(meet_id):
 
 
 
-@mngr.task
-def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
-	print 'ht_send_review_reminder()  sending meeting review emails now for ' + meet_id
-	meeting = Meeting.get_by_id(meet_id)
-	if (meeting.canceled()):
-		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + meet_id
-		return
-
-	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
-	(buyer_acct, buyer_prof) = get_account_and_profile(meeting.meet_buyer)
-	partner_prof = sellr_prof
-	if (sellr_acct.email == user_email):
-		partner_prof = buyer_prof
-
-	msg_html = email_body_review_reminder()
-	msg = create_notification('Review Meeting with ' + partner_prof.prof_name, user_email, user_name)
-	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
-	ht_send_email(user_email, msg)
-
-
-
 
 
 ################################################################################
@@ -368,3 +348,4 @@ def ht_send_email(email_addr, msg):
 	s.sendmail('noreply@herotime.co', email_addr, msg.as_string())
 	s.quit()
 
+print '\t<-', __name__

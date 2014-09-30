@@ -15,7 +15,10 @@
 print '\t->', __name__
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.srvc_events	 import mngr
-from server.infrastructure.errors		 import *
+from server.infrastructure.errors	import *
+from server.infrastructure.basics	import *
+from server.email import *
+from server.email_body import *
 from server.models	import Account, Profile, Oauth, Review
 from sqlalchemy import ForeignKey, LargeBinary
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
@@ -596,6 +599,28 @@ def meeting_event_complete(meet_id):
 	except Exception as e:
 		print 'meeting_event_occured callback: ' + str(type(e)) + str(e)
 		db_session.rollback()
+
+
+
+@mngr.task
+def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
+	print 'ht_send_review_reminder()  sending meeting review emails now for ' + meet_id
+	meeting = Meeting.get_by_id(meet_id)
+	if (meeting.canceled()):
+		print 'ht_send_review_reminder() meeting was canceled.  Do not send reviews. ' + meet_id
+		return
+
+	# call out to email.py to do all this... ?
+	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
+	(buyer_acct, buyer_prof) = get_account_and_profile(meeting.meet_buyer)
+	partner_prof = sellr_prof
+	if (sellr_acct.email == user_email):
+		partner_prof = buyer_prof
+
+	msg_html = email_body_review_reminder()
+	msg = create_notification('Review Meeting with ' + partner_prof.prof_name, user_email, user_name)
+	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
+	ht_send_email(user_email, msg)
 
 
 
