@@ -12,10 +12,10 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base, db_session
+from server.infrastructure.srvc_database import Base
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 from pytz import timezone
@@ -149,7 +149,5 @@ class Review(Base):
 
 	def get_review_url(self):
 		return '/review/new/' + str(self.review_id)
-
-
 
 
