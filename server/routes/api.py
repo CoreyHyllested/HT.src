@@ -68,8 +68,8 @@ def ht_api_meeting_accept():
 @insprite_views.route('/meeting/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_meeting_negotiate():
-	#meeting = Proposal.get_by_id(form.proposal_id.data)
-	#meeting.set_state(APPT_STATE_RESPONSE)
+	#meeting = Meeting.get_by_id(form.proposal_id.data)
+	#meeting.set_state(MeetingState.NEGOTIATE)
 	#meeting.prop_count = meeting.prop_count + 1
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
@@ -273,7 +273,7 @@ def ht_api_review_create(review_id):
 
 			print 'ht_api_review_create() data has been posted'
 			profile_reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
-			ht_posting_review_update_proposal(review)
+			ht_post_review(review)
 
 			# thank user for submitting review & making the world a better place
 			return jsonify(usrmsg='Thanks for submitting review. It will be posted shortly'), 200
@@ -332,11 +332,12 @@ def ht_profile_update_reviews(profile):
 
 
 
-def ht_posting_review_update_proposal(review):
-	""" Check to see if other review is posted and we can make them both visible"""
-	proposal = Proposal.get_by_id(review.rev_appt)
-	rev_sellr_id = proposal.review_hero
-	rev_buyer_id = proposal.review_user
+def ht_post_review(review):
+	""" Check if sibling-review is posted; if so make them both reviews visible. """
+	meeting = Meeting.get_by_id(review.rev_appt)
+	rev_sellr_id = meeting.review_sellr		# review mentor
+	rev_buyer_id = meeting.review_buyer		# review mentee
+
 	review_twin_id = (review.review_id == rev_sellr_id) and rev_buyer_id or rev_sellr_id
 	review_twin = Review.get_by_id(review_twin_id)
 	print 'ht_posting_review_update_proposal()\treview: ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
