@@ -117,7 +117,7 @@ def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
 
 def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
 	print "ht_send_meeting_proposed_notification_to_sellr: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
-
+	
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
 	msg_text = "You received a lesson proposal from " + buyer_name + ".\n\nDate: " + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime: " + meeting.get_meet_ts().strftime('%I:%M %p') + "--" + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration: " + meeting.get_duration_in_hours() + "\nLocation: " + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription: " + meeting.get_description_html() + "\n\nTo accept the lesson, click here: " + meeting.accept_url() + "\n\nTo reject the lesson, click here: " + meeting.reject_url() + "\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_subj = "You've received a lesson proposal from " + buyer_name
@@ -186,7 +186,7 @@ def ht_send_meeting_accepted_notifications(meeting):
 		buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
 
 		sellr_msg_html = email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile)
-		sellr_msg_text = "Fantastic! You\'ve accepted " + buyer_profile.prof_name + "\'s lesson proposal.\n\nDate: " + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime: " + meeting.get_meet_ts().strftime('%I:%M %p') + "&mdash;" + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration: " + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription: " + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+		sellr_msg_text = "Fantastic! You\'ve accepted " + buyer_profile.prof_name + "\'s lesson proposal.\n\nDate: " + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime: " + meeting.get_meet_ts().strftime('%I:%M %p') + "-" + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration: " + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription: " + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s lesson proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 		sellr_msg.attach(MIMEText(sellr_msg_text, 'plain'))
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'html', 'UTF-8'))
@@ -194,7 +194,7 @@ def ht_send_meeting_accepted_notifications(meeting):
 
 		# email buyer that seller accepted their proposal.
 		buyer_msg_html = email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_profile)
-		buyer_msg_text = sellr_profile.prof_name + " accepted your lesson proposal!\n\nDate:" + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nStart Time:" + meeting.get_meet_ts().strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+		buyer_msg_text = sellr_profile.prof_name + " accepted your lesson proposal!\n\nDate: " + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + "\nTime: " + meeting.get_meet_ts().strftime('%I:%M %p') + "-" + meeting.get_meet_tf().strftime('%I:%M %p') + "\nDuration:" + meeting.get_duration_in_hours() + " hours\nLocation:" + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription:" + meeting.get_description_html() + "\n\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		buyer_msg = create_msg(str(sellr_name) + ' accepted your lesson proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 		buyer_msg.attach(MIMEText(buyer_msg_text, 'plain'))
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'html', 'UTF-8'))
