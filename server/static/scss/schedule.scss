@@ -59,7 +59,7 @@ c) 750px - ... (tablets, desktops)
 	width: 980px;
 
 	h2 {
-		font-weight: bold;
+		font-weight: $font-weight-bold;
 		padding: 10px 10px 16px 0;
 	}
 
@@ -69,7 +69,7 @@ c) 750px - ... (tablets, desktops)
 	}
 
 	select {
-		color: #6e7980;
+		color: $charcoal-gray;
 		margin-top: -1px;
 		width: 100%;
 	}
@@ -81,7 +81,16 @@ c) 750px - ... (tablets, desktops)
 	width: 40%;
 	font-size: .9em;
 	line-height: 1.3em;
-	font-weight: 200;
+	font-weight: $font-weight-light;
+	color: rgba(0,0,0,.8);
+
+	.scheduleMentorHeader {
+		width: 100%;
+		float: left;
+		font-size: 1.1em;
+		font-weight: $font-weight-ltbold;
+		margin-bottom: 12px;
+	}
 
 	.scheduleMentorImage {
 		width: 100%;
@@ -100,9 +109,34 @@ c) 750px - ... (tablets, desktops)
 			width: 100%;
 			float: left;
 			font-size: 1.1em;
-			color: rgba(0,0,0,.8);
 			margin-bottom: 12px;
-			font-weight: 600;
+			font-weight: $font-weight-ltbold;
+		}
+	}
+
+	.scheduleMentorRating {
+
+		width: 100%;
+		float: left;
+		margin-bottom: 20px;
+			
+		.ratingHeader {
+			float: left;
+			font-size: 1.1em;
+			font-weight: $font-weight-ltbold;
+		}
+
+		.ratingStars {
+			float: left;
+			line-height: 1.4em;
+			margin: 0px 8px 0px 12px;
+			color: $orange-brighter;
+		}
+
+		.ratingReviews {
+			float: left;
+			line-height: 1.8em;
+			font-size: .8em;
 		}
 	}
 
@@ -118,7 +152,7 @@ c) 750px - ... (tablets, desktops)
 			font-size: 1.1em;
 			color: rgba(0,0,0,.8);
 			margin-bottom: 12px;
-			font-weight: 600;
+			font-weight: $font-weight-ltbold;
 		}
 
 		.scheduleMentorAvailDay {
@@ -136,14 +170,14 @@ c) 750px - ... (tablets, desktops)
 }
 
 .scheduleRightColumn {
-	color: black;
+	color: rgba(0,0,0,.8);
 	float: right;
-	line-height: 0.875em;
-	margin-top: 41px;
+	line-height: 0.9em;
+	margin-top: 28px;
 	width: 50%;
 
 	h3 {
-		color: black;
+		color: rgba(0,0,0,.8);
 		font-size: 1.188em;
 		margin-bottom: 18px;
 	}
@@ -154,11 +188,12 @@ c) 750px - ... (tablets, desktops)
 	}
 	.scheduleLessonInfo {
 		/*padding: 8px 0px;*/
-		width: 90%;
+		width: 96%;
 		font-size: .8em;
 		line-height: 1.3em;
 		float: left;
 		margin-top: 8px;
+		margin-bottom: 18px;
 
 		.loading {
 			width: 100%;
@@ -176,14 +211,14 @@ c) 750px - ... (tablets, desktops)
 			width: 100%;
 			padding: 6px 8px;
 			border-bottom: 1px dotted rgba(0,0,0,.05);
-			font-weight: 200;
+			font-weight: $font-weight-light;
 
 			&:last-of-type {
 				border-bottom: none;
 			}
 		
 			.lessonFieldLabel {
-				font-weight: 600;
+				font-weight: $font-weight-ltbold;
 				float: left;
 				width: 25%;
 			}
@@ -193,6 +228,17 @@ c) 750px - ... (tablets, desktops)
 				width: 75%;
 
 			}
+			.lessonMore {
+				float: left;
+				width: 100%;
+				text-align: right;
+				padding: 4px 0px;
+				font-size: .9em;
+				font-weight: $font-weight-ltbold;
+				i {
+					margin-left: 4px;
+				}
+			}
 		}
 
 	}
@@ -200,8 +246,8 @@ c) 750px - ... (tablets, desktops)
 	.scheduleIntro {
 		float: left;
 		width: 100%;
-		margin-bottom: 30px;
-		margin-top: 30px;
+		margin-bottom: 48px;
+		margin-top: 12px;
 	}
 
 	.scheduleIntro textarea {
@@ -211,7 +257,7 @@ c) 750px - ... (tablets, desktops)
 		width: 100%;
 
 		placeholder {
-			font-weight: 200;
+			font-weight: $font-weight-xlight;
 		}
 	}
 
@@ -259,7 +305,7 @@ c) 750px - ... (tablets, desktops)
 		float: left;
 		width: 100%;
 		/*border-bottom: 1px dotted rgba(0,0,0,.05);*/
-		font-weight: 200;
+		font-weight: $font-weight-light;
 		margin-top: 10px;
 		margin-bottom: 30px;
 
@@ -268,11 +314,11 @@ c) 750px - ... (tablets, desktops)
 			width: 100%;
 			padding: 8px 0px;
 			/*border-bottom: 1px dotted rgba(0,0,0,.05);*/
-			font-weight: 200;
+			font-weight: $font-weight-light;
 
 			&.highlight{
 				color: $teal;
-				font-weight: 600;
+				font-weight: $font-weight-bold;
 			}
 
 			&.invalidTime {
@@ -343,7 +389,7 @@ c) 750px - ... (tablets, desktops)
 		width: 100%;
 		padding: 8px 0px;
 		height: 40px;
-		font-weight: 200;
+		font-weight: $font-weight-light;
 		color: rgba(0,0,0,.5);
 
 		.propLocationMain {
@@ -390,8 +436,8 @@ input[type="text"] {
 	float: left;
 	padding: 6px 0px;
 	font-size: .9em;
-	font-weight: 400;
-	color: #e75f63;
+	font-weight: $font-weight-normal;
+	color: $red;
 	width: 100%;
 }
 
