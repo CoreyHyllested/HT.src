@@ -56,7 +56,6 @@
 
 		<div class="scheduleLessonInfo">
 		</div>
-
 		<div class="scheduleIntro">
 			<h3>Introduction</h3>
 			<textarea id="prop_description" placeholder="Tell {{mentor.prof_name}} a little about yourself and what you want to learn during your session (optional)."></textarea>
@@ -64,15 +63,14 @@
 
 		<div class="scheduleTime">
 			<h3>Date &amp; Time</h3>
-			
+			<div class="formFieldError"></div>
 			{{ form.prop_date(id="datepicker",placeholder="Choose Date") }}
 
+			<div class="formFieldError"></div>
 			<div class="scheduleTimeLabels">
 				{{form.prop_starttime.label}} {{form.prop_finishtime.label}}
 			</div>
-			
 			{{form.prop_starttime}}
-			
 			{{form.prop_finishtime}}
 			
 		</div>
@@ -645,37 +643,71 @@ $(document).ready(function() {
 	$('#send_proposal').click(function(e) {
 		e.preventDefault();
 
-		$cost = Number(totalCost) * 100;
-		$duration = lesson_duration;
-		$lesson = lesson_id;
+		// First validate to make sure user selected a date and time.
 
-		$groupsize = "1";
-
-		$description = $('#prop_description').val();
-		$location = $('#prop_location').val();
-		$start_date = $finish_date = $('#datepicker').val();
-		$start_time = $('#prop_starttime').val();
-		$finish_time = $('#prop_finishtime').val();
-
-		console.log('lesson = ' + $lesson);
-		console.log('duration = ' + $duration);
-		console.log('groupsize = ' + $groupsize);
-		console.log('description = ' + $description);
-		console.log('location = ' + $location);
-		console.log('mentor = ' + mentor_id + ';' + mentor_name);
-		console.log('start time = ' + $start_date+ ' ; ' + $start_time);
-		console.log('finish time = ' + $finish_date+ ' ; ' + $finish_time);
-		console.log('total cost = ' + $cost);
-
-		stripe_chkout.open({
-			name: mentor_name,
-			description: "Meeting on " + $start_date,
-			email: buyer_email,
-			image: '/static/img/favicon.png',
-			amount:	$cost,
-			currency: 'usd',
-		});
+		var valid = 1;
 		
+		if ($("#datepicker").val() == "") {
+			var error = "Please select a date for your session."; 
+			// $("#datepicker").css("border", "#e75f63");
+			$("#datepicker").prevAll(".formFieldError:first").html(error).fadeIn();
+			valid = 0;
+		} else {
+			console.log("datepicker val is " + $("#datepicker").val());
+		}
+		
+		if ($("#prop_starttime").val() == "" || $("#prop_finishtime").val() == "" ) {
+			var error = "Please select a time for your session."; 
+			
+			// if ($("#prop_starttime").val() == "") {
+			// 	$("#prop_starttime").css("border", "#e75f63");
+			// }			
+			// if ($("#prop_finishtime").val() == "") {
+			// 	$("#prop_finishtime").css("border", "#e75f63");
+			// }
+
+			$("#prop_starttime").prevAll(".formFieldError:first").html(error).fadeIn();
+			valid = 0;
+		}
+
+		if (valid == 0) {
+			openAlertWindow('Please fill out all required fields before submitting your request.');
+		}
+
+		// If valid, open the stripe widget to collect payment info
+
+		if (valid) {
+			$cost = Number(totalCost) * 100;
+			$duration = lesson_duration;
+			$lesson = lesson_id;
+
+			$groupsize = "1";
+
+			$description = $('#prop_description').val();
+			$location = $('#prop_location').val();
+			$start_date = $finish_date = $('#datepicker').val();
+			$start_time = $('#prop_starttime').val();
+			$finish_time = $('#prop_finishtime').val();
+
+			console.log('lesson = ' + $lesson);
+			console.log('duration = ' + $duration);
+			console.log('groupsize = ' + $groupsize);
+			console.log('description = ' + $description);
+			console.log('location = ' + $location);
+			console.log('mentor = ' + mentor_id + ';' + mentor_name);
+			console.log('start time = ' + $start_date+ ' ; ' + $start_time);
+			console.log('finish time = ' + $finish_date+ ' ; ' + $finish_time);
+			console.log('total cost = ' + $cost);
+
+			stripe_chkout.open({
+				name: mentor_name,
+				description: "Meeting on " + $start_date,
+				email: buyer_email,
+				image: '/static/img/favicon.png',
+				amount:	$cost,
+				currency: 'usd',
+			});
+		}
 	});
 });
 

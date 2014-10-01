@@ -94,6 +94,8 @@
 
 /* Component containers */
 
+.ui-datepicker{ z-index: 9999 !important;}
+
 .ui-datepicker, .ui-widget {
 	font-family: 'Helvetica Neue', Arial, sans-serif;
 	font-size: 1em;
