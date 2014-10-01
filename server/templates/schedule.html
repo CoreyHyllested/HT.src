@@ -245,30 +245,55 @@ $(document).ready(function() {
 
 
 	$("#prop_starttime").change(function() {
-		if ($("#prop_finishtime").is(":visible") && ($("#prop_finishtime").val() != "")) {
 
-			var starttime = moment($("#prop_starttime").val(), "HH:mm");
-			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");			
+		lesson_duration = $(".scheduleLessonInfo").attr("data-duration");
 
-			if (validateTimes(starttime, finishtime)) {		
-				//console.log("times are valid");
-				processLessonDuration();
-			} else {
-				//console.log("times are invalid");
+		if (lesson_duration > 0) {
+			// duration is fixed. we need to set the finish time dropdown based on the starttime we just picked.
+
+			console.log("starttime chosen - lesson duration set to " + lesson_duration + "; populating finish time");
+			processFinishTime($(this).val(), lesson_duration);
+		} else {
+			// duration is flexible - calculate duration based on values of start and finish time boxes (but only after both have been chosen).
+			if ($("#prop_finishtime").val() != "") {
+				var starttime = moment($("#prop_starttime").val(), "HH:mm");
+				var finishtime = moment($("#prop_finishtime").val(), "HH:mm");			
+
+				if (validateTimes(starttime, finishtime)) {		
+					console.log("times are valid");
+					processLessonDuration();
+				} else {
+					console.log("times are invalid");
+				}		
 			}
+
 		}
+
+
+
 	});
 
 	$("#prop_finishtime").change(function() {
-		if ($("#prop_starttime").val() != "") {
-			var starttime = moment($("#prop_starttime").val(), "HH:mm");
-			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
 
-			if (validateTimes(starttime, finishtime)) {		
-				//console.log("times are valid");
-				processLessonDuration();
-			} else {
-				//console.log("times are invalid");
+		lesson_duration = $(".scheduleLessonInfo").attr("data-duration");
+
+		if (lesson_duration > 0) {
+			// duration is fixed. we need to set the finish time dropdown based on the starttime we just picked.
+
+			console.log("finishtime chosen - lesson duration set to " + lesson_duration + "; populating start time");
+			processStartTime($(this).val(), lesson_duration);
+		} else {
+			// duration is flexible - calculate duration based on values of start and finish time boxes (but only after both have been chosen).
+			if ($("#prop_starttime").val() != "") {
+				var starttime = moment($("#prop_starttime").val(), "HH:mm");
+				var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
+
+				if (validateTimes(starttime, finishtime)) {		
+					//console.log("times are valid");
+					processLessonDuration();
+				} else {
+					//console.log("times are invalid");
+				}
 			}
 		}
 	});
@@ -292,7 +317,7 @@ $(document).ready(function() {
 		console.log("getLessonDetails: getting lesson details for lesson "+lesson_id);
 
 		$("#datepicker").val("");
-		$("#prop_finishtime,label[for=prop_finishtime]").show();
+		$("#prop_finishtime,label[for=prop_finishtime]").css("opacity", 1).removeAttr("disabled");
 		$(".detailFieldData").empty();
 		// $(".scheduleMapStatic, .scheduleMap").hide();
 
@@ -378,7 +403,7 @@ $(document).ready(function() {
 							console.log("getLessonDetails: The lesson has a duration: "+lesson_duration_str+" - hiding finishtime select box.");
 
 							// if duration is set for this lesson, hide the finish time 
-							$("#prop_finishtime,label[for=prop_finishtime]").hide();
+							$("#prop_finishtime,label[for=prop_finishtime]").css("opacity", "0.3").attr("disabled", "disabled");
 							$("#detailLessonDuration").text(lesson_duration_str);
 							totalCost = getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit);
 							$("#detailLessonCost").text("$"+totalCost).data("totalCost", totalCost);
@@ -413,6 +438,7 @@ $(document).ready(function() {
 		var duration = $(".scheduleLessonInfo").attr("data-duration");
 		var duration_offset = Math.ceil(parseInt(duration)/30);
 
+
 		if (start != "" && finish != "") {
 			var startTargetFirst = $("#prop_starttime").children("option[value='"+start+"']");
 			var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']");
@@ -422,10 +448,17 @@ $(document).ready(function() {
 			startTargetFirst.prevAll().attr('disabled','disabled');
 			startTargetLast.nextAll().attr('disabled','disabled');
 
-			var finishPointer = startTargetLast;
+			var startLatestPointer = startTargetLast;
+			var finishEarliestPointer = finishTargetFirst;
+
 			for (i = 0; i < duration_offset; i++) { 
-			    finishPointer.attr('disabled','disabled');
-			    finishPointer = finishPointer.prev();
+				// must factor in a lesson duration offset in each of the time select boxes, so you can't pick a start time half an hour from the mentor's quitting time, when the lesson is 3 hours. For each block of duration (currently, 30 minutes), deactivate a "late" start time and "early" finish time
+
+			    startLatestPointer.attr('disabled','disabled');
+			    startLatestPointer = startLatestPointer.prev();			    
+
+			    finishEarliestPointer.attr('disabled','disabled');
+			    finishEarliestPointer = finishEarliestPointer.next();
 			}
 
 			finishTargetFirst.prevAll().attr('disabled','disabled');
@@ -436,7 +469,15 @@ $(document).ready(function() {
 			start = "09:00";
 		}
 
+
+		console.log("processTimeSelect: duration is: " + duration);
+
 		$("#prop_starttime,#prop_finishtime").val(start);
+		
+		if (duration != "") {
+			// if duration of lesson is set, adjust the end time dropdown to display the end time (but it will be deactivated)
+			processFinishTime(start, duration);
+		}
 
 	}
 
@@ -444,7 +485,8 @@ $(document).ready(function() {
 	function processLessonDuration() {
 
 		var starttime = moment($("#prop_starttime").val(), "HH:mm");
-		var finishtime = moment($("#prop_finishtime").val(), "HH:mm");		
+		var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
+
 		var diff = finishtime.diff(starttime, 'minutes');
 		lesson_duration = diff;
 		lesson_duration_str = getDurationString(lesson_duration);
@@ -457,6 +499,37 @@ $(document).ready(function() {
 		totalCost = getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit);
 		$("#detailLessonCost").text("$"+totalCost);	
 	}
+
+	function processFinishTime(starttime, lesson_duration) {
+		// when user selects start time, check the lesson duration and populate the end time dropdown.
+		console.log("processFinishTime: starttime: " + starttime + ", duration: " + lesson_duration);
+
+		var starttime = moment(starttime, "HH:mm");
+		var finishtime = starttime.add(parseInt(lesson_duration), 'minutes');
+		var finishtime_formatted = moment(finishtime).format("HH:mm");
+
+		console.log("processFinishTime: mom starttime: " + starttime);
+		console.log("processFinishTime: mom finishtime: " + finishtime);
+		console.log("processFinishTime: finishtime formatted: " + finishtime_formatted);
+		
+		$("#prop_finishtime").val(finishtime_formatted);
+	}
+
+	function processStartTime(finishtime, lesson_duration) {
+		// when user selects start time, check the lesson duration and populate the end time dropdown.		
+		console.log("processStartTime: finishtime: " + finishtime + ", duration: " + lesson_duration);
+
+		var finishtime = moment(finishtime, "HH:mm");
+		var starttime = finishtime.subtract(parseInt(lesson_duration), 'minutes').format("HH:mm");
+		// var starttime_formatted = moment(finishtime).format("HH:mm");
+
+		console.log("processFinishTime: mom starttime: " + starttime);
+		console.log("processFinishTime: mom finishtime: " + finishtime);
+		// console.log("processFinishTime: finishtime formatted: " + finishtime_formatted);
+		
+		$("#prop_starttime").val(starttime);
+	}
+
 
 	// take duration and rates and calculate the cost we charge to user.
 	function getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit){
