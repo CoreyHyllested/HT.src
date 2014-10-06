@@ -9,6 +9,8 @@
 #requirements.txt
 #Procfile
 
+# SCSS files.
+server/static/css/lesson.css
 
 #HeroTime
 users.db

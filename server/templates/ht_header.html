@@ -165,7 +165,7 @@
 					<img src="/static/img/insprite_small2.png" class="headerLogoImg"></a>
 				</div>
 				<div class="headerSearchBar">
-					<form name="headerSearchForm" id="headerSearchForm" action="search" method="POST">
+					<form name="headerSearchForm" id="headerSearchForm" action="/search" method="POST">
 						<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
 						<input name="keywords_field" class="keywordsField" id="headerSearchField" type="text" autocomplete="off">
 					</form>

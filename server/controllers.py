@@ -289,11 +289,11 @@ def meeting_timedout(composite_meeting, profile):
 		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
 		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
-		if (meeting.meet_state == APPT_STATE_PROPOSED):
+		if (meeting.meet_state == MeetingState.PROPOSED):
 			print '\t\t\tPROPOSED Meeting...'
 			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				meeting.set_state(MEET_STATE_TIMEDOUT, profile)
+				meeting.set_state(MeetingState.TIMEDOUT, profile)
 				db_session.add(meeting)
 				db_session.commit()
 			else:
@@ -305,7 +305,7 @@ def meeting_timedout(composite_meeting, profile):
 			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
 				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\tFILTER Event out manually.  The events are working!!!'
-				meeting.set_state(APPT_STATE_OCCURRED)	# Hack, see above
+				meeting.set_state(MeetingState.OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -406,6 +406,92 @@ def ht_get_active_author_reviews(profile):
 
 
 
+
+def htdb_search_mentors_and_lessons(keywords, cost_min=0, cost_max=99999):
+	# COMPOSITE Profile-Lesson OBJECT
+	# OBJ.mentor	# Profile of Mentor
+	# OBJ.lesson	# Lesson by the mentor.
+
+	lesson = aliased(Lesson, name='lesson')
+	q_results	= db_session.query(Profile, lesson)										\
+							.filter(Profile.availability > PROF_MENTOR_NONE) 			\
+							.filter(Profile.prof_rate.between(cost_min, cost_max))		\
+							.join(lesson, Profile.prof_id == lesson.lesson_profile)		\
+							.filter(lesson.lesson_flags == LESSON_STATE_AVAILABLE)		\
+							.filter(lesson.lesson_rate.between(cost_min, cost_max))		\
+							.all();
+	print 'htdb_search_mentors_and_lessons: total results ', len(q_results)
+	hashmap = {}
+	results	= []
+
+	keywords = [k.lower() for k in keywords]
+	print 'htdb_search_mentors_and_lessons: score results ('+str(len(q_results))+') for keywords (', keywords, '),'
+
+	#################################################################################
+	### Search Process:
+	### Map 1:
+	### 	Score all mentor-lesson results
+	###		Map search-hits into hashtable indexed by Mentor's profile_id.
+	### Map 2: Order all lessons by their score. (mentor.lesson_hits)
+	###    score each composite mentor-lesson result for (case-insensitive) hits.
+	###    map any profile or lesson hits into dictionary/hashmap identified by prof_id
+	#################################################################################
+	map(lambda mentor_lesson: ht_score_search_results(mentor_lesson, keywords, hashmap), q_results)
+	map(lambda mentor_prof_id: ht_create_search_object(hashmap, mentor_prof_id, results), hashmap.keys())
+	print 'htdb_search_mentors_and_lessons: results[' + str(len(results)) + ']'
+
+#	results = ht_filter_composite_lessons(q_results, filter_by='COMP_SCORE', dump=True)	 # filter out no-profile and no-lessons.
+	for key in results:
+		print 'htdb_search_mentors_and_lessons: results[' + key.Profile.prof_name + '|' + str(key.total_score) + '|' + str(len(key.lesson_hits)) + ']'
+	results.sort(key=lambda x: x.total_score, reverse=True)
+	return results
+
+
+
+
+def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
+	mentor = hashmap[mentor_prof_id]
+	filtered_results.append(mentor[0])
+
+	lesson_hits = []
+	total_score = mentor[0].prof_score
+
+	# add lessons as appropriate
+	for lesson in mentor:
+		if (lesson.less_score > 0):
+			total_score = total_score + lesson.less_score
+			lesson_hits.append(lesson)
+
+	lesson_hits.sort(key=lambda x: x.less_score, reverse=True)
+	lesson_hits = lesson_hits[0:3]
+	setattr(mentor[0], 'lesson_hits', lesson_hits)
+	setattr(mentor[0], 'total_score', total_score)
+	print '\tht_score_mentor: Profile[' + str(mentor[0].prof_score) + '|' + str(total_score) + ']\t'+ mentor[0].Profile.prof_name  + '\t' + str(len(lesson_hits))
+
+
+
+
+
+def ht_filter_composite_lessons(search_set, filter_by='None', dump=False):
+	results = []
+
+	print 'ht_filter_composite_lessons: ', filter_by
+	if (filter_by == 'COMP_SCORE'):
+		#print 'Searching search_set for reviews of', profile.prof_name, profile.prof_id
+		results = filter(lambda s: (s.comp_score > 0), search_set)
+	elif (filter_by == 'LESS_SCORE'):
+		results = filter(lambda s: (s.less_score > 0), search_set)
+	else:
+		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
+
+	if (dump):
+		print 'ht_filter_composite_lessons: filter_by %s' % (filter_by), '\tSEARCH SET: ', len(search_set), "=>", len(results)
+		for s in results:
+			print '\t\t', s.Profile.prof_name, '\t', s.lesson.lesson_title, '\t', '$' + str(s.lesson.lesson_rate) #, '\t', s.score
+	return results
+
+
+
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
@@ -443,6 +529,40 @@ def display_meeting_partner(composite_meeting, profile):
 def display_meeting_lesson(composite_meeting, lesson):
 	lesson = composite_meeting.lesson
 	setattr(composite_meeting, 'lesson', lesson)
+
+
+def ht_score_search_results(composite_lesson, keywords, hashmap):
+	less_score = 0
+	prof_score = 0
+
+	for keyword in keywords:
+		if (keyword in composite_lesson.Profile.prof_name.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.prof_name.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.Profile.headline.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.headline.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.Profile.prof_bio.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.prof_bio.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.lesson.lesson_title.lower()):
+#			print '\t\t', keyword, composite_lesson.lesson.lesson_title.lower()
+			less_score = less_score + 1
+		if (keyword in composite_lesson.lesson.lesson_description.lower()):
+#			print '\t\t', keyword, composite_lesson.lesson.lesson_description.lower()
+			less_score = less_score + 1
+
+	setattr(composite_lesson, 'comp_score', (prof_score + less_score))
+	setattr(composite_lesson, 'prof_score', prof_score)
+	setattr(composite_lesson, 'less_score', less_score)
+
+	if ((prof_score + less_score) > 0):
+		# only add to map if at least one (profile/lesson) gets a hit.
+		lesson_list = hashmap.get(composite_lesson.Profile.prof_id, [])
+		lesson_list.append(composite_lesson)
+		hashmap[composite_lesson.Profile.prof_id] = lesson_list
+
+	print '\tht_score_lesson [' + str(less_score) + '|' + str(prof_score) + ']\t' + composite_lesson.Profile.prof_name, '\t', composite_lesson.lesson.lesson_title
 
 
 
@@ -552,6 +672,7 @@ def ht_create_lesson(profile):
 	return lesson
 
 
+
 def ht_create_avail_timeslot(profile):
 	avail = None
 	try:
@@ -571,8 +692,9 @@ def ht_create_avail_timeslot(profile):
 
 def htdb_get_lesson_images(lesson_id):
 	try:
-		lesson_images = db_session.query(LessonImageMap)								\
-									.filter(LessonImageMap.map_lesson == lesson_id).order_by(LessonImageMap.map_order).all()
+		lesson_images = db_session.query(LessonImageMap)				\
+						.filter(LessonImageMap.map_lesson == lesson_id)	\
+						.order_by(LessonImageMap.map_order).all()
 	except Exception as e:
 		print type(e), e
 	return lesson_images
@@ -676,6 +798,7 @@ def ht_print_timedelta(td):
 		return 'one day'
 	else:
 		return str(td.seconds / 3600) + ' hours'
+
 
 def get_day_string(day):
 	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}

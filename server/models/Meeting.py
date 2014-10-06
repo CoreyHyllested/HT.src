@@ -115,8 +115,8 @@ class Meeting(Base):
 	charge_transaction	= Column(String(40), nullable = True)	# stripe transaction id
 	charge_user_token	= Column(String(40), nullable = True)	# stripe charge tokn
 	hero_deposit_acct	= Column(String(40), nullable = True)	# hero's stripe deposit account
-	review_buyer = Column(String(40), ForeignKey('review.review_id'))
-	review_sellr = Column(String(40), ForeignKey('review.review_id'))
+	review_buyer = Column(String(40), ForeignKey('review.review_id'))	#mentor
+	review_sellr = Column(String(40), ForeignKey('review.review_id'))	#mentee
 
 	meet_lesson	= Column(String(40), ForeignKey('lesson.lesson_id'))
 	meet_groupsize = Column(Integer, default=1)
@@ -402,7 +402,7 @@ class Meeting(Base):
 
 			fee = 0
 			if (self.meet_cost > 5 and not self.test_flag(MEET_FLAG_WAIVE_FEE)):
-				fee = int((self.meet_cost * 7.1)-30),
+				fee = int((self.meet_cost * 7.1)-30)
 
 			print 'ht_charge_creditcard: cost (pennies)  ' +  str(self.meet_cost * 100)
 			print 'ht_charge_creditcard: application fee ' +  str(fee)
@@ -531,8 +531,8 @@ def ht_enable_reviews(meet_id):
 		db_session.commit()
 
 		print 'ht_enable_reviews()  modify meeting w/ review info'
-		meeting.review_user = review_bp.review_id
-		meeting.review_hero = review_hp.review_id
+		meeting.review_buyer = review_bp.review_id
+		meeting.review_sellr = review_hp.review_id
 		print 'ht_enable_reviews()  calling Meeting.writing.'
 		db_session.add(meeting)
 		db_session.commit()
