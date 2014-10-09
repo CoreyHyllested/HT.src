@@ -70,10 +70,10 @@
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Meeting.meet_id}}" data-location="{{proposal.Meeting.meet_location}}"></div>
 					</div>
 					{% if proposal.seller == true %}
-						<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
-						<input type="button" class="dashboardActionButton offerReject" id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
+						<input type="button" class="dashboardActionButton offerAccept" data-uuid="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
+						<input type="button" class="dashboardActionButton offerReject" data-uuid="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
 					{% else %}
-						<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
+						<input type="button" class="dashboardActionButton offerCancel" data-uuid="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
 					{% endif %}
 				</div>
 
@@ -255,7 +255,8 @@ $(document).ready(function() {
 	google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
 
     $('.offerAccept').click(function () {
-        var id = this.id;
+        var id = $(this).data('uuid');
+        console.log("accepting meeting id " + id);
 
         var fd = new FormData();
         fd.append('meet_id', id);
@@ -293,7 +294,7 @@ $(document).ready(function() {
 
 
 	$('.offerCancel').click(function () {
-		var id = this.id;
+        var id = $(this).data('uuid');
 		var fd = new FormData();
 		var sid = "#appt-" + id;
 		fd.append('meet_id', id);
@@ -332,7 +333,8 @@ $(document).ready(function() {
 
 
    $('.offerReject').click(function () {
-        var id = $(this).data('id');
+        var id = $(this).data('uuid');
+        console.log("rejecting meeting id " + id);
         var fd = new FormData();
         fd.append('meet_id', id);
 

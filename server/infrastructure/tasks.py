@@ -150,7 +150,7 @@ def ht_meeting_accept(meet_id, profile):
 
 
 def ht_meeting_cancel(meet_id, profile):
-	print 'ht_meeting_cancel(' + str(meet_id) + ')'
+	print 'ht_meeting_cancel(' + str(meet_id) + ')', profile.prof_id
 
 	meeting = Meeting.get_by_id(meet_id)
 	if (meeting is None): raise NoMeetingFound(meet_id)
@@ -164,7 +164,7 @@ def ht_meeting_cancel(meet_id, profile):
 		db_session.rollback()
 		ht_sanitize_error(e)
 
-	ht_send_meeting_canceled_notifications(meeting)
+	ht_send_meeting_canceled_notifications(meeting, profile)
 	return (200, 'Proposed meeting canceled')
 
 

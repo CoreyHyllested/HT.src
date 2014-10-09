@@ -73,9 +73,9 @@ def email_body_email_address_changed_confirmation(url, new_email):
 ### PROPOSAL | APPOINTMENT | MEETING EMAILS ####################################
 ################################################################################
 
-def email_send_meeting_proposed_notification_to_buyer(meeting, seller_name, sellr_profile):
+def email_body_new_proposal_notification_to_buyer(meeting, sellr_name, sellr_prof_id):
 	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_proposed_notification_to_buyer. """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\nYou sent a lesson proposal to <a href="' + site_url + '/profile?hero=' + sellr_profile.prof_id + '" style="color:#e75f63">'+ sellr_name + '</a>. <br><br>\n<br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;' + meeting.get_meet_tf().strftime('%I:%M %p') + '<br>\n<b>Duration: </b>' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b>' + str(meeting.meet_location) + '<br>\n<b>Total Cost: </b> $' + str(meeting.meet_cost) + ' <br>\n<b>Description: </b> ' + meeting.get_description_html() + '\n<br><br>\nStand by, and <a href="' + site_url + '/profile?hero=' + sellr_profile.prof_id + '" style="color:#e75f63">'+ sellr_name + '</a> will respond to your request soon.</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\nYou sent a lesson proposal to <a href="' + site_url + '/profile?hero=' + sellr_prof_id + '" style="color:#e75f63">'+ sellr_name + '</a>. <br><br>\n<br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;' + meeting.get_meet_tf().strftime('%I:%M %p') + '<br>\n<b>Duration: </b>' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b>' + str(meeting.meet_location) + '<br>\n<b>Total Cost: </b> $' + str(meeting.meet_cost) + ' <br>\n<b>Description: </b> ' + meeting.get_description_html() + '\n<br><br>\nStand by, and <a href="' + site_url + '/profile?hero=' + sellr_prof_id + '" style="color:#e75f63">'+ sellr_name + '</a> will respond to your request soon.</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -88,7 +88,7 @@ def email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_pr
 
 def email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name):
 	""" generate email body (HTML).  Buyer receives this email; sent via ht_send_meeting_rejected_notifications. """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px"><a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a> did not accept your lesson proposal this time around.<br><br>\nWhy, you ask? There could be many reasons, but trust us, do not take it personally.\n<br><br>Need to edit, manage or update the appointment? <a href="' + site_url + '/dashboard">Go for it</a>, or follow up with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px"><a href="' + site_url + '/profile?hero='+ meeting.meet_sellr + '" style="color:#e75f63">' + sellr_name + '</a> did not accept your lesson proposal this time around.<br><br>\nWhy, you ask? There could be many reasons, but trust us, do not take it personally.\n<br><br>If you\'d like, you can follow up with <a href="' + site_url + '/profile?hero='+ meeting.meet_sellr + '" style="color:#e75f63">' + sellr_name + '</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -96,7 +96,7 @@ def email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name):
 
 def email_body_meeting_rejected_notification_to_seller(meeting, buyer_name, buyer_prof_id):
 	""" generate email body (HTML).  Seller rejects proposal and receives this email; sent via ht_send_meeting_rejected_notifications. """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou did not accept a lesson proposal from <a href="' + site_url + '/profile?hero="' + buyer_prof_id + '" style="color:#e75f63">' + buyer_name + '</a><br>\nMessage <a href="' + site_url + '/profile?hero="' + buyer_prof_id + '" style="color:#e75f63">' + buyer_name + '</a> to see if you can work our a new date and time.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou did not accept a lesson proposal from <a href="' + site_url + '/profile?hero=' + buyer_prof_id + '" style="color:#e75f63">' + buyer_name + '</a><br>\n\nMessage <a href="' + site_url + '/profile?hero=' + buyer_prof_id + '" style="color:#e75f63">' + buyer_name + '</a> to see if you can work our a new date and time.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -105,7 +105,7 @@ def email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_
 	"""HTML email for buyer after the meeting proposal is accepted; called from ht_send_meeting_accepted_notification """
 	prof_url = site_url + "/profile?hero=" + sellr_profile.prof_id
 
-	msg = header +'<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\n<a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a> accepted your lesson proposal.<br><br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;'+ meeting.get_meet_tf().strftime('%I:%M %p') +'<br>\n<b>Duration: </b> ' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<br><br>\nWe know life can be busy, so we will send you a reminder 24 hours in advance. Need to manage the appointment? Send <a href="'+prof_url+'" style="color:#e75f63">' + sellr_profile.prof_name + '</a> a message.</font>\n</font>\n</td>\n</tr>\n</table>' + footer 
+	msg = header +'<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\n<a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a> accepted your lesson proposal.<br><br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;'+ meeting.get_meet_tf().strftime('%I:%M %p') +'<br>\n<b>Duration: </b> ' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<br><br>\nWe know life can be busy, so we will send you a reminder 24 hours in advance. Need to manage the appointment? Send <a href="'+prof_url+'" style="color:#e75f63">' + sellr_profile.prof_name + '</a> a message.</font>\n</font>\n</td>\n</tr>\n</table>' + footer 
 	
 	return msg
 
@@ -113,60 +113,64 @@ def email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_
 
 def email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile):
 	"""HTML email for seller after accepted meeting proposal; called from ht_send_meeting_accepted_notification """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\nFantastic! You\'ve accepted <a href="' + site_url + '/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '\'s lesson proposal</a>. <br><br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;'+ meeting.get_meet_tf().strftime('%I:%M %p') +'<br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost: </b> $' + str(meeting.meet_cost) + '<br>\n<b>Description: </b> ' + meeting.get_description_html() + '\n<br><br>\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:16px">\nFantastic! You\'ve accepted <a href="' + site_url + '/profile?hero=' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '\'s lesson proposal</a>. <br><br>\n<b>Date: </b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Time: </b>' + meeting.get_meet_ts().strftime('%I:%M %p') + '&mdash;'+ meeting.get_meet_tf().strftime('%I:%M %p') +'<br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + '<br>\n<b>Location: </b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost: </b> $' + str(meeting.meet_cost) + '<br>\n<b>Description: </b> ' + meeting.get_description_html() + '\n<br><br>\nWe know life can be busy, so we will send you a reminder 24 hours in advance.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
 
-def email_body_cancellation_from_buyer_before_acceptance(buyer_name, sellr_name):
+##### Cancellations #####
+
+def email_body_cancellation_from_buyer_to_buyer_before_acceptance(sellr_profile):
 	""" generate email body (HTML).  The buyer cancels the appointment before seller accpets. sent via ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou cancelled your lesson with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>.<br><br>\nNeed to reschedule with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>? <a href="' + site_url + '/dashboard" style="color:#e75f63">Go for it</a>, or <a href="'+msg_url+'" style="color:#e75f63">send ' + sellr_profile.prof_name + ' a message</a>. <br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou canceled your session with <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a>.<br><br>\nYou can try and reschedule by sending a message to <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a>. <br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+	
+	return msg
+
+def email_body_cancellation_from_buyer_to_seller_before_acceptance(buyer_profile):
+	""" generate email body (HTML).  The buyer cancels the appointment before seller accpets. sent via ht_send_meeting_canceled_notifications """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe are just letting you know that <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + ' canceled the session they had proposed to you. No further action is needed on your part.<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
 
-def email_body_cancellation_from_buyer_outside_24_hours(buyer_name, sellr_name):
-	""" generate email body (HTML).  The buyer cancels the appointment in advance of 24 hours threshold. sent via ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou cancelled your lesson with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>. You will not be charged for the cancellation. <br><br>\nNeed to reschedule with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>? <a href="' + site_url + '/dashboard" style="color:#e75f63">Go for it</a>, or <a href="'+msg_url+'" style="color:#e75f63">send ' + sellr_profile.prof_name + ' a message</a>. <br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+def email_body_cancellation_from_buyer_to_buyer(sellr_profile):
+	""" generate email body (HTML).  The buyer cancels the appointment in advance of 24/48 hours threshold. sent via ht_send_meeting_canceled_notifications """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou canceled your session with <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a>. You will not be charged for the cancellation. <br><br>\nWant to reschedule? Message <a href="' + site_url + '/profile?hero=' + sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a> to see if you can work our a new date and time.\n<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+	
+	return msg
+
+def email_body_cancellation_from_buyer_to_seller(buyer_profile):
+	""" generate email body (HTML).  The buyer cancels the appointment in advance of 24/48 hours threshold. sent via ht_send_meeting_canceled_notifications """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?hero='+ buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '</a> canceled his/her upcoming session with you.<br><br>\nYou can see if they want to reschedule by <a href="' + site_url + '/profile?hero=' + buyer_profile.prof_id + '" style="color:#e75f63">sending them a message</a>.\n<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
 
+def email_body_late_cancellation_from_buyer_to_buyer(sellr_profile, cost, window):
 
-def email_body_cancellation_from_buyer_within_24_hours(sellr_name, cost):
-	""" generate email body (HTML).  The buyer canceled the appointment within the 24 hours and will be charged.; sent via ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou cancelled your lesson with <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>.<br><br>\nWe know life can be busy, but we also value accountability and adhere to a 24-hour cancellation policy. You will be charged ' + str(meeting.meet_cost) + '</a> for the lesson.<br><br>\nQuestions? <a href="mailto:thegang@insprite.co" style="color:#e75f63">Drop us a line</a> or read up on our <a href="#" style="color:#e75f63">Terms of Service</a> and <a href="#" style="color:#e75f63">cancellation policies</a>.' + footer
+	""" generate email body (HTML).  The buyer canceled the appointment within the disallowed window and will be charged.; sent via ht_send_meeting_canceled_notifications """
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou canceled your session with <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a>.<br><br>\nWe know life can be busy, but we also value accountability and adhere to a '+ str(window) +'-hour cancellation policy. You will be charged $' + cost + '</a> for the session.<br><br>\nQuestions? <a href="mailto:thegang@insprite.co" style="color:#e75f63">Drop us a line</a> or read up on our <a href="#" style="color:#e75f63">Terms of Service</a> and <a href="#" style="color:#e75f63">cancellation policies</a>.' + footer
 
 	return msg
 
 
-
-def email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, buyer_profile, cost):
+def email_body_late_cancellation_from_buyer_to_seller(buyer_profile, cost, window):
 	""" generate email body (HTML).  Buyer cancels the meeting within 24 hours and seller receives this email. sent via ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> cancelled the lesson appointment.<br><br>\nSometimes things come up in life, but your time and talent are still valuable. You will receive ' + str(cost) +' from <a href="' + site_url + '/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> for the cancelled booking.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?hero=' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '</a> canceled his/her upcoming session with you.<br><br>\nSometimes things come up in life, but your time and talent are still valuable. You will receive $' + cost +' from <a href="' + site_url + '/profile?hero=' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '</a> for the canceled booking, because it was canceled within ' + str(window) + ' hours of the session.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
 
-
-def email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name, buyer_profile):
-	""" generate email body (HTML).  Buyer cancels the meeting within 48 hours and seller receives this email.; ht_send_meeting_canceled_notifications """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> cancelled the lesson appointment.<br><br>\nMessage <a href="' + site_url + '/profile?' + buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a> to see if you can work out a new date and time.\n</font>\n</td>\n</tr>\n</table>' + footer
-
-	return msg
-
-
-def email_body_cancellation_from_seller_to_buyer(sellr_name, sellr_profile):
+def email_body_cancellation_from_seller_to_buyer(sellr_profile):
 	""" generate email body (HTML).  Seller cancels the meeting, sends this email to buyer; sent via ht_send_meeting_canceled_notifications"""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a> cancelled your lesson.<br><br>\nCheck out <a href="' + site_url + '/profile?'+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_name + '</a>\'s availability, and send a new lesson proposal. (Sometimes, a little reshuffling can really make things happen.)\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n<a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a> canceled your lesson.<br><br>\nCheck out <a href="' + site_url + '/profile?hero='+ sellr_profile.prof_id + '" style="color:#e75f63">' + sellr_profile.prof_name + '</a>\'s availability, and send a new lesson proposal. (Sometimes, a little reshuffling can really make things happen.)\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
 
-
-def email_body_cancellation_from_seller(sellr_name, sellr_profile, buyer_name, buyer_profile):
+def email_body_cancellation_from_seller_to_seller(buyer_profile):
 	""" generate email body (HTML).  Seller cancels the meeting, sends this email to seller; sent via ht_send_meeting_canceled_notifications"""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n You cancelled your lesson with <a href="' + site_url + '/profile?'+ buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_name + '</a>.<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\n You canceled your lesson with <a href="' + site_url + '/profile?hero='+ buyer_profile.prof_id + '" style="color:#e75f63">' + buyer_profile.prof_name + '</a>.<br><br>\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -177,14 +181,14 @@ def email_body_cancellation_from_seller(sellr_name, sellr_profile, buyer_name, b
 
 def email_body_meeting_reminder(partner_prof, meeting):
 	""" generate email body (HTML). Both parties should receive 24 hours in advance of the meeting; sent by ht_send_meeting_reminder() """
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou have an lesson with <a href="' + site_url + '/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name +'</a>tomorrow.<br><br>\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.<br><br>\n<b>Date:</b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Start Time:' + meeting.get_meet_ts().strftime('%I:%M %p') + '</b><br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<b>Description:</b>' + meeting.get_description_html() + '<br><br>\nEnjoy!\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou have an lesson with <a href="' + site_url + '/profile?hero=hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name +'</a>tomorrow.<br><br>\nAs promised, we\'re sending you the details now so you don\'t have to worry about it later on.<br><br>\n<b>Date:</b>' + meeting.get_meet_ts().strftime('%A, %b %d, %Y') + '<br>\n<b>Start Time:' + meeting.get_meet_ts().strftime('%I:%M %p') + '</b><br>\n<b>Duration:</b> ' + meeting.get_duration_in_hours() + ' hours<br>\n<b>Location:</b> ' + str(meeting.meet_location) + '<br>\n<b>Total Cost:</b> $' + str(meeting.meet_cost) + '<br>\n<b>Description:</b>' + meeting.get_description_html() + '<br><br>\nEnjoy!\n</font>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
 
 def email_body_review_reminder(partner_prof, profile, url):
 	""" generate email body (HTML).  Rate and review email, both buyer and seller; called from ht_send_review_reminder."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="' + site_url + '/profile?hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="'+ url + '" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nWe hope you had a great lesson with <a href="' + site_url + '/profile?hero=hero=' + partner_prof.prof_id + '" style="color:#e75f63">' + partner_prof.prof_name + '</a>.<br>\n<br>\nYour opinion goes a long way&mdash;<a href="'+ url + '" style="color:#e75f63">write a review</a> so others can learn from your experience</a>.\n</font>\n</td>\n</tr>\n</table>' + footer
 
 	return msg
 
@@ -196,7 +200,7 @@ def email_body_review_reminder(partner_prof, profile, url):
 
 def email_body_to_user_sending_msg(profile, message):
 	""" generate email body (HTML).  When a user sends a message to a peer-user; send via ht_send_peer_message()."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou messaged <a href="' + site_url + '/profile?hero=' + profile.prof_id + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou messaged <a href="' + site_url + '/profile?hero=hero=' + profile.prof_id + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a> and should get a response soon.\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
@@ -206,7 +210,7 @@ def email_body_to_user_receiving_msg(profile, message):
 	messages_url = site_url + "/inbox"
 
 	""" generate email body (HTML).  When a user sends a message to a peer-user; sent via ht_send_peer_message()."""
-	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a message from <a href=\"' + site_url + '/profile?hero=' + str(profile.prof_id) + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a>. <br><br><br>\n<i>' + message.msg_content + '</i>\n<br><br><br><a href="' + messages_url +'" style="color:#e75f63">Go to your Insprite Inbox</a>\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
+	msg = header + '<table cellspacing="0" width="80%" align="center">\n<tr>\n<td style="padding-top:50px;padding-bottom:10px" align="left" valign="top">\n<font style="font-family:Helvetica Neue,Arial,sans-serif;color:#555;font-size:14px;line-height:14px">\nYou received a message from <a href=\"' + site_url + '/profile?hero=hero=' + str(profile.prof_id) + '" style="color:#e75f63">' + profile.prof_name.encode('utf8', 'ignore') + '</a>. <br><br><br>\n<i>' + message.msg_content + '</i>\n<br><br><br><a href="' + messages_url +'" style="color:#e75f63">Go to your Insprite Inbox</a>\n</font>\n<br>\n</td>\n</tr>\n</table>' + footer
 	
 	return msg
 
