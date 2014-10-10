@@ -116,7 +116,7 @@ $(document).ready(function() {
 		$('.editProfFormPage').hide();
 		$(".editProfNavItem").removeClass("active");
 
-		var nextPage = "guidelines";
+		var nextPage = "details";
 		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
 		$('#'+nextPage).show();
 		$('.editProfHeaderPageName').text(nextNav.text());

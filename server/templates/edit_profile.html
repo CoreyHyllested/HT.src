@@ -34,7 +34,6 @@
 
 					<div class="editProfNavItem" id="editProfNavItemMentor" data-target-page="mentor" data-default-icon="fa-sun-o">Become a Mentor!<i class="fa fa-fw fa-sun-o icon"></i></div>
 
-
 				</ul>
 
 				<div class="editProfNavActivate">
@@ -44,8 +43,7 @@
 
 			<div class="editProfNavContainer mentorNav">
 				<div class="editProfNavListHeader">Mentor Profile</div>
-				<ul class="editProfNavList">
-					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="guidelines" data-default-icon="fa-certificate">Guidelines<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-certificate icon"></i></div>			
+				<ul class="editProfNavList">	
 					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="details" data-default-icon="fa-star-o">Details<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-star-o icon"></i></div>
 					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="schedule" data-default-icon="fa-calendar">Schedule<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-calendar icon"></i></div>
 					<div class="editProfNavItem mentorFormNavItem disabled" data-target-page="payment" data-default-icon="fa-dollar">Rate & Payment<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-dollar icon"></i></div>
@@ -69,17 +67,17 @@
 					<div class="formContainer span12">
 						
 
-						<div class="formFieldInfo first">Your name as it should appear on your profile</div>
+						<div class="formFieldInfo first">Name</div>
 						<div class="formFieldError"></div>
-						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span6")}}
+						{{form.edit_name(placeholder="e.g. Ada Lovelace", maxlength="40", class="formField span6")}}
 
-						<div class="formFieldInfo">Where do you reside?</div>
+						<div class="formFieldInfo">Location</div>
 						<div class="formFieldError"></div>
-						{{form.edit_location(placeholder="Location", class="formField span6")}}
+						{{form.edit_location(placeholder="e.g. San Francisco, CA", class="formField span6")}}
 
-						<div class="formFieldInfo">Tell everybody your story. If you want to mentor others, talk about what you have to offer.</div>
+						<div class="formFieldInfo">About Me</div>
 						<div class="formFieldError"></div>
-						{{form.edit_bio(placeholder="Your Story", class="formField span12")}}	
+						{{form.edit_bio(placeholder="Tell everyone a little about yourself (e.g. passions, interests, craft, etc.)", class="formField span12")}}	
 					</div>
 
 					<div class="editProfFormPageFooter">
@@ -93,7 +91,7 @@
 
 				<div id="profile_photo" class="editProfFormPage">
 
-					<div class="formFieldInfo first">Recommended size is 2800 wide by 1400 tall. Photo is optional for regular users, but all mentors must upload one. Choose a good one - this will appear frequently around the site!</div>
+					<div class="formFieldInfo first">Photo is optional, except for mentors. Recommended size: 2800x1400. </div>
 
 					<div class="editProfImagePreviewContainer"><img id="editProfImagePreview" class="editProfImagePreview" src="{{photoURL}}"></div>
 
@@ -113,17 +111,18 @@
 
 
 				<div id="mentor" class="editProfFormPage">
-					<div class="formInstruction">What is an Insprite Mentor?</div>
-					<div class="formDescription">You have worked hard at your craft, skill, or hobby, and you can't wait to make the world a happier, more creative place by sharing your talent with others. As an Insprite Mentor, you can earn money by mentoring others in your community who want to learn from your experience and know-how.<br>
-					<ul>
-						<li>Create your mentor profile, telling the community what you have to offer</li>
-						<li>Create lessons or experiences that you want to share</li>
-						<li>Set your schedule and hourly or per-lesson rate</li>
-						<li>Earn money by imparting your wisdom on those who want to learn</li>
-						<li>Get paid directly through Insprite with no hassle</li>
-					</ul> 
+					<!-- <div class="formInstruction">What is an Insprite Mentor?</div> -->
+					<div class="formDescription">You’ve worked hard at your craft, skill or creative hobby. Now you can share your passion with others, and get paid for it.  Whether you teach a specific maker-arts lesson or let people tap your creative know-how for guidance, Insprite is the place for you to connect, meet and inspire others in-person.<br><br>
+
+					<ol>
+						<li>&#9830;  Create a mentor profile telling the community what you can offer. <!-- (Tip: Include a good photo of yourself--quality goes a long way.) --></li>
+						<li>&#9830;  Add lessons or experiences you can lead in-person. <!-- (Be sure it’s something you feel confident teaching to others.) --></li>
+						<li>&#9830;  Set your hourly, per-lesson rate and schedule availability.</li>
+						<li>&#9830;  Impart your creative wisdom, and earn money!</li>
+						<li>&#9830;  Get paid directly through Insprite with no hassle, promise.</li>
+					</ol> 
 					<br>
-					<div class="formInstruction">Ready to become an Insprite Mentor?</div>
+					<!-- <div class="formInstruction">Ready to become an Insprite Mentor?</div> -->
 					</div>
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">
@@ -134,7 +133,7 @@
 				</div>
 
 
-				<div id="guidelines" class="editProfFormPage mentorForm">
+				<!-- <div id="guidelines" class="editProfFormPage mentorForm">
 					<div class="formInstruction">We are ecstatic that you want to be a mentor!</div>
 					<div class="formDescription">That said, we have a few "guidelines": 
 					<ul>
@@ -153,18 +152,18 @@
 					</div>					
 					
 				</div>
-
+ -->
 
 				<div id="details" class="editProfFormPage mentorForm">
-					<div class="formFieldInfo first">Your profile title, or your specialty</div>
+					<div class="formFieldInfo first">Profile Title</div>
 					<div class="formFieldError"></div>
-					{{form.edit_headline(placeholder="e.g. Experienced Printmaker", class="formField span6")}}
+					{{form.edit_headline(placeholder="e.g. Soapmaker Extraordinaire", class="formField span6")}}
 <!-- 
 					<div class="formFieldInfo">In which category do your teachable skills primarily lie?</div>
 					<div class="formFieldError"></div>
 					{{form.edit_industry(class="formField span6")}} -->
 
-					<div class="formFieldInfo">Got a website?</div>
+					<div class="formFieldInfo">Personal Website</div>
 					<div class="formFieldError"></div>
 					{{form.edit_url(placeholder="Website URL", class="formField span6")}}
 
@@ -178,7 +177,7 @@
 
 
 				<div id="schedule" class="editProfFormPage mentorForm">
-					<div class="formFieldInfo first">When are you available to mentor others?</div>
+					<div class="formFieldInfo first">Mentorship Availability</div>
 					{{form.edit_availability(id="edit_availability", class="formField span6")}}
 					<br><br>
 					<div class="formFieldError"></div>
@@ -240,13 +239,15 @@
 				</div>
 
 				<div id="payment" class="editProfFormPage mentorForm">
-					<div class="formFieldInfo first">Please set your default hourly rate. You will still be able to set rates for specific lessons.</div>
+					<div class="formFieldInfo first">Set your default hourly rate. (You can also be booked for a non-specific lesson.)</div>
 					<div class="formFieldError"></div>
 					${{form.edit_rate(placeholder="US Dollars", maxlength="7", class="formField span2")}} per hour
 					<span class="formFieldCaption"></span>
 
 					<br><br>
-					<div class="formFieldInfo">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+
+					<div class="formDescription">To get paid, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe provides a secure way to accept payments over the Internet. Authorize Insprite to deposit money into your banking account by clicking on "Connect with Stripe" and signing up for a free account. 
+
 					</div>
 
 					<div class="formFieldError"></div>
@@ -264,7 +265,7 @@
 
 
 				<div id="submit" class="editProfFormPage mentorForm">
-					<div class="formDescription">Last step - tell us if you're cool with our Terms of Service. If your profile has all the required info, we'll make it live and public!</div>					
+					<div class="formDescription">Last step! Please aagree to our Terms of Service, and you're good to go.</div>					
 					<!-- <div class="formDescription">Last step - tell us if you're ready to make your mentor profile live, and that you are cool with our Terms of Service.</div> -->
 
 					

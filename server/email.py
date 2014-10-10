@@ -30,11 +30,11 @@ import json, smtplib, urllib
 
 
 def ht_email_welcome_message(user_email, user_name, challenge_hash):
-	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	msg_text = "Welcome to Insprite!\n"
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)     
+	msg_text = "Welcome to Insprite! We're thrilled that you've joined us.\n\nInsprite lets you connect with and learn from the creative people around you, and to teach your passions and skills to others. Please verify your email account by clicking this link " + verify_email_url + " before you start exploring the cool, creative experiences nearby.\n\n If you are getting this message by mistake and did not create an account, email thegang@insprite.co and we will get on it ASAP.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."     
 	msg_html = email_body_verify_account(verify_email_url)
 
-	msg = create_msg('Welcome to Insprite', user_email, user_name, 'noreply@insprite.co', u'Insprite')
+	msg = create_msg('Welcome to Insprite!', user_email, user_name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
@@ -45,7 +45,7 @@ def ht_email_welcome_message(user_email, user_name, challenge_hash):
 def ht_send_password_recovery_link(account):
 	""" Emails the password recovery link to a user """
 	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
-	msg_text = "Go to " + url + " to recover your HeroTime password."
+	msg_text = "Passwords can be tough to remember.\n\nNo biggie, simply follow the instructions at this link " + url + " to change it, and you'll be good to go.\n\nDid not request for a password reset? Email thegang@insprite.co ASAP.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 	msg_html = email_body_recover_your_password(url)
 
 	msg = create_msg('Reset your Insprite password', account.email, account.name, 'noreply@insprite.co', u'Insprite')
@@ -59,9 +59,10 @@ def ht_send_password_recovery_link(account):
 def ht_send_password_changed_confirmation(user_email):
 	""" email user 'password changed' confirmation notice. """
 	msg_html = email_body_password_changed_confirmation('url')
-	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
+	msg_text = "We are sending you a reminder: You changed your password.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 
 	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
+	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
 
@@ -71,20 +72,20 @@ def ht_send_email_address_verify_link(user_email, account):
 	print 'send a verify this email account to ' + str(user_email)
 
 	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
-
-	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
-	msg_text = "Let's get your email address verified for your Insprite account.\n\nPlease copy and paste this security code into your settings: " + str(account.sec_question) + "\n\nOr, just click on this link: " + verify_email_url
+	msg_text = "Before you book a lesson, you must verify your email address.<br><br>Please enter this security code into the verification box in Account Settings:" + str(account.sec_question) + "<br><br>\nOr, click on this link: " + verify_email_url + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_html = email_body_verify_email_address('url', 'abcd')  
 
 	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_text, 'plain' ))
-	# msg.attach(MIMEText(msg_html, 'html' ))
+	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
 
 
 def ht_send_email_address_changed_confirmation(user_email, new_email):
 	""" email user 'email address changed' confirmation noticed. """
 	msg_html = email_body_email_address_changed_confirmation('url', new_email)
-	msg_text = None
+	msg_text = "We are sending you a reminder: You changed your email address.\n\nWe want to keep your information safe and secure, so if you did not change it yourself email us at thegang@insprite.co ASAP and we will get on it.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+
 
 	msg = create_msg('Your Insprite email address has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
 	msg.attach(MIMEText(msg_html, 'plain'))
@@ -109,10 +110,12 @@ def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_n
 	print "ht_send_meeting_proposed_notification_to_sellr: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
-	msg_subj = "Proposal to meet " + buyer_name
+	msg_text = "You received a lesson proposal from " + buyer_name + ".\n\nDate: " + meeting.meet_ts.strftime('%A, %b %d, %Y') + "<br>\nStart Time: " + meeting.meet_ts.strftime('%A, %b %d, %Y %H:%M %p') + "\nDuration: " + meeting.get_duration_in_hours() + " hours\nLocation: " + str(meeting.meet_location) + "\nTotal Cost: $" + str(meeting.meet_cost) + "\nDescription: " + meeting.get_description_html() + "\n\nTo accept the lesson, click here: " + meeting.accept_url() + "\n\n To reject the lesson, " + meeting.reject_url() + "\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
+	msg_subj = "You've Received a Lesson Proposal from " + buyer_name
 	if (meeting.meet_count > 1): msg_subj = msg_subj + " (updated)"
 
 	msg = create_msg(msg_subj, sellr_email, sellr_name, 'noreply@insprite.co', u'Insprite Notifications')
+	msg.attach(MIMEText(msg_html, 'plain' ))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(sellr_email, msg)
 
@@ -143,14 +146,15 @@ def ht_send_meeting_rejected_notifications(meeting):
 
 		print 'ht_send_meeting_rejected_notifications create buyer_msg_html'
 		buyer_msg_html = email_body_meeting_rejected_notification_to_buyer(meeting, sellr_name)
-		buyer_msg = create_notification(str(sellr_name) + ' rejected your proposal', buyer_email_addr, buyer_name)
+		buyer_msg = create_notification(str(sellr_name) + ' rejected your lesson proposal', buyer_email_addr, buyer_name)
 		buyer_msg.attach(MIMEText(buyer_msg_html, 'plain'))
+		buyer_msg.attach(MIMEText(buyer_msg_html, 'html'))
 		ht_send_email(buyer_email_addr, buyer_msg)
 
 		print 'ht_send_meeting_rejected_notifications create sellr_msg_html'
 		sellr_msg_html = email_body_meeting_rejected_notification_to_seller(meeting, buyer_profile.prof_name, buyer_profile.prof_id)
 		print 'ht_send_meeting_rejected_notifications created sellr_msg_html'
-		sellr_msg = create_notification('You rejected a proposal', sellr_email_addr, sellr_name)
+		sellr_msg = create_notification('You rejected a lesson proposal', sellr_email_addr, sellr_name)
 		sellr_msg.attach(MIMEText(sellr_msg_html, 'plain'))
 		ht_send_email(sellr_email_addr, sellr_msg)
 	except Exception as e:
@@ -168,13 +172,13 @@ def ht_send_meeting_accepted_notification(meeting):
 		buyer_profile = Profile.get_by_prof_id(meeting.meet_buyer)
 
 		sellr_html = email_body_appointment_confirmation_for_seller(meeting, buyer_profile, sellr_profile)
-		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+		sellr_msg = create_msg('You accepted ' + buyer_name + '\'s lesson proposal', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
 		sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 		ht_send_email(sellr_email_addr, sellr_msg)
 
 		# email buyer that seller accepted their proposal.
 		buyer_html = email_body_appointment_confirmation_for_buyer(meeting, buyer_profile, sellr_profile)
-		buyer_msg = create_msg(str(sellr_name) + ' accepted your proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
+		buyer_msg = create_msg(str(sellr_name) + ' accepted your lesson proposal!', buyer_email_addr, buyer_name, 'noreply@insprite.co', u'Insprite')
 		buyer_msg.attach(MIMEText(buyer_html, 'html', 'UTF-8'))
 		ht_send_email(buyer_email_addr, buyer_msg)
 	except Exception as e:
@@ -202,14 +206,18 @@ def ht_send_meeting_canceled_notifications(meeting):
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in more than 48 hours'
 			sellr_html = email_body_cancellation_from_buyer_within_48_hours_to_seller(buyer_name)
+			seller_text = "<a href=" + buyer_name + " cancelled the lesson appointment.\n\nMessage " + buyer_name + " at https://127.0.0.1:5000/profile?" + buyer_profile.prof_id + " to see if you can work out a new date and time.\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 		else:
 			# assumes buyer canceled.
 			print 'ht_send_meeting_canceled_notifications\t meeting occurs in less than than 48 hours'
 			sellr_html = email_body_cancellation_from_buyer_within_24_hours_to_seller(buyer_name, str(meeting.meet_cost))
+			sellr_text = "" + buyer_name + " cancelled the lesson appointment.\n\nSometimes things come up in life, but your time and talent are still valuable. You will receive " + str(cost) + " from " + buyer_name + " for the cancelled booking.\n\n****************\n\nContact us at info@insprite.co\nSent by Insprite.co, Berkeley, California, USA."
 
 		# email seller that meeting has been canceled.
 		print 'ht_send_meeting_canceled_notifications\t create seller_msg'
+		sellr_msg_html = email_body_cancellation_from_seller_to_seller(sellr_name, sellr_profile, buyer_name, buyer_profile)
 		sellr_msg = create_msg('Meeting with ' + str(buyer_name) + ' canceled', sellr_email_addr, sellr_name, 'noreply@insprite.co', u'Insprite')
+		sellr_msg.attach(MIMEText(sellr_html, 'plain', 'UTF-8'))
 		sellr_msg.attach(MIMEText(sellr_html, 'html', 'UTF-8'))
 		ht_send_email(sellr_email_addr, sellr_msg)
 
@@ -281,8 +289,14 @@ def ht_send_meeting_reminders(meet_id):
 		print 'ht_send_meeting_reminders() --  meetin canceled ' + meet_id
 		return
 
+	(sellr_acct, sellr_prof) = get_account_and_profile(meeting.meet_sellr)
+	(buyer_acct, buyer_prof) = get_account_and_profile(meeting.meet_buyer)
 	(sellr_email_addr, sellr_name, buyer_email_addr, buyer_name) = get_proposal_email_info(meeting)
-	msg_html = email_body_meeting_reminder()
+
+	msg_html_buyer = email_body_meeting_reminder(sellr_prof, meeting)
+	msg_html_sellr = email_body_meeting_reminder(buyer_prof, meeting)
+	msg_text_buyer = ""
+	msg_text_seller = ""
 
 	msg_buyer = create_notification('You Have an Appointment Tomorrow with ' + sellr_name, buyer_email_addr, buyer_name)
 	msg_buyer.attach(MIMEText(msg_html, 'html', 'UTF-8'))
@@ -310,7 +324,9 @@ def ht_send_review_reminder(user_email, user_name, meet_id, review_id):
 		partner_prof = buyer_prof
 
 	msg_html = email_body_review_reminder()
-	msg = create_notification('Review Meeting with ' + partner_prof.prof_name, user_email, user_name)
+	msg_text = "We hope you had a great lesson with " +  partner_prof.prof_name + ".\n\nYour opinion goes a long way -- write a review so others can learn from your experience</a>."
+	msg = create_notification('Review your Lesson with ' + partner_prof.prof_name, user_email, user_name)
+	msg.attach(MIMEText(msg_html, 'plain', 'UTF-8'))
 	msg.attach(MIMEText(msg_html, 'html', 'UTF-8'))
 	ht_send_email(user_email, msg)
 
