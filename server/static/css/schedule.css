@@ -65,7 +65,7 @@
     width: 40%;
     font-size: 0.9em;
     line-height: 1.3em;
-    font-weight: 300; }
+    font-weight: 200; }
     .scheduleLeftColumn .scheduleMentorImage {
       width: 100%;
       float: left;
@@ -130,7 +130,7 @@
           width: 100%;
           padding: 6px 8px;
           border-bottom: 1px dotted rgba(0, 0, 0, 0.05);
-          font-weight: 300; }
+          font-weight: 200; }
           .scheduleRightColumn .scheduleLessonInfo .lessonField:last-of-type {
             border-bottom: none; }
             .scheduleRightColumn .scheduleLessonInfo .lessonField .lessonFieldLabel {
@@ -152,7 +152,7 @@
         resize: none;
         width: 100%; }
         .scheduleRightColumn .scheduleIntro textarea placeholder {
-          font-weight: 300; }
+          font-weight: 200; }
     .scheduleRightColumn .scheduleTime {
       position: relative;
       float: left;
@@ -182,14 +182,14 @@
       font-size: 0.9em;
       float: left;
       width: 100%;
-      font-weight: 300;
+      font-weight: 200;
       margin-top: 10px;
       margin-bottom: 30px; }
       .scheduleRightColumn .scheduleTimeDetails .detailField {
         float: left;
         width: 100%;
         padding: 8px 0px;
-        font-weight: 300; }
+        font-weight: 200; }
         .scheduleRightColumn .scheduleTimeDetails .detailField.highlight {
           color: #59a6a6;
           font-weight: 600; }
@@ -241,7 +241,7 @@
               width: 100%;
               padding: 8px 0px;
               height: 40px;
-              font-weight: 300;
+              font-weight: 200;
               color: rgba(0, 0, 0, 0.5); }
               .scheduleRightColumn .propLocationText .propLocationMain {
                 float: left;

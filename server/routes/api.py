@@ -98,7 +98,7 @@ def ht_api_meeting_reject():
 		session['messages'] = resp_message
 		return make_response(redirect(url_for('insprite.render_dashboard')))
 	return jsonify(usrmsg=resp_message), resp_code
-
+	
 
 
 
@@ -117,7 +117,7 @@ def ht_api_meeting_cancel():
 		print "ht_api_meeting_cancel()\t EXCEPTION", se
 		return se.api_response(request.method)
 	return jsonify(usrmsg=resp_message), resp_code
-
+	
 
 
 

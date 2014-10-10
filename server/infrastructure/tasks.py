@@ -156,6 +156,7 @@ def ht_meeting_cancel(meet_id, profile):
 	if (meeting is None): raise NoMeetingFound(meet_id)
 
 	try:
+		meet_state = meeting.meet_state
 		meeting.set_state(MeetingState.CANCELED, profile)
 		db_session.add(meeting)
 		db_session.commit()
@@ -164,7 +165,7 @@ def ht_meeting_cancel(meet_id, profile):
 		db_session.rollback()
 		ht_sanitize_error(e)
 
-	ht_send_meeting_canceled_notifications(meeting, profile)
+	ht_send_meeting_canceled_notifications(meeting, profile, meet_state)
 	return (200, 'Proposed meeting canceled')
 
 
