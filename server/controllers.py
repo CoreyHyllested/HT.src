@@ -763,24 +763,6 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 		# default: go to settings
 		return redirect(url_for('insprite.render_settings'))
 
-	
-
-
-
-
-def ht_get_meeting_lesson(meeting):
-	lessons = db_session.query(Lesson).filter(Lesson.lesson_id == meeting.meet_lesson).all();
-	if (len(lessons) != 1):
-		print "ht_get_meeting_lesson(): No lesson found"
-		lesson = None
-	else:
-		print "ht_get_meeting_lesson(): found lesson: ", lessons[0].lesson_id, lessons[0].lesson_title
-		lesson = lessons[0]
-	
-	return lesson
-
-
-
 
 
 #################################################################################

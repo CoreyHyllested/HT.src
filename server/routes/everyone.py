@@ -244,17 +244,15 @@ def ht_email_operations(operation, data):
 	print "ht_email_operations: begin"
 	print "ht_email_operations: operation: ", operation
 	print "ht_email_operations: data: ", data
+	nexturl = request.values.get('nexturl')
 	if (operation == 'verify'):
 		email = request.values.get('email')
 		# email = urllib.unquote(request.values.get('email'))
-		nexturl = request.values.get('nexturl')
 		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
-		nexturl = request.values.get('nexturl')
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
 	elif (operation == 'request-verification') and ('uid' in session):
-		nexturl = request.values.get('nexturl')
 		profile = Profile.get_by_uid(session.get('uid'))
 		account = Account.get_by_uid(session.get('uid'))
 		email_set = set([account.email, request.values.get('email_addr')])		
@@ -265,7 +263,6 @@ def ht_email_operations(operation, data):
 
 	elif (operation == 'request-verification-auto') and ('uid' in session):
 		# This is an attempt to set up a route to automatically send verification email, rather than going to settings. E.g. triggered when clicking on schedule button when unverified. Not implemented yet.
-		nexturl = request.values.get('nexturl')
 		profile = Profile.get_by_uid(session.get('uid'))
 		account = Account.get_by_uid(session.get('uid'))
 		email_set = set([account.email])
