@@ -24,14 +24,20 @@ function verify_email_js() {
 
 	var fd = {};
 	var challenge = $('#challenge').val();
-	fd.email = $('#set_input_email').val();
+	var email = $('#set_input_email').val();
+	fd.email = email;
 	fd.csrf_token = $('#csrf').val();
-	fd.next_url   = $('#nexturl').val();
+
+	if ($('#nexturl').val() == ""){
+		fd.nexturl = "ajax";
+	} else {
+		fd.nexturl = $('#nexturl').val();
+	}
 
 	console.log("verify_email_js: challenge: " + challenge);
-	console.log("verify_email_js: email: " + $('#set_input_email').val());
+	console.log("verify_email_js: email: " + email);
 	console.log("verify_email_js: csrf_token: " + $('#csrf').val());
-	console.log("verify_email_js: next_url: " + $('#nexturl').val());
+	console.log("verify_email_js: nexturl: " + $('#nexturl').val());
 
 	// $.each(fd, function(k, v) { console.log(k+ ": " + v); });
 	$.ajax({ url : '/email/verify/'+challenge,

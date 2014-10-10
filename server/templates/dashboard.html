@@ -24,7 +24,7 @@
 			<h1>Pending Offers ({{proposals|length}})</h1>
 
 			{% for proposal in proposals|sort(attribute='Meeting.meet_ts')  %}
-			<div class="dashboardOffer" id="{{proposal.Meeting.meet_id}}">
+			<div class="dashboardOffer" data-meeting-id="{{proposal.Meeting.meet_id}}">
 				<div class="dashboardOfferLeftColumn">
 
 					<div class="partnerInfoBox">
@@ -70,10 +70,10 @@
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Meeting.meet_id}}" data-location="{{proposal.Meeting.meet_location}}"></div>
 					</div>
 					{% if proposal.seller == true %}
-						<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
-						<input type="button" class="dashboardActionButton offerReject" id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
+						<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" data-uuid="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
+						<input type="button" class="dashboardActionButton offerReject" id="{{proposal.Meeting.meet_id}}" data-uuid="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
 					{% else %}
-						<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
+						<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Meeting.meet_id}}" data-uuid="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
 					{% endif %}
 				</div>
 
@@ -85,7 +85,7 @@
 		<div class="dashboardAppts">
 			<h1>Scheduled Lessons ({{appointments|length}})</h1>
 			{% for appointment in appointments|sort(attribute='Meeting.meet_ts')  %}
-			<div class="dashboardAppt" id="appt-{{appointment.Meeting.meet_id}}">
+			<div class="dashboardAppt" data-meeting-id="{{appointment.Meeting.meet_id}}">
 				<div class="dashboardApptLeftColumn">
 					<a href="/profile?hero={{appointment.display.prof_id}}">
 						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
@@ -115,7 +115,7 @@
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Meeting.meet_id}}" data-location="{{appointment.Meeting.meet_location}}" ></div>
 					</div>
 
-					<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
+					<input type="button" class="dashboardActionButton redButton lessonCancel" id="{{appointment.Meeting.meet_id}}" data-uuid="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -255,10 +255,11 @@ $(document).ready(function() {
 	google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
 
     $('.offerAccept').click(function () {
-        var id = this.id;
+        var meeting_id = $(this).data('uuid');
+        console.log("accepting meeting id " + meeting_id);
 
         var fd = new FormData();
-        fd.append('meet_id', id);
+        fd.append('meet_id', meeting_id);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/meeting/accept", true);
@@ -271,8 +272,11 @@ $(document).ready(function() {
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
-                    openAlertWindow('Success.');
-					window.location.href="/dashboard";
+                    openAlertWindow('Great! You accepted the meeting proposal.');
+					setTimeout(function() {
+						window.location.href="/dashboard";
+					}, 2000 );					
+					
                 } else if (this.status == 400) {
                     msg = JSON.parse(xhr.responseText);
                     console.log(['xhr post complete, err=400', e]);
@@ -292,11 +296,11 @@ $(document).ready(function() {
     });
 
 
+
 	$('.offerCancel').click(function () {
-		var id = this.id;
+        var meeting_id = $(this).data('uuid');
 		var fd = new FormData();
-		var sid = "#appt-" + id;
-		fd.append('meet_id', id);
+		fd.append('meet_id', meeting_id);
 
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', "/meeting/cancel", true);
@@ -309,10 +313,12 @@ $(document).ready(function() {
                 if (this.status == 200) {
                     console.log(['xhr post complete ', e]);
                     console.log(xhr.responseText);
-					$(sid).remove();
+					$(".dashboardOffer[data-meeting-id='" + meeting_id + "']").remove();
 
 					msg = JSON.parse(xhr.responseText);
-					openAlertWindow(msg['usrmsg']);
+					// openAlertWindow("msg['usrmsg']");
+					openAlertWindow("Proposal canceled.");
+
                 } else if (this.status == 400) {
                     console.log(['xhr post complete, err=400', e]);
 					msg = JSON.parse(xhr.responseText);
@@ -332,9 +338,10 @@ $(document).ready(function() {
 
 
    $('.offerReject').click(function () {
-        var id = $(this).data('id');
+        var meeting_id = $(this).data('uuid');
+        console.log("rejecting meeting id " + meeting_id);
         var fd = new FormData();
-        fd.append('meet_id', id);
+        fd.append('meet_id', meeting_id);
 
         var xhr = new XMLHttpRequest();
         xhr.open('post', "/meeting/reject", true);
@@ -349,7 +356,7 @@ $(document).ready(function() {
                     console.log(['xhr post complete', e]);
                     console.log(xhr.responseText);
                     openAlertWindow(msg['usrmsg']);
-                    $('#'+id).remove();
+                    $(".dashboardOffer[data-meeting-id='" + meeting_id + "']").remove();
                 } else if (this.status == 500) {
                     console.log(['xhr post complete, err=500', e]);
                     openAlertWindow('Failure: ' + msg['usrmsg']);
@@ -360,6 +367,44 @@ $(document).ready(function() {
             }
         };
 
+        return false;
+    });
+
+
+	$('.lessonCancel').click(function () {
+        var meeting_id = $(this).data('uuid');
+		var fd = new FormData();
+		fd.append('meet_id', meeting_id);
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "/meeting/cancel", true);
+		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
+		xhr.send(fd);
+
+        //catch response. make modificaitons.
+        xhr.onreadystatechange = function(e) {
+            if (4 == this.readyState) {
+                if (this.status == 200) {
+                    console.log(['xhr post complete ', e]);
+                    console.log(xhr.responseText);
+					$(".dashboardAppt[data-meeting-id='" + meeting_id + "']").remove();
+
+					msg = JSON.parse(xhr.responseText);
+					openAlertWindow(msg['usrmsg']);
+                } else if (this.status == 400) {
+                    console.log(['xhr post complete, err=400', e]);
+					msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else if (this.status == 500) {
+                    console.log(['xhr post complete, err=500', e]);
+					msg = JSON.parse(xhr.responseText);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                } else {
+                    console.log(['xhr post complete, err=?? ', this.status,  e]);
+                    openAlertWindow('Failure: ' + msg['usrmsg']);
+                }
+            }
+        };
         return false;
     });
 

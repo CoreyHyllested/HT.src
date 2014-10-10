@@ -244,29 +244,45 @@ def ht_email_operations(operation, data):
 	print "ht_email_operations: begin"
 	print "ht_email_operations: operation: ", operation
 	print "ht_email_operations: data: ", data
+	nexturl = request.values.get('nexturl')
 	if (operation == 'verify'):
 		email = request.values.get('email')
-		nexturl = request.values.get('next_url')
+		# email = urllib.unquote(request.values.get('email'))
 		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
-		nexturl = request.values.get('nexturl')
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
 	elif (operation == 'request-verification') and ('uid' in session):
-
 		profile = Profile.get_by_uid(session.get('uid'))
 		account = Account.get_by_uid(session.get('uid'))
-		email_set = set([account.email, request.values.get('email_addr')])
+		email_set = set([account.email, request.values.get('email_addr')])		
 		print email_set
 
-		ht_send_verification_to_list(account, email_set)
+		ht_send_verification_to_list(account, email_set, nexturl)
 		return jsonify(rc=200), 200
+
+	elif (operation == 'request-verification-auto') and ('uid' in session):
+		# This is an attempt to set up a route to automatically send verification email, rather than going to settings. E.g. triggered when clicking on schedule button when unverified. Not implemented yet.
+		profile = Profile.get_by_uid(session.get('uid'))
+		account = Account.get_by_uid(session.get('uid'))
+		email_set = set([account.email])
+		print email_set
+
+		ht_send_verification_to_list(account, email_set, nexturl)
+
+		usrmsg = 'We require a verified email prior to scheduling. We just sent a message with verification instructions to '+account.email+' - Please check it before proceeding.'
+
+		return make_response(jsonify(usrmsg=usrmsg), 200)
+
+		# return redirect(url_for('insprite.render_dashboard', usrmsg='Sorry, We encountered an error loading that lesson.'))
+
+
 	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
 
 
 
 
-def ht_send_verification_to_list(account, email_set):
+def ht_send_verification_to_list(account, email_set, nexturl):
 	print 'ht_send_verification_to_list() enter'
 	try:
 		account.reset_security_question()
@@ -278,7 +294,7 @@ def ht_send_verification_to_list(account, email_set):
 
 	for email in email_set:
 		print 'sending email to', email
-		ht_send_email_address_verify_link(email, account)
+		ht_send_email_address_verify_link(email, account, nexturl)
 
 
 

@@ -330,8 +330,8 @@ def settings_verify_stripe():
 	try:
 		db_session.add(oauth_stripe)
 		db_session.commit()
-		next_url = session.pop('next_url', '/settings')
-		return make_response(redirect(next_url))
+		nexturl = session.pop('nexturl', '/settings')
+		return make_response(redirect(nexturl))
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()

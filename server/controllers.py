@@ -707,18 +707,21 @@ def ht_get_active_lessons(profile):
 	return lessons
 
 
-
-
 def ht_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
 	print "ht_email_verify: begin"
-	print "ht_email_verify: challengeHash is ", challengeHash
-	print "ht_email_verify: email is ", email
-	print "ht_email_verify: nexturl is ", nexturl
+	print "ht_email_verify: challengeHash is", challengeHash
+	print "ht_email_verify: email is", email
+	print "ht_email_verify: nexturl is", nexturl
 
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
 		print "ht_email_verify: error - challenge hash not found in accounts."
+		if (accounts[0].email != email):
+			print "...and it was a problem with the email not matching."		
+		if (len(accounts) != 1):
+			print "...and it was a problem with not finding the account."
+
 		session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
 		return redirect(url_for('insprite.render_login'))
 	else:
@@ -741,12 +744,24 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 	# bind session cookie to this user's profile
 	profile = Profile.get_by_uid(account.userid)
 	ht_bind_session(profile)
-	if (nexturl is not None):
-		# POSTED from jquery in /settings:verify_email not direct GET
-		return make_response(jsonify(usrmsg="Email successfully verified."), 200)
 
-	session['messages'] = 'Great! You\'ve verified your email'
-	return redirect(url_for('insprite.render_dashboard'))
+	session['messages'] = 'Great! You\'ve verified your email.'
+
+	if (nexturl == "ajax"):
+		# POSTED from ajax in /settings, and no nexturl value was fed into the settings page. Just update with success message.
+		return jsonify(usrmsg="Success!"), 200
+	elif (nexturl == "dashboard"): # or "/dashboard"?
+		# this would happen if user clicked the verify link in initial welcome email.
+		return redirect(url_for('insprite.render_dashboard'))
+	elif (nexturl == "settings"): # or "/settings"?
+		# this would happen if user clicked on the link in the specific "verify email address" email.
+		return redirect(url_for('insprite.render_settings'))
+	elif (nexturl is not None):
+		# carrying on a nexturl fed from somewhere else. For instance, if user was scheduling a meeting and was redirected to settings.
+		return redirect(nexturl)
+	else:
+		# default: go to settings
+		return redirect(url_for('insprite.render_settings'))
 
 
 
