@@ -162,12 +162,13 @@ States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 
 Days = [(0,'sun'),(1,'mon'),(2,'tue'),(3,'wed'),(4,'thu'),(5,'fri'),(6,'sat')]
 
-Location = [('', "Your Location"), ('location_berkeley', "Berkeley, CA"), ('location_other', "Other")]
+Location = [('location_ip', "Your Location"), ('location_berkeley', "Berkeley, CA"), ('location_other', "Other")]
+
 
 class NewAccountForm(Form):
-	#names below (LHS) match what's on the HTML page.  
+	# names below (LHS) are used as the HTML element name.
 	input_signup_name   = TextField('Name',  [validators.Required(), validators.length(min=4, max=120)])
-	input_signup_location = SelectField("Location", coerce=str, choices=(Location))
+	#input_signup_location = SelectField("Location", coerce=str, choices=(Location))
 	input_signup_email  = TextField('Email', [validators.Required(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
 	input_signup_password = PasswordField('Password', [validators.Required(), validators.EqualTo('input_signup_confirm', message='Passwords must match')])
 	input_signup_confirm  = PasswordField('Confirm Password')
