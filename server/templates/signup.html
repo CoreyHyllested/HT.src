@@ -29,7 +29,7 @@
 			{{form.hidden_tag()}}
 			{{form.input_signup_name(id="signupName", placeholder="Name", class="formField")}}
 			{{form.input_signup_email(id="signupEmail", placeholder="Email", class="formField")}}
-			{{form.input_signup_location(id="signupLocation", class="formField")}}
+<!--			{ {form.input_signup_location(id="signupLocation", class="formField")} } -->
 			{{form.input_signup_password(id="signupPassword", placeholder="Enter Password", class="formField")}}
 			{{form.input_signup_confirm(id="signupConfirm", placeholder="Confirm Password", class="formField")}}
 			<div id="passMeter"></div>
@@ -42,9 +42,7 @@
 	</div>
 
 	{% if errmsg != none %}
-		<script>
-			openAlertWindow('{{errmsg}}')
-		</script>
+		<script>openAlertWindow('{{errmsg}}')</script>
 	{% endif %}
 
 	<!--
@@ -84,12 +82,10 @@ $.ajax({
 		console.log(['areacode, zip', location.areacode, location.zipcode]);
 		console.log(['ip', location.ip]);
 		console.log(['lxl', location.latitude, location.longitude]);
+		console.log(['country', location.country_name, location.country_code]);
 
-		$('#signupLocation').append($('<option>', { 'value' : 'location_' + location.region_name.toLowerCase() }).text(location.region_name));
+		$('#signupLocation').append($('<option>', { 'value' : 'location_ip' + location.region_name.toLowerCase() }).text(location.region_name));
 		//$('#signupLocation').options.add(new Option(location.region_name, 'location_' + location.region_name.toLowerCase()), $('#signupLocation').options[0]);
-		// example where I update content on the page.
-/*		jQuery('#country-name').html(location.country_name);
-		jQuery('#country-code').html(location.country_code); */
 	}
 } );
 
@@ -102,22 +98,17 @@ $(function() {
 	$("#signupPassword").keyup( function() { if ($("#signupConfirm").val() != "") { initializeStrengthMeter(); } });
 });
 
+
+
 function initializeStrengthMeter() {
 	$("#passMeter").PasswordStrengthManager({
 		password: $("#signupPassword").val(),
 		confirm_pass : $("#signupConfirm").val(),
 		blackList : ["efewf"], 
-		minChars : '5',
-		maxChars : '25',
+		minChars : '6',
+		maxChars : '50',
 		advancedStrength : false
 	});
-}
-
-function isNumberKey(evt) {
-	var charCode = (evt.which) ? evt.which : event.keyCode;
-	if (charCode > 31 && (charCode < 48 || charCode > 57))
-	return false;
-	return true;
 }
 
 
