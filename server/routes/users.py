@@ -1382,7 +1382,6 @@ def render_review_meeting_page(review_id):
 @insprite_views.route('/settings', methods=['GET', 'POST'])
 @req_authentication
 def render_settings():
-	print 'render_settings()\t enter'
 	""" Provides form for the user to change their settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)

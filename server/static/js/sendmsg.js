@@ -19,7 +19,6 @@ function loadMessageThread(msg_thread_id) {
 
 
 function verify_email_js() {
-	
 	console.log("verify_email_js: begin");
 
 	var fd = {};
@@ -28,31 +27,23 @@ function verify_email_js() {
 	fd.csrf_token = $('#csrf').val();
 	fd.next_url   = $('#nexturl').val();
 
-	console.log("verify_email_js: challenge: " + challenge);
-	console.log("verify_email_js: email: " + $('#set_input_email').val());
-	console.log("verify_email_js: csrf_token: " + $('#csrf').val());
-	console.log("verify_email_js: next_url: " + $('#nexturl').val());
-
-	// $.each(fd, function(k, v) { console.log(k+ ": " + v); });
+	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
 	$.ajax({ url : '/email/verify/'+challenge,
-			 type : 'POST', 	
+			 type : 'POST',
 			 data : fd,
 			 dataType: 'json',
-			 success : function(data) { 
-				console.log ('/email/verify - AJAX success');
-				console.log(data);
-				// window.location.href = $('#nexturl').val();
+			 success : function(data) {
+				console.log ('/email/verify - success');
 				$(".emailVerifyText").html("<span class='success'>Email successfully verified!</span>");
 				$(".emailVerifyStatus").html("<div class='verifySuccess'><i class='fa fa-fw fa-check'></i>Email verified.</div>");
 				setTimeout(function() {
 					$('.emailVerifyInput').slideUp(1000);
-				}, 2000 );				 
-				return false; 
+				}, 2000);
+				return false;
 			 },
 			 error: function(data) {
-			 	console.log ('/email/verify - AJAX error');
+				console.log ('/email/verify - error');
 			 	$(".emailVerifyText").html("<span class='error'>Sorry, that code didn't work.</span>");
-
 			 }
 	});
 	return false;
