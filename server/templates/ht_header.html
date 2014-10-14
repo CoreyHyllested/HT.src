@@ -44,16 +44,13 @@
 		                footerTop = ($(window).scrollTop()+$(window).height()-footerHeight)+"px";
 		                
 		                /* DEBUGGING STUFF
-		                
 		                console.log("Document height: ", $(document.body).height());
 		                console.log("Window height: ", $(window).height());
 		                console.log("Window scroll: ", $(window).scrollTop());
 		                console.log("Footer height: ", footerHeight);
 		                console.log("Footer top: ", footerTop);
 		                console.log("-----------") */
-		                
-		               
-		       
+
 		               if ( ($(document.body).height()+footerHeight) < $(window).height()) {
 		                   $footer.css({
 		                        position: "absolute"
@@ -67,7 +64,6 @@
 		               }
 		               
 		       }
-
 		       $(window).scroll(positionFooter).resize(positionFooter)
 		});
 
@@ -96,6 +92,7 @@
 	</script>
 </head>
 
+
 <body>
 	<!-- MODAL WINDOWS; users can click the overlay to close. -->
 	<div class="alertOverlay" onclick="closeAlertWindow();"></div>
@@ -123,7 +120,7 @@
 	<div class="menu"> <!-- hidden menu that only shows up on mobile -->
 		<form name="mobileSearchForm" id="mobileSearchForm" action="search" method="POST">
 			<input name="csrf_token" type="hidden" value="{{ csrf_token() }}">
-			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off">
+			<input name="keywords_field" class="keywordsField" id="mobileSearchField" type="text" autocomplete="off" value="">
 		</form>
 		<ul>
 
@@ -180,15 +177,9 @@
 					<ul class="headerDropdownMenu">
 						<li class="headerDropdownMenuName">{{bp.prof_name}}
 							<ul class="headerDropdownMenuActive">
-								{% if bp.availability > 0 %}
-									<a href="/lesson/new"><li>Create Lesson</li></a>
-								{% else %}
-									<a href="/profile/upgrade"><li>Become a Mentor</li></a>
-								{% endif %}
 								<a href="/dashboard"><li>Dashboard</li></a>
 								<a href="/profile"><li>Profile</li></a>
 								<a href="/profile/edit"><li>Edit Profile</li></a>
-								<a href="/inbox"><li>Messages</li></a>
 								<a href="/settings"><li>Settings</li></a>
 								<a href="/logout"><li>Log Out</li></a>
 							</ul>
@@ -249,39 +240,25 @@
 	</div><!-- Footer ends here -->
 
 
-	<script>	<!--Google Analytics-->
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	  ga('create', 'UA-54046005-2', 'auto');
-	  ga('send', 'pageview');
-	</script>
-
-
-	<script>
+<script>
 	$(document).ready(function() {
-		$(".headerSearchIcon").click(function() {
-			$("#headerSearchForm").submit();
-		});
-
-		$("#headerSearchForm, #mobileSearchForm").submit(function() {
-			return submitSearch($(this));
-		});		
+		$(".headerSearchIcon").click(function() { $("#headerSearchForm").submit(); });
+		$("#headerSearchForm, #mobileSearchForm").submit(function() { return submitSearch($(this)); });
 	});
 
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-55719064-1', 'auto');
+	ga('send', 'pageview');
+
 	function submitSearch(form) {
-		var query = $(form).find(".keywordsField").val().trim();
-		console.log("query: "+query);
-		if (query != "" && query != null) { 
-			return true;
-		} else {
-			console.log("Search field was blank.");
+		var q = $(form).find(".keywordsField").val().trim();
+		if (q == "") {
+			console.log('is empty')
 			return false;
-		}		
+		}
+		return true;
 	}
-	</script>
+</script>
 
 </body>
 </html>
