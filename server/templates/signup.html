@@ -5,13 +5,12 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
 	<script type="text/javascript" src="/static/js/signup.js"></script>
-
 {% endblock %}
+
 
 {% block content %}
 
 <div class="signupContentWrapper">
-	
 	<h2>Register for Insprite</h2>
 <!-- 
 	<div class="signupSwitch">
@@ -20,35 +19,25 @@
 	</div>
  -->
 	<div class="signupEmail">
-		
 		<form id="SignupNow" action="/signup" onsubmit="return validateForm();" method="POST">
 
 			{% if form.errors %}
 			<div class="formError">Please fill out all fields</div>
 			{% endif %}
-
 			<div class="formCheck">Please fill out all fields</div>
 
 			{{form.hidden_tag()}}
-
 			{{form.input_signup_name(id="signupName", placeholder="Name", class="formField")}}
 			{{form.input_signup_email(id="signupEmail", placeholder="Email", class="formField")}}
-			
 			{{form.input_signup_location(id="signupLocation", class="formField")}}
-			
 			{{form.input_signup_password(id="signupPassword", placeholder="Enter Password", class="formField")}}
 			{{form.input_signup_confirm(id="signupConfirm", placeholder="Confirm Password", class="formField")}}
-
 			<div id="passMeter"></div>
 
 			<div class="signupAcceptTOS">
 				{{form.accept_tos(class="checkbox formField")}} <label for="accept_tos" class="checkbox-label">I agree to the <a href="/terms" target="_blank">Terms of Service</a></label>
 			</div>
-
-			<div class="signupEmailSubmitWrapper">
-				<input type="submit" value="Join Now" class="button teal">
-			</div>
-
+			<div class="signupEmailSubmitWrapper"><input type="submit" value="Join Now" class="button teal"></div>
 		</form>	
 	</div>
 
@@ -84,17 +73,10 @@
 <script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
 <script type="text/javascript">
 
-// Jquery Password Strength Plugin - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
+// jquery pw-strength - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
 $(function() {
-	$("#signupConfirm").keyup(function(){
-		initializeStrengthMeter();
-	});
-
-	$("#signupPassword").keyup(function(){
-		if ($("#signupConfirm").val() != "") {
-			initializeStrengthMeter();
-		}
-	});
+	$("#signupConfirm").keyup(  function() { initializeStrengthMeter(); } );
+	$("#signupPassword").keyup( function() { if ($("#signupConfirm").val() != "") { initializeStrengthMeter(); } });
 });
 
 function initializeStrengthMeter() {
@@ -115,8 +97,8 @@ function isNumberKey(evt) {
 	return true;
 }
 
-function validateForm() {
 
+function validateForm() {
 	console.log("Validating");
 
 	$(".formField").removeClass("formFieldError")
@@ -126,7 +108,7 @@ function validateForm() {
 	var email_address = document.forms["SignupNow"]["signupEmail"];
 	var location = document.forms["SignupNow"]["signupLocation"];
 	var password = document.forms["SignupNow"]["signupPassword"];
-	var confirm = document.forms["SignupNow"]["signupConfirm"];
+	var confirm  = document.forms["SignupNow"]["signupConfirm"];
 
 	// Check for empty fields; if found, highlight them
 	var form_error = 0;
