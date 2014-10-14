@@ -17,15 +17,25 @@
 	{{form.hidden_tag()}}
 
 	<div class="scheduleLeftColumn">
-		Schedule Request to
-		<h2><a href="/profile?hero={{mentor.prof_id}}" class="blend">{{mentor.prof_name}}</a></h2>
+		<div class="scheduleMentorHeader">
+			Request session with <a href="/profile?hero={{mentor.prof_id}}">{{mentor.prof_name}}</a>
+		</div>
 		<div class="scheduleMentorImage">
 			<img src='https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.prof_img}}'>
 		</div>
+		
+		{#% if mentor.reviews > 0 %#}
+		<div class="scheduleMentorRating">
+			<div class="ratingHeader">Rating:</div> 
+			<div class="ratingStars"></div>
+			<div class="ratingReviews">({{mentor.reviews}} Review{% if mentor.reviews != 1 %}s{% endif %})</div>
+		</div>
+		{#% endif %#}
+
 		<div class="scheduleMentorAvail">
-			<div class="scheduleMentorAvailHeader">Availability</div>
+			<div class="scheduleMentorAvailHeader">General Availability</div>
 			{% if mentor.availability == 1 %}
-				This mentor has flexible availability - let them know what works for you.
+				This mentor has flexible availability.
 			{% else %}
 				
 				{% for timeslot in avail %}
@@ -35,12 +45,12 @@
 			{% endif %}
 		</div>
 
-		<div class="schedulePaymentBlurb">
+<!-- 		<div class="schedulePaymentBlurb">
 			<div class="schedulePaymentHeader">About Payments</div>
-			Payments are processed securely on Insprite using the Stripe payment system. When you propose or book a lesson with a mentor, you will be asked for your credit card information. This transaction will be handled directly by Stripe - Neither Insprite nor {{mentor.prof_name}} will ever get to see your credit card number.<br><br>
-			If the request is accepted by {{mentor.prof_name}}, your card will be securely processed. <strong>You will not be charged until after your lesson has completed</strong>. In the meantime, you may see the charge as pending on your credit card statement.<br><br>
+			Payments are processed securely on Insprite using the Stripe payment system. When you propose or book a lesson with a mentor, you will be asked for your credit card information. This transaction will be handled directly by Stripe - Neither Insprite nor [mentor.prof_name] will ever get to see your credit card number.<br><br>
+			If the request is accepted by [mentor.prof_name], your card will be securely processed. <strong>You will not be charged until after your lesson has completed</strong>. In the meantime, you may see the charge as pending on your credit card statement.<br><br>
 			<a href="">Read more about our payment policies here.</a>
-		</div>
+		</div> -->
 
 	</div>
 
@@ -57,22 +67,16 @@
 		<div class="scheduleLessonInfo">
 		</div>
 
-		<div class="scheduleIntro">
-			<h3>Introduction</h3>
-			<textarea id="prop_description" placeholder="Tell {{mentor.prof_name}} a little about yourself and what you want to learn during your session (optional)."></textarea>
-		</div>
-
 		<div class="scheduleTime">
 			<h3>Date &amp; Time</h3>
-			
+			<div class="formFieldError"></div>
 			{{ form.prop_date(id="datepicker",placeholder="Choose Date") }}
 
+			<div class="formFieldError"></div>
 			<div class="scheduleTimeLabels">
 				{{form.prop_starttime.label}} {{form.prop_finishtime.label}}
 			</div>
-			
 			{{form.prop_starttime}}
-			
 			{{form.prop_finishtime}}
 			
 		</div>
@@ -80,7 +84,7 @@
 			<div class="detailField invalidTime"></div>
 			<div class="detailField">
 				<div class="detailFieldLabel">
-					Your Lesson Duration:
+					Lesson Duration:
 				</div>
 				<div class="detailFieldData" id="detailLessonDuration">
 					
@@ -88,7 +92,7 @@
 			</div>				
 			<div class="detailField highlight">
 				<div class="detailFieldLabel">
-					Your Total Cost:
+					Total Cost:
 				</div>
 				<div class="detailFieldData" id="detailLessonCost">
 
@@ -107,6 +111,12 @@
             </div>
 			<p></p>
 		</div>
+
+		<div class="scheduleIntro">
+			<h3>Note</h3>
+			<textarea id="prop_description" placeholder="Tell {{mentor.prof_name}} a little about yourself and what you want to learn during your session (optional)."></textarea>
+		</div>
+
 
 		<!-- Buttons -->
  		<input id="send_proposal" type="submit" class="blueButton schedulePostButton" value="Checkout..."/>
@@ -145,6 +155,33 @@ $(document).ready(function() {
 	var surcharge = 0; // If we want to tack on 10% up front to buyer, set surcharge to 0.10.
 	if (surcharge > 0) {
 		mentor_rate = (mentor_rate * (1 + surcharge)).toFixed(2);
+	}
+
+	if ({{mentor.rating}} > 0) {
+		displayStars({{mentor.rating}});
+	} else {
+		// Placeholder default if no rating
+		$(".ratingStars").html('<i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star"></i><i class="fa fa-fw fa-star-half-o"></i><i class="fa fa-fw fa-star-o"></i>');
+	}
+
+	function displayStars(rating){
+
+		var rounded = (Math.round(rating * 2) / 2).toFixed(1);
+		var count = 0;
+		for (i=0; i<rounded; i++){
+			$(".ratingStars").append('<i class="fa fa-fw fa-star"></i>');
+			count++;
+		}
+
+		if (rounded % 2 != 0){
+			$(".ratingStars").append('<i class="fa fa-fw fa-star-half-o"></i>');
+			count++;
+		}
+
+		for (j=0; j<(5-count); j++){
+			$(".ratingStars").append('<i class="fa fa-fw fa-star-o"></i>');
+		}
+
 	}
 
 	getLessonDetails(lesson_id);
@@ -190,7 +227,7 @@ $(document).ready(function() {
 		var weekday = $(this).data("weekday");
 		var start = $(this).data("start");
 		var finish = $(this).data("finish");
-		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + " until " + moment(finish, "HH:mm:ss").format("h:mm a"));
+		$(this).html(moment(weekday, "e").format("dddd") + "s - " + moment(start, "HH:mm:ss").format("h:mm a") + "&mdash;" + moment(finish, "HH:mm:ss").format("h:mm a"));
 	});	
 
 	$("#datepicker").datepicker({
@@ -245,30 +282,55 @@ $(document).ready(function() {
 
 
 	$("#prop_starttime").change(function() {
-		if ($("#prop_finishtime").is(":visible") && ($("#prop_finishtime").val() != "")) {
 
-			var starttime = moment($("#prop_starttime").val(), "HH:mm");
-			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");			
+		lesson_duration = $(".scheduleLessonInfo").attr("data-duration");
 
-			if (validateTimes(starttime, finishtime)) {		
-				//console.log("times are valid");
-				processLessonDuration();
-			} else {
-				//console.log("times are invalid");
+		if (lesson_duration > 0) {
+			// duration is fixed. we need to set the finish time dropdown based on the starttime we just picked.
+
+			console.log("starttime chosen - lesson duration set to " + lesson_duration + "; populating finish time");
+			processFinishTime($(this).val(), lesson_duration);
+		} else {
+			// duration is flexible - calculate duration based on values of start and finish time boxes (but only after both have been chosen).
+			if ($("#prop_finishtime").val() != "") {
+				var starttime = moment($("#prop_starttime").val(), "HH:mm");
+				var finishtime = moment($("#prop_finishtime").val(), "HH:mm");			
+
+				if (validateTimes(starttime, finishtime)) {		
+					console.log("times are valid");
+					processLessonDuration();
+				} else {
+					console.log("times are invalid");
+				}		
 			}
+
 		}
+
+
+
 	});
 
 	$("#prop_finishtime").change(function() {
-		if ($("#prop_starttime").val() != "") {
-			var starttime = moment($("#prop_starttime").val(), "HH:mm");
-			var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
 
-			if (validateTimes(starttime, finishtime)) {		
-				//console.log("times are valid");
-				processLessonDuration();
-			} else {
-				//console.log("times are invalid");
+		lesson_duration = $(".scheduleLessonInfo").attr("data-duration");
+
+		if (lesson_duration > 0) {
+			// duration is fixed. we need to set the finish time dropdown based on the starttime we just picked.
+
+			console.log("finishtime chosen - lesson duration set to " + lesson_duration + "; populating start time");
+			processStartTime($(this).val(), lesson_duration);
+		} else {
+			// duration is flexible - calculate duration based on values of start and finish time boxes (but only after both have been chosen).
+			if ($("#prop_starttime").val() != "") {
+				var starttime = moment($("#prop_starttime").val(), "HH:mm");
+				var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
+
+				if (validateTimes(starttime, finishtime)) {		
+					//console.log("times are valid");
+					processLessonDuration();
+				} else {
+					//console.log("times are invalid");
+				}
 			}
 		}
 	});
@@ -291,9 +353,10 @@ $(document).ready(function() {
 	function getLessonDetails(lesson_id){
 		console.log("getLessonDetails: getting lesson details for lesson "+lesson_id);
 
-		$("#datepicker").val("");
-		$("#prop_finishtime,label[for=prop_finishtime]").show();
+		$("#datepicker, #prop_location").val("");
+		$("#prop_finishtime,label[for=prop_finishtime]").css("opacity", 1).removeAttr("disabled");
 		$(".detailFieldData").empty();
+		$(".invalidTime").hide();
 		// $(".scheduleMapStatic, .scheduleMap").hide();
 
 		// Disable the time selectors until user has chosen a date.
@@ -378,7 +441,7 @@ $(document).ready(function() {
 							console.log("getLessonDetails: The lesson has a duration: "+lesson_duration_str+" - hiding finishtime select box.");
 
 							// if duration is set for this lesson, hide the finish time 
-							$("#prop_finishtime,label[for=prop_finishtime]").hide();
+							$("#prop_finishtime,label[for=prop_finishtime]").css("opacity", "0.3").attr("disabled", "disabled");
 							$("#detailLessonDuration").text(lesson_duration_str);
 							totalCost = getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit);
 							$("#detailLessonCost").text("$"+totalCost).data("totalCost", totalCost);
@@ -388,13 +451,14 @@ $(document).ready(function() {
 						lesson_group_rate_unit_text = lesson_group_rate_unit == 0 ? " per person, per hour" : " per person";
 
 						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Duration:</div><div class='lessonData'>"+lesson_duration_str+"</div></div>");
-						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Rate:</div><div class='lessonData'>$" + lesson_rate + lesson_rate_unit_text + " (individuals)");
+						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Rate:</div><div class='lessonData'>$" + lesson_rate + lesson_rate_unit_text + " (individual)");
 						if (lesson_group_rate > 0) {
 							$(".scheduleLessonInfo").append("<br>"+ lesson_group_rate + lesson_group_rate_unit_text+" (groups, up to "+lesson_group_maxsize+")");
 						}
 						$(".scheduleLessonInfo").append("</div></div>");
-						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Description:</div><div class='lessonData'>" + lesson_description + "</div></div>");
-						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>More Details:</div><div class='lessonData'><a href='lesson/"+lesson_id+"'>Go to lesson page</a></div></div>");	
+						$(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>Description:</div><div class='lessonData'>" + lesson_description + "</div><div class='lessonMore'><a href='lesson/"+lesson_id + "'>More<i class='fa fa-arrow-circle-right'></i></a></div></div>");
+						
+						// $(".scheduleLessonInfo").append("<div class='lessonField'><div class='lessonFieldLabel'>More Details:</div><div class='lessonData'><a href='lesson/"+lesson_id+"'>Go to lesson page</a></div></div>");	
 					 },
 					 error: function(data) {
 						 console.log ('getLessonDetails: AJAX FAIL');
@@ -413,6 +477,7 @@ $(document).ready(function() {
 		var duration = $(".scheduleLessonInfo").attr("data-duration");
 		var duration_offset = Math.ceil(parseInt(duration)/30);
 
+
 		if (start != "" && finish != "") {
 			var startTargetFirst = $("#prop_starttime").children("option[value='"+start+"']");
 			var startTargetLast = $("#prop_starttime").children("option[value='"+finish+"']");
@@ -422,10 +487,17 @@ $(document).ready(function() {
 			startTargetFirst.prevAll().attr('disabled','disabled');
 			startTargetLast.nextAll().attr('disabled','disabled');
 
-			var finishPointer = startTargetLast;
+			var startLatestPointer = startTargetLast;
+			var finishEarliestPointer = finishTargetFirst;
+
 			for (i = 0; i < duration_offset; i++) { 
-			    finishPointer.attr('disabled','disabled');
-			    finishPointer = finishPointer.prev();
+				// must factor in a lesson duration offset in each of the time select boxes, so you can't pick a start time half an hour from the mentor's quitting time, when the lesson is 3 hours. For each block of duration (currently, 30 minutes), deactivate a "late" start time and "early" finish time
+
+			    startLatestPointer.attr('disabled','disabled');
+			    startLatestPointer = startLatestPointer.prev();			    
+
+			    finishEarliestPointer.attr('disabled','disabled');
+			    finishEarliestPointer = finishEarliestPointer.next();
 			}
 
 			finishTargetFirst.prevAll().attr('disabled','disabled');
@@ -436,7 +508,15 @@ $(document).ready(function() {
 			start = "09:00";
 		}
 
+
+		console.log("processTimeSelect: duration is: " + duration);
+
 		$("#prop_starttime,#prop_finishtime").val(start);
+		
+		if (duration != "") {
+			// if duration of lesson is set, adjust the end time dropdown to display the end time (but it will be deactivated)
+			processFinishTime(start, duration);
+		}
 
 	}
 
@@ -444,7 +524,8 @@ $(document).ready(function() {
 	function processLessonDuration() {
 
 		var starttime = moment($("#prop_starttime").val(), "HH:mm");
-		var finishtime = moment($("#prop_finishtime").val(), "HH:mm");		
+		var finishtime = moment($("#prop_finishtime").val(), "HH:mm");
+
 		var diff = finishtime.diff(starttime, 'minutes');
 		lesson_duration = diff;
 		lesson_duration_str = getDurationString(lesson_duration);
@@ -457,6 +538,37 @@ $(document).ready(function() {
 		totalCost = getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit);
 		$("#detailLessonCost").text("$"+totalCost);	
 	}
+
+	function processFinishTime(starttime, lesson_duration) {
+		// when user selects start time, check the lesson duration and populate the end time dropdown.
+		console.log("processFinishTime: starttime: " + starttime + ", duration: " + lesson_duration);
+
+		var starttime = moment(starttime, "HH:mm");
+		var finishtime = starttime.add(parseInt(lesson_duration), 'minutes');
+		var finishtime_formatted = moment(finishtime).format("HH:mm");
+
+		console.log("processFinishTime: mom starttime: " + starttime);
+		console.log("processFinishTime: mom finishtime: " + finishtime);
+		console.log("processFinishTime: finishtime formatted: " + finishtime_formatted);
+		
+		$("#prop_finishtime").val(finishtime_formatted);
+	}
+
+	function processStartTime(finishtime, lesson_duration) {
+		// when user selects start time, check the lesson duration and populate the end time dropdown.		
+		console.log("processStartTime: finishtime: " + finishtime + ", duration: " + lesson_duration);
+
+		var finishtime = moment(finishtime, "HH:mm");
+		var starttime = finishtime.subtract(parseInt(lesson_duration), 'minutes').format("HH:mm");
+		// var starttime_formatted = moment(finishtime).format("HH:mm");
+
+		console.log("processFinishTime: mom starttime: " + starttime);
+		console.log("processFinishTime: mom finishtime: " + finishtime);
+		// console.log("processFinishTime: finishtime formatted: " + finishtime_formatted);
+		
+		$("#prop_starttime").val(starttime);
+	}
+
 
 	// take duration and rates and calculate the cost we charge to user.
 	function getTotalCost(lesson_id, lesson_duration, lesson_rate, lesson_rate_unit){
@@ -572,38 +684,74 @@ $(document).ready(function() {
 	$('#send_proposal').click(function(e) {
 		e.preventDefault();
 
-		$cost = Number(totalCost) * 100;
-		$duration = lesson_duration;
-		$lesson = lesson_id;
+		// First validate to make sure user selected a date and time.
 
-		$groupsize = "1";
-
-		$description = $('#prop_description').val();
-		$location = $('#prop_location').val();
-		$start_date = $finish_date = $('#datepicker').val();
-		$start_time = $('#prop_starttime').val();
-		$finish_time = $('#prop_finishtime').val();
-
-		console.log('lesson = ' + $lesson);
-		console.log('duration = ' + $duration);
-		console.log('groupsize = ' + $groupsize);
-		console.log('description = ' + $description);
-		console.log('location = ' + $location);
-		console.log('mentor = ' + mentor_id + ';' + mentor_name);
-		console.log('start time = ' + $start_date+ ' ; ' + $start_time);
-		console.log('finish time = ' + $finish_date+ ' ; ' + $finish_time);
-		console.log('total cost = ' + $cost);
-
-		stripe_chkout.open({
-			name: mentor_name,
-			description: "Meeting on " + $start_date,
-			email: buyer_email,
-			image: '/static/img/favicon.png',
-			amount:	$cost,
-			currency: 'usd',
-		});
+		var valid = 1;
 		
+		if ($("#datepicker").val() == "") {
+			var error = "Please select a date for your session."; 
+			// $("#datepicker").css("border", "#e75f63");
+			$("#datepicker").prevAll(".formFieldError:first").html(error).fadeIn();
+			valid = 0;
+		} else {
+			console.log("datepicker val is " + $("#datepicker").val());
+		}
+		
+		if ($("#prop_starttime").val() == "" || $("#prop_finishtime").val() == "" ) {
+			var error = "Please select a time for your session."; 
+			
+			// if ($("#prop_starttime").val() == "") {
+			// 	$("#prop_starttime").css("border", "#e75f63");
+			// }			
+			// if ($("#prop_finishtime").val() == "") {
+			// 	$("#prop_finishtime").css("border", "#e75f63");
+			// }
+
+			$("#prop_starttime").prevAll(".formFieldError:first").html(error).fadeIn();
+			valid = 0;
+		}
+
+		if (valid == 0) {
+			openAlertWindow('Please fill out all required fields before submitting your request.');
+		}
+
+		// If valid, open the stripe widget to collect payment info
+
+		if (valid) {
+			$cost = Number(totalCost) * 100;
+			$duration = lesson_duration;
+			$lesson = lesson_id;
+
+			$groupsize = "1";
+
+			$description = $('#prop_description').val();
+			$location = $('#prop_location').val();
+			$start_date = $finish_date = $('#datepicker').val();
+			$start_time = $('#prop_starttime').val();
+			$finish_time = $('#prop_finishtime').val();
+
+			console.log('lesson = ' + $lesson);
+			console.log('duration = ' + $duration);
+			console.log('groupsize = ' + $groupsize);
+			console.log('description = ' + $description);
+			console.log('location = ' + $location);
+			console.log('mentor = ' + mentor_id + ';' + mentor_name);
+			console.log('start time = ' + $start_date+ ' ; ' + $start_time);
+			console.log('finish time = ' + $finish_date+ ' ; ' + $finish_time);
+			console.log('total cost = ' + $cost);
+
+			stripe_chkout.open({
+				name: mentor_name,
+				description: "Meeting on " + $start_date,
+				email: buyer_email,
+				image: '/static/img/favicon.png',
+				amount:	$cost,
+				currency: 'usd',
+			});
+		}
 	});
+
+
 });
 
 </script>

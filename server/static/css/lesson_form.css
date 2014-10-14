@@ -316,13 +316,13 @@
 	padding-top: 6px;
 	font-size: .9em;
 	font-weight: bold;
-	color: red;
+	color: #e75f63;
 	width: 100%;
 }
 .formFieldErrors label {
 	font-size: .9em;
 	font-weight: bold;
-	color: red;
+	color: #e75f63;
 }
 
 .formFieldError {

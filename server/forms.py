@@ -182,7 +182,7 @@ class LoginForm(Form):
 
 class LessonForm(Form):
 
-	Durations = [ (30, '30 minutes'), (45, '45 minutes'), (60, '1 hour'), (75, '1 hour 15 minutes'), (90, '1 hour 30 minutes'), (105, '1 hour 45 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
+	Durations = [ (30, '30 minutes'), (60, '1 hour'), (90, '1 hour 30 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
 
 	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
 	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
