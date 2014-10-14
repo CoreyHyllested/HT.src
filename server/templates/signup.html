@@ -73,6 +73,29 @@
 <script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
 <script type="text/javascript">
 
+
+$.ajax({
+	url: '//freegeoip.net/json/',
+	type: 'POST',
+	dataType: 'jsonp',
+	success: function(location) {
+		console.log(['city', location.city]);
+		console.log(['region-code, name', location.region_code, location.region_name]);
+		console.log(['areacode, zip', location.areacode, location.zipcode]);
+		console.log(['ip', location.ip]);
+		console.log(['lxl', location.latitude, location.longitude]);
+
+		$('#signupLocation').append($('<option>', { 'value' : 'location_' + location.region_name.toLowerCase() }).text(location.region_name));
+		//$('#signupLocation').options.add(new Option(location.region_name, 'location_' + location.region_name.toLowerCase()), $('#signupLocation').options[0]);
+		// example where I update content on the page.
+/*		jQuery('#country-name').html(location.country_name);
+		jQuery('#country-code').html(location.country_code); */
+	}
+} );
+
+
+
+
 // jquery pw-strength - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
 $(function() {
 	$("#signupConfirm").keyup(  function() { initializeStrengthMeter(); } );
