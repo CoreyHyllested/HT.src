@@ -2,21 +2,16 @@
 
 {% block head %}
 	{{ super() }}
-	<!-- <link type="text/css" rel="stylesheet" href="/static/css/recovery.css"> -->
-
 	{% assets "sass_settings" %}
 		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
 	{% endassets %}	
 {% endblock %}
 
 {% block content %}
-
 <div class="settingsContentWrapper">
 
 	{% if errmsg != none %}
-	<script>
-		openAlertWindow('{{errmsg}}');
-	</script>
+	<script>openAlertWindow('{{errmsg}}');</script>
 	{% endif %}
 
 	<form id="editSettingsForm">
@@ -24,7 +19,6 @@
 		<input type="hidden" id="nexturl" value="{{ nexturl }}">
 
 		<div class="formContainer">
-
 			<div class="formInstruction">Account Settings</div>
 			
 			<div class="formFieldContainer">
@@ -37,14 +31,13 @@
 				<div class="formFieldInfo">Your email address</div>
 				<div class="formFieldError"></div>
 				{{form.set_input_email(placeholder="Your Email", class="formField span8 left")}}
-			
+
 				<div class="formFieldAction emailVerifyStatus span3">
 					{% if unverified_email == True %}
-						<button id="verifySend" class="whiteButton small">Get Verified</button>					
+						<button id="verifySend" class="whiteButton small">Get Verified</button>
 					{% else %}
 						<div class="verifySuccess"><i class="fa fa-fw fa-check"></i>Email verified.</div>
 					{% endif %}
-
 				</div>
 			</div>
 
@@ -96,7 +89,8 @@
 <script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
 <script>
 $(document).ready(function() {
-	// Jquery Password Strength Plugin - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
+	// Jquery Password Strength Plugin
+	// sitepoint.com/developing-password-strength-plugin-jquery/
 
 	var unverifiedEmail = "{{unverified_email}}";
 	console.log("unverified email val:"+unverifiedEmail);
@@ -120,32 +114,11 @@ $(document).ready(function() {
 		$(".emailVerifyText").html("Verification code sent to "+myEmail);
 		$(".emailVerifyInput").slideDown();
 		send_verification_email();
+		$("#verifySend").hide();
 	});
 
-	$("#set_input_verpass").keyup(function(){
-		initializeStrengthMeter();
-	});
-
-	$("#set_input_newpass").keyup(function(){
-		if ($("#set_input_verpass").val() != "") {
-			initializeStrengthMeter();
-		}
-	});
-
-	// $('#verify-email').on("click", function(e) {
-	// 	e.preventDefault();
-
-			
-	// 	send_verification_email();
-
-	// 	var dataObj = new Object();
-	// 	dataObj.hero = "{{bp.prof_id}}";
-	// 	dataObj.next = "modal";
-	// 	dataObj.nexturl = "{{ nexturl }}";
-	// 	$.each(dataObj, function(k, v) { console.log(k+ ": " + v); });
-	// 	openModalWindow("/email/request-response/me", ".recoveryContentWrapper", JSON.stringify(dataObj), 'small');			
-	
-	// });
+	$("#set_input_verpass").keyup(function(){ initializeStrengthMeter(); });
+	$("#set_input_newpass").keyup(function(){ if ($("#set_input_verpass").val() != "") { initializeStrengthMeter(); } });
 
 	$(".settingsCancelButton").click(function(e){
 		e.preventDefault();
@@ -161,13 +134,10 @@ $(document).ready(function() {
 
 
 function saveSettings() {
-
 	var fd = new FormData($('#editSettingsForm')[0]);
-
 	$(".settingsFormStatus").html("Saving...").fadeIn();
 
 	// Remove error indicators
-
 	$("#passMeter").slideUp().html("");
 	$(".formFieldError").slideUp().html("");
 	$(".formField").css("border-color", "#e1e8ed");
@@ -204,11 +174,9 @@ function saveSettings() {
 			}
 	});
 	return false;
-
 }
 
 function showErrors(errors) {
-
 	$(".settingsFormStatus").empty();
 
 	// iterate thru errors, create status messages, highlight form elements.
@@ -229,16 +197,16 @@ function showErrors(errors) {
 	});
 
 	$(".settingsFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
-
 }
+
 
 function initializeStrengthMeter() {
 	$("#passMeter").PasswordStrengthManager({
 		password: $("#set_input_newpass").val(),
 		confirm_pass : $("#set_input_verpass").val(),
 		blackList : ["efewf"], 
-		minChars : '5',
-		maxChars : '25',
+		minChars : '6',
+		maxChars : '50',
 		advancedStrength : false
 	});
 }
