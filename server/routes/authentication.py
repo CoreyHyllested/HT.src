@@ -48,8 +48,9 @@ linkedin = ht_oauth.remote_app(  'linkedin',
 )
 
 
+
 @insprite_views.route('/signup', methods=['GET', 'POST'])
-def render_signup_page(usrmsg = None):
+def render_signup_page(usrmsg=None):
 	bp = False
 
 	if ('uid' in session):
@@ -59,7 +60,7 @@ def render_signup_page(usrmsg = None):
 
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
-		#check if account (via email) already exists in db
+		# check if account (email) already exists in db
 		accounts = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
 		if (len(accounts) == 1):
 			trace("email already exists in DB")
@@ -73,8 +74,8 @@ def render_signup_page(usrmsg = None):
 				usrmsg = 'Something went wrong.  Please try again'
 	
 	elif request.method == 'POST':
-		usrmsg = 'Sorry, the form isn\'t filled out properly.'
-		trace("/signup form isn't valid" + str(form.errors))
+		trace("/signup form invalid" + str(form.errors))
+		usrmsg = 'Sorry, something wasn\'t filled out properly.'
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))
 
