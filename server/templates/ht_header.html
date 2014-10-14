@@ -75,12 +75,12 @@
 			});
 
 			// [All pages] Allow clicking instead of :hover for dropdown menus
-		    $('.headerDropdownMenuName').click( function(event){
+		    $('.headerDropdownMenuName').click(function(event){
 		        event.stopPropagation();
 		        $('.headerDropdownMenuActive').toggle();
 		    });
 
-		    $(document).click( function(){
+		    $(document).click(function() {
 		        $('.headerDropdownMenuActive').hide();
 		    });
 
@@ -126,12 +126,6 @@
 
 			{% if bp %}
 			<li id="menuUserName">{{bp.prof_name}}</li>
-
-			{% if bp.availability > 0 %}
-				<li><a href="/lesson/new">Create Lesson</a></li>
-			{% else %}
-				<a href="/profile/upgrade"><li>Become a Mentor</li></a>
-			{% endif %}
 			<li><a href="/dashboard">Dashboard</a></li>
 			<li><a href="/profile">Profile</a></li>
 			<li><a href="/edit">Edit Profile</a></li>
