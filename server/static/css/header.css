@@ -116,7 +116,8 @@ New muted blues for links:
 	-moz-transition: all 0.3s ease-in;
 	-o-transition: all 0.3s ease-in;
 	-webkit-transition: all 0.3s ease-in;
-}	
+}
+
 .headerSearchBarIcon i.headerSearchIcon:hover {
 	opacity: 1;
 }
@@ -245,7 +246,6 @@ New muted blues for links:
 	display: block;
 	padding-left: 10px;
 	width: 100%;
-
 }
 
 .headerDropdownMenu li ul a:last-of-type li {
@@ -347,7 +347,6 @@ a.headerLogoLink {
 	}
 
 	/* Header Menu (graphical menu turned on, text menu turned off) */
-
 	.headerGraphicalMenu {
 		background: url("../img/menu.svg") no-repeat 14px 14px;
 		background-size: 25px 15px;
