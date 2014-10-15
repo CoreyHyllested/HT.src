@@ -180,12 +180,12 @@
 						</li>
 					</ul>
 				</div>
+
 				<div class="headerIcons">
 					{% if bp.availability == 0 %}
 						<a class="teacherSignupLink blend" href="/profile/upgrade">Become a Mentor</a>
 					{% endif %}
-					<!--a class="notification icon blend" href=""><i class="fa fa-bell-o"></i></a-->
-					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"></i></a>
+					<a class="mailbox icon blend" href="/inbox"><i class="fa fa-envelope-o"><span id="mail_count" class="blend badge"></span></i></a>
 				</div>
 
 				{% else %}
@@ -194,12 +194,7 @@
 					<li><a href="/signup">Sign Up</a></li>
 					<li><a href="/login">Log In</a></li>
 				</ul>
-
 				{% endif %}
-
-			</div>
-			<div id="top-flash">
-				<span id="fmsg"></span>
 			</div>
 		</div>
 		<!-- Header ends here -->
