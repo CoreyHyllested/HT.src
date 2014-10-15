@@ -24,12 +24,10 @@
 			{% if form.errors %}
 			<div class="formError">Please fill out all fields</div>
 			{% endif %}
-			<div class="formCheck">Please fill out all fields</div>
 
 			{{form.hidden_tag()}}
 			{{form.input_signup_name(id="signupName", placeholder="Name", class="formField")}}
 			{{form.input_signup_email(id="signupEmail", placeholder="Email", class="formField")}}
-<!--			{ {form.input_signup_location(id="signupLocation", class="formField")} } -->
 			{{form.input_signup_password(id="signupPassword", placeholder="Enter Password", class="formField")}}
 			{{form.input_signup_confirm(id="signupConfirm", placeholder="Confirm Password", class="formField")}}
 			<div id="passMeter"></div>
@@ -63,7 +61,6 @@
 	-->
 
 	<a class="signupLink" href="/login">Already a member?</a>
-
 </div>
 
 <!-- Scripts -->
@@ -72,39 +69,19 @@
 <script type="text/javascript">
 
 
-$.ajax({
-	url: '//freegeoip.net/json/',
-	type: 'POST',
-	dataType: 'jsonp',
-	success: function(location) {
-		console.log(['city', location.city]);
-		console.log(['region-code, name', location.region_code, location.region_name]);
-		console.log(['areacode, zip', location.areacode, location.zipcode]);
-		console.log(['ip', location.ip]);
-		console.log(['lxl', location.latitude, location.longitude]);
-		console.log(['country', location.country_name, location.country_code]);
 
-		$('#signupLocation').append($('<option>', { 'value' : 'location_ip' + location.region_name.toLowerCase() }).text(location.region_name));
-		//$('#signupLocation').options.add(new Option(location.region_name, 'location_' + location.region_name.toLowerCase()), $('#signupLocation').options[0]);
-	}
-} );
-
-
-
-
-// jquery pw-strength - http://www.sitepoint.com/developing-password-strength-plugin-jquery/
 $(function() {
-	$("#signupConfirm").keyup(  function() { initializeStrengthMeter(); } );
-	$("#signupPassword").keyup( function() { if ($("#signupConfirm").val() != "") { initializeStrengthMeter(); } });
+	// password strength - www.sitepoint.com/developing-password-strength-plugin-jquery/
+	$("#signupConfirm").keyup(  function() { init_pw_bar(); } );
+	$("#signupPassword").keyup( function() { if ($("#signupConfirm").val() != "") { init_pw_bar(); } });
 });
 
 
 
-function initializeStrengthMeter() {
+function init_pw_bar() {
 	$("#passMeter").PasswordStrengthManager({
 		password: $("#signupPassword").val(),
 		confirm_pass : $("#signupConfirm").val(),
-		blackList : ["efewf"], 
 		minChars : '6',
 		maxChars : '50',
 		advancedStrength : false
@@ -112,9 +89,11 @@ function initializeStrengthMeter() {
 }
 
 
+
 function validateForm() {
 	console.log("Validating");
 
+	// clear all 'red error boxes' around fields.
 	$(".formField").removeClass("formFieldError")
 
 	// Fetch form elements
@@ -124,57 +103,54 @@ function validateForm() {
 	var confirm  = document.forms["SignupNow"]["signupConfirm"];
 
 	// Check for empty fields; if found, highlight them
-	var form_error = 0;
-
+	var rc = 0;
 	var form_fields = [name, email_address, password, confirm];
 	for (var i = 0; i < form_fields.length; i++) {
-		
-		var current_element = form_fields[i];
-		var current_value = form_fields[i].value;
-		if (current_value.match(/^\s*$/)) {
-			$(current_element).addClass("formFieldError");
-			form_error = 1;
+		var element = form_fields[i];
+		var e_value = form_fields[i].value;
+		if (e_value.match(/^\s*$/)) {
+			// if word does not exist flag field.
+			$(element).addClass("formFieldError");
+			rc++;
 		}
 	}
-	
 
-	// Validate email address
-	if (isEmail(email_address)) {
-		console.log("it's an email address.");
-	} else {
-		console.log("it's NOT an email address.");
-		$(".signupEmail").addClass("formFieldError");
-		form_error = 1;		
-	}
-
-	// Checks if password is correct
-	if (password.value !== confirm.value) {
-		openAlertWindow("Password and confirmation password don't match.");
-		form_error = 1;
-	}
-
-	// Checks if the ToS checkbox is checked
-	if (document.getElementById('accept_tos').checked) {return true;} else {
-		openAlertWindow("You must agree to our Terms of Service in order to create an account.");
-		form_error = 1;
-	}
-
-	if (form_error == 1) {
+	if (rc > 0) {
+		openAlertWindow("Missing required information.");
 		return false;
-	} else {
-		console.log("ERROR IS NOT 1");
-		return true;
 	}
+
+	// validate email address.
+	if (v_email(email_address.value)) {
+		openAlertWindow("Invalid email address.");
+		return false;
+	}
+
+	// validate both passwords match.
+	if (password.value !== confirm.value) {
+		openAlertWindow("Passwords don't match.");
+		return false;
+	}
+
+	// validate user agreed to the terms of service.
+	if (!document.getElementById('accept_tos').checked) {
+		openAlertWindow("You must agree to the Terms of Service before creating an account.");
+		return false;
+	}
+	return true;
 }
 
-function isEmail(email) {
-	console.log("testing email");
+
+function v_email(email) {
 	var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-	return regex.test(email);
+	valid = regex.test(email);
+	if (!valid) {
+		console.log([email, valid])
+		$(".signupEmail").addClass("formFieldError");
+	}
+	return valid
 }
-
 </script>
 
 <!-- Bottom bar -->
-
 {% endblock %}
