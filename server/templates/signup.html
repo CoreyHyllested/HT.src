@@ -120,14 +120,13 @@ function validateForm() {
 	// Fetch form elements
 	var name = document.forms["SignupNow"]["signupName"];
 	var email_address = document.forms["SignupNow"]["signupEmail"];
-	var location = document.forms["SignupNow"]["signupLocation"];
 	var password = document.forms["SignupNow"]["signupPassword"];
 	var confirm  = document.forms["SignupNow"]["signupConfirm"];
 
 	// Check for empty fields; if found, highlight them
 	var form_error = 0;
 
-	var form_fields = [name, email_address, location, password, confirm];
+	var form_fields = [name, email_address, password, confirm];
 	for (var i = 0; i < form_fields.length; i++) {
 		
 		var current_element = form_fields[i];
@@ -135,12 +134,6 @@ function validateForm() {
 		if (current_value.match(/^\s*$/)) {
 			$(current_element).addClass("formFieldError");
 			form_error = 1;
-		}
-		if (current_element == location){
-			if (current_value == ""){
-				$(current_element).addClass("formFieldError");
-				form_error = 1;
-			}
 		}
 	}
 	
@@ -154,9 +147,9 @@ function validateForm() {
 		form_error = 1;		
 	}
 
-	// Checks if the password is correct
+	// Checks if password is correct
 	if (password.value !== confirm.value) {
-		openAlertWindow("Your password and confirmation password don't match.");
+		openAlertWindow("Password and confirmation password don't match.");
 		form_error = 1;
 	}
 
