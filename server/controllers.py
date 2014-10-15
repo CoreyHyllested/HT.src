@@ -11,7 +11,7 @@
 # consent has been obtained from Insprite, LLC.
 #################################################################################
 
-import os, json, pickle, requests
+import os, re, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
@@ -19,6 +19,7 @@ import pytz
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt
+from flask import request
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
@@ -129,11 +130,12 @@ def ht_password_recovery(email):
 
 def ht_create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
+	geo_location = get_geolocation_from_ip()
 
 	try:
-		print 'create account and profile'
+		print 'create account and profile', str(geo_location.get('region_name')), str(geo_location.get('country_code'))
 		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		profile = Profile(name, account.userid)
+		profile = Profile(name, account.userid, geo_location)
 		db_session.add(account)
 		db_session.add(profile)
 		db_session.commit()
@@ -142,7 +144,7 @@ def ht_create_account(name, email, passwd):
 		db_session.rollback()
 		# raise --fail... user already exists
 		# is this a third-party signup-merge?
-			#-- if is is a merge.
+			#-- if it is a merge....
 		return (None, None)
 	except Exception as e:
 		print type(e), e
@@ -753,6 +755,18 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 #################################################################################
 ### HELPER FUNCTIONS ############################################################
 #################################################################################
+
+def get_geolocation_from_ip(ip=None):
+	if (ip is None): ip = request.remote_addr
+
+	# find IPV4 addrs. http://www.shellhacks.com/en/RegEx-Find-IP-Addresses-in-a-File-Using-Grep
+	pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+	if not re.match(pattern, ip):
+		return dict()
+
+	ip_geo_url= 'http://freegeoip.net/json/' + str(ip)
+	return json.loads((urllib.urlopen(ip_geo_url)).read())
+
 
 def ht_print_timedelta(td):
 	if (td.days >= 9):
