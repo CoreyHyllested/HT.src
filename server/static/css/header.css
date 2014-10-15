@@ -292,19 +292,27 @@ a.headerLogoLink {
 	margin-right: 6px;
 }
 
+.fa {
+	position: relative;
+}
 
 .badge {
-	/*background: rgba(0,0,0,.1);
-	background-color: #1488CC; */
-	width: auto;
-	height: auto;
-	margin: 0;
+	background: rgba(0,0,0,0.4);
+	font-size: .6em;
+	display: block;
+	position: absolute;
+	top: -1.3em;
+	right: -1.3em;
+
+	line-height: 12px;
 	border-radius: 50%;
-	font-size: .75em;
-	position:absolute;
-	top:-15px;
+	text-align: center;
+
+	width: 1.2em;
+	height: 1.2em;
+	margin: 0;
 /*	right:-8px; */
-	padding:5px;
+	padding:3px;
 }
 
 /***** Responsive Styles *****/
