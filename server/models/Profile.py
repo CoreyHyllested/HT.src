@@ -61,7 +61,7 @@ class Profile(Base):
 
 	industry	= Column(String(64))
 	headline	= Column(String(128))
-	location	= Column(String(64), nullable=False, default="Berkeley, CA")
+	location	= Column(String(64), nullable=False, default="Boulder, CO")
 
 	updated = Column(DateTime(), nullable=False, default = "")
 	created = Column(DateTime(), nullable=False, default = "")
@@ -74,10 +74,13 @@ class Profile(Base):
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
-	def __init__ (self, name, acct):
+	def __init__(self, name, acct, area=None):
+		if (area and area.get('country_name') == 'Reserved'): area = 'The Internet'
+		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
 		self.account	= acct
+		self.location	= area
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
 
