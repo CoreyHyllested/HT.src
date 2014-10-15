@@ -313,6 +313,7 @@ a.headerLogoLink {
 	margin: 0;
 /*	right:-8px; */
 	padding:3px;
+	display:none;	/* default to not display */
 }
 
 /***** Responsive Styles *****/
