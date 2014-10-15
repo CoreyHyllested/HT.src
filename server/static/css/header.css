@@ -292,6 +292,21 @@ a.headerLogoLink {
 	margin-right: 6px;
 }
 
+
+.badge {
+	/*background: rgba(0,0,0,.1);
+	background-color: #1488CC; */
+	width: auto;
+	height: auto;
+	margin: 0;
+	border-radius: 50%;
+	font-size: .75em;
+	position:absolute;
+	top:-15px;
+/*	right:-8px; */
+	padding:5px;
+}
+
 /***** Responsive Styles *****/
 
 /* Phones (240px - 549px) */
