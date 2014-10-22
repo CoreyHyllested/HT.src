@@ -92,10 +92,10 @@
 					</a>
 				</div>
 				<div class="dashboardApptCenterColumn">
-					<a href="/profile?hero={{appointment.display.prof_id}}">
-						<h3>{{appointment.display.prof_name}}</h3>
-					</a>
-					<div class="appointmentIntro">{{appointment.Meeting.meet_lesson}}</div>
+					<a href="/profile?hero={{appointment.display.prof_id}}"><h3>{{appointment.display.prof_name}}</h3></a>
+					{% if appointment.Meeting.meet_lesson %}
+					<div class="appointmentIntro">{{appointment.lesson.lesson_title}}</div>
+					{% endif %}
 					<div class="appointmentIntro italic">{{appointment.Meeting.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
