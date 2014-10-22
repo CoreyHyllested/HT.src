@@ -99,23 +99,18 @@
 					<div class="appointmentIntro italic">{{appointment.Meeting.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
-					<div class="dashboardApptRightColumnElement apptDate"> {{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
-					<div class="dashboardApptRightColumnElement apptTime"> {{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
-
+					<div class="dashboardApptRightColumnElement apptDate">{{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
+					<div class="dashboardApptRightColumnElement apptTime">{{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
 					<div class="dashboardApptRightColumnElement apptCost">
-						{% if appointment.buyer == True %}
-						You will pay ${{appointment.Meeting.meet_cost}}.
-						{% else %}
-						You will earn ${{appointment.Meeting.meet_cost}}.
-						{% endif %}
+						{% if appointment.buyer == True %}You will pay ${{appointment.Meeting.meet_cost}}.{% else %}You will earn ${{appointment.Meeting.meet_cost}}.{% endif %}
 					</div>
-
+					<div class="dashboardApptRightColumnElement apptLocation">{{appointment.Meeting.meet_location}}</div>
 					<div class="dashboardApptRightColumnElement apptLocation">
-						{{appointment.Meeting.meet_location}}
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Meeting.meet_id}}" data-location="{{appointment.Meeting.meet_location}}" ></div>
 					</div>
-
-					<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
+					<div class="dashboardApptRightColumnElement apptLocation">
+						<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
+					</div>
 				</div>
 				<div class="clear"></div>
 			</div>
