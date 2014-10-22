@@ -275,7 +275,7 @@ h3 {color: black;}
 	float: right;
 	margin-top: 30px;
 	max-height: 600px;
-	overflow-y: scroll;
+	/* overflow-y: scroll; looks hidious */
 }
 
 .perHour {
