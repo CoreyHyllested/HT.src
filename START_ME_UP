@@ -1,0 +1,1 @@
+INSPRITE_DB=postgresql://htdb:pass@localhost:5432/beta4 python application.py 
