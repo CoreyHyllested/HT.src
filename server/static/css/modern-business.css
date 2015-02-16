@@ -133,18 +133,27 @@ body {
 
 
 /* Home Page Carousel */
-header.carousel {
+.carousel {
     height: 75%;
 	/* amount of screen space to fill */
 }
 
-header.carousel .item,
-header.carousel .item.active,
-header.carousel .carousel-inner {
-    height: 100%;
+.product {
+	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 */
+	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 */
+	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 */
+	background: linear-gradient(white, white); /* Standard syntax */
 }
 
-header.carousel .fill {
+
+.carousel .item,
+.carousel .item.active,
+.carousel .carousel-inner {
+	width: 100%;
+	height: 100vh;
+}
+
+.carousel .fill {
     width: 100%;
     height: 100%;
     background-position: center;
