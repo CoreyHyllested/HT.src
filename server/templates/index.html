@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SC</title>
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/modern-business.css" rel="stylesheet">
     <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -67,37 +67,6 @@
 			</div>
 	</div>
 
-    <!-- Header Carousel -->
-    <header id="myCarousel" class="carousel slide">
-        <!--ol class="carousel-indicators">
-            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-            <li data-target="#myCarousel" data-slide-to="1"></li>
-            <li data-target="#myCarousel" data-slide-to="2"></li>
-        </ol-->
-
-        <!-- Wrapper for slides -->
-        <div class="carousel-inner">
-            <div class="item active">
-                <div class="fill" style="background-image:url('/static/img/sc/glass_table.jpg');"></div>
-                <div class="carousel-caption">
-                    <h2>Caption 1</h2>
-                </div>
-            </div>
-            <!--div class="item">
-                <div class="fill" style="background-image:url('//placehold.it/1900x1080&text=Slide Three');"></div>
-                <div class="carousel-caption"> <h2>Caption 3</h2> </div>
-            </div-->
-        </div>
-
-        <!-- Controls 
-        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-            <span class="icon-prev"></span>
-        </a>
-        <a class="right carousel-control" href="#myCarousel" data-slide="next">
-            <span class="icon-next"></span>
-        </a>
-		-->
-    </header>
 
     <!-- Page Content -->
     <div class="container-fluid">
@@ -135,13 +104,34 @@
         </div><!-- /row -->
 
 
-        <!-- Flat Image Section -->
-        <div class="row lp-img1">
-				<div class="container">
-					<h1 class="lead">Creativity</h1>
-					<p>creating bespoke furniture<p>
+		<!-- Header Carousel -->
+		<div class="row">
+			<div class="container-fluid">
+				<div id="myCarousel" class="row carousel slide">
+					<ol class="carousel-indicators">
+						<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+						<li data-target="#myCarousel" data-slide-to="1"></li>
+					</ol>
+
+					<!-- Wrapper for slides -->
+					<div class="carousel-inner">
+						<div class="item active">
+							<div class="fill" style="background-image:url('/static/img/topo_table.jpg');"></div>
+							<div class="carousel-caption"> <h2>Topo Table.</h2> </div>
+						</div>
+						<div class="item">
+							<div class="fill" style="background-image:url('/static/img/sc/glass_table.jpg');"></div>
+							<div class="carousel-caption"> <h2>Glass Table.</h2> </div>
+						</div>
+					</div>
+
+					<!-- Left and Right Navigation; i.e. < and > icons -->
+					<a class="left carousel-control" href="#myCarousel" data-slide="prev"> <span class="icon-prev"></span> </a>
+					<a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="icon-next"></span> </a>
 				</div>
+			</div>
 		</div>
+
 
         <!-- Portfolio Section -->
         <div class="row">
@@ -259,11 +249,8 @@
     </div>
     <!-- /.container -->
 
-    <script src="/static/js/jquery.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script>
-    //$('.carousel').carousel({ interval: 5000 })
-    </script>
-
+	<script src="/static/js/jquery.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script> $('.carousel').carousel({ interval: 9000 }) </script>
 </body>
 </html>
