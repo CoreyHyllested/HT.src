@@ -15,18 +15,80 @@ body {
     padding-top: 50px; /* Required padding for .navbar-fixed-top. Remove if using .navbar-static-top. Change if height of navigation changes. */
 }
 
+.lp-img {
+	max-width: 100%;
+	height: auto;
+}
+
+
+.pad-top-bottom-100 {
+	padding-top: 100px;
+	padding-bottom: 100px;
+}
+
+.lp-img1 {
+	/* will not stretch, may not see full img */
+	background-image:url('/static/img/img1.jpg');
+	background-size: cover;
+	height: 750px;
+	color: #fff;
+}
+
+.lp-img2 {
+	/* only use where we can stretch the image */
+	background-image:url('/static/img/img2.jpg');
+	background-size: 100% 100%;
+	height: 750px;
+	color: #fff;
+}
+
 .img-portfolio {
     margin-bottom: 30px;
 }
 
 .img-hover:hover {
-    opacity: 0.8;
+    opacity: 0.9;
+/*	background-image:url('/static/img/topo_table.jpg');
+	background-size:cover;
+*/
+}
+
+.press {
+	padding-top: 75px;
+	padding-bottom: 75px;
+}
+
+.press-list {
+	margin-bottom: 15px;
+	list-style: none;
+}
+
+.list-inline {
+	padding-left: 0px;
+	height: 100px;
+}
+
+
+.press-list li {
+	display: block;
+	vertical-align: middle;	/* img? */
+}
+
+/*press-list and .last */
+.row.last {
+	margin-bottom:  100px;
+}
+
+.greyscale {
+	filter: gray;			/* IE6-9 */
+	filter: grayscale(1);	/* FF35+ */
+	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
 }
 
 /* Home Page Carousel */
-
 header.carousel {
-    height: 50%;
+    height: 75%;
+	/* amount of screen space to fill */
 }
 
 header.carousel .item,
@@ -42,8 +104,8 @@ header.carousel .fill {
     background-size: cover;
 }
 
-/* 404 Page Styles */
 
+/* 404 Page Styles */
 .error-404 {
     font-size: 100px;
 }
@@ -69,8 +131,21 @@ header.carousel .fill {
 
 /* Footer Styles */
 
-footer {
+/*footer {
     margin: 50px 0;
+}*/
+
+.footer-menu {
+	float: left;
+}
+
+.footer-menu li {
+	display: inline;
+	padding-right: 20px;
+}
+
+.footer-copy {
+	float: right;
 }
 
 /* Responsive Styles */
