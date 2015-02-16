@@ -26,6 +26,46 @@ body {
 	padding-bottom: 100px;
 }
 
+.lp-img {
+	background-image: url('/static/img/sc/glass_table.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	font-weight: 400;
+	width: 100%;
+	height: 80vh;
+	color: white;
+}
+
+.grid.center{
+	/* taken from trunk-club, not sure that this is doing anything */
+	-webkit-box-align:center;
+	-webkit-align-items:center;
+	-ms-flex-align:center;
+	align-items:center;
+	text-align:center;
+}
+
+.jumbotron-btn {
+	color: white;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	letter-spacing: 2px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+	border-width: 2px;
+	border-style: solid;
+	border-color: #fff;
+	border-radius: 4px;
+	transition: background 80ms ease-out;
+}
+
+.jumbotron-btn:hover {
+	text-decoration: none;
+	background-color: white;
+	color: black;
+}
+
+
 .lp-img1 {
 	/* will not stretch, may not see full img */
 	background-image:url('/static/img/img1.jpg');
@@ -84,6 +124,7 @@ body {
 	filter: grayscale(1);	/* FF35+ */
 	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
 }
+
 
 /* Home Page Carousel */
 header.carousel {
