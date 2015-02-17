@@ -4,8 +4,6 @@
  * For details, see http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-/* Global Styles */
-
 html,
 body {
     height: 100%;
@@ -35,6 +33,7 @@ body {
 }
 
 .lp-img h1 {
+	/* apparently em is a multiplier... h1 is impacted by .lp-img font-size */
 	font-size: 2em;
 	line-height: 1.1em;
 }
@@ -47,14 +46,16 @@ body {
 	-ms-flex-align:center;
 	align-items:center;
 	*/
+	top: 25%;
+	text-align:center;		 /* center align text too */
+
+	/* setting the width to a size and setting margins to auto ... we center-aligned the div */
 	position: absolute;
 	display: block;
-	top: 25%;
 	width: 95%;
 	margin-left: auto;
 	margin-right: auto;
-	text-align:center;
-	overflow:hidden;
+
 }
 
 .jumbotron-btn {
