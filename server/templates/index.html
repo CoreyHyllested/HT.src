@@ -31,7 +31,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+                <a class="navbar-brand" href="index.html">Soulcrafting</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -56,15 +56,16 @@
         <!-- /.container -->
     </nav>
 
-	<!-- Section with Image -->
-	<div class="lp-img">
-			<div class="container">
-				<div class="center">
-					<h1>Soulcrafted Furniture & Furnishings</h1>
-					<h2>Your Space.  Your Taste.</h2>
-					<h4><a href="/signup" class="btn jumbotron-btn">Get Started</a></h4>
-				</div>
-			</div>
+	<!-- Landing Page, Above the fold imagery. -->
+	<div class="container lp-img">
+		<div class="center">
+			<h1>Soulcrafted Furniture & Furnishings</h1>
+			<p>Your Space.  Your Taste.
+			<br>
+			<br>
+			<a href="/signup" class="btn jumbotron-btn">Get Started</a>
+			</p>
+		</div>
 	</div>
 
 
@@ -105,35 +106,45 @@
 
 
 		<!-- Header Carousel -->
-		<div class="row">
-			<div class="container-fluid">
-				<div id="myCarousel" class="row carousel slide">
-					<ol class="carousel-indicators">
-						<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-						<li data-target="#myCarousel" data-slide-to="1"></li>
-					</ol>
+		<div id="myCarousel" class="product-container row carousel slide">
+			<ol class="carousel-indicators">
+				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+				<li data-target="#myCarousel" data-slide-to="1"></li>
+			</ol>
 
-					<!-- Wrapper for slides -->
-					<div class="carousel-inner">
-						<div class="item active">
-							<div class="fill" style="background-image:url('/static/img/topo_table.jpg');"></div>
-							<div class="carousel-caption"> <h2>Topo Table.</h2> </div>
-						</div>
-						<div class="item">
-							<div class="fill" style="background-image:url('/static/img/sc/glass_table.jpg');"></div>
-							<div class="carousel-caption"> <h2>Glass Table.</h2> </div>
-						</div>
+			<!-- Wrapper for slides -->
+			<div class="container-fluid carousel-inner">
+				<div class="item active">
+					<div class="col-md-5 col-xs-12" style="text-align: center;">
+						<h2>Topo Table.</h2>
+						<hr>
+						<p>This amazing table was built in 2010 by Odin.  The glass was naturally forged beneath the Dweamer crags.  It's whereabouts are unknown, as it's owner grabbed it and flew off with a hammer.  We believe it to be in Vallhalla.</p>
+						<hr>
+						<p>$5000  | Glass &amp; Oak | Odin</p>
 					</div>
-
-					<!-- Left and Right Navigation; i.e. < and > icons -->
-					<a class="left carousel-control" href="#myCarousel" data-slide="prev"> <span class="icon-prev"></span> </a>
-					<a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="icon-next"></span> </a>
+					<div class="col-md-1" style="text-align: center;"></div>
+					<div class="col-md-5 col-xs-12" style="text-align: center; background-image:url('/static/img/topo_table.jpg'); jackground-position: center; height:40vh;"></div>
+				</div>
+				<div class="item">
+					<div class="col-md-5 col-xs-12" style="text-align: center;">
+						<h2>Glass Table.</h2>
+						<hr>
+						<p>This unique table was built for Intrado's guest services department.  Intrado wanted a chic modern table to welcome their guests, while showing their commmitment to killing trees as well.</p>
+						<hr>
+						<p>$12700  | Glass, Steel &amp; Oak | Wood Meets Steel</p>
+					</div>
+					<div class="col-md-1" style="text-align: center;"></div>
+					<div class="col-md-5 col-xs-12" style="text-align: center; background-image:url('/static/img/sc/glass_table.jpg'); background-position: center; height:40vh;"></div>
 				</div>
 			</div>
+
+			<!-- Left and Right Navigation; i.e. < and > icons -->
+			<a class="left carousel-control" href="#myCarousel" data-slide="prev"> <span class="icon-prev"></span> </a>
+			<a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="icon-next"></span> </a>
 		</div>
 
 
-        <!-- Portfolio Section -->
+        <!-- Portfolio Section 
         <div class="row">
             <div class="col-lg-12">
                 <h2 class="page-header">Portfolio Heading</h2>
@@ -169,9 +180,9 @@
                 </a>
             </div>
         </div>
+		-->
         <!-- /.row -->
 
-        <!-- Features Section -->
         <div class="row">
             <div class="col-lg-12"> <h2 class="page-header">Soulcrafting Bespoke Furniture</h2> </div>
             <div class="col-md-6">
@@ -190,8 +201,7 @@
             <div class="col-md-6">
                 <img class="img-responsive" src="//placehold.it/700x450" alt="">
             </div>
-        </div>
-        <!-- /.row -->
+        </div><!-- /.row -->
 
         <hr>
 
@@ -251,6 +261,6 @@
 
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/bootstrap.min.js"></script>
-	<script> $('.carousel').carousel({ interval: 9000 }) </script>
+	<script> //$('.carousel').carousel({ interval: 9000 }) </script>
 </body>
 </html>
