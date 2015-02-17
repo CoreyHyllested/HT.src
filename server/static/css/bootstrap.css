@@ -6209,6 +6209,7 @@ button.close {
 	content: '\203a';
 }
 
+
 .carousel-indicators {
   position: absolute;
   bottom: 10px;
@@ -6220,6 +6221,7 @@ button.close {
   text-align: center;
   list-style: none;
 }
+
 .carousel-indicators li {
   display: inline-block;
   width: 10px;
@@ -6232,12 +6234,21 @@ button.close {
   border: 1px solid #fff;
   border-radius: 10px;
 }
+.carousel-explore {
+	position: absolute;
+	bottom: 10px;
+	left: 60%;
+	float: left;
+	padding-left: 20px;
+	
+}
 .carousel-indicators .active {
   width: 12px;
   height: 12px;
   margin: 0;
   background-color: #fff;
 }
+
 .carousel-caption {
   position: absolute;
   right: 15%;
@@ -6279,6 +6290,7 @@ button.close {
   .carousel-indicators {
     bottom: 20px;
   }
+
 }
 .clearfix:before,
 .clearfix:after,
