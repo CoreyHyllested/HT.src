@@ -26,6 +26,10 @@ import uuid, factory
 
 
 # Profile states for teaching availability. 0 is when teaching has not been activated yet. 1 = flexible, 2 = specific
+PROF_MENTOR_NONE = 0
+PROF_MENTOR_FLEX = 1
+PROF_MENTOR_SPEC = 2
+
 PROF_FLAG_AVAIL_NONE = 0
 PROF_FLAG_AVAIL_FLEX = 1
 PROF_FLAG_AVAIL_SPEC = 2
@@ -57,20 +61,26 @@ class Profile(Base):
 
 	industry	= Column(String(64))
 	headline	= Column(String(128))
-	location	= Column(String(64), nullable=False, default="Berkeley, CA")
+	location	= Column(String(64), nullable=False, default="Boulder, CO")
 
 	updated = Column(DateTime(), nullable=False, default = "")
 	created = Column(DateTime(), nullable=False, default = "")
 
 	availability = Column(Integer, default=0)	
 
+	lessons = relationship('Lesson', backref='profile', cascade="all, delete-orphan")
+	timeslots = relationship('Availability', backref='profile', cascade="all, delete")
+
 	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
-	def __init__ (self, name, acct):
+	def __init__(self, name, acct, area=None):
+		if (area and area.get('country_name') == 'Reserved'): area = 'The Internet'
+		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
 		self.account	= acct
+		self.location	= area
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
 
@@ -138,7 +148,6 @@ class Profile(Base):
 			print type(e), e
 			db_session.rollback()
 		return self
-
 
 
 

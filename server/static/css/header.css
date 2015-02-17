@@ -77,7 +77,7 @@ New muted blues for links:
 
 /* Header Search */
 
-#headerSearch {
+#headerSearchField {
 	float: left;
 	background: #fff;
 	border-radius: 2px;
@@ -108,7 +108,7 @@ New muted blues for links:
 	margin-left: -23px;
 }
 
-.headerSearchBarIcon i.searchIcon {
+.headerSearchBarIcon i.headerSearchIcon {
 	color: #000;
 	opacity: 0.7;
 	cursor: pointer;
@@ -116,8 +116,9 @@ New muted blues for links:
 	-moz-transition: all 0.3s ease-in;
 	-o-transition: all 0.3s ease-in;
 	-webkit-transition: all 0.3s ease-in;
-}	
-.headerSearchBarIcon i.searchIcon:hover {
+}
+
+.headerSearchBarIcon i.headerSearchIcon:hover {
 	opacity: 1;
 }
 
@@ -245,7 +246,6 @@ New muted blues for links:
 	display: block;
 	padding-left: 10px;
 	width: 100%;
-
 }
 
 .headerDropdownMenu li ul a:last-of-type li {
@@ -290,6 +290,30 @@ a.headerLogoLink {
 
 .headerIcons .icon {
 	margin-right: 6px;
+}
+
+.fa {
+	position: relative;
+}
+
+.badge {
+	background: rgba(0,0,0,0.4);
+	font-size: .6em;
+	display: block;
+	position: absolute;
+	top: -1.3em;
+	right: -1.3em;
+
+	line-height: 12px;
+	border-radius: 50%;
+	text-align: center;
+
+	width: 1.2em;
+	height: 1.2em;
+	margin: 0;
+/*	right:-8px; */
+	padding:3px;
+	display:none;	/* default to not display */
 }
 
 /***** Responsive Styles *****/
@@ -347,7 +371,6 @@ a.headerLogoLink {
 	}
 
 	/* Header Menu (graphical menu turned on, text menu turned off) */
-
 	.headerGraphicalMenu {
 		background: url("../img/menu.svg") no-repeat 14px 14px;
 		background-size: 25px 15px;
@@ -374,7 +397,7 @@ a.headerLogoLink {
 		width: 200px;
 	}
 
-	#menuSearch {
+	#mobileSearchForm {
 		background: url("../img/search.svg") #282c34 no-repeat 152px;
 		border-style: none;
 		border-radius: 2px;

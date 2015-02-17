@@ -1,3 +1,5 @@
+// TODO - see if we use this anymore
+
 //checking if the key currently typed in is a number
 function isNumberKey(evt) {
   var charCode = (evt.which) ? evt.which : event.keyCode;

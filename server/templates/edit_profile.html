@@ -2,13 +2,11 @@
 
 {% block head %}
 	{{ super() }}
-	<!-- <link type="text/css" rel="stylesheet" href="/static/css/dropzone.css"> -->
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_profile.css"><!-- contains dropzone overrides -->
-
 {% endblock %}
 
-{% block content %}
 
+{% block content %}
 <div class="editProfContentWrapper">
 
 	<div class="editProfFlags" data-flags="{{flags}}">{{flags}}</div>
@@ -187,45 +185,45 @@
 					<fieldset id="editProfAvailTimes">
 
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="sun", class="daySelector", value="sun")}} <label for="sun">Sunday</label>
+						{{form.edit_avail_day_sun(id="sun", class="daySelector")}} <label for="sun">Sunday</label>
 						{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_sun_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_sun_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="mon", class="daySelector", value="mon")}} <label for="mon">Monday</label>
+						{{form.edit_avail_day_mon(id="mon", class="daySelector")}} <label for="mon">Monday</label>
 						{{form.edit_avail_time_mon_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_mon_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_mon_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="tue", class="daySelector", value="tue")}} <label for="tue">Tuesday</label>
+						{{form.edit_avail_day_tue(id="tue", class="daySelector")}} <label for="tue">Tuesday</label>
 						{{form.edit_avail_time_tue_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_tue_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_tue_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 						
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="wed", class="daySelector", value="wed")}} <label for="wed">Wednesday</label>
+						{{form.edit_avail_day_wed(id="wed", class="daySelector")}} <label for="wed">Wednesday</label>
 						{{form.edit_avail_time_wed_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_wed_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_wed_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="thu", class="daySelector", value="thu")}} <label for="thu">Thursday</label>
+						{{form.edit_avail_day_thu(id="thu", class="daySelector")}} <label for="thu">Thursday</label>
 						{{form.edit_avail_time_thu_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_thu_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_thu_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="fri", class="daySelector", value="fri")}} <label for="fri">Friday</label>
+						{{form.edit_avail_day_fri(id="fri", class="daySelector")}} <label for="fri">Friday</label>
 						{{form.edit_avail_time_fri_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_fri_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_fri_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 					<div class="editProfAvailDay">
-						{{form.edit_avail_day(id="sat", class="daySelector", value="sat")}} <label for="sat">Saturday</label>
+						{{form.edit_avail_day_sat(id="sat", class="daySelector")}} <label for="sat">Saturday</label>
 						{{form.edit_avail_time_sat_start(class="formField timeSelector span2")}}
-						{{form.edit_avail_time_sat_end(class="formField timeSelector span2")}}
+						{{form.edit_avail_time_sat_finish(class="formField timeSelector span2")}}
 						<div class="formFieldError inline"></div>
 					</div> 	
 
@@ -248,15 +246,13 @@
 					<span class="formFieldCaption"></span>
 
 					<br><br>
-					<div class="formDescription">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. 
-					<br><br>
-					Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
+					<div class="formFieldInfo">In order to get paid as a member of Insprite, you must sign up for a free <a href="https://stripe.com" target="_blank">Stripe</a> account. Stripe is a company that provides a secure way for individuals and businesses to accept payments over the Internet. Click "Connect with Stripe" to sign up and to authorize Insprite to deposit money into your account. You will be temporarily taken to Stripe's website, but will be taken back here once you're done.
 					</div>
 
 					<div class="formFieldError"></div>
+					<!-- ca_2lJc0Fr8dOo2O5L8Lds3xwOqnGspvo8l -->
 					<a href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_2lJcTENLl5q6xB5eLld0aiWCIyTI2tei&scope=read_write&stripe_landing=login" class="stripe-connect light-blue" id="set-stripe"><span>Connect with Stripe</span></a>
-					
-					{{form.edit_oauth_stripe(class="formField span4", readonly=true)}} <span class="formFieldCaption"></span>
+					{{form.edit_oauth_stripe(class="formField span4", readonly=true, placeholder='No Stripe Account Found.')}}<span class="formFieldCaption"></span>
 
 					<div class="editProfFormPageFooter">
 						<div class="editProfFormButtonContainer">

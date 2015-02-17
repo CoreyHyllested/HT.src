@@ -11,7 +11,7 @@
 # consent has been obtained from Insprite, LLC.
 #################################################################################
 
-import os, json, pickle, requests
+import os, re, json, pickle, requests
 import time, uuid, smtplib, urlparse, urllib, urllib2
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
@@ -19,6 +19,7 @@ import pytz
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt
+from flask import request
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
@@ -129,11 +130,12 @@ def ht_password_recovery(email):
 
 def ht_create_account(name, email, passwd):
 	challenge_hash = uuid.uuid4()
+	geo_location = get_geolocation_from_ip()
 
 	try:
-		print 'create account and profile'
+		print 'create account and profile', str(geo_location.get('region_name')), str(geo_location.get('country_code'))
 		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
-		profile = Profile(name, account.userid)
+		profile = Profile(name, account.userid, geo_location)
 		db_session.add(account)
 		db_session.add(profile)
 		db_session.commit()
@@ -142,7 +144,7 @@ def ht_create_account(name, email, passwd):
 		db_session.rollback()
 		# raise --fail... user already exists
 		# is this a third-party signup-merge?
-			#-- if is is a merge.
+			#-- if it is a merge....
 		return (None, None)
 	except Exception as e:
 		print type(e), e
@@ -257,14 +259,17 @@ def normalize_oa_account_data(provider, oa_data):
 def htdb_get_composite_meetings(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
+	lesson = aliased(Lesson, name='lesson')
 
-	meetings	= db_session.query(Meeting, user, hero)																	\
+	meetings	= db_session.query(Meeting, user, hero, lesson)															\
 							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
 							.join(user, user.prof_id == Meeting.meet_buyer)												\
-							.join(hero, hero.prof_id == Meeting.meet_sellr).all();
+							.join(hero, hero.prof_id == Meeting.meet_sellr)												\
+							.join(lesson, lesson.lesson_id == Meeting.meet_lesson).all();
 
 	map(lambda composite_meeting: meeting_timedout(composite_meeting, profile), meetings)
 	map(lambda composite_meeting: display_meeting_partner(composite_meeting, profile), meetings)
+	map(lambda composite_meeting: display_meeting_lesson(composite_meeting, lesson), meetings)
 	return meetings
 
 
@@ -286,11 +291,11 @@ def meeting_timedout(composite_meeting, profile):
 		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
 		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
 
-		if (meeting.meet_state == APPT_STATE_PROPOSED):
+		if (meeting.meet_state == MeetingState.PROPOSED):
 			print '\t\t\tPROPOSED Meeting...'
 			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				meeting.set_state(MEET_STATE_TIMEDOUT, profile)
+				meeting.set_state(MeetingState.TIMEDOUT, profile)
 				db_session.add(meeting)
 				db_session.commit()
 			else:
@@ -302,7 +307,7 @@ def meeting_timedout(composite_meeting, profile):
 			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
 				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
 				print '\t\t\tFILTER Event out manually.  The events are working!!!'
-				meeting.set_state(APPT_STATE_OCCURRED)	# Hack, see above
+				meeting.set_state(MeetingState.OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
@@ -403,21 +408,107 @@ def ht_get_active_author_reviews(profile):
 
 
 
+
+def htdb_search_mentors_and_lessons(keywords, cost_min=0, cost_max=99999):
+	# COMPOSITE Profile-Lesson OBJECT
+	# OBJ.mentor	# Profile of Mentor
+	# OBJ.lesson	# Lesson by the mentor.
+
+	lesson = aliased(Lesson, name='lesson')
+	q_results	= db_session.query(Profile, lesson)										\
+							.filter(Profile.availability > PROF_MENTOR_NONE) 			\
+							.filter(Profile.prof_rate.between(cost_min, cost_max))		\
+							.join(lesson, Profile.prof_id == lesson.lesson_profile)		\
+							.filter(lesson.lesson_flags == LESSON_STATE_AVAILABLE)		\
+							.filter(lesson.lesson_rate.between(cost_min, cost_max))		\
+							.all();
+	print 'htdb_search_mentors_and_lessons: total results ', len(q_results)
+	hashmap = {}
+	results	= []
+
+	keywords = [k.lower() for k in keywords]
+	print 'htdb_search_mentors_and_lessons: score results ('+str(len(q_results))+') for keywords (', keywords, '),'
+
+	#################################################################################
+	### Search Process:
+	### Map 1:
+	### 	Score all mentor-lesson results
+	###		Map search-hits into hashtable indexed by Mentor's profile_id.
+	### Map 2: Order all lessons by their score. (mentor.lesson_hits)
+	###    score each composite mentor-lesson result for (case-insensitive) hits.
+	###    map any profile or lesson hits into dictionary/hashmap identified by prof_id
+	#################################################################################
+	map(lambda mentor_lesson: ht_score_search_results(mentor_lesson, keywords, hashmap), q_results)
+	map(lambda mentor_prof_id: ht_create_search_object(hashmap, mentor_prof_id, results), hashmap.keys())
+	print 'htdb_search_mentors_and_lessons: results[' + str(len(results)) + ']'
+
+#	results = ht_filter_composite_lessons(q_results, filter_by='COMP_SCORE', dump=True)	 # filter out no-profile and no-lessons.
+	for key in results:
+		print 'htdb_search_mentors_and_lessons: results[' + key.Profile.prof_name + '|' + str(key.total_score) + '|' + str(len(key.lesson_hits)) + ']'
+	results.sort(key=lambda x: x.total_score, reverse=True)
+	return results
+
+
+
+
+def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
+	mentor = hashmap[mentor_prof_id]
+	filtered_results.append(mentor[0])
+
+	lesson_hits = []
+	total_score = mentor[0].prof_score
+
+	# add lessons as appropriate
+	for lesson in mentor:
+		if (lesson.less_score > 0):
+			total_score = total_score + lesson.less_score
+			lesson_hits.append(lesson)
+
+	lesson_hits.sort(key=lambda x: x.less_score, reverse=True)
+	lesson_hits = lesson_hits[0:3]
+	setattr(mentor[0], 'lesson_hits', lesson_hits)
+	setattr(mentor[0], 'total_score', total_score)
+	print '\tht_score_mentor: Profile[' + str(mentor[0].prof_score) + '|' + str(total_score) + ']\t'+ mentor[0].Profile.prof_name  + '\t' + str(len(lesson_hits))
+
+
+
+
+
+def ht_filter_composite_lessons(search_set, filter_by='None', dump=False):
+	results = []
+
+	print 'ht_filter_composite_lessons: ', filter_by
+	if (filter_by == 'COMP_SCORE'):
+		#print 'Searching search_set for reviews of', profile.prof_name, profile.prof_id
+		results = filter(lambda s: (s.comp_score > 0), search_set)
+	elif (filter_by == 'LESS_SCORE'):
+		results = filter(lambda s: (s.less_score > 0), search_set)
+	else:
+		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
+
+	if (dump):
+		print 'ht_filter_composite_lessons: filter_by %s' % (filter_by), '\tSEARCH SET: ', len(search_set), "=>", len(results)
+		for s in results:
+			print '\t\t', s.Profile.prof_name, '\t', s.lesson.lesson_title, '\t', '$' + str(s.lesson.lesson_rate) #, '\t', s.score
+	return results
+
+
+
 def htdb_get_composite_reviews(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
-	appt = aliased(Proposal, name='appt')
+	meet = aliased(Meeting, name='meet')
 
 	# COMPOSITE REVIEW OBJECT
 	# OBJ.Review	# Review
 	# OBJ.hero		# Profile of seller
 	# OBJ.user		# Profile of buyer
-	# OBJ.appt 		# Proposal object
+	# OBJ.meet		# Meeting object
 	# OBJ.display	# <ptr> Profile of other person (not me)
 
-	all_reviews = db_session.query(Review, appt, hero, user).distinct(Review.review_id)											\
+	all_reviews = db_session.query(Review, meet, hero, user).distinct(Review.review_id)											\
 								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
-								.join(appt, appt.prop_uuid == Review.rev_appt)													\
+								.join(meet, meet.meet_id == Review.rev_appt)													\
 								.join(user, user.prof_id == Review.prof_authored)												\
 								.join(hero, hero.prof_id == Review.prof_reviewed).all();
 	map(lambda review: display_review_partner(review, profile.prof_id), all_reviews)
@@ -430,11 +521,50 @@ def display_review_partner(r, prof_id):
 	setattr(r, 'display', display_attr)
 
 
-
 def display_meeting_partner(composite_meeting, profile):
 	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
 	setattr(composite_meeting, 'display', display_partner)
 	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
+	setattr(composite_meeting, 'buyer', (profile == composite_meeting.user))
+
+
+def display_meeting_lesson(composite_meeting, lesson):
+	lesson = composite_meeting.lesson
+	setattr(composite_meeting, 'lesson', lesson)
+
+
+def ht_score_search_results(composite_lesson, keywords, hashmap):
+	less_score = 0
+	prof_score = 0
+
+	for keyword in keywords:
+		if (keyword in composite_lesson.Profile.prof_name.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.prof_name.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.Profile.headline.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.headline.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.Profile.prof_bio.lower()):
+#			print '\t\t', keyword, composite_lesson.Profile.prof_bio.lower()
+			prof_score = prof_score + 1
+		if (keyword in composite_lesson.lesson.lesson_title.lower()):
+#			print '\t\t', keyword, composite_lesson.lesson.lesson_title.lower()
+			less_score = less_score + 1
+		if (keyword in composite_lesson.lesson.lesson_description.lower()):
+#			print '\t\t', keyword, composite_lesson.lesson.lesson_description.lower()
+			less_score = less_score + 1
+
+	setattr(composite_lesson, 'comp_score', (prof_score + less_score))
+	setattr(composite_lesson, 'prof_score', prof_score)
+	setattr(composite_lesson, 'less_score', less_score)
+
+	if ((prof_score + less_score) > 0):
+		# only add to map if at least one (profile/lesson) gets a hit.
+		lesson_list = hashmap.get(composite_lesson.Profile.prof_id, [])
+		lesson_list.append(composite_lesson)
+		hashmap[composite_lesson.Profile.prof_id] = lesson_list
+
+	print '\tht_score_lesson [' + str(less_score) + '|' + str(prof_score) + ']\t' + composite_lesson.Profile.prof_name, '\t', composite_lesson.lesson.lesson_title
 
 
 
@@ -475,8 +605,9 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 
 
 
-def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None):
-	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca
+def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
+	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name
+	
 	ba = Account.query.filter_by(userid=uid).all()[0]
 
 	if (not check_password_hash(ba.pwhash, current_pw)):
@@ -489,6 +620,10 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	if (new_mail != None):
 		print "update email", ba.email, "to", new_mail
 		ba.email = new_mail
+
+	if (new_name != None):
+		print "update name", ba.name, "to", new_name
+		ba.name = new_name
 
 	try:
 		db_session.add(ba)
@@ -539,6 +674,7 @@ def ht_create_lesson(profile):
 	return lesson
 
 
+
 def ht_create_avail_timeslot(profile):
 	avail = None
 	try:
@@ -555,13 +691,17 @@ def ht_create_avail_timeslot(profile):
 	return avail
 
 
+
 def htdb_get_lesson_images(lesson_id):
 	try:
-		lesson_images	= db_session.query(LessonImageMap)								\
-									.filter(LessonImageMap.map_lesson == lesson_id).order_by(LessonImageMap.map_order).all()
+		lesson_images = db_session.query(LessonImageMap)				\
+						.filter(LessonImageMap.map_lesson == lesson_id)	\
+						.order_by(LessonImageMap.map_order).all()
 	except Exception as e:
 		print type(e), e
 	return lesson_images
+
+
 
 def ht_get_active_lessons(profile):
 	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
@@ -573,13 +713,21 @@ def ht_get_active_lessons(profile):
 
 def ht_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
+	print "ht_email_verify: begin"
+	print "ht_email_verify: challengeHash is ", challengeHash
+	print "ht_email_verify: email is ", email
+	print "ht_email_verify: nexturl is ", nexturl
+
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
-			session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
-			return redirect(url_for('insprite.render_login'))
+		print "ht_email_verify: error - challenge hash not found in accounts."
+		session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
+		return redirect(url_for('insprite.render_login'))
+	else:
+		print "ht_email_verify: success - challenge hash found."
 
 	try:
-		print 'updating account'
+		print 'ht_email_verify: updating account'
 		account = accounts[0]
 		account.set_email(email)
 		account.set_sec_question("")
@@ -587,8 +735,9 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 		db_session.add(account)
 		db_session.commit()
+		print 'ht_email_verify: committed.'
 	except Exception as e:
-		print type(e), e
+		print "ht_email_verify: Exception: ", type(e), e
 		db_session.rollback()
 
 	# bind session cookie to this user's profile
@@ -596,7 +745,7 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 	ht_bind_session(profile)
 	if (nexturl is not None):
 		# POSTED from jquery in /settings:verify_email not direct GET
-		return make_response(jsonify(usrmsg="Account Updated."), 200)
+		return make_response(jsonify(usrmsg="Email successfully verified."), 200)
 
 	session['messages'] = 'Great! You\'ve verified your email'
 	return redirect(url_for('insprite.render_dashboard'))
@@ -606,6 +755,18 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 #################################################################################
 ### HELPER FUNCTIONS ############################################################
 #################################################################################
+
+def get_geolocation_from_ip(ip=None):
+	if (ip is None): ip = request.remote_addr
+
+	# find IPV4 addrs. http://www.shellhacks.com/en/RegEx-Find-IP-Addresses-in-a-File-Using-Grep
+	pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
+	if not re.match(pattern, ip):
+		return dict()
+
+	ip_geo_url= 'http://freegeoip.net/json/' + str(ip)
+	return json.loads((urllib.urlopen(ip_geo_url)).read())
+
 
 def ht_print_timedelta(td):
 	if (td.days >= 9):
@@ -618,6 +779,7 @@ def ht_print_timedelta(td):
 		return 'one day'
 	else:
 		return str(td.seconds / 3600) + ' hours'
+
 
 def get_day_string(day):
 	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}

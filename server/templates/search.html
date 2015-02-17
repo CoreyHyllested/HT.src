@@ -6,52 +6,54 @@
 {% endblock %}
 
 {% block content %}
-
-<script src="static/js/format.js"></script>
+<script src="/static/js/format.js"></script>
 
 <div class="searchWrapper">
 
 	<div class="searchResults">
 		<div class="searchResultsHeading">
-			<h2>{{rc_heroes}} People Found</h2>
+			<h2>{{mentors|length}} Mentors Found</h2>
 			<div class="searchOptionsMenu">Filter</div>
 		</div>
 
-		{% for hero in heroes %}
+		{% for mentor in mentors %}
 		<div class="searchListing">
-			
-			<a class="searchListingImage" href='/profile?hero={{hero.prof_id}}' style="		background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{hero.prof_img}}') no-repeat center center; background-size: cover;">
-				
+			<a class="searchListingImage" href='/profile?hero={{mentor.Profile.prof_id}}' style="background: url('https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{mentor.Profile.prof_img}}') no-repeat center center; background-size: cover;">
 			</a>
-
 
 			<div class="searchListingInfo">
 				<table class="searchListingTable">
-					
 					<tr>
 						<td colspan="2">
-							<a href='/profile?hero={{hero.prof_id}}'><h3>{{hero.prof_name}}</h3></a>
-							<span class="searchListingTableHeading">{{hero.headline}}</span>
+							<a href='/profile?hero={{mentor.Profile.prof_id}}'><h3>{{mentor.Profile.prof_name}}</h3></a>
+							<span class="searchListingTableHeading">{{mentor.Profile.headline}}</span>
 						</td>
 					</tr>
 
-					
+					{% if mentor.lesson_hits %}
 					<tr>
 						<td class="searchListingTableReviews" colspan="2">
-							{% if hero.reviews %}
-									{{'%0.1f' | format(hero.rating|float)}} out of 5 stars <a href="/profile?hero={{hero.prof_id}}">({{hero.reviews}} reviews)</a>
-							
+							{% for mentor_lesson in mentor.lesson_hits %}
+								<a href="/lesson/{{mentor_lesson.lesson.lesson_id}}">{{ mentor_lesson.lesson.lesson_title }}</a><br>
+							{% endfor %}
+						</td>
+					</tr>
+					{% endif %}
+
+					<tr>
+						<td class="searchListingTableReviews" colspan="2">
+							{% if mentor.Profile.reviews %}
+									{{'%0.1f' | format(mentor.Profile.rating|float)}} out of 5 stars <a href="/profile?hero={{mentor.Profile.prof_id}}">({{mentor.Profile.reviews}} reviews)</a>
 							{% else %}
 								No reviews
 							{% endif %}
 						</td>
 					</tr>
-					
-					<tr class="searchListingTableLastRow">
-						<td>{{hero.industry}}</td>
-						<td class="searchListingTablePrice"><strong>${{hero.prof_rate}}</strong> / hour</td>
-					</tr>
 
+					<tr class="searchListingTableLastRow">
+						<td>{{mentor.Profile.industry}}</td>
+						<td class="searchListingTablePrice"><strong>${{mentor.Profile.prof_rate}}</strong> / hour</td>
+					</tr>
 				</table>
 			</div>
 
@@ -65,9 +67,9 @@
 			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
 			{{form.keywords_field(placeholder="Keywords", id="searchOptionsKeywords")}}
+<!--
 			{{form.location_field(placeholder="Location", id="searchOptionsLocation")}}
 			{{form.industry_field(placeholder="Industry", id="searchOptionsIndustry")}}
-<!--
 			<select id="searchOptionsIndustry" name="{{form.industry_field.name}}">
 				{% for option in form.industry_field %}
 					{% if loop.index0 == 0 %}

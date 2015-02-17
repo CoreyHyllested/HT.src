@@ -18,7 +18,7 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, NTSForm, SearchForm, RecoverPasswordForm
+from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
 
 
@@ -32,6 +32,7 @@ def render_landingpage():
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('index.html', bp=bp))
+
 
 
 
@@ -65,25 +66,17 @@ def render_profile(usrmsg=None):
 		# complicated search queries can fail and lock up DB.
 		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
-		lessons = ht_get_active_lessons(hp)
-		if lessons:
-			print "found lessons."
-		else:
-			print "no lessons found."
-
+		hp_lessons = ht_get_active_lessons(hp)
 		avail = Availability.get_by_prof_id(hp.prof_id)	
-
-
-
 	except Exception as e:
-		print e
+		print type(e), e
 		db_session.rollback()
 
 
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=lessons, portfolio=visible_imgs, avail=avail))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=avail))
 
 
 
@@ -122,80 +115,71 @@ def render_about_page():
 @insprite_views.route('/search',  methods=['GET', 'POST'])
 @insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
-	""" Provides ability to everyone to search for Heros.  """
+	""" Provides ability to find Mentors. """
 	bp = None
 
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 
-	# get all the search 'keywords'
+	# show all the 'keywords'
 	#for key in request.values:
 	#	print key, '=', request.values.get(key)
 
-	keywords = request.values.get('keywords_field')
-	industry = request.values.get('industry_field', -1, type=int)
-	rateFrom = request.values.get('rate_from_field', 0, type=int)
-	rateTo =   request.values.get('rate_to_field', 9999, type=int)
+	find_keywords = request.values.get('keywords_field', '').split()
+	#find_industry = request.values.get('industry_field', -1, type=int)
+	find_cost_min = request.values.get('rate_from_field', 0, type=int)
+	find_cost_max = request.values.get('rate_to_field', 9999, type=int)
 	form = SearchForm(request.form)
 
-	if (rateTo < rateFrom):
-		rate_temp	= rateTo
-		rateTo		= rateFrom
-		rateFrom	= rate_temp
+	if (find_cost_max < find_cost_min):
+		tmp				= find_cost_max
+		find_cost_max	= find_cost_min
+		find_cost_min	= tmp
+
+		#results_industry = mentors #.all();
+		#if (find_industry != -1):
+		#	industry_str = Industry.industries[find_industry]
+		#	results_industry = mentors.filter(Profile.industry == industry_str)
+		#	print '\tProfiles in ', Industry.industries[find_industry], 'industry =', len(results_industry.all())
+
+#		if (find_keywords is not None):
+#			print "keywords = ", str(find_keywords)
+#			matched_name = mentors.filter(Profile.prof_name.ilike("%"+find_keywords+"%"))
+#			match_l_desc = lessons.filter(Lesson.lesson_description.ilike('%'+find_keywords+'%'))
+#			print 'results for name', str(len(matched_name.all())) + ', headline', str(len(matched_hdln.all())) + ', bio', str(len(matched_bio.all()))
+#			print 'results for lesson name', str(len(match_l_name.all())) + ', desc', str(len(match_l_desc.all()))
+
+			# filter by location, use IP as a tell
+#			matched_prof = matched_bio.union(matched_hdln).union(matched_name) #.all() #paginate(page, 4, False)
+			#matched_prof = matched_bio.union(matched_hdln).union(matched_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
+#		else:
+#			print 'returning all mentors'
+#			matched_prof = mentors #.all() #(page, 4, False)
+#		matched_results = matched_prof.intersect(results_industry).order_by(Profile.created)
 
 	try:
-		results = db_session.query(Profile) #.order_by(Profile.created)
-		results_industry = results #.all();
-		print 'Total Profiles:', len(results.all())
-		if (industry != -1):
-			industry_str = Industry.industries[industry]
-			results_industry = results.filter(Profile.industry == industry_str)
-			print '\tProfiles in ', Industry.industries[industry], 'industry =', len(results_industry.all())
-			for profile in results_industry.all(): print '\t\t' + str(profile)
-			
-		results_rate = results.filter(Profile.prof_rate.between(rateFrom, rateTo))
-		print '\tProfiles w rates between $' + str(rateFrom) + ' - $' + str(rateTo) + ':', len(results_rate.all())
-				
-		if (keywords is not None):
-			print "keywords = ", keywords
-			results_name = results.filter(Profile.prof_name.ilike("%"+keywords+"%"))
-			print 'results for name', len(results_name.all())
-			results_desc = results.filter(Profile.prof_bio.ilike("%"+keywords+"%"))
-			print 'results for desc', len(results_desc.all())
-			rc_hdln = results.filter(Profile.headline.ilike("%"+keywords+"%"))
-			print 'results for hdln', len(rc_hdln.all())
-
-			print len(results_name.all()), len(rc_hdln.all()), len(results_desc.all())
-	
-			# filter by location, use IP as a tell
-			rc_keys = results_desc.union(rc_hdln).union(results_name) #.all() #paginate(page, 4, False)
-			#rc_keys = results_desc.union(rc_hdln).union(results_name).all() #.intersect(results_industry).all() #paginate(page, 4, False)
-		else:
-			print 'returning all all'
-			rc_keys = results #.all() #(page, 4, False)
-
-		q_rc = rc_keys.intersect(results_rate).intersect(results_industry).order_by(Profile.created)
+		total_results = htdb_search_mentors_and_lessons(find_keywords, find_cost_min, find_cost_max)
 	except Exception as e:
-		print e
+		print e, type(e)
 		db_session.rollback()
 
-	page_items = []
-	page_total = []
-	total_results = q_rc.all();
-	per_page = 3
-	trc_start_pg = (page - 1) * per_page
-	trc_end_pg = (page * per_page)
-	if (trc_start_pg) > (len(total_results)):
-		trc_start_pg = len(total_results) - per_page
-	if (trc_end_pg > (len(total_results))):
-		trc_end_pg = len(total_results)
-	new_results = total_results[trc_start_pg:trc_end_pg]
-	paginate = Pagination(q_rc, page, per_page=3, total=page_total, items=q_rc.all())
-	print 'page_items', page_items
-	print 'page_total', page_total
-	print 'page_heros', paginate.items
+	PER_PAGE = 10
+	start_pg = (page - 1) * PER_PAGE
+	end_pg = (page * PER_PAGE)
+	if (start_pg) > (len(total_results)):
+		start_pg = len(total_results) - PER_PAGE
+	if (end_pg > (len(total_results))):
+		end_pg = len(total_results)
+	page_mentors = total_results[start_pg:end_pg]
 
-	return make_response(render_template('search.html', bp=bp, form=form, rc_heroes=len(new_results), heroes=new_results))
+	#page_items = []
+	#page_total = []
+	#paginate = Pagination(matched_results, page, per_page=PER_PAGE, total=page_total, items=matched_results.all())
+	#print 'page_items', page_items
+	#print 'page_total', page_total
+	#print 'page_heros', paginate.items
+
+	return make_response(render_template('search.html', bp=bp, form=form, mentors=page_mentors))
 
 
 
@@ -257,11 +241,13 @@ def render_password_reset_page(challengeHash):
 # related to authentication
 @insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
-	print operation, data
+	print "ht_email_operations: begin"
+	print "ht_email_operations: operation: ", operation
+	print "ht_email_operations: data: ", data
 	if (operation == 'verify'):
 		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
-		print 'verify: data  = ', data, 'email =', email
+		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')

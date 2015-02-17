@@ -235,10 +235,12 @@ $(document).ready(function() {
 	$(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
 
 	// When loading form - activate times when date is selected
-	// $.each(".daySelector", function() {
-
-
-	// });
+	
+	$(".daySelector").each(function() {
+		if ($(this).prop("checked")) {
+			$(this).siblings(".timeSelector").css("opacity", 1).removeAttr("disabled");
+		}	
+	});
 
 	$(".daySelector").change(function() {
 		if ($(this).prop("checked")) {
@@ -391,23 +393,24 @@ function showErrors(errors) {
 		var page = $(element).parents(".editProfFormPage").attr("id");
 		var navItem = ".editProfNavItem[data-target-page='" + page + "']";
 
-		// console.log("showErrors: element: "+element);
-		// console.log("showErrors: page: "+page);
-		// console.log("showErrors: navItem: "+navItem);		
+		console.log("showErrors: element: "+element);
+		console.log("showErrors: page: "+page);
+		console.log("showErrors: navItem: "+navItem);		
 
 		if ($(element).parents(".editProfAvailDay").length > 0) {
 			// This is a timeslot element - display the error inline
 			$(element).siblings(".formFieldError").html(error).fadeIn();
+		
 		} else {
 			// Display the error above the field
-			$(element).prevAll(".formFieldError").html(error).slideDown();
+			$(element).prevAll(".formFieldError:first").html(error).fadeIn();
 		}
 
-		$(element).css("border-color", "red");
+		$(element).css("border-color", "#e75f63");
 
 		$("#"+page).find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 
-		$(navItem).css("color", "red");
+		$(navItem).css("color", "#e75f63");
 		$(navItem).children("i.progress").hide();
 
 	});

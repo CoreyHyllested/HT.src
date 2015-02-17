@@ -17,44 +17,8 @@
 <div class="dashboardContentWrapper">
 	<div class="dashboardLeftColumn">
 		<div class="dashboardEmpty">
-			<h1>Welcome to Insprite!</h1>
-			<h2>This is your personal dashboard.</h2>
-			<p>Once you start making bookings, your offers and lessons will be displayed on this page.</p>
-
-			<p>Aenean tincidunt augue vitae eleifend pretium. Aliquam suscipit quis ipsum quis cursus. Vivamus tempus odio ac turpis ultrices porttitor. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam et malesuada libero, vel blandit mi. Duis vulputate, urna eget venenatis feugiat, massa ipsum sodales purus, vitae dictum diam odio id libero. In scelerisque iaculis tellus. Duis sed eros nec enim molestie fermentum.</p>
+			<h1>Welcome to your Insprite Dashboard.</h1>
 		</div>
-
-		{% if bp.availability > 0 %}
-			<div class="dashboardLessons">
-				<h1>My Lessons</h1>
-				{% for lesson in lessons %}
-					{#% if lesson.lesson_flags > 0 %#}
-					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
-						<div class="dashboardLessonLeftColumn">
-						{% if lesson.lesson_flags == 1 %}
-							Saved
-						{% elif lesson.lesson_flags == 2 %}
-							Private
-						{% elif lesson.lesson_flags == 3 %}	
-							Live
-						{% else %}
-							None
-						{% endif %}
-
-						{{ lesson.get_state() }}
-						</div>
-						<div class="dashboardLessonCenterColumn">
-							<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
-						</div>
-						<div class="dashboardLessonRightColumn">
-							<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
-						</div>
-						<div class="clear"></div>	
-					</div>
-					{#% endif %#}
-				{% endfor %}
-			</div>
-		{% endif %}
 		
 		<div class="dashboardOffers">
 			<h1>Pending Offers ({{proposals|length}})</h1>
@@ -62,44 +26,57 @@
 			{% for proposal in proposals|sort(attribute='Meeting.meet_ts')  %}
 			<div class="dashboardOffer" id="{{proposal.Meeting.meet_id}}">
 				<div class="dashboardOfferLeftColumn">
-					<a href="/profile?hero={{proposal.display.prof_id}}">
-						<img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}}">
-					</a>
+
+					<div class="partnerInfoBox">
+						<div class="partnerPhotoContainer">
+							<div class="partnerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})">
+							</div>
+						</div>
+
+						<div class="partnerInfo">
+							<div class="partnerName">
+								<a href="/profile?hero={{proposal.display.prof_id}}" class="blend">{{proposal.display.prof_name}}</a>
+							</div>						
+							<div class="partnerLocation">
+								{{proposal.display.location}}
+							</div>
+						</div>
+					</div>
+
 				</div>
 				<div class="dashboardOfferCenterColumn">
-					<a href="/profile?hero={{proposal.display.prof_id}}">
-						<h3>{{proposal.display.prof_name}}</h3>
-					</a>
-					<h4>{{proposal.display.headline}}</h4>
-					<div class="dashboardOfferIntro italic">{{proposal.Meeting.meet_details}}</div>
-				</div>
-
-				<div class="dashboardOfferRightColumn">
-					<div class="dashboardOfferRightColumnInfo">
-						{% if proposal.buyer == True %}
-						You offered ${{proposal.Meeting.meet_cost}}.
-						{% else %}
-						You were offered ${{proposal.Meeting.meet_cost}}.
+						<div class="dashboardOfferName">{{proposal.lesson.lesson_title}}</div>
+						<div class="dashboardOfferDetails">{{proposal.Meeting.meet_details}}</div>
+						<div class="dashboardOfferDetails">
+							{% if proposal.buyer == True %}
+								You offered ${{proposal.Meeting.meet_cost}}.
+							{% else %}
+								You were offered ${{proposal.Meeting.meet_cost}}.
+							{% endif %}
+						</div>
+						{% if proposal.timeout is defined %}
+							<div class="dashboardOfferDetails">
+							Expires in {{proposal.timeout }}
+							</div>
 						{% endif %}
-					</div>
-					<div class="dashboardOfferRightColumnInfo">
-					{% if proposal.timeout is defined %}Expires in {{proposal.timeout }}{% endif %}
-					</div>
-
-					<div class="dashboardOfferRightColumnInfo">
+						<div class="dashboardOfferDetails">
 						{{proposal.Meeting.get_meet_ts().strftime('%A, %b %d')}}<br>
 						{{proposal.Meeting.get_meet_ts().strftime('%H:%M %p')}} - {{proposal.Meeting.get_meet_tf().strftime('%H:%M %p')}}
-					</div>
-
-					<div class="dashboardOfferRightColumnInfo">
-						{{proposal.Meeting.meet_location}}
+						</div>
+				</div>
+				<div class="dashboardOfferRightColumn">
+					<div class="dashboardOfferDetails">
+						Location: {{proposal.Meeting.meet_location}}
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Meeting.meet_id}}" data-location="{{proposal.Meeting.meet_location}}"></div>
 					</div>
 					{% if proposal.seller == true %}
-					<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
+						<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
+						<input type="button" class="dashboardActionButton offerReject" id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
+					{% else %}
+						<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
 					{% endif %}
-					<input type="button" class="dashboardActionButton offerReject" data-id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
 				</div>
+
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
@@ -115,34 +92,62 @@
 					</a>
 				</div>
 				<div class="dashboardApptCenterColumn">
-					<a href="/profile?hero={{appointment.display.prof_id}}">
-						<h3>{{appointment.display.prof_name}}</h3>
-					</a>
+					<a href="/profile?hero={{appointment.display.prof_id}}"><h3>{{appointment.display.prof_name}}</h3></a>
+					{% if appointment.Meeting.meet_lesson %}
+					<div class="appointmentIntro">{{appointment.lesson.lesson_title}}</div>
+					{% endif %}
 					<div class="appointmentIntro italic">{{appointment.Meeting.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
-					<div class="dashboardApptRightColumnElement apptDate"> {{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
-					<div class="dashboardApptRightColumnElement apptTime"> {{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
-
+					<div class="dashboardApptRightColumnElement apptDate">{{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
+					<div class="dashboardApptRightColumnElement apptTime">{{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
 					<div class="dashboardApptRightColumnElement apptCost">
-						{% if appointment.buyer == True %}
-						You will pay ${{appointment.Meeting.meet_cost}}.
-						{% else %}
-						You will earn ${{appointment.Meeting.meet_cost}}.
-						{% endif %}
+						{% if appointment.buyer == True %}You will pay ${{appointment.Meeting.meet_cost}}.{% else %}You will earn ${{appointment.Meeting.meet_cost}}.{% endif %}
 					</div>
-
+					<div class="dashboardApptRightColumnElement apptLocation">{{appointment.Meeting.meet_location}}</div>
 					<div class="dashboardApptRightColumnElement apptLocation">
-						{{appointment.Meeting.meet_location}}
 						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Meeting.meet_id}}" data-location="{{appointment.Meeting.meet_location}}" ></div>
 					</div>
-
-					<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
+					<div class="dashboardApptRightColumnElement apptLocation">
+						<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
+					</div>
 				</div>
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
 		</div>
+
+
+		{% if bp.availability > 0 %}
+			<div class="dashboardLessons">
+				<h1>Experiences Offered</h1>
+				{% for lesson in lessons %}
+
+					{% if lesson.lesson_flags > 0 %}
+					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
+						<div class="dashboardLessonLeftColumn">
+						{% if lesson.lesson_flags == 1 %}
+							Saved
+						{% elif lesson.lesson_flags == 2 %}
+							Private
+						{% elif lesson.lesson_flags == 3 %}	
+							Public
+						{% else %}
+							None
+						{% endif %}
+						</div>
+						<div class="dashboardLessonCenterColumn">
+							<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
+						</div>
+						<div class="dashboardLessonRightColumn">
+							<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
+						</div>
+						<div class="clear"></div>	
+					</div>
+					{% endif %}
+				{% endfor %}
+			</div>
+		{% endif %}
 
 		<div class="dashboardAppts">
 			<h1>Reviews ({{reviews|length}})</h1>
@@ -158,15 +163,15 @@
 					<a href="/profile?hero={{review.display.prof_id}}">
 						<h3>{{review.display.prof_name}}</h3>
 					</a>
-					<div class="appointmentIntro italic">{{review.appt.prop_desc}}</div>
+					<div class="appointmentIntro italic">{{review.meet.meet_details}}</div>
 				</div>
 				<div class="dashboardApptRightColumn">
 					<div class="dashboardApptRightColumnElement apptDate">
-						{{review.appt.prop_ts.strftime('%A, %b %d')}}
+						{{review.meet.meet_ts.strftime('%A, %b %d')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptTime">
-						{{review.appt.prop_ts.strftime('%H:%M %p')}} - {{review.appt.prop_tf.strftime('%H:%M %p')}}
+						{{review.meet.meet_ts.strftime('%H:%M %p')}} - {{review.meet.meet_tf.strftime('%H:%M %p')}}
 					</div>
 
 					<div class="dashboardApptRightColumnElement apptCost"> </div>
@@ -206,11 +211,14 @@
 	<div class="dashboardRightColumn">
 		<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
 		<a href="/profile"><h3>{{bp.prof_name}}</h3></a>
-		<h4>{{bp.headline}}</h4>
-		<div class="dashboardBasicInfo">
-			<div class="dashboardInfoBox">{{bp.location}}</div>
-			<div class="dashboardInfoBox">{{bp.industry}}</div>
-			<div class="dashboardInfoBox">
+		<div class="dashboardInfoHeadline">{{bp.headline}}</div>
+		<div class="dashboardInfoBox">
+			<div class="dashboardInfoLocation">
+				<i class="fa fa-fw fa-map-marker"></i>
+				{{bp.location}}
+			</div>
+			<div class="dashboardInfoRating">
+				<i class="fa fa-fw fa-star-o"></i>
 				{% if bp.reviews == 0 %}
 					No Reviews
 				{% elif bp.reviews == 1 %}
@@ -222,11 +230,10 @@
 		</div>
 		<div class="dashboardButtons">
 			<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
-
 			{% if portfolio|length == 0 %}	
-				<a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a>
+				<!-- <a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a> -->
 			{% else %}
-				<a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a>
+				<!-- <a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a> -->
 			{% endif %}
 		</div>
 
@@ -234,7 +241,6 @@
 	</div>
 
 </div>
-
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
 <script src="/static/js/maps.js"></script>
@@ -281,16 +287,16 @@ $(document).ready(function() {
     });
 
 
-   $('.offerCancel').click(function () {
-        var id = this.id;
-        var fd = new FormData();
+	$('.offerCancel').click(function () {
+		var id = this.id;
+		var fd = new FormData();
 		var sid = "#appt-" + id;
-        fd.append('meet_id', id);
+		fd.append('meet_id', id);
 
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', "/meeting/cancel", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-        xhr.send(fd);
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', "/meeting/cancel", true);
+		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
+		xhr.send(fd);
 
         //catch response. make modificaitons.
         xhr.onreadystatechange = function(e) {

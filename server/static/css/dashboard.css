@@ -26,7 +26,7 @@ c) 1000px - ... (desktops)
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;			
-	height: 205px;
+	height: 145px;
 	width: 100%;
 }
 
@@ -52,9 +52,9 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardLeftColumn h1 {
-	border-bottom: 1px solid #b0b4b7;
+	border-bottom: 1px dotted rgba(0,0,0,.08);
 	color: black;
-	font-size: 2em;
+	font-size: 1.6em;
 	padding-bottom: 15px;
 	width: 100%;
 }
@@ -83,6 +83,71 @@ c) 1000px - ... (desktops)
 	margin-bottom: 1em;
 }
 
+.partnerInfoBox {
+
+	float: left;
+	width: 100%;
+	margin-bottom: 24px;
+	position: relative;
+}
+
+.partnerPhotoContainer {
+	float: left;
+	/*width: 50%;*/
+	padding-right: 12px;
+	position: relative;
+}
+
+.partnerPhotoWrapper {
+  width: 100px;
+  height: 100px;
+  margin: 25px;
+  -ms-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  overflow: hidden;
+}
+
+
+.partnerPhoto{
+
+    width:100px;
+    height:100px;
+    background-repeat: no-repeat center;
+	background-size: cover;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	-moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+	-webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);  
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.2);				
+
+}
+
+
+
+.partnerInfo {
+	width: 100%;
+	float: left;
+/*	position: absolute;
+	top: 120px;	*/
+}
+
+.partnerName {
+	color: rgba(0,0,0,.6);
+	font-weight: 600;
+	font-size: 1em;
+	margin-top: 6px;
+	margin-bottom: 4px;
+}
+.partnerHeadline {
+	font-size: .9em;
+	font-weight: 300;
+}
+.partnerLocation {
+	font-size: .9em;
+	font-weight: 300;
+}
 
 /* Lessons */
 
@@ -92,7 +157,7 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardLesson {
-	border-bottom: 1px solid #cfd7db;
+	border-bottom: 1px dotted rgba(0,0,0,.05);
 	display: block;
 	margin-top: 8px;
 	padding-bottom: 8px;
@@ -153,17 +218,22 @@ c) 1000px - ... (desktops)
 }
 
 .dashboardOffer {
-	border-bottom: 1px solid #cfd7db;
+	/*border-bottom: 1px solid #cfd7db;*/
 	display: block;
 	margin-top: 20px;
 	padding-bottom: 20px;
 }
 
-.dashboardOfferIntro {
-	color: #6e7980;
-	font-size: 0.9em;
-	line-height: 1.5em;
-	white-space: pre-wrap;
+.dashboardOfferName {
+	color: rgba(0,0,0,.8);
+	font-size: 1em;
+}
+
+.dashboardOfferDetails {
+	color: rgba(0,0,0,.5);
+	font-size: .9em;
+	line-height: 1.2em;
+	margin-bottom: 8px;
 }
 
 .dashboardOffer img {
@@ -171,35 +241,46 @@ c) 1000px - ... (desktops)
 	width: 100%;
 }
 
-.dashboardOfferCenterColumn h3 {
-	color: #1488CC;
-	cursor: pointer;
-	display: inline-block;
-	font-weight: bold;
-	margin-bottom: 5px;
+
+.dashboardOfferLeftColumn {
+	float: left;
+	width: 20%;
+}
+.dashboardOfferCenterColumn {
+	float: left;
+	width: 36%;
+}
+.dashboardOfferRightColumn {
+	float: right;
+	font-size: 0.8em;
+	width: 35%;
 }
 
-.dashboardOfferCenterColumn h4 {
-	color: #6e7980;
-	font-size: 0.9em;
-	font-weight: bold;
-	line-height: 1.4em;
-	margin-bottom: 20px;
+.dashboardApptLeftColumn, .dashboardMessageLeftColumn, .dashboardLessonLeftColumn {
+	float: left;
+	height: 100%;
+	margin-right: 20px;
+	width: 123px;
 }
+.dashboardApptCenterColumn, .dashboardMessageCenterColumn, .dashboardLessonCenterColumn {
+	float: left;
+	width: 370px;
+}
+
+.dashboardApptRightColumn, .dashboardMessageRightColumn, .dashboardLessonRightColumn {
+	float: right;
+	font-size: 0.8em;
+	width: 125px;
+}
+
 
 .dashboardOfferRightColumnInfo {
-	border-bottom: 1px solid #e1e8ed;
-	color: #6e7980;
+	color: rgba(0,0,0,.5);
 	line-height: 1.5em;
 	margin-bottom: 10px;
 	padding-bottom: 10px;
 }
 
-.dashboardOfferRightColumnInfo:first-of-type {
-	color: black;
-	font-weight: bold;
-	padding-top: 0;
-}
 
 .dashboardOffer input[type="button"] {
 	-moz-appearance: none;
@@ -394,18 +475,10 @@ input.lessonCancel:hover {
 }
 
 .dashboardRightColumn h3 {
-	color: #1488CC;
-	display: inline-block; 
-	font-weight: bold;
+	font-weight: 600;
 	margin: 20px 0 5px;
 }
 
-.dashboardRightColumn h4 {
-	color: #6e7980;
-	font-size: 0.875em;
-	font-weight: bold;
-	line-height: 1.4em;
-}
 
 .dashboardBasicInfo {
 	border-bottom: 1px solid #b5b6b8;
@@ -413,35 +486,35 @@ input.lessonCancel:hover {
 	width: 100%;
 }
 
-input[value="Edit Profile"] {
+.dashboardInfoHeadline {
+	color: rgba(0,0,0,.7);
+	font-size: 0.9em;
+	font-weight: 600;
+	line-height: 1.4em;
+	margin-bottom: 12px;
+}
+
+.dashboardInfoBox {	
+/*	border-bottom: 1px solid rgba(0,0,0,.4);
+*/	color: rgba(0,0,0,.7);
+	font-size: 0.9em;
+	padding-bottom: 12px;
+}
+
+.dashboardInfoLocation, .dashboardInfoRating {
 	width: 100%;
+	height: 20px;
+	line-height: 20px;	
+	padding: 6px 0px;
 }
 
-.dashboardInfoBox {
-	background-size: 18px 18px;		
-	border-bottom: 1px solid #e2e4e6;
-	color: #6e7980;
-	font-size: 0.875em;
-	padding: 11px 0 11px 30px;
-}
-
-.dashboardInfoBox:first-of-type {
-	background: url('../img/location.svg') no-repeat left center;
-	border-top: 1px solid #b5b6b8;
-}
-
-.dashboardInfoBox:nth-of-type(2) {
-	background: url('../img/passion.svg') no-repeat left center;
-}
-
-.dashboardInfoBox:last-of-type {
-	background: url('../img/star-full.svg') no-repeat left center;
-	border-bottom: none;
+.dashboardInfoBox i {
+	margin-right: 6px;
 }
 
 input.dashboardActionButton {
 	font-size: .9em;
-	width: 120px;
+	width: 125px;
 	float: right;
 	margin-top: 10px;
 }
@@ -466,11 +539,6 @@ input.dashboardActionButton {
 
 	.dashboardOffer, .dashboardAppt, .dashboardMessage {
 		padding-bottom: 10px;
-	}
-
-	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
-		border-top: 1px solid #e1e8ed;
-		padding: 10px 0;
 	}
 
 	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
@@ -518,11 +586,6 @@ input.dashboardActionButton {
 		padding-bottom: 10px;
 	}
 
-	.dashboardOfferIntro, .dashboardApptIntro, .dashboardMessageIntro {
-		border-top: 1px solid #e1e8ed;
-		padding: 10px 0;
-	}
-
 	.dashboardLessonLeftColumn, .dashboardLessonCenterColumn, .dashboardLessonRightColumn  {
 		width: 100%;
 	}
@@ -549,22 +612,6 @@ input.dashboardActionButton {
 
 @media only screen and (min-width: 1000px) {
 
-	.dashboardOfferLeftColumn, .dashboardApptLeftColumn, .dashboardMessageLeftColumn, .dashboardLessonLeftColumn {
-		float: left;
-		height: 100%;
-		margin-right: 20px;
-		width: 123px;
-	}
 
-	.dashboardOfferCenterColumn, .dashboardApptCenterColumn, .dashboardMessageCenterColumn, .dashboardLessonCenterColumn {
-		float: left;
-		width: 370px;
-	}
-
-	.dashboardOfferRightColumn, .dashboardApptRightColumn, .dashboardMessageRightColumn, .dashboardLessonRightColumn {
-		float: right;
-		font-size: 0.8em;
-		width: 120px;
-	}
 
 }

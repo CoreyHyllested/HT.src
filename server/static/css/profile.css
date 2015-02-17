@@ -75,7 +75,6 @@ c) 1000px - ... (desktops)
 	position: absolute;
 	right: 5px;
 	top: 0px;
-
 }
 
 /* MAIN LAYOUT */
@@ -300,32 +299,12 @@ h3 {color: black;}
 	float: right;
 }
 
-.profileInfoBox {
-	background-size: 18px 18px;		
+.profileInfoBox {	
 	border-bottom: 1px solid #e2e4e6;
 	color: #6e7980;
-	font-size: 0.875em;
+	font-size: 0.9em;
 	padding: 11px 0 11px 30px;
-}
-
-.profileInfoBox:last-of-type{
-	border-bottom: none;
-}
-
-.profileInfoBox.profileInfoFacebookSocial {
-	background: url('../img/facebook_profile.svg') no-repeat left center;	
-}
-
-.profileInfoBox.profileInfoLocation {
-	background: url('../img/location.svg') no-repeat left center;
-}
-
-.profileInfoBox.profileInfoIndustry {
-	background: url('../img/passion.svg') no-repeat left center;
-}
-
-.profileInfoBox.profileInfoRating {
-	background: url('../img/star-full.svg') no-repeat left center;
+	text-align: right;
 }
 
 .sendModalMessage {
@@ -441,17 +420,6 @@ h3 {color: black;}
 	.profileReviewImageWrap {
 		margin-bottom: 16px;
 		position: relative;
-	}
-
-	.profileReviewImageFacebook {
-		background: url('../img/facebook_review.svg') no-repeat center center;
-		background-size: 10px 10px;
-		display: block;
-		height: 10px;
-		left: 5px;
-		position: absolute;
-		top: 5px;
-		width: 10px;
 	}
 
 	.profileReviewImageWrap img {
@@ -596,8 +564,7 @@ h3 {color: black;}
 
 	.profileReviewBoxText {
 		color: #6e7980;
-		float: right;				
-		font-family: Garamond, Georgia, serif;
+		float: right;
 		font-style: italic;
 		line-height: 1.8em;
 		margin-top: 20px;
@@ -1336,7 +1303,7 @@ h3 {color: black;}
 		display: table;
 		float: left;
 		font-size: 0.9em;
-		font-weight: 200;
+		font-weight: 300;
 		height: 100px;
 		line-height: 1.4em;
 		margin-bottom: 11px;

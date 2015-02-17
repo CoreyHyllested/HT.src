@@ -51,7 +51,7 @@
 		<div class="profileMobileBlock">
 
 			{% if hp is not sameas bp and hp.availability > 0 %}
-				<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
+				<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton">Schedule meeting...</button></a>
 			{% endif %}
 			<div class="profileBasicInfo">
 				<div class="profileInfoBox">
@@ -85,7 +85,7 @@
 
 		{% if hp.availability > 0 %}
 		<div class="profileAvail">
-			<div class="profileAvailHeader">Availability</div>
+			<div class="profileAvailHeader">General Availability</div>
 			{% if hp.availability == 1 %}
 				This mentor has flexible availability - let them know what works for you.
 			{% else %}
@@ -200,7 +200,7 @@
 											<div class="profileReviewRatingNumerical">{{review.Review.score_attr_comm}}/5</div>
 										{% endif %}
 									</div>
-									<!--div> {{review.appt.prop_ts.strftime('%B %Y')}} </div-->
+									<!--div> {{review.meet.meet_ts.strftime('%B %Y')}} </div-->
 								</div>
 							</div>
 							<div class="profileReviewBoxText">{{review.Review.generalcomments}}</div>
@@ -232,7 +232,7 @@
 			<button type="button" id="sendModalMessage" class="blueButton sendModalMessage">Send Message</button>
 
 
-			<a href="/schedule?hp={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
+			<a href="/schedule?mentor={{hp.prof_id}}"><button class="blueButton scheduleMtgButton">Schedule Meeting...</button></a>
 
 			{% endif %}
 
@@ -278,7 +278,7 @@ $(document).ready(function() {
 		dataObj.next = "modal";
 
 		var myString = JSON.stringify(dataObj);
-		openModalWindow("/compose", ".composeWrapper", myString);	
+		openModalWindow("/compose", ".composeWrapper", myString, '');	
 
 	});
 

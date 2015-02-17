@@ -228,12 +228,11 @@
 }
 
 .editProfFormStatus {
-	color: rgb(0,0,0,.4);
+	color: rgba(0,0,0,.4);
 	display: none;
 	float: left;
 	text-align: left;
-/*	width: 200px;
-*/	font-size: .8em;
+	font-size: .8em;
 	height: 30px;
 	line-height: 36px;	
 	margin-left: 20px;
@@ -241,7 +240,7 @@
 
 .editProfFormButton {
 	width: 150px;
-	margin: 12px 0 12px 0;
+	margin: 12px 0px;
 }
 .editProfSave {
 	width: 150px;
@@ -327,7 +326,7 @@
 .formFieldError {
 	display: none;
 	font-size: .7em;
-	color: red;
+	color: #e75f63;
 }
 
 .formFieldError.inline {
@@ -354,29 +353,6 @@
 	box-sizing: border-box;
 	/*margin-bottom: 6px;*/
 	margin-bottom: -1px;
-}
-
-.span1 {
-	width: 8.33%;
-}
-.span2 {
-	width: 16.66%;
-}
-.span3 {
-	width: 25%;
-}
-.span4 {
-	width: 33%;
-}
-
-.span6 {
-	width: 50%;
-}
-.span9 {
-	width: 75%;
-}
-.span12 {
-	width: 100%;
 }
 
 
@@ -510,7 +486,7 @@ textarea.formField {
 	display: inline-block;
 	-webkit-font-smoothing: antialiased;
 	height: 40px;
-	margin-top: 15px;
+	margin-top: 6px;
 	padding: 1px;
 	text-decoration: none;
 	-moz-user-select: none;

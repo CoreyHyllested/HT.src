@@ -48,8 +48,9 @@ linkedin = ht_oauth.remote_app(  'linkedin',
 )
 
 
+
 @insprite_views.route('/signup', methods=['GET', 'POST'])
-def render_signup_page(usrmsg = None):
+def render_signup_page(usrmsg=None):
 	bp = False
 
 	if ('uid' in session):
@@ -59,7 +60,7 @@ def render_signup_page(usrmsg = None):
 
 	form = NewAccountForm(request.form)
 	if form.validate_on_submit():
-		#check if account (via email) already exists in db
+		# check if account (email) already exists in db
 		accounts = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
 		if (len(accounts) == 1):
 			trace("email already exists in DB")
@@ -71,9 +72,10 @@ def render_signup_page(usrmsg = None):
 				return redirect('/dashboard')
 			else:
 				usrmsg = 'Something went wrong.  Please try again'
+	
 	elif request.method == 'POST':
-		usrmsg = 'Form isn\'t filled out properly, ', str(form.errors)
-		trace("/signup form isn't valid" + str(form.errors))
+		trace("/signup form invalid" + str(form.errors))
+		usrmsg = 'Sorry, something wasn\'t filled out properly.'
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))
 
@@ -298,8 +300,8 @@ def settings_verify_stripe():
 	edesc = rc.get('error_description', 	 'None') 
 	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
-	pkey  = rc.get('stripe_publishable_key', 'None')
-	user  = rc.get('stripe_user_id',		 'None')
+	pkey  = rc.get('stripe_publishable_key', 'None')	# users?!? PK
+	user  = rc.get('stripe_user_id',		 'None')	# Insprite Customer ID.
 	rfrsh = rc.get('refresh_token')
 
 	if error != 'None':

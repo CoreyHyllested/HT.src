@@ -140,7 +140,7 @@ $(document).ready(function() {
 
 	$("#addressFields").css("opacity", .4).attr("disabled", "disabled");
 
-	if ($('#lessonPlace-2').is(":checked")) {
+	if ($('#lessonPlace-1').is(":checked")) {
 		$("#addressFields").css("opacity", 1).removeAttr("disabled");
 	}
 
@@ -348,7 +348,7 @@ function getLessonData(lesson_id) {
 
 	$(".lessonReviewAvail").text(availOptText);
 
-	if (placeOptID == "lessonPlace-2") {
+	if (placeOptID == "lessonPlace-1") {
 		console.log("getLessonData: Assembling teacher address");
 		var address1 = $("#lessonAddress1").val();
 		var address2 = $("#lessonAddress2").val();

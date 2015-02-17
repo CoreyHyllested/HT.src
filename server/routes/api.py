@@ -12,13 +12,12 @@
 #################################################################################
 
 
+from . import insprite_views
 from flask import render_template
-from ..forms import LoginForm, NewAccountForm, ProfileForm, SettingsForm, NewPasswordForm
-from ..forms import NTSForm, SearchForm, ReviewForm, RecoverPasswordForm, ProposalActionForm
+from ..forms import ReviewForm
 from .helpers import *
 from server.controllers import *
 from server.ht_utils import *
-from . import insprite_views
 
 
 
@@ -35,6 +34,8 @@ def ht_api_meeting_create():
 		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
 		return se.api_response(request.method)
 
+
+	# TODO - change nexturl to depend on passed variable, go to user profile if needed
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
@@ -67,8 +68,8 @@ def ht_api_meeting_accept():
 @insprite_views.route('/meeting/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_meeting_negotiate():
-	#meeting = Proposal.get_by_id(form.proposal_id.data)
-	#meeting.set_state(APPT_STATE_RESPONSE)
+	#meeting = Meeting.get_by_id(form.proposal_id.data)
+	#meeting.set_state(MeetingState.NEGOTIATE)
 	#meeting.prop_count = meeting.prop_count + 1
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
@@ -100,7 +101,7 @@ def ht_api_meeting_reject():
 
 
 
-@insprite_views.route('/meeting/cancel', methods=['POST'])
+@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
@@ -272,7 +273,7 @@ def ht_api_review_create(review_id):
 
 			print 'ht_api_review_create() data has been posted'
 			profile_reviewed = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
-			ht_posting_review_update_proposal(review)
+			ht_post_review(review)
 
 			# thank user for submitting review & making the world a better place
 			return jsonify(usrmsg='Thanks for submitting review. It will be posted shortly'), 200
@@ -331,41 +332,42 @@ def ht_profile_update_reviews(profile):
 
 
 
-def ht_posting_review_update_proposal(review):
-	""" Check to see if other review is posted and we can make them both visible"""
-	proposal = Proposal.get_by_id(review.rev_appt)
-	rev_sellr_id = proposal.review_hero
-	rev_buyer_id = proposal.review_user
+def ht_post_review(review):
+	""" Check if sibling-review is posted; if so make them both reviews visible. """
+	meeting = Meeting.get_by_id(review.rev_appt)
+	rev_sellr_id = meeting.review_sellr		# review mentor
+	rev_buyer_id = meeting.review_buyer		# review mentee
+
 	review_twin_id = (review.review_id == rev_sellr_id) and rev_buyer_id or rev_sellr_id
 	review_twin = Review.get_by_id(review_twin_id)
-	print 'ht_posting_review_update_proposal()\treview: ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
-	if (review_twin is None):
-		print 'ht_posting_review_update_proposal():  WTF, major error'
-		raise Exception('major error finding review')
-	if (review_twin.completed()):
-		try:
-			print 'ht_posting_review_update_proposal():  make both reviews live'
-			review.set_state(REV_STATE_VISIBLE)
-			review.updated = dt.utcnow()
-			review_twin.set_state(REV_STATE_VISIBLE)
-			review_twin.updated = dt.utcnow()
+	print 'ht_post_review(): ' + str(review.review_id) + '\treview_twin: ' + str(review_twin_id)
+	if (review_twin is None): raise NoReviewFound(review_twin_id) 
 
-			print 'ht_posting_review_update_proposal():  commit to DB'
-			db_session.add(review)
-			db_session.add(review_twin)
-		except Exception as e:
-			print 'ht_posting_review_update_proposal(): ', type(e), e
-			db_session.rollback()
-
-		print 'ht_posting_review_update_proposal(): update profiles'
-		profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
-		profile_buyer = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
-		print 'ht_posting_review_update_proposal(): profile', profile_sellr.prof_name
-		print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
-		ht_profile_update_reviews(profile_sellr)
-		ht_profile_update_reviews(profile_buyer)
-	else:
+	if (not review_twin.completed()):
 		print 'ht_posting_review_update_proposal():  just this review is available.'
+		return
+
+	try:
+		print 'ht_posting_review_update_proposal():  make both reviews live'
+		review.set_state(REV_STATE_VISIBLE)
+		review.updated = dt.utcnow()
+		review_twin.set_state(REV_STATE_VISIBLE)
+		review_twin.updated = dt.utcnow()
+
+		print 'ht_posting_review_update_proposal():  commit to DB'
+		db_session.add(review)
+		db_session.add(review_twin)
+	except Exception as e:
+		print 'ht_posting_review_update_proposal(): ', type(e), e
+		db_session.rollback()
+
+	print 'ht_posting_review_update_proposal(): update profiles'
+	profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
+	profile_buyer = Profile.get_by_prof_id(review.prof_reviewed)		# reviewed profile
+	print 'ht_posting_review_update_proposal(): profile', profile_sellr.prof_name
+	print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
+	ht_profile_update_reviews(profile_sellr)
+	ht_profile_update_reviews(profile_buyer)
 
 
 

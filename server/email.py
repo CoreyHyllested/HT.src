@@ -67,13 +67,17 @@ def ht_send_password_changed_confirmation(user_email):
 
 
 
-def ht_send_email_address_verify_link(email_address, account):
-	print 'send a verify this email account to ' + str(email_address) + '\njust stubbed out'
-	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
-	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
+def ht_send_email_address_verify_link(user_email, account):
+	print 'send a verify this email account to ' + str(user_email)
 
-	msg = create_msg('Verify your email address', email_address, account.name, 'noreply@insprite.co', u'Insprite')
-	msg.attach(MIMEText(msg_html, 'html' ))
+	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(account.sec_question) + "?email="+ urllib.quote_plus(user_email)
+
+	msg_html = email_body_verify_email_address('url', 'abcd')  #Bug
+	msg_text = "Let's get your email address verified for your Insprite account.\n\nPlease copy and paste this security code into your settings: " + str(account.sec_question) + "\n\nOr, just click on this link: " + verify_email_url
+
+	msg = create_msg('Verify your email address', user_email, account.name, 'noreply@insprite.co', u'Insprite')
+	msg.attach(MIMEText(msg_text, 'plain' ))
+	# msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
 
 
@@ -102,7 +106,7 @@ def ht_send_meeting_proposed_notifications(meeting, sa, sp, ba, bp):
 
 
 def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_name, buyer_name, buyer_prof_id):
-	print "ht_send_meeting_proposed_notification (to seller) (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_sellr: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	msg_html = email_body_new_proposal_notification_to_seller(meeting, buyer_name, buyer_prof_id)
 	msg_subj = "Proposal to meet " + buyer_name
@@ -115,7 +119,7 @@ def ht_send_meeting_proposed_notification_to_sellr(meeting, sellr_email, sellr_n
 
 
 def ht_send_meeting_proposed_notification_to_buyer(meeting, buyer_email, buyer_name, sellr_name, sellr_prof_id):
-	print "Proposal to sellr (" + str(meeting.meet_id) + ") last touched by", str(meeting.meet_owner)
+	print "ht_send_meeting_proposed_notification_to_buyer: " + str(meeting.meet_id) + " last touched by", str(meeting.meet_owner)
 
 	#msg_html = email_body_new_proposal_notification_to_buyer(sellr_name, meeting)
 	#msg_subj = "Proposal to meet " + sellr_name
@@ -267,6 +271,10 @@ def ht_send_peer_message(send_profile, recv_profile, msg_subject, thread, messag
 def ht_send_meeting_reminders(meet_id):
 	print 'ht_send_meeting_reminders() --  sending appointment reminder emails now for ' + meet_id
 	meeting = Meeting.get_by_id(meet_id)
+
+	if (not meeting):
+		print 'ht_send_meeting_reminders(' + str(meet_id) + ') doesn\'t exist'
+		return
 
 	if (meeting.canceled()):
 		# meeting was canceled, log event and do not send reminder email.

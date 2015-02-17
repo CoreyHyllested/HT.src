@@ -54,7 +54,7 @@ c) 890px - ... (desktops)
 	border-radius: 6px;
 	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);		
 	margin: 40px 0 30px 7.5%; /* Fallback w/o calc() support*/
-	margin: 40px 0 30px calc((100% - 768px)/2);
+	margin: 40px 80px 40px 80px;
 	padding: 10px;
 	width: 300px;
 }
@@ -69,8 +69,10 @@ c) 890px - ... (desktops)
 	text-decoration: underline;
 }
 
+
+
+
 .signupLink {
-	clear: both;
 	display: block;
 	font-size: 0.9em;
 	margin-top: 5px;
@@ -110,8 +112,32 @@ c) 890px - ... (desktops)
 #passMeter {
 	display: none;
 	font-size: .9em;
-	padding-left: 8px;
+	padding: 8px;
 	text-align: center;
+}
+
+.formCheck {
+	display: none;
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: hsla(358, 74%, 64%, 1);
+	width: 100%;
+	text-align: center;
+}
+.formError {
+	float: left;
+	padding-top: 6px;
+	font-size: .9em;
+	font-weight: bold;
+	color: hsla(358, 74%, 64%, 1);
+	width: 100%;
+	text-align: center;
+}
+
+.formFieldError::-webkit-input-placeholder {
+    color: red;
 }
 
 /* Email signup */
@@ -150,6 +176,10 @@ c) 890px - ... (desktops)
 	font-size: 0.9em;
 	margin-top: 10px;
 }
+/*
+.signupAcceptTOS label {
+	display: inline;
+}*/
 
 .signupEmailSubmitWrapper {
 	margin: 20px 0 20px;
@@ -334,7 +364,7 @@ c) 890px - ... (desktops)
 	}
 
 	.pageWrapper {
-		background: url('../img/background-signup.jpg') no-repeat center center;
+		background: url('../img/backgrounds/pottery_bg_flip.jpg') no-repeat center center;
 		-o-background-size: cover;
 		-webkit-background-size: cover;		
 		background-size: cover;
@@ -342,7 +372,7 @@ c) 890px - ... (desktops)
 		min-height: 780px;
 		overflow-x: hidden;
 		width: 100%;
-	}
+	}	
 
 }
 

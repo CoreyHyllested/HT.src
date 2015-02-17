@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 HeroTime, Inc.
+# Copyright (C) 2013 - 2014 Insprite, Inc.
 # All Rights Reserved.
 # 
 # All information contained is the property of HeroTime, Inc.  Any intellectual 
@@ -8,7 +8,7 @@
 # property contained within is covered by trade secret and copyright law.   
 # 
 # Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from HeroTime, Inc.
+# consent has been obtained from Insprite, Inc.
 #################################################################################
 
 
@@ -24,6 +24,7 @@ Base		= None
 
 
 def initialize_database(config):
+	""" Create connection to database """
 	global DATABASE_URI
 	global MIGRATE_REPO
 	global db_engine
@@ -42,7 +43,7 @@ def initialize_database(config):
 	db_session	= scoped_session(sessionmaker(bind=db_engine))
 	Base = declarative_base(bind=db_engine)
 	Base.query = db_session.query_property()
-	from server.models import *
+	from server import models 
 
 	if (config['TESTING']):
 		#print 'TESTING... create database'
