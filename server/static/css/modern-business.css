@@ -39,17 +39,6 @@ body {
 }
 
 
-.lp-img-maker {
-	background-image: url('/static/img/img1.jpg');
-	background-repeat: no-repeat;
-    background-position: center;
-	background-size: cover;
-	width: 100%;
-	height: 40vh;
-	color: white;
-    text-shadow: 0 2px 30px rgba(0,0,0,.8);
-}
-
 
 .center {
 	/* taken from trunk-club, not sure that this is doing anything 
