@@ -22,12 +22,10 @@ from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPassw
 from server import ht_csrf
 
 
+@insprite_views.route('/index.html')
 @insprite_views.route('/index')
 @insprite_views.route('/', methods=['GET', 'POST'])
 def render_landingpage():
-	""" Returns the HeroTime front page for users and Heros
-		- detect HT Session info.  Provide modified info.
-	"""
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
@@ -81,7 +79,7 @@ def render_profile(usrmsg=None):
 
 
 
-@insprite_views.route('/terms', methods=['GET'])
+@insprite_views.route('/terms/service', methods=['GET'])
 def render_terms_of_service():
 	bp = None
 	if 'uid' in session:
@@ -279,11 +277,3 @@ def ht_send_verification_to_list(account, email_set):
 	for email in email_set:
 		print 'sending email to', email
 		ht_send_email_address_verify_link(email, account)
-
-
-
-################################################################################
-### HELP FUNCTIONS.  ###########################################################
-################################################################################
-
-
