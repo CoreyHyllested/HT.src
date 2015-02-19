@@ -1,0 +1,358 @@
+html,
+body {
+    height: 100%;
+}
+
+
+.signup-page {
+	background: #253340 url('/static/img/img3.jpg') no-repeat 50% top;
+	background-size: cover;
+
+}
+
+.access-section {
+  padding-bottom: 200px;
+  padding-top: 90px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.access-section .note {
+	color: #999999;
+	font-size: 13px;
+	margin-bottom: 15px;
+	margin-top: 15px;
+}
+
+.access-section .lead {
+	font-size: 14px;
+	color: #999999;
+	margin-top: 30px;
+}
+
+
+.access-section .divider {
+  border-left: none;
+  margin-bottom: 30px;
+  position: static;
+}
+
+.access-section .social-btns {
+	padding-left: 0;
+	text-align: center;
+}
+
+.access-section .social-btns {
+	padding-left: 60px;
+	min-height: 250px;
+	margin-bottom: 15px;
+}
+
+.access-section .social-btns .social-login {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+
+.access-section .social-btns {
+  padding-left: 60px;
+  min-height: 250px;
+  margin-bottom: 15px;
+}
+.access-section .social-btns li {
+  margin-bottom: 10px;
+}
+.access-section .social-btns li .btn {
+  color: #fff;
+  min-width: 220px;
+  text-align: left;
+}
+.access-section .social-btns li .btn:hover {
+  color: #fff;
+}
+.access-section .social-btns li .btn .fa {
+  font-size: 18px;
+  position: relative;
+  top: 2px;
+  margin-right: 10px;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  padding-right: 10px;
+  width: 30px;
+}
+.twitter-btn		{ background: #55acee; }
+.twitter-btn:hover	{ background: #2795e9; }
+.facebook-btn		{ background: #3b5998; }
+.facebook-btn:hover	{ background: #2d4373; }
+.google-btn			{ background: #dd4b39; }
+.google-btn:hover	{ background: #c23321; }
+.access-section .forgot-password {
+  font-size: 13px;
+  margin-top: 10px;
+}
+.access-section .forgot-password a { color: #999999; }
+.access-section .forgot-password a:hover {
+  text-decoration: underline;
+  color: #ec6952;
+}
+
+.access-section .divider span {
+  background: #fff;
+  display: inline-block;
+  padding: 0 10px;
+  position: relative;
+  top: inherit;
+  text-transform: uppercase;
+  color: #999999;
+}
+
+.access-section .divider:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  background: #e5e5e5;
+  height: 1px;
+  width: 100%;
+}
+
+
+
+
+/* rename this --just--  signup section */
+.access-section.signup-section .title {
+  margin-bottom: 50px;
+}
+
+.access-section .form-box .form-box-inner {
+	background: #fff; -webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	-ms-border-radius: 7px;
+	-o-border-radius: 7px;
+	border-radius: 7px;
+
+	-moz-background-clip: padding;
+	-webkit-background-clip: padding-box;
+
+	background-clip: padding-box;
+	padding: 40px;
+}
+
+
+.access-section .form-group {
+  position: relative;
+}
+
+.access-section .form-control {
+	padding-left: 30px;
+}
+
+.access-section .form-group.email:before {
+  content: "\f007";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
+
+.access-section .form-group.password:before {
+  content: "\f023";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
+
+.btn-signup {
+	background: white;
+	border: 2px solid black;
+}
+
+.lp-img {
+	background-image: url('/static/img/sc/glass_table.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 100%;
+	height: 80vh;
+	color: white;
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 2.4em;
+	line-height: 1.1em;
+}
+
+
+.lp-img1 {
+	/* will not stretch, may not see full img */
+	background-image:url('/static/img/img1.jpg');
+	background-size: cover;
+	height: 750px;
+	color: #fff;
+}
+
+.lp-img2 {
+	/* only use where we can stretch the image */
+	background-image:url('/static/img/img2.jpg');
+	background-size: 100% 100%;
+	height: 750px;
+	color: #fff;
+}
+
+.img-portfolio {
+    margin-bottom: 30px;
+}
+
+.img-hover:hover {
+    opacity: 0.9;
+/*	background-image:url('/static/img/topo_table.jpg');
+	background-size:cover;
+*/
+}
+
+.press {
+	padding-top: 75px;
+	padding-bottom: 75px;
+}
+
+.press-list {
+	margin-bottom: 15px;
+	list-style: none;
+}
+
+.list-inline {
+	padding-left: 0px;
+	height: 100px;
+}
+
+
+.press-list li {
+	display: block;
+	vertical-align: middle;	/* img? */
+}
+
+/*press-list and .last */
+.row.last {
+	margin-bottom:  100px;
+}
+
+.greyscale {
+	filter: gray;			/* IE6-9 */
+	filter: grayscale(1);	/* FF35+ */
+	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
+}
+
+
+/* Home Page Carousel */
+.carousel {
+    height: 75%;
+	/* amount of screen space to fill */
+}
+
+.product-container {
+	padding: 100px 75px;
+/*
+	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 *
+	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 *
+	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 *
+	background: linear-gradient(white, white); /* Standard syntax 
+*/
+	color: white;
+	background: rgba(76,76,76,1); 
+}
+
+
+.carousel .item,
+.carousel .item.active,
+.carousel .carousel-inner {
+	color: white;
+	width: 100%;
+	/* height: 100vh; */
+}
+
+.carousel .fill {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+
+
+/* 404 Page Styles */
+.error-404 {
+    font-size: 100px;
+}
+
+/* Pricing Page Styles */
+
+.price {
+    display: block;
+    font-size: 50px;
+    line-height: 50px;
+}
+
+.price sup {
+    top: -20px;
+    left: 2px;
+    font-size: 20px;
+}
+
+.period {
+    display: block;
+    font-style: italic;
+}
+
+/* Footer Styles */
+
+/*footer {
+    margin: 50px 0;
+}*/
+
+.footer-menu {
+	float: left;
+}
+
+.footer-menu li {
+	display: inline;
+	padding-right: 20px;
+}
+
+.footer-copy {
+	float: right;
+}
+
+
+
+
+@media(max-width:991px) {
+    .customer-img,
+    .img-related {
+        margin-bottom: 30px;
+    }
+
+	.access-section .social-btns {
+		padding-left: 65px;
+	}
+}
+
+@media(max-width:767px) {
+    .img-portfolio {
+        margin-bottom: 15px;
+    }
+
+    header.carousel .carousel {
+        height: 70%;
+    }
+}
+
+
+

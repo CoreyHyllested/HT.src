@@ -1,0 +1,14 @@
+/* (c) 2015 Soulcrafing */
+
+body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
+
+
+footer {
+	background-color: white; 
+}
+.footer-copy { float: right; }
+.footer-menu { float: left; }
+.footer-menu li {
+	display: inline;
+	padding-right: 20px;
+}

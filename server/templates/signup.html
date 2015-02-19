@@ -1,156 +1,119 @@
-{% extends "ht_header.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block head %}
-	{{ super() }}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SC</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/headerfooter.css" rel="stylesheet">
+    <link href="/static/css/modern-login.css" rel="stylesheet">
 	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
-	<script type="text/javascript" src="/static/js/signup.js"></script>
-{% endblock %}
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
 
 
-{% block content %}
+<body class="signup-page">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
 
-<div class="signupContentWrapper">
-	<h2>Register for Insprite</h2>
-<!-- 
-	<div class="signupSwitch">
-		<div class="signupSwitchEmail signupSwitchActive">Email Signup</div>
-		<div class="signupSwitchSocial">Social Signup</div>
-	</div>
- -->
-	<div class="signupEmail">
-		<form id="SignupNow" action="/signup" onsubmit="return validateForm();" method="POST">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Soulcrafting</a>
+            </div>
 
-			{% if form.errors %}
-			<div class="formError">Please fill out all fields</div>
-			{% endif %}
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li> <a href="about.html">About</a> </li>
+                    <li> <a href="contact.html">Contact</a> </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Locations<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li> <a href="full-width.html">Boulder</a></li>
+                            <li> <a href="sidebar.html">Denver</a></li>
+                            <li> <a href="pricing.html">Fort Collins</a> </li>
+                            <li> <a href="faq.html">Longmont</a></li>
+                            <!--li> <a href="404.html">404</a> </li-->
+                        </ul>
+                    </li>
+                </ul>
+            </div> <!-- /.navbar-collapse -->
+        </div> <!-- /.container -->
+	</nav>
 
-			{{form.hidden_tag()}}
-			{{form.input_signup_name(id="signupName", placeholder="Name", class="formField")}}
-			{{form.input_signup_email(id="signupEmail", placeholder="Email", class="formField")}}
-			{{form.input_signup_password(id="signupPassword", placeholder="Enter Password", class="formField")}}
-			{{form.input_signup_confirm(id="signupConfirm", placeholder="Confirm Password", class="formField")}}
-			<div id="passMeter"></div>
+	<section class="signup-section access-section section">
+		<div class="container">
+			<div class="row">
 
-			<div class="signupAcceptTOS">
-				{{form.accept_tos(class="checkbox formField")}} <label for="accept_tos" class="checkbox-label">I agree to the <a href="/terms" target="_blank">Terms of Service</a></label>
-			</div>
-			<div class="signupEmailSubmitWrapper"><input type="submit" value="Join Now" class="button teal"></div>
-		</form>	
-	</div>
+				<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
+					<div class="form-box-inner">
+						<h2 class="title text-center">Sign up</h2>  
+						<div class="row">
+							<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
+								<ul class="list-unstyled social-login">
+									<li><button class="twitter-btn btn"  type="button"><i class="fa fa-twitter"></i>Sign up with Twitter</button></li>
+									<li><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign up with Facebook</button></li>
+									<li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li>
+								</ul>
+							</div>
 
-	{% if errmsg != none %}
-		<script>openAlertWindow('{{errmsg}}')</script>
-	{% endif %}
+							<div class="form-container col-md-5 col-sm-12 col-xs-12">
+								<form class="signup-form">                
+									<div class="form-group email">
+										<label class="sr-only" for="signup-email">Your email</label>
+										<input id="signup-email" type="email" class="form-control login-email" placeholder="Your email">
+									</div>
+									<div class="form-group password">
+										<label class="sr-only" for="signup-password">Your password</label>
+										<input id="signup-password" type="password" class="form-control login-password" placeholder="Password">
+									</div>
+									<button type="submit" class="btn btn-block btn-signup">Sign up</button>
+									<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
+									<p class="lead">Already have an account? <a class="login-link" id="login-link" href="login.html">Log in</a></p>  
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
 
-	<!--
-	<h2>Or use these</h2>
-	<div class="signupSocial">
-		<form method="link" action="/signup/linkedin">
-			<input type="submit" class="signupLinkedIn" name="signupLinkedIn" value="LinkedIn" target="_blank"> 
-		</form>
 
-		<form method="link" action="/signup/facebook">
-			<input type="submit" class="signupFacebook" value="Facebook">
-		</form>
-
-		<div class="signupLinkedInNotice">			
-			By clicking any of the buttons above, you confirm that you have read the <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
+			</div><!--//row-->
 		</div>
-	</div>
-	-->
-
-	<a class="signupLink" href="/login">Already a member?</a>
-</div>
-
-<!-- Scripts -->
-<script type="text/javascript" src="/static/js/zxcvbn.js"></script>
-<script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
-<script type="text/javascript">
+	</section>
 
 
+	<footer>
+		<div class="row">
+			<div class="container">
+				<div class="footer-menu">
+					<ul>
+						<li>About</li>
+						<li>FAQ</li>
+						<li>Terms</li>
+					</ul>
+				</div>
+				<div class="footer-copy">
+					<p>&copy; Soulcrafting 2015</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
 
-$(function() {
-	// password strength - www.sitepoint.com/developing-password-strength-plugin-jquery/
-	$("#signupConfirm").keyup(  function() { init_pw_bar(); } );
-	$("#signupPassword").keyup( function() { if ($("#signupConfirm").val() != "") { init_pw_bar(); } });
-});
-
-
-
-function init_pw_bar() {
-	$("#passMeter").PasswordStrengthManager({
-		password: $("#signupPassword").val(),
-		confirm_pass : $("#signupConfirm").val(),
-		minChars : '6',
-		maxChars : '50',
-		advancedStrength : false
-	});
-}
-
-
-
-function validateForm() {
-	console.log("Validating");
-
-	// clear all 'red error boxes' around fields.
-	$(".formField").removeClass("formFieldError")
-
-	// Fetch form elements
-	var name = document.forms["SignupNow"]["signupName"];
-	var email_address = document.forms["SignupNow"]["signupEmail"];
-	var password = document.forms["SignupNow"]["signupPassword"];
-	var confirm  = document.forms["SignupNow"]["signupConfirm"];
-
-	// Check for empty fields; if found, highlight them
-	var rc = 0;
-	var form_fields = [name, email_address, password, confirm];
-	for (var i = 0; i < form_fields.length; i++) {
-		var element = form_fields[i];
-		var e_value = form_fields[i].value;
-		if (e_value.match(/^\s*$/)) {
-			// if word does not exist flag field.
-			$(element).addClass("formFieldError");
-			rc++;
-		}
-	}
-
-	if (rc > 0) {
-		openAlertWindow("Missing required information.");
-		return false;
-	}
-
-	// validate email address.
-	if (v_email(email_address.value)) {
-		openAlertWindow("Invalid email address.");
-		return false;
-	}
-
-	// validate both passwords match.
-	if (password.value !== confirm.value) {
-		openAlertWindow("Passwords don't match.");
-		return false;
-	}
-
-	// validate user agreed to the terms of service.
-	if (!document.getElementById('accept_tos').checked) {
-		openAlertWindow("You must agree to the Terms of Service before creating an account.");
-		return false;
-	}
-	return true;
-}
-
-
-function v_email(email) {
-	var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-	valid = regex.test(email);
-	if (!valid) {
-		console.log([email, valid])
-		$(".signupEmail").addClass("formFieldError");
-	}
-	return valid
-}
-</script>
-
-<!-- Bottom bar -->
-{% endblock %}
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+</html>
