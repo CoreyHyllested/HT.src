@@ -76,6 +76,7 @@ class Profile(Base):
 
 	def __init__(self, name, acct, area=None):
 		if (area and area.get('country_name') == 'Reserved'): area = 'The Internet'
+		if (area and area.get('region_name')  == None): area = None
 		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
