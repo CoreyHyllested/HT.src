@@ -3,6 +3,7 @@
 {% block head %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/dashboard.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/modern-dash.css">
 	<script src="/static/js/format.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
@@ -16,12 +17,13 @@
 
 <div class="dashboardContentWrapper">
 	<div class="dashboardLeftColumn">
-		<div class="dashboardEmpty">
-			<h1>Welcome to your Insprite Dashboard.</h1>
-		</div>
 		
 		<div class="dashboardOffers">
-			<h1>Pending Offers ({{proposals|length}})</h1>
+			<h1>Projects ({{proposals|length}})</h1>
+			<div class="create_project">
+				You don't have any projects.
+				<a href="/project/edit"><button class="whiteButton">Create Project...</button></a>
+			</div>
 
 			{% for proposal in proposals|sort(attribute='Meeting.meet_ts')  %}
 			<div class="dashboardOffer" id="{{proposal.Meeting.meet_id}}">
@@ -29,17 +31,12 @@
 
 					<div class="partnerInfoBox">
 						<div class="partnerPhotoContainer">
-							<div class="partnerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})">
-							</div>
+							<div class="partnerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})"> </div>
 						</div>
 
 						<div class="partnerInfo">
-							<div class="partnerName">
-								<a href="/profile?hero={{proposal.display.prof_id}}" class="blend">{{proposal.display.prof_name}}</a>
-							</div>						
-							<div class="partnerLocation">
-								{{proposal.display.location}}
-							</div>
+							<div class="partnerName"> <a href="/profile?hero={{proposal.display.prof_id}}" class="blend">{{proposal.display.prof_name}}</a> </div>						
+							<div class="partnerLocation"> {{proposal.display.location}} </div>
 						</div>
 					</div>
 
@@ -81,156 +78,19 @@
 			</div>
 			{% endfor %}
 		</div>
-
-		<div class="dashboardAppts">
-			<h1>Scheduled Lessons ({{appointments|length}})</h1>
-			{% for appointment in appointments|sort(attribute='Meeting.meet_ts')  %}
-			<div class="dashboardAppt" id="appt-{{appointment.Meeting.meet_id}}">
-				<div class="dashboardApptLeftColumn">
-					<a href="/profile?hero={{appointment.display.prof_id}}">
-						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{appointment.display.prof_img}}"></div>
-					</a>
-				</div>
-				<div class="dashboardApptCenterColumn">
-					<a href="/profile?hero={{appointment.display.prof_id}}"><h3>{{appointment.display.prof_name}}</h3></a>
-					{% if appointment.Meeting.meet_lesson %}
-					<div class="appointmentIntro">{{appointment.lesson.lesson_title}}</div>
-					{% endif %}
-					<div class="appointmentIntro italic">{{appointment.Meeting.meet_details}}</div>
-				</div>
-				<div class="dashboardApptRightColumn">
-					<div class="dashboardApptRightColumnElement apptDate">{{appointment.Meeting.meet_ts.strftime('%A, %b %d')}} </div>
-					<div class="dashboardApptRightColumnElement apptTime">{{appointment.Meeting.meet_ts.strftime('%H:%M %p')}} - {{appointment.Meeting.meet_tf.strftime('%H:%M %p')}} </div>
-					<div class="dashboardApptRightColumnElement apptCost">
-						{% if appointment.buyer == True %}You will pay ${{appointment.Meeting.meet_cost}}.{% else %}You will earn ${{appointment.Meeting.meet_cost}}.{% endif %}
-					</div>
-					<div class="dashboardApptRightColumnElement apptLocation">{{appointment.Meeting.meet_location}}</div>
-					<div class="dashboardApptRightColumnElement apptLocation">
-						<div class="scheduleMap" id="map-canvas" data-uuid="{{appointment.Meeting.meet_id}}" data-location="{{appointment.Meeting.meet_location}}" ></div>
-					</div>
-					<div class="dashboardApptRightColumnElement apptLocation">
-						<input type="button" class="dashboardActionButton redButton lessonCancel offerCancel" id="{{appointment.Meeting.meet_id}}" value="Cancel Lesson">
-					</div>
-				</div>
-				<div class="clear"></div>
-			</div>
-			{% endfor %}
-		</div>
-
-
-		{% if bp.availability > 0 %}
-			<div class="dashboardLessons">
-				<h1>My Lessons</h1>
-				{% for lesson in lessons %}
-
-					{% if lesson.lesson_flags > 0 %}
-					<div class="dashboardLesson" id="{{lesson.lesson_id}}">
-						<div class="dashboardLessonLeftColumn">
-						{% if lesson.lesson_flags == 1 %}
-							Saved
-						{% elif lesson.lesson_flags == 2 %}
-							Private
-						{% elif lesson.lesson_flags == 3 %}	
-							Public
-						{% else %}
-							None
-						{% endif %}
-						</div>
-						<div class="dashboardLessonCenterColumn">
-							<h3><a href="/lesson/{{lesson.lesson_id}}">{{lesson.lesson_title}}</a></h3>
-						</div>
-						<div class="dashboardLessonRightColumn">
-							<a href="/lesson/edit/{{lesson.lesson_id}}">EDIT</a>
-						</div>
-						<div class="clear"></div>	
-					</div>
-					{% endif %}
-				{% endfor %}
-			</div>
-		{% endif %}
-
-		<div class="dashboardAppts">
-			<h1>Reviews ({{reviews|length}})</h1>
-			{% for review in reviews|sort(attribute='Review.review_id')|reverse  %}
-			<div class="dashboardAppt" id="review-{{review.Review.review_id}}">
-				<p><a href='{{review.Review.get_review_url()}}'>Review Appointment</a></p>
-				<div class="dashboardApptLeftColumn">
-					<a href="/profile?hero={{review.display.prof_id}}">
-						<div class="appointmentSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{review.display.prof_img}}"></div>
-					</a>
-				</div>
-				<div class="dashboardApptCenterColumn">
-					<a href="/profile?hero={{review.display.prof_id}}">
-						<h3>{{review.display.prof_name}}</h3>
-					</a>
-					<div class="appointmentIntro italic">{{review.meet.meet_details}}</div>
-				</div>
-				<div class="dashboardApptRightColumn">
-					<div class="dashboardApptRightColumnElement apptDate">
-						{{review.meet.meet_ts.strftime('%A, %b %d')}}
-					</div>
-
-					<div class="dashboardApptRightColumnElement apptTime">
-						{{review.meet.meet_ts.strftime('%H:%M %p')}} - {{review.meet.meet_tf.strftime('%H:%M %p')}}
-					</div>
-
-					<div class="dashboardApptRightColumnElement apptCost"> </div>
-				</div>
-			</div>
-			<div class="clear"></div>
-			{% endfor %}
-
-			<div class="clear"></div>
-		</div>
-
-		<div class="dashboardMessages">
-			<h1>Messages ({{messages|length}})</h1>
-			{% for msg in messages|sort(attribute='UserMessage.msg_created')|reverse  %}
-			<div class="dashboardMessage" id="msg-{{msg.UserMessage.msg_id}}">
-				<p></p>
-				<div class="dashboardMessageLeftColumn">
-					<a href="/profile?hero={{msg.display.prof_id}}">
-						<div class="messageSenderImage"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{msg.display.prof_img}}"></div>
-						<div class="messageSenderName">{{msg.display.prof_name}}</div>
-					</a>
-				</div>
-				<div class="dashboardMessageCenterColumn">
-					<div class="messageSubjectLine">{{msg.UserMessage.msg_subject}}</div>
-					<div class="messageIntro italic">{{msg.UserMessage.msg_content}}</div>
-				</div>
-				<div class="dashboardMessageRightColumn">
-					<div class="messageDatetime">{{msg.UserMessage.msg_created.strftime('%b %d at %I:%M %p')}}</div>
-					<div class="messageView"><a href="/inbox#thread?id={{msg.UserMessage.msg_thread}}"><button id="messageViewButton" class="whiteButton messageViewButton">View/Reply</button></a></div>
-				</div>
-				<div class="clear"></div>
-			</div>
-			{% endfor %}
-		</div>
 	</div>
 
-	<div class="dashboardRightColumn">
-		<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
+
+	<div class="user_profile">
+		<!--a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a-->
 		<a href="/profile"><h3>{{bp.prof_name}}</h3></a>
-		<div class="dashboardInfoHeadline">{{bp.headline}}</div>
+		<!--div class="dashboardInfoHeadline">{{bp.headline}}</div-->
 		<div class="dashboardInfoBox">
-			<div class="dashboardInfoLocation">
-				<i class="fa fa-fw fa-map-marker"></i>
-				{{bp.location}}
-			</div>
-			<div class="dashboardInfoRating">
-				<i class="fa fa-fw fa-star-o"></i>
-				{% if bp.reviews == 0 %}
-					No Reviews
-				{% elif bp.reviews == 1 %}
-					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Review)</a>
-				{% else %}
-					{{ '%0.1f' | format(bp.rating|float) }} out of 5 stars <a href="/profile?{{bp.prof_id}}#reviews">({{bp.reviews}} Reviews)</a>
-				{% endif %}
-			</div>
+			<div class="dashboardInfoLocation"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
 		</div>
 		<div class="dashboardButtons">
 			<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
-			{% if portfolio|length == 0 %}	
+			{% if portfolio|length == 0 %}
 				<!-- <a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a> -->
 			{% else %}
 				<!-- <a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a> -->
