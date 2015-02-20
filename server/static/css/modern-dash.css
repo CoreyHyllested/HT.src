@@ -1,0 +1,18 @@
+.create_project {
+	float: left;
+	width: 40%;
+	padding: 30px;
+	/* border: 2px solid black; */
+	text-align: center;
+	box-sizing: border-box;
+}
+
+
+.user_profile {
+	float: right;
+	width: 30%;
+	background: lightgrey;
+	box-sizing: border-box;
+	padding: 10px;
+	border-radius: 10px;
+}
