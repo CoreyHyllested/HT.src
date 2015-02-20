@@ -1608,9 +1608,7 @@ def render_edit_project():
 	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
 
-	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-
-	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
+	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp, flags=flags))
 
 
 

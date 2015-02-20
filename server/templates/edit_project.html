@@ -1,0 +1,156 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
+{% endblock %}
+
+
+
+{% block content %}
+<div class="editProfContentWrapper">
+
+	<div class="editProfHeader">
+		<div class="editProfHeaderLeft">
+			<div class="editProfTopLeftNavigation"> <a title="Go to your dashboard" href="/profile">To Dashboard</a> </div>
+		</div>
+			
+		<div class="editProfHeaderRight">
+			<div class="editProfHeaderPageName">Project Information</div>
+		</div>			
+	</div>
+  
+  	<div class="editProfContentContainer">
+		<div class="editProfLeftColumn">
+
+			<div class="editProfNavContainer">
+				<ul class="editProfNavList">
+					<div class="editProfNavItem" data-target-page="general">General Information</div>		
+					<div class="editProfNavItem mentorFormNavItem" data-target-page="schedule">Schedule Call<i class='fa fa-fw fa-check progress'></i><i class="fa fa-fw fa-calendar icon"></i></div>
+					<!--div class="editProfNavItem" data-target-page="profile_photo" data-default-icon="fa-picture-o">Profile Photo></i></div-->	
+				</ul>
+			</div>
+		</div>
+
+		<div class="editProfRightColumn">
+			<div class="editProfFormPageContainer">
+
+				<div class="editProfStatus"></div>
+  				<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
+
+  				{{form.hidden_tag()}}
+
+				<div id="general" class="editProfFormPage">
+
+					<div class="formContainer span12">
+						
+						<div class="formFieldInfo first">Name your project.</div>
+						<div class="formFieldError"></div>
+						{{form.edit_name(placeholder="Name", maxlength="40", class="formField span6")}}
+
+						<div class="formFieldInfo">Where is your home?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_location(placeholder="Location", class="formField span6")}}
+
+						<div class="formFieldInfo">How much are you willing to invest?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_rate(placeholder="$1000", maxlength="7", class="formField span5")}} &dash;
+						{{form.edit_rate(placeholder="$2000", maxlength="7", class="formField span5")}}
+
+						<div class="formFieldInfo">What is your timeline?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_location(placeholder="I'd like this to be done in the next six months.", class="formField span12")}}	
+
+						<div class="formFieldInfo">Where are you investing in your home?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_bio(placeholder="", class="formField span12")}}	
+
+						<div class="formFieldInfo">Anything we should know before we call you?</div>
+						<div class="formFieldError"></div>
+						{{form.edit_location(placeholder="", class="formField span12")}}	
+
+					</div>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="general">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>	
+					</div>
+
+				</div>
+
+
+
+				<div id="schedule" class="editProfFormPage mentorForm">
+					<div class="formFieldInfo">What phone number are you available at?  We keep <em>NEVER</em> sell your data (includes your phone number). </div>
+					<div class="formFieldError"></div>
+					{{form.edit_location(placeholder="", class="formField span12")}}
+					<br>
+					<br>
+
+					<div class="formFieldInfo first">Schedule when you are available to have us call you.  All times are in Mountain Standard Time (MST).  We will send an email to confirm ahead of time.</div>
+					<fieldset id="editProfAvailTimes">
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_sun(id="sun", class="daySelector")}} <label for="sun">Sunday</label>
+							{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_sun_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_mon(id="mon", class="daySelector")}} <label for="mon">Monday</label>
+							{{form.edit_avail_time_mon_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_mon_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_tue(id="tue", class="daySelector")}} <label for="tue">Tuesday</label>
+							{{form.edit_avail_time_tue_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_tue_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 						
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_wed(id="wed", class="daySelector")}} <label for="wed">Wednesday</label>
+							{{form.edit_avail_time_wed_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_wed_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_thu(id="thu", class="daySelector")}} <label for="thu">Thursday</label>
+							{{form.edit_avail_time_thu_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_thu_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_fri(id="fri", class="daySelector")}} <label for="fri">Friday</label>
+							{{form.edit_avail_time_fri_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_fri_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+						<div class="editProfAvailDay">
+							{{form.edit_avail_day_sat(id="sat", class="daySelector")}} <label for="sat">Saturday</label>
+							{{form.edit_avail_time_sat_start(class="formField timeSelector span2")}}
+							{{form.edit_avail_time_sat_finish(class="formField timeSelector span2")}}
+							<div class="formFieldError inline"></div>
+						</div> 	
+					</fieldset>
+
+					<div class="editProfFormPageFooter">
+						<div class="editProfFormButtonContainer">
+							<button class="blueButton editProfSave" data-current-page="schedule">Save Changes</button>
+						</div>
+						<div class="editProfFormStatus"></div>			
+					</div>
+
+
+				</div>
+				</form>
+				Thanks.
+
+			</div>	
+
+	</div><!--empty, container-->
+</div>
+
+<script src="/static/js/edit_project.js"></script>
+{% endblock %}
