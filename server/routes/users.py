@@ -229,6 +229,8 @@ def render_message_page():
 
 
 
+
+
 @insprite_views.route('/profile/edit', methods=['GET', 'POST'])
 @req_authentication
 def render_edit_profile():
@@ -1546,6 +1548,69 @@ def upload():
 				bp.update_profile_image(image)
 
 	return jsonify(tmp="/uploads/" + str(image.img_id))
+
+
+
+@insprite_views.route('/project/edit', methods=['GET', 'POST'])
+@req_authentication
+def render_edit_project():
+	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session['uid'])
+	avail = Availability.get_by_prof_id(bp.prof_id)
+
+	form = ProfileForm(request.form)
+	form.edit_name.data     = bp.prof_name
+	form.edit_location.data = bp.location	
+	form.edit_bio.data      = bp.prof_bio
+	form.edit_headline.data = bp.headline
+	form.edit_url.data      = bp.prof_url
+	form.edit_rate.data     = bp.prof_rate
+	form.edit_availability.data      = bp.availability
+
+	for timeslot in avail:
+		day = timeslot.avail_weekday
+
+		if (day == 0):
+			form.edit_avail_time_sun_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_sun_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_sun.data = 'y'
+
+		if (day == 1):
+			form.edit_avail_time_mon_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_mon_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_mon.data = 'y'
+
+		if (day == 2):
+			form.edit_avail_time_tue_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_tue_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_tue.data = 'y'
+
+		if (day == 3):
+			form.edit_avail_time_wed_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_wed_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_wed.data = 'y'
+
+		if (day == 4):
+			form.edit_avail_time_thu_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_thu_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_thu.data = 'y'
+
+		if (day == 5):
+			form.edit_avail_time_fri_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_fri_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_fri.data = 'y'
+
+		if (day == 6):
+			form.edit_avail_time_sat_start.data = str(timeslot.avail_start)[:-3]
+			form.edit_avail_time_sat_finish.data = str(timeslot.avail_finish)[:-3]
+			form.edit_avail_day_sat.data = 'y'
+
+	flags = bp.availability
+	print "render_edit_profile(): This user's availability is ", bp.availability
+
+	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
+
+	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
 
 
 
