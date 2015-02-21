@@ -20,7 +20,7 @@ from server.controllers import *
 from . import insprite_views
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
+from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -388,6 +388,8 @@ def api_update_profile(usrmsg=None):
 	return jsonify(usrmsg="Something went wrong."), 500
 
 
+
+
 def ht_validate_profile(bp, form, form_page):
 	errors = {}
 	print "ht_validate_page: validating page: ", form_page
@@ -510,8 +512,9 @@ def ht_validate_profile(bp, form, form_page):
 	else:
 		print "ht_validate_profile: errors: ", pprint(errors)
 		valid = False
-
 	return valid, errors
+
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -1558,57 +1561,128 @@ def render_edit_project():
 	ba = Account.get_by_uid(session['uid'])
 	avail = Availability.get_by_prof_id(bp.prof_id)
 
-	form = ProfileForm(request.form)
-	form.edit_name.data     = bp.prof_name
-	form.edit_location.data = bp.location	
-	form.edit_bio.data      = bp.prof_bio
-	form.edit_headline.data = bp.headline
-	form.edit_url.data      = bp.prof_url
-	form.edit_rate.data     = bp.prof_rate
-	form.edit_availability.data      = bp.availability
+	# if there is a project, try and find it first.
+	edit_project = None
+
+	form = ProjectForm(request.form)
+	project = None #Project.get_by_proj_id()
+	if (project):
+		form.proj_name.data	= project.proj_name
+		form.proj_addr.data = project.proj_addr
+		form.proj_desc.data = project.proj_desc
+		form.proj_min.data	= project.proj_min
+		form.proj_max.data	= project.proj_max
+		form.proj_timeline.data	= project.proj_timeline
+		form.proj_contact.data	= project.proj_contact
 
 	for timeslot in avail:
 		day = timeslot.avail_weekday
-
 		if (day == 0):
 			form.edit_avail_time_sun_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_sun_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_sun.data = 'y'
 
 		if (day == 1):
 			form.edit_avail_time_mon_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_mon_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_mon.data = 'y'
 
 		if (day == 2):
 			form.edit_avail_time_tue_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_tue_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_tue.data = 'y'
 
 		if (day == 3):
 			form.edit_avail_time_wed_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_wed_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_wed.data = 'y'
 
 		if (day == 4):
 			form.edit_avail_time_thu_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_thu_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_thu.data = 'y'
 
 		if (day == 5):
 			form.edit_avail_time_fri_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_fri_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_fri.data = 'y'
 
 		if (day == 6):
 			form.edit_avail_time_sat_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_sat_finish.data = str(timeslot.avail_finish)[:-3]
 			form.edit_avail_day_sat.data = 'y'
 
-	flags = bp.availability
 	print "render_edit_profile(): This user's availability is ", bp.availability
+	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp))
 
-	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp, flags=flags))
+
+
+
+@insprite_views.route('/project/update', methods=['POST'])
+@req_authentication
+def api_update_project(usrmsg=None):
+	# Process the edit profile form
+	print "api_proj_update: start"
+
+	uid = session['uid']
+	bp = Profile.get_by_uid(uid)
+	
+	#proj_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
+	#proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
+	#proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
+	#proj_min	= IntegerField('Minimum')
+	#proj_max	= IntegerField('Maximum')
+	#proj_timeline	= TextField('Timeline')
+	#proj_contact	= TextField('Contact')
+
+	# validate all data manually. 
+	form = ProjectForm(request.form)
+	try:
+		errors = "CAH, no errors"
+		if form.validate_on_submit():
+			print "api_proj_update: valid on submit"
+
+			update = True;
+			if (update):
+				print "api_proj_update: add"
+				project = Project.get_by_project_id(form.project_id)
+				if (project == None):
+					print "api_proj_update: create new project"
+					project = Project(form.proj_name.data, uid)
+
+				print "api_proj_update: set details"
+				project.proj_name	= form.proj_name.data
+				project.proj_addr	= form.proj_addr.data
+				project.proj_desc	= form.proj_desc.data
+				project.proj_min	= form.proj_min.data
+				project.proj_max	= form.proj_max.data
+				print "api_proj_update: set details 2"
+				project.timeline 	= form.proj_timeline.data
+				project.contact		= form.proj_contact.data
+				print "api_proj_update: add"
+				db_session.add(project)
+				db_session.commit()
+				return jsonify(usrmsg="project updated"), 200
+			else:
+				db_session.rollback()
+				print "api_proj_update: update error"
+				return jsonify(usrmsg="We messed something up, sorry", errors=form.errors), 500
+		else:
+			print 'api_proj_update: invalid POST', form.errors
+
+		print "api_proj_update: invalid", 
+		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format. Please check the form.', errors=form.errors), 500
+
+	except AttributeError as ae:
+		print "api_proj_update: exception", ae
+		db_session.rollback()
+		return jsonify(usrmsg='We messed something up, sorry'), 500
+	except Exception as e:
+		print type(e), e
+		print "api_proj_update: exception", e
+		db_session.rollback()
+		return jsonify(usrmsg=e), 500
+
+	print "api_update_profile: Something went wrong - Fell Through."
+	print "here is the form object:"
+	print str(form)
+
+	print "api_proj_update: return"
+	return jsonify(usrmsg="Something went wrong."), 500
+
 
 
 
