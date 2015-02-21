@@ -15,6 +15,7 @@
 from .Account			import *
 from .Availability		import *
 from .Profile			import *
+from .Project			import *
 from .Email				import *
 from .Image				import *
 from .Industry			import *
