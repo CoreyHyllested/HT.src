@@ -205,8 +205,34 @@ class LessonForm(Form):
 	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
 
 
-class ProfileForm(Form):
+class ProjectForm(Form):
+	proj_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
+	proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
+	proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
+	proj_min	= IntegerField('Minimum')
+	proj_max	= IntegerField('Maximum')
+	proj_timeline	= TextField('Timeline')
+	proj_contact	= TextField('Contact')
 
+	edit_avail_day_sun = BooleanField('Sunday')
+	edit_avail_day_mon = BooleanField('Monday')
+	edit_avail_day_tue = BooleanField('Tuesday')
+	edit_avail_day_wed = BooleanField('Wednesday')
+	edit_avail_day_thu = BooleanField('Thursday')
+	edit_avail_day_fri = BooleanField('Friday')
+	edit_avail_day_sat = BooleanField('Saturday')
+
+	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_tue_start	= SelectField('Tue Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_wed_start	= SelectField('Wed Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_thu_start	= SelectField('Thu Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_fri_start	= SelectField('Fri Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_sat_start	= SelectField('Sat Start', coerce=str, choices=NTS_times_start)
+	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
+
+
+
+class ProfileForm(Form):
 	edit_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
 	edit_location = TextField('Location')
 	edit_bio      = TextAreaField('Bio', [validators.length(min=0, max=5000)])
@@ -244,8 +270,9 @@ class ProfileForm(Form):
 	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
 	edit_avail_time_sun_finish		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
 
+
+
 class ProposalForm(Form):
-	
 	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
 	prop_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
 	prop_location    = TextField('Location')
