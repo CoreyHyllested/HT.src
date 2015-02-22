@@ -314,6 +314,12 @@ def meeting_timedout(composite_meeting, profile):
 
 
 
+def sc_get_projects(profile):
+	projects = db_session.query(Project)									\
+							.filter(Project.account == profile.account)		\
+							.all();
+	return projects
+
 
 def ht_get_active_meetings(profile):
 	props = []

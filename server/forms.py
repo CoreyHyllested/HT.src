@@ -206,7 +206,8 @@ class LessonForm(Form):
 
 
 class ProjectForm(Form):
-	proj_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
+	proj_id		= HiddenField('id')
+	proj_name	= TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
 	proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
 	proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
 	proj_min	= IntegerField('Minimum')
