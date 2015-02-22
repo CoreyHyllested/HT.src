@@ -1,3 +1,14 @@
+.projects { min-height: 100px; }
+
+
+.project {
+	/*border-bottom: 1px solid #cfd7db;*/
+	display: block;
+	margin-top: 20px;
+	padding-bottom: 20px;
+}
+
+
 .create_project {
 	float: left;
 	width: 40%;
@@ -15,4 +26,22 @@
 	box-sizing: border-box;
 	padding: 10px;
 	border-radius: 10px;
+}
+
+.project.address {
+	font-size: .9em;
+	font-weight: 300;
+}
+
+.project .details {
+	font-size: .9em;
+	margin-bottom: 8px;
+	line-height: 1.2em;
+}
+
+
+@media only screen and (min-device-width: 240px) and (max-width: 489px) {
+	.project.LeftCol, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
+		width: 100%;
+	}
 }

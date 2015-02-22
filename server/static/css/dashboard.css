@@ -6,11 +6,7 @@ c) 1000px - ... (desktops)
 */
 
 
-/**** COMMON ELEMENTS ****/
-
-
 /* Layout */
-
 .pageWrapper {
 	background-color: white;
 	min-height: 100%;
@@ -144,10 +140,6 @@ c) 1000px - ... (desktops)
 	font-size: .9em;
 	font-weight: 300;
 }
-.partnerLocation {
-	font-size: .9em;
-	font-weight: 300;
-}
 
 /* Lessons */
 
@@ -213,28 +205,6 @@ c) 1000px - ... (desktops)
 
 /* Offers */
 
-.dashboardOffers {
-	min-height: 80px;
-}
-
-.dashboardOffer {
-	/*border-bottom: 1px solid #cfd7db;*/
-	display: block;
-	margin-top: 20px;
-	padding-bottom: 20px;
-}
-
-.dashboardOfferName {
-	color: rgba(0,0,0,.8);
-	font-size: 1em;
-}
-
-.dashboardOfferDetails {
-	color: rgba(0,0,0,.5);
-	font-size: .9em;
-	line-height: 1.2em;
-	margin-bottom: 8px;
-}
 
 .dashboardOffer img {
 	border-radius: 3px;
@@ -522,7 +492,6 @@ input.dashboardActionButton {
 /* Responsive Stuff */
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
-
 	.dashboardContentWrapper {
 		width: 90%;
 	}

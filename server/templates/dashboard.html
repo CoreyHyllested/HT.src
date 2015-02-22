@@ -18,65 +18,44 @@
 <div class="dashboardContentWrapper">
 	<div class="dashboardLeftColumn">
 		
-		<div class="dashboardOffers">
-			<h1>Projects ({{proposals|length}})</h1>
-			<div class="create_project">
-				You don't have any projects.
-				<a href="/project/edit"><button class="whiteButton">Create Project...</button></a>
-			</div>
+		<div class="projects">
+			<h1>Projects ({{projects|length}})</h1>
 
-			{% for proposal in proposals|sort(attribute='Meeting.meet_ts')  %}
-			<div class="dashboardOffer" id="{{proposal.Meeting.meet_id}}">
+			<!--|sort(attribute='Meeting.meet_ts')-->
+			{% for project in projects  %}
+			<div class="project" id="{{project.proj_id}}">
 				<div class="dashboardOfferLeftColumn">
-
-					<div class="partnerInfoBox">
-						<div class="partnerPhotoContainer">
-							<div class="partnerPhoto" style="background-image: url(https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{proposal.display.prof_img}})"> </div>
-						</div>
-
-						<div class="partnerInfo">
-							<div class="partnerName"> <a href="/profile?hero={{proposal.display.prof_id}}" class="blend">{{proposal.display.prof_name}}</a> </div>						
-							<div class="partnerLocation"> {{proposal.display.location}} </div>
-						</div>
-					</div>
-
+						<div class="details">{{project.proj_name}}</div>
+						<div class="details"> Investmax: ${{project.proj_min}} &dash; ${{project.proj_max}}</div>
+						<div class="details"> Timeline: {{project.proj_timeline}}</div>
+						<div class="details"> Contact#: {{project.proj_contact}}</div>
 				</div>
+				<!--div class="partnerPhotoContainer"></div-->
+				<!--div class="partnerInfo">
+					<div class="partnerName"> <a href="/project?id={{project.proj_id}}" class="blend">{{project.proj_name}}</a> </div>
+				</div-->
+
 				<div class="dashboardOfferCenterColumn">
-						<div class="dashboardOfferName">{{proposal.lesson.lesson_title}}</div>
-						<div class="dashboardOfferDetails">{{proposal.Meeting.meet_details}}</div>
-						<div class="dashboardOfferDetails">
-							{% if proposal.buyer == True %}
-								You offered ${{proposal.Meeting.meet_cost}}.
-							{% else %}
-								You were offered ${{proposal.Meeting.meet_cost}}.
-							{% endif %}
-						</div>
-						{% if proposal.timeout is defined %}
-							<div class="dashboardOfferDetails">
-							Expires in {{proposal.timeout }}
-							</div>
-						{% endif %}
-						<div class="dashboardOfferDetails">
-						{{proposal.Meeting.get_meet_ts().strftime('%A, %b %d')}}<br>
-						{{proposal.Meeting.get_meet_ts().strftime('%H:%M %p')}} - {{proposal.Meeting.get_meet_tf().strftime('%H:%M %p')}}
-						</div>
+						<div class="details">{{project.proj_desc}}</div>
 				</div>
+
 				<div class="dashboardOfferRightColumn">
 					<div class="dashboardOfferDetails">
-						Location: {{proposal.Meeting.meet_location}}
-						<div class="scheduleMap" id="map-canvas" data-uuid="{{proposal.Meeting.meet_id}}" data-location="{{proposal.Meeting.meet_location}}"></div>
+						<div class="scheduleMap" id="map-canvas" data-uuid="{{project.proj_id}}" data-location="{{project.proj_addr}}"></div>
+						<div class="project address"> {{project.proj_addr}} </div>
+						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Edit Project...</button></a>
 					</div>
-					{% if proposal.seller == true %}
-						<input type="button" class="dashboardActionButton offerAccept" id="{{proposal.Meeting.meet_id}}" value="Accept Proposal">
-						<input type="button" class="dashboardActionButton offerReject" id="{{proposal.Meeting.meet_id}}" value="Reject Proposal">
-					{% else %}
-						<input type="button" class="dashboardActionButton offerCancel" id="{{proposal.Meeting.meet_id}}" value="Cancel Proposal">
-					{% endif %}
 				</div>
+				<br>
 
 				<div class="clear"></div>
 			</div>
 			{% endfor %}
+
+			<div class="create_project">
+				You don't have any projects.
+				<a href="/project/edit"><button class="whiteButton">Create Project...</button></a>
+			</div>
 		</div>
 	</div>
 
@@ -90,11 +69,7 @@
 		</div>
 		<div class="dashboardButtons">
 			<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
-			{% if portfolio|length == 0 %}
-				<!-- <a href="/upload_portfolio"><button id="portfolioUploadButton" class="whiteButton">Add Portfolio Images</button></a> -->
-			{% else %}
-				<!-- <a href="/edit_portfolio"><button id="portfolioUploadButton" class="whiteButton">Edit Portfolio</button></a> -->
-			{% endif %}
+			<a href="/share"><button class="whiteButton">Share with Friends</button></a>
 		</div>
 
 
@@ -104,125 +79,9 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
 <script src="/static/js/maps.js"></script>
-<script src="/static/js/sendmsg.js"></script>
 <script>
 $(document).ready(function() {
 	google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
-
-    $('.offerAccept').click(function () {
-        var id = this.id;
-
-        var fd = new FormData();
-        fd.append('meet_id', id);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('post', "/meeting/accept", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-		xhr.send(fd);
-		console.log('sent');
-
-        xhr.onreadystatechange = function(e) {
-            if (4 == this.readyState) {
-                if (this.status == 200) {
-                    console.log(['xhr post complete ', e]);
-                    console.log(xhr.responseText);
-                    openAlertWindow('Success.');
-					window.location.href="/dashboard";
-                } else if (this.status == 400) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=400', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 500) {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=500', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else {
-                    msg = JSON.parse(xhr.responseText);
-                    console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                }
-            }
-        };
-        return false;
-    });
-
-
-	$('.offerCancel').click(function () {
-		var id = this.id;
-		var fd = new FormData();
-		var sid = "#appt-" + id;
-		fd.append('meet_id', id);
-
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', "/meeting/cancel", true);
-		xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-		xhr.send(fd);
-
-        //catch response. make modificaitons.
-        xhr.onreadystatechange = function(e) {
-            if (4 == this.readyState) {
-                if (this.status == 200) {
-                    console.log(['xhr post complete ', e]);
-                    console.log(xhr.responseText);
-					$(sid).remove();
-
-					msg = JSON.parse(xhr.responseText);
-					openAlertWindow(msg['usrmsg']);
-                } else if (this.status == 400) {
-                    console.log(['xhr post complete, err=400', e]);
-					msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else if (this.status == 500) {
-                    console.log(['xhr post complete, err=500', e]);
-					msg = JSON.parse(xhr.responseText);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else {
-                    console.log(['xhr post complete, err=?? ', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                }
-            }
-        };
-        return false;
-    });
-
-
-   $('.offerReject').click(function () {
-        var id = $(this).data('id');
-        var fd = new FormData();
-        fd.append('meet_id', id);
-
-        var xhr = new XMLHttpRequest();
-        xhr.open('post', "/meeting/reject", true);
-        xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token() }}');
-        xhr.send(fd);
-
-        // catch response.  make modificaitons
-        xhr.onreadystatechange = function(e) {
-            if (4 == this.readyState) {
-                msg = JSON.parse(xhr.responseText);
-                if (this.status == 200) {
-                    console.log(['xhr post complete', e]);
-                    console.log(xhr.responseText);
-                    openAlertWindow(msg['usrmsg']);
-                    $('#'+id).remove();
-                } else if (this.status == 500) {
-                    console.log(['xhr post complete, err=500', e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                } else {
-                    console.log(['xhr post complete, err=??', this.status,  e]);
-                    openAlertWindow('Failure: ' + msg['usrmsg']);
-                }
-            }
-        };
-
-        return false;
-    });
-
-	$('.falseMap').click(function () {
-		openAlertWindow('Sorry! Not available yet');
-		return false;
-	});
-
 });
 
 </script>
