@@ -38,23 +38,15 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 @insprite_views.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard(usrmsg=None):
-	""" Provides Hero their personalized homepage.
-		- Show calendar with all upcoming appointments
-		- Show any statistics.
-	"""
-
 	bp = Profile.get_by_uid(session['uid'])
 	insprite_msg = session.pop('messages', None)
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 
-	unread_msgs = []
-
 	try:
-		(props, appts, rview) = ht_get_active_meetings(bp)
-		active_reviews = ht_get_active_author_reviews(bp)
-		active_lessons = ht_get_active_lessons(bp)
-		unread_msgs = ht_get_unread_messages(bp)
-		profile_imgs = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+		projects = sc_get_projects(bp)
+		for p in projects:
+			pprint(p)
+		#(props, appts, rview) = ht_get_active_meetings(bp)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
@@ -63,8 +55,8 @@ def render_dashboard(usrmsg=None):
 		usrmsg = insprite_msg
 		print 'render_dashboard() usrmsg = ', usrmsg
 
-	map(lambda msg: display_partner_message(msg, bp.prof_id), unread_msgs)
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, lessons=active_lessons, proposals=props, appointments=appts, messages=unread_msgs, reviews=active_reviews, portfolio=profile_imgs, errmsg=usrmsg))
+	print 'render_dashboard()'
+	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=[], projects=projects, errmsg=usrmsg))
 
 
 
@@ -1555,25 +1547,31 @@ def upload():
 
 
 @insprite_views.route('/project/edit', methods=['GET', 'POST'])
+@insprite_views.route('/project/edit/<string:pid>', methods=['GET', 'POST'])
 @req_authentication
-def render_edit_project():
+def render_edit_project(pid=None):
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
 	avail = Availability.get_by_prof_id(bp.prof_id)
+	print "pid", pid
 
 	# if there is a project, try and find it first.
 	edit_project = None
 
 	form = ProjectForm(request.form)
-	project = None #Project.get_by_proj_id()
+	# This needs to be owened by the browsing user
+	project = Project.get_by_proj_id(pid)
 	if (project):
+		form.proj_id.data	= project.proj_id
 		form.proj_name.data	= project.proj_name
 		form.proj_addr.data = project.proj_addr
 		form.proj_desc.data = project.proj_desc
 		form.proj_min.data	= project.proj_min
 		form.proj_max.data	= project.proj_max
-		form.proj_timeline.data	= project.proj_timeline
-		form.proj_contact.data	= project.proj_contact
+		form.proj_timeline.data	= project.timeline
+		form.proj_contact.data	= project.contact
+	else:
+		form.proj_id.data	= 'new'
 
 	for timeslot in avail:
 		day = timeslot.avail_weekday
@@ -1638,7 +1636,11 @@ def api_update_project(usrmsg=None):
 			update = True;
 			if (update):
 				print "api_proj_update: add"
-				project = Project.get_by_project_id(form.project_id)
+				print "api_proj_update: id = ", form.proj_id.data
+				project = None
+				if form.proj_id is not 'new':
+					project = Project.get_by_proj_id(form.proj_id.data)
+
 				if (project == None):
 					print "api_proj_update: create new project"
 					project = Project(form.proj_name.data, uid)
