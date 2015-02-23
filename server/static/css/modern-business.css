@@ -199,24 +199,6 @@ body {
     font-style: italic;
 }
 
-/* Footer Styles */
-
-/*footer {
-    margin: 50px 0;
-}*/
-
-.footer-menu {
-	float: left;
-}
-
-.footer-menu li {
-	display: inline;
-	padding-right: 20px;
-}
-
-.footer-copy {
-	float: right;
-}
 
 /* Responsive Styles */
 
