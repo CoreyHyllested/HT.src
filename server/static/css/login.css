@@ -3,36 +3,9 @@ There are three responsive design ranges for the login page (login.html):
 a) 240px - 349px (phones)
 b) 350 - 889px (phablets, tablets)
 c) 890px - ... (desktops)
-
 */
 
-/* ANIMATIONS */
-
-	/* LinkedIn Button Pulse */
-	@-moz-keyframes linkedinPulse {
-		0% {background-color: #7dc7f2;}
-		50% {background-color: #00a1e8;}
-		100% {background-color: #7dc7f2;}
-	}
-
-	@-webkit-keyframes linkedinPulse {
-		0% {background-color: #7dc7f2;}
-		50% {background-color: #00a1e8;}
-		100% {background-color: #7dc7f2;}
-	}
-
-	@keyframes linkedinPulse {
-		0% {background-color: #7dc7f2;}
-		50% {background-color: #00a1e8;}
-		100% {background-color: #7dc7f2;}
-	}
-
 /* COMMON ELEMENTS */
-
-	.loginContentWrapper a:hover {
-		text-decoration: underline;
-	}
-
 	.loginEmail input[type="text"] {
 		border-radius: 5px 5px 0 0;
 		margin-bottom: 0;
@@ -42,64 +15,6 @@ c) 890px - ... (desktops)
 		width: 100%;
 	}
 
-	.loginLinkedIn {
-		background: url("../img/linkedin.svg") #7dc7f2 no-repeat 2px 3px;
-		border: 0;
-		border-radius: 3px;
-		color: white;
-		display: table-cell;
-		font-size: 1em;
-		font-weight: 400;
-		height: 40px;
-		text-align: center;
-		width: 100%;
-		vertical-align: middle;
-	}
-
-	.loginFacebook {
-		background: url("../img/facebook.svg") #47629c no-repeat 2px 3px;
-		border: 0;
-		border-radius: 3px;
-		color: white;
-		display: table-cell;
-		font-size: 1em;
-		font-weight: 400;
-		height: 40px;
-		margin-top: 10px;
-		text-align: center;
-		width: 100%;
-		vertical-align: middle;		
-	}
-
-	.loginTwitter {
-		background: url("../img/twitter.svg") #59adeb no-repeat 2px 3px;
-		border: 0;
-		border-radius: 3px;
-		color: white;
-		display: table-cell;
-		font-size: 1em;
-		font-weight: 400;
-		height: 40px;
-		margin-top: 10px;
-		text-align: center;
-		width: 100%;
-		vertical-align: middle;		
-	}	
-
-	.loginLinkedInNotice {
-		color: gray;
-		font-size: 0.7em;
-		line-height: 1.7em;
-		margin-top: 20px;
-	}
-
-	.loginLink {
-		clear: both;
-		display: block;
-		font-size: 0.9em;
-		margin-top: 5px;
-		text-align: center;
-	}
 
 /* PHONE DESIGN */
 @media only screen and (min-device-width: 240px) and (max-width: 349px) {
@@ -226,7 +141,6 @@ c) 890px - ... (desktops)
 
 /* PHABLET, TABLET DESIGN */
 @media only screen and (min-width: 350px) and (max-width: 889px) {
-
 	/* Login panel slides into view */
 	@-moz-keyframes loginAppear {
 		0% {opacity: 0; margin-top: 300px;}
