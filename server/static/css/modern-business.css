@@ -117,15 +117,28 @@ body {
 	list-style: none;
 }
 
+.press-img:hover {
+/* 	border: 1px solid aliceblue; */
+/* 	makes img smaller... bah */
+}
+
 .list-inline {
 	padding-left: 0px;
 	height: 100px;
 }
 
-
 .press-list li {
 	display: block;
 	vertical-align: middle;	/* img? */
+}
+
+.press-list li img {
+	/* set height of image to normalize; let automatically determine width.  */
+	height: 60px;
+	filter: alpha(50%);
+	/* center */
+	margin-left: auto;
+	margin-right: auto;
 }
 
 /*press-list and .last */
@@ -139,6 +152,10 @@ body {
 	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
 }
 
+.greyscale:hover {
+	filter: grayscale(0);	/* FF35+ */
+	-webkit-filter: grayscale(0); /* Chrome, Safari 6+ & Opera 15+ */
+}
 
 /* Home Page Carousel */
 .carousel {
@@ -217,4 +234,10 @@ body {
     header.carousel .carousel {
         height: 70%;
     }
+}
+
+@media only screen and (min-device-width: 240px) and (max-width: 500px) {
+	.lp-img {
+		font-size: 1em;
+	}
 }
