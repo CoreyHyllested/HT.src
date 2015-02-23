@@ -492,14 +492,9 @@ input.dashboardActionButton {
 /* Responsive Stuff */
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
-	.dashboardContentWrapper {
-		width: 90%;
-	}
+	.dashboardContentWrapper { width: 90%; }
 
-	.dashboardLeftColumn {
-		width: 100%;
-	}
-
+	.dashboardLeftColumn { width: 100%; }
 	.dashboardRightColumn {display: none;}
 
 	.dashboardLeftColumn h1 {
