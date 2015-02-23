@@ -90,6 +90,16 @@ def render_inbox_page():
 
 
 @req_authentication
+@insprite_views.route("/share", methods=['GET', 'POST'])
+def render_share_page():
+	bp = Profile.get_by_uid(session['uid'])
+	hp = None
+	next = request.values.get('next')
+	return make_response(render_template('share.html', bp=bp, hp=hp, next=next))
+
+
+
+@req_authentication
 @insprite_views.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
 	hid = request.values.get('hp')
