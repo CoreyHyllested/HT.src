@@ -1,41 +1,128 @@
-{% extends "ht_header.html" %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block head %}
-	{{ super() }}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SC</title>
+    <link href="/static/css/bootstrap.css" rel="stylesheet">
+    <link href="/static/css/headerfooter.css" rel="stylesheet">
+    <link href="/static/css/modern-login.css" rel="stylesheet">
+	<link type="text/css" rel="stylesheet" href="/static/css/signup.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/login.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
+    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
 	<script type="text/javascript" src="/static/js/login.js"></script>
-{% endblock %}
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
 
-{% block content %}
 
-<div class="loginContentWrapper">
-	<h2>Login to Insprite</h2>
+<body class="signup-page">
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
 
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Soulcrafting</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li> <a href="about.html">About</a> </li>
+                    <li> <a href="contact.html">Contact</a> </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Locations<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li> <a href="full-width.html">Boulder</a></li>
+                            <li> <a href="sidebar.html">Denver</a></li>
+                            <li> <a href="pricing.html">Fort Collins</a> </li>
+                            <li> <a href="faq.html">Longmont</a></li>
+                            <!--li> <a href="404.html">404</a> </li-->
+                        </ul>
+                    </li>
+                </ul>
+            </div> <!-- /.navbar-collapse -->
+        </div> <!-- /.container -->
+	</nav>
+
+	<section class="signup-section access-section section">
+		<div class="container">
+			<div class="row">
+
+				<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
+					<div class="form-box-inner">
+						<h2 class="title text-center">Login</h2>  
+						<div class="row">
+							<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
+								<ul class="list-unstyled social-login">
+									<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign up with Facebook</button></a></li>
+									<li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li>
+								</ul>
+							</div>
+
+							<div class="form-container col-md-5 col-sm-12 col-xs-12">
+								<form class="signup-form">                
+									<div class="form-group email">
+										<label class="sr-only" for="signup-email">Your email</label>
+										<input id="signup-email" type="email" class="form-control login-email" placeholder="Your email">
+									</div>
+									<div class="form-group password">
+										<label class="sr-only" for="signup-password">Your password</label>
+										<input id="signup-password" type="password" class="form-control login-password" placeholder="Password">
+									</div>
+									<button type="submit" class="btn btn-block btn-signup">Sign up</button>
+									<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
+									<p class="lead">Already have an account? <a class="login-link" id="login-link" href="login.html">Log in</a></p>  
+								</form>
+							</div>
+						</div>
+						<a class="loginLink" href="/signup">Join Insprite</a>
+						<a class="loginLink" href="/password/recover">Forgot your password?</a>
+					</div>
+				</div>
+
+
+			</div><!--//row-->
+		</div>
+	</section>
+
+
+
+<!--div class="loginContentWrapper">
 	<div class="loginSwitch">
 		<div class="loginSwitchEmail loginSwitchActive">Email Login</div>
 		<div class="loginSwitchSocial">Social Login</div>
-	</div>
+	</div-->
 
-	<div class="loginEmail">
-
+	<!--div class="loginEmail"  /* child of loginContentWrapper */>
 		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
-			{{form.hidden_tag()}}
+			{ {form.hidden_tag()} }
 			<input type="email" id="input_login_email" name="input_login_email" placeholder="Email">
 			<input type="password" id="input_login_password" name="input_login_password" placeholder="Password">
 
-			{% if errmsg != none %}
+			{ % if errmsg != none %}
 				<script>
-					openAlertWindow('{{errmsg}}')
+					openAlertWindow('{ {errmsg}}')
 				</script>
-			{% endif %}
+			{ % endif %}
 
 			<div class="loginEmailSubmitWrapper">
 				<input type="submit" value="Log in" class="button teal">
 			</div>
 		</form>
-
-	</div>
+	</div-->
 
 	<!--
 	<h2>Or use these</h2> 
@@ -54,12 +141,29 @@
 	</div>
 	-->
 	
-	<a class="loginLink" href="/signup">Join Insprite</a>
-	<a class="loginLink" href="/password/recover">Forgot your password?</a>
 
-</div>
+<!--/div   (loginContentWrapper)-->
 
-<!-- Scripts -->
+
+	<footer>
+		<div class="row">
+			<div class="container">
+				<div class="footer-menu">
+					<ul>
+						<li>About</li>
+						<li>FAQ</li>
+						<li>Terms</li>
+					</ul>
+				</div>
+				<div class="footer-copy">
+					<p>&copy; Soulcrafting 2015</p>
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
+
+
 
 <script type="text/javascript">
 	function validateForm() {
@@ -79,5 +183,6 @@
 		}		
    }
 </script>
-
-{% endblock %}
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+</html>
