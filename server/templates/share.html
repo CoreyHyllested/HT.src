@@ -1,0 +1,44 @@
+{% extends "ht_header.html" %}
+
+{% block head %}
+	{{ super() }}
+	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="composeWrapper">
+
+	<div class="composeHeader">
+		<h1>Compose Message</h1>
+	</div>
+
+	<div class="composeMessageContainer">
+		<div class="composeRecipientContainer">
+			<div class="composeFieldCaption">To</div>
+			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" placeholder="MyFriend@gmail.com">
+		</div>
+
+		<div class="composeSubjectContainer">
+			<div class="composeFieldCaption">Subject</div>
+			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Message Subject">
+		</div>
+
+		<div class="composeBodyContainer">
+			<div class="composeFieldCaption">Message</div>
+			<textarea id="composeBody" name="composeBody" class="composeField" value="Hi, if you're thinking about doing a home remodel, check out Soulcrafting."></textarea>
+		</div>
+	</div>
+
+	<div class="composeMessageStatus"></div>
+
+	<div class="composeMessageSend">
+		<button id="sendMessage" class="blueButton composeMessageSendButton">Send</button>
+	</div>
+	<div class="composeMessageCancel">
+		<a href="/inbox">Cancel</a>
+	</div>
+</div>
+
+{% endblock %}	
