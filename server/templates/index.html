@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SC</title>
+    <title>Soulcrafting</title>
     <link href="/static/css/bootstrap.css" rel="stylesheet">
     <link href="/static/css/headerfooter.css" rel="stylesheet">
     <link href="/static/css/modern-business.css" rel="stylesheet">
@@ -18,7 +18,8 @@
 </head>
 
 <body>
-    <!-- Navigation -->
+	<div class="overlay"></div>
+
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
 
@@ -53,6 +54,7 @@
 
         </div> <!-- /.container -->
     </nav>
+
 
 	<!-- LandingPage, above the fold story/explanation. -->
 	<div class="container lp-img">
@@ -228,11 +230,16 @@
 		</div>
 	</div>
 
-	<!--div class="container"-->
+	<div class="overlay-content">
+		<div class="overlay-close">&#x2715;</div>
+		<div class="modalContent"></div>
+	</div>
+
+	<div class="container">
 		<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
 		<!--a class="btn btn-lg btn-default btn-block" href="/explore">Request an Invite</ai-->
-	<!--/div-->
-
+		<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
+	</div>
 	<!--hr-->
 
 	<footer>
@@ -252,5 +259,44 @@
 
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/bootstrap.min.js"></script>
+	<script>
+	$(document).ready(function(){
+		$('.show-popup').click(function(event){
+			event.preventDefault();		// disable normal link function so that it doesn't refresh the page
+			var docHeight = $(document).height();	// total document height
+			var scrollTop = $(window).scrollTop();	// top of window (in Px)?
+			var selectedPopup = $(this).data('showpopup');
+			console.log([docHeight, scrollTop, selectedPopup]);
+			//$('.overlay').toggleClass('modalOverlayOn'); //.css({'height' : docHeight}); //display your popup background and set height to the page height
+			//$('.'+selectedPopup).show(); //.css({'top': scrollTop+75+'px'}); //show the appropriate popup and set the content 20px from the window top
+		});
+
+		$('.overlay-close').click(function(){ closeModal(); });
+
+		// hide the popup when user presses the esc key
+		$(document).keyup(function(e) { if (e.keyCode == 27 /* ESC */) { closeModal(); } });
+	});
+
+	$('.reload-btn').click(function(e) {
+		$('.overlay-content').toggleClass('content-set');
+	});
+
+	function openModal() {
+		$('.overlay').toggleClass('modalOverlayOn');
+		// must be logged in right now, put /share in 'everybody'
+		$('.modalContent').load("/share .composeWrapper");
+		$('.overlay-content').show();
+	}
+
+	function closeModal() {
+		$('.overlay-content').hide();
+		$('.overlay').toggleClass('modalOverlayOn');
+		return false;
+	};
+
+	setTimeout(function () { console.log ('boo'); openModal();}, 2000);
+
+	</script>
+
 </body>
 </html>

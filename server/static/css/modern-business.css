@@ -39,6 +39,59 @@ body {
 }
 
 
+.overlay {
+}
+
+.modalOverlayOn {
+	/* toggled on/off an empty div [overlay] */
+	/* sets background (whole screen) to black */
+	display: block;
+	position: fixed;
+
+	top: 0;
+	height: 100%;
+	left: 0;
+	width: 100%;
+
+    background: #000; /* fallback */
+    background: rgba(0,0,0,.6);
+	z-index: 99997;
+}
+
+
+
+.overlay-content {
+	/* defines a box that will be filled */
+	display: none;
+	background: #fff;
+	padding: 1%;
+
+	position: fixed;
+	top: 25%;
+
+	width: 50%;
+	left: 25%;
+
+	cursor: default;
+	z-index: 99998;
+	border-radius: 15px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.9);
+}
+
+
+
+.overlay-close {
+	/* The X to close the overlay */
+	position: absolute;
+	top: 5px;
+	right: 8px;
+	cursor: pointer;
+	font-size: 1.3em;
+	z-index: 99999;
+	color: #d1d1d1;
+}
+.overlay-close :hover { color: #adadad; }
+
 
 .center {
 	/* taken from trunk-club, not sure that this is doing anything 
