@@ -3,11 +3,22 @@ body {
     height: 100%;
 }
 
-
 .signup-page {
 	background: #253340 url('/static/img/img3.jpg') no-repeat 50% top;
 	background-size: cover;
+}
 
+/* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
+
+.attention::-webkit-input-placeholder { /* WebKit browsers */	color: red; }
+.attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red ; }
+.attention:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color: red;
+	opacity:  1;
+}
+.attention::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color: red;
+	opacity:  1;
 }
 
 .access-section {
@@ -119,7 +130,8 @@ body {
 
 
 /* rename this --just--  signup section */
-.access-section.signup-section .title {
+.access-section.signup-section .title,
+.access-section.login-section .title {
   margin-bottom: 50px;
 }
 
@@ -146,8 +158,23 @@ body {
 	padding-left: 30px;
 }
 
-.access-section .form-group.email:before {
+.access-section .form-group.username:before {
   content: "\f007";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
+
+
+.access-section .form-group.email:before {
+  content: "\f003";
   font-family: FontAwesome;
   font-style: normal;
   font-weight: normal;

@@ -19,7 +19,7 @@ from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.ht_utils	import *
-from server.forms import LoginForm, NewAccountForm
+from server.forms import LoginForm, SignupForm, NewAccountForm
 
 from httplib2 import Http
 from urllib import urlencode
@@ -57,22 +57,21 @@ def render_signup_page(usrmsg=None):
 		# if logged in, take 'em home
 		return redirect('/dashboard')
 
-
-	form = NewAccountForm(request.form)
+	form = SignupForm(request.form)
 	if form.validate_on_submit():
 		# check if account (email) already exists in db
-		accounts = Account.query.filter_by(email=form.input_signup_email.data.lower()).all()
+		accounts = Account.query.filter_by(email=form.email.data.lower()).all()
 		if (len(accounts) == 1):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
-			(bh, bp) = ht_create_account(form.input_signup_name.data, form.input_signup_email.data.lower(), form.input_signup_password.data)
+			# no account exists in database, create one.
+			(bh, bp) = ht_create_account(form.uname.data, form.email.data.lower(), form.passw.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
 			else:
-				usrmsg = 'Something went wrong.  Please try again'
-	
+				usrmsg = 'Something went wrong.  Please try again.'
 	elif request.method == 'POST':
 		trace("/signup form invalid" + str(form.errors))
 		usrmsg = 'Sorry, something wasn\'t filled out properly.'
@@ -86,21 +85,20 @@ def render_signup_page(usrmsg=None):
 @insprite_views.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
 def render_login(usrmsg=None):
-	""" Logs user into HT system
-		If successful, sets session cookies and redirects to dash
-	"""
+	""" If successful, sets session cookies and redirects to dash """
 	bp = None
 	usrmsg = None
 	insprite_msg = session.pop('messages', None)
 
 	if ('uid' in session):
-		# user already logged in; take 'em home
+		# user has already logged in.
 		return redirect('/dashboard')
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
-		ba = ht_authenticate_user(form.input_login_email.data.lower(), form.input_login_password.data)
+		ba = ht_authenticate_user(form.email.data.lower(), form.passw.data)
 		if (ba is not None):
+			# successful login, bind session.
 			bp = Profile.get_by_uid(ba.userid)
 			ht_bind_session(bp)
 			return redirect('/dashboard')
