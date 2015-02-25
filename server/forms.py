@@ -174,9 +174,14 @@ class NewAccountForm(Form):
 	input_signup_confirm  = PasswordField('Confirm Password')
 	accept_tos = BooleanField('TOS', [validators.Required()])
 
+class SignupForm(Form):
+	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])
+	email	= TextField('Email', [validators.Required(), validators.Email()])
+	passw	= PasswordField('Password', [validators.Required()])
+
 class LoginForm(Form):
-	input_login_email    = TextField('Email', [validators.Required(), validators.Email()])
-	input_login_password = PasswordField('Password', [validators.Required()])
+	email	= TextField('Email', [validators.Required(), validators.Email()])
+	passw	= PasswordField('Password', [validators.Required()])
 
 
 
