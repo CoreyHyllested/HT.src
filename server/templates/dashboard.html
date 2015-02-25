@@ -26,7 +26,14 @@
 			<div class="project" id="{{project.proj_id}}">
 				<div class="dashboardOfferLeftColumn">
 						<div class="details">{{project.proj_name}}</div>
-						<div class="details"> Investmax: ${{project.proj_min}} &dash; ${{project.proj_max}}</div>
+						{% if project.proj_min and project.proj_max %}
+						<div class="details">${{project.proj_min}} &dash; ${{project.proj_max}}</div>
+						{% elif  project.proj_min %}
+						<div class="details">${{project.proj_min}}</div>
+						{% elif  project.proj_max %}
+						<div class="details">${{project.proj_max}}</div>
+						{% endif %}
+
 						<div class="details"> Timeline: {{project.proj_timeline}}</div>
 						<div class="details"> Contact#: {{project.proj_contact}}</div>
 				</div>
