@@ -4,7 +4,7 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 
 
 footer {
-	position: absolute;
+/*	position: absolute; */
 	bottom: 0;
 	width: 100%;
 	
