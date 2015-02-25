@@ -1645,15 +1645,18 @@ def api_update_project(usrmsg=None):
 
 			update = True;
 			if (update):
+				project = None
 				print "api_proj_update: add"
 				print "api_proj_update: id = ", form.proj_id.data
-				project = None
 				if form.proj_id is not 'new':
 					project = Project.get_by_proj_id(form.proj_id.data)
 
 				if (project == None):
 					print "api_proj_update: create new project"
 					project = Project(form.proj_name.data, uid)
+					if (project == None):
+						err_msg = 'Error: user(%s) gave us a bad ID(%s), BAIL!' % (uid, form.proj_name.data)
+						raise err_msg
 
 				print "api_proj_update: set details"
 				project.proj_name	= form.proj_name.data
@@ -1661,9 +1664,16 @@ def api_update_project(usrmsg=None):
 				project.proj_desc	= form.proj_desc.data
 				project.proj_min	= form.proj_min.data
 				project.proj_max	= form.proj_max.data
-				print "api_proj_update: set details 2"
 				project.timeline 	= form.proj_timeline.data
 				project.contact		= form.proj_contact.data
+
+				# in case of classic user fippery
+				if (project.proj_min > project.proj_max):
+					print 'Classic user fippery, SWAP!'
+					tmp = project.proj_min
+					project.proj_min = project.proj_max
+					project.proj_max = tmp
+
 				print "api_proj_update: add"
 				db_session.add(project)
 				db_session.commit()
