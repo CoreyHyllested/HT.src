@@ -307,7 +307,7 @@ class SettingsForm(Form):
 
 
 class RecoverPasswordForm(Form):
-    rec_input_email = TextField('Email', [validators.Required(), validators.Email()])
+    email = TextField('Email', [validators.Required(), validators.Email()])
 
 
 class NewPasswordForm(Form):
