@@ -1,119 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "sc_header.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Soulcrafting</title>
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/css/headerfooter.css" rel="stylesheet">
-    <link href="/static/css/modern-business.css" rel="stylesheet">
-    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+{% block header_css %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/modern-business.css">
+{% endblock %}
 
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
-
-<body>
-	<div class="overlay"></div>
-	<div class="overlay-content">
-		<div class="overlay-close">&#x2715;</div>
-		<div class="modalContent"></div>
+{% block content %}
+<!-- LandingPage, above the fold story/explanation. -->
+<div class="container lp-img">
+	<div class="center"> <h1>Soulcrafted Furniture & Furnishings</h1>
+		<p> Discover and create custom home furnishings with the trusted master craftspeople in your community.
+		<br>
+		<br>
+		<a href="/signup" class="btn jumbotron-btn">Get Started</a>
+		</p>
 	</div>
+</div>
 
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
-
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="/">Soulcrafting</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li> <a href="about.html">About</a> </li>
-                    <li> <a href="contact.html">Contact</a> </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Locations<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li> <a href="full-width.html">Boulder</a></li>
-                            <li> <a href="sidebar.html">Denver</a></li>
-                            <li> <a href="pricing.html">Fort Collins</a> </li>
-                            <li> <a href="faq.html">Longmont</a></li>
-                            <!--li> <a href="404.html">404</a> </li-->
-                        </ul>
-                    </li>
-                </ul>
-            </div> <!-- /.navbar-collapse -->
-
-        </div> <!-- /.container -->
-    </nav>
-
-
-		<!-- LandingPage, above the fold story/explanation. -->
-	<div class="page-content">
-		<div class="container lp-img">
-			<div class="center"> <h1>Soulcrafted Furniture & Furnishings</h1>
-				<p> Discover and create custom home furnishings with the trusted master craftspeople in your community.
-				<br>
-				<br>
-				<a href="/signup" class="btn jumbotron-btn">Get Started</a>
-				</p>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="container text-center">
-				<h2 class="press">Press Coverage</h2>
-				<!--for more help see http://wrapbootstrap.com/preview/WB0N38R04... wrapboostrap.com/velocity -->
-				<ul class="press-list list-inline row last">
-					<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
-						<div class="img-responsive press-img">
-							<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg" alt>
-						</div>
-					</li>
-					<li class="col-md-2 col-sm-2 col-xs-4">
-						<div class="img-responsive press-img">
-							<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
-						</div>
-					</li>
-					<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
-						<div class="img-responsive press-img" >
-							<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
-						</div>
-					</li>
-					<li class="col-md-2 col-sm-2 col-xs-4">
-						<div class="img-responsive press-img" >
-							<img class="img-responsive greyscale" src="/static/img/press-dc.svg" alt>
-						</div>
-					</li>
-					<li class="col-md-2 col-sm-2 col-xs-4">
-						<div class="img-responsive press-img">
-							<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
-						</div>
-					</li>
-				</ul>
-				<!--ul class="press-list list-inline row last"></ul-->
-			</div>
-		</div>
-
-		<div class="container">
-			<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
-			<!--a class="btn btn-lg btn-default btn-block" href="/explore">Request an Invite</ai-->
-			<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
-		</div>
-		<!--hr-->
+<div class="row">
+	<div class="container text-center">
+		<h2 class="press">Press Coverage</h2>
+		<!--for more help see http://wrapbootstrap.com/preview/WB0N38R04... wrapboostrap.com/velocity -->
+		<ul class="press-list list-inline row last">
+			<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
+				<div class="img-responsive press-img">
+					<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg" alt>
+				</div>
+			</li>
+			<li class="col-md-2 col-sm-2 col-xs-4">
+				<div class="img-responsive press-img">
+					<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
+				</div>
+			</li>
+			<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
+				<div class="img-responsive press-img" >
+					<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
+				</div>
+			</li>
+			<li class="col-md-2 col-sm-2 col-xs-4">
+				<div class="img-responsive press-img" >
+					<img class="img-responsive greyscale" src="/static/img/press-dc.svg" alt>
+				</div>
+			</li>
+			<li class="col-md-2 col-sm-2 col-xs-4">
+				<div class="img-responsive press-img">
+					<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
+				</div>
+			</li>
+		</ul>
+		<!--ul class="press-list list-inline row last"></ul-->
 	</div>
+</div>
+
+<!--hr-->
+{% endblock %}
+
+<!--div class="container">
+	<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
+	<!--a class="btn btn-lg btn-default btn-block" href="/explore">Request an Invite</ai-->
+	<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
+<!--/div-->
 
 
     <!-- Page Content 
@@ -243,23 +189,9 @@
         <!-- /.row -->
 
 
-	<footer>
-		<div class="container">
-			<div class="footer-menu">
-				<ul>
-					<li>About</li>
-					<li>FAQ</li>
-					<li>Terms</li>
-				</ul>
-			</div>
-			<div class="footer-copy">
-				<p>&copy; Soulcrafting 2015</p>
-			</div>
-		</div>
-	</footer>
 
-	<script src="/static/js/jquery.js"></script>
-	<script src="/static/js/bootstrap.min.js"></script>
+{% block scripts %}
+	{{ super() }}
 	<script>
 	$(document).ready(function(){
 		$('.show-popup').click(function(event){
@@ -296,8 +228,5 @@
 	};
 
 	setTimeout(function () { openModal(); }, 60000);
-
 	</script>
-
-</body>
-</html>
+{% endblock %}
