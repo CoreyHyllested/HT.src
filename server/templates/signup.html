@@ -1,152 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "sc_header.html" %}
+{% set title = 'Join Soulcrafting' %}
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SC</title>
-    <link href="/static/css/bootstrap.css" rel="stylesheet">
-    <link href="/static/css/headerfooter.css" rel="stylesheet">
-    <link href="/static/css/modern-login.css" rel="stylesheet">
-    <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
+{% block header_css %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/modern-login.css">
+	<link rel="stylesheet" href="/static/css/modern-business.css">
+{% endblock %}
 
 
-<body class="signup-page">
-    <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
+# TODO.  Fix the responsive issues.  Allow err-msgs.
+# 1) Social-login btns are too big when shrunk down (min-width is set to 220px).  Change this when we shrink.
+# 2) There is a gigantic whitespace between the social login and email login; minimize this when we shrink.
+# 3) When user signs up (again).  No error msg pops-up suggesting to login.  Make this happen.
 
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="index.html">Soulcrafting</a>
-            </div>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li> <a href="about.html">About</a> </li>
-                    <li> <a href="contact.html">Contact</a> </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Locations<b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li> <a href="full-width.html">Boulder</a></li>
-                            <li> <a href="sidebar.html">Denver</a></li>
-                            <li> <a href="pricing.html">Fort Collins</a> </li>
-                            <li> <a href="faq.html">Longmont</a></li>
-                            <!--li> <a href="404.html">404</a> </li-->
-                        </ul>
-                    </li>
-                </ul>
-            </div> <!-- /.navbar-collapse -->
-        </div> <!-- /.container -->
-	</nav>
+{% block content %}
 
-	<div class="page-content">
-		<section class="signup-section access-section section">
-			<div class="container">
-				<div class="row">
+<section class="signup-section access-section section">
+	<div class="container">
+		<div class="row">
 
-					<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
-						<div class="form-box-inner">
-							<h2 class="title text-center">Join Soulcrafting</h2>  
-							<div class="row">
-								<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
-									<ul class="list-unstyled social-login">
-										<!--li><button class="twitter-btn btn"  type="button"><i class="fa fa-twitter"></i>Sign up with Twitter</button></li-->
-										<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
-										<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
-									</ul>
+			<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">
+				<div class="form-box-inner">
+					<h2 class="title text-center">Join Soulcrafting</h2>
+					<div class="row">
+						<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">
+							<ul class="list-unstyled social-login">
+								<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
+							</ul>
+						</div>
+
+						<div class="form-container col-md-5 col-sm-12 col-xs-12">
+							<form action="/signup" method="POST" id='signup-form' class="signup-form">
+								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+								<div class="form-group username">
+									<label class="sr-only" for="uname">Your name</label>
+									{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
 								</div>
-
-								<div class="form-container col-md-5 col-sm-12 col-xs-12">
-
-									<form action="/signup" method="POST" id='signup-form' class="signup-form">
-										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-										<div class="form-group username">
-											<label class="sr-only" for="uname">Your name</label>
-											{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
-										</div>
-										<div class="form-group email">
-											<label class="sr-only" for="email">Your email</label>
-											{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
-										</div>
-										<div class="form-group password">
-											<label class="sr-only" for="passw">Your password</label>
-											{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
-										</div>
-										<button type="submit" class="btn btn-block btn-signup">Join</button>
-										<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
-										<p class="lead">Already have an account? <a class="login-link" id="login-link" href="/login">Log in</a></p>
-									</form>
+								<div class="form-group email">
+									<label class="sr-only" for="email">Your email</label>
+									{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
 								</div>
-							</div>
+								<div class="form-group password">
+									<label class="sr-only" for="passw">Your password</label>
+									{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
+								</div>
+								<button type="submit" class="btn btn-block btn-signup">Join</button>
+								<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
+								<p class="lead">Already have an account? <a class="login-link" id="login-link" href="/login">Log in</a></p>
+							</form>
 						</div>
 					</div>
-
-
-				</div><!--//row-->
-			</div>
-		</section>
-	</div>
-
-	<footer>
-		<div class="row">
-			<div class="container">
-				<div class="footer-menu">
-					<ul>
-						<li>About</li>
-						<li>FAQ</li>
-						<li>Terms</li>
-					</ul>
-				</div>
-				<div class="footer-copy">
-					<p>&copy; Soulcrafting 2015</p>
+				<!--End form-box-inner -->
 				</div>
 			</div>
+
+		<!--End Row-->
 		</div>
-	</footer>
-</body>
+	</div>
+</section>
+
+{% endblock %}
+
+<!--li><button class="twitter-btn btn"  type="button"><i class="fa fa-twitter"></i>Sign up with Twitter</button></li-->
+<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
 
 <script src="/static/js/jquery.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
+{% block scripts %}
+	{{ super() }}
+
 <script>
-$(document).ready(function() {
-	$(".form-control").blur(function (e) {
-		$(this).removeClass('attention');
-	});
-	
-	$('.btn-signup').click(function(e) {
-		var errors = 0;
-		var uname = document.forms["signup-form"]["uname"];
-		var email = document.forms["signup-form"]["email"];
-		var passw = document.forms["signup-form"]["passw"];
-
-		if (uname.value == '') {	$(uname).addClass('attention');	errors++;	}
-		if (email.value == '') {	$(email).addClass('attention');	errors++;	}
-		if (passw.value == '') {	$(passw).addClass('attention');	errors++;	}
-		if (errors) {
-			console.log('Had ' + errors + ' errors');
-			return false;
-		}
-		$.post( "/signup", function( data ) {
-		$( ".result" ).html( data );
+	$(document).ready(function() {
+		$(".form-control").blur(function (e) {
+			$(this).removeClass('attention');
 		});
-		return true;
-	});
-});
 
+		$('.btn-signup').click(function(e) {
+			var errors = 0;
+			var uname = document.forms["signup-form"]["uname"];
+			var email = document.forms["signup-form"]["email"];
+			var passw = document.forms["signup-form"]["passw"];
+
+			if (uname.value == '') {	$(uname).addClass('attention');	errors++;	}
+			if (email.value == '') {	$(email).addClass('attention');	errors++;	}
+			if (passw.value == '') {	$(passw).addClass('attention');	errors++;	}
+			if (errors) {
+				console.log('Had ' + errors + ' errors');
+				return false;
+			}
+
+			return true;
+		});
+	});
 </script>
-</html>
+{% endblock %}
