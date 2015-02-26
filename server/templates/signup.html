@@ -54,52 +54,53 @@
         </div> <!-- /.container -->
 	</nav>
 
-	<section class="signup-section access-section section">
-		<div class="container">
-			<div class="row">
+	<div class="page-content">
+		<section class="signup-section access-section section">
+			<div class="container">
+				<div class="row">
 
-				<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
-					<div class="form-box-inner">
-						<h2 class="title text-center">Join Soulcrafting</h2>  
-						<div class="row">
-							<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
-								<ul class="list-unstyled social-login">
-									<!--li><button class="twitter-btn btn"  type="button"><i class="fa fa-twitter"></i>Sign up with Twitter</button></li-->
-									<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
-									<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
-								</ul>
-							</div>
+					<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
+						<div class="form-box-inner">
+							<h2 class="title text-center">Join Soulcrafting</h2>  
+							<div class="row">
+								<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
+									<ul class="list-unstyled social-login">
+										<!--li><button class="twitter-btn btn"  type="button"><i class="fa fa-twitter"></i>Sign up with Twitter</button></li-->
+										<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
+										<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
+									</ul>
+								</div>
 
-							<div class="form-container col-md-5 col-sm-12 col-xs-12">
+								<div class="form-container col-md-5 col-sm-12 col-xs-12">
 
-								<form action="/signup" method="POST" id='signup-form' class="signup-form">
-									<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-									<div class="form-group username">
-										<label class="sr-only" for="uname">Your name</label>
-										{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
-									</div>
-									<div class="form-group email">
-										<label class="sr-only" for="email">Your email</label>
-										{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
-									</div>
-									<div class="form-group password">
-										<label class="sr-only" for="passw">Your password</label>
-										{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
-									</div>
-									<button type="submit" class="btn btn-block btn-signup">Join</button>
-									<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
-									<p class="lead">Already have an account? <a class="login-link" id="login-link" href="/login">Log in</a></p>
-								</form>
+									<form action="/signup" method="POST" id='signup-form' class="signup-form">
+										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+										<div class="form-group username">
+											<label class="sr-only" for="uname">Your name</label>
+											{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
+										</div>
+										<div class="form-group email">
+											<label class="sr-only" for="email">Your email</label>
+											{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
+										</div>
+										<div class="form-group password">
+											<label class="sr-only" for="passw">Your password</label>
+											{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
+										</div>
+										<button type="submit" class="btn btn-block btn-signup">Join</button>
+										<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
+										<p class="lead">Already have an account? <a class="login-link" id="login-link" href="/login">Log in</a></p>
+									</form>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
 
-			</div><!--//row-->
-		</div>
-	</section>
-
+				</div><!--//row-->
+			</div>
+		</section>
+	</div>
 
 	<footer>
 		<div class="row">

@@ -11,10 +11,6 @@
     <link href="/static/css/modern-login.css" rel="stylesheet">
     <link href="/static/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 
 </head>
 
@@ -55,45 +51,47 @@
         </div> <!-- /.container -->
 	</nav>
 
-	<section class="login-section access-section section">
-		<div class="container">
-			<div class="row">
+	<div class="page-content">
+		<section class="login-section access-section section">
+			<div class="container">
+				<div class="row">
 
-				<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
-					<div class="form-box-inner">
-						<h2 class="title text-center">Login to Soulcrafting</h2>  
-						<div class="row">
-							<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
-								<ul class="list-unstyled social-login">
-									<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Login with Facebook</button></a></li>
-									<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
-								</ul>
-							</div>
+					<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">     
+						<div class="form-box-inner">
+							<h2 class="title text-center">Login to Soulcrafting</h2>  
+							<div class="row">
+								<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">  
+									<ul class="list-unstyled social-login">
+										<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Login with Facebook</button></a></li>
+										<!--li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
+									</ul>
+								</div>
 
-							<div class="form-container col-md-5 col-sm-12 col-xs-12">
-								<form class="login-form" method='POST' action='/login'>
-									<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-									<div class="form-group email">
-										<label class="sr-only" for="login-email">Your email</label>
-										{{form.email(type="email", class="form-control login-email", placeholder="Your email")}}
-									</div>
-									<div class="form-group password">
-										<label class="sr-only" for="login-password">Your password</label>
-										{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
-									</div>
-									<button type="submit" class="btn btn-block btn-signup">Login</button>
-									<p class="lead"><a class="loginLink" href="/password/recover">Forgot password?</a></p>
-									<p class="lead">Want to <a class="login-link" id="login-link" href="/signup">join?</a></p>  
-								</form>
+								<div class="form-container col-md-5 col-sm-12 col-xs-12">
+									<form class="login-form" method='POST' action='/login'>
+										<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+										<div class="form-group email">
+											<label class="sr-only" for="login-email">Your email</label>
+											{{form.email(type="email", class="form-control login-email", placeholder="Your email")}}
+										</div>
+										<div class="form-group password">
+											<label class="sr-only" for="login-password">Your password</label>
+											{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
+										</div>
+										<button type="submit" class="btn btn-block btn-signup">Login</button>
+										<p class="lead"><a class="loginLink" href="/password/recover">Forgot password?</a></p>
+										<p class="lead">Want to <a class="login-link" id="login-link" href="/signup">join?</a></p>  
+									</form>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 
 
-			</div><!--//row-->
-		</div>
-	</section>
+				</div><!--//row-->
+			</div>
+		</section>
+	</div>
 
 
 
@@ -132,8 +130,6 @@
 		</div>
 	</div>
 	-->
-	
-
 <!--/div   (loginContentWrapper)-->
 
 

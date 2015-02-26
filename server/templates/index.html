@@ -19,6 +19,10 @@
 
 <body>
 	<div class="overlay"></div>
+	<div class="overlay-content">
+		<div class="overlay-close">&#x2715;</div>
+		<div class="modalContent"></div>
+	</div>
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
@@ -56,17 +60,61 @@
     </nav>
 
 
-	<!-- LandingPage, above the fold story/explanation. -->
-	<div class="container lp-img">
-		<div class="center">
-			<h1>Soulcrafted Furniture & Furnishings</h1>
-			<p> Discover and create custom home furnishings with the trusted master craftspeople in your community.
-			<br>
-			<br>
-			<a href="/signup" class="btn jumbotron-btn">Get Started</a>
-			</p>
+		<!-- LandingPage, above the fold story/explanation. -->
+	<div class="page-content">
+		<div class="container lp-img">
+			<div class="center"> <h1>Soulcrafted Furniture & Furnishings</h1>
+				<p> Discover and create custom home furnishings with the trusted master craftspeople in your community.
+				<br>
+				<br>
+				<a href="/signup" class="btn jumbotron-btn">Get Started</a>
+				</p>
+			</div>
 		</div>
+
+		<div class="row">
+			<div class="container text-center">
+				<h2 class="press">Press Coverage</h2>
+				<!--for more help see http://wrapbootstrap.com/preview/WB0N38R04... wrapboostrap.com/velocity -->
+				<ul class="press-list list-inline row last">
+					<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
+						<div class="img-responsive press-img">
+							<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg" alt>
+						</div>
+					</li>
+					<li class="col-md-2 col-sm-2 col-xs-4">
+						<div class="img-responsive press-img">
+							<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
+						</div>
+					</li>
+					<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
+						<div class="img-responsive press-img" >
+							<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
+						</div>
+					</li>
+					<li class="col-md-2 col-sm-2 col-xs-4">
+						<div class="img-responsive press-img" >
+							<img class="img-responsive greyscale" src="/static/img/press-dc.svg" alt>
+						</div>
+					</li>
+					<li class="col-md-2 col-sm-2 col-xs-4">
+						<div class="img-responsive press-img">
+							<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
+						</div>
+					</li>
+				</ul>
+				<!--ul class="press-list list-inline row last"></ul-->
+			</div>
+		</div>
+
+		<div class="container">
+			<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
+			<!--a class="btn btn-lg btn-default btn-block" href="/explore">Request an Invite</ai-->
+			<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
+		</div>
+		<!--hr-->
 	</div>
+
 
     <!-- Page Content 
     <div class="container-fluid pad-top-bottom-100">
@@ -194,53 +242,6 @@
 		-->
         <!-- /.row -->
 
-
-	<div class="row">
-		<div class="container text-center">
-			<h2 class="press">Press Coverage</h2>
-			<!--for more help see http://wrapbootstrap.com/preview/WB0N38R04... wrapboostrap.com/velocity -->
-			<ul class="press-list list-inline row last">
-				<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
-					<div class="img-responsive press-img">
-						<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg" alt>
-					</div>
-				</li>
-				<li class="col-md-2 col-sm-2 col-xs-4">
-					<div class="img-responsive press-img">
-						<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
-					</div>
-				</li>
-				<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
-					<div class="img-responsive press-img" >
-						<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
-					</div>
-				</li>
-				<li class="col-md-2 col-sm-2 col-xs-4">
-					<div class="img-responsive press-img" >
-						<img class="img-responsive greyscale" src="/static/img/press-dc.svg" alt>
-					</div>
-				</li>
-				<li class="col-md-2 col-sm-2 col-xs-4">
-					<div class="img-responsive press-img">
-						<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
-					</div>
-				</li>
-			</ul>
-			<!--ul class="press-list list-inline row last"></ul-->
-		</div>
-	</div>
-
-	<div class="overlay-content">
-		<div class="overlay-close">&#x2715;</div>
-		<div class="modalContent"></div>
-	</div>
-
-	<div class="container">
-		<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
-		<!--a class="btn btn-lg btn-default btn-block" href="/explore">Request an Invite</ai-->
-		<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
-	</div>
-	<!--hr-->
 
 	<footer>
 		<div class="container">
