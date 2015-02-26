@@ -20,12 +20,19 @@
 
 
 .user_profile {
+	margin-top: 20px; /* helps line up with dashboardLeftColumn projects h1 */
 	float: right;
 	width: 30%;
 	background: lightgrey;
 	box-sizing: border-box;
 	padding: 10px;
 	border-radius: 10px;
+
+}
+
+.user_profile a h1 {
+	color: darkslategrey;
+	font-size: 1.5em;
 }
 
 .project.address {
@@ -38,6 +45,7 @@
 	margin-bottom: 8px;
 	line-height: 1.2em;
 }
+
 
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
