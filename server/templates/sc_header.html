@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Soulcrafting {{title}}</title>
+	<title>{{title}}</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 
-	{% block head %}
-
 	<link rel="stylesheet" href="/static/css/bootstrap.css">
 	<link rel="stylesheet" href="/static/css/headerfooter.css">
-    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css">
+	{% block header_css %}{% endblock %}
 
-	<!-- SCRIPTS -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+	{% block header_js %}{% endblock %}
 
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-	{% endblock %}
 </head>
 
 
@@ -75,8 +73,8 @@
 		<div class="container">
 			<div class="footer-menu">
 				<ul>
-					<li><a href="/about">About</a> |</li>
-					<li><a href="/faq">FAQ</a> | </li>
+					<li><a href="/about">About</a></li>
+					<li><a href="/faq">FAQ</a></li>
 					<li><a href="/terms">Terms &amp; Privacy</a></li>
 				</ul>
 			</div>
@@ -85,5 +83,6 @@
 			</div>
 		</div>
 	</footer>
+	{% block scripts %}{% endblock %}
 </body>
 </html>
