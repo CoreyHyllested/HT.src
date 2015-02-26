@@ -49,6 +49,7 @@ linkedin = ht_oauth.remote_app(  'linkedin',
 
 
 
+@insprite_views.route('/join', methods=['GET', 'POST'])
 @insprite_views.route('/signup', methods=['GET', 'POST'])
 def render_signup_page(usrmsg=None):
 	bp = False
