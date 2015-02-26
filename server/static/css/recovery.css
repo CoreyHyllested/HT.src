@@ -4,7 +4,6 @@ a) 240px - 349px (phones)
 b) 350px - ... (everything else)
 
 /* COMMON ELEMENTS */
-
 .recoveryLink {
 	clear: both;
 	display: block;
@@ -63,22 +62,6 @@ b) 350px - ... (everything else)
 /* DESIGN FOR EVERYTHING ELSE */
 @media only screen and (min-width: 350px) {
 
-	/* Recovery panel slides into view */
-	@-moz-keyframes modalAppear {
-		0% {opacity: 0; margin-top: 200px;}
-		100% {opacity: 1; margin-top: 40px;}
-	}
-
-	@-webkit-keyframes modalAppear {
-		0% {opacity: 0; margin-top: 200px;}
-		100% {opacity: 1; margin-top: 40px;}
-	}
-
-	@keyframes modalAppear {
-		from {opacity: 0; margin-top: 200px;}
-		to {opacity: 1; margin-top: 40px;}
-	}
-
 	.pageWrapper {
 		background: url('../img/background-blurred.jpg') no-repeat center right;
 		background-position: 100% 30%;
@@ -90,10 +73,6 @@ b) 350px - ... (everything else)
 	}
 
 	.recoveryContentWrapper {
-/*		-moz-animation: modalAppear 1s;
-		-o-animation: modalAppear 1s;
-		-webkit-animation: modalAppear 1s;
-		animation: modalAppear 1s;*/
 		background-color: white;
 		border-radius: 6px;
 		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);

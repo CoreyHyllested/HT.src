@@ -1,36 +1,41 @@
-{% extends "ht_header.html" %}
+{% extends "sc_header.html" %}
+{% set title = 'Recover Soulcrafting password' %}
 
-{% block head %}
+{% block header_css %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/recovery.css">
+	<link rel="stylesheet" href="/static/css/modern-business.css">
+	<link rel="stylesheet" href="/static/css/modern-recover.css">
+	<link rel="stylesheet" href="/static/css/recovery.css">
+	<link rel="stylesheet" href="/static/css/master.css">
 {% endblock %}
 
 
 {% block content %}
-
-
 <div class="recoveryContentWrapper">
-	<h2>Password Recovery</h2>
+	<h2>Recover Password</h2>
 	<form method="post">		
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		<div class="recoveryInstructions">Enter the email registered with your Insprite account and we will send you the reset link.</div>
-		{{form.rec_input_email(type="email", placeholder="Email", autocomplete="off")}}
+		<div class="recoveryInstructions">Enter your email and Soulcrafting will send you the reset link.</div>
+		{{form.email(type="email", placeholder="Your email", autocomplete="off")}}
 
-		{% if errmsg != none %}
-		<script>
-			openAlertWindow('{{errmsg}}')
-		</script>
-		{% endif %}
-		
 		<div class="recoverySubmitWrapper">
-			<input type="submit" id="rec_submit" class="blueButton" value="Send Reset Link" onclick="this.style.visibility='hidden'">
+			<input type="submit" id="recover" class="blueButton" value="Send password reset">
 		</div>
-
 		<a href="/login" class="recoveryLink">Back to Login</a>
-
 	</form>
 </div>
-
-<!-- Bottom bar -->
-
 {% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+{% endblock %}
+
+
+# Bugs.
+1) Invalid email may exist
+2) Removing the button is a problem if its an invalid email.
+	<script>
+	{% if errmsg != none %} openAlertWindow('{{errmsg}}'); {% endif %}
+	//$('#recover').click(function () { $('#recover').css('visibility', 'hidden'); } );
+	</script>
