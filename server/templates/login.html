@@ -1,5 +1,5 @@
 {% extends "sc_header.html" %}
-{% set title = 'Soulcrafting Login' %}
+{% set title = 'Login to Soulcrafting' %}
 
 {% block header_css %}
 	{{ super() }}
@@ -97,9 +97,7 @@
 
 
 {% block scripts %}
-<script src="/static/js/jquery.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
 {% if errmsg != none %}
-<script> openAlertWindow('{ {errmsg}}') </script>
+<script> openAlertWindow('{{errmsg}}') </script>
 {% endif %}
 {% endblock %}
