@@ -20,6 +20,7 @@ from server.models import *
 from server.controllers import *
 from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPasswordForm
 from server import ht_csrf
+from pprint import pprint
 
 
 @insprite_views.route('/index.html')
@@ -240,6 +241,12 @@ def render_password_reset_page(challengeHash):
 @insprite_views.route("/share", methods=['GET', 'POST'])
 def render_share_page():
 	back = request.values.get('back')
+	print 'render_share_page()'
+	pprint(request.args)
+	for idx in request.args:
+		print idx, request.values.get (idx)
+
+#	print 'back = \'' + str(back) + '\''
 	return make_response(render_template('share.html', back=back))
 
 
