@@ -4,6 +4,8 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern-business.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/share.css" async>
+	<!--link type="text/css" rel="stylesheet" href="/static/css/master.css"-->
 {% endblock %}
 
 {% block content %}
@@ -217,14 +219,16 @@
 
 	function openModal() {
 		$('.overlay').toggleClass('modalOverlayOn');
-		// must be logged in right now, put /share in 'everybody'
 		$('.modalContent').load("/share .composeWrapper");
 		$('.overlay-content').show();
+		$(document.body).css('overflow', 'hidden');
+		//$.getScript("/ajax-connect-to-server-and-send-email");
 	}
 
 	function closeModal() {
 		$('.overlay-content').hide();
 		$('.overlay').toggleClass('modalOverlayOn');
+		$(document.body).css('overflow', 'inherit');
 		return false;
 	};
 
