@@ -1,44 +1,38 @@
-{% extends "ht_header.html" %}
+{% extends "sc_header.html" %}
 
-{% block head %}
+{% block header_css %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/compose.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/share.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
+	<link type="text/css" rel="stylesheet" href="/static/css/modern-business.css">
 {% endblock %}
 
 
 {% block content %}
-
 <div class="composeWrapper">
 
-	<div class="composeHeader">
-		<h1>Compose Message</h1>
-	</div>
+	<div class="composeHeader"> <h1>Share Soulcrafting </h1> </div>
 
-	<div class="composeMessageContainer">
-		<div class="composeRecipientContainer">
-			<div class="composeFieldCaption">To</div>
-			<input type="text" id="composeRecipient" name="composeRecipient" class="composeField" placeholder="MyFriend@gmail.com">
+	<div class="shareFieldContainer">
+		<div class="shareFieldContainer">
+			<div class="shareField">To</div>
+			<input type="text" id="recipient" name="shareRecipient" class="composeField" placeholder=" corey@gmail.com">
 		</div>
 
-		<div class="composeSubjectContainer">
-			<div class="composeFieldCaption">Subject</div>
-			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Message Subject">
+		<div class="shareFieldContainer">
+			<div class="shareField">Subject</div>
+			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Save $200 on bespoke furniture">
 		</div>
 
-		<div class="composeBodyContainer">
-			<div class="composeFieldCaption">Message</div>
-			<textarea id="composeBody" name="composeBody" class="composeField" value="Hi, if you're thinking about doing a home remodel, check out Soulcrafting."></textarea>
+		<div class="shareFieldContainer">
+			<div class="shareField">Message</div>
+			<textarea id="composeBody" name="composeBody" class="composeField" placeholder="Hi, you mentioned looking for an awesome table.  Check out Soulcrafting and use the code, BLAH, to get a $200 discount."></textarea>
 		</div>
 	</div>
 
-	<div class="composeMessageStatus"></div>
-
+	<div id="shareStatus"></div>
 	<div class="composeMessageSend">
 		<button id="sendMessage" class="blueButton composeMessageSendButton">Send</button>
 	</div>
-	<div class="composeMessageCancel">
-		<a href="/inbox">Cancel</a>
-	</div>
 </div>
-
 {% endblock %}	

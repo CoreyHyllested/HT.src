@@ -5,12 +5,6 @@ c) 890px - ... (desktops)
 */
 
 /* Mobiles, phablets, and tablets */
-.pageWrapper {
-	background-color: white;
-	min-height: 100%;
-	padding-bottom: 50px;		
-	width: 100%;
-}
 
 .composeWrapper {
 	background-color: white;
@@ -28,22 +22,12 @@ c) 890px - ... (desktops)
 .composeHeader {
 	/*border-bottom: 1px solid #b0b4b7;*/
 	margin-bottom: 20px;
-	float: left;
 	width: 100%;
+	float: left;
 }
 
 /* Desktop */
 @media only screen and (min-width: 890px) {
-	.pageWrapper {
-		background: #dfdfdf;
-		background: -moz-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -webkit-gradient(left top, left bottom, color-stop(0%, #dfdfdf), color-stop(100%, #ffffff));
-		background: -webkit-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -o-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: -ms-linear-gradient(top, #dfdfdf 0%, #ffffff 100%);
-		background: linear-gradient(to bottom, #dfdfdf 0%, #ffffff 100%);
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dfdfdf', endColorstr='#ffffff', GradientType=0 );
-	}
 }
 
 @media only screen and (min-width: 350px) and (max-width: 889px) {
@@ -55,43 +39,27 @@ c) 890px - ... (desktops)
 .composeHeader h1 {
 	color: black;
 	font-size: 2em;
-	padding-bottom: 15px;
+	padding-bottom: 10px;
 }
 
-.navigation {
+
+.shareFieldContainer {
 	float: left;
+	width: 100%;
+}
+
+.shareField {
+	/* To.  From.  Message */
+	float: left;
+	width: 100px;
+	height: 40px;
+
 	font-size: 1em;
-	width: 100%;
-	padding-bottom: 15px;
-}
-.navigation i {
-	font-size: .9em;
-}
-.navigation a {
-	color: #1488CC;
-	-moz-transition: 0.5s ease;
-	-o-transition: 0.5s ease;
-	-webkit-transition: 0.5 ease;
-	transition: 0.5s ease;	
-}
-.navigation a:hover {
-	color: #7dc7f2;
-}
-
-.composeMessageContainer {
-	width: 100%;
-	float: left;
-}
-
-.composeFieldCaption{
-	font-size: 1.1em;
 	font-weight: bold;
 	text-align: right;
 	line-height: 40px;
-	height: 40px;
-	width: 100px;
-	float: left;
 }
+
 
 .composeRecipient{
 	float: left;
@@ -103,22 +71,10 @@ c) 890px - ... (desktops)
 	font-size: .9em;
 }
 
-.composeRecipientContainer {
-	width: 100%;
-	float: left;
-}
 
-.composeSubjectContainer {
-	width: 100%;
-	float: left;
-}
 
-.composeBodyContainer {
-	width: 100%;
-	float: left;
-}
-
-input.composeField {
+input.composeField, 
+textarea.composeField {
 	float: right;
 	width: 780px;
 	margin-top: -1px;
@@ -129,10 +85,6 @@ input.composeField:nth-of-type(1) {
 }
 
 textarea.composeField {
-	resize: none;
-	float: right;
-	width: 788px;
-	margin-top: -1px;
 	border-radius: 0 0 3px 3px;
 }
 
@@ -146,21 +98,15 @@ textarea.composeField {
 	margin: 20px auto;
 }
 
-.composeMessageStatus{
+.shareStatus {
 	display: none;
+	float: left;
 	width: 100%;
 	text-align: center;
 	padding-top: 10px;
-	float: left;
 }
-
-.composeMessageStatus .success{
-	color: green;
-}
-
-.composeMessageStatus .error{
-	color: red;
-}
+.shareStatus.success	{ color: green;	}
+.shareStatus.error		{ color: red;	}
 
 .composeMessageCancel{
 	width: 100%;
@@ -169,12 +115,11 @@ textarea.composeField {
 }
 
 /* Modal Window Adjustments */
-
 .modalContent .composeWrapper {
 	margin: 0px;
 }
 
-.modalContent .composeWrapper .navigation, .composeMessageCancel {
+.modalContent .composeWrapper .composeMessageCancel {
 	display: none;
 }
 
