@@ -14,16 +14,26 @@ c) 890px - ... (desktops)
 	box-sizing: border-box;
 	margin: 12px auto 0px;
 	padding: 41px;
-	position: relative;
 	overflow: auto;
-	width: 980px;
+	width: 100%;
 }
 
-.composeHeader {
-	/*border-bottom: 1px solid #b0b4b7;*/
-	margin-bottom: 20px;
-	width: 100%;
+.share {
 	float: left;
+	width: 100%;
+}
+
+.title {
+	float: left;
+	width: 100%;
+	margin-bottom: 20px;
+	border-bottom: 1px solid black;
+}
+
+.title h1 {
+	color: black;
+	font-size: 2em;
+	padding-bottom: 5px;
 }
 
 /* Desktop */
@@ -36,19 +46,10 @@ c) 890px - ... (desktops)
 @media only screen and (min-device-width: 240px) and (max-width: 349px) {
 }
 
-.composeHeader h1 {
-	color: black;
-	font-size: 2em;
-	padding-bottom: 10px;
-}
 
 
-.shareFieldContainer {
-	float: left;
-	width: 100%;
-}
 
-.shareField {
+.share.field {
 	/* To.  From.  Message */
 	float: left;
 	width: 100px;
@@ -73,28 +74,25 @@ c) 890px - ... (desktops)
 
 
 
-input.composeField, 
-textarea.composeField {
+input.field, 
+textarea.field{
 	float: right;
-	width: 780px;
+	width: 400px;
 	margin-top: -1px;
 }
 
-input.composeField:nth-of-type(1) {
+
+
+
+input.field:nth-of-type(1) {
 	border-radius: 3px 3px 0 0;
 }
 
-textarea.composeField {
+textarea.field {
 	border-radius: 0 0 3px 3px;
 }
 
-.composeMessageSend{
-	width: 100%;
-	float: left;
-}
-
-.composeMessageSendButton{
-	width: 250px;
+.shareButton {
 	margin: 20px auto;
 }
 
@@ -124,5 +122,8 @@ textarea.composeField {
 }
 
 
-
-
+.modalContent .composeWrapper .container .row .input.field, 
+.modalContent .composeWrapper .container .row .textarea.field {
+	/* in modal */
+	width: 230px;
+}
