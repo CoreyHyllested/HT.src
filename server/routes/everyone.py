@@ -237,6 +237,13 @@ def render_password_reset_page(challengeHash):
 
 
 
+@insprite_views.route("/share", methods=['GET', 'POST'])
+def render_share_page():
+	back = request.values.get('back')
+	return make_response(render_template('share.html', back=back))
+
+
+
 # related to authentication
 @insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
