@@ -11,28 +11,30 @@
 {% block content %}
 <div class="composeWrapper">
 
-	<div class="composeHeader"> <h1>Share Soulcrafting </h1> </div>
+	<div class="container-fluid">
+		<div class="container">
+			<div class="title"> <h1>Share Soulcrafting </h1> </div>
+			<div class="row">
+				<div class="col-xs-4 col-md-1 col-lg-1">To</div>
+				<input type="text" id="recipient" class="col-xs-12 col-md-4 col-lg-6" placeholder=" corey@gmail.com">
+			</div>
 
-	<div class="shareFieldContainer">
-		<div class="shareFieldContainer">
-			<div class="shareField">To</div>
-			<input type="text" id="recipient" name="shareRecipient" class="composeField" placeholder=" corey@gmail.com">
+			<div class="row">
+				<div class="col-xs-4 col-md-1 col-lg-1">Subject</div>
+				<input type="text" id="subject" class="col-xs-12 col-md-4 col-lg-6" placeholder="Save $200 on bespoke furniture">
+			</div>
+
+			<div class="row">
+				<div class="col-xs-4 col-md-1 col-lg-1">Message</div>
+				<textarea id="composeBody" class="col-xs-12 col-md-4 col-lg-6" placeholder="Hi, you mentioned looking for an awesome table.  Check out Soulcrafting and use the code, BLAH, to get a $200 discount."></textarea>
+			</div>
+
+			<div class="row"> <div id="shareStatus"></div></div>
+			<div class="row"> 
+				<div class="col-xs-6 col-lg-4"></div>
+				<div class="col-xs-3 col-lg-2"> <button id="sendMessage" class="blueButton shareButton">Send</button> </div>
+			</div>
 		</div>
-
-		<div class="shareFieldContainer">
-			<div class="shareField">Subject</div>
-			<input type="text" id="composeSubject" name="composeSubject" class="composeField" placeholder="Save $200 on bespoke furniture">
-		</div>
-
-		<div class="shareFieldContainer">
-			<div class="shareField">Message</div>
-			<textarea id="composeBody" name="composeBody" class="composeField" placeholder="Hi, you mentioned looking for an awesome table.  Check out Soulcrafting and use the code, BLAH, to get a $200 discount."></textarea>
-		</div>
-	</div>
-
-	<div id="shareStatus"></div>
-	<div class="composeMessageSend">
-		<button id="sendMessage" class="blueButton composeMessageSendButton">Send</button>
 	</div>
 </div>
 {% endblock %}	
