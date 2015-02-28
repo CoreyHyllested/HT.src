@@ -30,11 +30,11 @@ import json, smtplib, urllib
 
 
 def ht_email_welcome_message(user_email, user_name, challenge_hash):
-	verify_email_url  = 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	msg_text = "Welcome to Insprite!\n"
+	verify_email_url	= 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	msg_text = "Welcome to Soulcrafting!\n"
 	msg_html = email_body_verify_account(verify_email_url)
 
-	msg = create_msg('Welcome to Insprite', user_email, user_name, 'noreply@insprite.co', u'Insprite')
+	msg = create_msg('Welcome to Soulcrafting', user_email, user_name, 'noreply@getsoulcrafting.com', u'Soulcrafting')
 	msg.attach(MIMEText(msg_text, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html' ))
 	ht_send_email(user_email, msg)
@@ -67,6 +67,7 @@ def ht_send_password_changed_confirmation(user_email):
 
 
 
+
 def ht_send_email_address_verify_link(user_email, account):
 	print 'send a verify this email account to ' + str(user_email)
 
@@ -81,6 +82,7 @@ def ht_send_email_address_verify_link(user_email, account):
 	ht_send_email(user_email, msg)
 
 
+
 def ht_send_email_address_changed_confirmation(user_email, new_email):
 	""" email user 'email address changed' confirmation noticed. """
 	msg_html = email_body_email_address_changed_confirmation('url', new_email)
@@ -90,6 +92,18 @@ def ht_send_email_address_changed_confirmation(user_email, new_email):
 	msg.attach(MIMEText(msg_html, 'plain'))
 	msg.attach(MIMEText(msg_html, 'html'))
 	ht_send_email(user_email, msg)
+
+
+
+def	ht_send_share_email(email_addr, msg_sub, msg_body):
+	""" A user is sharing SC with a friend. """
+	msg_text = None
+
+	print 'ht_send_share_email: sending email now'
+	msg = create_msg(msg_sub, email_addr, email_addr, 'noreply@getsoulcrafting.com', u'Soulcrafting')
+	msg.attach(MIMEText(msg_body, 'plain'))
+#	msg.attach(MIMEText(msg_html, 'html'))
+	ht_send_email(email_addr, msg)
 
 
 
@@ -359,12 +373,14 @@ def create_notification(subject, email_to, name_to):
 
 def ht_send_email(email_addr, msg):
 	# SendGrid login; TODO, move into config file.
-	username = 'radnovic'
-	password = "HeroTime"
+	print 'ht_send_email: sending email now'
+	username = 'cah'
+	password = "passw0rd"
 
-	# open conn to SendGrid. Login send email.
+	# connect to SendGrid, login and send msg.
 	s = smtplib.SMTP('smtp.sendgrid.net', 587)
 	s.login(username, password)
-	s.sendmail('noreply@herotime.co', email_addr, msg.as_string())
+	s.sendmail('noreply@getsoulcrafting.com', email_addr, msg.as_string())
 	s.quit()
+
 
