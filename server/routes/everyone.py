@@ -238,7 +238,8 @@ def render_password_reset_page(challengeHash):
 
 
 
-@insprite_views.route("/share", methods=['GET', 'POST'])
+@insprite_views.route("/share/", methods=['GET', 'POST'])
+@insprite_views.route("/share",	 methods=['GET', 'POST'])
 def render_share_page():
 	back = request.values.get('back')
 	print 'render_share_page()'
@@ -251,7 +252,8 @@ def render_share_page():
 
 
 
-# related to authentication
+
+@ht_csrf.exempt
 @insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
 	print "ht_email_operations: begin"
@@ -262,6 +264,13 @@ def ht_email_operations(operation, data):
 		nexturl = request.values.get('next_url')
 		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
 		return ht_email_verify(email, data, nexturl)
+	elif (operation == 'share'):
+		print "ht_email_operations: you've chosen wisely.... share: "
+		msg_to	 = request.values.get('recipient')
+		msg_sub	 = request.values.get('subject')
+		msg_body = request.values.get('composeBody')
+		ht_send_share_email(msg_to, msg_sub, msg_body)
+		return jsonify(rc=200, whatwhat='yeah, that\'s the shit I\'m talking about'), 200
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
