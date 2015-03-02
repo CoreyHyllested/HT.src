@@ -99,7 +99,26 @@ class RequiredIf(Required):
 			super(RequiredIf, self).__call__(form, field)
 
 
-NTS_times = [ ('00:00', '12:00 AM'), ('00:30', '12:30 AM'),
+NTS_times2 = [ 
+('07:00', '7:00 AM'), ('07:30', '7:30 AM'), 
+('08:00', '8:00 AM'), ('08:30', '8:30 AM'), 
+('09:00', '9:00 AM'), ('09:30', '9:30 AM'),
+('10:00', '10:00 AM'), ('10:30', '10:30 AM'), 
+('11:00', '11:00 AM'), ('11:30', '11:30 AM'), 
+('12:00', '12:00 PM'), ('12:30', '12:30 PM'),
+('13:00', '1:00 PM'), ('13:30', '1:30 PM'), 
+('14:00', '2:00 PM'), ('14:30', '2:30 PM'), 
+('15:00', '3:00 PM'), ('15:30', '3:30 PM'),
+('16:00', '4:00 PM'), ('16:30', '4:30 PM'), 
+('17:00', '5:00 PM'), ('17:30', '5:30 PM'), 
+('18:00', '6:00 PM'), ('18:30', '6:30 PM'),
+('19:00', '7:00 PM'), ('19:30', '7:30 PM'), 
+('20:00', '8:00 PM'), ('20:30', '8:30 PM'), 
+('21:00', '9:00 PM'), ('21:30', '9:30 PM'),
+]
+
+NTS_times = [ 
+('00:00', '12:00 AM'), ('00:30', '12:30 AM'),
 ('01:00', '1:00 AM'), ('01:30', '1:30 AM'), ('02:00', '2:00 AM'), 
 ('02:30', '2:30 AM'), ('03:00', '3:00 AM'), ('03:30', '3:30 AM'), 
 ('04:00', '4:00 AM'), ('04:30', '4:30 AM'), ('05:00', '5:00 AM'), 
@@ -117,8 +136,8 @@ NTS_times = [ ('00:00', '12:00 AM'), ('00:30', '12:30 AM'),
 ('22:00', '10:00 PM'), ('22:30', '10:30 PM'), ('23:00', '11:00 PM'),
 ('23:30', '11:30 PM')]
 
-NTS_times_start = NTS_times[:]
-NTS_times_end = NTS_times[:]
+NTS_times_start = NTS_times2[:]
+NTS_times_end = NTS_times2[:]
 
 NTS_times_start.insert(0, ('', 'Start Time'))
 NTS_times_end.insert(0, ('', 'End Time'))
@@ -160,7 +179,15 @@ States = [("AL","Alabama"),("AK","Alaska"),("AZ","Arizona"),("AR","Arkansas"),
 ("TX","Texas"),("UT","Utah"),("VT","Vermont"),("VA","Virginia"),
 ("WA","Washington"),("WV","West Virginia"),("WI","Wisconsin"),("WY","Wyoming")]
 
-Days = [(0,'sun'),(1,'mon'),(2,'tue'),(3,'wed'),(4,'thu'),(5,'fri'),(6,'sat')]
+Days = [
+	(0,'Sunday'), 
+	(1,'Monday'),
+	(2,'Tuesday'),	
+	(3,'Wednesday'),
+	(4,'Thursday'),
+	(5,'Friday'),
+	(6,'Saturday')
+]
 
 Location = [('location_ip', "Your Location"), ('location_berkeley', "Berkeley, CA"), ('location_other', "Other")]
 
@@ -220,21 +247,8 @@ class ProjectForm(Form):
 	proj_timeline	= TextField('Timeline')
 	proj_contact	= TextField('Contact')
 
-	edit_avail_day_sun = BooleanField('Sunday')
-	edit_avail_day_mon = BooleanField('Monday')
-	edit_avail_day_tue = BooleanField('Tuesday')
-	edit_avail_day_wed = BooleanField('Wednesday')
-	edit_avail_day_thu = BooleanField('Thursday')
-	edit_avail_day_fri = BooleanField('Friday')
-	edit_avail_day_sat = BooleanField('Saturday')
-
-	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_tue_start	= SelectField('Tue Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_wed_start	= SelectField('Wed Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_thu_start	= SelectField('Thu Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_fri_start	= SelectField('Fri Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_sat_start	= SelectField('Sat Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
+	avail_day = SelectField('Day', coerce=int, choices=Days)
+	avail_time = SelectField('Start time', coerce=str, choices=NTS_times_start)
 
 
 
