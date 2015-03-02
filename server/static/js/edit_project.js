@@ -70,36 +70,15 @@ $(document).ready(function() {
 	});
 
 
-	$(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
-
-	// When loading form - activate times when date is selected
-	$(".daySelector").each(function() {
-		if ($(this).prop("checked")) {
-			$(this).siblings(".timeSelector").css("opacity", 1).removeAttr("disabled");
-		}	
-	});
-
-	$(".daySelector").change(function() {
-		if ($(this).prop("checked")) {
-		  $(this).siblings(".timeSelector").css("opacity", 1).removeAttr("disabled");
-		} else {
-		  $(this).siblings(".timeSelector").css("opacity", .4).attr("disabled", "disabled");
-		} 		
-	})
-
 	$("#edit_rate").blur(function() {
-		
 		var rate = $(this).val();
-
 		console.log("type of rate: "+typeof rate);
 
 		if (isNaN(rate)) { // string
 			console.log("Ok it's not a number");
 			$(this).val(0);
 			$(this).next(".formFieldCaption").text("Please only enter a number here.").fadeIn();
-
 		} else {
-
 			if (rate % 1 === 0) { // integer
 				$(this).next(".formFieldCaption").fadeOut().empty();
 			} else { // float
@@ -111,13 +90,11 @@ $(document).ready(function() {
 		setTimeout(function() {
 			$('.formFieldCaption').fadeOut(400);
 		}, 3000 );
-		
 	})
 
 	if ($("#edit_oauth_stripe").val() != "") {
 		$("#edit_oauth_stripe").next(".formFieldCaption").text("Account number imported.").fadeIn();
 	}
-
 });
 
 
@@ -138,8 +115,9 @@ function saveProject() {
 			processData: false,
   			contentType: false,
 			success : function(response) {
-
-			 	console.log("AJAX Success - project saved.");		 	
+			 	console.log(["success - saved.", response] );
+			 	console.log('setting proj_id ' + response.proj_id);
+				$('#proj_id').val(response.proj_id);				
 
 				if (formPage != "mentor") {
 					$("#"+formPage+" .editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
@@ -179,26 +157,3 @@ function showErrors(errors) {
 	$("#submit").find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
 }
 
-function createReader(input, whenReady) {
-	var file = input.files[0];
-	var imageType = /image.*/;
-
-	if (input.files && file) {
-		if (file.type.match(imageType)) {
-			var reader = new FileReader();
-			reader.onload = function (e) {
-			    var image = new Image;
-			    image.onload = function(e) {
-		            var width = this.width;
-		            var height = this.height;
-		            var src = this.src;
-		            if (whenReady) whenReady(width, height, src);
-			    };
-			    image.src = e.target.result;
-			    $('.editProfImagePreview').attr('src', e.target.result).show();
-			}
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
-
-}
