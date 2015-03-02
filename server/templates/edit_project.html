@@ -1,8 +1,10 @@
-{% extends "ht_header.html" %}
+{% extends 'sc_header.html' %}
+{% set title='Edit your Soulcrafting project' %}
 
-{% block head %}
+{% block header_css %}
 	{{ super() }}
-	<link type="text/css" rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
+	<link rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
+	<link rel="stylesheet" href="/static/css/modern-business.css">
 {% endblock %}
 
 
@@ -16,12 +18,9 @@
 	</div>
   
   	<div class="editProfContentContainer">
-		<div class="">
-			<div class="editProfFormPageContainer">
-  				<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
-
-  				{{form.hidden_tag()}}
-
+		<div class="editProfFormPageContainer">
+			<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
+				{{form.hidden_tag()}}
 				<div id="general" class="editProfFormPage">
 					{{form.proj_id(placeholder="id") }}
 					<div class="formContainer span12">
@@ -52,37 +51,11 @@
 
 						<br>
 						<br>
-						<br>
-						<br>
 						<div class="formFieldInfo first">Schedule when you are available to have us call you.  It should take about 30 minutes.  All times are in Mountain Standard Time (MST).  </div>
 						<fieldset id="editProfAvailTimes">
 							<div class="editProfAvailDay">
-								{{form.edit_avail_day_sun(id="sun", class="daySelector")}} <label for="sun">Sunday</label>
-								{{form.edit_avail_time_sun_start(class="formField timeSelector span2")}}
-							</div> 	
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_mon(id="mon", class="daySelector")}} <label for="mon">Monday</label>
-								{{form.edit_avail_time_mon_start(class="formField timeSelector span2")}}
-							</div> 	
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_tue(id="tue", class="daySelector")}} <label for="tue">Tuesday</label>
-								{{form.edit_avail_time_tue_start(class="formField timeSelector span2")}}
-							</div> 						
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_wed(id="wed", class="daySelector")}} <label for="wed">Wednesday</label>
-								{{form.edit_avail_time_wed_start(class="formField timeSelector span2")}}
-							</div> 	
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_thu(id="thu", class="daySelector")}} <label for="thu">Thursday</label>
-								{{form.edit_avail_time_thu_start(class="formField timeSelector span2")}}
-							</div> 	
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_fri(id="fri", class="daySelector")}} <label for="fri">Friday</label>
-								{{form.edit_avail_time_fri_start(class="formField timeSelector span2")}}
-							</div> 	
-							<div class="editProfAvailDay">
-								{{form.edit_avail_day_sat(id="sat", class="daySelector")}} <label for="sat">Saturday</label>
-								{{form.edit_avail_time_sat_start(class="formField timeSelector span2")}}
+								{{form.avail_day(id="day", class="daySelector")}} <label for="sun">What Day?</label>
+								{{form.avail_time(class="formField timeSelector span2")}}
 							</div> 	
 						</fieldset>
 					</div>
@@ -92,13 +65,20 @@
 							<button class="whiteButton editProfSave" data-current-page="general">Save</button>
 						</div>
 					</div>
+
+				<!-- ending general, class=editProfFormPage"-->
 				</div>
-
-				</form>
-			</div>	
-
-	</div><!--empty, container-->
+			</form>
+			<!-- ending editProfFormPageContainer-->
+		</div>	
+	  	<!-- ending editProfContentContainer-->
+	</div>
+	<!--div class="editProfContentWrapper"-->
 </div>
 
-<script src="/static/js/edit_project.js"></script>
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}
+	<script src="/static/js/edit_project.js"></script>
 {% endblock %}
