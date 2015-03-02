@@ -29,25 +29,31 @@ class Availability(Base):
 	__tablename__ = "availability"
 	avail_id		= Column(Integer, primary_key = True)
 	avail_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False, index=True)
+
 	avail_created	= Column(DateTime(), nullable = False)
 	avail_updated	= Column(DateTime(), nullable = False)
 
-	avail_weekday	= Column(Integer,	 nullable = True)
+	avail_weekday	= Column(Integer)	# general day (0-6)
+	avail_repeats	= Column(Integer)	# should be boolean?
+	avail_timeout	= Column(DateTime)	# not used?
+	avail_start		= Column(Time())
+	avail_finish	= Column(Time())
+	avail_project	= Column(String(40), ForeignKey('project.proj_id'), nullable=True, index=True, unique=True)
 
-	avail_repeats	= Column(Integer,	 nullable = True)
-	avail_timeout	= Column(DateTime,	 nullable = True)
-	
-	avail_start		= Column(Time(),	 nullable = True)
-	avail_finish	= Column(Time(),	 nullable = True)
-
-	def __init__ (self, profile):
+	def __init__ (self, profile, project_id=None, day=None, time_start=None):
 		self.avail_profile	= profile.prof_id
+		self.avail_project	= project_id
+		self.avail_weekday	= day 
+		self.avail_start	= time_start
+
 		self.avail_created	= dt.utcnow()
 		self.avail_updated	= dt.utcnow()
+		
 
 
 	def __repr__ (self):
-		return '<availablity %r>' % (self.avail_profile)
+		return '<availablity %r %r %r>' % (self.avail_profile, self.avail_project, self.avail_weekday)
+
 
 	@staticmethod
 	def get_by_prof_id(profile_id):
@@ -57,6 +63,19 @@ class Availability(Base):
 		except NoResultFound as nrf:
 			pass
 		return avail
+
+
+
+	@staticmethod
+	def get_project_scheduled_time(project_id):
+		availability = None
+		try:
+			availability = Availability.query.filter_by(avail_project=project_id).one()
+		except NoResultFound as nrf:
+			pass
+		return availability
+
+
 
 	@staticmethod
 	def get_avail_by_day(profile_id, day):
@@ -72,6 +91,8 @@ class Availability(Base):
 		except NoResultFound as nrf:
 			pass
 		return start, finish
+
+
 
 	@staticmethod
 	def get_avail_days(profile_id):
