@@ -62,7 +62,7 @@ class Project(Base):
 
 
 	@staticmethod
-	def get_by_proj_id(project_id):
+	def get_by_proj_id(project_id, profile=None):
 		project = None
 		try:
 			project = Project.query.filter_by(proj_id=project_id).one()

@@ -1551,16 +1551,12 @@ def upload():
 @req_authentication
 def render_edit_project(pid=None):
 	bp = Profile.get_by_uid(session['uid'])
-	ba = Account.get_by_uid(session['uid'])
 	avail = Availability.get_by_prof_id(bp.prof_id)
-	print "pid", pid
-
-	# if there is a project, try and find it first.
-	edit_project = None
+	print "render_edit_project: profile[" + str(bp.prof_id) + "] project[" + str(pid) + "]"
 
 	form = ProjectForm(request.form)
-	# This needs to be owened by the browsing user
-	project = Project.get_by_proj_id(pid)
+	# This project should be owned by the browsing user (not used right now)
+	project = Project.get_by_proj_id(pid, bp)
 	if (project):
 		form.proj_id.data	= project.proj_id
 		form.proj_name.data	= project.proj_name
@@ -1570,40 +1566,17 @@ def render_edit_project(pid=None):
 		form.proj_max.data	= project.proj_max
 		form.proj_timeline.data	= project.timeline
 		form.proj_contact.data	= project.contact
+
+		print "render_edit_project: checking for scheduled time."
+		schedule_call = Availability.get_project_scheduled_time(project.proj_id)
+		if (schedule_call is not None):
+				print "render_edit_project: setting values to ", str(schedule_call.avail_weekday), str(schedule_call.avail_start), str(schedule_call.avail_start)[:-3]
+				form.avail_day.data  = schedule_call.avail_weekday
+				form.avail_time.data = str(schedule_call.avail_start)[:-3]
 	else:
+		# set proj_id to 'new'
 		form.proj_id.data	= 'new'
 
-	for timeslot in avail:
-		day = timeslot.avail_weekday
-		if (day == 0):
-			form.edit_avail_time_sun_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_sun.data = 'y'
-
-		if (day == 1):
-			form.edit_avail_time_mon_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_mon.data = 'y'
-
-		if (day == 2):
-			form.edit_avail_time_tue_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_tue.data = 'y'
-
-		if (day == 3):
-			form.edit_avail_time_wed_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_wed.data = 'y'
-
-		if (day == 4):
-			form.edit_avail_time_thu_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_thu.data = 'y'
-
-		if (day == 5):
-			form.edit_avail_time_fri_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_fri.data = 'y'
-
-		if (day == 6):
-			form.edit_avail_time_sat_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_day_sat.data = 'y'
-
-	print "render_edit_profile(): This user's availability is ", bp.availability
 	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp))
 
 
@@ -1621,24 +1594,23 @@ def api_update_project(usrmsg=None):
 	#proj_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
 	#proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
 	#proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
-	#proj_min	= IntegerField('Minimum')
-	#proj_max	= IntegerField('Maximum')
 	#proj_timeline	= TextField('Timeline')
 	#proj_contact	= TextField('Contact')
 
 	# validate all data manually. 
 	form = ProjectForm(request.form)
+	print "api_proj_update: day", form.avail_day.data, form.avail_time.data
 	try:
 		errors = "CAH, no errors"
 		if form.validate_on_submit():
-			print "api_proj_update: valid on submit"
+			print "api_proj_update: valid submit"
 
 			update = True;
 			if (update):
 				project = None
-				print "api_proj_update: add"
 				print "api_proj_update: id = ", form.proj_id.data
 				if form.proj_id is not 'new':
+					# find project.
 					project = Project.get_by_proj_id(form.proj_id.data)
 
 				if (project == None):
@@ -1657,6 +1629,7 @@ def api_update_project(usrmsg=None):
 				project.timeline 	= form.proj_timeline.data
 				project.contact		= form.proj_contact.data
 
+
 				# in case of classic user fippery
 				if (project.proj_min > project.proj_max):
 					print 'Classic user fippery, SWAP!'
@@ -1664,10 +1637,24 @@ def api_update_project(usrmsg=None):
 					project.proj_min = project.proj_max
 					project.proj_max = tmp
 
+				print "api_proj_update: set day/time = ", form.avail_day.data, form.avail_time.data
+				schedule_call = Availability.get_project_scheduled_time(project.proj_id)
+				print "api_proj_update: ", str(schedule_call)
+				if (schedule_call is None):
+					# create new availabliity.
+					schedule_call = Availability(bp, project.proj_id)
+
+				print "api_proj_update: adding time/date"
+				schedule_call.avail_weekday = form.avail_day.data
+				schedule_call.avail_start =  form.avail_time.data
+			
+
+
 				print "api_proj_update: add"
 				db_session.add(project)
+				db_session.add(schedule_call)
 				db_session.commit()
-				return jsonify(usrmsg="project updated"), 200
+				return jsonify(usrmsg="project updated", proj_id=project.proj_id), 200
 			else:
 				db_session.rollback()
 				print "api_proj_update: update error"
