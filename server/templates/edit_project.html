@@ -5,15 +5,30 @@
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
 	<link rel="stylesheet" href="/static/css/modern-business.css">
+	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
+	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.print.css' media='print'>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+{% endblock %}
+
+{% block header_js %}
+	{{ super() }}
+	<script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
 {% endblock %}
 
 
 
 {% block content %}
+<div id="dialog-confirm" title="">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+
+
 <div class="editProfContentWrapper">
 
 	<div class="editProfHeader">
-		<div class="editProfHeaderLeft"> <div class="editProfTopLeftNavigation"> <a title="Go to your dashboard" href="/dashboard">To Dashboard</a> </div> </div>
+		<div class="editProfHeaderLeft"> <a title="Go to your dashboard" href="/dashboard">To Dashboard</a> </div>
 		<div class="editProfHeaderRight"> Project Information </div>
 	</div>
   
@@ -65,11 +80,12 @@
 							<button class="whiteButton editProfSave" data-current-page="general">Save</button>
 						</div>
 					</div>
-
+					
 				<!-- ending general, class=editProfFormPage"-->
 				</div>
 			</form>
 			<!-- ending editProfFormPageContainer-->
+			<div id='calendar'></div>
 		</div>	
 	  	<!-- ending editProfContentContainer-->
 	</div>
@@ -78,7 +94,54 @@
 
 {% endblock %}
 
+
 {% block scripts %}
 	{{ super() }}
 	<script src="/static/js/edit_project.js"></script>
+	<script src='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.js' ></script>
+	<script>
+	$(document).ready(function() {
+		
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev, today',
+				center: 'title',
+				right: 'next'
+			},
+
+
+			defaultView: 'agendaWeek',
+			allDaySlot: false,
+			minTime: '6:00:00',
+			maxTime: '21:00:00',
+
+			//events.
+			eventDurationEditable: false,
+			forceEventDuration: true,
+			eventRender: function(event, element) {
+				phone = $('#proj_contact').val(); 
+				$(element).tooltip({title: 'Soulcrafting will call you at ' + phone + ' (30 min)'});
+			},
+			selectable: true,
+			selectHelper: true,
+			defaultTimedEventDuration: '00:30',
+			//eventClick: function(calEvent, jsEvent, view) { },
+			select: function(start, end) {
+				var phone = $('#proj_contact').val(); 
+				var newMeeting = {
+					title: 'Phonecall with Soulcrafting: '+phone,
+					start: start,
+				};
+				
+				$('#calendar').fullCalendar('removeEvents');
+				$('#calendar').fullCalendar('renderEvent', newMeeting, true); // stick? = true
+				$('#calendar').fullCalendar('unselect');
+			},
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+			events: [ ]
+		});
+		
+	});
+	</script>
 {% endblock %}
