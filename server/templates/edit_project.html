@@ -8,6 +8,11 @@
 	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
 	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.print.css' media='print'>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+	<style> 
+.fc-content .fc-time {
+   display : none !important;
+}
+</style>
 {% endblock %}
 
 {% block header_js %}
@@ -128,8 +133,13 @@
 			//eventClick: function(calEvent, jsEvent, view) { },
 			select: function(start, end) {
 				var phone = $('#proj_contact').val(); 
+				if (phone == '') {
+					//this is not enough right now.
+					alert('No phone provided');
+					return false;
+				}
 				var newMeeting = {
-					title: 'Phonecall with Soulcrafting: '+phone,
+					title: 'Call with Soulcrafting:\n'+phone,
 					start: start,
 				};
 				
