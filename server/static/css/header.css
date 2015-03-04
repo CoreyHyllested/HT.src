@@ -15,19 +15,6 @@ New muted blues for links:
 /***** Common Elements *****/
 
 /* SAFE TO DELETE?
-.pageWrapper {
-	background-color: white;
-	-ms-transform: translate(0px, 0px);		
-	-moz-transform: translate(0px, 0px);
-	-o-transform: translate(0px, 0px);
-	-webkit-transform: translate(0px, 0px);		
-	transform: translate(0px, 0px);
-	-moz-transition: 0.15s ease;
-	-o-transition: 0.15s ease;
-	-webkit-transition: 0.15s ease;		
-	transition: 0.15s ease;
-}
-
 .pageWrapperSlide {
 	-moz-transform: translate(0, 0);
 	-ms-transform: translate(0, 0);
@@ -42,11 +29,10 @@ New muted blues for links:
 }
 
 /* Off-Canvas Menu (only displayed on small screens) */
-
 .menu, .menuSlide, .pageWrapperSlide {display: none;}
 
-/* Header */
 
+/* Header */
 .headerBackground {
 	background-color: #fff;
 	height: 40px;
@@ -472,11 +458,5 @@ a.headerLogoLink {
 	.headerDropdownMenu li:hover {
 		color: #1488CC;
 	}
-
-}
-
-/* Tablets, desktops (1000px and greater) */
-@media only screen and (min-width: 1000px) {
-
 
 }

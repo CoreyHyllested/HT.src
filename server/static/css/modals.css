@@ -1,0 +1,140 @@
+/* MODAL WINDOWS */
+
+.overlay { }			/* darken Screen (overlay-on) */
+.overlay-content{ }		/* message-box, sits on overlay	*/
+.overlay-close { }		/* message-box close (X)	*/
+.modalContent { }		/* message-box content		*/
+
+
+/* toggle on/off */
+.overlay-darken {
+	display: block;
+
+	/* whole screen */
+	position: fixed;
+	top:	0;
+	left:	0;
+	height:	100%;
+	width:	100%;
+
+	/* darken whole screen */
+    background: black; /* fallback */
+    background: rgba(0,0,0,.6);
+	z-index: 99997;
+}
+
+
+
+.overlay-content {
+	/* message-box, sits on top of overlay. */
+	display: none;		/* start hidden */
+	z-index: 99998;
+	position: fixed;
+
+	padding: 1%;
+
+	top: 25%;
+	left: 25%;
+	width: 50%;
+
+	background: white;
+	border-radius: 15px;
+	box-shadow: 0 0 5px rgba(0,0,0,0.9);
+	cursor: default;
+}
+
+
+
+.overlay-close {
+	/* The X to close the overlay */
+	position: absolute;
+	top: 5px;
+	right: 8px;
+	cursor: pointer;
+	font-size: 1.3em;
+	font-color: red;
+	z-index: 99999;
+}
+.overlay-close:hover { 
+	font-color: black;
+	font-weight: bolder;
+}
+
+
+.alertOverlay {
+	/* change opacity */
+	opacity: 0;
+
+	-o-transition:		opacity 0.3s;
+	-moz-transition:	opacity 0.3s;
+	-webkit-transition:	opacity 0.3s;
+	transition:			opacity 0.3s;
+}
+
+
+.alertOverlayOn { background-color: black;
+	display: block;
+	height: 100%;
+	left: 0;
+	opacity: 0.8;
+	position: fixed;
+	top: 0;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	width: 100%;
+	z-index: 99998;
+}
+
+.alertWindowWrap {
+	opacity: 0;
+	top: -20%;
+}
+
+.alertWindowWrapOn {
+	display: inline;
+	height: 0;
+	left: 0;
+	opacity: 1;
+	position: fixed;
+	right: 0;
+	text-align: center;
+	top: 20%;
+	-moz-transition: top 0.5s ease;
+	-o-transition: top 0.5s ease;
+	-webkit-transition: top 0.5s ease;
+	transition: top 0.5s ease;
+	z-index: 99999;
+}
+
+.alertWindow {
+	display: none;
+
+	background-color: rgba(255, 255, 255, 0.9);
+	-webkit-border-radius: 6px;
+	border-radius: 6px;
+	padding: 15px 10px 10px;
+	text-align: center;
+}
+.alertWindowOn { display: inline-block; }
+
+.alertMessage {
+	font-size: 0.9em;
+	line-height: 1.35em;
+	margin-bottom: 15px;
+	text-align: center;
+}
+
+.alertButton {
+	background: none;
+	border-top: 1px solid rgba(0,0,0, 0.2);	
+	color: #29abe2;
+	cursor: pointer;
+	margin: auto;
+	padding-top: 10px;
+	width: 100%;
+}
+
+@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ .alertWindow {width: 80%;	 }	}
+@media only screen and (min-width: 350px)								{ .alertWindow {width: 240px;}	}
+@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ .alertWindow {width: 80%;	 }	}
+@media only screen and (min-width: 350px)								{ .alertWindow {width: 240px;}	}

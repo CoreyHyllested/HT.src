@@ -1,0 +1,147 @@
+.lp-img {
+	background-image: url('/static/img/sc/glass_table.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	width: 100%;
+	height: 80vh;
+	color: white;
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 2em;
+	line-height: 1.1em;
+}
+
+
+.lp-img h1 {
+	font-size: 1.5em;
+	line-height: 1.0em;
+}
+
+
+
+.center {
+	/* taken from trunk-club, not sure that this is doing anything 
+	-webkit-box-align:center;
+	-webkit-align-items:center;
+	-ms-flex-align:center;
+	align-items:center;
+	*/
+	display: block;
+	position: absolute;
+	top: 25%;
+
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+
+	text-align:center;		 /* center align text too */
+}
+
+
+.jumbotron-btn {
+	color: white !important;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	letter-spacing: 2px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+	border-width: 2px;
+	border-style: solid;
+	border-color: #fff;
+	border-radius: 4px;
+	transition: background 80ms ease-out;
+}
+
+.jumbotron-btn:hover {
+	text-decoration: none;
+	background-color: white;
+	color: black !important;
+}
+
+
+.lp-img1 {
+	/* will not stretch, may not see full img */
+	background-image:url('/static/img/img1.jpg');
+	background-size: cover;
+	height: 750px;
+	color: #fff;
+}
+
+.img-portfolio {
+    margin-bottom: 30px;
+}
+
+.img-hover:hover {
+    opacity: 0.9;
+/*	background-image:url('/static/img/topo_table.jpg');
+	background-size:cover;
+*/
+}
+
+.press { padding: 75px 0; }
+
+
+.press-list {
+	margin-bottom: 15px;
+	list-style: none;
+}
+
+.press-img:hover {
+/* 	border: 1px solid aliceblue; */
+/* 	makes img smaller... bah */
+}
+
+.list-inline {
+	padding-left: 0px;
+	height: 100px;
+}
+
+.press-list li {
+	display: block;
+	vertical-align: middle;	/* img? */
+}
+
+.press-list li img {
+	/* set height of image to normalize; let automatically determine width.  */
+	height: 60px;
+	filter: alpha(50%);
+
+	/* center */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*press-list and .last */
+.row.last {
+	margin-bottom:  100px;
+}
+
+.greyscale {
+	filter: gray;			/* IE6-9 */
+	filter: grayscale(1);	/* FF35+ */
+	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
+}
+.greyscale:hover {
+	filter: grayscale(0);	/* FF35+ */
+	-webkit-filter: grayscale(0); /* Chrome, Safari 6+ & Opera 15+ */
+}
+
+
+
+
+
+/* Responsive Styles */
+@media(max-width:991px) {
+    .customer-img,
+    .img-related {
+        margin-bottom: 30px;
+    }
+}
+
+@media(max-width:767px) {
+    .img-portfolio { margin-bottom: 15px; }
+    header.carousel .carousel { height: 70%; }
+}
+
+@media only screen and (min-device-width: 240px) and (max-width: 500px) {
+	.lp-img { font-size: 1em; }
+}
