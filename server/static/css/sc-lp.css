@@ -1,6 +1,7 @@
 .lp-img {
-	background-image: url('/static/img/sc/glass_table.jpg');
+	background-image: url('/static/img/cover.jpg');
 	background-repeat: no-repeat;
+	background-position: center;
 	background-size: cover;
 	width: 100%;
 	height: 80vh;
