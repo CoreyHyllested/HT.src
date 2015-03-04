@@ -360,10 +360,6 @@ html, body { height: 100%; }
     .img-related {
         margin-bottom: 30px;
     }
-
-	.access-section .social-btns {
-		padding-left: 65px;
-	}
 }
 
 @media(max-width:767px) {
