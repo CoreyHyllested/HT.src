@@ -3,14 +3,13 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel="stylesheet" href="/static/css/modern-business.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/share.css" async>
-	<!--link type="text/css" rel="stylesheet" href="/static/css/master.css"-->
+	<link rel="stylesheet" href="/static/css/sc-lp.css">
+	<link rel="stylesheet" href="/static/css/share.css">
 {% endblock %}
 
 {% block content %}
 <!-- LandingPage, above the fold story/explanation. -->
-<div class="container lp-img">
+<div class="lp-img">
 	<div class="center"> <h1>Soulcrafted Furniture & Furnishings</h1>
 		<p> The smartest way to invest in your home.
 		<br>
@@ -27,27 +26,37 @@
 		<ul class="press-list list-inline row last">
 			<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
 				<div class="img-responsive press-img">
-					<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg" alt>
+					<a href='http://www.denverpost.com/homegarden/ci_26988525/master-craft-opportunities-abound-learn-from-denver-area'>
+						<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg">
+					</a>
 				</div>
 			</li>
 			<li class="col-md-2 col-sm-2 col-xs-4">
 				<div class="img-responsive press-img">
-					<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
+					<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'>
+						<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
+					</a>
 				</div>
 			</li>
 			<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
 				<div class="img-responsive press-img" >
-					<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
-				</div>
-			</li>
-			<li class="col-md-2 col-sm-2 col-xs-4">
-				<div class="img-responsive press-img" >
-					<img class="img-responsive greyscale" src="/static/img/press-dc.svg" alt>
+					<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'>
+						<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
+					</a>
 				</div>
 			</li>
 			<li class="col-md-2 col-sm-2 col-xs-4">
 				<div class="img-responsive press-img">
-					<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
+					<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'>
+						<img class="img-responsive greyscale" src="/static/img/press-dc.svg">
+					</a>
+				</div>
+			</li>
+			<li class="col-md-2 col-sm-2 col-xs-4">
+				<div class="img-responsive press-img">
+					<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'>
+						<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
+					</a>
 				</div>
 			</li>
 		</ul>
@@ -112,6 +121,53 @@
 
 
 		<!-- Header Carousel
+
+		Carousel styles.
+
+
+
+
+
+
+.pad-top-bottom-100 {
+	padding-top: 10px;
+	padding-bottom: 100px;
+}
+
+/* Home Page Carousel */
+.carousel {
+    height: 75%;
+	/* amount of screen space to fill */
+}
+
+.carousel .item,
+.carousel .item.active,
+.carousel .carousel-inner {
+	color: white;
+	width: 100%;
+	/* height: 100vh; */
+}
+
+.carousel .fill {
+    width: 100%;
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+
+.product-container {
+	padding: 100px 75px;
+/*
+	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 *
+	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 *
+	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 *
+	background: linear-gradient(white, white); /* Standard syntax 
+*/
+	color: white;
+	background: rgba(76,76,76,1); 
+}
+
+
 		<div id="myCarousel" class="product-container row carousel slide">
 			<ol class="carousel-indicators">
 				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
@@ -203,13 +259,13 @@
 			var scrollTop = $(window).scrollTop();	// top of window (in Px)?
 			var selectedPopup = $(this).data('showpopup');
 			console.log([docHeight, scrollTop, selectedPopup]);
-			//$('.overlay').toggleClass('modalOverlayOn'); //.css({'height' : docHeight}); //display your popup background and set height to the page height
+			//$('.overlay').toggleClass('overlay-darken'); //.css({'height' : docHeight}); //display your popup background and set height to the page height
 			//$('.'+selectedPopup).show(); //.css({'top': scrollTop+75+'px'}); //show the appropriate popup and set the content 20px from the window top
 		});
 
 		$('.overlay-close').click(function(){ closeModal(); });
 
-		// hide the popup when user presses the esc key
+		// hide popup when user presses ESC-key
 		$(document).keyup(function(e) { if (e.keyCode == 27 /* ESC */) { closeModal(); } });
 	});
 
@@ -218,20 +274,20 @@
 	});
 
 	function openModal() {
-		$('.overlay').toggleClass('modalOverlayOn');
+		$(document.body).css('overflow', 'hidden');
+		$('.overlay').addClass('overlay-darken');
 		$('.modalContent').load("/share .composeWrapper");
 		$('.overlay-content').show();
-		$(document.body).css('overflow', 'hidden');
-		$.getScript("/static/js/share.js");
+		$.getScript("/static/js/share.js?_bah");
 	}
 
 	function closeModal() {
 		$('.overlay-content').hide();
-		$('.overlay').toggleClass('modalOverlayOn');
+		$('.overlay').removeClass('overlay-darken');
 		$(document.body).css('overflow', 'inherit');
 		return false;
 	};
 
-	setTimeout(function () { openModal(); }, 60000);
+	setTimeout(function () { openModal(); }, 75000);
 	</script>
 {% endblock %}
