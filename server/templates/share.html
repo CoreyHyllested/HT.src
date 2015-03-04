@@ -3,20 +3,17 @@
 {% block header_css %}
 	{{ super() }}
 	<link type="text/css" rel="stylesheet" href="/static/css/share.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/master.css">
-	<link type="text/css" rel="stylesheet" href="/static/css/modern-business.css">
 {% endblock %}
 
 
 {% block content %}
 <div class="composeWrapper">
-
 	<div class="container-fluid">
 		<div class="container">
-			<div class="title"> <h1>Share Soulcrafting </h1> </div>
+			<div class="title"> <h1>Share Soulcrafting and get $200 for your next project.</h1> </div>
 			<div class="row">
 				<div class="col-xs-4 col-md-1 col-lg-1">To</div>
-				<input type="text" id="recipient" class="col-xs-12 col-md-4 col-lg-6" placeholder=" corey@gmail.com">
+				<input type="text" id="recipient" class="col-xs-12 col-md-4 col-lg-6" placeholder="corey@gmail.com">
 			</div>
 
 			<div class="row">
@@ -25,14 +22,14 @@
 			</div>
 
 			<div class="row">
-				<div class="col-xs-4 col-md-1 col-lg-1">Message</div>
-				<textarea id="composeBody" class="col-xs-12 col-md-4 col-lg-6" placeholder="Hi, you mentioned looking for an awesome table.  Check out Soulcrafting and use the code, BLAH, to get a $200 discount."></textarea>
+				<div class="col-xs-4 col-md-1 col-lg-1">Personalize Message</div>
+				<textarea id="composeBody" class="col-xs-12 col-md-4 col-lg-6" placeholder="Hi, Check out Soulcrafting and you can save $200 on commissioned furniture using the passcode, TECHSTARS, to get a $200 discount.">Hi, you looking for a table?</textarea>
 			</div>
 
 			<div class="row"> <div id="shareStatus"></div></div>
 			<div class="row"> 
 				<div class="col-xs-6 col-lg-4"></div>
-				<div class="col-xs-3 col-lg-2"> <button id="sendMessage" class="blueButton shareButton">Send</button> </div>
+				<div class="col-xs-3 col-lg-2"> <button id="sendMessage" class="blueButton shareButton">Share</button> </div>
 			</div>
 		</div>
 	</div>
