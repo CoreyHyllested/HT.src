@@ -4,35 +4,33 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern-login.css">
-	<link rel="stylesheet" href="/static/css/modern-business.css">
 {% endblock %}
 
 
-# TODO.  Fix the responsive issues.  Allow err-msgs.
-# 1) Social-login btns are too big when shrunk down (min-width is set to 220px).  Change this when we shrink.
-# 2) There is a gigantic whitespace between the social login and email login; minimize this when we shrink.
-# 3) When user signs up (again).  No error msg pops-up suggesting to login.  Make this happen.
-
-
 {% block content %}
-
 <section class="signup-section access-section section">
 	<div class="container">
+
 		<div class="row">
 
 			<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">
 				<div class="form-box-inner">
 					<h2 class="title text-center">Join Soulcrafting</h2>
 					<div class="row">
-						<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">
-							<ul class="list-unstyled social-login">
-								<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
-							</ul>
-						</div>
+						<div class="col-md-6 col-sm-12 col-xs-12 col-md-offset-3 col-sm-offset-0 col-sm-offset-0">
+							<div class='social-btns'>
+								<ul class="list-unstyled social-login">
+									<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Join with Facebook</button></a></li>
+								</ul>
+							</div>
 
-						<div class="form-container col-md-5 col-sm-12 col-xs-12">
-							<form action="/signup" method="POST" id='signup-form' class="signup-form">
+							<p class="note">By joining, you agree to the <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
+
+							<hr>
+
+							<form action="/join" method="POST" id='signup-form' class="signup-form">
 								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
 								<div class="form-group username">
 									<label class="sr-only" for="uname">Your name</label>
 									{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
@@ -45,11 +43,13 @@
 									<label class="sr-only" for="passw">Your password</label>
 									{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
 								</div>
-								<button type="submit" class="btn btn-block btn-signup">Join</button>
-								<p class="note">By signing up, you agree to our <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p>
-								<p class="lead">Already have an account? <a class="login-link" id="login-link" href="/login">Log in</a></p>
+								<button type="submit" class="btn btn-block blueButton">Join</button>
+								<br>
+								<p><a href='/login'><button class='btn btn-block whiteButton'>I have an account</button></a></p>
 							</form>
 						</div>
+
+						<!--Ending row-->
 					</div>
 				<!--End form-box-inner -->
 				</div>
@@ -95,3 +95,10 @@
 	});
 </script>
 {% endblock %}
+
+
+# TODO.  Fix the responsive issues.  Allow err-msgs.
+# 1) Social-login btns are too big when shrunk down (min-width is set to 220px).  Change this when we shrink.
+# 2) There is a gigantic whitespace between the social login and email login; minimize this when we shrink.
+# 3) When user signs up (again).  No error msg pops-up suggesting to login.  Make this happen.
+
