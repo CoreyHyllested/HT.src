@@ -4,26 +4,28 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern-login.css">
-	<link rel="stylesheet" href="/static/css/modern-business.css">
 {% endblock %}
 
 
 {% block content %}
-
 <section class="login-section access-section section">
 	<div class="container">
+
 		<div class="row">
+
 			<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">
 				<div class="form-box-inner">
 					<h2 class="title text-center">Login to Soulcrafting</h2>
 					<div class="row">
-						<div class="social-btns col-md-5 col-sm-12 col-xs-12 col-md-offset-1 col-sm-offset-0 col-sm-offset-0">
-							<ul class="list-unstyled social-login">
-								<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Login with Facebook</button></a></li>
-							</ul>
-						</div>
+						<div class="col-md-6 col-sm-12 col-xs-12 col-md-offset-3 col-sm-offset-0 col-sm-offset-0">
+							<div class="social-btns">
+								<ul class="list-unstyled social-login">
+									<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Login with Facebook</button></a></li>
+								</ul>
+							</div>
 
-						<div class="form-container col-md-5 col-sm-12 col-xs-12">
+							<hr>
+
 							<form class="login-form" method='POST' action='/login'>
 								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -37,20 +39,24 @@
 									{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
 								</div>
 
-								<button type="submit" class="btn btn-block btn-signup">Login</button>
-								<p class="lead"><a class="loginLink" href="/password/recover">Forgot password?</a></p>
-								<p class="lead">Want to <a class="login-link" id="login-link" href="/signup">join Soulcrafting?</a></p>
+								<button type="submit" class="btn btn-block blueButton">Login</button>
+								<p class='lead'>
+									<a href='/password/recover'><button class="btn btn-block whiteButton">Forgot password?</button></a>
+									<a href='/join'><button class='whiteButton btn btn-block'>Join Soulcrafting?</button></a>
+								</p>
 							</form>
 						</div>
+					<!--ENDING ROW -->
 					</div>
-				<!--close-form-box-inner-->
+				<!--ENDING form-box-inner-->
 				</div>
+			<!--ENDING form-box [COLS COLS COLS] -->
 			</div>
-		<!--close-row-->
+		<!--ENDING row-->
 		</div>
+	<!--ENDING container-->
 	</div>
 </section>
-
 {% endblock %}
 
 
