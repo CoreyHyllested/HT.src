@@ -1,15 +1,18 @@
-
 html, body { height: 100%; }
 
 .body-wrapper { min-height: 100%; }
 
-.signup-page {
-	background: #253340 url('/static/img/img3.jpg') no-repeat 50% top;
+
+
+.page-content,
+.blurred-background {
+	background-image: url('/static/img/background-blurred.jpg');
 	background-size: cover;
+	background-repeat: no-repeat;
 }
 
-/* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
 
+/* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
 .attention::-webkit-input-placeholder { /* WebKit browsers */	color: red; }
 .attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red ; }
 .attention:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
@@ -51,12 +54,8 @@ html, body { height: 100%; }
 .access-section .social-btns {
 	padding-left: 0;
 	text-align: center;
-}
-
-.access-section .social-btns {
-	padding-left: 60px;
-	min-height: 250px;
-	margin-bottom: 15px;
+	margin: 15px;
+	/* min-height: 250px; //removed when we moved to single column */
 }
 
 .access-section .social-btns .social-login {
@@ -65,11 +64,6 @@ html, body { height: 100%; }
 }
 
 
-.access-section .social-btns {
-  padding-left: 60px;
-  min-height: 250px;
-  margin-bottom: 15px;
-}
 .access-section .social-btns li {
   margin-bottom: 10px;
 }
@@ -136,7 +130,8 @@ html, body { height: 100%; }
 }
 
 .access-section .form-box .form-box-inner {
-	background: #fff; -webkit-border-radius: 7px;
+	background: white;
+	-webkit-border-radius: 7px;
 	-moz-border-radius: 7px;
 	-ms-border-radius: 7px;
 	-o-border-radius: 7px;
