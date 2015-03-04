@@ -10,7 +10,7 @@
 /* GLOBAL TAGS */
 html, body {
 	-webkit-font-smoothing: subpixel-antialiased;
-	color: @scblue; /*rgba(0, 0, 0, 0.5);*/
+	color: rgba(0, 0, 0, 0.5);
 	font-family: "Helvetica Neue", "Open Sans", Arial, sans-serif;
 	font-size: 1em;
 	font-weight: normal;
