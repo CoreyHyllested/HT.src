@@ -21,13 +21,12 @@
 		
 		<div class="projects">
 			<h1>Projects</h1>
-			<a href="/project/edit"><button class="whiteButton">Add new project...</button></a>
 
 			<!--|sort(attribute='Meeting.meet_ts')-->
 			{% for project in projects  %}
 			<div class="project" id="{{project.proj_id}}">
 				<div class="dashboardOfferLeftColumn">
-						<div class="details">{{project.proj_name}}</div>
+						<div class="details"><em>{{project.proj_name}}</em></div>
 						<div class="details">${{project.proj_max}}</div>
 				</div>
 
@@ -48,7 +47,9 @@
 			</div>
 			{% endfor %}
 			<!-- ENDING PROJECTS -->
+
 		</div>
+		<a href="/project/edit"><button class="whiteButton">Add new project...</button></a>
 	</div>
 
 
