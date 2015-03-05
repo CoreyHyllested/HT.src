@@ -3,27 +3,26 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel="stylesheet" href="/static/css/modern-business.css">
 	<link rel="stylesheet" href="/static/css/modern-recover.css">
 	<link rel="stylesheet" href="/static/css/recovery.css">
-	<link rel="stylesheet" href="/static/css/master.css">
+	<link rel="stylesheet" href="/static/css/modern-login.css">
 {% endblock %}
 
 
 {% block content %}
-<div class="recoveryContentWrapper">
-	<h2>Recover Password</h2>
-	<form method="post">		
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		<div class="recoveryInstructions">Enter your email and Soulcrafting will send you the reset link.</div>
-		{{form.email(type="email", placeholder="Your email", autocomplete="off")}}
+<section class="recovery-section">
+	<div class='recovery-wrapper'></div>
+		<h2>Recover Password</h2>
+		<form method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			{{form.email(type="email", placeholder="Your email", autocomplete="off")}}
 
-		<div class="recoverySubmitWrapper">
-			<input type="submit" id="recover" class="blueButton" value="Send password reset">
-		</div>
-		<a href="/login" class="recoveryLink">Back to Login</a>
-	</form>
-</div>
+			<div class="recoverySubmitWrapper">
+				<input type="submit" id="recover" class="blueButton" value="Send password reset">
+			</div>
+			<a href="/login" class="recoveryLink">Back to Login</a>
+		</form>
+</section>
 {% endblock %}
 
 
@@ -33,9 +32,10 @@
 
 
 # Bugs.
-1) Invalid email may exist
+1) Invalid email may exist.
 2) Removing the button is a problem if its an invalid email.
-	<script>
-	{% if errmsg != none %} openAlertWindow('{{errmsg}}'); {% endif %}
-	//$('#recover').click(function () { $('#recover').css('visibility', 'hidden'); } );
-	</script>
+<script>
+{% if errmsg != none %} openAlertWindow('{{errmsg}}'); {% endif %}
+//$('#recover').click(function () { $('#recover').css('visibility', 'hidden'); } );
+</script>
+<!--div class="recoveryInstructions">Enter your email and Soulcrafting will send you the reset link.</div>
