@@ -11,12 +11,54 @@
 <!-- LandingPage, above the fold story/explanation. -->
 <div class="lp-img">
 	<div class="center"> <h1>Soulcrafted Furniture & Furnishings</h1>
-		<p> The smartest way to invest in your home.
+		<p> The smartest way to invest in your home.</p>
 		<br>
 		<br>
-		<a href="/signup" class="btn jumbotron-btn">Get Started</a>
-		</p>
+		<p> <a href="/signup" class="btn jumbotron-btn">Login with Facebook</a></p>
+		<p> <a href="/signup" class="btn jumbotron-btn">Login with Email</a> </p>
 	</div>
+</div>
+
+<div class="darkgrey-background">
+	<div class="container">
+		<div class="h2 text-center"> How Soulcrafting Works</div>
+		<div class="col-xs-12 col-md-4 col-xs-push-1 col-md-push-0 text-center">
+
+			<div class="panel panel-default img-hover">
+				<div class="panel-heading"> <h4><i class="fa fa-fw fa-check"></i>Craftsmanship</h4> </div>
+				<div class="panel-body">
+					<p>	Craftsmanship has a new home.  Yours.</p>
+					<p> We have partnered with the best, most passionate, local craftspeople in Colorado.  Each piece is a functional work of art. </p> 
+				</div>
+				<!-- ENDING panel panel-default -->
+			</div>
+
+		</div>
+
+		<div class="col-xs-12 col-md-4 col-xs-push-1 col-md-push-0 text-center">
+			<div class="panel panel-default img-hover">
+				<div class="panel-heading"> <h4><i class="fa fa-fw fa-gift"></i> Stress Free </h4> </div>
+				<div class="panel-body">
+					<p> We'll do the heavy lifting. </p>
+					<p> We're helping people create the home they want.  Just tell us about your project and your style &amp; personality &dash; and we'll make it happen.  Unsure what to create?  Checkout our <a href="#" style="text-decoration: none;">gallery of completed projects</a>.  Still unsure?  Our consierge can help out.   </p>
+				</div>
+				<!-- ENDING panel panel-default -->
+			</div>
+		</div>
+
+		<div class="col-xs-12 col-md-4 col-xs-push-1 col-md-push-0 text-center">
+			<div class="panel panel-default">
+				<div class="panel-heading"> <h4><i class="fa fa-fw fa-compass"></i> Your Space.  Your Taste.</h4> </div>
+				<div class="panel-body">
+					<p> Simple.</p>
+					<p> We'll call you.  We'll provide updates.  Pay with a credit card.  </p>
+					< !p Talented, Trusted, Transparent, Simple, Safe and Stress Free ->
+				</div>
+				<!-- ENDING panel panel-default -->
+			</div>
+		</div>
+
+	</div >
 </div>
 
 <div class="row">
@@ -85,36 +127,9 @@
 			</div>
 
 			<div class="row"> 
-				<div class="col-md-4">
-					<div class="panel panel-default img-hover">
-						<div class="panel-heading"> <h4><i class="fa fa-fw fa-check"></i>Craftsmanship</h4> </div>
-						<div class="panel-body">
-							<p>	Craftsmanship has a new home.  Yours.</p>
-							<p> We have partnered with the best, most passionate, local craftspeople in Colorado.  Each piece is a functional work of art. </p> 
-						</div>
-					</div>
-				</div>
 
-				<div class="col-md-4">
-					<div class="panel panel-default img-hover">
-						<div class="panel-heading"> <h4><i class="fa fa-fw fa-gift"></i> Stress Free </h4> </div>
-						<div class="panel-body">
-							<p> We'll do the heavy lifting. </p>
-							<p> We're helping people create the home they want.  Just tell us about your project and your style &amp; personality &dash; and we'll make it happen.  Unsure what to create?  Checkout our <a href="#" style="text-decoration: none;">gallery of completed projects</a>.  Still unsure?  Our consierge can help out.   </p>
-						</div>
-					</div>
-				</div>
 
-				<div class="col-md-4">
-					<div class="panel panel-default">
-						<div class="panel-heading"> <h4><i class="fa fa-fw fa-compass"></i> Your Space.  Your Taste.</h4> </div>
-						<div class="panel-body">
-							<p> Simple.</p>
-							<p> We'll call you.  We'll provide updates.  Pay with a credit card.  </p>
-							< !p Talented, Trusted, Transparent, Simple, Safe and Stress Free ->
-						</div>
-					</div>
-				</div>
+
 			</div>
 		</div>< ! - - /container  > 
 		-->
@@ -251,6 +266,7 @@
 
 {% block scripts %}
 	{{ super() }}
+{% endblock %}
 	<script>
 	$(document).ready(function(){
 		$('.show-popup').click(function(event){
@@ -290,4 +306,3 @@
 
 	setTimeout(function () { openModal(); }, 75000);
 	</script>
-{% endblock %}
