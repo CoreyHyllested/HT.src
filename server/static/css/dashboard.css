@@ -7,12 +7,6 @@ c) 1000px - ... (desktops)
 
 
 /* Layout */
-.pageWrapper {
-	background-color: white;
-	min-height: 100%;
-	padding-bottom: 50px;		
-	width: 100%;
-}
 
 .scheduleMap {
 	background-color: rgba(0,0,0, 0.05);
@@ -462,24 +456,6 @@ input.lessonCancel:hover {
 	font-weight: 600;
 	line-height: 1.4em;
 	margin-bottom: 12px;
-}
-
-.dashboardInfoBox {	
-/*	border-bottom: 1px solid rgba(0,0,0,.4);
-*/	color: rgba(0,0,0,.7);
-	font-size: 0.9em;
-	padding-bottom: 12px;
-}
-
-.dashboardInfoLocation, .dashboardInfoRating {
-	width: 100%;
-	height: 20px;
-	line-height: 20px;	
-	padding: 6px 0px;
-}
-
-.dashboardInfoBox i {
-	margin-right: 6px;
 }
 
 input.dashboardActionButton {
