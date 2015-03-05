@@ -4,6 +4,10 @@ a) 240px - 349px (phones)
 b) 350px - ... (everything else)
 
 /* COMMON ELEMENTS */
+.page-content{
+	padding: 35px;
+}
+
 .recoveryLink {
 	clear: both;
 	display: block;
@@ -16,7 +20,7 @@ b) 350px - ... (everything else)
 	text-decoration: underline;
 }
 
-.recoveryContentWrapper input[type="email"], input[type="password"] {
+.recovery-section input[type="email"], input[type="password"] {
 	border-radius: 5px;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -25,7 +29,7 @@ b) 350px - ... (everything else)
 	width: 100%;
 }
 
-.recoveryContentWrapper input[type="submit"] {
+.recovery-section input[type="submit"] {
 	margin-bottom: 15px;
 	width: 100%;
 }
@@ -39,14 +43,14 @@ b) 350px - ... (everything else)
 
 /* PHONE DESIGN */
 @media only screen and (min-device-width: 240px) and (max-width: 349px) {
-
 	.pageWrapper {
 		background-color: white;
 		height: 100%;
 		min-height: 380px;
 	}
-	.recoveryContentWrapper {
-		margin: auto;
+
+	.recovery-section {
+		margin: 0px auto;
 		overflow-y: scroll;
 		padding-bottom: 10px;
 		width: 90%;
@@ -56,12 +60,10 @@ b) 350px - ... (everything else)
 		margin: 20px auto 10px;
 		text-align: center;
 	}
-	
 }
 
 /* DESIGN FOR EVERYTHING ELSE */
 @media only screen and (min-width: 350px) {
-
 	.pageWrapper {
 		background: url('../img/background-blurred.jpg') no-repeat center right;
 		background-position: 100% 30%;
@@ -72,11 +74,11 @@ b) 350px - ... (everything else)
 		width: 100%;		
 	}
 
-	.recoveryContentWrapper {
+	.recovery-section {
 		background-color: white;
 		border-radius: 6px;
 		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
-		margin: 40px auto 30px;
+		margin: 0px auto;
 		padding: 20px 20px 10px;
 		width: 300px;
 	}
