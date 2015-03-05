@@ -4,11 +4,8 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/master.css">
-	<link rel="stylesheet" href="/static/css/header.css">
-	<link rel="stylesheet" href="/static/css/footer.css">
 	<link rel="stylesheet" href="/static/css/dashboard.css">
 	<link rel="stylesheet" href="/static/css/modern-dash.css">
-	<link rel="stylesheet" href="/static/css/modern-business.css">
 	<script src="/static/js/format.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
@@ -23,7 +20,7 @@
 	<div class="dashboardLeftColumn">
 		
 		<div class="projects">
-			<h1>Projects ({{projects|length}})</h1>
+			<h1>Projects</h1>
 			<a href="/project/edit"><button class="whiteButton">Add new project...</button></a>
 
 			<!--|sort(attribute='Meeting.meet_ts')-->
@@ -31,17 +28,7 @@
 			<div class="project" id="{{project.proj_id}}">
 				<div class="dashboardOfferLeftColumn">
 						<div class="details">{{project.proj_name}}</div>
-
-						{% if project.proj_min and project.proj_max %}
-						<div class="details">${{project.proj_min}} &dash; ${{project.proj_max}}</div>
-						{% elif  project.proj_min %}
-						<div class="details">${{project.proj_min}}</div>
-						{% elif  project.proj_max %}
 						<div class="details">${{project.proj_max}}</div>
-						{% endif %}
-
-						<div class="details"> Timeline: {{project.proj_timeline}}</div>
-						<div class="details"> Contact#: {{project.proj_contact}}</div>
 				</div>
 
 				<div class="dashboardOfferCenterColumn">
@@ -50,9 +37,7 @@
 
 				<div class="dashboardOfferRightColumn">
 					<div class="dashboardOfferDetails">
-						<div class="scheduleMap" id="map-canvas" data-uuid="{{project.proj_id}}" data-location="{{project.proj_addr}}"></div>
-						<div class="project address"> {{project.proj_addr}} </div>
-						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Edit Project...</button></a>
+						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Go to project...</button></a>
 					</div>
 				</div>
 
@@ -62,26 +47,15 @@
 				<!-- ENDING PROJECT {{project.proj_id}} -->
 			</div>
 			{% endfor %}
-
-			<div class="create_project">
-				{% if projects.length == 0 %} You don't have any projects.
-				<a href="/project/edit"><button class="whiteButton">Create Project...</button></a>
-				{% endif %}
-			</div>
 			<!-- ENDING PROJECTS -->
 		</div>
 	</div>
 
 
-	<div class="user_profile">
-		<!--a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a-->
+	<div class="profile">
 		<a href="/profile"><h1>{{bp.prof_name}}</h1></a>
-		<div class="dashboardInfoBox">
-			<div class="dashboardInfoLocation"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
-		</div>
-		<div class="dashboardButtons">
-			<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
-			<a href="/share?back=/"><button class="whiteButton">Share with Friends</button></a>
+		<div class="stats">
+			<div class="location"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
 		</div>
 	</div>
 
@@ -100,3 +74,21 @@
 	</script>
 {% endblock %}
 
+
+
+
+<!-- Unused code. 
+
+<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
+
+right side.
+<div class="dashboardOfferDetails">
+	<div class="scheduleMap" id="map-canvas" data-uuid="{{project.proj_id}}" data-location="{{project.proj_addr}}"></div>
+	<div class="project address"> {{project.proj_addr}} </div>
+	<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Edit Project...</button></a>
+</div>
+
+<div class="dashboardButtons">
+	<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
+	<a href="/share?back=/"><button class="whiteButton">Share with Friends</button></a>
+</div>
