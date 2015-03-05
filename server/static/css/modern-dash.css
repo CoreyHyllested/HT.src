@@ -1,4 +1,10 @@
-.projects { min-height: 100px; }
+.projects {
+	min-height: 55px;
+}
+
+.dashboardLeftColumn a button{
+	margin: 0 0 20px;
+}
 
 
 .project {
@@ -9,31 +15,39 @@
 }
 
 
-.create_project {
-	float: left;
-	width: 40%;
-	padding: 30px;
-	/* border: 2px solid black; */
-	text-align: center;
-	box-sizing: border-box;
-}
 
-
-.user_profile {
+.profile {
 	margin-top: 20px; /* helps line up with dashboardLeftColumn projects h1 */
 	float: right;
-	width: 30%;
+	width: 25%;
 	background: lightgrey;
 	box-sizing: border-box;
 	padding: 10px;
 	border-radius: 10px;
-
 }
 
-.user_profile a h1 {
-	color: darkslategrey;
+.profile a h1 {
+	color: black;
 	font-size: 1.5em;
 }
+
+.profile .stats {
+	color: rgba(0,0,0,.7);
+	font-size: 1em;
+	padding-bottom: 12px;
+}
+
+.profile .stats i {
+	margin-right: 6px;
+}
+
+.stats .location {
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	padding: 6px 0px;
+}
+
 
 .project.address {
 	font-size: .9em;
@@ -47,6 +61,12 @@
 }
 
 
+@media only screen and (min-device-width: 240px) and (max-width: 489px) {
+	.profile {
+		width: 95%;
+		margin: 0 0 75px;	/* full width in small device */
+	}
+}
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
 	.project.LeftCol, .dashboardOfferCenterColumn, .dashboardOfferRightColumn  {
