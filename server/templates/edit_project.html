@@ -4,99 +4,94 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
-	<link rel="stylesheet" href="/static/css/modern-business.css">
 	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
-	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.print.css' media='print'>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 	<style> 
-.fc-content .fc-time {
-   display : none !important;
-}
-</style>
+		.fc-content .fc-time { display : none !important; }
+	</style>
 {% endblock %}
+
 
 {% block header_js %}
 	{{ super() }}
+	<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
+	<script src="/static/js/maps.js">
 	<script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
-	<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
 {% endblock %}
 
 
 
 {% block content %}
-<div id="dialog-confirm" title="">
-  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
-</div>
+<div class="project-wrapper">
 
-
-<div class="editProfContentWrapper">
-
-	<div class="editProfHeader">
-		<div class="editProfHeaderLeft"> <a title="Go to your dashboard" href="/dashboard">To Dashboard</a> </div>
-		<div class="editProfHeaderRight"> Project Information </div>
+	<div id="project-header">
+		<div class="col-md-2 col-xs-2"> <a title="Back to dashboard" href="/dashboard">To Dashboard</a> </div>
+		<div class="col-md-8 col-xs-8 text-center"> Project Information </div>
 	</div>
   
-  	<div class="editProfContentContainer">
-		<div class="editProfFormPageContainer">
-			<form id="editProfForm" method="post" action="/profile/update" enctype="multipart/form-data">
+			<form id="project-details" enctype="multipart/form-data">
 				{{form.hidden_tag()}}
-				<div id="general" class="editProfFormPage">
+				<div id="basic-details">
 					{{form.proj_id(placeholder="id") }}
-					<div class="formContainer span12">
-						<div class="formFieldInfo first">Name your project.</div>
-						<div class="formFieldError"></div>
-						{{form.proj_name(placeholder="Name", maxlength="40", class="formField span6")}}
+					<div class="container-fluid p10">
+						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">Project Name</div>
+						{{form.proj_name(placeholder="Update attic.", maxlength="40", class="formField first col-lg-10 col-md-8 col-xs-12")}}
+						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+					</div>
 
-						<div class="formFieldInfo">Where is your home?</div>
-						<div class="formFieldError"></div>
-						{{form.proj_addr(placeholder="Address", class="formField span6")}}
+					<div class="container-fluid p10">
+						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What are your goals?</div>
+						{{form.proj_desc(placeholder="I want to transform the attic above my garage into a studio to rent on Airbnb.", class="formField col-lg-10 col-md-8 col-xs-12")}}	
+						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+					</div>
 
-						<div class="formFieldInfo">How much are you willing to invest?</div>
-						<div class="formFieldError"></div>
-						{{form.proj_min(placeholder="$1000", maxlength="7", class="formField span5")}} &dash;
-						{{form.proj_max(placeholder="$2000", maxlength="7", class="formField span5")}}
+					<div class="container-fluid p10">
+						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">Where is your home?</div>
+						{{form.proj_addr(placeholder="Address", class="formField col-lg-10 col-md-8 col-xs-12")}}
+						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='Boulder, CO' data-uuid='4'></div>
+					</div>
 
-						<div class="formFieldInfo">What is your timeline?</div>
-						<div class="formFieldError"></div>
-						{{form.proj_timeline(placeholder="I'd like this to be done in the next six months.", class="formField span12")}}	
+					<div class="container-fluid p10">
+						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What is your timeline?</div>
+						{{form.proj_timeline(placeholder="I'd like to complete this project as soon as possible.", class="formField col-lg-3 col-md-8 col-xs-12")}}
+						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+					</div>
 
-						<div class="formFieldInfo">Where are you investing in your home?</div>
-						<div class="formFieldError"></div>
-						{{form.proj_desc(placeholder="I'm looking to find new furniture for my living room.", class="formField span12")}}	
+					<div class="container-fluid p10">
+						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What is your budget?</div>
+						{{form.proj_max(placeholder="$7000", maxlength="7", class="formField col-lg-3 col-md-8 col-xs-12")}}
+						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+					</div>
 
-						<div class="formFieldInfo">What phone number are you available at?  We keep <em>NEVER</em> sell your data (includes your phone number). </div>
-						<div class="formFieldError"></div>
-						{{form.proj_contact(placeholder="(555) 303-1234", class="formField span4")}}
 
-						<br>
-						<br>
+
+						<!--div class="formFieldInfo">What phone number are you available at?  We keep <em>NEVER</em> sell your data (includes your phone number). </div>
+						<div class="formFieldError"></div>
+						{ {form.proj_contact(placeholder="(555) 303-1234", class="formField span4")} } -->
+
+					<!--div class="container-fluid">
 						<div class="formFieldInfo first">Schedule when you are available to have us call you.  It should take about 30 minutes.  All times are in Mountain Standard Time (MST).  </div>
 						<fieldset id="editProfAvailTimes">
 							<div class="editProfAvailDay">
-								{{form.avail_day(id="day", class="daySelector")}} <label for="sun">What Day?</label>
-								{{form.avail_time(class="formField timeSelector span2")}}
+								{ {form.avail_day(id="day", class="daySelector")}} <label for="sun">What Day?</label>
+								{ {form.avail_time(class="formField timeSelector span2")}}
 							</div> 	
 						</fieldset>
-					</div>
+					</div-->
 
-					<div class="editProfFormPageFooter">
-						<div class="editProfFormButtonContainer">
-							<button class="whiteButton editProfSave" data-current-page="general">Save</button>
-						</div>
-					</div>
+					<div id="status"></div>
+					<button id="save-project" class="btn btn-block whiteButton"><span id='save-btn-text'>Save project</span></button>
 					
 				<!-- ending general, class=editProfFormPage"-->
 				</div>
 			</form>
+			<!--div id='calendar'></div-->
 			<!-- ending editProfFormPageContainer-->
-			<div id='calendar'></div>
-		</div>	
-	  	<!-- ending editProfContentContainer-->
-	</div>
-	<!--div class="editProfContentWrapper"-->
-</div>
 
+	<!--ENDING 'project-wrapper'-->
+</div>
 {% endblock %}
 
 
@@ -113,7 +108,6 @@
 				center: 'title',
 				right: 'next'
 			},
-
 
 			defaultView: 'agendaWeek',
 			allDaySlot: false,
@@ -151,7 +145,11 @@
 			eventLimit: true, // allow "more" link when too many events
 			events: [ ]
 		});
-		
+
+		google.maps.event.addDomListener(window, 'load', initialize);
 	});
 	</script>
 {% endblock %}
+
+
+# Add ability to delete.
