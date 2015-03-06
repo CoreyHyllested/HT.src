@@ -1,140 +1,57 @@
 $(document).ready(function() {
-	if (window.location.hash) {
-		$(".editProfNavItem").removeClass("active");
-		var hash = window.location.hash.substring(1);
-
-		var currentNav = $(".editProfNavItem[data-target-page=" + hash + "]");
-		$('#'+hash).show();
-		history.replaceState({title: hash}, "", '');
-	} else {
-		// Default to first page
-		$('#general').show();
-		var currentNav = $(".editProfNavItem[data-target-page=general]");
-		history.replaceState({title: "#general"}, "", '');
-	}
-
-	//set current #PAGE as active, using a class/decorator.
-	currentNav.addClass("active");
-	$('.editProfHeaderPageName').text(currentNav.text());
-
-	window.onpopstate = function(event) {
-		if (event.state) {
-			var page_title = event.state.title;
-			$('.editProfFormPage').hide();
-			$("#"+page_title).show();
-		}
-	};
-
-	// Navigation
-	$(document).on("click", '.editProfNavItem:not(.disabled)', function() {
-		$('.editProfFormPage').hide();
-		$(".editProfNavItem").removeClass("active");
-		var target = $(this).attr("data-target-page");
-		$('.editProfHeaderPageName').text($(this).text());
-		$("#"+target).show();
-		$(this).addClass("active");
-		history.pushState({title: target}, "", '/project/edit#'+target);
+	$('.formField').focus(function(e) {
+		console.log(this);
+		$(this).nextAll(".formFieldError:first").html('');
 	});
 
-	$('.editProfFormButton').click(function(e) {
-		e.preventDefault();
-		$('.editProfFormPage').hide();
-		$(".editProfNavItem").removeClass("active");
-		var currentPage = $(this).attr("data-current-page");
-		var nextPage = $('#'+currentPage).next('.editProfFormPage').attr("id");
-		var nextNav = $(".editProfNavItem[data-target-page=" + nextPage + "]");
-		$('.editProfHeaderPageName').text(nextNav.text());
-		$('#'+nextPage).show();
-		nextNav.addClass("active");
-		history.pushState({title: nextPage}, "", '/project/edit#'+nextPage);
+	$('.formField').blur(function(e) {
+		$(this).css("border-color", "#e1e8ed");
 	});
 
-
-	$('.editProfFormPrevious').click(function(e) {
-		e.preventDefault();
-		$('.editProfFormPage').hide();	 
- 		$(".editProfNavItem").removeClass("active");
-		var currentPage = $(this).closest(".editProfFormPage").attr("id");
-		var prevPage = $('#'+currentPage).prev('.editProfFormPage').attr("id");
-		var prevNav = $(".editProfNavItem[data-target-page=" + prevPage + "]");
-		$('.editProfHeaderPageName').text(prevNav.text());
-		$('#'+prevPage).show();
-		prevNav.addClass("active");
-		history.pushState({title: prevPage}, "", '/project/edit#'+prevPage);
-	})
-
-
-	$(".editProfSave").click(function(e) {
+	$("#save-project").click(function(e) {
 		e.preventDefault();
 		saveProject();
 	});
-
-
-	$("#edit_rate").blur(function() {
-		var rate = $(this).val();
-		console.log("type of rate: "+typeof rate);
-
-		if (isNaN(rate)) { // string
-			console.log("Ok it's not a number");
-			$(this).val(0);
-			$(this).next(".formFieldCaption").text("Please only enter a number here.").fadeIn();
-		} else {
-			if (rate % 1 === 0) { // integer
-				$(this).next(".formFieldCaption").fadeOut().empty();
-			} else { // float
-				var rounded = Math.round(rate);
-				$(this).val(rounded);
-				$(this).next(".formFieldCaption").text("Please keep it to a whole dollar amount (or zero).").fadeIn();
-			}
-		}
-		setTimeout(function() {
-			$('.formFieldCaption').fadeOut(400);
-		}, 3000 );
-	})
-
-	if ($("#edit_oauth_stripe").val() != "") {
-		$("#edit_oauth_stripe").next(".formFieldCaption").text("Account number imported.").fadeIn();
-	}
 });
 
 
 
 function saveProject() {
-	formPage = 'none';
 	console.log("save project");
-	var fd = new FormData($('#editProfForm')[0]);
+	var fd = new FormData($('#project-details')[0]);
+	$.each(fd, function(k, v) {
+		console.log('project fd['+k+']='+v);
+	});
 
-	// reset all error indications.
-	$(".formFieldError").slideUp().html("");
+	// reset ALL error indicators
+	$(".formFieldError").html("");
 	$(".formField").css("border-color", "#e1e8ed");
 
-	console.log("calling AJAX.");		 	
 	$.ajax({ url	: "/project/update",
 			type	: "POST",
-			data : fd,
+			data	: fd,
 			processData: false,
   			contentType: false,
 			success : function(response) {
-			 	console.log(["success - saved.", response] );
-			 	console.log('setting proj_id ' + response.proj_id);
-				$('#proj_id').val(response.proj_id);				
+				$('#proj_id').val(response.proj_id);
 
-				if (formPage != "mentor") {
-					$("#"+formPage+" .editProfFormStatus").html("<span class='success'>Changes Saved.</span>").fadeIn(400);
-				}
-
+				console.log('Fade success in and out, set proj_id: ' + response.proj_id);
+				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 1000);
 				setTimeout(function() {
-					$('.editProfFormStatus').fadeOut(400);
-				}, 1600 );
-			}, 
+					$('#save-btn-text').text('Successfully Saved!').css('color', 'green');
+					$('#save-btn-text').fadeTo('slow', 1);
+				}, 3000);
+
+				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 5000);
+				setTimeout(function() {
+					$('#save-btn-text').text('Save project').css('color', '#29abe2');
+					$('#save-btn-text').fadeTo('slow', 1);
+				}, 7000);
+			},
 
 			error: function(xhr, status, error) {
-				console.log("project not saved.");
-
 				var err = JSON.parse(xhr.responseText);
 				var errors = err.errors;
-				
-				console.log("FORM ERRORS:");
 				console.log(JSON.stringify(errors));
 				showErrors(errors);
 			}
@@ -145,15 +62,13 @@ function saveProject() {
 
 
 function showErrors(errors) {
-	// iterate thru errors, highlight and navigation elements.
-
+	// highlight each error/element for users
 	$.each(errors, function(element, error) {
 		var e = "#"+element;
-		console.log("showErrors: " + element + ": " + error);
-		$(e).prevAll(".formFieldError:first").html(error).fadeIn();
-		$(e).css("border-color", "yellow");
+		console.log("error: " + element + " => " + error);
+		$(e).nextAll(".formFieldError:first").html(error).fadeIn();
+		$(e).css("border-color", "red");
 	});
-
-	$("#submit").find(".editProfFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
+	// create error count and set it on submit button; count down. 'Fix X errors and Submit'
 }
 
