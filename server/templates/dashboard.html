@@ -12,48 +12,50 @@
 
 
 
-{ % if errmsg != none % } <script>openAlertWindow('{{errmsg}}');</script> { % endif % }
+#EXAMPLE CODE
+	<!--div class="details">{{project.proj_desc}}</div-->
+	<!--div class="details">${{project.proj_max}}</div-->
+	{ % if errmsg != none % } <script>openAlertWindow('{{errmsg}}');</script> { % endif % }
+
 
 {% block content %}
 
-<div class="container">
-	<div class="dashboardLeftColumn">
-		
-		<div class="projects">
+<div class="container-fluid">
+	<div id='projects' class="col-lg-push-1 col-lg-7">
 			<h1>My Projects</h1>
-
 			{% for project in projects | sort(attribute='updated') %}
 			<div class="project" id="{{project.proj_id}}">
-				<div class="dashboardOfferLeftColumn">
+				<div class='row'>
+					<div class="dashboardOfferLeftColumn">
 						<div class="details" style='color: black;'>{{project.proj_name}}</div>
-						<!--div class="details">${{project.proj_max}}</div-->
-						<div class="details"><em>{{project.updated.strftime('%A, %b %d')}}</em></div>
-				</div>
+						<div class="details" style='font-size: .8em'><em>{{project.updated.strftime('%A, %b %d')}}</em></div>
+					</div>
 
-				<div class="dashboardOfferCenterColumn">
-						<div class="details">{{project.proj_desc}}</div>
-				</div>
+					<div class="dashboardOfferCenterColumn">
+						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Go to project</button></a>
+					</div>
 
-				<div class="dashboardOfferRightColumn">
-					<div class="dashboardOfferDetails">
-						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Go to project...</button></a>
+					<div class="dashboardOfferRightColumn">
+						<a href="#"><button class="blueButton">Schedule meeting...</a>
 					</div>
 				</div>
 
-				<br>
+				<!--div class='row'>
+					<div class="dashboardOfferLeftColumn">
+					</div>
+				</div-->
+
 
 				<div class="clear"></div>
 				<!-- ENDING PROJECT {{project.proj_id}} -->
 			</div>
 			{% endfor %}
-			<!-- ENDING PROJECTS -->
 
-		</div>
 		<a href="/project/edit"><button class="whiteButton">Add new project...</button></a>
 	</div>
 
 
-	<div class="profile">
+	<div class="col-lg-push-1 col-lg-3 profile">
 		<a href="/profile"><h1>{{bp.prof_name}}</h1></a>
 		<div class="stats">
 			<div class="location"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
@@ -66,13 +68,6 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
-	<script src="/static/js/maps.js"></script>
-	<script>
-		$(document).ready(function() {
-			google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
-		});
-	</script>
 {% endblock %}
 
 
@@ -80,6 +75,13 @@
 
 <!-- Unused code. 
 
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
+	<script src="/static/js/maps.js"></script>
+	<script>
+		$(document).ready(function() {
+			google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
+		});
+	</script>
 <a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
 
 right side.

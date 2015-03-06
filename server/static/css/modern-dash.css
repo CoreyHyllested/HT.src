@@ -17,9 +17,9 @@
 
 
 .profile {
-	margin-top: 20px; /* helps line up with dashboardLeftColumn projects h1 */
 	float: right;
-	width: 25%;
+	margin-top: 20px; /* helps line up with dashboardLeftColumn projects h1 */
+	/* width: 25%; */
 	background: lightgrey;
 	box-sizing: border-box;
 	padding: 10px;
@@ -56,14 +56,19 @@
 
 .project .details {
 	font-size: .9em;
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 	line-height: 1.2em;
 }
 
 
+.blueButton a {
+	color: white;
+}
+
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
 	.profile {
-		width: 95%;
+	/*	width: 95%; */
+		float: right;
 		margin: 0 0 75px;	/* full width in small device */
 	}
 }
