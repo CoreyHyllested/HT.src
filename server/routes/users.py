@@ -1622,17 +1622,18 @@ def api_update_project(usrmsg=None):
 				project.proj_addr	= form.proj_addr.data
 				project.proj_desc	= form.proj_desc.data
 				project.proj_min	= 0	#hardcoding to zero
-				project.proj_max	= form.proj_max.data	#Budget
+				project.proj_max	= form.proj_max.data	#rename_budget (budget_actual?)
 				project.timeline 	= form.proj_timeline.data
 				project.contact		= form.proj_contact.data
+				project.updated		= datetime.utcnow()
 
 
 				# in case of classic user fippery
-				if (project.proj_min > project.proj_max):
-					print 'Classic user fippery, SWAP!'
-					tmp = project.proj_min
-					project.proj_min = project.proj_max
-					project.proj_max = tmp
+#				if (project.proj_min > project.proj_max):
+#					print 'Classic user fippery, SWAP!'
+#					tmp = project.proj_min
+#					project.proj_min = project.proj_max
+#					project.proj_max = tmp
 
 #				print "api_proj_update: set day/time = ", form.avail_day.data, form.avail_time.data
 #				schedule_call = Availability.get_project_scheduled_time(project.proj_id)
