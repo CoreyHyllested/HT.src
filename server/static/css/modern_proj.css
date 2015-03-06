@@ -10,6 +10,19 @@
 		margin: 0 auto;
 }
 
+#actions {
+	margin: 10px auto;
+}
+
+#actions-next {
+	margin-top: 10px;
+}
+
+.underlined {
+	border-bottom: 1px solid darkgrey;
+}
+
+
 .project-wrapper {
 	background-color: white;
 	border-radius: 6px;
@@ -24,20 +37,23 @@
 	z-index: 30;
 }
 
-@media (max-width: 489px) {
+@media (min-width: 489px) {
 	.project-wrapper { margin: 20px 50px 75px; }
 }
 
-@media (min-width: 490px) and (max-width: 789px) {
+@media (min-width: 768px) {
+	.project-wrapper { margin: 20px 60px 75px; }
+	#save-project { visibility: visible !important; }
+	#actions { margin: 20px auto; }
+	#actions-next { margin-top: 25px; }
+}
+
+@media (min-width: 980px) {
 	.project-wrapper { margin: 20px 100px 75px; }
 }
 
-@media (min-width: 790px) and (max-width: 999px) {
-	.project-wrapper { margin: 20px 150px 75px; }
-}
-
-@media (min-width: 1000px) {
-	.project-wrapper { margin: 20px 250px 75px; }
+@media (min-width: 1200px) {
+	.project-wrapper { margin: 20px 200px 75px; }
 }
 
 #project-header {
@@ -56,9 +72,13 @@
 }
 
 
-/* not sure if the next 3 fields have impact, test this */
-#save-btn-text {
+/* not sure if the next 5 fields have impact, test this */
+.save-btn-text {
 } 
+
+#save-project {
+	visibility: hidden;
+}
 
 #basic-details {
 	display: block;
@@ -239,6 +259,13 @@ input[type='text'] {
 .formField.stack:last-of-type {
 	border-radius: 0 0 5px 5px;
 }
+
+
+input.disabled,
+.disabled p, 
+.disabled h3 {
+	 color: rgba(0,0,0,.4);
+} 
 
 input[type="text"].formField, select.formField {
 	height: 45px;
