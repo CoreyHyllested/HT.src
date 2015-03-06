@@ -1,202 +1,92 @@
+.page-content {
+	background: url('/static/img/background-blurred.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	overflow-x: hidden;	/* not sure why this is necessary here */
+}
+
 #calendar {
 		max-width: 900px;
 		margin: 0 auto;
 }
 
-.page-content {
-	background: url('/static/img/background-blurred.jpg') no-repeat center right;
-	background-position: 100% 30%;
-	background-size: cover;
-	height: 100%;
-	min-height: 620px;
-	overflow-x: hidden;
-	-moz-transition: 0.15s ease;
-	-o-transition: 0.15s ease;
-	-webkit-transition: 0.15s ease;
-	transition: 0.15s ease;
-	width: 100%;
-}
-
-.editProfContentWrapper {
+.project-wrapper {
 	background-color: white;
 	border-radius: 6px;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);	
-	margin: 12px auto 75px;
-	padding: 41px;
+	margin: 20px 50px 75px;
+	padding: 25px;
 	position: relative;
 	overflow: auto;
-	width: 980px;
-	min-height: 600px;
 	z-index: 30;
 }
 
-/* Header and Top Navigation */
-
-.editProfHeader {
+#project-header {
 	border-bottom: 1px solid #b0b4b7;
 	padding-bottom: 15px;		
-	margin-bottom: 10px;
-	width: 100%;
-	/*color: black;*/
-	float: left;
-}
-
-.editProfHeaderLeft {
-    float: left;
-	width: 25%;
-}
-
-.editProfHeaderRight {
-	float: left;
-	width: 75%;
-}
-
-.editProfTopLeftNavigation {
-	font-size: 1.1em;
-}
-
-.editProfTopLeftNavigation .navItem {
-	cursor: pointer;
-	padding-right: 36px;
-}
-
-.editProfTopLeftNavigation i {
-	font-size: .9em;
-}
-
-.editProfHeaderPageName {
-	color: rgba(0,0,0, 0.9);
-	font-size: 1.8em;
-	font-weight: 400;
-/*	line-height: 1.2em;*/
-	margin-bottom: 12px;
-}
-
-.editProfFlags {
-	display: none;
+	margin-bottom: 15px;
 	width: 100%;
 	float: left;
 }
 
-/* Main Content Areas */
-
-.editProfContentContainer {
-
+#status {
+	display: block;
+	height: 75px;
+	font-weight: bolder;
+	visibility: hidden;
 }
 
-.editProfLeftColumn {
-    float: left;
-    text-align: left;
-	width: 25%;
-}
 
-.editProfRightColumn {
-	float: right;
-	width: 75%;
-}
+/* not sure if the next 3 fields have impact, test this */
+.fw { width: 100%; }
 
-/* Left Navigation */
+#save-btn-text {
+    -moz-transition:color .2s ease-in;
+    -o-transition:color .2s ease-in;
+    -webkit-transition:color .2s ease-in;
+} 
 
-.editProfNavContainer {
-	padding-right: 38px;
-	margin-bottom: 36px;
-}	
-
-.editProfNavList {
-
-}
-.editProfNavListHeader {
-	color: rgba(0, 0, 0, 0.4);
-	font-size: .8em;
-	padding: 0px 0px 4px 4px;
-}
-
-.editProfNavItem {
-	color: rgba(0, 0, 0, 0.7);
+#saved-results {
 	position: relative;
-	height: 30px;
-	line-height: 30px;
-	font-size: 1em;
-	cursor: pointer;
-	-moz-transition: 0.2s ease;
-	-o-transition: 0.2s ease;
-	-webkit-transition: 0.2 ease;
-	transition: 0.2s ease;	
-	padding: 4px;
+	display: inline-block;
+	font-weight: bolder;
+	opacity: 0;
 }
 
-.editProfNavItem:hover {
-	background-color: rgba(0, 0, 0, 0.1);
-}
-.editProfNavItem.active {
-	background-color: rgba(0, 0, 0, 0.05);
-	font-weight: bold;
+
+#basic-details {
+	display: block;
+	width: 100%;
+	margin: 20px auto;
+	margin: 25px 0 24;
+	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
-.editProfNavItem.disabled {
-	color: rgba(0, 0, 0, 0.4);
-	cursor: default;
-}
 
-.editProfNavItem.disabled:hover {
-	background-color: inherit;
-}
-.editProfNavItem.disabled.active {
-	background-color: inherit;
-	font-weight: normal;
-}
 
-.editProfNavItem i {
-	font-size: .9em;
-	margin-left: 6px;
-	position: absolute;
-	right: 4px;
-	top: 33%;
-}
 
-.editProfNavItem i.progress {
-	display: none;
-	font-size: .8em;
-	margin-left: 6px;
-	position: absolute;
-	right: 24px;
-	top: 33%;
-	color: rgba(0,0,0,.5);
+/*
+	padding: 25px 0 24px;
+*/
+.scheduleMap {
+	background-color: rgba(0,0,0, 0.05);
+	border: 1px #e1e8ed solid;
+	border-radius: 0 0 3px 3px;
+	border-top: none;
+	margin-top: 3px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	height: 300px;
 }
+	/* float: left;	*/
 
-/* specific nav item for mentor activation */
-#editProfNavItemMentor {
-	/*display: none;*/
-	/*visibility: hidden;*/
-}
+
 
 /* nav items for mentor fields */
-.mentorNav {
-	opacity: 0.4;
-}
-
-
-/* Styles for the form container and pages */
-
-
-.editProfFormPageContainer {
-	/*min-height: 300px;*/
-}
-
-.editProfFormPageFooter {
-	float: left;
-	width: 100%;
-	margin-top: 24px;	
-}
-
-.editProfFormButtonContainer {
-	float: left;
-	text-align: left;
-
-}
 
 .editProfFormStatus {
 	color: rgba(0,0,0,.4);
@@ -213,11 +103,9 @@
 	width: 150px;
 	margin: 12px 0px;
 }
+
 .editProfSave {
 	width: 150px;
-}
-.editProfSave.final {
-	width: 250px;
 }
 
 .editProfFormButtonSubmit {
@@ -238,15 +126,6 @@
 .editProfFormCancel {
 	display: none;
 	cursor: pointer;
-}
-
-.editProfFormPage {
-	display: none;
-	float: left;
-/*	padding: 8px 0px 24px 0px;*/
-	width: 100%;
-	margin: 10px auto;
-	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
 
@@ -282,22 +161,34 @@
 	margin-left: 16px;
 }
 
-.formFieldInfo {
-	color: rgba(0,0,0,0.4);
-	font-size: .9em;
-	padding-bottom: 6px;
-	padding-top: 20px;
+.p10 {
+	margin: 10px auto;
 }
 
-.formFieldInfo.first {
-	padding-top: 0px;
-		
+.formFieldInfo {
+	color: rgba(0,0,0,0.4);	//set a color
+	height: 45px;
+	margin: 5px 0;
+	font-size: .9em;
+
+	/* override bootstrap */
+	padding-left: 5px;
+	padding-right: 5px;
 }
+
+input[type='text'] {
+	font-size: 1em;
+	/* for some reason the text is smaller than textarea */
+}
+/* .formFieldInfo.first { padding-top: 0px; } */
+
 
 .formFieldError {
 	display: none;
 	font-size: .7em;
 	color: #e75f63;
+	height: 45px;
+	overflow-y: auto;
 }
 
 .formFieldError.inline {
@@ -307,7 +198,7 @@
 
 .formFieldError.alt {
 	float: left;
-	height: 40px;
+	height: 45px;
 	line-height: 50px;
 	margin-left: 16px;
 	margin-top: 10px;
@@ -327,6 +218,9 @@
 }
 
 
+.formField:focus { border-color: black; }
+
+
 .formField.stack:first-of-type {
 	border-radius: 5px 5px 0 0;
 }
@@ -336,7 +230,7 @@
 }
 
 input[type="text"].formField, select.formField {
-	height: 40px;
+	height: 45px;
 }
 
 
@@ -344,21 +238,17 @@ input.formField:focus, select.formField:focus, textarea.formField:focus {
 	border: 1px #cccccc solid;
 }
 
+#proj_addr {
+	padding-bottom: 5px;
+}
+
 textarea.formField {
 	border-radius: 3px !important;
-	height: 235px;
+	padding-left: 5px;
 	resize: none;
 }
 
 /* Specific Form Fields */
-
-#mentor {
-	display: none;
-}
-
-#mentor .editProfFormPageFooter {
-	margin-top: 0px;
-}
 
 .editProfAvailDay {
 	position: relative;
@@ -382,57 +272,8 @@ textarea.formField {
 	top: 4px;
 }
 
-.statusElement {
-	position: relative;
-	margin-bottom: 4px;
-}
-
-.statusElement input[type="checkbox"]{
-	height: 20px;
-	width: 20px;
-	position: relative;
-	top: 4px;
-}
-
-.statusElement label {
-	color: rgba(0,0,0,.7);
-	font-size: .9em;
-	display: inline-block;
-	padding: 0px 10px 0px 6px;	
-}
 
 .editProfAvailDay .daySelector {
 	width: 20%;
 }
 
-#edit_photo {
-	display: none;
-}
-
-.editProfImageInfo {
-	width: 100%;
-	float: left;
-	margin: 12px 0px;
-	font-size: .9em;
-}
-
-.editProfImageButton {
-	width: 150px;
-	margin-top: 18px;
-	float: left;
-}
-
-.editProfImagePreview {
-	/*display: none;*/
-	border: 1px #cccccc solid;
-	padding: 3px;
-	width: 98%;
-	cursor: pointer;
-}
-
-
-/* Privacy & Notifications */
-
-input[type="checkbox"] {
-	display: inline;
-}
