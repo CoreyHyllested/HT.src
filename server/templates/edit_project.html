@@ -27,85 +27,81 @@
 <div class="project-wrapper">
 
 	<div id="project-header">
-		<div class="col-md-2 col-xs-2"> <a title="Back to dashboard" href="/dashboard">To Dashboard</a> </div>
-		<div class="col-md-8 col-xs-8 text-center"> Project Information </div>
+		<div class="col-md-3 col-xs-4"> <a title="Back to your dashboard" href="/dashboard">Dashboard</a> </div>
+		<div class="col-md-6 col-xs-8 text-center"> Project Information </div>
 	</div>
   
+		<div id="project" class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
 			<form id="project-details" enctype="multipart/form-data">
 				{{form.hidden_tag()}}
 				<div id="basic-details">
 					{{form.proj_id(placeholder="id") }}
 					<div class="container-fluid p10">
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">Project Name</div>
-						{{form.proj_name(placeholder="Update attic.", maxlength="40", class="formField first col-lg-10 col-md-8 col-xs-12")}}
-						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+						<div class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">Project Name</div>
+						{{form.proj_name(placeholder="Update attic.", maxlength="40", class="formField col-lg-9 col-md-9 col-xs-12")}}
+						<div class="formFieldError col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12"></div>
 					</div>
 
 					<div class="container-fluid p10">
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What are your goals?</div>
-						{{form.proj_desc(placeholder="I want to transform the attic above my garage into a studio to rent on Airbnb.", class="formField col-lg-10 col-md-8 col-xs-12")}}	
-						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+						<div class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">What are your goals?</div>
+						{{form.proj_desc(placeholder="I want to transform the attic above my garage into a studio to rent on Airbnb.", class="formField col-lg-9 col-md-9 col-xs-12")}}
+						<div class="formFieldError col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12"></div>
 					</div>
 
 					<div class="container-fluid p10">
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">Where is your home?</div>
-						{{form.proj_addr(placeholder='1050 Walnut Street, Suite 202, Boulder, CO 80302', class="formField col-lg-10 col-md-8 col-xs-12")}}
+						<div class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">Where is your home?</div>
+						{{form.proj_addr(placeholder='1050 Walnut Street, Suite 202, Boulder, CO 80302', class="formField col-lg-9 col-md-9 col-xs-12")}}
 						{% if form.proj_addr.data %}
-						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='{{form.proj_addr.data}}' data-uuid='4'></div>
+						<div class="scheduleMap col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12" id="map-canvas" data-location='{{form.proj_addr.data}}' data-uuid='4'></div>
 						{% else%}
-						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='1050 Walnut Street, Suite 202, Boulder, CO 80302' data-uuid='4'></div>
+						<div class="scheduleMap col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12" id="map-canvas" data-location='1050 Walnut Street, Suite 202, Boulder, CO 80302' data-uuid='4'></div>
 						{% endif %}
 					</div>
 
 					<div class="container-fluid p10">
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What is your timeline?</div>
-						{{form.proj_timeline(placeholder="I'd like to complete this project as soon as possible.", class="formField col-lg-10 col-md-8 col-xs-12")}}
-						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+						<div class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">What is your timeline?</div>
+						{{form.proj_timeline(placeholder="I'd like to complete this project as soon as possible.", class="formField col-lg-9 col-md-9 col-xs-12")}}
+						<div class="formFieldError col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12"></div>
 					</div>
 
 					<div class="container-fluid p10">
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What is your budget?</div>
-						{{form.proj_max(placeholder="$7000", maxlength="7", class="formField col-lg-10 col-md-8 col-xs-12")}}
-						<div class="formFieldError col-lg-1 col-md-2 col-xs-6"></div>
+						<div class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">What is your budget?</div>
+						{{form.proj_max(placeholder="$7000", maxlength="7", class="formField col-lg-9 col-md-9 col-xs-12")}}
+						<div class="formFieldError col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12"></div>
+					</div>
+
+					<div class='container-fluid p10'>
+						<div title='This is only needed if you want to schedule a time where we call you' class="formFieldInfo  col-lg-3 col-md-3 col-xs-6">Phone number?</div>
+						{{form.proj_contact(placeholder="(555) 303-1234", title="(optional)", class="formField col-lg-9 col-md-9 col-xs-12")}} 
+						<div class="formFieldError col-lg-push-3 col-lg-9 col-md-push-3 col-md-9 col-xs-12"></div>
 					</div>
 
 					<!--div class='container-fluid'>
-						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">What is your phone number?</div>
-						{{form.proj_contact(placeholder="(555) 303-1234", class="formField col-lg-3 col-md-8 col-xs-12")}} 
-						<div class="formFieldError"></div>
-					</div>
-
-					<div class='container-fluid'>
 						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">When should we reach out?</div>
 						<div id='calendar' class='col-lg-10 col-md-8 col-xs-12'></div>
 					</div-->
 
-					<!--div class="container-fluid">
-						<div class="formFieldInfo first">Schedule when you are available to have us call you.  It should take about 30 minutes.  All times are in Mountain Standard Time (MST).  </div>
-						<fieldset id="editProfAvailTimes">
-							<div class="editProfAvailDay">
-								{ {form.avail_day(id="day", class="daySelector")}} <label for="sun">What Day?</label>
-								{ {form.avail_time(class="formField timeSelector span2")}}
-							</div> 	
-						</fieldset>
-					</div-->
-
-					<div id="learn-more" class="container-fluid text-center">
-						<h3>Next step?</h3>
-						<div class="col-lg-push-4 col-lg-4 col-md-push-4 col-md-4 col-xs-12">
-							<div id="learn-phone" class="">
-								<button class="btn btn-block whiteButton">We'll call you </button>
-							</div>
-							<div id="learn-email" class="">
-								<button class="btn btn-block whiteButton">We'll email you </button>
-							</div>
-						</div>
+					<br>
+					<div class="container-fluid p10">
+						<button class="btn btn-block whiteButton save-project"><span class='save-btn-text'>Save project</span></button>
 					</div>
-
-					<button id="save-project" class="btn btn-block whiteButton"><span id='save-btn-text'>Save project</span></button>
-					
 				</div>
 			</form>
+		</div>
+
+		<div id="actions" class="col-lg-3 col-md-3 col-sm-3 col-xs-12">
+			<button id="save-project" class="btn btn-block whiteButton save-project"><span class='save-btn-text'>Save project</span></button>
+			<div id="actions-next" class="disabled">
+				<h3 class="underlined">Next Steps.</h3>
+				<p>
+					Schedule time with our experts so we can better understand your project.  We will find the best craftsperson for your project, help schedule the work, and we guauntee the quality of our projects.
+				</p>
+				<p>
+					<button id="schedule_phone" class="btn btn-block blueButton disabled">Schedule call</button>
+					<button id="schedule_email" class="btn btn-block blueButton disabled">Request email</button>
+				</p>
+			</div>
+		</div>
 
 </div>
 {% endblock %}
