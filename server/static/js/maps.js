@@ -1,6 +1,6 @@
-// Insprite's GoogleMap API Wrapper.
+// GoogleMap API Wrapper.
 
-var DEBUG = 0;
+var DEBUG = 1;
 
 if (DEBUG) { console.log('loading maps.js...'); }
 var geocoder1;
@@ -10,56 +10,54 @@ var geocoder = new google.maps.Geocoder();
 var markers = [];
 
 
-function cal_map(address, id) {
-	if (DEBUG) { console.log('cal_map(' + address + ',' + id + ')\tenter'); }
-    geocoder1 = new google.maps.Geocoder();
-    geocoder1.geocode({
-        'address': address
-    }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            var myOptions = {
-                zoom: 14,
-                center: results[0].geometry.location,
-                mapTypeControl: false,
-                mapTypeId: google.maps.MapTypeId.ROADMAP
-            }
-			if (DEBUG) { console.log('cal_map(' + address + ',' + id + ')\t set map1'); }
-            map1 = new google.maps.Map(document.getElementById("map-canvas-cal-" + id), myOptions);
+if (DEBUG) { console.log('maps.js\tdefine init_canvas()'); }
+function init_canvas(map_canvas, map_options, map_searchbox) {
+	map_id = $(map_canvas).data('uuid');
+	map_location = $(map_canvas).data('location');
 
-            var marker = new google.maps.Marker({
-                map: map1,
-                position: results[0].geometry.location
-            });
-        }
-    });
+	if (DEBUG) { console.log('init_canvas()\t initialize canvas ('+map_id+')\t' + map_location); }
+	if ($(map_canvas) != null) {
+		//set center to Boulder or Berkeley?
+		map_options.center = new google.maps.LatLng(39.968430, -105.153975);
+		var map = new google.maps.Map(map_canvas, map_options);
+
+		// create search box and link it to UI element.
+		var searchBox = null;
+		if (map_searchbox != null) {
+			if (DEBUG) { console.log('init_canvas()\t.  Use map_searchbox, != null'); }
+			searchBox = new google.maps.places.SearchBox(map_searchbox);
+
+			// Listen for event fired when user selects an item from pick list. Retrieve the matching places for that item.
+			if (DEBUG) { console.log('init_canvas()\t addListener to \'places_changed\' (drop-down picklist)'); }
+			google.maps.event.addListener(searchBox, 'places_changed', function() { map_places_changed(map, searchBox); });
+		}
+
+		// Bias SearchBox results towards places that are within the bounds of the current map's viewport.
+		if (DEBUG) { console.log('dash_canvas_initialize()\t addListener to \'bounds_changed\''); }
+		google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
+
+		geocoder.geocode({'address': map_location}, function (results, status) {
+				if (DEBUG) { console.log('init_canvas()\tgeocode\tresults for ' + map_location); }
+				geocode_result_handler(results, status, map);
+		 });
+	}
 }
 
-
 function initialize() {
-	if (DEBUG) { console.log('initialize()\tdefine mapOptions'); }
-	var mapOptions = {
-		zoom: 6,
-		mapTypeControl: false,
-		streetViewControl: false,
-		center: new google.maps.LatLng(35.730885,-120.007383),
-		mapTypeId: 'roadmap'
-	}
-
-	if (DEBUG) { console.log('initialize()\tfind map-canvas'); }
 	if (document.getElementById('map-canvas') != null) {
 		if (DEBUG) { console.log('initialize()\tmap-canvas not null'); }
 		map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
 		// Create search box and link it to the UI element.
-		if (DEBUG) { console.log('initialize()\tderp-derp.  Use prop_location'); }
-		var input = document.getElementById('prop_location');
+		if (DEBUG) { console.log('initialize()\tderp-derp.  Use proj_addr'); }
+		var input = document.getElementById('proj_addr');
 		var searchBox = new google.maps.places.SearchBox(input);
 	
 		// Listen for the event fired when the user selects an item from the
-		// pick list. Retrieve the matching places for that item.
-		if (DEBUG) { console.log('initialize()\tind map-canvas'); }
+		// pick list. Retrieve the matching place for that item.
+		if (DEBUG) { console.log('initialize()\tmap-canvas'); }
 		google.maps.event.addListener(searchBox, 'places_changed', function() {
-			if (DEBUG) { console.log('initialize()\tplaces_changed()\tenter'); }
+			if (DEBUG) { console.log('places_changed()\tenter'); }
 			var places = searchBox.getPlaces();
 
 			for (var i = 0, marker; marker = markers[i]; i++) {
@@ -187,42 +185,6 @@ function geocode_result_handler(result, status, map) {
 }
 
 
-if (DEBUG) { console.log('maps.js\tdefine init_canvas()'); }
-function init_canvas(map_canvas, map_options, map_searchbox) {
-	map_id = $(map_canvas).data('uuid');
-	map_location = $(map_canvas).data('location');
-
-	if (DEBUG) { console.log('init_canvas()\t initialize canvas ('+map_id+')\t' + map_location); }
-	if ($(map_canvas) != null) {
-		if (DEBUG) { console.log('init_canvas()\tcanvas is not null'); }
-		map_options.center = new google.maps.LatLng(39.968430, -105.153975);
-		if (DEBUG) { console.log('init_canvas()\tpre\tmap_options.center = ', map_options.center); }
-
-		var map = new google.maps.Map(map_canvas, map_options);
-		if (DEBUG) { console.log('init_canvas()\tpst\tmap_options.center = ', map_options.center); }
-
-		// create search box and link it to UI element.
-		var searchBox = null;
-		if (map_searchbox != null) {
-			if (DEBUG) { console.log('init_canvas()\t.  Use map_searchbox, != null'); }
-			searchBox = new google.maps.places.SearchBox(map_searchbox);
-
-			// Listen for event fired when user selects an item from pick list. Retrieve the matching places for that item.
-			if (DEBUG) { console.log('init_canvas()\t addListener to \'places_changed\' (drop-down picklist)'); }
-			google.maps.event.addListener(searchBox, 'places_changed', function() { map_places_changed(map, searchBox); });
-		}
-
-		// Bias SearchBox results towards places that are within the bounds of the current map's viewport.
-		if (DEBUG) { console.log('dash_canvas_initialize()\t addListener to \'bounds_changed\''); }
-		google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
-
-		geocoder.geocode({'address': map_location}, function (results, status) {
-				if (DEBUG) { console.log('init_canvas()\tgeocode\tresults for ' + map_location); }
-				geocode_result_handler(results, status, map);
-		 });
-	}
-}
-
 
 var mapOptions = {
 	zoom: 6,
@@ -232,6 +194,13 @@ var mapOptions = {
 	mapTypeId: 'roadmap'
 }
 
+
+function initialize_map(map_canvas_eid, map_search_eid, options) {
+		map_canvas	= $('#'+map_canvas_eid);
+		map_search	= $('#'+map_search_eid);
+		map_options	= (options) ? options : mapOptions; 
+		init_canvas(map_canvas, map_options, map_search);
+}
 
 function initialize_all_dashboard_maps() {
 	$.each($('.scheduleMap'), function(idx, map) {
