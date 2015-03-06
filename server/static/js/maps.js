@@ -12,34 +12,30 @@ var markers = [];
 
 if (DEBUG) { console.log('maps.js\tdefine init_canvas()'); }
 function init_canvas(map_canvas, map_options, map_searchbox) {
-	map_id = $(map_canvas).data('uuid');
 	map_location = $(map_canvas).data('location');
 
-	if (DEBUG) { console.log('init_canvas()\t initialize canvas ('+map_id+')\t' + map_location); }
 	if ($(map_canvas) != null) {
-		//set center to Boulder or Berkeley?
-		map_options.center = new google.maps.LatLng(39.968430, -105.153975);
 		var map = new google.maps.Map(map_canvas, map_options);
 
-		// create search box and link it to UI element.
 		var searchBox = null;
 		if (map_searchbox != null) {
+			// a searchbox exists; link the UI element (map_searchBox) to the map.
 			if (DEBUG) { console.log('init_canvas()\t.  Use map_searchbox, != null'); }
 			searchBox = new google.maps.places.SearchBox(map_searchbox);
 
-			// Listen for event fired when user selects an item from pick list. Retrieve the matching places for that item.
+			// listen for event, user selected an item from picklist; grab matching places and put on map.
 			if (DEBUG) { console.log('init_canvas()\t addListener to \'places_changed\' (drop-down picklist)'); }
 			google.maps.event.addListener(searchBox, 'places_changed', function() { map_places_changed(map, searchBox); });
 		}
 
 		// Bias SearchBox results towards places that are within the bounds of the current map's viewport.
-		if (DEBUG) { console.log('dash_canvas_initialize()\t addListener to \'bounds_changed\''); }
+		if (DEBUG) { console.log('init_canvas()\t addListener to \'bounds_changed\''); }
 		google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
 
 		geocoder.geocode({'address': map_location}, function (results, status) {
 				if (DEBUG) { console.log('init_canvas()\tgeocode\tresults for ' + map_location); }
 				geocode_result_handler(results, status, map);
-		 });
+		});
 	}
 }
 
@@ -100,6 +96,13 @@ function initialize() {
 			if (DEBUG) { console.log('initialize()\tbounds_changed() - get and set bounds'); }
 			var bounds = map.getBounds();
 			searchBox.setBounds(bounds);
+		});
+
+		map_location = $('#map-canvas').data('location');	//hardcoded to element ID
+		console.log(map_location);
+		geocoder.geocode({'address': map_location}, function (results, status) {
+				if (DEBUG) { console.log('init_canvas()\tgeocode\tresults for ' + map_location); }
+				geocode_result_handler(results, status, map);
 		});
 	};
 }
@@ -190,22 +193,26 @@ var mapOptions = {
 	zoom: 6,
 	mapTypeControl: false,
 	streetViewControl: false,
-	center: new google.maps.LatLng(35.730885,-120.007383),
+	center: new google.maps.LatLng(40.0274, -105.2519),
 	mapTypeId: 'roadmap'
-}
+};
 
 
-function initialize_map(map_canvas_eid, map_search_eid, options) {
-		map_canvas	= $('#'+map_canvas_eid);
-		map_search	= $('#'+map_search_eid);
-		map_options	= (options) ? options : mapOptions; 
-		init_canvas(map_canvas, map_options, map_search);
+function initialize_project_map() {
+	map_canvas	= $('#map-canvas');	//hardcoded to element ID
+	map_search	= $('#project_addr');
+	map_options	= mapOptions;
+
+	//map_canvas	= $('#'+map_canvas_eid);
+	//map_search	= $('#'+map_search_eid);
+	//map_options	= (options) ? options : mapOptions;
+	init_canvas(map_canvas, map_options, map_search);
 }
 
 function initialize_all_dashboard_maps() {
 	$.each($('.scheduleMap'), function(idx, map) {
 		if (DEBUG) { console.log('initialize_all_dashboard_maps()\t initialize canvas ('+idx+')'); }
-		maps_search_input = null
+		maps_search_input = null;
 		init_canvas(map, mapOptions, maps_search_input);
 	});
 }
