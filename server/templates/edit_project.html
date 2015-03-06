@@ -49,8 +49,12 @@
 
 					<div class="container-fluid p10">
 						<div class="formFieldInfo  col-lg-2 col-md-2 col-xs-6">Where is your home?</div>
-						{{form.proj_addr(placeholder="Address", class="formField col-lg-10 col-md-8 col-xs-12")}}
-						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='Boulder, CO' data-uuid='4'></div>
+						{{form.proj_addr(placeholder='1050 Walnut Street, Suite 202, Boulder, CO 80302', class="formField col-lg-10 col-md-8 col-xs-12")}}
+						{% if form.proj_addr.data %}
+						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='{{form.proj_addr.data}}' data-uuid='4'></div>
+						{% else%}
+						<div class="scheduleMap col-lg-push-2 col-lg-10 col-md-push-2 col-md-8 col-xs-12" id="map-canvas" data-location='1050 Walnut Street, Suite 202, Boulder, CO 80302' data-uuid='4'></div>
+						{% endif %}
 					</div>
 
 					<div class="container-fluid p10">
