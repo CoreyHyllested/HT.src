@@ -8,10 +8,22 @@ $(document).ready(function() {
 		$(this).css("border-color", "#e1e8ed");
 	});
 
-	$("#save-project").click(function(e) {
+	$(".save-project").click(function(e) {
 		e.preventDefault();
 		saveProject();
 	});
+
+	$('#schedule_phone').click(function(e) {
+		e.preventDefault();
+		error = { 'proj_contact' : 'Required for us to call you.' };
+		if ($('#proj_contact').val() == '') {
+			showErrors(error);
+		} else {
+			alert('If you haven\'t, save the phone number.  We\'ll call you this week');
+		}
+	});
+
+	enableNS();
 });
 
 
@@ -36,18 +48,18 @@ function saveProject() {
 				$('#proj_id').val(response.proj_id);
 
 				console.log('Fade success in and out, set proj_id: ' + response.proj_id);
-				$('#save-btn-text').fadeTo('slow', 0);
+				$('.save-btn-text').fadeTo('slow', 0);
 				setTimeout(function() {
-					$('#save-btn-text').text('Successfully Saved!').css('color', 'green');
-					$('#save-btn-text').fadeTo('slow', 1);
+					$('.save-btn-text').text('Successfully Saved!').css('color', 'green');
+					$('.save-btn-text').fadeTo('slow', 1);
 				}, 1000);
 
-				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 3000);
+				setTimeout(function() { $('.save-btn-text').fadeTo('slow', 0); }, 3000);
 				setTimeout(function() {
-					$('#save-btn-text').text('Save project').css('color', '#29abe2');
-					$('#save-btn-text').fadeTo('slow', 1);
+					$('.save-btn-text').text('Save project').css('color', '#29abe2');
+					$('.save-btn-text').fadeTo('slow', 1);
 				}, 5000);
-				//$('#learn-more').slideDown();
+				enableNS();
 			},
 
 			error: function(xhr, status, error) {
@@ -58,6 +70,17 @@ function saveProject() {
 			}
 	});
 	return false;
+}
+
+function enableNS() {
+	id = $('#proj_id').val();
+
+	if (id != 'new') {
+		$.each($('.disabled'), function () {
+			console.log('nextstep class elem ' + $(this));
+			$(this).removeClass('disabled');
+		});
+	}
 }
 
 
