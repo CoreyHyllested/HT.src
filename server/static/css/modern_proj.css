@@ -41,21 +41,8 @@
 
 
 /* not sure if the next 3 fields have impact, test this */
-.fw { width: 100%; }
-
 #save-btn-text {
-    -moz-transition:color .2s ease-in;
-    -o-transition:color .2s ease-in;
-    -webkit-transition:color .2s ease-in;
 } 
-
-#saved-results {
-	position: relative;
-	display: inline-block;
-	font-weight: bolder;
-	opacity: 0;
-}
-
 
 #basic-details {
 	display: block;
@@ -65,8 +52,20 @@
 	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
+#learn-more{
+	box-sizing: border-box;
+	display: none;
+}
 
+#learn-email {
+	float: right;
+	width: 40%;
+}
 
+#learn-phone {
+	float: left;
+	width: 40%;
+}
 
 /*
 	padding: 25px 0 24px;
@@ -205,10 +204,6 @@ input[type='text'] {
 }
 
 
-.formContainer {
-	margin-bottom: 20px;
-}
-
 .formField {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -247,33 +242,3 @@ textarea.formField {
 	padding-left: 5px;
 	resize: none;
 }
-
-/* Specific Form Fields */
-
-.editProfAvailDay {
-	position: relative;
-	margin-bottom: 4px;
-	width: 100%;
-}
-
-.editProfAvailDay label {
-	color: rgba(0,0,0,.7);
-	font-size: 1em;
-	font-weight: 600;
-	display: inline-block;
-	padding: 0px 10px 0px 6px;	
-	width: 100px;
-}
-
-.editProfAvailDay input[type="checkbox"]{
-	height: 20px;
-	width: 20px;
-	position: relative;
-	top: 4px;
-}
-
-
-.editProfAvailDay .daySelector {
-	width: 20%;
-}
-
