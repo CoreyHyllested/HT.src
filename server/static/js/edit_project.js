@@ -36,17 +36,18 @@ function saveProject() {
 				$('#proj_id').val(response.proj_id);
 
 				console.log('Fade success in and out, set proj_id: ' + response.proj_id);
-				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 1000);
+				$('#save-btn-text').fadeTo('slow', 0);
 				setTimeout(function() {
 					$('#save-btn-text').text('Successfully Saved!').css('color', 'green');
 					$('#save-btn-text').fadeTo('slow', 1);
-				}, 3000);
+				}, 1000);
 
-				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 5000);
+				setTimeout(function() { $('#save-btn-text').fadeTo('slow', 0); }, 3000);
 				setTimeout(function() {
 					$('#save-btn-text').text('Save project').css('color', '#29abe2');
 					$('#save-btn-text').fadeTo('slow', 1);
-				}, 7000);
+				}, 5000);
+				//$('#learn-more').slideDown();
 			},
 
 			error: function(xhr, status, error) {
