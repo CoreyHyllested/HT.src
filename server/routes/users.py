@@ -1271,10 +1271,6 @@ def render_schedule_page():
 	if (mentor is None):
 		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
 
-	if (ba.status == Account.USER_UNVERIFIED):
-		session['messages'] = 'We require a verified email prior to scheduling'
-		return make_response(redirect(url_for('insprite.render_settings', nexturl='/schedule?mentor='+request.args.get('mentor')+'&lesson='+request.args.get('lesson'))))
-
 
 	form.prop_mentor.data = mentor.prof_id
 
@@ -1562,7 +1558,7 @@ def render_edit_project(pid=None):
 		form.proj_name.data	= project.proj_name
 		form.proj_addr.data = project.proj_addr
 		form.proj_desc.data = project.proj_desc
-		form.proj_min.data	= project.proj_min
+#		form.proj_min.data	= project.proj_min
 		form.proj_max.data	= project.proj_max
 		form.proj_timeline.data	= project.timeline
 		form.proj_contact.data	= project.contact
@@ -1571,8 +1567,8 @@ def render_edit_project(pid=None):
 		schedule_call = Availability.get_project_scheduled_time(project.proj_id)
 		if (schedule_call is not None):
 				print "render_edit_project: setting values to ", str(schedule_call.avail_weekday), str(schedule_call.avail_start), str(schedule_call.avail_start)[:-3]
-				form.avail_day.data  = schedule_call.avail_weekday
-				form.avail_time.data = str(schedule_call.avail_start)[:-3]
+#				form.avail_day.data  = schedule_call.avail_weekday
+#				form.avail_time.data = str(schedule_call.avail_start)[:-3]
 	else:
 		# set proj_id to 'new'
 		form.proj_id.data	= 'new'
@@ -1599,7 +1595,8 @@ def api_update_project(usrmsg=None):
 
 	# validate all data manually. 
 	form = ProjectForm(request.form)
-	print "api_proj_update: day", form.avail_day.data, form.avail_time.data
+#	print "api_proj_update: day", form.avail_day.data, form.avail_time.data
+
 	try:
 		errors = "CAH, no errors"
 		if form.validate_on_submit():
@@ -1624,8 +1621,8 @@ def api_update_project(usrmsg=None):
 				project.proj_name	= form.proj_name.data
 				project.proj_addr	= form.proj_addr.data
 				project.proj_desc	= form.proj_desc.data
-				project.proj_min	= form.proj_min.data
-				project.proj_max	= form.proj_max.data
+				project.proj_min	= 0	#hardcoding to zero
+				project.proj_max	= form.proj_max.data	#Budget
 				project.timeline 	= form.proj_timeline.data
 				project.contact		= form.proj_contact.data
 
@@ -1637,22 +1634,22 @@ def api_update_project(usrmsg=None):
 					project.proj_min = project.proj_max
 					project.proj_max = tmp
 
-				print "api_proj_update: set day/time = ", form.avail_day.data, form.avail_time.data
-				schedule_call = Availability.get_project_scheduled_time(project.proj_id)
-				print "api_proj_update: ", str(schedule_call)
-				if (schedule_call is None):
+#				print "api_proj_update: set day/time = ", form.avail_day.data, form.avail_time.data
+#				schedule_call = Availability.get_project_scheduled_time(project.proj_id)
+#				print "api_proj_update: ", str(schedule_call)
+#				if (schedule_call is None):
 					# create new availabliity.
-					schedule_call = Availability(bp, project.proj_id)
+#					schedule_call = Availability(bp, project.proj_id)
 
-				print "api_proj_update: adding time/date"
-				schedule_call.avail_weekday = form.avail_day.data
-				schedule_call.avail_start =  form.avail_time.data
+#				print "api_proj_update: adding time/date"
+#				schedule_call.avail_weekday = form.avail_day.data
+#				schedule_call.avail_start =  form.avail_time.data
 			
 
 
 				print "api_proj_update: add"
 				db_session.add(project)
-				db_session.add(schedule_call)
+#				db_session.add(schedule_call)
 				db_session.commit()
 				return jsonify(usrmsg="project updated", proj_id=project.proj_id), 200
 			else:

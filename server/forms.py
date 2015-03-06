@@ -240,15 +240,15 @@ class LessonForm(Form):
 class ProjectForm(Form):
 	proj_id		= HiddenField('id')
 	proj_name	= TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
-	proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
-	proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
-	proj_min	= IntegerField('Minimum')
-	proj_max	= IntegerField('Maximum')
+	proj_addr	= TextField('Address', [validators.length(min=0, max=128)])
+	proj_desc	= TextAreaField('Project Description', [validators.Required(), validators.length(min=0, max=5000)])
+	#proj_min	= IntegerField('Minimum')
+	proj_max	= IntegerField('Budget')
 	proj_timeline	= TextField('Timeline')
 	proj_contact	= TextField('Contact')
 
-	avail_day = SelectField('Day', coerce=int, choices=Days)
-	avail_time = SelectField('Start time', coerce=str, choices=NTS_times_start)
+	#avail_day = SelectField('Day', coerce=int, choices=Days)
+	#avail_time = SelectField('Start time', coerce=str, choices=NTS_times_start)
 
 
 
