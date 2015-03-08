@@ -7,8 +7,6 @@
 	<link type="text/css" rel="stylesheet" href="/static/css/edit_portfolio.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lesson_form.css">
 	<link type="text/css" rel="stylesheet" href="/static/css/lightbox.css">
-
-
 {% endblock %}
 
 {% block content %}
@@ -36,11 +34,11 @@
 		<div class="lessonHeaderCenter">
 			<div class="lessonHeaderPageName">
 			{% if version == "first" %}
-				All righty! Let's create your first lesson!
+				All right. Let's create your first Experience!
 			{% elif version == "edit" %}
-				Editing Lesson: {{lesson_title}}
+				Editing Experience: {{lesson_title}}
 			{% else %}
-				Create a Lesson				
+				Create an Experience
 			{% endif %}			
 			</div>
 			<div class="lessonHeaderPageStatus" data-flags="{{lesson_flags}}">
@@ -84,7 +82,7 @@
 				{% endif %}
 				<div id="overview" class="lessonFormPage">
 					<div class="formElement">
-						<div class="formFieldInfo first">What lesson or instruction do you want to offer?</div>
+						<div class="formFieldInfo first">What experience are you offering?</div>
 
 						{% if form.lessonTitle.errors %}
         					<div class="formFieldErrors">{% for error in form.lessonTitle.errors %}<div class="formFieldError">{{ error }}</div>{% endfor %}</div>
