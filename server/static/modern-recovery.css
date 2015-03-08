@@ -1,0 +1,109 @@
+/*
+There are two responsive design ranges for the password recovery page (recovery.html):
+a) 240px - 349px (phones)
+b) 350px - ... (everything else)
+
+/* COMMON ELEMENTS */
+
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
+}
+
+.recoveryLink:hover {
+	text-decoration: underline;
+}
+
+.recoveryContentWrapper input[type="email"], input[type="password"] {
+	border-radius: 5px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 20px 0 20px;
+	width: 100%;
+}
+
+.recoveryContentWrapper input[type="submit"] {
+	margin-bottom: 15px;
+	width: 100%;
+}
+
+.recoveryInstructions {
+	font-size: 0.9em;
+	line-height: 1.35em;
+	text-align: center;
+}
+
+
+/* PHONE DESIGN */
+@media only screen and (min-device-width: 240px) and (max-width: 349px) {
+
+	.pageWrapper {
+		background-color: white;
+		height: 100%;
+		min-height: 380px;
+	}
+	.recoveryContentWrapper {
+		margin: auto;
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 90%;
+	}
+
+	h2 {
+		margin: 20px auto 10px;
+		text-align: center;
+	}
+	
+}
+
+/* DESIGN FOR EVERYTHING ELSE */
+@media only screen and (min-width: 350px) {
+
+	/* Recovery panel slides into view */
+	@-moz-keyframes modalAppear {
+		0% {opacity: 0; margin-top: 200px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@-webkit-keyframes modalAppear {
+		0% {opacity: 0; margin-top: 200px;}
+		100% {opacity: 1; margin-top: 40px;}
+	}
+
+	@keyframes modalAppear {
+		from {opacity: 0; margin-top: 200px;}
+		to {opacity: 1; margin-top: 40px;}
+	}
+
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 460px;
+		overflow-x: hidden;
+		width: 100%;		
+	}
+
+	.recoveryContentWrapper {
+/*		-moz-animation: modalAppear 1s;
+		-o-animation: modalAppear 1s;
+		-webkit-animation: modalAppear 1s;
+		animation: modalAppear 1s;*/
+		background-color: white;
+		border-radius: 6px;
+		box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+		margin: 40px auto 30px;
+		padding: 20px 20px 10px;
+		width: 300px;
+	}
+
+	h2 {
+		margin: 0 auto 20px;
+		text-align: center;
+	}
+}
