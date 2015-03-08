@@ -24,7 +24,7 @@ class Config:
 	MAX_CONTENT_LENGTH = 2**23			# Maxiumum size of request cannot exeed 8MB.
 	SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
-	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@beta3.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@soulcrafting.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432/scdb'
 	SQLALCHEMY_MIGRATE_REPO = HT_BASEDIR + '/database/'
 	DATABASE_QUERY_TIMEOUT = 1.0
 
@@ -86,7 +86,7 @@ class ProductionConfig(Config):
 	#COMPRESS_MIN_SIZE=500
 	#COMPRESS_DEBUG=True
 
-	SQLALCHEMY_DATABASE_URI = 'postgresql://htdb:passw0rd@htdb.cesf5wqzwzr9.us-east-1.rds.amazonaws.com:5432/htdb'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@soulcrafting.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432/scdb'
 	REDIS_URL='redis://ht-redis.h6fyv6.0001.use1.cache.amazonaws.com:6379/'
 	JSFILTER='jsmin'
 
