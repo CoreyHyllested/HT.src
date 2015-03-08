@@ -121,12 +121,20 @@ html, body { height: 100%; }
 }
 
 
+.blueButton {
+	text-transform: uppercase;
+	color: white;
+}
+.blueButton:hover {
+	color: rgba(255,255,255,.8);
+}
+
 
 
 /* rename this --just--  signup section */
 .access-section.signup-section .title,
 .access-section.login-section .title {
-  margin-bottom: 50px;
+	margin-bottom: 50px;
 }
 
 .access-section .form-box .form-box-inner {
