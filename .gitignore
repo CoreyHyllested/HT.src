@@ -48,3 +48,8 @@ nosetests.xml
 .pydevproject
 .elasticbeanstalk/
 server/static/.webassets-cache/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
