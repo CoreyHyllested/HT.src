@@ -70,9 +70,13 @@ min-height: 55px;
 }
 
 .project .details {
-	font-size: .9em;
+	font-size: 1em;
 	margin-bottom: 4px;
 	line-height: 1.2em;
+}
+
+.project .details.minor {
+	font-size: .9em;
 }
 
 
