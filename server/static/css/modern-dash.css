@@ -42,6 +42,11 @@ min-height: 55px;
 */
 }
 
+#btn-95 {
+	width: 95%;
+	margin: 10px;
+}
+
 #projects #header {
 	width: 95%;
 	margin: 10px;
