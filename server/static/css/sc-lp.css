@@ -17,6 +17,10 @@
 	line-height: 1.0em;
 }
 
+.panel-heading h1 {
+	font-size: 64px;
+}
+
 
 .darkgrey-background {
 	/* positioning */
