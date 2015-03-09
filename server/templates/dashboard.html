@@ -9,13 +9,11 @@
 {% endblock %}
 
 
-{% block content %}
-<div id='dashboard-wrapper'>
+{% block content %} <div id='dashboard-wrapper'>
 	<div id='dashboard' class='container-fluid'>
 		<div id='projects' class="col-lg-push-1 col-lg-7 col-md-push-1 col-md-7 col-sm-8 col-xs-12">
-			<!--a href="/project/edit/new"><button class="whiteButton">PROJECT LIST</button></a-->
 			<h2 id='header'>My Projects</h2>
-		
+
 			{% for project in projects | sort(attribute='updated') %}
 				<div class="project" id="{{project.proj_id}}">
 					<div class='col-lg-4				col-md-5						col-sm-6		 			col-xs-6'>
@@ -35,6 +33,7 @@
 					-->
 				</div>
 			{% endfor %}
+			<a href="/project/edit/new"><button id="btn-95" class="whiteButton">Create new project...</button></a>
 		</div>
 
 		<section id='profile-wrapper' class="col-lg-push-1 col-lg-3 col-md-push-1 col-md-4 col-sm-4 col-xs-12">
@@ -56,15 +55,11 @@
 	{{ super() }}
 {% endblock %}
 
-	<div id='projects' class="col-lg-push-1 col-lg-7 col-md-push-1 col-md-7 col-sm-8 col-xs-12">
 <!--
 		<div class='col-xs-push-1 col-xs-10'> Project List </div>
 -->
 			<!--
-		<a href="/project/edit/new"><button class="whiteButton">Add new project...</button></a>
 				-->
-	</div>
-
 
 <!-- Unused code. 
 
