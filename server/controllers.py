@@ -62,9 +62,9 @@ def ht_browsingprofile():
 def ht_authenticate_user(user_email, password):
 	""" Returns authenticated account """
 
-	trace("user_email = " + str(user_email) + ", password = " + str(password))
+	trace("user_email = " + str(user_email) + ", password = " + str(password) + ' ' + str(type(password)))
 	accounts = Account.query.filter_by(email=(user_email)).all()
-	if ((len(accounts) == 1) and check_password_hash(accounts[0].pwhash, password)):
+	if ((len(accounts) == 1) and check_password_hash(accounts[0].pwhash, str(password))):
 		return accounts[0]
 
 	if (len(accounts) > 1):
