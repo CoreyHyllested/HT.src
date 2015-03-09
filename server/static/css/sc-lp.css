@@ -12,6 +12,19 @@
 }
 
 
+.lp-btn {
+	width: 240px;
+}
+
+#lp-fbook {
+	background: #3b5998;
+}
+
+#lp-email {
+	background: #5b8a08;
+/* 55a32a; */
+}
+
 .lp-img h1 {
 	font-size: 1.5em;
 	line-height: 1.0em;
@@ -40,11 +53,11 @@
 	color: white;
 	text-transform: uppercase;
 	margin: 30px auto 0;
-	width: 50%;
+/*	width: 50%; */
 }
 
 .panel-body {
-	height: 75px;
+	height: 85px;
 }
 
 .panel {
