@@ -6,7 +6,7 @@ html, body { height: 100%; }
 
 .page-content,
 .blurred-background {
-	background-image: url('/static/img/background-blurred.jpg');
+	background-image: url('/static/img/grass.jpg');
 	background-size: cover;
 	background-repeat: no-repeat;
 }
