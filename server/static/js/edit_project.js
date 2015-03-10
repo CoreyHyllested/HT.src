@@ -15,12 +15,11 @@ $(document).ready(function() {
 
 	$('#schedule_phone').click(function(e) {
 		e.preventDefault();
-		error = { 'proj_contact' : 'Required for us to call you.' };
+		setTimeout(function() { location.href='http://soulcrafting.co/dashboard'; }, 1500);
 		if ($('#proj_contact').val() == '') {
 			showErrors(error);
-		} else {
-			alert('If you haven\'t, save the phone number.  We\'ll call you this week');
-		}
+		} 
+		//alert('If you haven\'t, save the phone number.  We\'ll call you this week');
 	});
 
 	enableNS();
@@ -50,15 +49,15 @@ function saveProject() {
 				console.log('Fade success in and out, set proj_id: ' + response.proj_id);
 				$('.save-btn-text').fadeTo('slow', 0);
 				setTimeout(function() {
-					$('.save-btn-text').text('Successfully Saved!').css('color', 'green');
+					$('.save-btn-text').text('Successfully Saved!'); /* .css('color', 'green'); */
 					$('.save-btn-text').fadeTo('slow', 1);
 				}, 1000);
 
-				setTimeout(function() { $('.save-btn-text').fadeTo('slow', 0); }, 3000);
+				setTimeout(function() { $('.save-btn-text').fadeTo('slow', 0); }, 2500);
 				setTimeout(function() {
-					$('.save-btn-text').text('Save project').css('color', '#29abe2');
+					$('.save-btn-text').text('Save project'); /* .css('color', '#29abe2'); */
 					$('.save-btn-text').fadeTo('slow', 1);
-				}, 5000);
+				}, 4000);
 				enableNS();
 			},
 
