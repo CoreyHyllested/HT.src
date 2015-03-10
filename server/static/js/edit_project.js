@@ -14,17 +14,24 @@ $(document).ready(function() {
 	});
 
 	$('#schedule_phone').click(function(e) {
-		e.preventDefault();
-		setTimeout(function() { location.href='http://soulcrafting.co/dashboard'; }, 1500);
-		if ($('#proj_contact').val() == '') {
-			showErrors(error);
-		} 
-		//alert('If you haven\'t, save the phone number.  We\'ll call you this week');
+		kick(e);
+	});
+
+	$('#schedule_email').click(function(e) {
+		kick(e);
 	});
 
 	enableNS();
 });
 
+function kick(e) {
+	e.preventDefault();
+	if ($('#proj_contact').val() == '') {
+		showErrors(error);
+	} else {
+		setTimeout(function() { location.href='http://soulcrafting.co/dashboard'; }, 1500);
+	}
+}
 
 
 function saveProject() {
