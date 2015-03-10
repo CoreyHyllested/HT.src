@@ -5,6 +5,11 @@
 	overflow-x: hidden;	/* not sure why this is necessary here */
 }
 
+.blueButton:hover {
+	color: white;
+	font-weight: bolder;
+}
+
 #calendar {
 		max-width: 900px;
 		margin: 0 auto;
