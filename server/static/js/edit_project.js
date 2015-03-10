@@ -18,6 +18,7 @@ $(document).ready(function() {
 	});
 
 	$('#schedule_email').click(function(e) {
+		console.log('schedule email');
 		kick(e);
 	});
 
@@ -26,11 +27,8 @@ $(document).ready(function() {
 
 function kick(e) {
 	e.preventDefault();
-	if ($('#proj_contact').val() == '') {
-		showErrors(error);
-	} else {
-		setTimeout(function() { location.href='http://soulcrafting.co/dashboard'; }, 1500);
-	}
+	console.log('kick');
+	setTimeout(function() { location.pathname='/dashboard'; }, 1500);
 }
 
 
