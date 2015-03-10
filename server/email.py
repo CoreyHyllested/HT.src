@@ -378,9 +378,9 @@ def ht_send_email(email_addr, msg):
 	password = "passw0rd"
 
 	# connect to SendGrid, login and send msg.
-	s = smtplib.SMTP('smtp.sendgrid.net', 587)
-	s.login(username, password)
-	s.sendmail('noreply@getsoulcrafting.com', email_addr, msg.as_string())
-	s.quit()
+	#s = smtplib.SMTP('smtp.sendgrid.net', 587)
+	#s.login(username, password)
+	#s.sendmail('noreply@getsoulcrafting.com', email_addr, msg.as_string())
+	#s.quit()
 
 
