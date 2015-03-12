@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting.  Any intellectual
 # property about the design, implementation, processes, and interactions with
 # services may be protected by U.S. and Foreign Patents.  All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -34,9 +34,20 @@ def render_landingpage():
 
 
 
+@insprite_views.route('/gift/<from_user>', methods=['GET', 'POST'])
+def render_giftpage(from_user):
+	print 'render_gift(): enter [' + str(from_user) + ']'
+	bp = None
+	if 'uid' in session:
+		print 'render_gift(): ' + str(bp)
+		bp = Profile.get_by_uid(session['uid'])
+	print 'render_gift(): render page'
+	return make_response(render_template('gift.html', bp=bp))
 
-@ht_csrf.exempt
-@insprite_views.route('/profile', methods=['GET', 'POST'])
+
+
+#@ht_csrf.exempt
+#@insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
 
 	bp = None 
@@ -80,7 +91,7 @@ def render_profile(usrmsg=None):
 
 
 
-@insprite_views.route('/terms/service', methods=['GET'])
+#@insprite_views.route('/terms/service', methods=['GET'])
 def render_terms_of_service():
 	bp = None
 	if 'uid' in session:
@@ -90,7 +101,7 @@ def render_terms_of_service():
 
 
 
-@insprite_views.route("/dmca", methods=['GET', 'POST'])
+#@insprite_views.route("/dmca", methods=['GET', 'POST'])
 def render_dmca():
 	bp = None
 	if 'uid' in session:
@@ -100,7 +111,7 @@ def render_dmca():
 
 
 
-@insprite_views.route("/about", methods=['GET', 'POST'])
+#@insprite_views.route("/about", methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
@@ -110,9 +121,9 @@ def render_about_page():
 
 
 
-@ht_csrf.exempt
-@insprite_views.route('/search',  methods=['GET', 'POST'])
-@insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
+#@ht_csrf.exempt
+#@insprite_views.route('/search',  methods=['GET', 'POST'])
+#@insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
 	""" Provides ability to find Mentors. """
 	bp = None
@@ -247,7 +258,6 @@ def render_share_page():
 	for idx in request.args:
 		print idx, request.values.get (idx)
 
-#	print 'back = \'' + str(back) + '\''
 	return make_response(render_template('share.html', back=back))
 
 
