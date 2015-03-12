@@ -96,22 +96,22 @@
 
 
 
-.list-inline {
-	padding-left: 0px;
-	height: 100px;
-}
-
-.press-list {
+#press-list {
+	/* INLINE/horiz list w/ no... */
+	height: 80px;
 	margin-bottom: 15px;
-	list-style: none;
 }
 
-.press-list li {
-	display: block;
+#press-list li {
+	display: inline;
+	list-style-type: none;
+
+	float: left;
 	vertical-align: middle;	/* img? */
 }
+#press-list li:last-child {	display: none; 	}
 
-.press-list li img {
+#press-list li img {
 	/* set height of image to normalize; let automatically determine width.  */
 	height: 60px;
 
@@ -141,9 +141,26 @@
 	.lp-img { font-size: 1em; }
 }
 
-.test-font {
-	font-family: 'Kameron', serif;
-	font-size: 1em;
-	font-weight: normal;
+
+@media (min-width: 489px) {
+	#press-list li {	padding-left: 10px; 	}
 }
 
+@media (min-width: 768px) {
+	#press-list li {	padding-left: 85px; 	}
+}
+
+@media (min-width: 980px) {
+	#press-list li {	padding-left: 35px; 	}
+}
+
+@media (max-width: 1200px) and (min-width: 1449) {
+	#press-list li {	padding-left: 10px; 	}
+}
+
+@media (min-width: 1450px) {
+	#press-list li {	padding-left: 20px; 	}
+	#press-list li:last-child {	display: block; 	}
+}
+
+#project-header {
