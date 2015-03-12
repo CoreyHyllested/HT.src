@@ -1,0 +1,71 @@
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+<img class="col-lg-2 col-md-4 col-sm-6 col-xs-12" src="//placehold.it/500x100"> 
+
+.test-font {
+	font-family: 'Kameron', serif;
+	font-size: 1em;
+	font-weight: normal;
+}
+
+	<a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a>
+
+<script>
+	$(document).ready(function(){
+		$('.show-popup').click(function(event){
+			event.preventDefault();		// disable normal link function so that it doesn't refresh the page
+			var selectedPopup = $(this).data('showpopup');
+			console.log([docHeight, scrollTop, selectedPopup]);
+		});
+
+		$('.overlay-close').click(function(){ closeModal(); });
+
+		// hide popup when user presses ESC-key
+		$(document).keyup(function(e) { if (e.keyCode == 27 /* ESC */) { closeModal(); } });
+	});
+
+	$('.reload-btn').click(function(e) {
+		$('.overlay-content').toggleClass('content-set');
+	});
+
+	// GET height, and top of window.
+	var docHeight = $(document).height();	// total document height
+	var scrollTop = $(window).scrollTop();	// top of window (in Px)?
+
+	function openModal() {
+		$(document.body).css('overflow', 'hidden');
+		$('.overlay').addClass('overlay-darken');
+		$('.modalContent').load("/share .composeWrapper");
+		$('.overlay-content').show();
+		$.getScript("/static/js/share.js?_bah");
+	}
+
+	function closeModal() {
+		$('.overlay-content').hide();
+		$('.overlay').removeClass('overlay-darken');
+		$(document.body).css('overflow', 'inherit');
+		return false;
+	};
+
+	setTimeout(function () { openModal(); }, 75000);
+</script>
+
+# COPY WE DON'T WANT TO LOSE
+<p>	Craftsmanship has a new home.  Yours.</p>
+<p> We have partnered with the best, most passionate, local craftspeople in Colorado.  Each piece is a functional work of art. </p> 
+<p> We'll do the heavy lifting. </p>
+<p> We're helping people create the home they want.  Just tell us about your project and your style &amp; personality &dash; and we'll make it happen.  Unsure what to create?  Checkout our <a href="#" style="text-decoration: none;">gallery of completed projects</a>.  Still unsure?  Our consierge can help out.   </p>
+<p> Simple.</p>
+<p> We'll call you.  We'll provide updates.  Pay with a credit card.  </p>
+< !p Talented, Trusted, Transparent, Simple, Safe and Stress Free ->
+
+
+/*
+	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 *
+	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 *
+	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 *
+	background: linear-gradient(white, white); /* Standard syntax 
+*/

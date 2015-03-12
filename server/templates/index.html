@@ -9,278 +9,80 @@
 {% endblock %}
 
 {% block content %}
-<div class="lp-img">
-	<!--version 1.0-->
-	<div class="center"> 
-		<h1>A CONCIERGE SERVICE </h1>
-		<p> For smarter home renovation projects</p>
+<div id='lp-masthead'>
+	<div class='masthead-text'>
+		<h1>The Conceirge service</h1>
+		<p>For smarter home renovation projects</p>
 		<br>
-		<br>
-		<p> <a href="/signup/facebook" id="lp-fbook" class="btn jumbotron-btn lp-btn">Sign up with Facebook</a></p>
-		<p> <a href="/signup" id="lp-email" class="btn jumbotron-btn lp-btn">Sign up with email</a> </p>
-	</div>
-</div>
-
-<div class="darkgrey-background">
-	<div class="container">
-		<div class="text-center"> <h2>Your vision. Our expertise.</h2> </div>
-
-		<div class="col-xs-12 col-md-4 col-xs-push-0 col-md-push-0 text-center">
-			<div class="">
-				<div class="panel-heading"><h1><i class="icon ion-hammer"></i></h1></div>
-				<div class="panel-body"> <p><b>Craftsmanship</b><br> We'll help you find the right experts from our community of master craftspeople.</p> </div>
-			</div>
-		</div>
-
-		<div class="col-xs-12 col-md-4 col-xs-push-0 col-md-push-0 text-center">
-			<div class="">
-				<div class="panel-heading"> <h1><i class="fa fa-fw fa-heart"></i></h1></div>
-				<div class="panel-body"> <p><b>Peace of Mind</b><br> Your Soulcrafting concierge is a knowledgeable project manager committed to your success.</p> </div>
-			</div>
-		</div>
-
-		<div class="col-xs-12 col-md-4 col-xs-push-0 col-md-push-0 text-center">
-			<div class="">
-				<div class="panel-heading"><h1><i class="fa fa-fw fa-dollar"></i></h1></div>
-				<div class="panel-body"><p><b>Savings</b><br>You'll save money by hiring craftspeople directly and managing parts of the project yourself.</p> </div>
-			</div>
-		</div>
-
-
-		<div class="col-xs-12">
-			<a id="getstarted" class="btn btn-block jumbotron-btn lp-btn jumbotron-btn blueButton text-center" href="/signup">Get Started Now</a>
-		</div>
+		<p><a id='lp-fbook' class="btn jumbotron-btn lp-btn" href="/signup/facebook">Sign up with Facebook</a></p>
+		<p><a id='lp-email' class="btn jumbotron-btn lp-btn" href='/signup'>Sign up with email</a></p>
 	</div>
 </div>
 
 
-<div class="row">
-	<div class="container text-center">
-		<h2 class="press">Press Coverage</h2>
-		<!--for more help see http://wrapbootstrap.com/preview/WB0N38R04... wrapboostrap.com/velocity -->
-		<ul class="press-list list-inline row last">
-			<li class="col-md-offset-1 col-md-2 col-sm-2 col-xs-4">
-				<div class="img-responsive press-img">
-					<a href='http://www.denverpost.com/yhbiz/ci_27101638/business-q-amp-soulcrafting-denver'>
-						<img class="img-responsive greyscale" src="/static/img/press-denverpost.svg">
-					</a>
-				</div>
-			</li>
-			<li class="col-md-2 col-sm-2 col-xs-4">
-				<div class="img-responsive press-img">
-					<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'>
-						<img class="img-responsive greyscale" src="/static/img/press-cpr.svg" alt>
-					</a>
-				</div>
-			</li>
-			<li class="col-md-2 col-sm-2 col-xs-4 xs-break">
-				<div class="img-responsive press-img" >
-					<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'>
-						<img class="img-responsive greyscale" src="/static/img/press-5280.svg" alt>
-					</a>
-				</div>
-			</li>
-			<li class="col-md-2 col-sm-2 col-xs-4">
-				<div class="img-responsive press-img">
-					<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'>
-						<img class="img-responsive greyscale" src="/static/img/press-dc.svg">
-					</a>
-				</div>
-			</li>
-			<li class="col-md-2 col-sm-2 col-xs-4">
-				<div class="img-responsive press-img">
-					<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'>
-						<img class="img-responsive greyscale" src="/static/img/press-examiner.svg" alt>
-					</a>
-				</div>
-			</li>
-		</ul>
-		<!--ul class="press-list list-inline row last"></ul-->
-	</div>
-</div>
+<section id='values' class="container-fluid">
+	<div class="text-center"><h2 class='kameron'>Your vision. Our expertise.</h2></div>
 
-<!--hr-->
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"><h1><i class="icon ion-hammer"></i></h1></div>
+		<div class="container-fluid"> <p><b>Craftsmanship</b><br> We'll help you find the right experts from our community of master craftspeople.</p> </div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"> <h1><i class="fa fa-fw fa-heart"></i></h1></div>
+		<div class="container-fluid"> <p><b>Peace of Mind</b><br> Your Soulcrafting concierge is a knowledgeable project manager committed to your success.</p> </div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"><h1><i class="fa fa-fw fa-dollar"></i></h1></div>
+		<div class="container-fluid"><p><b>Savings</b><br>You'll save money by hiring craftspeople directly and managing parts of the project yourself.</p> </div>
+	</div>
+
+	<div id='getstarted' class="col-xs-12">
+		<a class="btn btn-block jumbotron-btn lp-btn blueButton center text-center" href="/signup">Get Started Now</a>
+	</div>
+</section>
+
+
+<section id='press' class='container-fluid text-center'>
+	<h2 id='press-title' class="kameron">Press Coverage</h2>
+
+	<ul id='press-list'>
+		<li>
+			<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'>
+				<img class="img-responsive greyscale" src="/static/img/press-dp.png">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.denverpost.com/yhbiz/ci_27101638/business-q-amp-soulcrafting-denver'>
+				<img class="img-responsive greyscale" src="/static/img/press-cpr.svg">
+			</a>
+		</li>
+
+
+		<li>
+			<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'>
+				<img class="img-responsive greyscale" src="/static/img/press-5280.svg">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'>
+				<img class="img-responsive greyscale" src="/static/img/press-dc.svg">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'>
+				<img class="img-responsive greyscale" src="/static/img/press-examiner.svg">
+			</a>
+		</li>
+	</ul>
+</section>
 {% endblock %}
-
-<!--div class="container">
-	<!--a class="btn btn-lg btn-default btn-block" href="/explore">Explore Past Projects</a-->
-	<!--a class="btn btn-lg btn-default btn-block show-popup" data-showpopup="overlay-content">Pop Up</a-->
-<!--/div-->
-
-
-    <!-- Page Content 
-    <div class="container-fluid pad-top-bottom-100">
-		<div class="container">
-			<div class="row">
-				<h2 class="page-header"> Create something amazing. </h2> 
-				<p>
-					Soulcrafting helps you build inspired, custom furniture.  Create an account and our design consierge will call you.  When you're happy with the design&dash;you can supply your own&dash;we will work with a local craftsperson to build your custom project.
-				</p>
-			</div>
-
-			<div class="row"> 
-
-
-
-			</div>
-		</div>< ! - - /container  > 
-		-->
-
-
-		<!-- Header Carousel
-
-		Carousel styles.
-
-
-
-
-
-
-.pad-top-bottom-100 {
-	padding-top: 10px;
-	padding-bottom: 100px;
-}
-
-/* Home Page Carousel */
-.carousel {
-    height: 75%;
-	/* amount of screen space to fill */
-}
-
-.carousel .item,
-.carousel .item.active,
-.carousel .carousel-inner {
-	color: white;
-	width: 100%;
-	/* height: 100vh; */
-}
-
-.carousel .fill {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-}
-
-.product-container {
-	padding: 100px 75px;
-/*
-	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 *
-	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 *
-	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 *
-	background: linear-gradient(white, white); /* Standard syntax 
-*/
-	color: white;
-	background: rgba(76,76,76,1); 
-}
-
-
-		<div id="myCarousel" class="product-container row carousel slide">
-			<ol class="carousel-indicators">
-				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-				<li data-target="#myCarousel" data-slide-to="1"></li>
-			</ol>
-			<a class="btn btn-lg btn-default carousel-explore" href="/explore">Explore Projects</a>
-
-			< ! - - Wrapper for slides - - > 
-			<div class="container-fluid carousel-inner">
-				<div class="item active">
-					<div class="col-md-5 col-xs-12" style="text-align: center;">
-						<h2>Topo Table.</h2>
-						<hr>
-						<p>This amazing table was built in 2010 by Odin.  The glass was naturally forged beneath the Dweamer crags.  It's whereabouts are unknown, as it's owner grabbed it and flew off with a hammer.  We believe it to be in Vallhalla.</p>
-						<hr>
-						<p>$5000  | Glass &amp; Oak | Odin</p>
-					</div>
-					<div class="col-md-1"></div>
-					<div class="col-md-5 col-xs-12" style="text-align: center; background-image:url('/static/img/topo_table.jpg'); jackground-position: center; height:40vh;"></div>
-				</div>
-				<div class="item">
-					<div class="col-md-5 col-xs-12" style="text-align: center;">
-						<h2>Glass Table.</h2>
-						<hr>
-						<p>This unique table was built for Intrado's guest services department.  Intrado wanted a chic modern table to welcome their guests, while showing their commmitment to battering dead trees as well.</p>
-						<hr>
-						<p>$12700  | Glass, Steel &amp; Oak | Wood Meets Steel</p>
-					</div>
-					<div class="col-md-1"></div>
-					<div class="col-md-5 col-xs-12" style="text-align: center; background-image:url('/static/img/sc/glass_table.jpg'); background-position: center; height:40vh;"></div>
-				</div>
-			</div>
-
-			< - - Left and Right Navigation; i.e. < and > icons - - >
-			<a class="left carousel-control" href="#myCarousel" data-slide="prev"> <span class="icon-prev"></span> </a>
-			<a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="icon-next"></span> </a>
-		</div>
-		 -->
-
-
-        <!-- Portfolio Section 
-        <div class="row">
-            <div class="col-lg-12">
-                <h2 class="page-header">Portfolio Heading</h2>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="//placehold.it/700x450" alt="">
-                </a>
-            </div>
-        </div>
-		-->
-        <!-- /.row -->
-
 
 
 {% block scripts %}
 	{{ super() }}
 {% endblock %}
-
-
-	<script>
-	$(document).ready(function(){
-		$('.show-popup').click(function(event){
-			event.preventDefault();		// disable normal link function so that it doesn't refresh the page
-			var docHeight = $(document).height();	// total document height
-			var scrollTop = $(window).scrollTop();	// top of window (in Px)?
-			var selectedPopup = $(this).data('showpopup');
-			console.log([docHeight, scrollTop, selectedPopup]);
-			//$('.overlay').toggleClass('overlay-darken'); //.css({'height' : docHeight}); //display your popup background and set height to the page height
-			//$('.'+selectedPopup).show(); //.css({'top': scrollTop+75+'px'}); //show the appropriate popup and set the content 20px from the window top
-		});
-
-		$('.overlay-close').click(function(){ closeModal(); });
-
-		// hide popup when user presses ESC-key
-		$(document).keyup(function(e) { if (e.keyCode == 27 /* ESC */) { closeModal(); } });
-	});
-
-	$('.reload-btn').click(function(e) {
-		$('.overlay-content').toggleClass('content-set');
-	});
-
-	function openModal() {
-		$(document.body).css('overflow', 'hidden');
-		$('.overlay').addClass('overlay-darken');
-		$('.modalContent').load("/share .composeWrapper");
-		$('.overlay-content').show();
-		$.getScript("/static/js/share.js?_bah");
-	}
-
-	function closeModal() {
-		$('.overlay-content').hide();
-		$('.overlay').removeClass('overlay-darken');
-		$(document.body).css('overflow', 'inherit');
-		return false;
-	};
-
-	setTimeout(function () { openModal(); }, 75000);
-	</script>
-
-# COPY WE DON'T WANT TO LOSE
-<p>	Craftsmanship has a new home.  Yours.</p>
-<p> We have partnered with the best, most passionate, local craftspeople in Colorado.  Each piece is a functional work of art. </p> 
-<p> We'll do the heavy lifting. </p>
-<p> We're helping people create the home they want.  Just tell us about your project and your style &amp; personality &dash; and we'll make it happen.  Unsure what to create?  Checkout our <a href="#" style="text-decoration: none;">gallery of completed projects</a>.  Still unsure?  Our consierge can help out.   </p>
-<p> Simple.</p>
-<p> We'll call you.  We'll provide updates.  Pay with a credit card.  </p>
-< !p Talented, Trusted, Transparent, Simple, Safe and Stress Free ->
