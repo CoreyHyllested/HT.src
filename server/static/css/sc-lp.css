@@ -27,13 +27,13 @@
 #lp-fbook { background: #3b5998; }
 #lp-email { background: #5b8a08; }
 
-#getstarted { margin: 25px auto 50px; }
+#getstarted { margin: 25px auto 25px; }
 
 
 /* SECTION: VALUES */
 #values {
 	/* positioning */
-	padding: 20px 0;
+	padding: 50px 0;
 
 	background-color: grey; /* fallback */
 	background-repeat: repeat-x;
@@ -46,8 +46,8 @@
 }
 
 /* SECTION: PRESS */
-#press { padding: 40px 0 55px; }
-#press-title { padding: 10px 0; }
+#press { margin-bottom: 40px; }
+#press-title { padding: 0 0 10px; }
 
 .kameron { font-family: 'Kameron', serif; }
 
