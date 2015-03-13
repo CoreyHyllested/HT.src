@@ -73,6 +73,7 @@ class SanitizedException(Exception):
 
 class GiftNotFoundError(SanitizedException):
 	def __init__(self, gift_id, flags=None, user_msg=None):
+		super(GiftNotFoundError, self).__init__(None, resp_code=400, user_msg=user_msg)
 		self.gift_id = str(gift_id)
 		self.flags	= flags
 		self.technical_msg(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
