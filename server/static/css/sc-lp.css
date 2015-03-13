@@ -46,7 +46,10 @@
 }
 
 /* SECTION: PRESS */
-#press { margin-bottom: 40px; }
+#press {
+	display: none;
+	margin-bottom: 40px;
+}
 #press-title { padding: 0 0 10px; }
 
 .kameron { font-family: 'Kameron', serif; }
@@ -143,23 +146,24 @@
 
 
 @media (min-width: 489px) {
-	#press-list li {	padding-left: 10px; 	}
+	#press { display: block; }
+	#press-list li {	padding-right: 10px; 	}
 }
 
 @media (min-width: 768px) {
-	#press-list li {	padding-left: 85px; 	}
+	#press-list li {	padding-right: 85px; 	}
 }
 
 @media (min-width: 980px) {
-	#press-list li {	padding-left: 35px; 	}
+	#press-list li {	padding-right: 0px; 	}
 }
 
 @media (max-width: 1200px) and (min-width: 1449) {
-	#press-list li {	padding-left: 10px; 	}
+	#press-list li {	padding-right: 10px; 	}
 }
 
 @media (min-width: 1450px) {
-	#press-list li {	padding-left: 20px; 	}
+	#press-list li {	padding-right: 20px; 	}
 	#press-list li:last-child {	display: block; 	}
 }
 
