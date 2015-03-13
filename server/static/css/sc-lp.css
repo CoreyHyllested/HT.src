@@ -48,7 +48,7 @@
 /* SECTION: PRESS */
 #press {
 	display: none;
-	margin-bottom: 40px;
+	margin: 20px auto 40px;
 }
 #press-title { padding: 0 0 10px; }
 
@@ -98,25 +98,37 @@
 }
 
 
+.press {
+	width: 150px;
+	margin: 0 auto;
+}
+
 
 #press-list {
 	/* INLINE/horiz list w/ no... */
 	height: 80px;
+	width: 100%;
+	display: table;
+	table-layout: fixed;
 	margin-bottom: 15px;
 }
 
 #press-list li {
-	display: inline;
+	display: table-cell;
 	list-style-type: none;
 
-	float: left;
+	width: auto;
+	/* float: left; */
 	vertical-align: middle;	/* img? */
 }
-#press-list li:last-child {	display: none; 	}
+
+
+/* #press-list li:last-child {	display: none; 	} */
 
 #press-list li img {
 	/* set height of image to normalize; let automatically determine width.  */
 	height: 60px;
+	width: 150px;
 
 	/* center */
 	margin-left: auto;
@@ -146,25 +158,24 @@
 
 
 @media (min-width: 489px) {
-	#press { display: block; }
-	#press-list li {	padding-right: 10px; 	}
 }
 
 @media (min-width: 768px) {
-	#press-list li {	padding-right: 85px; 	}
+	#press { display: block; }
+	#press-list li {	adding-right: 85px; 	}
 }
 
 @media (min-width: 980px) {
-	#press-list li {	padding-right: 0px; 	}
+	#press-list li {	adding-right: 0px; 	}
 }
 
 @media (max-width: 1200px) and (min-width: 1449) {
-	#press-list li {	padding-right: 10px; 	}
+	#press-list li {	adding-right: 10px; 	}
 }
 
 @media (min-width: 1450px) {
-	#press-list li {	padding-right: 20px; 	}
-	#press-list li:last-child {	display: block; 	}
+	#press-list li {	adding-right: 20px; 	}
+/*	#press-list li:last-child {	display: block; 	} */
 }
 
 #project-header {
