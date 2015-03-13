@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting, LLC.
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting.  Any intellectual
 # property about the design, implementation, processes, and interactions with
 # services may be protected by U.S. and Foreign Patents.  All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -69,6 +69,17 @@ class SanitizedException(Exception):
 ################################################################################
 ### SUBCLASS EXCEPTIONS ########################################################
 ################################################################################
+
+
+class GiftNotFoundError(SanitizedException):
+	def __init__(self, gift_id, flags=None, user_msg=None):
+		self.gift_id = str(gift_id)
+		self.flags	= flags
+		self.technical_msg(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
+
+	def __str__(self):
+		return "<NoGiftFound (%r)>" % (self.gift_id)
+
 
 
 class StateTransitionError(SanitizedException):

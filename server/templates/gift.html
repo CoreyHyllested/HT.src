@@ -1,0 +1,88 @@
+{% extends "sc_header.html" %}
+{% set title='Soulcrafting' %}
+
+{% block header_css %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/sc-lp.css">
+	<link rel="stylesheet" href="/static/css/share.css">
+	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+{% endblock %}
+
+{% block content %}
+<div id='lp-masthead'>
+	<div class='masthead-text'>
+		<h1>The Concierge Service</h1>
+		<p>For smarter home renovation projects</p>
+		<br>
+		<p><a id='lp-fbook' class="btn jumbotron-btn lp-btn" href="/signup/facebook">Sign up with Facebook</a></p>
+		<p><a id='lp-email' class="btn jumbotron-btn lp-btn" href='/signup'>Sign up with email</a></p>
+	</div>
+</div>
+
+
+<section id='values' class="container-fluid">
+	<div class="text-center"><h2 class=''>Your vision. Our expertise.</h2></div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"><h1><i class="icon ion-hammer"></i></h1></div>
+		<div class="container-fluid"> <p><b>Craftsmanship</b><br> We'll help you find the right experts from our community of master craftspeople.</p> </div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"> <h1><i class="fa fa-fw fa-heart"></i></h1></div>
+		<div class="container-fluid"> <p><b>Peace of Mind</b><br> Your Soulcrafting concierge is a knowledgeable project manager committed to your success.</p> </div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading"><h1><i class="fa fa-fw fa-dollar"></i></h1></div>
+		<div class="container-fluid"><p><b>Savings</b><br>You'll save money by hiring craftspeople directly and managing parts of the project yourself.</p> </div>
+	</div>
+
+	<div id='getstarted' class="col-xs-12">
+		<a class="btn btn-block jumbotron-btn lp-btn blueButton center text-center" href="/signup">Get Started Now</a>
+	</div>
+</section>
+
+
+<section id='press' class='container-fluid text-center'>
+	<h2 id='press-title' class="">Press Coverage</h2>
+
+	<ul id='press-list'>
+		<li>
+			<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'>
+				<img class="img-responsive greyscale" src="/static/img/press-dp.png">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.denverpost.com/yhbiz/ci_27101638/business-q-amp-soulcrafting-denver'>
+				<img class="img-responsive greyscale" src="/static/img/press-cpr.svg">
+			</a>
+		</li>
+
+
+		<li>
+			<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'>
+				<img class="img-responsive greyscale" src="/static/img/press-5280.svg">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'>
+				<img class="img-responsive greyscale" src="/static/img/press-dc.svg">
+			</a>
+		</li>
+
+		<li>
+			<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'>
+				<img class="img-responsive greyscale" src="/static/img/press-examiner.svg">
+			</a>
+		</li>
+	</ul>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+{% endblock %}
