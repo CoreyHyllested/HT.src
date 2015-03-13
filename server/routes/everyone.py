@@ -38,9 +38,16 @@ def render_landingpage():
 def render_giftpage(from_user):
 	print 'render_gift(): enter [' + str(from_user) + ']'
 	bp = None
-	if 'uid' in session:
-		print 'render_gift(): ' + str(bp)
-		bp = Profile.get_by_uid(session['uid'])
+
+	if (from_user is not None):
+		print 'render_gift(): getting gift [' + str(from_user) + ']'
+		bp = Profile.get_by_uid(from_user)
+		print 'render_gift(): getting gift [' + str(bp) + ']'
+
+	if ((bp is None) or (from_user is None)):
+		#raise 'Gift Not Found' #GiftNotFoundError(from_user)
+		return make_response("Gift Not Found", 500)
+		
 	print 'render_gift(): render page'
 	return make_response(render_template('gift.html', bp=bp))
 
