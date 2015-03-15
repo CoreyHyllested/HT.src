@@ -18,6 +18,7 @@ from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
 from . import insprite_views
+from . import sc_views
 from .api import ht_api_get_message_thread
 from .helpers import *
 from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
@@ -57,6 +58,17 @@ def render_dashboard(usrmsg=None):
 
 	print 'render_dashboard()'
 	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=[], projects=projects, errmsg=usrmsg))
+
+
+
+
+@sc_views.route('/invite', methods=['GET', 'POST'])
+@req_authentication
+def render_invite_page():
+	bp = Profile.get_by_uid(session['uid'])
+
+	print 'render_invite(): render page'
+	return make_response(render_template('invite.html', bp=bp))
 
 
 
