@@ -93,7 +93,9 @@ def initialize_server(config_name):
 	from routes import authentication, everyone, users, api, errors, testing
 	from routes import insprite_views as main_blueprint
 	from routes import insprite_tests as test_blueprint
+	from routes import sc_views as sc_blueprint
 	ht_server.register_blueprint(main_blueprint)
 	ht_server.register_blueprint(test_blueprint)
+	ht_server.register_blueprint(sc_blueprint)
 
 	return ht_server
