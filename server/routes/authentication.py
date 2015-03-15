@@ -1,17 +1,17 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
-from . import insprite_views
+from . import sc_ebody
 from flask import render_template
 from server import ht_csrf, ht_oauth
 from server.infrastructure.srvc_database import db_session
@@ -49,8 +49,8 @@ linkedin = ht_oauth.remote_app(  'linkedin',
 
 
 
-@insprite_views.route('/join', methods=['GET', 'POST'])
-@insprite_views.route('/signup', methods=['GET', 'POST'])
+@sc_ebody.route('/join', methods=['GET', 'POST'])
+@sc_ebody.route('/signup', methods=['GET', 'POST'])
 def render_signup_page(usrmsg=None):
 	bp = False
 
@@ -83,13 +83,13 @@ def render_signup_page(usrmsg=None):
 
 
 @ht_csrf.exempt
-@insprite_views.route('/login', methods=['GET', 'POST'])
+@sc_ebody.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
 def render_login(usrmsg=None):
 	""" If successful, sets session cookies and redirects to dash """
 	bp = None
 	usrmsg = None
-	insprite_msg = session.pop('messages', None)
+	sc_msg = session.pop('messages', None)
 
 	if ('uid' in session):
 		# user has already logged in.
@@ -110,8 +110,8 @@ def render_login(usrmsg=None):
 		trace("POST /login form isn't valid" + str(form.errors))
 		usrmsg = "Incorrect username or password."
 
-	if (usrmsg is None and insprite_msg):
-		usrmsg = insprite_msg
+	if (usrmsg is None and sc_msg):
+		usrmsg = sc_msg
 
 	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
 
@@ -119,25 +119,25 @@ def render_login(usrmsg=None):
 
 
 # sends to facebook, which gets token, and user is redirected to 'facebook_authorized'
-@insprite_views.route('/signup/facebook', methods=['GET'])
+@sc_ebody.route('/signup/facebook', methods=['GET'])
 def oauth_signup_facebook():
 	session['oauth_facebook_signup'] = True
-	return facebook.authorize(callback=url_for('insprite.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('sc_ebody.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
-@insprite_views.route('/login/facebook', methods=['GET'])
+@sc_ebody.route('/login/facebook', methods=['GET'])
 def oauth_login_facebook():
 	session['oauth_facebook_signup'] = False
-	return facebook.authorize(callback=url_for('insprite.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('sc_ebody.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
 
-@insprite_views.route('/authorized/facebook')
+@sc_ebody.route('/authorized/facebook')
 @facebook.authorized_handler
 def facebook_authorized(resp):
 	if resp is None:
 		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('insprite.render_login'))
+		return redirect(url_for('sc_ebody.render_login'))
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
@@ -163,22 +163,22 @@ def facebook_authorized(resp):
 
 
 # redirects to LinkedIn, which gets token and comes back to 'authorized'
-@insprite_views.route('/signup/linkedin', methods=['GET'])
+@sc_ebody.route('/signup/linkedin', methods=['GET'])
 def oauth_signup_linkedin():
 	print 'signup_linkedin'
 	session['oauth_linkedin_signup'] = True
-	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('sc_ebody.linkedin_authorized', _external=True))
 
 
-@insprite_views.route('/login/linkedin', methods=['GET'])
+@sc_ebody.route('/login/linkedin', methods=['GET'])
 def oauth_login_linkedin():
 	print 'login_linkedin()'
 	session['oauth_linkedin_signup'] = False
-	return linkedin.authorize(callback=url_for('insprite.linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('sc_ebody.linkedin_authorized', _external=True))
 
 
 
-@insprite_views.route('/authorized/linkedin')
+@sc_ebody.route('/authorized/linkedin')
 @linkedin.authorized_handler
 def linkedin_authorized(resp):
 	print 'login() linkedin_authorized'
@@ -252,7 +252,7 @@ linkedin.pre_request = change_linkedin_query
 
 
 
-@insprite_views.route('/authorize/stripe', methods=['GET', 'POST'])
+@sc_ebody.route('/authorize/stripe', methods=['GET', 'POST'])
 @req_authentication
 def settings_verify_stripe():
 	uid = session['uid']
@@ -300,7 +300,7 @@ def settings_verify_stripe():
 	token = rc.get('access_token',			 'None')	# Used like Secret Key
 	mode  = rc.get('livemode',				 'None')
 	pkey  = rc.get('stripe_publishable_key', 'None')	# users?!? PK
-	user  = rc.get('stripe_user_id',		 'None')	# Insprite Customer ID.
+	user  = rc.get('stripe_user_id',		 'None')	# Customer ID.
 	rfrsh = rc.get('refresh_token')
 
 	if error != 'None':
@@ -352,13 +352,13 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-@insprite_views.route('/facebook')
+@sc_ebody.route('/facebook')
 def TESTING_render_facebook_info():
 	me = facebook.get('/me')
 	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
 	
 
-@insprite_views.route('/logout', methods=['GET', 'POST'])
+@sc_ebody.route('/logout', methods=['GET', 'POST'])
 def logout():
 	session.clear()
 	return redirect('/')
