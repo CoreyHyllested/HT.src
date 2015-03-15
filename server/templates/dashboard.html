@@ -4,6 +4,10 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/modern-dash.css">
+{% endblock %}
+
+{% block header_js %}
+	{{ super() }}
 	<script src="/static/js/format.js"></script>
 	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
@@ -42,6 +46,12 @@
 				<div class="stats"> 
 					<div class="location"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
 					<div class="location"> <i class="fa fa-fw fa-folder-open"></i> {{projects|length}} {% if projects|length == 1 %} project {% else %} projects {% endif %} </div>
+					<div class="location" title='Credit towards next project'> <i class="fa fa-fw fa-money"></i> None </div>
+				 </div>
+				 <br>
+				 <div class="share">
+					<a href="/invite" title='Credit towards next project'>Give $150 Soulcrafting credit to friends.</a>
+					<p>Invite friends. Make $100 towards your next project.</p>
 				 </div>
 			</div>
 		</section>
