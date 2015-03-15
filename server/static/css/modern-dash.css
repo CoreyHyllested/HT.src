@@ -18,28 +18,18 @@ rgba(0,0,0,.2);
 	padding: 50px 0;
 }
 
-@media (min-width: 489px) {
-	#dashboard-wrapper { margin: 0px 50px; }
-}
-
-@media (min-width: 768px) {
-	#dashboard-wrapper { margin: 0px 60px; }
-}
-
-@media (min-width: 980px) {
-	#dashboard-wrapper { margin: 0px 100px; }
-}
-
-@media (min-width: 1200px) {
-	#dashboard-wrapper { margin: 0px 125px; }
-}
 
 #projects {
 	color: black;
 	padding: 0 10px;
 /*	
-min-height: 55px;
 */
+}
+
+#projects #header {
+	width: 95%;
+	margin: 10px;
+	border-bottom: 1px solid black;
 }
 
 #btn-95 {
@@ -47,11 +37,34 @@ min-height: 55px;
 	margin: 10px;
 }
 
-#projects #header {
-	width: 95%;
-	margin: 10px;
-	border-bottom: 1px solid black;	
+
+
+#profile {
+	/* width: 25%; 
+	*/
+	padding: 8px 15px;
+	background: lightgrey;
+
+	/* margin-top helps line up with dashboardLeftColumn projects h1 */
+	margin: 0px 8px;
+	border-radius: 10px;
 }
+
+#profile a h1 {
+	color: black;
+	font-size: 1.5em;
+}
+
+#profile .stats {
+	color: rgba(0,0,0,.7);
+	font-size: 1em;
+	padding-bottom: 12px;
+}
+
+#profile .stats i {
+	margin-right: 6px;
+}
+
 
 .centered {
 	margin: 0px auto;
@@ -86,31 +99,6 @@ min-height: 55px;
 
 
 
-#profile {
-	/* width: 25%; 
-	*/
-	padding: 8px 15px;
-	background: lightgrey;
-
-	/* margin-top helps line up with dashboardLeftColumn projects h1 */
-	margin: 0px 8px;
-	border-radius: 10px;
-}
-
-#profile a h1 {
-	color: black;
-	font-size: 1.5em;
-}
-
-#profile .stats {
-	color: rgba(0,0,0,.7);
-	font-size: 1em;
-	padding-bottom: 12px;
-}
-
-#profile .stats i {
-	margin-right: 6px;
-}
 
 .stats .location {
 	width: 100%;
@@ -123,6 +111,24 @@ min-height: 55px;
 .blueButton a {
 	color: white;
 }
+
+
+@media (min-width: 489px) {
+	#dashboard-wrapper { margin: 0px 50px; }
+}
+
+@media (min-width: 768px) {
+	#dashboard-wrapper { margin: 0px 60px; }
+}
+
+@media (min-width: 980px) {
+	#dashboard-wrapper { margin: 0px 100px; }
+}
+
+@media (min-width: 1200px) {
+	#dashboard-wrapper { margin: 0px 125px; }
+}
+
 
 @media only screen and (min-device-width: 240px) and (max-width: 489px) {
 	.profile {
