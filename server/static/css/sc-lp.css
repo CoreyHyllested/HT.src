@@ -1,78 +1,91 @@
-.lp-img {
+/* ELEMENTS */
+
+#lp-masthead {
+	width: 100%;
+	height: 80vh;
+
+	/* TEXT READABILITY */
+	font-weight: bolder;
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 2.1em;
+	line-height: 1.1em;
+	color: white;
+
+	/* background image */
 	background-image: url('/static/img/cover.jpg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
-	width: 100%;
-	height: 80vh;
-	color: white;
-    text-shadow: 0 2px 30px rgba(0,0,0,.8);
-	font-size: 2em;
-	line-height: 1.1em;
 }
 
-
-.lp-btn {
-	width: 240px;
-}
-
-#lp-fbook {
-	background: #3b5998;
-}
-
-#lp-email {
-	background: #5b8a08;
-/* 55a32a; */
-}
-
-.lp-img h1 {
-	font-size: 1.5em;
+#lp-masthead h1 {
 	line-height: 1.0em;
+	text-transform: uppercase;
+	font-weight: bolder;
 }
 
-.panel-heading h1 {
-	font-size: 64px;
-}
+#lp-fbook { background: #3b5998; }
+#lp-email { background: #5b8a08; }
 
 
-.darkgrey-background {
+
+/* SECTION: VALUES */
+#values {
 	/* positioning */
-	padding: 20px 0;
+	padding: 50px 0;
 
 	background-color: grey; /* fallback */
 	background-repeat: repeat-x;
 
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
-	background: -webkit-linear-gradient(top, lightgrey, white);	/* Safari 5.1, Chrome 10+ */
+	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
 	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
-	background: -ms-linear-gradient(top, lightgrey, white);		/* IE 10 */
-	background: -o-linear-gradient(top, lightgrey, white);		/* Opera 11.10+ */
+	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
+	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
 }
 
-#getstarted {
-	color: white;
-	text-transform: uppercase;
-	margin: 30px auto 0;
-/*	width: 50%; */
+#getstarted { margin: 25px auto 25px; }
+
+.panel-heading 		{ padding: 0; }
+.panel-heading h1	{ font-size: 64px; }
+
+
+
+/* SECTION: PRESS */
+#press {
+	display: none;
+	margin: 20px auto 40px;
 }
 
-.panel-body {
-	height: 85px;
+#press-row {
+	margin: 30px 10px;
+	text-align: center;
 }
 
-.panel {
-	
+#press-title { padding: 0 0 10px; }
+#press-row div:last-child {	display: none; 	}
+
+.press-img {
+	display: inline-block;
+	height: 50px;
+	padding-right: 2px;
 }
 
-.center {
-	/* taken from trunk-club, not sure that this is doing anything */
+
+.masthead-text {
 	display: block;
+
 	position: absolute;
 	top: 23%;
 	margin: 0 auto;
 	width: 100%;
 	text-align:center;		 /* center align text too */
 }
+
+.kameron { font-family: 'Kameron', serif; }
+
+
+
 
 
 
@@ -96,65 +109,17 @@
 	color: black !important;
 }
 
-
-.lp-img1 {
-	/* will not stretch, may not see full img */
-	background-image:url('/static/img/img1.jpg');
-	background-size: cover;
-	height: 750px;
-	color: #fff;
+.lp-btn {
+	width: 240px;
+	color: white;
+	text-transform: uppercase;
 }
 
-.img-portfolio {
-    margin-bottom: 30px;
-}
 
-.img-hover:hover {
-    opacity: 0.9;
-/*	background-image:url('/static/img/topo_table.jpg');
-	background-size:cover;
-*/
-}
-
-.press { padding: 50px 0 30px; }
-
-
-.press-list {
-	margin-bottom: 15px;
-	list-style: none;
-}
-
-.press-img:hover {
-/* 	border: 1px solid aliceblue; */
-/* 	makes img smaller... bah */
-}
-
-.list-inline {
-	padding-left: 0px;
-	height: 100px;
-}
-
-.press-list li {
-	display: block;
-	vertical-align: middle;	/* img? */
-}
-
-.press-list li img {
-	/* set height of image to normalize; let automatically determine width.  */
-	height: 60px;
-	filter: alpha(50%);
-
-	/* center */
-	margin-left: auto;
-	margin-right: auto;
-}
-
-/*press-list and .last */
-.row.last {
-	margin-bottom:  100px;
-}
 
 .greyscale {
+	height: 35px;
+
 	filter: gray;			/* IE6-9 */
 	filter: grayscale(1);	/* FF35+ */
 	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
@@ -169,18 +134,28 @@
 
 
 /* Responsive Styles */
-@media(max-width:991px) {
-    .customer-img,
-    .img-related {
-        margin-bottom: 30px;
-    }
-}
-
-@media(max-width:767px) {
-    .img-portfolio { margin-bottom: 15px; }
-    header.carousel .carousel { height: 70%; }
-}
-
 @media only screen and (min-device-width: 240px) and (max-width: 500px) {
 	.lp-img { font-size: 1em; }
 }
+
+
+@media (min-width: 489px) {
+	#press { display: block; }
+}
+
+@media (min-width: 768px) {
+	.greyscale { height: 40px; }
+	.press-img { padding-right: 15px; }
+}
+
+@media (min-width: 980px) {
+	#press-row div:last-child {	display: inline-block; 	}
+}
+
+@media (min-width: 1200px) {
+	.press-img { padding-right: 25px; }
+}
+
+@media (min-width: 1450px) {
+}
+

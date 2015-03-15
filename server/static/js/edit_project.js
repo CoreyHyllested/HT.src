@@ -71,6 +71,18 @@ function saveProject() {
 				var errors = err.errors;
 				console.log(JSON.stringify(errors));
 				showErrors(errors);
+				var topElement = null;
+				var topOffset = $(document).height();
+				$.each(errors, function(element, error ) {
+					jelement = $('#' + element)
+					//console.log('maybe goto : ' + element + ', ' + jelement.offset().top);
+					if (topOffset > jelement.offset().top) {
+						topOffset = jelement.offset().top;
+						topElement = jelement;
+					//	console.log('better: ' + topOffset);
+					}
+				});
+				window.scrollTo(0, topOffset-53);	//subtract the navbar.
 			}
 	});
 	return false;
@@ -99,4 +111,3 @@ function showErrors(errors) {
 	});
 	// create error count and set it on submit button; count down. 'Fix X errors and Submit'
 }
-

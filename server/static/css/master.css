@@ -67,6 +67,10 @@ a:active	{ color: #29abe1; }
 a:visited	{ color: #29abe1; }
 
 
+/* GENERIC */
+.center { margin: 0 auto; }
+
+
 /* FORMS */
 label {
 	color: gray;
