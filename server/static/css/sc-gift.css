@@ -1,5 +1,6 @@
 /* ELEMENTS */
 
+
 .darken {
 	position: absolute;
 	width: 100%;
@@ -7,19 +8,6 @@
 	background-color: rgba(0,0,0,.3);
 }
 
-.half {
-	display: inline-block;
-	float : left;
-}
-
-.part2 {
-	margin: 22px 0 10px;
-	text-align: left;
-	/* TODO: fix this stuff */
-	font-size: 30px;
-	padding-top: 15px;
-	vertical-align: middle;
-}
 
 #lp-masthead {
 	width: 100%;
@@ -46,12 +34,12 @@
 
 #project-ideas {
 	display: none;
-	margin: 30px auto 53px;
+	margin: 25px auto;
 }
 
-#invite {
-	margin: 25px auto 60px;
-}
+#invite			{ margin: 25px auto 55px; }
+#how-it-works	{ margin: 25px auto 55px; }
+
 
 .text-smaller {
 	line-height: 1.0em;
@@ -61,7 +49,10 @@
 }
 
 
-#lp-email { background: #5b8a08; }
+#lp-email	{	background: #5b8a08; }
+#lp-credit	{	background: #5b8a08;
+				min-width: 240px;
+}
 #getstarted { margin: 25px auto 50px; }
 
 
@@ -90,10 +81,11 @@
 	display: block;
 
 	position: relative;
-	top: 25%;
+	top: 15%;
 	margin: 0 auto;
 	width: 100%;
 	text-align:center;		 /* center align text too */
+	font-weight: bold;
 }
 
 
@@ -135,38 +127,18 @@
 
 
 #idea-list {
-/*
-height: 200px;
-	margin-bottom: 15px;
-*/
-
 	/* Center images */
 	text-align: center;
+	margin: 25px auto;
 }
-
-
-#idea-list li:last-child {	display: none;
-	margin-right: 0px;
-} 
+#idea-list .idea:last-child {	display: none; 	}
 
 .idea {
 	display: inline-block;
 	position: relative;
-/*	
-height: 200px; 
-*/
-
 	margin: 0px 10px 0px;
 }
 
-#idea-list li .idea img {
-	/* set height of image to normalize; let automatically determine width.  */
-	height: 140px;
-	width: 210px;
-	/* center */
-	margin-left: auto;
-	margin-right: auto;
-}
 
 .idea .dark p {
 	display: block;
@@ -219,40 +191,24 @@ height: 200px;
 @media (min-width: 768px) {
 	#invite_emails { width: 350px; }
 	#project-ideas { display: block; }
+
+	.masthead-center { top: 25%; }
 }
 
 @media (min-width: 980px) {
 	#invite_emails { width: 400px; }
-	#idea-list li .idea {
-		margin-right: 14px;
-	}
-	#idea-list li:last-child {	display: block; 	} 
+	#idea-list .idea:last-child {	display: inline-block; 	}
 }
 
 @media (min-width: 1200px) {
-
-	#idea-list { height: 200px; }
-
-
-	#idea-list li .idea img {
-		height: 180px;
-		width: 270px;
-	}
-	#idea-list li .idea {
-		margin-right: 9px;
-	}
-	.idea p {
-		top: 70%;
-	}
 }
 
 @media (min-width: 1450px) {
-	#idea-list { height: 220px; }
-	#idea-list li .idea img {
-		height: 200px;
-		width: 300px;
+	#idea-list .idea img {
+		height: 150px;
+		width: 225px;
 	}
-	#idea-list li .idea {
+	#idea-list .idea {
 		margin-right: 40px;
 	}
 }
