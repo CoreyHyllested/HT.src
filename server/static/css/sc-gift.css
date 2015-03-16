@@ -46,7 +46,7 @@
 
 #project-ideas {
 	display: none;
-	margin: 30px auto 30px;
+	margin: 30px auto 53px;
 }
 
 #invite {
@@ -80,6 +80,10 @@
 	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
 }
 
+
+
+
+
 .kameron { font-family: 'Kameron', serif; }
 
 .masthead-center {
@@ -97,7 +101,11 @@
 .panel-heading 		{ padding: 0; }
 .panel-heading h1	{ font-size: 64px; }
 
-.img-responsive { margin: 0 auto 30px; }
+.img-responsive { 
+	height: 140px;
+	width: 210px;
+	margin: 0 auto;
+}
 
 .jumbotron-btn {
 	color: white !important;
@@ -127,25 +135,28 @@
 
 
 #idea-list {
-	/* INLINE/horiz list w/ no... */
-	height: 150px;
+/*
+height: 200px;
 	margin-bottom: 15px;
+*/
+
+	/* Center images */
+	text-align: center;
 }
 
-#idea-list li {
-	display: inline;
-	list-style-type: none;
 
-	float: left;
-	vertical-align: middle;	/* img? */
-}
 #idea-list li:last-child {	display: none;
 	margin-right: 0px;
 } 
 
-#idea-list li .idea {
+.idea {
+	display: inline-block;
 	position: relative;
-	margin-right: 18px;
+/*	
+height: 200px; 
+*/
+
+	margin: 0px 10px 0px;
 }
 
 #idea-list li .idea img {
@@ -157,15 +168,14 @@
 	margin-right: auto;
 }
 
-.idea p {
+.idea .dark p {
 	display: block;
 	position: absolute;
-	top: 65%;
+	top: 50%;
 
 	margin: auto auto;
 	width: 100%;
 
-	color: white;
 	font-weight: bold;
 	font-size: 1.4em;
     text-shadow: 1px 2px 30px rgba(0,0,0,.8);
@@ -177,7 +187,15 @@
 	height: 100%;
 	width: 100%;
     background-color: rgba(0,0,0,.3);
+	color: rgba(255,255,255,1); 
 }
+
+.dark:hover {
+    background-color: rgba(0,0,0,0);
+	color: rgba(255,255,255,0); 
+}
+
+
 
 #invite_emails {
 	display: inline-block;

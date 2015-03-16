@@ -11,8 +11,7 @@
 <div id='lp-masthead'>
 	<div class='darken'></div>
 	<div class='container masthead-center'>
-		<p>{{bp.prof_name}} gave you $250 to invest in your home.</p>
-
+		<p>{{bp.prof_name}} gave you $250 to invest in your home.</p> 
 		<br>
 		<p class='text-smaller'>Corey invited you to join Soulcrafting, the best way to make home improvements.</p>
 		<p> <a id='lp-email' class="btn jumbotron-btn lp-btn" href='/signup?credit=yes'>Sign up to claim credit</a> </p>
@@ -20,48 +19,28 @@
 </div>
 
 
-<section id='project-ideas' class='container-fluid'>
-	<h1 class='lead text-center'>Project Ideas</h1>
+<section id='project-ideas' class='container text-center'>
+	<h1 class='lead'>Project Ideas</h1>
 
-	<ul id='idea-list'>
-		<li> 
-			<div class='idea'>
-				<div class='dark'></div>
-				<img class="img-responsive" src="/static/img/idea-conversion.jpg"> 
-				<p class=''>AirBnB Conversion</p>
-			</div>
-		</li>
-		<li>
-			<div class='idea'>
-				<div class='dark'></div>
-				<img class="img-responsive" src="/static/img/idea-furniture.jpg"> 
-				<p>Custom Furniture</p>
-			</div>
-		</li>
-		<li> 
-			<div class='idea'>
-				<div class='dark'></div>
-				<img class="img-responsive" src="/static/img/kitchen-red.jpg"> 
-				<p>Kitchen Remodel</p>
-			</div>
-		</li>
-		<li> 
-			<div class='idea'>
-				<div class='dark'></div>
-				<img class="img-responsive" src="/static/img/idea-deck.jpg">
-				<p>Update Deck</p>
-			</div>
-		</li>
-
-		<!--li> 
-			<div class='idea'>
-				<img class="img-responsive" src="/static/img/idea-bedroom.jpg"> 
-				<p>Creative Kids Bedroom</p>
-			</div>
-		</li-->
-	</ul>
+	<div id='idea-list'>
+		<div class='idea'>
+			<div class='dark'> <p>AirBnB Conversion</p> </div>
+			<img class="img-responsive" src="/static/img/idea-conversion.jpg"> 
+		</div>
+		<div class='idea'>
+			<div class='dark'> <p>Custom Furniture</p> </div>
+			<img class="img-responsive" src="/static/img/idea-furniture.jpg"> 
+		</div>
+		<div class='idea'>
+			<div class='dark'> <p>Kitchen Remodel</p> </div>
+			<img class="img-responsive" src="/static/img/kitchen-red.jpg"> 
+		</div>
+		<div class='idea'>
+			<div class='dark'> <p>Update Deck</p> </div>
+			<img class="img-responsive" src="/static/img/idea-deck.jpg">
+		</div>
+	</div>
 </section>
-
 {% endblock %}
 
 <section id='how-it-works' class="container">
