@@ -1,14 +1,14 @@
 ################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2013 - 2014 Soulcrafting.
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
 # services may be protected by U.S. and Foreign Patents.  All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -17,10 +17,11 @@ from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
-from . import insprite_views
+from . import sc_users
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
+from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm
+from ..forms import InviteForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -34,8 +35,7 @@ from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-@insprite_views.route('/home',      methods=['GET', 'POST'])
-@insprite_views.route('/dashboard', methods=['GET', 'POST'])
+@sc_users.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -61,8 +61,32 @@ def render_dashboard(usrmsg=None):
 
 
 
-@insprite_views.route("/inbox", methods=['GET', 'POST'])
+@sc_users.route('/invite', methods=['GET', 'POST'])
 @req_authentication
+def render_invite_page():
+	bp = Profile.get_by_uid(session['uid'])
+
+	invite = InviteForm(request.form)
+	invite.invite_userid.data = bp.account
+	try:
+		if invite.validate_on_submit():
+			print 'invite: valid post from user ', invite.invite_userid.data
+			print 'invite: emails ', invite.invite_emails.data
+#			print 'invite: check post from user personalized ', invite.invite_personalized.data
+			return redirect('/dashboard')
+		else:
+			print 'invite: invalid POST', invite.errors
+	except Exception as e:
+		print e
+		#db_session.rollback()
+	print 'render_invite(): render page'
+	return make_response(render_template('invite.html', bp=bp, form=invite))
+
+
+
+
+#@insprite_views.route("/inbox", methods=['GET', 'POST'])
+#@req_authentication
 def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
@@ -89,8 +113,8 @@ def render_inbox_page():
 
 
 
-@req_authentication
-@insprite_views.route("/compose", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
@@ -103,8 +127,8 @@ def render_compose_page():
 
 
 
-@req_authentication
-@insprite_views.route("/get_threads", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
 	threads = []
@@ -139,8 +163,8 @@ def get_threads():
 
 
 
-@req_authentication
-@insprite_views.route("/message", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/message", methods=['GET', 'POST'])
 def render_message_page():
 	msg_thread_id = request.values.get('msg_thread_id')
 	action = request.values.get('action')
@@ -223,8 +247,8 @@ def render_message_page():
 
 
 
-@insprite_views.route('/profile/edit', methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route('/profile/edit', methods=['GET', 'POST'])
+#@req_authentication
 def render_edit_profile():
 	# Form to edit a profile
 
@@ -321,8 +345,8 @@ def render_edit_profile():
 	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
 
 
-@insprite_views.route('/profile/update', methods=['POST'])
-@req_authentication
+#@insprite_views.route('/profile/update', methods=['POST'])
+#@req_authentication
 def api_update_profile(usrmsg=None):
 	# Process the edit profile form
 
@@ -676,8 +700,8 @@ def ht_update_profile(ba, bp, form, form_page):
 	# bp.updated  = dt.utcnow()
 
 
-@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
+#@req_authentication
 def upgrade_profile():
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
@@ -690,8 +714,8 @@ def upgrade_profile():
 
 
 
-@req_authentication
-@insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
 def render_multiupload_page():
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('upload_portfolio.html', bp=bp))
@@ -699,8 +723,8 @@ def render_multiupload_page():
 
 	
 
-@req_authentication
-@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
 def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id', False)
@@ -719,8 +743,8 @@ def render_edit_portfolio_page():
 
 
 # This route initiates a new lesson
-@insprite_views.route('/lesson/new', methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route('/lesson/new', methods=['GET', 'POST'])
+#@req_authentication
 def initialize_lesson(version=None):
 	bp = Profile.get_by_uid(session['uid'])
 	
@@ -741,8 +765,8 @@ def initialize_lesson(version=None):
 
 
 # The new lesson has been initialized - redirect to the form
-@insprite_views.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route('/lesson/new/<lesson_id>', methods=['GET', 'POST'])
+#@req_authentication
 def render_new_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
 	version = request.values.get("version")
@@ -796,8 +820,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 
 
 # User is choosing to edit a lesson they previously saved - display the form
-@insprite_views.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route('/lesson/edit/<lesson_id>', methods=['GET', 'POST'])
+#@req_authentication
 def render_edit_lesson(lesson_id, form=None, errmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
 	if (bp.availability == 0): return redirect('/dashboard')
@@ -858,8 +882,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 
 
 # Update will run no matter which form (add or edit) was submitted. It's the same function for both form types (i.e. there is no "create").
-@insprite_views.route('/lesson/update/<lesson_id>', methods=['POST'])
-@req_authentication
+#@insprite_views.route('/lesson/update/<lesson_id>', methods=['POST'])
+#@req_authentication
 def api_update_lesson(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
 	if (bp.availability == 0): return redirect('/dashboard')
@@ -1059,7 +1083,7 @@ def ht_update_lesson(lesson, form, saved):
 
 
 # View the lesson page
-@insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
+#@insprite_views.route("/lesson/<lesson_id>", methods=['GET', 'POST'])
 def render_lesson_page(lesson_id):
 	avail = None
 	bp = None
@@ -1100,8 +1124,8 @@ def render_lesson_page(lesson_id):
 
 
 
-@req_authentication
-@insprite_views.route("/lesson/<lesson_id>/images", methods=['GET', 'POST'])
+#@req_authentication
+#@insprite_views.route("/lesson/<lesson_id>/images", methods=['GET', 'POST'])
 def api_get_images_for_lesson(lesson_id):
 	# move this to API.
 
@@ -1113,8 +1137,8 @@ def api_get_images_for_lesson(lesson_id):
 	return jsonify(portfolio=images)
 
 
-@req_authentication
-@insprite_views.route("/lesson/<lesson_id>/retrieve", methods=['GET'])
+#@req_authentication
+#@insprite_views.route("/lesson/<lesson_id>/retrieve", methods=['GET'])
 def ht_api_retrieve_lesson(lesson_id):
 	# move this to API.
 	lesson = Lesson.get_by_id(lesson_id)
@@ -1128,8 +1152,8 @@ def ht_get_serialized_images_for_lesson(lesson_id):
 	return [img.serialize for img in images]
 
 
-@req_authentication
-@insprite_views.route("/portfolio/<operation>/", methods=['POST'])
+#@req_authentication
+#@insprite_views.route("/portfolio/<operation>/", methods=['POST'])
 def api_update_portfolio(operation):
 	bp = Profile.get_by_uid(session['uid'])
 	lesson_id = request.values.get('lesson_id')
@@ -1188,8 +1212,8 @@ def api_update_portfolio(operation):
 
 
 
-@req_authentication
-@insprite_views.route("/lesson/<lesson_id>/image/update", methods=['POST'])
+#@req_authentication
+#@insprite_views.route("/lesson/<lesson_id>/image/update", methods=['POST'])
 def api_lesson_image_update(lesson_id):
 	bp = Profile.get_by_uid(session['uid'])
 
@@ -1236,8 +1260,8 @@ def api_lesson_image_update(lesson_id):
 
 
 
-@insprite_views.route('/schedule', methods=['GET','POST'])
-@req_authentication
+#@insprite_views.route('/schedule', methods=['GET','POST'])
+#@req_authentication
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
@@ -1279,8 +1303,8 @@ def render_schedule_page():
 	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
 
 
-@insprite_views.route('/schedule/getdays', methods=['GET'])
-@req_authentication
+#@insprite_views.route('/schedule/getdays', methods=['GET'])
+#@req_authentication
 def get_schedule_days():
 	print "get_schedule_days: start"
 	mentor_id = request.values.get('mentor_id')
@@ -1302,8 +1326,8 @@ def get_schedule_days():
 	return jsonify(availdays=availdays), 200	
 
 
-@insprite_views.route('/schedule/gettimes', methods=['GET'])
-@req_authentication
+#@insprite_views.route('/schedule/gettimes', methods=['GET'])
+#@req_authentication
 def get_schedule_times():
 	print "get_schedule_times: start"
 	day = request.values.get('day')
@@ -1325,8 +1349,8 @@ def get_schedule_times():
 
 
 
-@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
-@req_authentication
+#@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
+#@req_authentication
 def render_review_meeting_page(review_id):
 	"""renders review page.  Results posted to ht_api_review"""
 	print 'render_review_meeting()\treview_id =', review_id
@@ -1372,8 +1396,8 @@ def render_review_meeting_page(review_id):
 
 
 
-@insprite_views.route('/settings', methods=['GET', 'POST'])
-@req_authentication
+#@sc_views.route('/settings', methods=['GET', 'POST'])
+#@req_authentication
 def render_settings():
 	""" Provides form for the user to change their settings."""
 	uid = session['uid']
@@ -1402,8 +1426,8 @@ def render_settings():
 
 
 
-@insprite_views.route('/settings/update', methods=['GET','POST'])
-@req_authentication
+#@insprite_views.route('/settings/update', methods=['GET','POST'])
+#@req_authentication
 def ht_api_update_settings():
 	# Process the edit settings form
 
@@ -1505,9 +1529,9 @@ def ht_api_update_settings():
 
 
 # rename /image/create
-@insprite_views.route('/upload', methods=['POST'])
-@dbg_enterexit
-@req_authentication
+#@insprite_views.route('/upload', methods=['POST'])
+#@dbg_enterexit
+#@req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
 
@@ -1542,8 +1566,8 @@ def upload():
 
 
 
-@insprite_views.route('/project/edit', methods=['GET', 'POST'])
-@insprite_views.route('/project/edit/<string:pid>', methods=['GET', 'POST'])
+@sc_users.route('/project/edit', methods=['GET', 'POST'])
+@sc_users.route('/project/edit/<string:pid>', methods=['GET', 'POST'])
 @req_authentication
 def render_edit_project(pid=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -1578,7 +1602,7 @@ def render_edit_project(pid=None):
 
 
 
-@insprite_views.route('/project/update', methods=['POST'])
+@sc_users.route('/project/update', methods=['POST'])
 @req_authentication
 def api_update_project(usrmsg=None):
 	# Process the edit profile form
@@ -1687,8 +1711,8 @@ def api_update_project(usrmsg=None):
 
 #HELPER FUNCTIONS.
 
-@insprite_views.route('/uploads/<filename>')
-def uploaded_file(filename):
+#@insprite_views.route('/uploads/<filename>')
+#def uploaded_file(filename):
 	# add sec protection?
 	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
 

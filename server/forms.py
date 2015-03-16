@@ -252,6 +252,13 @@ class ProjectForm(Form):
 
 
 
+class InviteForm(Form):
+	invite_userid = HiddenField('userid',   [validators.Required(), validators.length(min=30, max=40)])
+	invite_emails = TextField('Emails', [validators.Required(), validators.length(min=1, max=400)])
+	invite_personalized = TextField('codeid', [validators.Optional(), validators.length(min=5, max=40)])
+
+
+
 class ProfileForm(Form):
 	edit_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
 	edit_location = TextField('Location')

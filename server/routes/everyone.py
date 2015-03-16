@@ -12,7 +12,7 @@
 #################################################################################
 
 
-from . import insprite_views
+from . import sc_ebody
 from flask import render_template, make_response, session, request, redirect
 from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
@@ -23,9 +23,9 @@ from server import ht_csrf
 from pprint import pprint
 
 
-@insprite_views.route('/index.html')
-@insprite_views.route('/index')
-@insprite_views.route('/', methods=['GET', 'POST'])
+@sc_ebody.route('/index.html')
+@sc_ebody.route('/index')
+@sc_ebody.route('/', methods=['GET', 'POST'])
 def render_landingpage():
 	bp = None
 	if 'uid' in session:
@@ -34,7 +34,7 @@ def render_landingpage():
 
 
 
-@insprite_views.route('/gift/<from_user>', methods=['GET', 'POST'])
+@sc_ebody.route('/gift/<from_user>', methods=['GET', 'POST'])
 def render_giftpage(from_user):
 	print 'render_gift(): enter [' + str(from_user) + ']'
 	bp = None
@@ -201,7 +201,7 @@ def render_search(page = 1):
 
 
 
-@insprite_views.route("/password/recover", methods=['GET', 'POST'])
+@sc_ebody.route("/password/recover", methods=['GET', 'POST'])
 def render_password_reset_request():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
@@ -216,7 +216,7 @@ def render_password_reset_request():
 
 
 
-@insprite_views.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
+@sc_ebody.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
 def render_password_reset_page(challengeHash):
 	form = NewPasswordForm(request.form)
 
@@ -256,8 +256,8 @@ def render_password_reset_page(challengeHash):
 
 
 
-@insprite_views.route("/share/", methods=['GET', 'POST'])
-@insprite_views.route("/share",	 methods=['GET', 'POST'])
+@sc_ebody.route("/share/", methods=['GET', 'POST'])
+@sc_ebody.route("/share",	 methods=['GET', 'POST'])
 def render_share_page():
 	back = request.values.get('back')
 	print 'render_share_page()'
@@ -270,8 +270,8 @@ def render_share_page():
 
 
 
-@ht_csrf.exempt
-@insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
+#@ht_csrf.exempt
+#@insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
 def ht_email_operations(operation, data):
 	print "ht_email_operations: begin"
 	print "ht_email_operations: operation: ", operation

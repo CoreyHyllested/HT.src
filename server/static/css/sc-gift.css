@@ -1,5 +1,6 @@
 /* ELEMENTS */
 
+
 .darken {
 	position: absolute;
 	width: 100%;
@@ -7,19 +8,6 @@
 	background-color: rgba(0,0,0,.3);
 }
 
-.half {
-	display: inline-block;
-	float : left;
-}
-
-.part2 {
-	margin: 22px 0 10px;
-	text-align: left;
-	/* TODO: fix this stuff */
-	font-size: 30px;
-	padding-top: 15px;
-	vertical-align: middle;
-}
 
 #lp-masthead {
 	width: 100%;
@@ -46,8 +34,12 @@
 
 #project-ideas {
 	display: none;
-	margin: 30px auto 30px;
+	margin: 25px auto;
 }
+
+#invite			{ margin: 25px auto 55px; }
+#how-it-works	{ margin: 25px auto 55px; }
+
 
 .text-smaller {
 	line-height: 1.0em;
@@ -57,7 +49,10 @@
 }
 
 
-#lp-email { background: #5b8a08; }
+#lp-email	{	background: #5b8a08; }
+#lp-credit	{	background: #5b8a08;
+				min-width: 240px;
+}
 #getstarted { margin: 25px auto 50px; }
 
 
@@ -76,16 +71,21 @@
 	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
 }
 
+
+
+
+
 .kameron { font-family: 'Kameron', serif; }
 
 .masthead-center {
 	display: block;
 
 	position: relative;
-	top: 25%;
+	top: 15%;
 	margin: 0 auto;
 	width: 100%;
 	text-align:center;		 /* center align text too */
+	font-weight: bold;
 }
 
 
@@ -93,7 +93,11 @@
 .panel-heading 		{ padding: 0; }
 .panel-heading h1	{ font-size: 64px; }
 
-.img-responsive { margin: 0 auto 30px; }
+.img-responsive { 
+	height: 140px;
+	width: 210px;
+	margin: 0 auto;
+}
 
 .jumbotron-btn {
 	color: white !important;
@@ -123,45 +127,27 @@
 
 
 #idea-list {
-	/* INLINE/horiz list w/ no... */
-	height: 150px;
-	margin-bottom: 15px;
+	/* Center images */
+	text-align: center;
+	margin: 25px auto;
 }
+#idea-list .idea:last-child {	display: none; 	}
 
-#idea-list li {
-	display: inline;
-	list-style-type: none;
-
-	float: left;
-	vertical-align: middle;	/* img? */
-}
-#idea-list li:last-child {	display: none;
-	margin-right: 0px;
-} 
-
-#idea-list li .idea {
+.idea {
+	display: inline-block;
 	position: relative;
-	margin-right: 18px;
+	margin: 0px 10px 0px;
 }
 
-#idea-list li .idea img {
-	/* set height of image to normalize; let automatically determine width.  */
-	height: 140px;
-	width: 210px;
-	/* center */
-	margin-left: auto;
-	margin-right: auto;
-}
 
-.idea p {
+.idea .dark p {
 	display: block;
 	position: absolute;
-	top: 65%;
+	top: 50%;
 
 	margin: auto auto;
 	width: 100%;
 
-	color: white;
 	font-weight: bold;
 	font-size: 1.4em;
     text-shadow: 1px 2px 30px rgba(0,0,0,.8);
@@ -173,6 +159,19 @@
 	height: 100%;
 	width: 100%;
     background-color: rgba(0,0,0,.3);
+	color: rgba(255,255,255,1); 
+}
+
+.dark:hover {
+    background-color: rgba(0,0,0,0);
+	color: rgba(255,255,255,0); 
+}
+
+
+
+#invite_emails {
+	display: inline-block;
+	width: 200px;
 }
 
 
@@ -184,43 +183,68 @@
 
 
 @media (min-width: 489px) {
+	#invite_emails {
+		width: 200px;
+	}
 }
 
 @media (min-width: 768px) {
+	#invite_emails { width: 350px; }
 	#project-ideas { display: block; }
+
+	.masthead-center { top: 25%; }
 }
 
 @media (min-width: 980px) {
-	#idea-list li .idea {
-		margin-right: 14px;
-	}
-	#idea-list li:last-child {	display: block; 	} 
+	#invite_emails { width: 400px; }
+	#idea-list .idea:last-child {	display: inline-block; 	}
 }
 
 @media (min-width: 1200px) {
-
-	#idea-list { height: 200px; }
-
-
-	#idea-list li .idea img {
-		height: 180px;
-		width: 270px;
-	}
-	#idea-list li .idea {
-		margin-right: 9px;
-	}
-	.idea p {
-		top: 70%;
-	}
 }
 
 @media (min-width: 1450px) {
-	#idea-list { height: 220px; }
-	#idea-list li .idea img {
-		height: 200px;
-		width: 300px;
+	#idea-list .idea img {
+		height: 150px;
+		width: 225px;
 	}
-	#idea-list li .idea {
+	#idea-list .idea {
 		margin-right: 40px;
 	}
+}
+
+#send_invite {
+	display: inline-block;
+	width: 75px;
+	height: 39px;
+	/* 
+	border: 1px solid white;
+	*/
+}
+
+
+.form-group {
+	position: relative;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.form-control.email {
+	/*
+	padding-left: 30px;
+	*/
+}
+
+.access-section .form-group.email:before {
+  content: "\f003";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
 }

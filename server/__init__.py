@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 # 
-# All information contained is the property of Insprite, LLC.  Any intellectual 
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with 
-# services may be protected by U.S. and Foreign Patents.  All intellectual 
+# services may be protected by U.S. and Foreign Patents. All intellectual 
 # property contained within is covered by trade secret and copyright law.   
 # 
 # Dissemination or reproduction is strictly forbidden unless prior written 
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -91,9 +91,13 @@ def initialize_server(config_name):
 	Compress(ht_server)
 
 	from routes import authentication, everyone, users, api, errors, testing
-	from routes import insprite_views as main_blueprint
-	from routes import insprite_tests as test_blueprint
-	ht_server.register_blueprint(main_blueprint)
-	ht_server.register_blueprint(test_blueprint)
+#	from routes import insprite_views as main_blueprint
+#	from routes import insprite_tests as test_blueprint
+	from routes import sc_users as sc_allusers
+	from routes import sc_ebody as sc_everyone
+#	ht_server.register_blueprint(main_blueprint)
+#	ht_server.register_blueprint(test_blueprint)
+	ht_server.register_blueprint(sc_everyone)
+	ht_server.register_blueprint(sc_allusers)
 
 	return ht_server
