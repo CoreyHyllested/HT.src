@@ -20,7 +20,8 @@ from server.controllers import *
 from . import sc_users
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm, LessonForm, ProposalForm
+from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm
+from ..forms import InviteForm, ProposalForm
 
 # more this into controllers / tasks.
 import boto
@@ -65,8 +66,21 @@ def render_dashboard(usrmsg=None):
 def render_invite_page():
 	bp = Profile.get_by_uid(session['uid'])
 
+	invite = InviteForm(request.form)
+	invite.invite_userid.data = bp.account
+	try:
+		if invite.validate_on_submit():
+			print 'invite: valid post from user ', invite.invite_userid.data
+			print 'invite: emails ', invite.invite_emails.data
+#			print 'invite: check post from user personalized ', invite.invite_personalized.data
+			return redirect('/dashboard')
+		else:
+			print 'invite: invalid POST', invite.errors
+	except Exception as e:
+		print e
+		#db_session.rollback()
 	print 'render_invite(): render page'
-	return make_response(render_template('invite.html', bp=bp))
+	return make_response(render_template('invite.html', bp=bp, form=invite))
 
 
 

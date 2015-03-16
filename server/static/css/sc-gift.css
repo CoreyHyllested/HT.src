@@ -49,6 +49,10 @@
 	margin: 30px auto 30px;
 }
 
+#invite {
+	margin: 25px auto 60px;
+}
+
 .text-smaller {
 	line-height: 1.0em;
     /*text-shadow: 0 2px 2px rgba(0,0,0,.8); */
@@ -175,6 +179,11 @@
     background-color: rgba(0,0,0,.3);
 }
 
+#invite_emails {
+	display: inline-block;
+	width: 200px;
+}
+
 
 
 /* Responsive Styles */
@@ -184,13 +193,18 @@
 
 
 @media (min-width: 489px) {
+	#invite_emails {
+		width: 200px;
+	}
 }
 
 @media (min-width: 768px) {
+	#invite_emails { width: 350px; }
 	#project-ideas { display: block; }
 }
 
 @media (min-width: 980px) {
+	#invite_emails { width: 400px; }
 	#idea-list li .idea {
 		margin-right: 14px;
 	}
@@ -223,4 +237,40 @@
 	#idea-list li .idea {
 		margin-right: 40px;
 	}
+}
+
+#send_invite {
+	display: inline-block;
+	width: 75px;
+	height: 39px;
+	/* 
+	border: 1px solid white;
+	*/
+}
+
+
+.form-group {
+	position: relative;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.form-control.email {
+	/*
+	padding-left: 30px;
+	*/
+}
+
+.access-section .form-group.email:before {
+  content: "\f003";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
 }

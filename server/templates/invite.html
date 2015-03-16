@@ -1,0 +1,75 @@
+{% extends "sc_header.html" %}
+{% set title='Invite Friends' %}
+
+{% block header_css %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/sc-gift.css">
+{% endblock %}
+
+{% block content %}
+<div id='lp-masthead'>
+	<div class='darken'></div>
+	<div class='container masthead-center'>
+		<h1>Share Soulcrafting</h1>
+		<h2>Give a friend $150 and earn $100 towards your next project.</h2>
+	</div>
+</div>
+
+
+
+<section id='invite' class='container'>
+	<h1 class='lead text-center'>Give Soulcrafting to a friend.</h1>
+
+	<form method='POST' action='/invite'>
+		<div class='col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12'>
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+			{{form.invite_userid}}
+
+			<div class="form-group email">
+				{{form.invite_emails(type='email', class='form-control', autocomplete='off', placeholder="Add your friend's email")}}
+				<input id='send_invite' type="submit" class="blueButton" value="Send">
+			</div>
+		</div>
+	</form>
+
+	<!--div class='col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12 text-center'>
+		<p>	
+			<h1 class='lead'>Share a link with a friend.</h1>
+			http://soulcrafting.co/gift/{{bp.account}}
+		</p>
+	</div-->
+
+</section>
+{% endblock %}
+
+<section id='how-it-works' class="container">
+	<div class="text-center">
+		<h1 class=''>How it Works</h1>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class='panel-heading'>
+			<div class="half"> <h1><i class="fa fa-fw fa-check"></i></h1> </div>
+			<div class="half"> <div class='part2'> <b>Create Project</b></div> </div>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading">
+			<div class="half"> <h1><i class="fa fa-fw fa-phone"></i></h1> </div>
+			<div class="half"> <div class='part2'> <b>Talk to concierge</b></div> </div>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-sm-4 text-center">
+		<div class="panel-heading">
+			<div class="half"> <h1><i class="fa fa-fw fa-dollar"></i></h1> </div>
+			<div class="half"> <div class='part2'> <b>Save Money</b></div> </div>
+		</div>
+	</div>
+</section>
+
+
+{% block scripts %}
+	{{ super() }}
+{% endblock %}
