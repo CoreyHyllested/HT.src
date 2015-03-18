@@ -1,18 +1,18 @@
 #################################################################################
-# Copyright (C) 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting.
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
-from . import insprite_views
+from . import sc_users
 from flask import render_template
 from ..forms import ReviewForm
 from .helpers import *
@@ -21,27 +21,93 @@ from server.ht_utils import *
 
 
 
-@insprite_views.route('/meeting/create', methods=['POST'])
+@sc_users.route('/purchase/create', methods=['POST'])
 @req_authentication
-def ht_api_meeting_create():
-	print 'ht_api_meeting_create()'
-	resp_message = 'Meeting proposal created'
+def sc_api_purchase_create():
+	print 'sc_api_purchase_create()'
+	resp_message = 'Purchase created'
 	resp_code = 200
 
 	try:
-		ht_meeting_create(request.values, session['uid'])
+		sc_purchase_gift(request.values, session['uid'])
 	except SanitizedException as se:
-		print 'ht_api_meeting_create()	sanitized messages',  se.sanitized_msg()
+		print 'sc_api_purchase_create() sanitized messages',  se.sanitized_msg()
 		return se.api_response(request.method)
 
-
-	# TODO - change nexturl to depend on passed variable, go to user profile if needed
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
 
 
-@insprite_views.route('/meeting/accept', methods=['GET','POST'])
+def sc_purchase_gift(values, uid):
+	""" Create a Purchase (gift). """
+
+	print 'sc_purchase_gift: enter()'
+	#	Stripe fields should be validated.
+	#	v1 - end time is reasonable (after start time)
+	#	v2 - hero exists.
+	#	v3 - place doesn't matter as much..
+	#	v4 - cost..
+	try:
+		stripe_tokn = values.get('stripe_tokn')		# used to charge
+		stripe_card = values.get('stripe_card')		# card to add to insprite_customer.
+		stripe_cust = values.get('stripe_cust')
+		#stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
+
+		prop_mentor = values.get('prop_mentor')
+		prop_cost = values.get('prop_cost')
+		prop_desc = values.get('prop_desc')
+		prop_location = values.get('prop_location')
+		prop_lesson = values.get('prop_lesson')
+		prop_groupsize = values.get('prop_groupsize')
+
+		print "sc_purchase_gift: mentor:", prop_mentor
+		print "sc_purchase_gift: cost:", prop_cost
+		print "sc_purchase_gift: desc:", prop_desc
+		print "sc_purchase_gift: location:", prop_location
+		print "sc_purchase_gift: lesson:", prop_lesson
+		print "sc_purchase_gift: groupsize:", prop_groupsize
+
+		# validate start/end times via conversion.
+		prop_s_date = values.get('prop_s_date')
+		prop_s_time = values.get('prop_s_time')
+		prop_f_date = values.get('prop_f_date')
+		prop_f_time = values.get('prop_f_time')
+		dt_start = dt.strptime(prop_s_date  + " " + prop_s_time, '%A, %b %d, %Y %H:%M')
+		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_time, '%A, %b %d, %Y %H:%M')
+
+		# convert to user's local TimeZone.
+		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
+		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
+
+		print 'sc_purchase_gift: (from stripe) token =', stripe_tokn, 'card =', stripe_card
+		hp	= Profile.get_by_prof_id(prop_mentor)
+		bp	= Profile.get_by_uid(uid)
+		ba  = Account.get_by_uid(uid)
+		ha  = Account.get_by_uid(hp.account)
+		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
+
+		print 'sc_purchase_gift: Mentee (' + str(bp.prof_name) + ', ' + str(stripe_cust) + ')'
+		print 'sc_purchase_gift: Mentor (' + str(hp.prof_name) + ')'
+
+		meeting = Meeting(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_location), str(prop_desc), str(prop_lesson), prop_groupsize, token=stripe_tokn, customer=stripe_cust, card=stripe_card)
+
+		db_session.add(meeting)
+		db_session.commit()
+		print "sc_purchase_gift: successfully committed meeting"
+	except Exception as e:
+		# IntegrityError, from commit()
+		# SanitizedException(None), from Meeting.init()
+		print type(e), e
+		db_session.rollback()
+		ht_sanitize_error(e)
+	print "sc_purchase_gift: sending notifications"
+	# add code to send notification.
+	#ht_send_meeting_proposed_notifications(meeting, ha, hp, ba, bp)
+
+
+
+#@insprite_views.route('/meeting/accept', methods=['GET','POST'])
 @req_authentication
 def ht_api_meeting_accept():
 	meet_id = request.values.get('meet_id', None)
@@ -65,7 +131,7 @@ def ht_api_meeting_accept():
 
 
 
-@insprite_views.route('/meeting/negotiate', methods=['POST'])
+#@insprite_views.route('/meeting/negotiate', methods=['POST'])
 @req_authentication
 def ht_api_meeting_negotiate():
 	#meeting = Meeting.get_by_id(form.proposal_id.data)
@@ -76,7 +142,7 @@ def ht_api_meeting_negotiate():
 
 
 
-@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
+#@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_reject():
 	# cannot use form to validate inputs. do manually
@@ -101,7 +167,7 @@ def ht_api_meeting_reject():
 
 
 
-@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
+#@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @req_authentication
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
@@ -120,8 +186,8 @@ def ht_api_meeting_cancel():
 
 
 
+#@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 @req_authentication
-@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 def ht_api_get_message_thread(msg_thread):
 	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
@@ -180,7 +246,7 @@ def ht_api_get_message_thread(msg_thread):
 
 
 
-@insprite_views.route('/sendmsg', methods=['POST'])
+#@insprite_views.route('/sendmsg', methods=['POST'])
 @req_authentication
 def ht_api_send_message():
 	""" Send a user message. """
@@ -240,7 +306,7 @@ def ht_api_send_message():
 
 
 
-@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
+#@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
 @req_authentication
 def ht_api_review_create(review_id):
 	msg = None

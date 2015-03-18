@@ -1,0 +1,249 @@
+/* ELEMENTS */
+#p-masthead {
+	width: 100%;
+	height: 20vh;
+
+	/* TEXT READABILITY */
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 2.1em;
+	line-height: 1.1em;
+	color: white;
+
+	/* background image */
+	background-image: url('/static/img/uber-dollars.jpg');
+	background-image: url('/static/img/campfire.jpg');
+	background-repeat: no-repeat;
+	background-position-y: 60%;
+	background-size: cover;
+}
+
+
+#p-masthead h1 {
+	line-height: 1.0em;
+	font-weight: bolder;
+}
+
+
+
+.page-wrapper {
+	/* display box */
+	border-radius: 10px;
+	box-shadow: 1px 5px 5px rgba(0, 0, 0, .5);
+	background-color: white;
+
+	margin: 50px auto;
+	padding: 10px;
+}
+
+
+
+
+#project-ideas {
+	display: none;
+	margin: 25px auto;
+}
+
+#invite			{ margin: 25px auto 55px; }
+#how-it-works	{ margin: 25px auto 55px; }
+
+
+.text-smaller {
+	line-height: 1.0em;
+    /*text-shadow: 0 2px 2px rgba(0,0,0,.8); */
+	font-weight: 600;
+	font-size: .5em;
+}
+
+
+
+/* SECTION: VALUES */
+#values {
+	/* positioning */
+	padding: 20px 0;
+
+	background-color: grey; /* fallback */
+	background-repeat: repeat-x;
+
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
+	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
+	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
+	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
+}
+
+
+
+
+
+.kameron { font-family: 'Kameron', serif; }
+
+.masthead-center {
+	display: block;
+
+	position: relative;
+	top: 15%;
+	margin: 0 auto;
+	width: 100%;
+	text-align:center;		 /* center align text too */
+	font-weight: bold;
+}
+
+
+
+.panel-heading 		{ padding: 0; }
+.panel-heading h1	{ font-size: 64px; }
+
+
+.jumbotron-btn {
+	color: white !important;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	letter-spacing: 2px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+	border-width: 2px;
+	border-style: solid;
+	border-color: #fff;
+	border-radius: 4px;
+	transition: background 80ms ease-out;
+}
+
+.jumbotron-btn:hover {
+	text-decoration: none;
+	background-color: white;
+	color: black !important;
+}
+
+.lp-btn {
+	width: 240px;
+	color: white;
+	text-transform: uppercase;
+}
+
+
+.idea {
+	display: inline-block;
+	position: relative;
+/*
+	margin: 0px 10px 0px;
+*/
+}
+
+
+.idea .dark p {
+	display: block;
+	position: absolute;
+	top: 50%;
+
+	margin: auto auto;
+	width: 100%;
+
+	font-weight: bold;
+	font-size: 1.4em;
+    text-shadow: 1px 2px 30px rgba(0,0,0,.8);
+	text-align:center;		 /* center align text too */
+}
+
+.dark {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+    background-color: rgba(0,0,0,.3);
+	color: rgba(255,255,255,1); 
+}
+
+
+
+
+
+
+
+/* Responsive Styles */
+@media only screen and (min-device-width: 240px) and (max-width: 500px) {
+	.lp-img { font-size: 1em; }
+}
+
+
+@media (min-width: 489px) {
+}
+
+@media (min-width: 768px) {
+	#project-ideas { display: block; }
+
+	.masthead-center { top: 25%; }
+}
+
+@media (min-width: 980px) {
+/*	
+.page-wrapper { width: 980px; } 
+*/
+	#idea-list .idea:last-child {	display: inline-block; 	}
+}
+
+@media (min-width: 1200px) {
+}
+
+@media (min-width: 1450px) {
+	#idea-list .idea img {
+		height: 150px;
+		width: 225px;
+	}
+	#idea-list .idea {
+		margin-right: 40px;
+	}
+}
+
+#send_invite {
+	display: inline-block;
+	width: 75px;
+	height: 39px;
+	/* 
+	border: 1px solid white;
+	*/
+}
+
+
+.form-group {
+	position: relative;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.form-control.email {
+	/*
+	padding-left: 30px;
+	*/
+}
+
+.access-section .form-group.email:before {
+  content: "\f003";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
+
+
+
+/* UNUSED */
+.darken {
+	position: absolute;
+	width: 100%;
+	height: 33%;
+	background-color: rgba(0,0,0,.3);
+}
+
+
+
+.dark:hover {
+/*
+    background-color: rgba(0,0,0,0);
+	color: rgba(255,255,255,0); 
+*/
+}

@@ -21,7 +21,7 @@ from . import sc_users
 from .api import ht_api_get_message_thread
 from .helpers import *
 from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm
-from ..forms import InviteForm, ProposalForm
+from ..forms import InviteForm, ProposalForm, GiftForm
 
 # more this into controllers / tasks.
 import boto
@@ -36,6 +36,7 @@ from datetime import datetime
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
+@sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -83,6 +84,14 @@ def render_invite_page():
 	return make_response(render_template('invite.html', bp=bp, form=invite))
 
 
+
+
+@sc_users.route("/purchase", methods=['GET', 'POST'])
+@req_authentication
+def render_purchase_page():
+	bp = Profile.get_by_uid(session['uid'])
+	gift = GiftForm(request.form)
+	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
 
 
 #@insprite_views.route("/inbox", methods=['GET', 'POST'])
@@ -1260,31 +1269,22 @@ def api_lesson_image_update(lesson_id):
 
 
 
-#@insprite_views.route('/schedule', methods=['GET','POST'])
-#@req_authentication
+@sc_users.route('/schedule', methods=['GET','POST'])
+@req_authentication
 def render_schedule_page():
 	""" Schedule a new appointment appointment. """
 
 	usrmsg = None
-
 	form = ProposalForm(request.form)
 
 	try:
 		bp = Profile.get_by_uid(session.get('uid'))
 		ba = Account.get_by_uid(session.get('uid'))
-		mentor = Profile.get_by_prof_id(request.values.get('mentor'))
-		lesson = Lesson.get_by_id(request.values.get('lesson'))
+		#hack.
+		mentor = bp #Profile.get_by_prof_id(request.values.get('mentor'))
 		avail = Availability.get_by_prof_id(mentor.prof_id)	
-
 		print 'render_schedule() mentor:', mentor
-		print 'render_schedule() lesson:', lesson
 
-
-		form.prop_lesson.choices = Lesson.get_enum_active_by_prof_id(mentor.prof_id)
-		form.prop_lesson.choices.insert(0, ('-1', 'No specific lesson - Request a meeting'))
-		
-		if (lesson):
-			form.prop_lesson.default = lesson.lesson_id		
 
 		form.process()
 
@@ -1292,15 +1292,10 @@ def render_schedule_page():
 		print type(e), e
 		db_session.rollback()
 
-	if (mentor is None):
-		return redirect(url_for('insprite.render_dashboard', messages='You must specify a user profile to scheduling.'))
-
 
 	form.prop_mentor.data = mentor.prof_id
-
 	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
-
-	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, lesson=lesson, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
+	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
 
 
 #@insprite_views.route('/schedule/getdays', methods=['GET'])
