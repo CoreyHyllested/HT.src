@@ -24,40 +24,53 @@
 	<form method='POST' action='/purchase'>
 	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-	<div id='recipient-info' class='col-lg-5 col-md-5 col-sm-12 col-xs-12'>
+	<div id='recipient-info' class='col-lg-4 col-md-4 col-sm-12 col-xs-12'>
 		<h3>Soulcrafting Gifts</h3>
+		<hr>
 		<div id='gift-img' class='idea'>
 			<div class='dark'> <p>$500 for comissioned furniture or remodling</p> </div>
 			<img class='img-responsive' src='/static/img/uber-dollars.jpg'>
 		</div>
+		<!-- ENDING recipient-info -->
+	</div>
 
+	<div id='purchaser' class='col-lg-offset-1 col-lg-6 col-md-offset-1 col-md-6 col-sm-12 col-xs-12'>
+		<h3>Recipient Information</h3>
 		<hr>
-		<h2>Recipient Information</h2>
-		<div id='gift-name' class="form-group ">
+		<div id='gift-name' class="form-group-">
 			<h4>Name</h4>
-			{{form.gift_name(type='name', class='form-control', autocomplete='off', placeholder="Who is the lucky person?")}}
+			{{form.gift_name(class='form-control', autocomplete='off', placeholder="Who is the lucky person?")}}
 		</div>
 		<!--div id='gift-addr'>
 			<h4>Address</h4>
 			{{form.gift_addr(class='form-control', placeholder="Address")}}
 		</div-->
-		<div id='gift-mail' class="form-group email">
+		<div id='gift-mail' class="form-group- email">
 			<h4>Email</h4>
 			{{form.gift_mail(class='form-control', type='email', placeholder="Email Address")}}
 		</div>
-		<div id='gift-cell'>
+		<div id='gift-cell' class="form-group- email">
 			<h4>Phone</h4>
-			{{form.gift_mail(class='form-control', placeholder="Phone Number")}}
+			{{form.gift_cell(class='form-control', placeholder="Phone Number")}}
 		</div>
+
 		<div id='gift-note'>
-			<h4>Message</h4>
+			<h4>Personal Message</h4>
 			{{form.gift_note(class='form-control', placeholder="Add a personalized message")}}
 		</div>
-		<!-- ENDING gift-info -->
-	</div>
+		<br>
+		<br>
 
-	<div id='purchaser' class='col-lg-7 col-md-7 col-sm-12 col-xs-12'>
-		<input id='checkout' type="submit" class="blueButton" value='Checkout'>
+		<h3>Your Information</h3>
+		<hr>
+		<div id='gift-from'>
+			<h4>Your Name</h4>
+			{{form.gift_from(class='form-control', placeholder="The Best Realtor in Boulder")}}
+		</div>
+
+		<br>
+		<br>
+		<input id='checkout' type="submit" class="blueButton" value='Checkout...'>
 	</div>
 
 	</form>
@@ -86,19 +99,29 @@
 				$.each(token, function(k, v) { console.log('token.' + k + ':' + v); });
 
 				var fd = {};
+				var r = {};
+				var p = {};
+				r.name = $('#gift_name').val();
+				r.addr = $('#gift_addr').val();
+				r.mail = $('#gift_mail').val();
+				r.cell = $('#gift_cell').val();
+				r.note = $('#gift_note').val();
+				p.name = $('#gift_from').val();
+				p.cost = Number(500);
+				//$.each(r, function(k, v) { console.log('recipient.' + k + ':' + v); });
+
+				fd.recipient	= r;
+				fd.purchaser	= p;
 				fd.csrf_token = csrf_token;
 				fd.stripe_tokn = token.id;
 				fd.stripe_card = (token.card.id);
 				fd.stripe_name = (token.card.name);
+				//fd.stripe_paid = (token.card.paid);
 				fd.stripe_city = (token.card.address_city);
 				fd.stripe_stat = (token.card.address_state);
 				fd.stripe_cust = (token.card.customer);
 				fd.stripe_fngr = (token.card.fingerprint);
 				fd.stripe_mail = (token.email);
-
-				fd.prop_cost = $cost;
-				fd.prop_location = $location;
-				fd.prop_desc =  $description;
 
 				$.ajax({ url	: "/purchase/create",
 						type	: "POST",
@@ -127,9 +150,7 @@
 
 			console.log('open stripe_chkout');
 			stripe_chkout.open({
-				name: 'Corey--NAME',
-				description: "Buying SC gift certificate",
-				email: 'corey@getsoulcrafting.co',
+				description: "Soulcrafting Gift Certificate",
 				image: '/static/img/favicon.png',
 				amount:	$cost,
 				currency: 'usd',
