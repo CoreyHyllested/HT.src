@@ -12,89 +12,80 @@
 #################################################################################
 
 
-from . import sc_users
+from . import sc_ebody, sc_users
 from flask import render_template
 from ..forms import ReviewForm
 from .helpers import *
 from server.controllers import *
 from server.ht_utils import *
+from server.models import *
 
 
 
-@sc_users.route('/purchase/create', methods=['POST'])
-@req_authentication
+@sc_ebody.route('/purchase/create', methods=['POST'])
 def sc_api_purchase_create():
-	print 'sc_api_purchase_create()'
+	print 'sc_api_purchase_create(): enter'
 	resp_message = 'Purchase created'
 	resp_code = 200
 
 	try:
-		sc_purchase_gift(request.values, session['uid'])
+		recipient = {};
+		purchaser = {};
+		stripe = {};
+
+		# There should be a better way of getting this data, right?
+		recipient['name'] = request.values.get('recipient[name]')
+		recipient['addr'] = request.values.get('recipient[addr]')
+		recipient['mail'] = request.values.get('recipient[mail]')
+		recipient['cell'] = request.values.get('recipient[cell]')
+		recipient['note'] = request.values.get('recipient[note]')
+		print recipient['name'], recipient['addr'], recipient['mail'], recipient['cell'], recipient['note']
+
+		purchaser['name'] = request.values.get('purchaser[name]')
+		purchaser['cost'] = request.values.get('purchaser[cost]')
+		purchaser['mail'] = request.values.get('stripe_mail')
+		print purchaser['name'], purchaser['mail'], purchaser['cost']
+
+		stripe['token'] = request.values.get('stripe_tokn')				# used to charge, *I think this points at CC*
+		#stripe['amountpaid'] = request.values.get('purchaser[paid]')		# Should be grabbed from stripe somewhere.
+		stripe['creditcard'] = request.values.get('stripe_card')	# save to sc customer
+		stripe['customerid'] = request.values.get('stripe_cust')	# stripe customer id
+		stripe['transaction'] = request.values.get('stripe_trnx')
+		stripe['fingerprint'] = request.values.get('stripe_fngr')
+		print 'sc_api_purchase_gift: stripe::', stripe['token'], stripe['creditcard'], stripe['transaction']
+
+		for k in request.values:
+			pass
+			#print k, values[k]
+
+		print 'sc_api_purchase_create(): purchase_gift'
+		sc_purchase_gift(recipient, purchaser, stripe, session.get('uid'))
 	except SanitizedException as se:
 		print 'sc_api_purchase_create() sanitized messages',  se.sanitized_msg()
 		return se.api_response(request.method)
 
+	print 'sc_api_purchase_create(): response'
 	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
 
 
 
 
-def sc_purchase_gift(values, uid):
+def sc_purchase_gift(recipient, purchaser, stripe, uid):
 	""" Create a Purchase (gift). """
 
 	print 'sc_purchase_gift: enter()'
-	#	Stripe fields should be validated.
-	#	v1 - end time is reasonable (after start time)
-	#	v2 - hero exists.
-	#	v3 - place doesn't matter as much..
-	#	v4 - cost..
 	try:
-		stripe_tokn = values.get('stripe_tokn')		# used to charge
-		stripe_card = values.get('stripe_card')		# card to add to insprite_customer.
-		stripe_cust = values.get('stripe_cust')
-		#stripe_fngr = values.get('stripe_fngr')	#card_fingerprint
+		# check if recipient, purchaser are users...
+		#	recipient_prof = Column(String(40), ForeignKey('profile.prof_id'))			# THE PROFILE who can make a decision. (to accept, etc)
 
-		prop_mentor = values.get('prop_mentor')
-		prop_cost = values.get('prop_cost')
-		prop_desc = values.get('prop_desc')
-		prop_location = values.get('prop_location')
-		prop_lesson = values.get('prop_lesson')
-		prop_groupsize = values.get('prop_groupsize')
-
-		print "sc_purchase_gift: mentor:", prop_mentor
-		print "sc_purchase_gift: cost:", prop_cost
-		print "sc_purchase_gift: desc:", prop_desc
-		print "sc_purchase_gift: location:", prop_location
-		print "sc_purchase_gift: lesson:", prop_lesson
-		print "sc_purchase_gift: groupsize:", prop_groupsize
-
-		# validate start/end times via conversion.
-		prop_s_date = values.get('prop_s_date')
-		prop_s_time = values.get('prop_s_time')
-		prop_f_date = values.get('prop_f_date')
-		prop_f_time = values.get('prop_f_time')
-		dt_start = dt.strptime(prop_s_date  + " " + prop_s_time, '%A, %b %d, %Y %H:%M')
-		dt_finsh = dt.strptime(prop_f_date  + " " + prop_f_time, '%A, %b %d, %Y %H:%M')
-
-		# convert to user's local TimeZone.
-		dt_start_pacific = timezone('US/Pacific').localize(dt_start)
-		dt_finsh_pacific = timezone('US/Pacific').localize(dt_finsh)
-
-		print 'sc_purchase_gift: (from stripe) token =', stripe_tokn, 'card =', stripe_card
-		hp	= Profile.get_by_prof_id(prop_mentor)
-		bp	= Profile.get_by_uid(uid)
-		ba  = Account.get_by_uid(uid)
-		ha  = Account.get_by_uid(hp.account)
-		stripe_cust  = ht_get_stripe_customer(ba, cc_token=stripe_tokn, cc_card=stripe_card, cust=stripe_cust)
-
-		print 'sc_purchase_gift: Mentee (' + str(bp.prof_name) + ', ' + str(stripe_cust) + ')'
-		print 'sc_purchase_gift: Mentor (' + str(hp.prof_name) + ')'
-
-		meeting = Meeting(hp.prof_id, bp.prof_id, dt_start_pacific, dt_finsh_pacific, (int(prop_cost)/100), str(prop_location), str(prop_desc), str(prop_lesson), prop_groupsize, token=stripe_tokn, customer=stripe_cust, card=stripe_card)
-
-		db_session.add(meeting)
+#		print 'sc_purchase_gift: (' + str(prof_name) + ', ' + str(stripe_cust) + ')'
+		gift = GiftCertificate(recipient, purchaser, stripe)
+		db_session.add(gift)
 		db_session.commit()
-		print "sc_purchase_gift: successfully committed meeting"
+		print "sc_purchase_gift: successfully added gift"
+
+		print "sc_purchase_gift: now charge and capture"
+		gift.capture()
 	except Exception as e:
 		# IntegrityError, from commit()
 		# SanitizedException(None), from Meeting.init()
