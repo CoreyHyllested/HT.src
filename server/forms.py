@@ -16,8 +16,9 @@ class GiftForm(Form):
 	gift_addr	= TextField('Address', [validators.Optional(), validators.length(min=4, max=128)])
 	gift_mail	= TextField('Email', [validators.Optional(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
 	gift_cell	= TextField('Phone', [validators.Optional(), validators.length(min=7, max=15)])
-	gift_note	= TextField('Note',	[validators.Optional(), validators.length(min=1, max=256)])
 
+	gift_from	= TextField('Name',	[validators.Required(), validators.length(min=2, max=128)])
+	gift_note	= TextField('Note',	[validators.Optional(), validators.length(min=1, max=256)])
 	gift_cost	= IntegerField('Cost', [validators.Required(), validators.length(min=4, max=120)])
 	gift_value	= IntegerField('Value', [validators.Required(), validators.length(min=4, max=120)])
 
