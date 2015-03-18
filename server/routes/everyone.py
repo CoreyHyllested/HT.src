@@ -18,7 +18,8 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, ProposalForm, SearchForm, RecoverPasswordForm
+from server.forms import NewPasswordForm, ProposalForm, SearchForm
+from server.forms import GiftForm, RecoverPasswordForm
 from server import ht_csrf
 from pprint import pprint
 
@@ -32,6 +33,11 @@ def render_landingpage():
 		bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('index.html', bp=bp))
 
+
+@sc_ebody.route("/purchase", methods=['GET', 'POST'])
+def render_purchase_page_ebody():
+	gift = GiftForm(request.form)
+	return make_response(render_template('purchase.html', form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
 
 
 @sc_ebody.route('/gift/<from_user>', methods=['GET', 'POST'])

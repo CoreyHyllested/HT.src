@@ -86,12 +86,13 @@ def render_invite_page():
 
 
 
-@sc_users.route("/purchase", methods=['GET', 'POST'])
+@sc_users.route("/purchase_me", methods=['GET', 'POST'])
 @req_authentication
 def render_purchase_page():
 	bp = Profile.get_by_uid(session['uid'])
 	gift = GiftForm(request.form)
 	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
+
 
 
 #@insprite_views.route("/inbox", methods=['GET', 'POST'])
