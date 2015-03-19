@@ -217,6 +217,7 @@ class NewAccountForm(Form):
 	accept_tos = BooleanField('TOS', [validators.Required()])
 
 class SignupForm(Form):
+	refid	= HiddenField('referred', [validators.Optional()])
 	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])
 	email	= TextField('Email', [validators.Required(), validators.Email()])
 	passw	= PasswordField('Password', [validators.Required()])

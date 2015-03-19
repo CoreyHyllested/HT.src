@@ -3,7 +3,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel="stylesheet" href="/static/css/modern-login.css">
+	<link rel="stylesheet" href="/static/css/sc-auth.css">
 {% endblock %}
 
 
@@ -22,13 +22,16 @@
 								<ul class="list-unstyled social-login">
 									<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign Up with Facebook</button></a></li>
 								</ul>
+								{% if ref_name %} <label class='text-center'>Referred by {{ref_name}}</label> {% endif %}
 							</div>
+
 
 							<!--p class="note">By joining, you agree to the <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p-->
 							<hr>
 
 							<form action="/join" method="POST" id='signup-form' class="signup-form">
 								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+								{{form.refid}}
 
 								<div class="form-group username">
 									<label class="sr-only" for="uname">Your name</label>
