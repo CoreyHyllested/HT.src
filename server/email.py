@@ -24,8 +24,11 @@ from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
 from server.email_body import *
 from pprint import pprint as pp
+import mandrill
 import json, smtplib, urllib
 
+
+email_client = mandrill.Mandrill('Fc1-NkxSROn715kzsldP8A')
 
 
 
