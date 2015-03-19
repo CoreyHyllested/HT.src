@@ -26,6 +26,7 @@ from .Review			import *
 from .Meeting			import *
 from .Registrant		import *
 from .Skills			import *
+from .Referral			import *
 from .GiftCertificate	import *
 from .UserMessage		import *
 

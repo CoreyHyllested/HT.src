@@ -60,14 +60,14 @@ def render_signup_page(usrmsg=None):
 
 	form = SignupForm(request.form)
 	if form.validate_on_submit():
-		# check if account (email) already exists in db
-		accounts = Account.query.filter_by(email=form.email.data.lower()).all()
-		if (len(accounts) == 1):
+		# check if account (email) already exists in db, (use Account.get_by_email instead).
+		account = Account.query.filter_by(email=form.email.data.lower()).all()
+		if (len(account) == 1):
 			trace("email already exists in DB")
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
 			# no account exists in database, create one.
-			(bh, bp) = ht_create_account(form.uname.data, form.email.data.lower(), form.passw.data)
+			(bh, bp) = ht_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
 			if (bh):
 				ht_bind_session(bp)
 				return redirect('/dashboard')
@@ -77,7 +77,16 @@ def render_signup_page(usrmsg=None):
 		trace("/signup form invalid" + str(form.errors))
 		usrmsg = 'Sorry, something wasn\'t filled out properly.'
 
-	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, errmsg=usrmsg))
+
+	ref_id = request.values.get('ref')
+	ref_name = None
+	print 'Referral id set. == ' + str(ref_id)
+	if (ref_id and request.method == 'GET'):
+		session['ref_id'] = ref_id
+		form.refid.data = ref_id
+		ref_name = 'Carlos Bananas'
+
+	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
 
 
 
@@ -194,6 +203,7 @@ def linkedin_authorized(resp):
 	print('li_auth - login ', str(not signup))
 
 	session['linkedin_token'] = (resp['access_token'], '')
+	ref_id = session.get('ref_id', None)	# Never tested.  Value might not be set.
 
 	me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	email = linkedin.get('people/~/email-address')
@@ -216,7 +226,7 @@ def linkedin_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth')
+	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
 		ht_bind_session(bp)

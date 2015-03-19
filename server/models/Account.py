@@ -103,17 +103,19 @@ class Account(Base):
 	stripe_cust	 = Column(String(64))
 	role		 = Column(Integer, default = 0)
 	email_policy = Column(Integer, default = 0)
+	referred_by	= Column(String(40), ForeignKey('referral.ref_id'))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
 
-	def __init__ (self, user_name, user_email, user_pass):
+	def __init__ (self, user_name, user_email, user_pass, ref=None):
 		self.userid = str(uuid.uuid4())
 		self.name   = user_name
 		self.email  = user_email
 		self.pwhash	= user_pass
 		self.created = dt.utcnow()
 		self.updated = dt.utcnow()
+		self.referred_by = ref
 
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)

@@ -128,13 +128,13 @@ def ht_password_recovery(email):
 
 
 
-def ht_create_account(name, email, passwd):
+def ht_create_account(name, email, passwd, ref_id):
 	challenge_hash = uuid.uuid4()
 	geo_location = get_geolocation_from_ip()
 
 	try:
 		print 'create account and profile', str(geo_location.get('region_name')), str(geo_location.get('country_code'))
-		account = Account(name, email, generate_password_hash(passwd)).set_sec_question(str(challenge_hash))
+		account = Account(name, email, generate_password_hash(passwd), ref=ref_id).set_sec_question(str(challenge_hash))
 		profile = Profile(name, account.userid, geo_location)
 		db_session.add(account)
 		db_session.add(profile)

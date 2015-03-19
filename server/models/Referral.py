@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting.  Any intellectual
 # property about the design, implementation, processes, and interactions with
 # services may be protected by U.S. and Foreign Patents.  All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -16,56 +16,43 @@ from __future__ import absolute_import
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
+from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 from pytz import timezone
-import datetime
-import uuid
+import datetime, uuid
 
 
 
-class Registrant(Base):
-	"""Account for interested parties signing up through the preview.insprite.co."""
-	__tablename__ = "registrant"
+class Referral(Base):
+	__tablename__ = "referral"
 
-	reg_userid  = Column(String(40), primary_key=True, index=True, unique=True)
-	reg_email   = Column(String(128), index=True, unique=True)
-	reg_location = Column(String(128))
-	reg_ip = Column(String(20))
-	reg_name    = Column(String(128))
-	reg_org    = Column(String(128))	
-	reg_referrer = Column(String(128))
-	reg_flags = Column(Integer, default=0)
-	reg_created = Column(DateTime())
-	reg_updated = Column(DateTime())
-	reg_comment = Column(String(1024))
-	reg_referral_code = Column(String(128))
+	ref_id = Column(String(40), primary_key=True, index=True, unique=True)
+	ref_account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
+	ref_shareid = Column(String(40), unique=True)
+	ref_gift_id = Column(String(40))
+	ref_created = Column(DateTime(), nullable=False)
 
-	def __init__ (self, reg_email, reg_location, reg_ip, reg_org, reg_referrer, reg_flags, reg_comment, reg_referral_code):
-		self.reg_userid = str(uuid.uuid4())
-		self.reg_email  = reg_email
-		self.reg_location  = reg_location
-		self.reg_ip  = reg_ip
-		self.reg_org  = reg_org
-		self.reg_referrer  = reg_referrer
-		self.reg_flags  = reg_flags
-		self.reg_comment = reg_comment
-		self.reg_created = dt.utcnow()
-		self.reg_updated = dt.utcnow()
-		self.reg_referral_code  = reg_referral_code
+	def __init__ (self, account, personalized=None, gift_id=None):
+		self.ref_id = str(uuid.uuid4())
+		self.ref_account = account
+		self.ref_shareid = personalized
+		self.ref_gift_id = gift_id
+		self.ref_created = dt.utcnow()
 
-	def __repr___ (self):
-		return '<Registrant %r, %r, %r, %r>'% (self.reg_userid, self.reg_email, self.reg_location, self.reg_flags)
+	def __repr__ (self):
+		return '<Referral %r, %r>'% (self.ref_id, self.ref_account)
 
 
 	@staticmethod
-	def get_by_regid(regid):
-		registrants = Registrant.query.filter_by(reg_userid=regid).all()
-		if len(registrants) != 1: raise NoAccountFound(regid, 'Sorry, no account found')
-		return registrants[0]
+	def get_by_refid(ref):
+		referral = Referral.query.filter_by(ref_id=ref).one()
+		if len(referral) != 1: raise NoAccountFound(ref, 'Referral not found.')	
+		return referral
 
 
+#TODO 
+#get_by_refid: Raise Error NoReferralFound
 
 ################################################################################
 #### EXAMPLE: Reading from PostgreSQL. #########################################
