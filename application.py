@@ -14,17 +14,17 @@ manager = Manager(application)
 
 
 def run_manager():
-	def mk_insprite_shell_ctx():
+	def make_shell_ctx():
 		return dict(app=application)
-	manager.add_command("shell", Shell(make_context=mk_insprite_shell_ctx))
+	manager.add_command("shell", Shell(make_context=make_shell_ctx))
 	manager.run()
 
 
 def main():
 	# print 'Run with SSH'
 	context = SSL.Context(SSL.SSLv23_METHOD)
-	context.use_privatekey_file('security/herotime-pk.pem')
-	context.use_certificate_file('security/herotime.crt')
+	context.use_privatekey_file('security/soulcrafting.co.pem.key')
+	context.use_certificate_file('security/soulcrafting.co.crt')
 	application.run(debug = True, ssl_context=context)
 
 @manager.command
