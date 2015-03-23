@@ -1,5 +1,5 @@
 ################################################################################
-# Copyright (C) 2013 - 2014 Soulcrafting.
+# Copyright (C) 2015 Soulcrafting.
 # All Rights Reserved.
 #
 # All information contained is the property of Soulcrafting. Any intellectual
@@ -35,8 +35,8 @@ from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-@sc_users.route('/dashboard', methods=['GET', 'POST'])
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
+@sc_users.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
@@ -47,6 +47,8 @@ def render_dashboard(usrmsg=None):
 		projects = sc_get_projects(bp)
 		for p in projects:
 			pprint(p)
+		usercash = GiftCertificate.get_usercredit(bp)
+		print usercash
 		#(props, appts, rview) = ht_get_active_meetings(bp)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
@@ -57,7 +59,7 @@ def render_dashboard(usrmsg=None):
 		print 'render_dashboard() usrmsg = ', usrmsg
 
 	print 'render_dashboard()'
-	return make_response(render_template('dashboard.html', title="- " + bp.prof_name, bp=bp, proposals=[], projects=projects, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, errmsg=usrmsg))
 
 
 
@@ -66,22 +68,47 @@ def render_dashboard(usrmsg=None):
 @req_authentication
 def render_invite_page():
 	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session['uid'])
 
 	invite = InviteForm(request.form)
 	invite.invite_userid.data = bp.account
-	try:
-		if invite.validate_on_submit():
-			print 'invite: valid post from user ', invite.invite_userid.data
-			print 'invite: emails ', invite.invite_emails.data
-#			print 'invite: check post from user personalized', invite.invite_personalized.data
+	if invite.validate_on_submit():
+		try:
+			print 'invite: valid post from user ', invite.invite_userid.data, invite.invite_emails.data
 
-			sc_email_invite_friend(invite.invite_emails.data, friend_name=bp.prof_name, invite_link=bp.account)
+			print 'invite: create gift'
+			r = {}
+			r['mail'] = invite.invite_emails.data
+			r['name'] = 'Unknown'
+			p = {}
+			p['prof'] = bp.prof_id
+			p['name'] = bp.prof_name
+			p['mail'] = ba.email
+			p['cost'] = 0
+			s = {}
+			s['gift_value'] = 15000		# $150.00
+			gift = GiftCertificate(r, p, s)
+			print gift
+
+			referral = Referral(bp.account, gift_id=gift.gift_id)
+			print referral
+
+			db_session.add(gift)
+			db_session.add(referral)
+			db_session.commit()
+#			print 'invite: check post from user personalized', invite.invite_personalized.data
+			sc_email_invite_friend(invite.invite_emails.data, friend_name=bp.prof_name, referral_id=referral.ref_id, gift_id=bp.account)
 			return redirect('/dashboard')
-		else:
-			print 'invite: invalid POST', invite.errors
-	except Exception as e:
-		print e
-		#db_session.rollback()
+
+		except Exception as e:
+			print e
+			db_session.rollback()
+			print 'need to set error message and post to user'
+	elif request.method == 'POST':
+		print 'invite: invalid POST', invite.errors
+	else:
+		pass
+
 	print 'render_invite(): render page'
 	return make_response(render_template('invite.html', bp=bp, form=invite))
 
