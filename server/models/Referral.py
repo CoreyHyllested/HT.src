@@ -57,6 +57,15 @@ class Referral(Base):
 		return referral
 
 
+	@staticmethod
+	def get_by_gift_id(gift):
+		referral = None
+		print 'Referral.get_by_gift_id...' + str(gift)
+		try: referral = Referral.query.filter_by(ref_gift_id=gift).one()
+		except NoResultFound as nrf: pass
+		return referral
+
+
 #TODO 
 #get_by_refid: Raise Error NoReferralFound
 
