@@ -61,7 +61,7 @@ class GiftCertificate(Base):
 	gift_value	= Column(Integer, nullable=False, default=0)
 	gift_flags	= Column(Integer, nullable=False, default=0)											# Attributes: Quiet?, Digital?, Run-Over Enabled?
 
-	gift_recipient_name = Column(String(64), nullable = False)
+	gift_recipient_name = Column(String(64))	# may only have email
 	gift_recipient_mail = Column(String(64), nullable = False)
 	gift_recipient_cell = Column(String(16))
 	gift_recipient_addr = Column(String(128))
@@ -91,33 +91,33 @@ class GiftCertificate(Base):
 		print 'GiftCertificate - create'
 		self.gift_id	= str(uuid.uuid4())
 		self.gift_state = CertificateState.CREATED
-		self.gift_value = 50000 # get from stripe['amountpaid']
+		self.gift_value = stripe.get('gift_value', 50000)
 		self.gift_flags	= 0
 
-		self.gift_recipient_name = recipient['name']
-		self.gift_recipient_mail = recipient['mail']
+		self.gift_recipient_mail = recipient['mail']			#required
+		self.gift_recipient_name = recipient.get('name', None)
 		self.gift_recipient_cell = recipient.get('cell', None)
 		self.gift_recipient_addr = recipient.get('addr', None)
 		self.gift_recipient_note = recipient.get('note', None)
 
-		self.gift_purchaser_name = purchaser.get('name', None)
-		self.gift_purchaser_mail = purchaser.get('mail', None)
-		self.gift_purchaser_cost = int(purchaser.get('cost', 50000)) * 100	#covert to pennies
+		self.gift_purchaser_prof = purchaser.get('prof', None)
+		self.gift_purchaser_name = purchaser.get('name', None)	# required
+		self.gift_purchaser_mail = purchaser.get('mail', None)	# required
+		self.gift_purchaser_cost = int(purchaser.get('cost', 500)) * 100		#how much user required to pay, may be different from gift_value.  [in pennies]
 		print 'GiftCertificate - recipient: ', self.gift_recipient_name, self.gift_recipient_mail
-		print 'GiftCertificate - purchaser: ', self.gift_purchaser_name, self.gift_purchaser_mail, self.gift_purchaser_cost
-		print 'GiftCertificate - purchaser: ', self.gift_purchaser_name, self.gift_purchaser_mail, self.gift_purchaser_cost
+		print 'GiftCertificate - purchaser: ', self.gift_purchaser_name, self.gift_purchaser_mail, self.gift_purchaser_cost, self.gift_purchaser_prof
 
 		self.gift_stripe_customerid = stripe.get('customerid', None)
-		self.gift_stripe_creditcard = stripe['creditcard']
-		self.gift_stripe_transaction = stripe['transaction']
-		self.gift_stripe_chargetoken = stripe['token']
+		self.gift_stripe_creditcard = stripe.get('creditcard', None)
+		self.gift_stripe_transaction = stripe.get('transaction', None)
+		self.gift_stripe_chargetoken = stripe.get('token', None)
 
 		#if (token is None):		raise SanitizedException(None, user_msg = 'Meeting: stripe token is None')
 		#if (card is None):		raise SanitizedException(None, user_msg = 'Meeting: credit card is None')
 		#if (customer is None):	raise SanitizedException(None, user_msg = 'Meeting: customer is None')
 
-		self.gift_created = dt.utcnow()
-		self.gift_updated = dt.utcnow()
+		self.gift_created = dt.utcnow()							# required
+		self.gift_updated = dt.utcnow()							# required
 		#print 'GiftCertificate(p_uid=%s, cost=%s, location=%s)' % (self.gift_id, cost, location)
 
 
