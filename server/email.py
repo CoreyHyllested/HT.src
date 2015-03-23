@@ -53,12 +53,15 @@ def create_mandrill_message():
 
 
 
-def sc_email_invite_friend(friend_email, friend_name, invite_link):
+def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None):
 	template = 'invite-a-friend-html'
 	temp_subject	= 'OVER-RIDE Invite a Friend'
-	temp_friend	= str(friend_name)
 	temp_email	= str(friend_email)
-	temp_invite	= str('https://soulcrafting.co/gift/'+invite_link)
+	temp_friend	= str(friend_name)
+	temp_invite	= str('https://soulcrafting.co/signup?ref=' + referral_id)
+	temp_giftid	= str('https://soulcrafting.co/gift/'+gift_id)
+	print str('https://127.0.0.1:5000/gift/'+gift_id)
+	print str('https://127.0.0.1:5000/signup?ref='+referral_id)
 
 	message = create_mandrill_message()
 	message['to'].append({'email': friend_email})
