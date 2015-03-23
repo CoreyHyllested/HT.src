@@ -31,14 +31,19 @@ class Referral(Base):
 	ref_account = Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)
 	ref_shareid = Column(String(40), unique=True)
 	ref_gift_id = Column(String(40))
+	# ref_address = Column(String(64), nullable=False)  make this an email addres
 	ref_created = Column(DateTime(), nullable=False)
 
 	def __init__ (self, account, personalized=None, gift_id=None):
 		self.ref_id = str(uuid.uuid4())
 		self.ref_account = account
 		self.ref_shareid = personalized
-		self.ref_gift_id = gift_id
 		self.ref_created = dt.utcnow()
+
+		self.ref_gift_id = gift_id
+		if (gift_id == 'CREATE'):
+			print 'I should create the gift'
+			pass
 
 	def __repr__ (self):
 		return '<Referral %r, %r>'% (self.ref_id, self.ref_account)
@@ -46,8 +51,9 @@ class Referral(Base):
 
 	@staticmethod
 	def get_by_refid(ref):
-		referral = Referral.query.filter_by(ref_id=ref).one()
-		if len(referral) != 1: raise NoAccountFound(ref, 'Referral not found.')	
+		referral = None
+		try: referral = Referral.query.filter_by(ref_id=ref).one()
+		except NoResultFound as nrf: pass
 		return referral
 
 
