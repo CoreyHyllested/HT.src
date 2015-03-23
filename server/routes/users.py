@@ -72,7 +72,9 @@ def render_invite_page():
 		if invite.validate_on_submit():
 			print 'invite: valid post from user ', invite.invite_userid.data
 			print 'invite: emails ', invite.invite_emails.data
-#			print 'invite: check post from user personalized ', invite.invite_personalized.data
+#			print 'invite: check post from user personalized', invite.invite_personalized.data
+
+			sc_email_invite_friend(invite.invite_emails.data, friend_name=bp.prof_name, invite_link=bp.account)
 			return redirect('/dashboard')
 		else:
 			print 'invite: invalid POST', invite.errors

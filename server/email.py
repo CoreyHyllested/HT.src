@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting.  Any intellectual
 # property about the design, implementation, processes, and interactions with
 # services may be protected by U.S. and Foreign Patents.  All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -30,6 +30,43 @@ import json, smtplib, urllib
 
 email_client = mandrill.Mandrill('Fc1-NkxSROn715kzsldP8A')
 
+
+def create_mandrill_message():
+	message = {}
+
+	temp_archive	= 'Invite a Friend' # href, view email in browser
+	temp_unsub = 'Invite a Friend' # href, user unsubscribe URL
+
+	# company details
+	temp_current_year = 'Invite a Friend'
+	temp_list_company = 'Invite a Friend' # href, view email in browser
+	temp_archive_page = 'Invite a Friend' # href, view email in browser
+	temp_list_address_html = 'Invite a Friend' # href, view email in browser
+
+	temp_update_profile = 'Invite a Friend' # href, view email in browser
+
+	message['to'] = []
+	message['global_merge_vars'] =	[]
+	message['global_merge_vars'].append({ 'name': 'LIST_COMPANY',		'content': 'Soulcrafting' })
+	message['global_merge_vars'].append({ 'name': 'LIST_DESCRIPTION',	'content': 'Trusted Craftsmanship.' })
+	return message
+
+
+
+def sc_email_invite_friend(friend_email, friend_name, invite_link):
+	template = 'invite-a-friend-html'
+	temp_subject	= 'OVER-RIDE Invite a Friend'
+	temp_friend	= str(friend_name)
+	temp_email	= str(friend_email)
+	temp_invite	= str('https://soulcrafting.co/gift/'+invite_link)
+
+	message = create_mandrill_message()
+	message['to'].append({'email': friend_email})
+	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': temp_friend	})
+	message['global_merge_vars'].append({ 'name': 'INVITE_LINK',	'content': temp_invite	})
+	sc_send_mandrill_template(template, message)
+
+	# maybe setup?
 
 
 def ht_email_welcome_message(user_email, user_name, challenge_hash):
@@ -372,6 +409,11 @@ def create_notification(subject, email_to, name_to):
 	msg['From'] = "\"%s\" <%s>" % (Header('Insprite Notifications', 'utf-8'), 'noreply@insprite.co')
 	return msg
 
+
+def sc_send_mandrill_template(template_name, message):
+	#send_template(self, template_name, template_content, message, async=False, ip_pool=None, send_at=None)
+	content = []
+	email_client.messages.send_template(template_name, content, message)
 
 
 def ht_send_email(email_addr, msg):
