@@ -80,9 +80,9 @@ class GiftCertificate(Base):
 	gift_stripe_customerid = Column(String(40)) #charge_customer_id	= Column(String(40), nullable = True)	# tethers to OUR customer id
 #	gift_stripe_amountpaid = Column(Integer, default=0)
 
-	gift_created = Column(DateTime(), nullable = False)
-	gift_updated = Column(DateTime(), nullable = False)
-	gift_charged = Column(DateTime())
+	gift_dt_created = Column(DateTime(), nullable = False)
+	gift_dt_updated = Column(DateTime(), nullable = False)
+	gift_dt_charged = Column(DateTime())
 
 
 
@@ -99,11 +99,12 @@ class GiftCertificate(Base):
 		self.gift_recipient_cell = recipient.get('cell', None)
 		self.gift_recipient_addr = recipient.get('addr', None)
 		self.gift_recipient_note = recipient.get('note', None)
+		self.gift_recipient_prof = recipient.get('prof', None)
 
 		self.gift_purchaser_prof = purchaser.get('prof', None)
 		self.gift_purchaser_name = purchaser.get('name', None)	# required
 		self.gift_purchaser_mail = purchaser.get('mail', None)	# required
-		self.gift_purchaser_cost = int(purchaser.get('cost', 500)) * 100		#how much user required to pay, may be different from gift_value.  [in pennies]
+		self.gift_purchaser_cost = int(purchaser.get('cost', 500)) * 100		#required, how much user required to pay, may be different from gift_value.  [in pennies]
 		print 'GiftCertificate - recipient: ', self.gift_recipient_name, self.gift_recipient_mail
 		print 'GiftCertificate - purchaser: ', self.gift_purchaser_name, self.gift_purchaser_mail, self.gift_purchaser_cost, self.gift_purchaser_prof
 
@@ -112,12 +113,12 @@ class GiftCertificate(Base):
 		self.gift_stripe_transaction = stripe.get('transaction', None)
 		self.gift_stripe_chargetoken = stripe.get('token', None)
 
+		self.gift_dt_created = dt.utcnow()						# required
+		self.gift_dt_updated = dt.utcnow()						# required
 		#if (token is None):		raise SanitizedException(None, user_msg = 'Meeting: stripe token is None')
 		#if (card is None):		raise SanitizedException(None, user_msg = 'Meeting: credit card is None')
 		#if (customer is None):	raise SanitizedException(None, user_msg = 'Meeting: customer is None')
 
-		self.gift_created = dt.utcnow()							# required
-		self.gift_updated = dt.utcnow()							# required
 		#print 'GiftCertificate(p_uid=%s, cost=%s, location=%s)' % (self.gift_id, cost, location)
 
 
@@ -136,12 +137,23 @@ class GiftCertificate(Base):
 
 
 	@staticmethod
-	def get_by_id(gift_id):
+	def get_by_giftid(gift_id):
 		gift = None
 		try: gift = GiftCertificate.query.filter_by(gift_id=gift_id).one()
 		except NoResultFound as nrf: pass
 		return gift
 	
+	@staticmethod
+	def get_usercredit(profile):
+		credit = 0
+		gifts = db_session.query(GiftCertificate).filter(GiftCertificate.gift_recipient_prof == profile.prof_id).all()
+		for certificate in gifts:
+			print 'get_usercredit ', str(credit)
+			credit = credit + certificate.gift_value
+		return (credit/100)
+
+	def get_value():
+		return (certificate.gift_value / 100)
 
 	def set_flag(self, flag):
 		self.gift_flags = (self.gift_flags | flag)
