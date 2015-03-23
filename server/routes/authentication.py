@@ -21,6 +21,7 @@ from server.controllers	import *
 from server.ht_utils	import *
 from server.forms import LoginForm, SignupForm, NewAccountForm
 
+from datetime import datetime as dt
 from httplib2 import Http
 from urllib import urlencode
 
@@ -69,7 +70,26 @@ def render_signup_page(usrmsg=None):
 			# no account exists in database, create one.
 			(bh, bp) = ht_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
 			if (bh):
+				# created new account
 				ht_bind_session(bp)
+				session.pop('ref_id')
+				session.pop('ref_prof')
+				gift_id = session.pop('gift_id')
+				if (gift_id):
+					# claim gift
+					gift = GiftCertificate.get_by_giftid(gift_id)
+					gift.gift_state = CertificateState.CLAIMED
+					gift.gift_recipient_name = bp.prof_name
+					gift.gift_recipient_prof = bp.prof_id
+					gift.gift_dt_updated = dt.utcnow();
+					try:
+						db_session.add(gift)
+						db_session.commit()
+					except Exception as e:
+						print type(e), e
+						db_session.rollback()
+
+					# TODO set account.referred_by
 				return redirect('/dashboard')
 			else:
 				usrmsg = 'Something went wrong.  Please try again.'
@@ -82,9 +102,19 @@ def render_signup_page(usrmsg=None):
 	ref_name = None
 	print 'Referral id set. == ' + str(ref_id)
 	if (ref_id and request.method == 'GET'):
-		session['ref_id'] = ref_id
 		form.refid.data = ref_id
-		ref_name = 'Carlos Bananas'
+		referral = Referral.get_by_refid(ref_id)
+		ref_prof = Profile.get_by_uid(referral.ref_account)
+		ref_name = ref_prof.prof_name
+#		gift = GiftCertificate.get_by_giftid(referral.ref_gift_id)
+#		if (gift):
+#			ref_name = ref_name + ', signup to claim $' + str(gift.gift_value/100)
+
+
+		# save the work, on successfully creating account -- pop these values
+		session['ref_id']	= ref_id
+		session['gift_id']	= referral.ref_gift_id
+		session['ref_prof']	= ref_prof.prof_id
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
 
@@ -373,3 +403,6 @@ def logout():
 	session.clear()
 	return redirect('/')
 
+
+#TODO 
+# Pop the referred_by / reference values when account creations succeeds.
