@@ -149,12 +149,11 @@ class GiftCertificate(Base):
 		#print 'GiftCertificate.get_usercredit' ,  profile.prof_id, 'credit', credit
 		try:
 			gifts = db_session.query(GiftCertificate).filter(GiftCertificate.gift_recipient_prof == profile.prof_id).all()
+			for certificate in gifts:
+				#print 'get_usercredit ', str(credit)
+				credit = credit + certificate.gift_value
 		except Exception as e:
 			print e
-
-		for certificate in gifts:
-			#print 'get_usercredit ', str(credit)
-			credit = credit + certificate.gift_value
 		return (credit/100)
 
 
