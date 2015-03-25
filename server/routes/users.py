@@ -42,12 +42,13 @@ def render_dashboard(usrmsg=None):
 	bp = Profile.get_by_uid(session['uid'])
 	insprite_msg = session.pop('messages', None)
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
+	usercash = None
 
 	try:
 		projects = sc_get_projects(bp)
 		for p in projects:
 			pprint(p)
-		usercash = GiftCertificate.get_usercredit(bp)
+		#usercash = GiftCertificate.get_usercredit(bp)
 		print usercash
 		#(props, appts, rview) = ht_get_active_meetings(bp)
 	except Exception as e:
