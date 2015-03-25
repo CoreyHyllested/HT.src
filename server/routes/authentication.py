@@ -104,17 +104,19 @@ def render_signup_page(usrmsg=None):
 	if (ref_id and request.method == 'GET'):
 		form.refid.data = ref_id
 		referral = Referral.get_by_refid(ref_id)
-		ref_prof = Profile.get_by_uid(referral.ref_account)
-		ref_name = ref_prof.prof_name
+		if referral is not None:
+			ref_prof = Profile.get_by_uid(referral.ref_account)
+			ref_name = ref_prof.prof_name
+
+			# save the work, on successfully creating account -- pop these values
+			session['ref_id']	= ref_id
+			session['gift_id']	= referral.ref_gift_id
+			session['ref_prof']	= ref_prof.prof_id
 #		gift = GiftCertificate.get_by_giftid(referral.ref_gift_id)
 #		if (gift):
 #			ref_name = ref_name + ', signup to claim $' + str(gift.gift_value/100)
 
 
-		# save the work, on successfully creating account -- pop these values
-		session['ref_id']	= ref_id
-		session['gift_id']	= referral.ref_gift_id
-		session['ref_prof']	= ref_prof.prof_id
 
 	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
 
