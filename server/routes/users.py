@@ -48,7 +48,7 @@ def render_dashboard(usrmsg=None):
 		projects = sc_get_projects(bp)
 		for p in projects:
 			pprint(p)
-		#usercash = GiftCertificate.get_usercredit(bp)
+		usercash = GiftCertificate.get_user_credit_amount(bp)
 		print usercash
 		#(props, appts, rview) = ht_get_active_meetings(bp)
 	except Exception as e:

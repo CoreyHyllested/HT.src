@@ -144,16 +144,23 @@ class GiftCertificate(Base):
 		return gift
 	
 	@staticmethod
-	def get_usercredit(profile):
+	def get_user_credit_amount(profile):
 		credit = 0
-		gifts = db_session.query(GiftCertificate).filter(GiftCertificate.gift_recipient_prof == profile.prof_id).all()
+		#print 'GiftCertificate.get_usercredit' ,  profile.prof_id, 'credit', credit
+		try:
+			gifts = db_session.query(GiftCertificate).filter(GiftCertificate.gift_recipient_prof == profile.prof_id).all()
+		except Exception as e:
+			print e
+
 		for certificate in gifts:
-			print 'get_usercredit ', str(credit)
+			#print 'get_usercredit ', str(credit)
 			credit = credit + certificate.gift_value
 		return (credit/100)
 
+
 	def get_value():
 		return (certificate.gift_value / 100)
+
 
 	def set_flag(self, flag):
 		self.gift_flags = (self.gift_flags | flag)
