@@ -72,9 +72,9 @@ def render_signup_page(usrmsg=None):
 			if (bh):
 				# created new account
 				ht_bind_session(bp)
-				session.pop('ref_id')
-				session.pop('ref_prof')
-				gift_id = session.pop('gift_id')
+				session.pop('ref_id', None)
+				session.pop('ref_prof', None)
+				gift_id = session.pop('gift_id', None)
 				if (gift_id):
 					# claim gift
 					gift = GiftCertificate.get_by_giftid(gift_id)
