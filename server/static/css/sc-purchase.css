@@ -10,7 +10,6 @@
 	color: white;
 
 	/* background image */
-	background-image: url('/static/img/uber-dollars.jpg');
 	background-image: url('/static/img/campfire.jpg');
 	background-repeat: no-repeat;
 	background-position-y: 60%;
@@ -28,7 +27,7 @@
 .page-wrapper {
 	/* display box */
 	border-radius: 10px;
-	box-shadow: 1px 5px 5px rgba(0, 0, 0, .5);
+/*	box-shadow: 1px 5px 5px rgba(0, 0, 0, .5); */
 	background-color: white;
 
 	margin: 50px auto;
