@@ -36,34 +36,48 @@ def render_landingpage():
 
 @sc_ebody.route("/purchase", methods=['GET', 'POST'])
 def render_purchase_page_ebody():
-	gift = GiftForm(request.form)
-	return make_response(render_template('purchase.html', form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
-
-
-@sc_ebody.route('/gift/<from_user>', methods=['GET', 'POST'])
-def render_giftpage(from_user):
-	print 'render_gift(): enter [' + str(from_user) + ']'
 	bp = None
+	if (session.get('uid') is not None):
+		bp = Profile.get_by_uid(session.get('uid'))
 
-	if (from_user is not None):
-		print 'render_gift(): getting gift [' + str(from_user) + ']'
-		bp = Profile.get_by_uid(from_user)
-		print 'render_gift(): getting gift [' + str(bp) + ']'
+	gift = GiftForm(request.form)
+	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
 
-	if ((bp is None) or (from_user is None)):
+
+@sc_ebody.route('/gift/<gift_id>', methods=['GET', 'POST'])
+def render_giftpage(gift_id):
+	print 'render_gift(): enter [' + str(gift_id) + ']'
+	bp = None
+	if (session.get('uid') is not None):
+		bp = Profile.get_by_uid(session.get('uid'))
+
+
+	if (gift_id):
+		print 'render_gift(): getting gift [' + str(gift_id) + ']'
+		gift = GiftCertificate.get_by_giftid(gift_id)
+
+	if ((gift is None) or (gift_id is None)):
 		#raise 'Gift Not Found' #GiftNotFoundError(from_user)
 		return make_response("Gift Not Found", 500)
-		
+
+
+	# Was this a referral?  If so, set ref=ref_id
+	referral = Referral.get_by_gift_id(gift_id)
+	ref_id = (referral.ref_id) if (referral) else None
+	#print gift
+	#print referral
+	#if (referral):
+	#	prof_referral = Profile.get_by_uid(referral.ref_account)	#
+
 	print 'render_gift(): render page'
-	return make_response(render_template('gift.html', bp=bp))
+	return make_response(render_template('gift.html', bp=bp, gift=gift, referral=ref_id))
 
 
 
 #@ht_csrf.exempt
 #@insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
-
-	bp = None 
+	bp = None
 	if (session.get('uid') is not None):
 		bp = Profile.get_by_uid(session.get('uid'))
 		print "BP = ", bp.prof_name, bp.prof_id, bp.account
