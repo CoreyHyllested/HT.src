@@ -272,7 +272,7 @@ def render_password_reset_page(challengeHash):
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
 
-	return render_template('newpassword.html', form=form)
+	return render_template('password_reset.html', form=form)
 
 
 
