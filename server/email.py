@@ -48,12 +48,26 @@ def create_mandrill_message(template=None):
 
 
 def sc_email_welcome_message(user_email, user_name, challenge_hash):
+	""" Emails the Welcome message, includes a 'verify your email' link."""
 	verify_link = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	url_verify = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
 
 	message = create_mandrill_message(template = 'confirm-email')
 	message['to'].append({'email': user_email})
 	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': user_name})
-	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': verify_link})
+	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': url_verify})
+	sc_send_mandrill_template(message)
+
+
+def sc_send_password_recovery_link(account):
+	""" Emails the password recovery link to a user """
+	url_reset  = 'https://soulcrafting.co/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
+
+	message = create_mandrill_message(template = 'reset-password')
+	message['to'].append({'email': account.email})
+	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': account.name})
+	message['global_merge_vars'].append({ 'name': 'LINK_RESET',		'content': url_reset})
+
 	sc_send_mandrill_template(message)
 
 

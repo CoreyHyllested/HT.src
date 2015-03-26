@@ -103,7 +103,7 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 
 
-def ht_password_recovery(email):
+def sc_password_recovery(email):
 	""" Password recovery
 		returns a string provided to the user on success and failure.
 	"""
@@ -120,9 +120,9 @@ def ht_password_recovery(email):
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
-		return str(e)
+		return 'Error' #str(e)
 
-	ht_send_password_recovery_link(account)
+	sc_send_password_recovery_link(account)
 	return "Password recovery email has been sent."
 
 
