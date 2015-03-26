@@ -2,9 +2,9 @@
 # Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Soulcrafting.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
@@ -31,56 +31,55 @@ import json, smtplib, urllib
 email_client = mandrill.Mandrill('Fc1-NkxSROn715kzsldP8A')
 
 
-def create_mandrill_message():
+def create_mandrill_message(template=None):
 	message = {}
 
-	temp_archive	= 'Invite a Friend' # href, view email in browser
-	temp_unsub = 'Invite a Friend' # href, user unsubscribe URL
-
 	# company details
-	temp_current_year = 'Invite a Friend'
-	temp_list_company = 'Invite a Friend' # href, view email in browser
-	temp_archive_page = 'Invite a Friend' # href, view email in browser
-	temp_list_address_html = 'Invite a Friend' # href, view email in browser
-
-	temp_update_profile = 'Invite a Friend' # href, view email in browser
+	mvar_company		= 'Soulcrafting'
+	mvar_description	= 'Trusted. Craftsmanship.'
 
 	message['to'] = []
+	message['template'] = template
 	message['global_merge_vars'] =	[]
-	message['global_merge_vars'].append({ 'name': 'LIST_COMPANY',		'content': 'Soulcrafting' })
-	message['global_merge_vars'].append({ 'name': 'LIST_DESCRIPTION',	'content': 'Trusted Craftsmanship.' })
+	message['global_merge_vars'].append({ 'name': 'LIST_COMPANY',		'content': mvar_company })
+	message['global_merge_vars'].append({ 'name': 'LIST_DESCRIPTION',	'content': mvar_description })
 	return message
 
 
 
+def sc_email_welcome_message(user_email, user_name, challenge_hash):
+	verify_link = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+
+	message = create_mandrill_message(template = 'confirm-email')
+	message['to'].append({'email': user_email})
+	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': user_name})
+	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': verify_link})
+	sc_send_mandrill_template(message)
+
+
 def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None):
-	template = 'invite-a-friend-html'
-	temp_subject	= 'OVER-RIDE Invite a Friend'
-	temp_email	= str(friend_email)
 	temp_friend	= str(friend_name)
 	temp_invite	= str('https://soulcrafting.co/signup?ref=' + referral_id)
 	temp_giftid	= str('https://soulcrafting.co/gift/'+gift_id)
 	print str('https://127.0.0.1:5000/gift/'+gift_id)
 	print str('https://127.0.0.1:5000/signup?ref='+referral_id)
 
-	message = create_mandrill_message()
+	message = create_mandrill_message(template='invite-a-friend-html')
 	message['to'].append({'email': friend_email})
 	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': temp_friend	})
 	message['global_merge_vars'].append({ 'name': 'INVITE_LINK',	'content': temp_invite	})
-	sc_send_mandrill_template(template, message)
-
+	sc_send_mandrill_template(message)
 	# maybe setup?
 
 
-def ht_email_welcome_message(user_email, user_name, challenge_hash):
-	verify_email_url	= 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	msg_text = "Welcome to Soulcrafting!\n"
-	msg_html = email_body_verify_account(verify_email_url)
-
-	msg = create_msg('Welcome to Soulcrafting', user_email, user_name, 'noreply@getsoulcrafting.com', u'Soulcrafting')
-	msg.attach(MIMEText(msg_text, 'plain'))
-	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(user_email, msg)
+#def ht_email_welcome_message(user_email, user_name, challenge_hash):
+#	verify_email_url	= 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+#	msg_text = "Welcome to Soulcrafting!\n"
+#	msg_html = email_body_verify_account(verify_email_url)
+#	msg = create_msg('Welcome to Soulcrafting', user_email, user_name, 'noreply@getsoulcrafting.com', u'Soulcrafting')
+#	msg.attach(MIMEText(msg_text, 'plain'))
+#	msg.attach(MIMEText(msg_html, 'html' ))
+#	ht_send_email(user_email, msg)
 
 
 
@@ -413,10 +412,10 @@ def create_notification(subject, email_to, name_to):
 	return msg
 
 
-def sc_send_mandrill_template(template_name, message):
+def sc_send_mandrill_template(message):
 	#send_template(self, template_name, template_content, message, async=False, ip_pool=None, send_at=None)
 	content = []
-	email_client.messages.send_template(template_name, content, message)
+	email_client.messages.send_template(message['template'], content, message)
 
 
 def ht_send_email(email_addr, msg):
