@@ -242,7 +242,6 @@ def render_password_reset_request():
 def render_password_reset_page(challengeHash):
 	form = NewPasswordForm(request.form)
 
-	#Page url
 	url = urlparse.urlparse(request.url)
 	#Extract query which has email and uid
 	query = urlparse.parse_qs(url.query)
@@ -250,20 +249,19 @@ def render_password_reset_page(challengeHash):
 		email  = query['email'][0]
 
 	accounts = Account.query.filter_by(sec_question=(str(challengeHash))).all()
-
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
 			return redirect('/login')
 
 	if form.validate_on_submit():
-		hero_account = accounts[0]
-		hero_account.set_sec_question("")
-		hero_account.pwhash = generate_password_hash(form.rec_input_newpass.data)
+		account = accounts[0]
+		account.set_sec_question("")
+		account.pwhash = generate_password_hash(form.rec_input_newpass.data)
 		trace("New pass is: " + form.rec_input_newpass.data)
-		trace("hash " + hero_account.pwhash)
+		trace("hash " + account.pwhash)
 
 		try:
-			db_session.add(hero_account)
+			db_session.add(account)
 			db_session.commit()
 			ht_send_password_changed_confirmation(email)
 		except Exception as e:
