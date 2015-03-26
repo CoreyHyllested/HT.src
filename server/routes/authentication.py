@@ -59,6 +59,9 @@ def render_signup_page(usrmsg=None):
 		# if logged in, take 'em home
 		return redirect('/dashboard')
 
+	ref_name = None
+	ref_id = request.values.get('ref', None)
+
 	form = SignupForm(request.form)
 	if form.validate_on_submit():
 		# check if account (email) already exists in db, (use Account.get_by_email instead).
@@ -96,29 +99,25 @@ def render_signup_page(usrmsg=None):
 	elif request.method == 'POST':
 		trace("/signup form invalid" + str(form.errors))
 		usrmsg = 'Sorry, something wasn\'t filled out properly.'
+	else:
+		trace("/signup (GET)")
+		if ref_id:
+			form.refid.data = ref_id
+			referral = Referral.get_by_refid(ref_id)
+			if referral is not None:
+				ref_prof = Profile.get_by_uid(referral.ref_account)
+				ref_name = ref_prof.prof_name
 
+				# save the work, on successfully creating account -- pop these values
+				session['ref_id']	= ref_id
+				session['gift_id']	= referral.ref_gift_id
+				session['ref_prof']	= ref_prof.prof_id
 
-	ref_id = request.values.get('ref')
-	ref_name = None
-	print 'Referral id set. == ' + str(ref_id)
-	if (ref_id and request.method == 'GET'):
-		form.refid.data = ref_id
-		referral = Referral.get_by_refid(ref_id)
-		if referral is not None:
-			ref_prof = Profile.get_by_uid(referral.ref_account)
-			ref_name = ref_prof.prof_name
-
-			# save the work, on successfully creating account -- pop these values
-			session['ref_id']	= ref_id
-			session['gift_id']	= referral.ref_gift_id
-			session['ref_prof']	= ref_prof.prof_id
 #		gift = GiftCertificate.get_by_giftid(referral.ref_gift_id)
 #		if (gift):
 #			ref_name = ref_name + ', signup to claim $' + str(gift.gift_value/100)
 
-
-
-	return make_response(render_template('signup.html', title='- Sign Up', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
+	return make_response(render_template('signup.html', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
 
 
 
