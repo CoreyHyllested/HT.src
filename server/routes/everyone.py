@@ -233,7 +233,7 @@ def render_password_reset_request():
 		print usrmsg
 		return make_response(redirect(url_for('sc_ebody.render_login')))
 
-	return render_template('recovery.html', form=form, errmsg=usrmsg)
+	return render_template('password_recover.html', form=form, errmsg=usrmsg)
 
 
 
@@ -257,7 +257,6 @@ def render_password_reset_page(challengeHash):
 		account = accounts[0]
 		account.set_sec_question("")
 		account.pwhash = generate_password_hash(form.rec_input_newpass.data)
-		trace("New pass is: " + form.rec_input_newpass.data)
 		trace("hash " + account.pwhash)
 
 		try:
