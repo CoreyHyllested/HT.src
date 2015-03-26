@@ -62,6 +62,7 @@ def sc_email_welcome_message(user_email, user_name, challenge_hash):
 def sc_send_password_recovery_link(account):
 	""" Emails the password recovery link to a user """
 	url_reset  = 'https://soulcrafting.co/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
+	print 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
 
 	message = create_mandrill_message(template = 'reset-password')
 	message['to'].append({'email': account.email})
@@ -98,16 +99,15 @@ def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None)
 
 
 
-def ht_send_password_recovery_link(account):
-	""" Emails the password recovery link to a user """
-	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
-	msg_text = "Go to " + url + " to recover your HeroTime password."
-	msg_html = email_body_recover_your_password(url)
-
-	msg = create_msg('Reset your Insprite password', account.email, account.name, 'noreply@insprite.co', u'Insprite')
-	msg.attach(MIMEText(msg_text, 'plain'))
-	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(account.email, msg)
+#def ht_send_password_recovery_link(account):
+#	""" Emails the password recovery link to a user """
+#	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
+#	msg_text = "Go to " + url + " to recover your HeroTime password."
+#	msg_html = email_body_recover_your_password(url)
+#	msg = create_msg('Reset your Insprite password', account.email, account.name, 'noreply@insprite.co', u'Insprite')
+#	msg.attach(MIMEText(msg_text, 'plain'))
+#	msg.attach(MIMEText(msg_html, 'html' ))
+#	ht_send_email(account.email, msg)
 
 
 
