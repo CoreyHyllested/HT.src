@@ -225,12 +225,14 @@ def render_search(page = 1):
 def render_password_reset_request():
 	form = RecoverPasswordForm(request.form)
 	usrmsg = None
-	if request.method == 'POST':
+	if form.validate_on_submit():
 		print 'password_reset_request() -', form.email.data
-		usrmsg = ht_password_recovery(form.email.data)
+		usrmsg = sc_password_recovery(form.email.data)
 		# TODO on success... AJAX respond with message.  After 10 seconds, redirect user.
+		# TODO if email not found... Let user know?
 		print usrmsg
-		return make_response(redirect(url_for('insprite.render_login')))
+		return make_response(redirect(url_for('sc_ebody.render_login')))
+
 	return render_template('recovery.html', form=form, errmsg=usrmsg)
 
 
