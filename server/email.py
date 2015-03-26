@@ -43,6 +43,7 @@ def create_mandrill_message(template=None):
 	message['global_merge_vars'] =	[]
 	message['global_merge_vars'].append({ 'name': 'LIST_COMPANY',		'content': mvar_company })
 	message['global_merge_vars'].append({ 'name': 'LIST_DESCRIPTION',	'content': mvar_description })
+	message['global_merge_vars'].append({ 'name': 'CONTACT_US',			'content': 'hello@soulcrafting.co'})
 	return message
 
 
@@ -72,6 +73,14 @@ def sc_send_password_recovery_link(account):
 	sc_send_mandrill_template(message)
 
 
+def sc_send_password_changed_confirmation(user_email):
+	""" email user 'password changed' confirmation notice. """
+	print 'sending password changed confirmation notice'
+	message = create_mandrill_message(template = 'password-change-confirmation')
+	message['to'].append({'email': user_email})
+	sc_send_mandrill_template(message)
+
+
 def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None):
 	temp_friend	= str(friend_name)
 	temp_invite	= str('https://soulcrafting.co/signup?ref=' + referral_id)
@@ -96,9 +105,6 @@ def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None)
 #	msg.attach(MIMEText(msg_html, 'html' ))
 #	ht_send_email(user_email, msg)
 
-
-
-
 #def ht_send_password_recovery_link(account):
 #	""" Emails the password recovery link to a user """
 #	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
@@ -109,17 +115,13 @@ def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None)
 #	msg.attach(MIMEText(msg_html, 'html' ))
 #	ht_send_email(account.email, msg)
 
-
-
-
-def ht_send_password_changed_confirmation(user_email):
-	""" email user 'password changed' confirmation notice. """
-	msg_html = email_body_password_changed_confirmation('url')
-	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
-
-	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
-	msg.attach(MIMEText(msg_html, 'html' ))
-	ht_send_email(user_email, msg)
+#def ht_send_password_changed_confirmation(user_email):
+#	""" email user 'password changed' confirmation notice. """
+#	msg_html = email_body_password_changed_confirmation('url')
+#	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
+#	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
+#	msg.attach(MIMEText(msg_html, 'html' ))
+#	ht_send_email(user_email, msg)
 
 
 

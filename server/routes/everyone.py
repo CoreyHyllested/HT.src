@@ -262,9 +262,9 @@ def render_password_reset_page(challengeHash):
 		try:
 			db_session.add(account)
 			db_session.commit()
-			ht_send_password_changed_confirmation(email)
+			sc_send_password_changed_confirmation(email)
 		except Exception as e:
-			trace(str(e))
+			trace(type(e) + ' ' + str(e))
 			db_session.rollback()
 		return redirect('/login')
 
