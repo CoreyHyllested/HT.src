@@ -35,6 +35,7 @@ log_hndlr.setFormatter(log_frmtr)
 log_hndlr.setLevel(logging.INFO)
 
 ht_csrf  = CsrfProtect()
+sc_csrf	= ht_csrf
 ht_oauth = OAuth()
 
 ht_server = None
@@ -70,7 +71,7 @@ def initialize_server(config_name):
 	ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
 	initialize_database(ht_server.config)
 
-	ht_csrf.init_app(ht_server)
+	sc_csrf.init_app(ht_server)
 	ht_oauth.init_app(ht_server)
 	assets = Environment(ht_server)
 	assets.url = ht_server.static_url_path
