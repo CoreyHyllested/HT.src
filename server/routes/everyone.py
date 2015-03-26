@@ -20,7 +20,7 @@ from server.models import *
 from server.controllers import *
 from server.forms import NewPasswordForm, ProposalForm, SearchForm
 from server.forms import GiftForm, RecoverPasswordForm
-from server import ht_csrf
+from server import sc_csrf
 from pprint import pprint
 
 
@@ -290,24 +290,22 @@ def render_share_page():
 
 
 
-#@ht_csrf.exempt
-#@insprite_views.route("/email/<operation>/<data>", methods=['GET','POST'])
-def ht_email_operations(operation, data):
-	print "ht_email_operations: begin"
-	print "ht_email_operations: operation: ", operation
-	print "ht_email_operations: data: ", data
+@sc_ebody.route("/email/<operation>/<data>", methods=['GET','POST'])
+def sc_email_operations(operation, data):
+	print "sc_email_operations: begin", operation
+	print "sc_email_operations: data: ", data
 	if (operation == 'verify'):
 		email = request.values.get('email')
 		nexturl = request.values.get('next_url')
-		print 'ht_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
-		return ht_email_verify(email, data, nexturl)
-	elif (operation == 'share'):
-		print "ht_email_operations: you've chosen wisely.... share: "
-		msg_to	 = request.values.get('recipient')
-		msg_sub	 = request.values.get('subject')
-		msg_body = request.values.get('composeBody')
-		ht_send_share_email(msg_to, msg_sub, msg_body)
-		return jsonify(rc=200, whatwhat='yeah, that\'s the shit I\'m talking about'), 200
+		print 'sc_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
+		return sc_email_verify(email, data, nexturl)
+#	elif (operation == 'share'):
+#		print "sc_email_operations: you've chosen wisely.... share: "
+#		msg_to	 = request.values.get('recipient')
+#		msg_sub	 = request.values.get('subject')
+#		msg_body = request.values.get('composeBody')
+#		ht_send_share_email(msg_to, msg_sub, msg_body)
+#		return jsonify(rc=200, whatwhat='yeah, that\'s the shit I\'m talking about'), 200
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')
 		return make_response(render_template('verify_email.html', nexturl=nexturl))

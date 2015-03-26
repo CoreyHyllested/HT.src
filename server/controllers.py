@@ -151,7 +151,7 @@ def ht_create_account(name, email, passwd, ref_id):
 		db_session.rollback()
 		return (None, None)
 
-	ht_email_welcome_message(email, name, challenge_hash)
+	sc_email_welcome_message(email, name, challenge_hash)
 	return (account, profile)
 
 
@@ -717,23 +717,17 @@ def ht_get_active_lessons(profile):
 
 
 
-def ht_email_verify(email, challengeHash, nexturl=None):
+def sc_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
-	print "ht_email_verify: begin"
-	print "ht_email_verify: challengeHash is ", challengeHash
-	print "ht_email_verify: email is ", email
-	print "ht_email_verify: nexturl is ", nexturl
+	print "sc_email_verify: begin", email, nexturl, challengeHash
 
 	accounts = Account.query.filter_by(sec_question=(challengeHash)).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
-		print "ht_email_verify: error - challenge hash not found in accounts."
+		print "sc_email_verify: error - challenge hash not found in accounts."
 		session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
-		return redirect(url_for('insprite.render_login'))
-	else:
-		print "ht_email_verify: success - challenge hash found."
+		return redirect(url_for('sc_ebody.render_login'))
 
 	try:
-		print 'ht_email_verify: updating account'
 		account = accounts[0]
 		account.set_email(email)
 		account.set_sec_question("")
@@ -741,9 +735,9 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 
 		db_session.add(account)
 		db_session.commit()
-		print 'ht_email_verify: committed.'
+		print 'sc_email_verify: account updated.'
 	except Exception as e:
-		print "ht_email_verify: Exception: ", type(e), e
+		print "sc_email_verify: Exception: ", type(e), e
 		db_session.rollback()
 
 	# bind session cookie to this user's profile
@@ -754,7 +748,7 @@ def ht_email_verify(email, challengeHash, nexturl=None):
 		return make_response(jsonify(usrmsg="Email successfully verified."), 200)
 
 	session['messages'] = 'Great! You\'ve verified your email'
-	return redirect(url_for('insprite.render_dashboard'))
+	return redirect(url_for('sc_ebody.render_dashboard'))
 
 
 
