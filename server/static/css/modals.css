@@ -1,7 +1,7 @@
 /* MODAL WINDOWS */
 #overlay {}							/* Overlay Screen (overlay-dark) */
-#modal-wrap {}						/* modal-wrap. unsure if needed	*/
-	#modal-window {}				/* window, display:none;		*/
+#modal-wrap { top: -20% }			/* modal-wrap. unsure if needed - 	ACTIVATED: .modal-active */
+	#modal-window {}				/* window, display:none;		- 	ACTIVATED: .window-alert */
 		#modal-content {}			/* container for window-content	*/
 			#modal-header {}		/* container for window-header	*/
 				#modal-title {}		/* 		[ Title ]				*/
@@ -12,7 +12,8 @@
 
 
 #modal-window {
-	display: none;		/* INTENTIONAL CLASSES: 'window-alert' */
+	/* Activating Classes: 'window-alert' */
+	display: none;
 
 	/* describe window */
 	background-color: white;
@@ -43,26 +44,14 @@
 #modal-close {
 	/* top-right corner */
 	position: absolute;
-	top: -10px;
-	right: -6px;
+	top: -15px;
+	right: 0px;
 
 	cursor: pointer;
 	font-size: 1.2em;
 }
 #modal-close:before	{ content:"\00D7"; }	/* X to close. */
-#modal-close:hover	{ color: darkred; font-weight: bolder;  }
-
-
-
-#modal-window-orig {
-	/* window, sits on top of overlay. */
-	z-index: 99998;
-	position: fixed;
-
-	/* appearence */
-	padding: 1%;
-}
-
+#modal-close:hover	{ color: black; font-weight: bolder;  }
 
 
 
@@ -70,7 +59,6 @@
 	text-align:	center;
 	font-size:	1.0em;
 	line-height: 1.35em;
-
 	margin-bottom: 15px;
 }
 
@@ -96,11 +84,11 @@
 	left:	0;
 	height:	100%;
 	width:	100%;
-	z-index: 99997;
+	z-index: 99998;
 
 	/* darken the screen */
     background-color: darkgray;	/* fallback */
-    background-color: rgba(0,0,0,.6);
+    background-color: rgba(0,0,0,.8);
 }
 
 
@@ -108,22 +96,28 @@
 .modal-dismiss { z-index: 99998; }
 
 
-.window-visible {
+
+/* CLASSES for ALL MODAL-WINDOWS */
+.modal-active {
+	position: fixed;
 	display: inline;
 	z-index: 99999;
 
-	position: fixed;	/* necessary? */
+	/* center window */
+	text-align: center;
 	width: 100%;
 
-	text-align: center;	/*  here? */
-	bottom: 65%;
+
+	/* drop-in from top */
+	top: 30% !important;
+	transition: top .4s ease;
+	-webkit-transition: top .4s ease;
+	-moz-transition: top .4s ease;
+	-o-transition: top .4s ease;
 }
 
 
-/* CLASSES of WINDOWS */
-.window-alert {
-	display: inline-block !important;
-}
+.window-alert { display: inline-block !important; }
 
 
 @media only screen and (min-device-width: 240px) and (max-width: 349px)	{ #modal-window {	width: 80%;		}	}
