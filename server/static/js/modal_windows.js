@@ -7,7 +7,7 @@ $(document).ready(function () {
 	$(document).keyup(function(e) {
 		/* close overlay if ESC is hit */
 		if (e.keyCode == 27) /* ESC */ {
-			if ($('#modal-wrap').hasClass('window-visible') && $('#modal-window').hasClass('window-alert')) {
+			if ($('#modal-wrap').hasClass('modal-active') && $('#modal-window').hasClass('window-alert')) {
 					closeAlertWindow();
 			}
 		}
@@ -22,7 +22,7 @@ $(document).ready(function () {
 function openAlertWindow(text) {
 	$('#overlay').addClass('overlay-dark').addClass('dismiss-modal');
 	$('#modal-message').html(text);
-	$('#modal-wrap').addClass('window-visible')
+	$('#modal-wrap').addClass('modal-active')
 	$('#modal-window').addClass('window-alert');
 
 	return false;
@@ -38,7 +38,7 @@ function closeNotification() { }
 function closeAlertWindow() {
 	$('#overlay').removeClass('overlay-dark');
 	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
-	$('#modal-wrap').removeClass('window-visible');
+	$('#modal-wrap').removeClass('modal-active');
 	$('#modal-window').removeClass('window-alert');
 	$('#modal-message').html('');
 	return false;
