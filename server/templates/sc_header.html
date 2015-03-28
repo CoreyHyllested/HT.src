@@ -6,17 +6,18 @@
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 
 	<link rel='icon' type="image/png" href="/static/img/favicon.png">
-	<link rel='stylesheet' href="/static/css/master.css">
-	<link rel='stylesheet' href="/static/css/modals.css">
-	<link rel='stylesheet' href="/static/css/bootstrap.css">
-	<link rel='stylesheet' href="/static/css/headerfooter.css">
+	<link rel='stylesheet' href='/static/css/master.css'>
+	<link rel='stylesheet' href='/static/css/modals.css'>
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	<link rel='stylesheet' href='/static/css/headerfooter.css'>
 	<link rel='stylesheet' href='/static/font-awesome/css/font-awesome.min.css'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Kameron|Poiret+One|Cinzel|Open+Sans'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Lustria|Nixie+One|Crete+Round|Ovo|Playfair+Display+SC|Alegreya'>
 	{% block header_css %}{% endblock %}
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+	<script src='//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js'></script>
+	<script src='/static/js/modal_windows.js'></script>
 	{% block header_js %}{% endblock %}
 
 	<!--[if lt IE 9]>
@@ -26,12 +27,21 @@
 </head>
 
 
-
 <body>
-	<div class="overlay"></div>
-	<div class="overlay-content">
-		<div class="overlay-close">&#x2715;</div>
-		<div class="modalContent"></div>
+	<div id='overlay'></div>
+	<div id='modal-wrap'>
+		<div id="modal-window">
+			<div id='modal-content'>
+				<div id="modal-header">
+					<span id='modal-title'></span>
+					<div  id='modal-close'></div>
+				</div>
+				<div id='modal-message'></div>
+				<div id='modal-buttons'>
+					<div id='alertBtn'>OK</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
