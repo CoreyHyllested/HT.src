@@ -1,53 +1,45 @@
-	// If ESC is pressed, close all modal windows
+$(document).ready(function () {
+	console.log('modals.js: ready');
+	$('#modal-close').click(function (e)	{ closeAlertWindow(); } );
+	$('#modal-dismiss').click(function (e)	{ closeAlertWindow(); } );
+	$('.dismiss-modal').click(function (e)	{ closeAlertWindow(); } );
+
 	$(document).keyup(function(e) {
-		if (e.keyCode == 27) {
-			if ($('.alertWindowWrap').hasClass('alertWindowWrapOn') &&
-				$('.alertWindow').hasClass('alertWindowOn')) {
+		/* close overlay if ESC is hit */
+		if (e.keyCode == 27) /* ESC */ {
+			if ($('#modal-wrap').hasClass('window-visible') && $('#modal-window').hasClass('window-alert')) {
 					closeAlertWindow();
-			} else if ($('.modalWindowWrap').hasClass('modalWindowWrapOn') &&
-				$('.modalWindow').hasClass('modalWindowOn')) {
-					closeModalWindow();
 			}
 		}
 	});
 
+	/* MAYBE:
+		$('#overlay').click( function (e) { closeAlertWindow(); } );
+		$('.alertButton').click( function (e) { closeAlertWindow(); } );
+	*/
+});
 
-	// Alert windows: Open
-	function openAlertWindow(text) {
-		$('.alertWindowWrap').toggleClass('alertWindowWrapOn');
-		$('.alertWindow').toggleClass('alertWindowOn');
-		$('.alertMessage').html(text);
-		$('.alertOverlay').toggleClass('alertOverlayOn');
-		return false;
-	}
+function openAlertWindow(text) {
+	$('#overlay').addClass('overlay-dark').addClass('dismiss-modal');
+	$('#modal-message').html(text);
+	$('#modal-wrap').addClass('window-visible')
+	$('#modal-window').addClass('window-alert');
 
-	// Alert windows: Close
-	function closeAlertWindow() {
-		$('.alertOverlay').toggleClass('alertOverlayOn');
-		$('.alertWindowWrap').toggleClass('alertWindowWrapOn');
-		$('.alertWindow').toggleClass('alertWindowOn');
-		$('.alertMessage').html('');
-		return false;
-	}
+	return false;
+}
 
-	// Modal windows: Open
-	function openModalWindow(url, element, dataStr, modalClass) {
-		$('.modalOverlay').toggleClass('modalOverlayOn');
-/*		$('.modalWindowWrap').showCloseWindowButton(); */
-		$('.modalContent').load(url + " " + element);
-		return false;
-	}
 
-	function showCloseWindowButton() {
-		$('.modalWindowClose').show();
-	}
+function notifyUser(txt) {
+	return openAlertWindow(text);
+}
 
-	// Modal windows: Close
-	function closeModalWindow() {
-		$('.modalWindowClose').hide();
-		$('.modalContent').html('');
-		$( ".modalWindowWrap" ).css("opacity", 0);
-		$('.modalOverlay').toggleClass('modalOverlayOn');
-		
-		return false;
-	}
+function closeNotification() { }
+
+function closeAlertWindow() {
+	$('#overlay').removeClass('overlay-dark');
+	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
+	$('#modal-wrap').removeClass('window-visible');
+	$('#modal-window').removeClass('window-alert');
+	$('#modal-message').html('');
+	return false;
+}
