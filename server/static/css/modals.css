@@ -1,140 +1,130 @@
 /* MODAL WINDOWS */
+#overlay {}							/* Overlay Screen (overlay-dark) */
+#modal-wrap {}						/* modal-wrap. unsure if needed	*/
+	#modal-window {}				/* window, display:none;		*/
+		#modal-content {}			/* container for window-content	*/
+			#modal-header {}		/* container for window-header	*/
+				#modal-title {}		/* 		[ Title ]				*/
+				#modal-close {}		/*		[ close (X) ]			*/
+			#modal-message {}		/* container for content		*/
+			#modal-buttons {}		/* container for buttons		*/
+				#modal-dismiss {}	/* 		[ OK :: dismisses ]		*/
 
-.overlay { }			/* darken Screen (overlay-on) */
-.overlay-content{ }		/* message-box, sits on overlay	*/
-.overlay-close { }		/* message-box close (X)	*/
-.modalContent { }		/* message-box content		*/
+
+#modal-window {
+	display: none;		/* INTENTIONAL CLASSES: 'window-alert' */
+
+	/* describe window */
+	background-color: white;
+	border-radius: 6px;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	-o-border-radius: 8px;
+
+	padding: 20px 10px 10px;
+	text-align: center;
+}
+
+#modal-content {
+	/* required to position modal-header */
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
 
 
-/* toggle on/off */
-.overlay-darken {
-	display: block;
+#modal-header {
+	/* container for title, close */
+	height: 100%;
+	padding-bottom:	5px;
+	margin-bottom:	5px;
+}
 
-	/* whole screen */
+#modal-close {
+	/* top-right corner */
+	position: absolute;
+	top: -10px;
+	right: -6px;
+
+	cursor: pointer;
+	font-size: 1.2em;
+}
+#modal-close:before	{ content:"\00D7"; }	/* X to close. */
+#modal-close:hover	{ color: darkred; font-weight: bolder;  }
+
+
+
+#modal-window-orig {
+	/* window, sits on top of overlay. */
+	z-index: 99998;
 	position: fixed;
+
+	/* appearence */
+	padding: 1%;
+}
+
+
+
+
+#modal-message {
+	text-align:	center;
+	font-size:	1.0em;
+	line-height: 1.35em;
+
+	margin-bottom: 15px;
+}
+
+
+#modal-dismiss {
+	border-top: 1px solid rgba(0,0,0, 0.4);
+	padding-top: 10px;
+
+	cursor: pointer;
+	margin: auto;
+	width: 100%;
+	color: #29abe2;
+}
+
+
+
+
+.overlay-dark {
+	/* whole screen */
+	display:	block;
+	position:	fixed;
 	top:	0;
 	left:	0;
 	height:	100%;
 	width:	100%;
-
-	/* darken whole screen */
-    background: black; /* fallback */
-    background: rgba(0,0,0,.6);
 	z-index: 99997;
+
+	/* darken the screen */
+    background-color: darkgray;	/* fallback */
+    background-color: rgba(0,0,0,.6);
 }
 
 
-
-.overlay-content {
-	/* message-box, sits on top of overlay. */
-	display: none;		/* start hidden */
-	z-index: 99998;
-	position: fixed;
-
-	padding: 1%;
-
-	top: 25%;
-	left: 25%;
-	width: 50%;
-
-	background: white;
-	border-radius: 15px;
-	box-shadow: 0 0 5px rgba(0,0,0,0.9);
-	cursor: default;
-}
+/* doesn't appear to be working */
+.modal-dismiss { z-index: 99998; }
 
 
-
-.overlay-close {
-	/* The X to close the overlay */
-	position: absolute;
-	top: 5px;
-	right: 8px;
-	cursor: pointer;
-	font-size: 1.3em;
-	font-color: red;
-	z-index: 99999;
-}
-.overlay-close:hover { 
-	font-color: black;
-	font-weight: bolder;
-}
-
-
-.alertOverlay {
-	/* change opacity */
-	opacity: 0;
-
-	-o-transition:		opacity 0.3s;
-	-moz-transition:	opacity 0.3s;
-	-webkit-transition:	opacity 0.3s;
-	transition:			opacity 0.3s;
-}
-
-
-.alertOverlayOn { background-color: black;
-	display: block;
-	height: 100%;
-	left: 0;
-	opacity: 0.8;
-	position: fixed;
-	top: 0;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	width: 100%;
-	z-index: 99998;
-}
-
-.alertWindowWrap {
-	opacity: 0;
-	top: -20%;
-}
-
-.alertWindowWrapOn {
+.window-visible {
 	display: inline;
-	height: 0;
-	left: 0;
-	opacity: 1;
-	position: fixed;
-	right: 0;
-	text-align: center;
-	top: 20%;
-	-moz-transition: top 0.5s ease;
-	-o-transition: top 0.5s ease;
-	-webkit-transition: top 0.5s ease;
-	transition: top 0.5s ease;
 	z-index: 99999;
-}
 
-.alertWindow {
-	display: none;
-
-	background-color: rgba(255, 255, 255, 0.9);
-	-webkit-border-radius: 6px;
-	border-radius: 6px;
-	padding: 15px 10px 10px;
-	text-align: center;
-}
-.alertWindowOn { display: inline-block; }
-
-.alertMessage {
-	font-size: 0.9em;
-	line-height: 1.35em;
-	margin-bottom: 15px;
-	text-align: center;
-}
-
-.alertButton {
-	background: none;
-	border-top: 1px solid rgba(0,0,0, 0.2);	
-	color: #29abe2;
-	cursor: pointer;
-	margin: auto;
-	padding-top: 10px;
+	position: fixed;	/* necessary? */
 	width: 100%;
+
+	text-align: center;	/*  here? */
+	bottom: 65%;
 }
 
-@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ .alertWindow {width: 80%;	 }	}
-@media only screen and (min-width: 350px)								{ .alertWindow {width: 240px;}	}
-@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ .alertWindow {width: 80%;	 }	}
-@media only screen and (min-width: 350px)								{ .alertWindow {width: 240px;}	}
+
+/* CLASSES of WINDOWS */
+.window-alert {
+	display: inline-block !important;
+}
+
+
+@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ #modal-window {	width: 80%;		}	}
+@media only screen and (min-width: 350px)								{ #modal-window {	width: 240px;	}	}
