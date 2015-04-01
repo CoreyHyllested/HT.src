@@ -66,6 +66,9 @@
 
 {% block scripts %}
 	{{ super() }}
+	{% if usrmsg != none %}
+	<script>openAlertWindow('{{usrmsg}}');</script>
+	{% endif %}
 {% endblock %}
 
 <!--
@@ -101,6 +104,5 @@ right side.
 <!--div class="details">{{project.proj_desc}}</div-->
 <!--div class="details">${{project.proj_max}}</div-->
 
-#{ % if errmsg != none % } <script>openAlertWindow('{{errmsg}}');</script> { % endif % }
 
 

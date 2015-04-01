@@ -38,9 +38,9 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
-def render_dashboard(usrmsg=None):
+def render_dashboard():
 	bp = Profile.get_by_uid(session['uid'])
-	insprite_msg = session.pop('messages', None)
+	message = session.pop('message', None)
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 	usercash = None
 
@@ -55,12 +55,12 @@ def render_dashboard(usrmsg=None):
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
-	if (usrmsg is None and insprite_msg):
-		usrmsg = insprite_msg
+	if (message):
+		usrmsg = message
 		print 'render_dashboard() usrmsg = ', usrmsg
 
 	print 'render_dashboard()'
-	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, errmsg=usrmsg))
+	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, usrmsg=usrmsg))
 
 
 
@@ -1539,7 +1539,6 @@ def ht_api_update_settings():
 		print 'ht_api_update_settings: AttributeError: ', ae
 		db_session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
-
 	except Exception as e:
 		print 'ht_api_update_settings: Exception: ', e
 		db_session.rollback()
@@ -1549,7 +1548,6 @@ def ht_api_update_settings():
 	print "ht_api_update_settings: Something went wrong - Fell Through."
 	print "here is the form object:"
 	print str(form)
-
 	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
 
 
@@ -1624,6 +1622,22 @@ def render_edit_project(pid=None):
 		form.proj_id.data	= 'new'
 
 	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp))
+
+
+
+
+@sc_users.route('/project/schedule/<mode>/<string:pid>', methods=['GET', 'POST'])
+@req_authentication
+def api_project_schedule_consultation(mode, pid=None):
+	bp = Profile.get_by_uid(session['uid'])
+	try:
+		project = Project.get_by_proj_id(pid, bp)
+		if (project):
+			session['message'] = 'A project specialist will contact you by ' + str(mode) + ' within 24 hours.'
+	except Exception as e:
+		print e
+	return redirect('/dashboard')
+
 
 
 

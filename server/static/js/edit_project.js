@@ -14,21 +14,22 @@ $(document).ready(function() {
 	});
 
 	$('#schedule_phone').click(function(e) {
-		kick(e);
+		kick(e, 'phone');
 	});
 
 	$('#schedule_email').click(function(e) {
 		console.log('schedule email');
-		kick(e);
+		kick(e, 'email');
 	});
 
 	enableNS();
 });
 
-function kick(e) {
+
+function kick(e, mode) {
 	e.preventDefault();
-	console.log('kick');
-	setTimeout(function() { location.pathname='/dashboard'; }, 1500);
+	id = $('#proj_id').val();
+	setTimeout(function() { location.pathname='/project/schedule/'+mode+'/'+id; }, 1500);
 }
 
 
