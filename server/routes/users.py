@@ -39,6 +39,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard():
+	usrmsg = None
 	bp = Profile.get_by_uid(session['uid'])
 	message = session.pop('message', None)
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
