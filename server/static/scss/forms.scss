@@ -16,15 +16,12 @@ $field-height: 40px;
 
 
 .field {
-	font-family: "Open Sans", Helvetica, sans-serif;
-}
-
-
-.field.info {
 	color: $field-info-color;
+	font-family: "Open Sans", Helvetica, sans-serif;
 	font-size: .9em;
-	padding-bottom: 5px;
 }
+
+.field.info			{ padding-bottom: 5px; }
 .field.info.first	{ padding-top: 0px;		}
 .field.info.notice	{ font-weight: 600;	}
 
@@ -55,7 +52,7 @@ $field-height: 40px;
 
 .field.action {
 	float: left;
-	padding-left: 15px;
+	padding-left: 10px;
 	height: $field-height;
 }
 
