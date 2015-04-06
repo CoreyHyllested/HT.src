@@ -1,11 +1,13 @@
-{% extends "ht_header.html" %}
+{% extends 'sc_header.html' %}
+{% set title='Edit your Settings' %}
 
-{% block head %}
+{% block header_css %}
 	{{ super() }}
 	{% assets "sass_settings" %}
-		<link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}"></script>
+		<link rel='stylesheet' href='{{ASSET_URL}}'></script>
 	{% endassets %}	
 {% endblock %}
+
 
 {% block content %}
 <div class="settingsContentWrapper">
