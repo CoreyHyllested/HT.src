@@ -1,0 +1,74 @@
+@import 'colors';
+@import 'fonts';
+
+$field-info-color: $black;
+$field-input-color: $black;
+$field-bottom-margin: 10px;
+$field-height: 40px;
+
+
+.field-container {
+	display: block;
+	width: 100%;
+	margin: 25px 0 10px;
+	max-width: 600px;
+}
+
+
+.field {
+	font-family: "Open Sans", Helvetica, sans-serif;
+}
+
+
+.field.info {
+	color: $field-info-color;
+	font-size: .9em;
+	padding-bottom: 5px;
+}
+.field.info.first	{ padding-top: 0px;		}
+.field.info.notice	{ font-weight: 600;	}
+
+.field.input {
+/*	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+*/
+}
+.field.error {
+	display: none;
+	font-size: .7em;
+	color: #e75f63;
+}
+.field.error.inline {
+	display: inline-block;
+	margin-left: 8px;
+}
+
+.field.error.alt {
+	float: left;
+	height: $field-height;
+	line-height: 50px;
+	margin-left: 16px;
+	margin-top: 10px;
+}
+
+
+.field.action {
+	float: left;
+	padding-left: 15px;
+	height: $field-height;
+}
+
+/* UNUSED */
+.field.description {
+	color: rgba(0,0,0, 0.7);
+	margin-bottom: $field-bottom-margin;
+}
+
+.btn-settings {
+	float: left;
+	min-width: 110px;
+	height: $field-height;
+	padding: 10px 20px;
+	margin-right: 20px;
+}
