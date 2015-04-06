@@ -39,9 +39,9 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
 @req_authentication
 def render_dashboard():
-	usrmsg = None
 	bp = Profile.get_by_uid(session['uid'])
 	message = session.pop('message', None)
+
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 	usercash = None
 
@@ -56,12 +56,8 @@ def render_dashboard():
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
-	if (message):
-		usrmsg = message
-		print 'render_dashboard() usrmsg = ', usrmsg
-
 	print 'render_dashboard()'
-	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, usrmsg=usrmsg))
+	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, usrmsg=message))
 
 
 
@@ -1423,33 +1419,30 @@ def render_review_meeting_page(review_id):
 
 
 
-#@sc_views.route('/settings', methods=['GET', 'POST'])
-#@req_authentication
+@sc_users.route('/settings', methods=['GET', 'POST'])
+@req_authentication
 def render_settings():
-	""" Provides form for the user to change their settings."""
+	""" Allows user to change his or her email settings."""
 	uid = session['uid']
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
 
-	errmsg = None
-	insprite_msg = session.pop('messages', None)
+	#email_unverified = False
+	#if (ba.status == Account.USER_UNVERIFIED):
+	#	email_unverified = True
+	email_unverified = True if (ba.status == Account.USER_UNVERIFIED) else False
+
+	print 'render_settings()', bp.prof_name, ' email unverified', email_unverified
 
 	form = SettingsForm(request.form)
-
-	email_unver = False
-	if (ba.status == Account.USER_UNVERIFIED):
-		email_unver = True
-
-	print 'render_settings()', bp.prof_name, ' email unverified', email_unver
-
 	form.set_input_email.data	= ba.email
 	form.set_input_name.data	= ba.name
-	nexturl = "/settings"
-	if (request.values.get('nexturl') is not None):
-		nexturl = request.values.get('nexturl')
-	if (errmsg is None): errmsg = insprite_msg
 
-	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unver, errmsg=errmsg))
+	#nexturl = "/settings"
+	#if (request.values.get('nexturl') is not None):
+	nexturl = request.values.get('nexturl', '/settings')
+	message = session.pop('message', None)	# was messages
+	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unverified, errmsg=message))
 
 
 
