@@ -1427,12 +1427,8 @@ def render_settings():
 	bp	= Profile.get_by_uid(uid)
 	ba	= Account.get_by_uid(uid)
 
-	#email_unverified = False
-	#if (ba.status == Account.USER_UNVERIFIED):
-	#	email_unverified = True
-	email_unverified = True if (ba.status == Account.USER_UNVERIFIED) else False
-
-	print 'render_settings()', bp.prof_name, ' email unverified', email_unverified
+	email_verified = False if (ba.status == Account.USER_UNVERIFIED) else True
+	print 'render_settings(' + str(ba.userid), bp.prof_name, ') email-verified:', email_verified
 
 	form = SettingsForm(request.form)
 	form.set_input_email.data	= ba.email
@@ -1442,7 +1438,7 @@ def render_settings():
 	#if (request.values.get('nexturl') is not None):
 	nexturl = request.values.get('nexturl', '/settings')
 	message = session.pop('message', None)	# was messages
-	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, unverified_email=email_unverified, errmsg=message))
+	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, verified_email=email_verified, errmsg=message))
 
 
 
