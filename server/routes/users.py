@@ -1431,8 +1431,8 @@ def render_settings():
 	print 'render_settings(' + str(ba.userid), bp.prof_name, ') email-verified:', email_verified
 
 	form = SettingsForm(request.form)
-	form.set_input_email.data	= ba.email
-	form.set_input_name.data	= ba.name
+	form.email.data	= ba.email
+	form.name.data	= ba.name
 
 	#nexturl = "/settings"
 	#if (request.values.get('nexturl') is not None):
