@@ -4,213 +4,91 @@
 {% block header_css %}
 	{{ super() }}
 	{% assets "sass_settings" %}
-		<link rel='stylesheet' href='{{ASSET_URL}}'></script>
+	<link rel='stylesheet' href='{{ASSET_URL}}'></script>
 	{% endassets %}	
 {% endblock %}
 
 
+
 {% block content %}
-<div class="settingsContentWrapper">
+<div id='settings-content'>
+	<div id="settings-title">Account Settings</div>
 
-	{% if errmsg != none %}
-	<script>openAlertWindow('{{errmsg}}');</script>
-	{% endif %}
+	<form id='settings-form' enctype="multipart/form-data">
+		{{form.hidden_tag()}}
+		<input type="hidden" id="csrf"	  value='{{csrf_token()}}'>
+		<input type="hidden" id="nexturl" value='{{nexturl}}'>
 
-	<form id="editSettingsForm">
-		<input type="hidden" id="csrf" name="csrf_token" value="{{ csrf_token() }}">
-		<input type="hidden" id="nexturl" value="{{ nexturl }}">
+		<div class='field-container' id='update-name'>
+			<div class='field info'>Your legal name</div>
+			<div class='field error'></div>
+			{{form.name(placeholder="Your Name", class="field input span9")}}
+		</div>
 
-		<div class="formContainer">
-			<div class="formInstruction">Account Settings</div>
-			
-			<div class="formFieldContainer">
-				<div class="formFieldInfo first">Your legal name (different from your public profile name - this is kept private)</div>
-				<div class="formFieldError"></div>
-				{{form.set_input_name(placeholder="Your Name", class="formField span12")}}
+		<div class='field-container' id='update-email'>
+			<div class='field info'>Your email address</div>
+			<div class='field error'></div>
+			{{form.email(placeholder="Your Email", class="field input span9 left")}}
+
+
+			<div class='field action'>
+				{% if verified_email == True %}
+					<div id='email-verified'><i class="fa fa-fw fa-check"></i>&nbsp;Verified</div>
+				{% else %}
+					<button id='btn-get-verified' class="whiteButton">Get Verified</button>
+				{% endif %}
 			</div>
+		</div>
 
-			<div class="formFieldContainer">
-				<div class="formFieldInfo">Your email address</div>
-				<div class="formFieldError"></div>
-				{{form.set_input_email(placeholder="Your Email", class="formField span8 left")}}
-
-				<div class="formFieldAction emailVerifyStatus span3">
-					{% if unverified_email == True %}
-						<button id="verifySend" class="whiteButton small">Get Verified</button>
-					{% else %}
-						<div class="verifySuccess"><i class="fa fa-fw fa-check"></i>Email verified.</div>
-					{% endif %}
-				</div>
+		<div class='field-container' id='verify-email'>
+			<div id="verify-notice"></div>
+			<input type="text" id="challenge" placeholder="Enter your verification code here." class="field input span9 left">
+			<div class='field action'>
+				<button id='btn-validate-code' class="whiteButton">Submit Code</button>
 			</div>
+		</div>
 
-			<div class="formFieldContainer emailVerifyInput">
-				<div class="emailVerifyText"></div>
-					<input type="text" id="challenge" value="" placeholder="Enter your verification code here." class="formField span8 left">
-					<div class="formFieldAction span3">
-						<button id="verifySubmit" class="whiteButton small">Submit Code</button>
+		<br>
+		<div class='field-container' id='update-password'>
+			<div class='field info'>Update your password</div>
+			<div class='field error'></div>
+			{{form.update_password(placeholder="New password",    class="field input span9", autocomplete="off")}}
+			{{form.verify_password(placeholder="Verify password", class="field input span9", autocomplete="off")}}
+		</div>
 
-					</div>	
-			</div>
-
-			<div class="formFieldContainer">
-				<div class="formFieldInfo">Change your password</div>
-				<div class="formFieldError"></div>
-				{{form.set_input_newpass(placeholder="New password", class="formField span12", autocomplete="off")}}
-				{{form.set_input_verpass(placeholder="Verify password", class="formField span12", autocomplete="off")}}
-				<div id="passMeter"></div>
-			</div>
-
-			<div class="formFieldContainer">
-				<div class="formFieldInfo notice">Enter current password to save changes.</div>
-				<div class="formFieldError"></div>
-				{{form.set_input_curpass(placeholder="Current password", class="formField span12", autocomplete="off")}}
-			</div>
-
-			<div class="settingsFormPageFooter">
-				<div class="settingsFormButtonContainer">
-					<button class="blueButton settingsFormButton" id="set-save">Save Settings</button>
-
-					<button class="whiteButton settingsCancelButton">Cancel</button>
-				</div>
-				<div class="settingsFormStatus"></div>
-				<div class="settingsFooter">
-					<a href="/dashboard">Go Back to Dashboard</a>
-				</div>
-			</div>	
-
-
+		<div class='field-container' id='current-password'>
+			<div class='field info notice'>Enter current password to save changes.</div>
+			<div class='field error'></div>
+			{{form.current_password(placeholder="Current password", class="field input span9", autocomplete="off")}}
 		</div>
 	</form>
 
-	<div class="clear"></div>
+	<div id='settings-actions' class='field-container'>
+		<div id="settings-btn-container">
+			<button class='btn-settings span4 blueButton ' id='btn-save'>Save Settings</button>
+			<button class='btn-settings span4 whiteButton' id='btn-back'>Go Back</button>
+		</div>
+		<div id="settings-status"></div>
+	</div>
 </div>
-<div class="clear"></div>
+{% endblock %}
 
-<script type="text/javascript" src="/static/js/sendmsg.js"></script>
-<script type="text/javascript" src="/static/js/zxcvbn.js"></script>
-<script type="text/javascript" src="/static/js/jquery.password.strength.js"></script>
-<script>
-$(document).ready(function() {
-	// Jquery Password Strength Plugin
-	// sitepoint.com/developing-password-strength-plugin-jquery/
 
-	var unverifiedEmail = "{{unverified_email}}";
-	console.log("unverified email val:"+unverifiedEmail);
+{% block scripts %}
+	{{ super() }}
+	<script src="/static/js/settings.js"></script>
+	<script src="/static/js/forms.js"></script>
+	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
+	<script>
 
-	if (unverifiedEmail != "True") {
-		$("#verifySend").hide();
-		$(".verifySuccess").show();
+	var verifiedEmail = '{{verified_email}}';
+
+	if (verifiedEmail === 'True') {
+		$('#btn-get-verified').hide();
+		$('#email-verified').show();
 	} else {
-		$("#verifySend").show();
-		$(".verifySuccess").hide();		
+		$('#btn-get-verified').show();
+		$('#email-verified').hide();
 	}
-
-	$('#verifySubmit').on('click', function(e) {
-		e.preventDefault();
-		verify_email_js();
-	});
-
-	$('#verifySend').on('click', function(e) {
-		e.preventDefault();
-		var myEmail = $("#set_input_email").val();
-		$(".emailVerifyText").html("Verification code sent to "+myEmail);
-		$(".emailVerifyInput").slideDown();
-		send_verification_email();
-		$("#verifySend").hide();
-	});
-
-	$("#set_input_verpass").keyup(function(){ initializeStrengthMeter(); });
-	$("#set_input_newpass").keyup(function(){ if ($("#set_input_verpass").val() != "") { initializeStrengthMeter(); } });
-
-	$(".settingsCancelButton").click(function(e){
-		e.preventDefault();
-		window.location.href = "/dashboard";
-	});
-
-	$(".settingsFormButton").click(function(e){
-		e.preventDefault();
-		saveSettings();
-	});
-
-});
-
-
-function saveSettings() {
-	var fd = new FormData($('#editSettingsForm')[0]);
-	$(".settingsFormStatus").html("Saving...").fadeIn();
-
-	// Remove error indicators
-	$("#passMeter").slideUp().html("");
-	$(".formFieldError").slideUp().html("");
-	$(".formField").css("border-color", "#e1e8ed");
-
-	$.ajax({ url	: "/settings/update",
-			type	: "POST",
-			data : fd,
-			processData: false,
-  			contentType: false,
-			success : function(response) {
-
-			 	console.log("AJAX Success - settings saved.");		 	
-
-			 	$("#set_input_newpass, #set_input_verpass, #set_input_curpass").val('');
-			 	$("#passMeter").slideUp().html("");
-				$(".settingsFormStatus").html("<span class='success'>"+response.usrmsg+"</span>").fadeIn(400);
-
-				setTimeout(function() {
-					$('.settingsFormStatus').fadeOut(400);
-				}, 1600 );
-			}, 
-			error: function(xhr, status, error) {
-				console.log("AJAX Error - settings not saved.");
-
-				var err = JSON.parse(xhr.responseText);
-				var errors = err.errors;
-				
-				console.log("FORM ERRORS:");
-
-				console.log(JSON.stringify(errors));
-
-				showErrors(errors);
-
-			}
-	});
-	return false;
-}
-
-function showErrors(errors) {
-	$(".settingsFormStatus").empty();
-
-	// iterate thru errors, create status messages, highlight form elements.
-	$.each(errors, function(e, error){
-		// "e" here would be the form element name that has the error, e.g. "prof_name"
-		var element = "#"+e;
-		console.log("showErrors: element: "+element);
-
-		if (element == "#set_input_verpass") {
-			$("#set_input_newpass").prev(".formFieldError").html(error).slideDown();
-			$("#set_input_newpass, #set_input_verpass").css("border-color", "#e75f63");
-
-		} else {
-			$(element).prev(".formFieldError").html(error).slideDown();
-			$(element).css("border-color", "#e75f63");
-		}
-
-	});
-
-	$(".settingsFormStatus").html("<span class='error'>There was a problem - please check the form.</span>").fadeIn();
-}
-
-
-function initializeStrengthMeter() {
-	$("#passMeter").PasswordStrengthManager({
-		password: $("#set_input_newpass").val(),
-		confirm_pass : $("#set_input_verpass").val(),
-		blackList : ["efewf"], 
-		minChars : '6',
-		maxChars : '50',
-		advancedStrength : false
-	});
-}
-</script>
+	</script>
 {% endblock %}
