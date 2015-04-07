@@ -1,21 +1,19 @@
 $(document).ready(function() {
-	// Jquery Password Strength Plugin; sitepoint.com/developing-password-strength-plugin-jquery/
-
-	$('#btn-validate-code').click(function(e) {
-		console.log ('validate code');
-		//verify_email_js();
-	});
-
 	$('#btn-get-verified').click(function(e) {
 		e.preventDefault();
-		console.log ('validate code');
 		email = $("#email").val();
 		console.log ('validate code' + email);
-		$("#verify-notice").html("Verification code sent to "+ email);
+		$("#verify-notice").html("Verification sent.");
+		$("#verify-email").removeClass('empty');
 		$("#verify-email").slideDown();
-		console.log ('send _ VERIFICATION _ EMAIL ');
-//		send_verification_email();
+		send_verification_email();
 		$("#btn-get-verified").hide();
+	});
+
+	$('#btn-validate-code').click(function(e) {
+		e.preventDefault();
+		console.log('validate code');
+		validate_challenge_hash();
 	});
 
 
@@ -29,6 +27,56 @@ $(document).ready(function() {
 	});
 
 });
+
+
+
+function send_verification_email() {
+	console.log('send_verification_email()');
+	var fd = {};
+	fd.email_addr = $('#email').val();
+	fd.csrf_token = $('#csrf').val();
+
+	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
+	$.ajax({ url : '/email/request-verification/me',
+			 type : 'POST',
+			 data : fd,
+			 success : function(data) {
+				 console.log('sent verification emails');
+			}
+	});
+}
+
+function validate_challenge_hash() {
+	console.log("verify_email_js: begin");
+	var challenge = $('#challenge').val();
+
+	var fd = {};
+	fd.email = $('#email').val();
+	fd.csrf_token = $('#csrf').val();
+	fd.next_url   = $('#nexturl').val();
+	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
+
+
+	$.ajax({ url : '/email/verify/'+challenge,
+			 type : 'POST',
+			 data : fd,
+			 dataType: 'json',
+			 success : function(data) {
+				console.log ('/email/verify - success');
+				$(".emailVerifyText").html("<span class='success'>Email successfully verified!</span>");
+				$(".emailVerifyStatus").html("<div class='verifySuccess'><i class='fa fa-fw fa-check'></i>Email verified.</div>");
+				setTimeout(function() {
+					$('.emailVerifyInput').slideUp(1000);
+				}, 2000);
+				return false;
+			 },
+			 error: function(data) {
+				console.log ('/email/verify - error');
+			 	$(".emailVerifyText").html("<span class='error'>Sorry, that code didn't work.</span>");
+			 }
+	});
+	return false;
+}
 
 
 function save_settings() {
@@ -72,6 +120,8 @@ function save_settings() {
 
 
 /*
+	// Jquery Password Strength Plugin; sitepoint.com/developing-password-strength-plugin-jquery/
+
 	$('#verify_password').keyup(function(){ initializeStrengthMeter(); });
 	$('#update_password').keyup(function(){ if ($('#verify_password').val() != "") { initializeStrengthMeter(); } });
 function initializeStrengthMeter() {
