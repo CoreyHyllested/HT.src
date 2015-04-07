@@ -19,44 +19,43 @@
 		<input type="hidden" id="csrf"	  value='{{csrf_token()}}'>
 		<input type="hidden" id="nexturl" value='{{nexturl}}'>
 
-		<div class='field-container' id='update-name'>
+		<div class='row field-container' id='update-name'>
 			<div class='field info'>Your legal name</div>
 			<div class='field error'></div>
 			{{form.name(placeholder="Your Name", class="field input span9")}}
 		</div>
 
-		<div class='field-container' id='update-email'>
+		<div class='row field-container' id='update-email'>
 			<div class='field info'>Your email address</div>
 			<div class='field error'></div>
+
 			{{form.email(placeholder="Your Email", class="field input span9 left")}}
-
-
 			<div class='field action'>
 				{% if verified_email == True %}
 					<div id='email-verified'><i class="fa fa-fw fa-check"></i>&nbsp;Verified</div>
 				{% else %}
 					<button id='btn-get-verified' class="whiteButton">Get Verified</button>
+					<div id="verify-notice"></div>
 				{% endif %}
 			</div>
-		</div>
 
-		<div class='field-container' id='verify-email'>
-			<div id="verify-notice"></div>
-			<input type="text" id="challenge" placeholder="Enter your verification code here." class="field input span9 left">
-			<div class='field action'>
-				<button id='btn-validate-code' class="whiteButton">Submit Code</button>
+			<div class='empty' id='verify-email'>
+				<input type="text" id="challenge" placeholder="Enter verification code." class="field input span9 left">
+				<div class='field action'>
+					<button id='btn-validate-code' class="whiteButton">Submit Code</button>
+				</div>
 			</div>
 		</div>
 
-		<br>
-		<div class='field-container' id='update-password'>
+
+		<div class='row field-container' id='update-password'>
 			<div class='field info'>Update your password</div>
 			<div class='field error'></div>
 			{{form.update_password(placeholder="New password",    class="field input span9", autocomplete="off")}}
 			{{form.verify_password(placeholder="Verify password", class="field input span9", autocomplete="off")}}
 		</div>
 
-		<div class='field-container' id='current-password'>
+		<div class='row field-container' id='current-password'>
 			<div class='field info notice'>Enter current password to save changes.</div>
 			<div class='field error'></div>
 			{{form.current_password(placeholder="Current password", class="field input span9", autocomplete="off")}}
