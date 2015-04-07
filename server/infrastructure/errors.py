@@ -70,16 +70,14 @@ class SanitizedException(Exception):
 ### SUBCLASS EXCEPTIONS ########################################################
 ################################################################################
 
-
-class GiftNotFoundError(SanitizedException):
-	def __init__(self, gift_id, flags=None, user_msg=None):
-		super(GiftNotFoundError, self).__init__(None, resp_code=400, user_msg=user_msg)
-		self.gift_id = str(gift_id)
-		self.flags	= flags
-		self.technical_msg(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
+class PasswordError(SanitizedException):
+	def __init__(self, account, error='Password does not match what is on file'):
+		super(PasswordError, self).__init__(error, resp_code=401)
+		self.account = account
+		self.sanitized_msg(msg = error)
 
 	def __str__(self):
-		return "<NoGiftFound (%r)>" % (self.gift_id)
+		return '<Passworderror:%r:%r>' % (self.account, self._tech_mesg)
 
 
 
@@ -122,14 +120,26 @@ class NoMeetingFound(NoResourceFound):
 class NoProfileFound(NoResourceFound):
 	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', str(pid))
 
-class NoLessonFound(NoResourceFound):
-	def __init__(self, pid): super(NoLessonFound, self).__init__('Lesson', str(pid))
-
 class NoReviewFound(NoResourceFound):
 	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
 
 class NoOauthFound(NoResourceFound):
 	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', str(uid))
+
+class NoGiftFound(NoResourceFound):
+	def __init__(self, gid): super(NoGiftFound, self).__init__('Gift', str(gid))
+
+
+#replace with NoGiftFound.
+class GiftNotFoundError(SanitizedException):
+	def __init__(self, gift_id, flags=None, user_msg=None):
+		super(GiftNotFoundError, self).__init__(None, resp_code=400, user_msg=user_msg)
+		self.gift_id = str(gift_id)
+		self.flags	= flags
+		self.technical_msg(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
+
+	def __str__(self):
+		return "<NoGiftFound (%r)>" % (self.gift_id)
 
 
 

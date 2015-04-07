@@ -1442,103 +1442,80 @@ def render_settings():
 
 
 
-#@insprite_views.route('/settings/update', methods=['GET','POST'])
-#@req_authentication
-def ht_api_update_settings():
-	# Process the edit settings form
-
-	print "ht_api_update_settings: beginning update"
+@sc_users.route('/settings/update', methods=['POST'])
+@req_authentication
+def sc_api_update_settings():
+	print "sc_api_update_settings: begin"
 
 	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	ba = Account.get_by_uid(uid)
-
+	ba	= Account.get_by_uid(uid)
 	form = SettingsForm(request.form)
+
+	# determine what needs to be updated.
+	update_acct = False		# requires password.
+	update_pass = None		# sends email
+	update_mail = None		# sends email
+	update_name = None
+
+	if (ba.name != form.name.data):
+		update_acct = True
+		update_name = form.name.data
+
+	if (ba.email != form.email.data):
+		update_acct = True
+		update_mail = form.email.data
+
+	if (form.update_password.data != ""):
+		update_acct = True
+		update_pass = form.update_password.data
 
 	try:
 		if form.validate_on_submit():
-			print 'ht_api_update_settings()\tvalid submit'
-			update_acct = False		# requires current_pw_set, 					Sends email
-			update_pass = None		# requires current_pw_set, valid new pw =>	Sends email
-			update_mail = None
-			update_name = None
+			print 'sc_api_update_settings()\tvalid submit'
 
-			update_prop = None
-			update_vnty = None
-			update_fail = False
-
-			if (form.set_input_name.data != ba.name):
-				print 'ht_api_update_settings()\tupdate', str(ba.name) + " to " +  str(form.set_input_name.data)
-				update_acct = True
-				update_name = form.set_input_name.data
-
-			if (form.set_input_newpass.data != ""):
-				print 'ht_api_update_settings()\tupdate', str(ba.pwhash) + " to " +  str(form.set_input_newpass.data)
-				update_acct = True
-				update_pass = form.set_input_newpass.data
-
-			if (ba.email != form.set_input_email.data):
-				print 'ht_api_update_settings()\tupdate', str(ba.email) + " to " +  str(form.set_input_email.data)
-				update_acct = True
-				update_mail = form.set_input_email.data
-
-			if (update_acct):
-				print 'ht_api_update_settings()\tupdate account'
-				pwd = form.set_input_curpass.data
-				
-				print 'ht_api_update_settings()\tnow call modify account()'
-				(rc, errno) = modifyAccount(uid, pwd, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
-				print("ht_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
-				
-				if (rc == False):
-					errmsg = str(errno)
-					errmsg = error_sanitize(errmsg)
-					form.set_input_curpass.data = ''
-					form.set_input_newpass.data = ''
-					form.set_input_verpass.data = ''
-					print "update was false - errmsg:", errmsg
-					errors = {}
-					errors["set_input_curpass"] = "This didn't match the password in your account."
-
-					return jsonify(usrmsg="Hmm... something went wrong.", errors=errors), 500
-				else:
-					print "ht_api_update_settings() Update should be complete"
-					return jsonify(usrmsg="Settings updated"), 200
-			else:
-				# User didn't change anything.
+			if (update_acct == False):
+				# user did not update anything.
 				return jsonify(usrmsg="Cool... Nothing changed."), 200
 
-			if (update_name):
-				usrmsg = "Your account name has been updated."
+			print 'sc_api_update_settings()\tupdate account'
+			(rc, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
+			# TODO.  sc_update_account could throw errors/ return False from what?
+			print("sc_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
 
-			if (update_mail):
-				# user changed email; for security, send confimration email to last email addr.
-				ht_send_email_address_changed_confirmation(ba.email, form.set_input_email.data)
-				usrmsg = "Your email has been updated."
+			if (rc == False):
+				errmsg = str(errno)
+				errmsg = error_sanitize(errmsg)
+				form.current_password.data = ''
+				form.update_password.data = ''
+				form.verify_password.data = ''
+				return jsonify(usrmsg="Hmm... something went wrong.", errors=None), 500
 
-			#change pass send email
-			if (update_pass):
-				send_passwd_change_email(ba.email)
-				usrmsg = "Password successfully updated."
 
-			print 'ht_api_update_settings() Finished Handling POST.'
-		
-		return jsonify(usrmsg='Sorry, there was a problem with the form.', errors=form.errors), 500
-		
+			# successfully updated account
+			# user changed email, password. For security, send confimration email.
+			if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
+			if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
+			print "sc_api_update_settings() Update should be complete"
+			return jsonify(usrmsg="Settings updated"), 200
+	except PasswordError as pe:
+		print 'sc_api_update_settings: Password (CodeBug):', pe
+		db_session.rollback()
+		badpassword = {}
+		badpassword['current_password'] = pe.sanitized_msg()
+		return jsonify(usrmsg='We messed something up, sorry', errors=badpassword), pe.http_resp_code()
 	except AttributeError as ae:
-		print 'ht_api_update_settings: AttributeError: ', ae
+		print 'sc_api_update_settings: AttributeError (CodeBug):', ae
 		db_session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
 	except Exception as e:
-		print 'ht_api_update_settings: Exception: ', e
+		print 'sc_api_update_settings: Exception: ', e
 		db_session.rollback()
-		return jsonify(usrmsg=e), 500	
+		return jsonify(usrmsg=e, errors=form.errors), 500
 
-
-	print "ht_api_update_settings: Something went wrong - Fell Through."
-	print "here is the form object:"
+	print "sc_api_update_settings: Something went wrong - Fell Through."
 	print str(form)
 	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
+
 
 
 
@@ -1611,7 +1588,7 @@ def render_edit_project(pid=None):
 		# set proj_id to 'new'
 		form.proj_id.data	= 'new'
 
-	return make_response(render_template('edit_project.html', title="- Edit Project", form=form, bp=bp))
+	return make_response(render_template('edit_project.html', form=form, bp=bp))
 
 
 
