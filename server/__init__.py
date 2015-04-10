@@ -37,12 +37,14 @@ log_hndlr.setLevel(logging.INFO)
 ht_csrf  = CsrfProtect()
 sc_csrf	= ht_csrf
 ht_oauth = OAuth()
+sc_oauth = ht_oauth
 
 ht_server = None
+sc_server = None
 
-def create_upload_directory(ht_server):
+def create_upload_directory(sc_server):
 	try:
-		dir_upload = ht_server.config['HT_UPLOAD_DIR']
+		dir_upload = sc_server.config['HT_UPLOAD_DIR']
 		os.makedirs(dir_upload)
 	except OSError as oe:
 		if (oe.errno != 17):
@@ -54,51 +56,50 @@ def create_upload_directory(ht_server):
 
 
 def initialize_server(config_name):
-	global ht_server
-	ht_server = Flask(__name__)
+	global sc_server, ht_server
+	sc_server = Flask(__name__)
+	ht_server = sc_server # dont break everything yet
 
-	ht_server.config.from_object(server_configuration[config_name])
+	sc_server.config.from_object(server_configuration[config_name])
 	if (config_name == 'production' or config_name == 'devel_money'):
 		print 'using configuration... ', config_name
 
-	ht_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
-	ht_server.debug = True
-	ht_server.logger.setLevel(logging.DEBUG)
-	ht_server.logger.addHandler(log_hndlr)	 #ht_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
-	create_upload_directory(ht_server)
+	sc_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
+	sc_server.debug = True
+	sc_server.logger.setLevel(logging.DEBUG)
+	sc_server.logger.addHandler(log_hndlr)	 #sc_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
+	create_upload_directory(sc_server)
 
-	redis_cache = Redis(ht_server)
-	ht_server.session_interface = RedisSessionInterface(redis=redis_cache)
-	initialize_database(ht_server.config)
+	redis_cache = Redis(sc_server)
+	sc_server.session_interface = RedisSessionInterface(redis=redis_cache)
+	initialize_database(sc_server.config)
 
-	sc_csrf.init_app(ht_server)
-	ht_oauth.init_app(ht_server)
-	assets = Environment(ht_server)
-	assets.url = ht_server.static_url_path
+	sc_csrf.init_app(sc_server)
+	sc_oauth.init_app(sc_server)
+	assets = Environment(sc_server)
+	assets.url = sc_server.static_url_path
 
 
-	jsfilter = ht_server.config['JSFILTER']
+	jsfilter = sc_server.config['JSFILTER']
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
-#	css_lesson = Bundle('scss/lesson.scss', filters='pyscss', output='css/lesson.css')
 	css_schedule = Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
 	css_settings = Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
+	css_projects = Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
 
 	assets.register('js_mapformat', js_dashboard_maps_format)
-#	assets.register('sass_lesson', css_lesson)
 	assets.register('sass_schedule', css_schedule)
 	assets.register('sass_settings', css_settings)
+	assets.register('scss_projects', css_projects)
 
-	Compress(ht_server)
+	Compress(sc_server)
 
 	from routes import authentication, everyone, users, api, errors, testing
-#	from routes import insprite_views as main_blueprint
-#	from routes import insprite_tests as test_blueprint
 	from routes import sc_users as sc_allusers
 	from routes import sc_ebody as sc_everyone
-#	ht_server.register_blueprint(main_blueprint)
-#	ht_server.register_blueprint(test_blueprint)
-	ht_server.register_blueprint(sc_everyone)
-	ht_server.register_blueprint(sc_allusers)
+#	sc_server.register_blueprint(main_blueprint)
+#	sc_server.register_blueprint(test_blueprint)
+	sc_server.register_blueprint(sc_everyone)
+	sc_server.register_blueprint(sc_allusers)
+	return sc_server
 
-	return ht_server
