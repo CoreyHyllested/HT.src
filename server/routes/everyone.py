@@ -13,7 +13,8 @@
 
 
 from . import sc_ebody
-from flask import render_template, make_response, session, request, redirect
+from flask import render_template, make_response, redirect
+from flask import session, request
 from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
@@ -138,12 +139,21 @@ def render_dmca():
 
 
 
-#@insprite_views.route("/about", methods=['GET', 'POST'])
+#@sc_ebody.route("/about", methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('about.html', bp=bp))
+
+
+@sc_ebody.route('/about/version', methods=['GET'])
+def render_about_version_page():
+	return render_template('version')
+
+
+
+
 
 
 
