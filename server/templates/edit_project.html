@@ -3,12 +3,10 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel="stylesheet" href="/static/css/modern_proj.css"><!-- contains dropzone overrides -->
-	<link rel="stylesheet" href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-	<style> 
-		.fc-content .fc-time { display : none !important; }
-	</style>
+	<link rel='stylesheet' href='/static/css/projects.css'>
+	<link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
+	<link rel='stylesheet' href='//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css'>
+	<style> .fc-content .fc-time { display : none !important; } </style>
 {% endblock %}
 
 
