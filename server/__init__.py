@@ -89,7 +89,7 @@ def initialize_server(config_name):
 
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('sass_schedule', css_schedule)
-	assets.register('sass_settings', css_settings)
+	assets.register('scss_settings', css_settings)
 	assets.register('scss_projects', css_projects)
 
 	Compress(sc_server)
