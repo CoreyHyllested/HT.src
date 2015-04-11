@@ -15,6 +15,17 @@
 }
 
 
+#project-wrapper {
+	background-color: white;
+	border-radius: 6px;
+	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);
+	margin: 20px 20px 75px;
+	padding: 25px;
+	position: relative;
+	overflow: auto;
+}
+
+
 
 /* Form */
 .formContainer {
@@ -213,37 +224,24 @@ input[type="checkbox"] {
 }
 
 
-.project-wrapper {
-	background-color: white;
-	border-radius: 6px;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	box-shadow: 0px 3px 20px rgba(0,0,0, 0.15);	
-	margin: 20px 20px 75px;
-	padding: 25px;
-	position: relative;
-	overflow: auto;
-	z-index: 30;
-}
 
 @media (min-width: 489px) {
-	.project-wrapper { margin: 20px 50px 75px; }
+	#project-wrapper { margin: 20px 50px 75px; }
 }
 
 @media (min-width: 768px) {
-	.project-wrapper { margin: 20px 60px 75px; }
+	#project-wrapper { margin: 20px 60px 75px; }
 	#save-project { visibility: visible !important; }
 	#actions { margin: 20px auto; }
 	#actions-next { margin-top: 25px; }
 }
 
 @media (min-width: 980px) {
-	.project-wrapper { margin: 20px 100px 75px; }
+	#project-wrapper { margin: 20px 100px 75px; }
 }
 
 @media (min-width: 1200px) {
-	.project-wrapper { margin: 20px 200px 75px; }
+	#project-wrapper { margin: 20px 200px 75px; }
 }
 
 #project-header {
