@@ -3,9 +3,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets "sass_settings" %}
-	<link rel='stylesheet' href='{{ASSET_URL}}'></script>
-	{% endassets %}	
+	{% assets "sass_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
