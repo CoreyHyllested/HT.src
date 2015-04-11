@@ -336,11 +336,11 @@ class SearchForm(Form):
 
 
 class SettingsForm(Form):
-	set_input_name	= TextField('Name', [validators.Required()])
-	set_input_email = TextField('Email', [validators.Required()])	
-	set_input_newpass = PasswordField('Password')
-	set_input_verpass = PasswordField('Password', [validators.EqualTo('set_input_newpass', 'Passwords must match')])
-	set_input_curpass = PasswordField('Password', [validators.Required()])
+	name	= TextField('Name', [validators.Required()])
+	email	= TextField('Email', [validators.Required()])
+	update_password =	PasswordField('Password')
+	verify_password	=	PasswordField('Password', [validators.EqualTo('update_password', 'Passwords must match')])
+	current_password =	PasswordField('Password', [validators.Required()])
 
 
 class RecoverPasswordForm(Form):

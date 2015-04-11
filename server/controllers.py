@@ -24,6 +24,7 @@ from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks  import *
+from server.infrastructure import errors
 from server.models import *
 from server.ht_utils import *
 from server import ht_server
@@ -610,6 +611,8 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 
 
 
+def sc_update_account(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
+	return modifyAccount(uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name)
 
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
 	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name
@@ -617,7 +620,7 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 	ba = Account.query.filter_by(userid=uid).all()[0]
 
 	if (not check_password_hash(ba.pwhash, current_pw)):
-		return False, "Password didn't match one on file"
+		raise PasswordError(uid)
 
 	if (new_pass != None):
 		print "updating hash", ba.pwhash, "to", new_pass, generate_password_hash(new_pass)

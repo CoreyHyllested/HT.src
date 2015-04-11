@@ -12,63 +12,14 @@ function loadMessageThread(msg_thread_id) {
 
 				$('.messageThreadItemContainer').html(page_content);
 				$('.inboxMessagesHeaderConvoTitle').html(conversation_title + " " + num_thread_messages);
-
 			}
 	});
 }
 
 
-function verify_email_js() {
-	console.log("verify_email_js: begin");
-
-	var fd = {};
-	var challenge = $('#challenge').val();
-	fd.email = $('#set_input_email').val();
-	fd.csrf_token = $('#csrf').val();
-	fd.next_url   = $('#nexturl').val();
-
-	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
-	$.ajax({ url : '/email/verify/'+challenge,
-			 type : 'POST',
-			 data : fd,
-			 dataType: 'json',
-			 success : function(data) {
-				console.log ('/email/verify - success');
-				$(".emailVerifyText").html("<span class='success'>Email successfully verified!</span>");
-				$(".emailVerifyStatus").html("<div class='verifySuccess'><i class='fa fa-fw fa-check'></i>Email verified.</div>");
-				setTimeout(function() {
-					$('.emailVerifyInput').slideUp(1000);
-				}, 2000);
-				return false;
-			 },
-			 error: function(data) {
-				console.log ('/email/verify - error');
-			 	$(".emailVerifyText").html("<span class='error'>Sorry, that code didn't work.</span>");
-			 }
-	});
-	return false;
-}
-
-
-function send_verification_email() {
-	console.log('send_verification_email()');
-	var fd = {};
-	fd.email_addr = $('#set_input_email').val();
-	fd.csrf_token = $('#csrf').val();
-
-	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
-	$.ajax({ url : '/email/request-verification/me',
-			 type : 'POST',
-			 data : fd,
-			 success : function(data) {
-				 console.log('sent verification emails');
-			}
-	});
-}
 
 
 function replyDOMUpdate(msg_thread_id) {
-
 	var thread_archived = $('.messageThread').attr("data-thread-archived");
 	if (thread_archived == "True") {
 
@@ -77,7 +28,6 @@ function replyDOMUpdate(msg_thread_id) {
 		thisThreadElement.children(".threadAction").removeClass("threadRestore").addClass("threadArchive").html('<a title="Archive Message" class="blend"><i class="fa fa-archive"></i></a>');
 
 		// Update timestamp of .thread
-
 		thisTimestamp = moment().format("YYYYMMDDHHmmss");
 		thisThreadElement.data("timestamp", thisTimestamp);
 
