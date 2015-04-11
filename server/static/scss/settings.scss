@@ -8,14 +8,11 @@ a) 240px - 449px (phones)
 b) 450px - ... (everything else)
 */
 
-.page-content {
-}
-
 
 #settings-content {
 	background-color: white;
 	padding: 40px;
-	size: 100%;
+	margin-bottom: 50px;
 }
 
 
@@ -64,6 +61,7 @@ b) 450px - ... (everything else)
 @media only screen and (min-device-width: 240px) and (max-width: 449px) {
 	#settings-content {
 		padding: 40px 10px;
+		margin: 20px 50px 75px;
 	}
 }
 
@@ -72,6 +70,16 @@ b) 450px - ... (everything else)
 		padding: 40px 35px;
 	}
 }
+
+@media (min-width: 489px) {}
+@media (min-width: 768px) {}
+@media (min-width: 768px) {}
+@media (min-width: 980px) {
+}
+
+@media (min-width: 1200px) {
+}
+
 
 
 /* Settings panel slides into view
