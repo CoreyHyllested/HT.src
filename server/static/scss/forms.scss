@@ -8,9 +8,10 @@ $field-height: 40px;
 
 
 .field-container {
+	position: relative;
 	display: block;
 	width: 100%;
-	margin: 25px 0 10px;
+	margin: 0px 0 8px;
 	max-width: 600px;
 }
 
@@ -21,9 +22,9 @@ $field-height: 40px;
 	font-size: .9em;
 }
 
-.field.info			{ padding-bottom: 5px; }
+.field.info			{ padding: 7px 0 5px; 	}
 .field.info.first	{ padding-top: 0px;		}
-.field.info.notice	{ font-weight: 600;	}
+.field.info.notice	{ font-weight: 600;		}
 
 .field.input {
 /*	-moz-box-sizing: border-box;
