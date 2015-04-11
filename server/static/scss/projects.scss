@@ -26,177 +26,29 @@
 }
 
 
-
-/* Form */
-.formContainer {
-	padding: 36px 48px;
-}
-
-
-.formFieldContainer {
+#project-header {
+	border-bottom: 1px solid #b0b4b7;
+	padding-bottom: 15px;
+	margin-bottom: 15px;
 	width: 100%;
 	float: left;
-	margin-bottom: 8px;
 }
 
-.formFieldAction {
-	float: left;
-	font-size: .8em;
-	margin-left: 16px;
-	height: 40px;
-	line-height: 40px;	
+#proj_desc	{ padding-left: 5px;	}	/* override col-XX-sz, which sets 15px padding */
+#proj_addr	{ padding-bottom: 5px;	}
+#actions		{ margin: 10px auto; }
+#actions-next	{ margin-top: 10px; }
+
+#status {
+	display: block;
+	height: 75px;
+	font-weight: bolder;
+	visibility: hidden;
 }
 
-
-.formFieldInfo.first {
-	padding-top: 0px;	
-}
-
-.formFieldInfo.notice {
-	color: rgba(0,0,0,0.9);
-	font-weight: $font-weight-bold;	
-}
-
-.formFieldError {
-	display: none;
-	font-size: .7em;
-	color: #e75f63;
-}
-
-.formFieldError.inline {
-	display: inline-block;
-	margin-left: 8px;
-}
-
-.formFieldError.alt {
-	float: left;
-	height: 40px;
-	line-height: 50px;
-	margin-left: 16px;
-	margin-top: 10px;
-}
-
-
-/* Form Elements */
-
-.emailVerifyStatus {
-
-}
-
-.emailVerifyInput {
-	display: none;
-	height: 60px;
-}
-
-.emailVerifyText {
-	font-size: .8em;
-	width: 100%;
-}
-
-.verifySuccess {
-	height: 40px;
-	line-height: 40px;
-	color: rgba(0, 0, 0, 0.3);	
-}
-.verifySuccess i {
-	padding-right: 4px;
-}
-
-input[type="checkbox"] {
-	display: inline;
-}
-
-#set_input_newpass {
-	/*border-radius: 3px 3px 0 0;*/
-}
-
-#set_input_verpass {
-	/*border-radius: 0 0 3px 3px;*/
-	margin-top: -1px;
-}	
-
-
-.settingsFormPageFooter {
-	float: left;
-	width: 100%;
-	margin: 12px 0px;
-}
-
-.settingsFormButtonContainer {
-	float: left;
-	text-align: left;
-	width: 100%;
-}
-
-.settingsFormStatus {
-	color: rgba(0,0,0,.4);
-	/*display: none;*/
-	float: left;
-	text-align: left;
-	font-size: .9em;
-	height: 30px;
-	line-height: 36px;
-	font-weight: $font-weight-ltbold;
-}
-
-.settingsFormButton {
-	float: left;
-	width: 250px;
-	margin: 12px 0px;
-}
-
-.settingsCancelButton {
-	float: right;
-	width: 250px;
-	margin: 12px 0px 12px 12px;
-}
-
-#passMeter {
-	display: none;
-	font-size: .9em;
-	padding: 8px;
-}
-
-.settingsFooter {
-	float: left;
-	width: 100%;
-	padding: 18px 0px 8px;
-	text-align: center;
-	font-size: .9em;
-}
 
 /* PHONE DESIGN */
-@media only screen and (min-device-width: 240px) and (max-width: 449px) {
-
-	.pageWrapper {
-		background-color: white;
-		min-height: 100%;
-		padding-bottom: 30px;
-		width: 100%;
-	}
-
-	.settingsContentWrapper {
-		margin: 30px auto 10px;
-		overflow-y: scroll;
-		padding-bottom: 10px;
-		width: 90%;
-	}
-
-	/* Email tab */
-
-	.settingsEmail {
-		padding-bottom: 15px;
-		width: 100%;		
-	}
-
-	/* Password tab */
-	.settingsPassword {
-		margin: 30px auto 10px;
-		padding-bottom: 15px;
-		width: 100%;		
-	}
-}
-
+@media only screen and (min-device-width: 240px) and (max-width: 449px) { }
 @media only screen and (min-width: 450px) { }
 
 
@@ -211,13 +63,6 @@ input[type="checkbox"] {
 		margin: 0 auto;
 }
 
-#actions {
-	margin: 10px auto;
-}
-
-#actions-next {
-	margin-top: 10px;
-}
 
 .underlined {
 	border-bottom: 1px solid darkgrey;
@@ -244,20 +89,6 @@ input[type="checkbox"] {
 	#project-wrapper { margin: 20px 200px 75px; }
 }
 
-#project-header {
-	border-bottom: 1px solid #b0b4b7;
-	padding-bottom: 15px;		
-	margin-bottom: 15px;
-	width: 100%;
-	float: left;
-}
-
-#status {
-	display: block;
-	height: 75px;
-	font-weight: bolder;
-	visibility: hidden;
-}
 
 
 /* not sure if the next 5 fields have impact, test this */
@@ -276,20 +107,21 @@ input[type="checkbox"] {
 	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
-#learn-more{
-	box-sizing: border-box;
-	display: none;
-}
 
-#learn-email {
-	float: right;
-	width: 40%;
-}
 
-#learn-phone {
-	float: left;
-	width: 40%;
+/* THIS WORKS... but needs to be changed; also everything needs the hint 
+.input-wrapper:before {
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  top: 10px;
+  color: #999999;
+  z-index: 1;
 }
+*/
 
 /*
 	padding: 25px 0 24px;
@@ -309,144 +141,10 @@ input[type="checkbox"] {
 
 
 
-/* nav items for mentor fields */
-
-.editProfFormStatus {
-	color: rgba(0,0,0,.4);
-	display: none;
-	float: left;
-	text-align: left;
-	font-size: .8em;
-	height: 30px;
-	line-height: 36px;	
-	margin-left: 20px;
-}
-
-.editProfFormButton {
-	width: 150px;
-	margin: 12px 0px;
-}
-
-.editProfSave {
-	width: 150px;
-}
-
-.editProfFormButtonSubmit {
-	width: 300px;
-	margin: 12px 0 12px 0;
-}
-
-.editProfActivate {
-	width: 300px;
-	margin: 12px 0 12px 0;	
-}
-
-.editProfFormPrevious {
-	cursor: pointer;
-	float: left;
-}
-
-.editProfFormCancel {
-	display: none;
-	cursor: pointer;
-}
-
-
-
-.formTitle {
-	display: none;
-}
-
-.formInstruction {
-	color: rgba(0,0,0, 0.9);
-	font-size: 1.5em;
-	font-weight: 400;
-	line-height: 1.2em;
-	margin-bottom: 12px;
-}
-
-.formDescription {
-	color: rgba(0,0,0, 0.7);
-	margin-bottom: 12px;
-}
-
-.formDescription ul {
-	list-style: disc;
-	margin: 12px 0px 12px 24px;
-}
-.formDescription li {
-	margin-bottom: 8px;
-}
-
-.formFieldCaption {
-	display: none;
-	font-size: .8em;
-	margin-left: 16px;
-}
-
 .p10 {
 	margin: 10px auto;
 }
 
-.formFieldInfo {
-	color: rgba(0,0,0,0.4);	//set a color
-	height: 45px;
-	margin: 5px 0;
-	font-size: .9em;
-
-	/* override bootstrap */
-	padding-left: 5px;
-	padding-right: 5px;
-}
-
-input[type='text'] {
-	font-size: 1em;
-	/* for some reason the text is smaller than textarea */
-}
-/* .formFieldInfo.first { padding-top: 0px; } */
-
-
-.formFieldError {
-	display: none;
-	font-size: .7em;
-	color: #e75f63;
-	height: 45px;
-	overflow-y: auto;
-}
-
-.formFieldError.inline {
-	display: inline-block;
-	margin-left: 8px;
-}
-
-.formFieldError.alt {
-	float: left;
-	height: 45px;
-	line-height: 50px;
-	margin-left: 16px;
-	margin-top: 10px;
-}
-
-
-.formField {
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	/*margin-bottom: 6px;*/
-	margin-bottom: -1px;
-}
-
-
-.formField:focus { border-color: black; }
-
-
-.formField.stack:first-of-type {
-	border-radius: 5px 5px 0 0;
-}
-
-.formField.stack:last-of-type {
-	border-radius: 0 0 5px 5px;
-}
 
 
 input.disabled,
@@ -454,22 +152,3 @@ input.disabled,
 .disabled h3 {
 	 color: rgba(0,0,0,.4);
 } 
-
-input[type="text"].formField, select.formField {
-	height: 45px;
-}
-
-
-input.formField:focus, select.formField:focus, textarea.formField:focus {
-	border: 1px #cccccc solid;
-}
-
-#proj_addr {
-	padding-bottom: 5px;
-}
-
-textarea.formField {
-	border-radius: 3px !important;
-	padding-left: 5px;
-	resize: none;
-}
