@@ -137,15 +137,11 @@
 	box-sizing: border-box;
 	height: 300px;
 }
-	/* float: left;	*/
 
 
 
-.p10 {
-	margin: 10px auto;
-}
-
-
+.p10		{ margin: 10px auto; }
+.underlined	{ border-bottom: 1px solid darkgrey; }
 
 input.disabled,
 .disabled p, 
