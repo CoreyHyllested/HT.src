@@ -63,13 +63,13 @@
 
 				<div class='row field-container' id='proj-budget'>
 					<div class="field info col-md-3 col-xs-6">What is your budget?</div>
-					{{form.proj_max(placeholder="$ 10,000", maxlength="7", class="field input col-lg-9 col-md-9 col-xs-12")}}
+					<div id='wrap-budget'> {{form.proj_max(placeholder="10,000", maxlength="7", class="field input iconified col-lg-9 col-md-9 col-xs-12")}} </div>
 					<div class='field error  col-md-push-3 col-md-9 col-xs-12'></div>
 				</div>
 
 				<div class='row field-container' id='proj-phone'>
 					<div title='This is needed for the concierge to contact you.' class="field info  col-md-3 col-xs-6">Phone number?</div>
-					<div class='input-wrapper'>
+					<div id='wrap-phone'>
 						{{form.proj_contact(placeholder="(555) 303-1234", class="form input col-md-9 col-xs-12")}}
 					</div>
 					<div class="field error  col-md-push-3 col-md-9 col-xs-12"></div>
@@ -80,14 +80,12 @@
 						<div id='calendar' class='col-lg-10 col-md-8 col-xs-12'></div>
 					</div-->
 
-					<br>
-					<div class="container-fluid p10">
-						<button class="btn btn-block blueButton save-project"><span class='save-btn-text'>Save project</span></button>
-					</div>
+				<br>
+				<div class="container-fluid p10">
+					<button class="btn btn-block blueButton save-project"><span class='save-btn-text'>Save project</span></button>
 				</div>
-			</form>
-
-
+			</div>
+		</form>
 
 
 			<div id="actions" class="container-fluid">

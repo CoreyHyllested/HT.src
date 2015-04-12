@@ -37,8 +37,8 @@
 #proj_desc	{ padding-left: 5px;	}	/* override col-XX-sz, which sets 15px padding */
 #proj_addr	{ padding-bottom: 5px;	}
 #actions		{ margin: 10px auto; }
-#actions-next	{ margin-top: 10px; }
-
+#actions-next	{ margin-top: 10px;		}
+#save-project	{ visibility: hidden;	}
 #status {
 	display: block;
 	height: 75px;
@@ -62,12 +62,6 @@
 		max-width: 900px;
 		margin: 0 auto;
 }
-
-
-.underlined {
-	border-bottom: 1px solid darkgrey;
-}
-
 
 
 @media (min-width: 489px) {
@@ -95,9 +89,6 @@
 .save-btn-text {
 } 
 
-#save-project {
-	visibility: hidden;
-}
 
 #basic-details {
 	display: block;
@@ -108,6 +99,15 @@
 }
 
 
+#wrap-budget:before {
+	content: '$';
+	font-size: .9em;
+	line-height: 40px;
+	position: absolute;
+	padding-left: 5px;
+	/* color: #999999; Make black if something exists.*/
+	z-index: 1;
+}
 
 /* THIS WORKS... but needs to be changed; also everything needs the hint 
 .input-wrapper:before {
