@@ -1,10 +1,10 @@
 $(document).ready(function() {
-	$('.formField').focus(function(e) {
+	$('.field.input').focus(function(e) {
 		console.log(this);
-		$(this).nextAll(".formFieldError:first").html('');
+		$(this).nextAll(".field.error:first").html('');
 	});
 
-	$('.formField').blur(function(e) {
+	$('.field.input').blur(function(e) {
 		$(this).css("border-color", "#e1e8ed");
 	});
 
@@ -41,8 +41,8 @@ function saveProject() {
 	});
 
 	// reset ALL error indicators
-	$(".formFieldError").html("");
-	$(".formField").css("border-color", "#e1e8ed");
+	$(".field.error").html("");
+	$(".field.input").css("border-color", "#e1e8ed");
 
 	$.ajax({ url	: "/project/update",
 			type	: "POST",
@@ -107,7 +107,7 @@ function showErrors(errors) {
 	$.each(errors, function(element, error) {
 		var e = "#"+element;
 		console.log("error: " + element + " => " + error);
-		$(e).nextAll(".formFieldError:first").html(error).fadeIn();
+		$(e).nextAll(".field.error:first").html(error).fadeIn();
 		$(e).css("border-color", "red");
 	});
 	// create error count and set it on submit button; count down. 'Fix X errors and Submit'
