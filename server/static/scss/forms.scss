@@ -26,12 +26,14 @@ $field-height: 40px;
 .field.info.first	{ padding-top: 0px;		}
 .field.info.notice	{ font-weight: 600;		}
 
-.field.input {
+
 /*	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 */
-}
+.field.input { }
+.field.input.iconified { padding-left: 13px; }
+
 .field.error {
 	display: none;
 	font-size: .7em;
