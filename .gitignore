@@ -10,7 +10,8 @@
 #Procfile
 
 # SCSS files.
-server/static/css/lesson.css
+server/static/css/settings.css
+server/static/css/projects.css
 
 #HeroTime
 users.db
