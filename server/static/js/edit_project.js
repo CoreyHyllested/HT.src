@@ -107,7 +107,7 @@ function showErrors(errors) {
 	$.each(errors, function(element, error) {
 		var e = "#"+element;
 		console.log("error: " + element + " => " + error);
-		$(e).nextAll(".field.error:first").html(error).fadeIn();
+		$(e).nextAll(".field.error").addClass('inline').html(error).fadeIn();
 		$(e).css("border-color", "red");
 	});
 	// create error count and set it on submit button; count down. 'Fix X errors and Submit'
