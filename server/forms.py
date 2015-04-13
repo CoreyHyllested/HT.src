@@ -1,26 +1,27 @@
+#################################################################################
+# Copyright (C) 2015 Soulcrafting
+# All Rights Reserved.
+#
+# All information contained is the property of Soulcrafting. Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents. All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Soulcrafting.
+#################################################################################
+
+
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
-from wtforms import SelectField, BooleanField, RadioField, FileField, HiddenField, SelectMultipleField, DateField
-from wtforms import IntegerField, validators
+from wtforms import SelectField, BooleanField, RadioField, SelectMultipleField
+from wtforms import IntegerField, HiddenField, FileField, DateField, validators
 from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
-from cgi import escape
 from wtforms.validators import Required
+from cgi import escape
 from flask.ext.wtf import Form
 from server.models import *
 from wtforms_components import DateTimeField, DateRange, Email
 from werkzeug.datastructures import MultiDict
-
-
-class GiftForm(Form):
-	# names below (LHS) are used as the HTML element name.
-	gift_name	= TextField('Name',	[validators.Required(), validators.length(min=2, max=128)])
-	gift_addr	= TextField('Address', [validators.Optional(), validators.length(min=4, max=128)])
-	gift_mail	= TextField('Email', [validators.Optional(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
-	gift_cell	= TextField('Phone', [validators.Optional(), validators.length(min=7, max=15)])
-
-	gift_from	= TextField('Name',	[validators.Required(), validators.length(min=2, max=128)])
-	gift_note	= TextField('Note',	[validators.Optional(), validators.length(min=1, max=256)])
-	gift_cost	= IntegerField('Cost', [validators.Required(), validators.length(min=4, max=120)])
-	gift_value	= IntegerField('Value', [validators.Required(), validators.length(min=4, max=120)])
 
 
 
@@ -204,7 +205,7 @@ Days = [
 	(6,'Saturday')
 ]
 
-Location = [('location_ip', "Your Location"), ('location_berkeley', "Berkeley, CA"), ('location_other', "Other")]
+Location = [('location_ip', "Your Location"), ('location_berkeley', "Boulder, CO"), ('location_other', "Other")]
 
 
 class NewAccountForm(Form):
@@ -216,41 +217,18 @@ class NewAccountForm(Form):
 	input_signup_confirm  = PasswordField('Confirm Password')
 	accept_tos = BooleanField('TOS', [validators.Required()])
 
+
 class SignupForm(Form):
 	refid	= HiddenField('referred', [validators.Optional()])
 	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])
 	email	= TextField('Email', [validators.Required(), validators.Email()])
 	passw	= PasswordField('Password', [validators.Required()])
 
+
 class LoginForm(Form):
 	email	= TextField('Email', [validators.Required(), validators.Email()])
 	passw	= PasswordField('Password', [validators.Required()])
 
-
-
-
-class LessonForm(Form):
-
-	Durations = [ (30, '30 minutes'), (60, '1 hour'), (90, '1 hour 30 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
-
-	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
-	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
-	lessonAddress1	= TextField('Address Line 1', None)
-	lessonAddress2	= TextField('Address Line 1', None)
-	lessonCity		= TextField('City',	None)
-	lessonState		= SelectField('State', coerce=str, default='CA', choices=(States))
-	lessonZip		= TextField('Zip', None)
-	lessonCountry	= TextField('Country', None)
-	lessonAddressDetails = TextField('Details', None)
-	lessonRate		= IntegerField('Rate Amount', None, default=100)
-	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
-	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
-	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
-	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=60, choices=(Durations))
-	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
-	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
-	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
-	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
 
 
 class ProjectForm(Form):
@@ -272,6 +250,19 @@ class InviteForm(Form):
 	invite_userid = HiddenField('userid',   [validators.Required(), validators.length(min=30, max=40)])
 	invite_emails = TextField('Emails', [validators.Required(), validators.length(min=1, max=400)])
 	invite_personalized = TextField('codeid', [validators.Optional(), validators.length(min=5, max=40)])
+
+
+class GiftForm(Form):
+	# names below (LHS) are used as the HTML element name.
+	gift_name	= TextField('Name',	[validators.Required(), validators.length(min=2, max=128)])
+	gift_addr	= TextField('Address', [validators.Optional(), validators.length(min=4, max=128)])
+	gift_mail	= TextField('Email', [validators.Optional(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
+	gift_cell	= TextField('Phone', [validators.Optional(), validators.length(min=7, max=15)])
+
+	gift_from	= TextField('Name',	[validators.Required(), validators.length(min=2, max=128)])
+	gift_note	= TextField('Note',	[validators.Optional(), validators.length(min=1, max=256)])
+	gift_cost	= IntegerField('Cost', [validators.Required(), validators.length(min=4, max=120)])
+	gift_value	= IntegerField('Value', [validators.Required(), validators.length(min=4, max=120)])
 
 
 
@@ -314,18 +305,6 @@ class ProfileForm(Form):
 	edit_avail_time_sun_finish		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
 
 
-
-class ProposalForm(Form):
-	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
-	prop_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
-	prop_location    = TextField('Location')
-	prop_lesson      = SelectField('Lesson', coerce=str)
-	prop_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
-	prop_starttime   = SelectField('Choose Start Time', coerce=str, choices=NTS_times_start)
-	prop_finishtime     = SelectField('Choose End Time', coerce=str, choices=NTS_times_end)
-	prop_date 		 = DateField('Date')
-
-	# prop_date = DateTimeField('Date', validators=[DateRange(min=datetime(2000, 1, 1), max=datetime(2000, 10, 10))])
 
 class SearchForm(Form):
 	keywords_field = TextField('keywords-field')
@@ -402,3 +381,43 @@ def checkfile(form,field):
 #	card_expiry_month = forms.SelectField(required=False, choices=MONTHS.iteritems())
 #	card_expiry_year = forms.SelectField(required=False, choices=options.ZEBRA_CARD_YEARS_CHOICES)
 #
+
+
+
+################################################################################
+### DEPRECATED #################################################################
+################################################################################
+
+class LessonForm(Form):
+	Durations = [ (30, '30 minutes'), (60, '1 hour'), (90, '1 hour 30 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
+
+	lessonTitle			= TextField('Lesson Title', [validators.Required(), validators.length(min=1, max=120)])
+	lessonDescription	= TextAreaField('Lesson Description', [validators.Required(), validators.length(min=1, max=100000)])
+	lessonAddress1	= TextField('Address Line 1', None)
+	lessonAddress2	= TextField('Address Line 1', None)
+	lessonCity		= TextField('City',	None)
+	lessonState		= SelectField('State', coerce=str, default='CA', choices=(States))
+	lessonZip		= TextField('Zip', None)
+	lessonCountry	= TextField('Country', None)
+	lessonAddressDetails = TextField('Details', None)
+	lessonRate		= IntegerField('Rate Amount', None, default=100)
+	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
+	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
+	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
+	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=60, choices=(Durations))
+	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
+	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
+	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
+	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
+
+class ProposalForm(Form):
+	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
+	prop_price       = TextField('Rate',		[validators.Required(), validators.NumberRange(min=0, max=None)])
+	prop_location    = TextField('Location')
+	prop_lesson      = SelectField('Lesson', coerce=str)
+	prop_description = TextAreaField('Description') #,  [validators.length(min=6, max=40)])
+	prop_starttime   = SelectField('Choose Start Time', coerce=str, choices=NTS_times_start)
+	prop_finishtime     = SelectField('Choose End Time', coerce=str, choices=NTS_times_end)
+	prop_date 		 = DateField('Date')
+
+	# prop_date = DateTimeField('Date', validators=[DateRange(min=datetime(2000, 1, 1), max=datetime(2000, 10, 10))])
