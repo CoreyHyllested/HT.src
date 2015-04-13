@@ -35,7 +35,7 @@ def log_uevent(uid, msg):
 ### ANNOTATIONS ################################################################
 ################################################################################
 
-def authentication(function):
+def sc_authenticated(function):
 	@functools.wraps(function)
 	def verify_authenticated_user(*args, **kwargs):
 		if 'uid' not in session:
