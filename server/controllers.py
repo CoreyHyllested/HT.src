@@ -11,11 +11,11 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-import os, re, json, pickle, requests
-import time, uuid, smtplib, urlparse, urllib, urllib2
+import os, re, json, pickle, requests, uuid
+import smtplib, urlparse, urllib, urllib2
+import time, pytz
 import oauth2 as oauth
 import OpenSSL, hashlib, base64
-import pytz
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt
@@ -26,8 +26,8 @@ from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks  import *
 from server.infrastructure import errors
 from server.models import *
-from server.ht_utils import *
-from server import ht_server
+from server.sc_utils import *
+from server import sc_server
 from string import Template
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError

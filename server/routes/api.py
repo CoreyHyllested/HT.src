@@ -17,7 +17,7 @@ from flask import render_template
 from ..forms import ReviewForm
 from .helpers import *
 from server.controllers import *
-from server.ht_utils import *
+from server.sc_utils import *
 from server.models import *
 
 
@@ -99,7 +99,7 @@ def sc_purchase_gift(recipient, purchaser, stripe, uid):
 
 
 #@insprite_views.route('/meeting/accept', methods=['GET','POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_meeting_accept():
 	meet_id = request.values.get('meet_id', None)
 	print 'ht_api_meeting_accept(' + meet_id + ')\tenter'
@@ -123,7 +123,7 @@ def ht_api_meeting_accept():
 
 
 #@insprite_views.route('/meeting/negotiate', methods=['POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_meeting_negotiate():
 	#meeting = Meeting.get_by_id(form.proposal_id.data)
 	#meeting.set_state(MeetingState.NEGOTIATE)
@@ -134,7 +134,7 @@ def ht_api_meeting_negotiate():
 
 
 #@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_meeting_reject():
 	# cannot use form to validate inputs. do manually
 	meet_id = request.values.get('meet_id', None)
@@ -159,7 +159,7 @@ def ht_api_meeting_reject():
 
 
 #@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
 	meet_id = request.values.get('meet_id', None)
@@ -178,7 +178,7 @@ def ht_api_meeting_cancel():
 
 
 #@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_get_message_thread(msg_thread):
 	print 'ht_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
@@ -238,7 +238,7 @@ def ht_api_get_message_thread(msg_thread):
 
 
 #@insprite_views.route('/sendmsg', methods=['POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_send_message():
 	""" Send a user message. """
 
@@ -298,7 +298,7 @@ def ht_api_send_message():
 
 
 #@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
-@req_authentication
+@sc_authenticated
 def ht_api_review_create(review_id):
 	msg = None
 	uid = session['uid']

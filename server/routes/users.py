@@ -12,7 +12,7 @@
 #################################################################################
 
 
-from server.ht_utils import *
+from server.sc_utils import *
 from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
@@ -37,7 +37,7 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def render_dashboard():
 	bp = Profile.get_by_uid(session['uid'])
 	message = session.pop('message', None)
@@ -63,7 +63,7 @@ def render_dashboard():
 
 
 @sc_users.route('/invite', methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def render_invite_page():
 	bp = Profile.get_by_uid(session['uid'])
 	ba = Account.get_by_uid(session['uid'])
@@ -114,7 +114,7 @@ def render_invite_page():
 
 
 @sc_users.route("/purchase_me", methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def render_purchase_page():
 	bp = Profile.get_by_uid(session['uid'])
 	gift = GiftForm(request.form)

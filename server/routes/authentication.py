@@ -18,7 +18,7 @@ from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
-from server.ht_utils	import *
+from server.sc_utils	import *
 from server.forms import LoginForm, SignupForm
 
 from datetime import datetime as dt
@@ -74,7 +74,7 @@ def render_signup_page(usrmsg=None):
 			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
 			if (bh):
 				# created new account
-				ht_bind_session(bp)
+				sc_bind_session(bp)
 				session.pop('ref_id', None)
 				session.pop('ref_prof', None)
 				gift_id = session.pop('gift_id', None)
@@ -137,11 +137,11 @@ def render_login(usrmsg=None):
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():
-		ba = ht_authenticate_user(form.email.data.lower(), form.passw.data)
+		ba = sc_authenticate_user(form.email.data.lower(), form.passw.data)
 		if (ba is not None):
 			# successful login, bind session.
 			bp = Profile.get_by_uid(ba.userid)
-			ht_bind_session(bp)
+			sc_bind_session(bp)
 			return redirect('/dashboard')
 
 		trace ("POST /login failed, flash name/pass combo failed")
