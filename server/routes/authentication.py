@@ -11,9 +11,9 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-from . import sc_ebody
+from . import sc_ebody, sc_tests
 from flask import render_template
-from server import ht_csrf, ht_oauth
+from server import sc_csrf, sc_oauth
 from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
@@ -26,7 +26,7 @@ from httplib2 import Http
 from urllib import urlencode
 
 
-facebook = ht_oauth.remote_app( 'facebook',
+facebook = sc_oauth.remote_app( 'facebook',
 		base_url='https://graph.facebook.com',
 		request_token_url=None,
 		access_token_url='/oauth/access_token',
@@ -37,7 +37,7 @@ facebook = ht_oauth.remote_app( 'facebook',
 )
 
 
-linkedin = ht_oauth.remote_app(  'linkedin',
+linkedin = sc_oauth.remote_app(  'linkedin',
 					consumer_key=ht_server.config['LINKEDIN_KEY'],
 					consumer_secret=ht_server.config['LINKEDIN_SEC'],
 					request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
@@ -122,7 +122,7 @@ def render_signup_page(usrmsg=None):
 
 
 
-@ht_csrf.exempt
+@sc_csrf.exempt
 @sc_ebody.route('/login', methods=['GET', 'POST'])
 @dbg_enterexit
 def render_login(usrmsg=None):
@@ -393,7 +393,7 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-@sc_ebody.route('/facebook')
+@sc_tests.route('/facebook')
 def TESTING_render_facebook_info():
 	me = facebook.get('/me')
 	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
