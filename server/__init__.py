@@ -12,8 +12,7 @@
 #################################################################################
 
 
-import logging
-import os
+import os, logging
 from logging.handlers import RotatingFileHandler
 from logging import StreamHandler
 from flask import Flask
@@ -77,8 +76,6 @@ def initialize_server(config_name):
 	sc_csrf.init_app(sc_server)
 	sc_oauth.init_app(sc_server)
 	assets = Environment(sc_server)
-	assets.url = sc_server.static_url_path
-
 
 	jsfilter = sc_server.config['JSFILTER']
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
@@ -87,6 +84,7 @@ def initialize_server(config_name):
 	css_settings = Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
 	css_projects = Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
 
+	assets.url = sc_server.static_url_path
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('sass_schedule', css_schedule)
 	assets.register('scss_settings', css_settings)
@@ -97,8 +95,6 @@ def initialize_server(config_name):
 	from routes import authentication, everyone, users, api, errors, testing
 	from routes import sc_users as sc_allusers
 	from routes import sc_ebody as sc_everyone
-#	sc_server.register_blueprint(main_blueprint)
-#	sc_server.register_blueprint(test_blueprint)
 	sc_server.register_blueprint(sc_everyone)
 	sc_server.register_blueprint(sc_allusers)
 	return sc_server
