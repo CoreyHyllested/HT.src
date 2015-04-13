@@ -32,7 +32,14 @@ def render_landingpage():
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('index.html', bp=bp))
+
+	print request.referrer
+	# if referrer == 'getsoulcrafting.co'::banner
+	if 'getsoulcrafting.com' in request.referrer:
+		print 'from getsoulcrafting.com'
+		referred = True
+	return make_response(render_template('index.html', bp=bp, referred=None))
+
 
 
 @sc_ebody.route("/purchase", methods=['GET', 'POST'])
@@ -75,7 +82,7 @@ def render_giftpage(gift_id):
 
 
 
-#@ht_csrf.exempt
+#@sc_csrf.exempt
 #@insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
 	bp = None
@@ -158,7 +165,7 @@ def render_about_version_page():
 
 
 
-#@ht_csrf.exempt
+#@sc_csrf.exempt
 #@insprite_views.route('/search',  methods=['GET', 'POST'])
 #@insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
