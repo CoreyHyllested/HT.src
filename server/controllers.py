@@ -711,36 +711,47 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 ### DEPRECATED FUNCTIONS ########################################################
 #################################################################################
 
+@deprecated
 def ht_bind_session(bp):
 	sc_bind_session(bp)
 
+@deprecated
 def ht_get_profile(ba):
 	return sc_get_profile(ba)
 
+@deprecated
 def ht_browsingprofile():
 	return sc_browsingprofile()
 
+@deprecated
 def ht_authenticate_user(user_email, password):
 	return sc_authenticate_user(user_email, password)
 
+@deprecated
 def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 	return sc_authenticate_user_with_oa(oa_srvc, oa_data_raw)
 
+@deprecated
 def ht_create_account(name, email, passwd, ref_id):
 	return sc_create_account(name, email, passwd, ref_id)
 
+@deprecated
 def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
 	return sc_create_account_with_oauth(name, email, oa_provider, oa_data)
 
+@deprecated
 def ht_get_unread_messages(profile):
 	return sc_get_unread_messages(profile)
 
+@deprecated
 def ht_get_thread_messages(profile):
 	return sc_get_thread_messages(profile)
 
+@deprecated
 def htdb_get_composite_messages(profile):
 	return sc_get_composite_messages(profile)
 
+@deprecated
 def ht_get_active_meetings(profile):
 	props = []
 	appts = []
@@ -754,6 +765,7 @@ def ht_get_active_meetings(profile):
 
 	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
 	return (props, appts, rview)
+
 
 
 #################################################################################
