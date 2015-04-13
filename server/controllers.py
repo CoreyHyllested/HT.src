@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 import os, re, json, pickle, requests
@@ -36,7 +36,8 @@ from werkzeug.security       import generate_password_hash, check_password_hash
 from werkzeug.datastructures import CallbackDict
 
 
-def ht_bind_session(bp):
+
+def sc_bind_session(bp):
 	""" preserve userid server-side """
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
 	session['uid'] = bp.account
@@ -44,8 +45,8 @@ def ht_bind_session(bp):
 	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + ']')
 
 
-def ht_get_profile(ba):
-	"""return profile from account"""
+def sc_get_profile(ba):
+	""" return profile from account """
 	if (ba == None): return None
 
 	profiles = Profile.query.filter_by(account=ba.userid).all()
@@ -53,14 +54,14 @@ def ht_get_profile(ba):
 	return None
 
 
-def ht_browsingprofile():
+def sc_browsingprofile():
 	bp = Profile.query.filter_by(account=session.get('uid', 0)).all()
 	if (len(bp) == 1): return bp[0]
 	return None
 
 
 
-def ht_authenticate_user(user_email, password):
+def sc_authenticate_user(user_email, password):
 	""" Returns authenticated account """
 
 	trace("user_email = " + str(user_email) + ", password = " + str(password) + ' ' + str(type(password)))
@@ -74,8 +75,8 @@ def ht_authenticate_user(user_email, password):
 
 
 
-def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
-	""" Returns authenticated account.  Unless one doesn't exist -- then create it. """
+def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
+	""" Returns authenticated account. Iff account doesn't exist -- create it. """
 
 	print 'normalize oauth account data', oa_srvc
 	oa_data = normalize_oa_account_data(oa_srvc, oa_data_raw)
@@ -98,7 +99,7 @@ def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 		hero = Account.get_by_uid(oa_account.ht_account)
 	else:
 		print 'found ', len(oauth_accounts), 'so sign up user with this oauth account.'
-		(hero, prof) = ht_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)
+		(hero, prof) = sc_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)
 		#import_profile(prof, oa_srvc, oa_data)
 	return hero
 
@@ -129,7 +130,7 @@ def sc_password_recovery(email):
 
 
 
-def ht_create_account(name, email, passwd, ref_id):
+def sc_create_account(name, email, passwd, ref_id):
 	challenge_hash = uuid.uuid4()
 	geo_location = get_geolocation_from_ip()
 
@@ -158,9 +159,9 @@ def ht_create_account(name, email, passwd, ref_id):
 
 
 
-def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
-	print 'ht_create_account_with_oauth: ', name, email, oa_provider
-	(account, profile) = ht_create_account(name, email, str(uuid.uuid4()))
+def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
+	print 'sc_create_account_with_oauth: ', name, email, oa_provider
+	(account, profile) = sc_create_account(name, email, str(uuid.uuid4()))
 
 	if (account is None):
 		print 'create_account failed. happens when same email address is used'
@@ -301,8 +302,8 @@ def meeting_timedout(composite_meeting, profile):
 				db_session.commit()
 			else:
 				timeout = meet_to - utc_now
-				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + ht_print_timedelta(timeout)
-				setattr(composite_meeting, 'timeout', ht_print_timedelta(timeout))
+				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + sc_print_timedelta(timeout)
+				setattr(composite_meeting, 'timeout', sc_print_timedelta(timeout))
 		elif (meeting.accepted()):
 			print '\t\t\tACCEPTED meeting...'
 			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
@@ -322,55 +323,23 @@ def sc_get_projects(profile):
 	return projects
 
 
-def ht_get_active_meetings(profile):
-	props = []
-	appts = []
-	rview = []
-
-	meetings = htdb_get_composite_meetings(profile)
-	props = filter(lambda p: (p.Meeting.proposed()), meetings)
-	appts = filter(lambda a: (a.Meeting.accepted()), meetings)
-	rview = filter(lambda r: (r.Meeting.occurred()), meetings)
-	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
-
-	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
-
-	#for meeting in meetings:
-	#	if (profile.prof_id == thread.UserMessage.msg_to):
-	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_from)
-	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_RECV_ARCHIVE) else inbox
-	#	elif (profile.prof_id == thread.UserMessage.msg_from):
-	#		thread_partner = Profile.get_by_prof_id(thread.UserMessage.msg_to)
-	#		mbox = archive if (thread.UserMessage.msg_flags & MSG_STATE_SEND_ARCHIVE) else inbox
-	#	else:
-	#		print 'Major error.  profile_id didn\'t match to or from'
-	#		continue
-	#	setattr(thread, 'thread_partner', thread_partner)
-	#	mbox.append(thread)
-
-	return (props, appts, rview)
 
 
-
-
-
-
-
-def ht_get_unread_messages(profile):
-	all_msgs	= htdb_get_composite_messages(profile)
+def sc_get_unread_messages(profile):
+	all_msgs	= sc_get_composite_messages(profile)
 	unread_msgs	= ht_filter_composite_messages(all_msgs, profile, filter_by='UNREAD')
 	toProf_msgs = ht_filter_composite_messages(unread_msgs, profile, filter_by='RECEIVED', dump=False)
 	return toProf_msgs
 
 
-def ht_get_thread_messages(profile):
-	all_msgs	= htdb_get_composite_messages(profile)
+def sc_get_thread_messages(profile):
+	all_msgs	= sc_get_composite_messages(profile)
 	msg_threads	= ht_filter_composite_messages(all_msgs, profile, filter_by='THREADS')
 	return msg_threads
 
 
 
-def htdb_get_composite_messages(profile):
+def sc_get_composite_messages(profile):
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
 
@@ -454,7 +423,6 @@ def htdb_search_mentors_and_lessons(keywords, cost_min=0, cost_max=99999):
 		print 'htdb_search_mentors_and_lessons: results[' + key.Profile.prof_name + '|' + str(key.total_score) + '|' + str(len(key.lesson_hits)) + ']'
 	results.sort(key=lambda x: x.total_score, reverse=True)
 	return results
-
 
 
 
@@ -614,6 +582,7 @@ def ht_filter_composite_reviews(review_set, filter_by='REVIEWED', profile=None, 
 def sc_update_account(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
 	return modifyAccount(uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name)
 
+
 def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None, new_secq=None, new_seca=None, new_name=None):
 	print uid, current_pw, new_pass, new_mail, new_status, new_secq, new_seca, new_name
 	
@@ -663,24 +632,6 @@ def ht_assign_msg_threads_to_mbox(mbox_profile_id, msg_threads):
 
 	return (inbox, archive)
 
-
-
-
-def ht_create_lesson(profile):
-	lesson = None
-	try:
-		lesson = Lesson(profile.prof_id)
-		print 'ht_create_lesson: creating lesson. Lesson data:',str(lesson)
-		# lesson.set_state(LESSON_STATE_INCOMPLETE)
-		db_session.add(lesson)
-		db_session.commit()
-	except IntegrityError as ie:
-		print 'ht_create_lesson: ERROR ie:', ie
-		db_session.rollback()
-	except Exception as e:
-		print 'ht_create_lesson: ERROR e:', type(e), e
-		db_session.rollback()
-	return lesson
 
 
 
@@ -755,6 +706,56 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 
 
 
+
+#################################################################################
+### DEPRECATED FUNCTIONS ########################################################
+#################################################################################
+
+def ht_bind_session(bp):
+	sc_bind_session(bp)
+
+def ht_get_profile(ba):
+	return sc_get_profile(ba)
+
+def ht_browsingprofile():
+	return sc_browsingprofile()
+
+def ht_authenticate_user(user_email, password):
+	return sc_authenticate_user(user_email, password)
+
+def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
+	return sc_authenticate_user_with_oa(oa_srvc, oa_data_raw)
+
+def ht_create_account(name, email, passwd, ref_id):
+	return sc_create_account(name, email, passwd, ref_id)
+
+def ht_create_account_with_oauth(name, email, oa_provider, oa_data):
+	return sc_create_account_with_oauth(name, email, oa_provider, oa_data)
+
+def ht_get_unread_messages(profile):
+	return sc_get_unread_messages(profile)
+
+def ht_get_thread_messages(profile):
+	return sc_get_thread_messages(profile)
+
+def htdb_get_composite_messages(profile):
+	return sc_get_composite_messages(profile)
+
+def ht_get_active_meetings(profile):
+	props = []
+	appts = []
+	rview = []
+
+	meetings = htdb_get_composite_meetings(profile)
+	props = filter(lambda p: (p.Meeting.proposed()), meetings)
+	appts = filter(lambda a: (a.Meeting.accepted()), meetings)
+	rview = filter(lambda r: (r.Meeting.occurred()), meetings)
+	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
+
+	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
+	return (props, appts, rview)
+
+
 #################################################################################
 ### HELPER FUNCTIONS ############################################################
 #################################################################################
@@ -771,7 +772,7 @@ def get_geolocation_from_ip(ip=None):
 	return json.loads((urllib.urlopen(ip_geo_url)).read())
 
 
-def ht_print_timedelta(td):
+def sc_print_timedelta(td):
 	if (td.days >= 9):
 		return 'more than a week'
 	if (td.days >= 6):
