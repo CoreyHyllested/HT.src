@@ -28,7 +28,7 @@ class Config:
 	SQLALCHEMY_MIGRATE_REPO = HT_BASEDIR + '/database/'
 	DATABASE_QUERY_TIMEOUT = 1.0
 
-	HT_UPLOAD_DIR='/tmp/ht_upload/'
+	HT_UPLOAD_DIR='/tmp/soulcrafting/upload/'
 	HT_IMAGES_EXT=set(['png', 'jpg', 'jpeg', 'bmp'])
 
 	JSFILTER=None
