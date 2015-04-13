@@ -205,24 +205,19 @@ Days = [
 	(6,'Saturday')
 ]
 
-Location = [('location_ip', "Your Location"), ('location_berkeley', "Boulder, CO"), ('location_other', "Other")]
+Location = [('location_ip', "Your Location"), ('location_boulder', "Boulder, CO"), ('location_other', "Other")]
 
-
-class NewAccountForm(Form):
-	# names below (LHS) are used as the HTML element name.
-	input_signup_name   = TextField('Name',  [validators.Required(), validators.length(min=4, max=120)])
-	#input_signup_location = SelectField("Location", coerce=str, choices=(Location))
-	input_signup_email  = TextField('Email', [validators.Required(), validators.Email(message=u'Invalid email address'), validators.length(min=6, max=50)])
-	input_signup_password = PasswordField('Password', [validators.Required(), validators.EqualTo('input_signup_confirm', message='Passwords must match')])
-	input_signup_confirm  = PasswordField('Confirm Password')
-	accept_tos = BooleanField('TOS', [validators.Required()])
 
 
 class SignupForm(Form):
 	refid	= HiddenField('referred', [validators.Optional()])
-	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])
-	email	= TextField('Email', [validators.Required(), validators.Email()])
+	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])		#what is max size in DB?
+	email	= TextField('Email', [validators.Required(), validators.Email()])					#what is max size in DB?
 	passw	= PasswordField('Password', [validators.Required()])
+	#location = SelectField("Location", coerce=str, choices=(Location))
+	#accept_tos = BooleanField('TOS', [validators.Required()])
+	#input_signup_password = PasswordField('Password', [validators.Required(), validators.EqualTo('input_signup_confirm', message='Passwords must match')])
+	#input_signup_confirm  = PasswordField('Confirm Password')
 
 
 class LoginForm(Form):

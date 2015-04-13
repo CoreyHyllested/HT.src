@@ -19,7 +19,7 @@ from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.ht_utils	import *
-from server.forms import LoginForm, SignupForm, NewAccountForm
+from server.forms import LoginForm, SignupForm
 
 from datetime import datetime as dt
 from httplib2 import Http
@@ -71,7 +71,7 @@ def render_signup_page(usrmsg=None):
 			usrmsg = "An account with that email address exists. Login instead?"
 		else:
 			# no account exists in database, create one.
-			(bh, bp) = ht_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
+			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
 			if (bh):
 				# created new account
 				ht_bind_session(bp)
@@ -187,12 +187,12 @@ def facebook_authorized(resp):
 	me = facebook.get('/me')
 	me.data['token']=session['oauth_token']
 
-	ba = ht_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	ba = sc_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
 	if (ba):
 		print ("created_account, uid = " , str(ba.userid), ', get profile')
 		bp = Profile.get_by_uid(ba.userid)
 		print 'bind session'
-		ht_bind_session(bp)
+		sc_bind_session(bp)
 		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
 		resp = redirect('/dashboard')
 	else:
@@ -243,7 +243,7 @@ def linkedin_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
-	#(bh, bp) = ht_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
+	#(bh, bp) = sc_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
 
 
 	# also look for linkedin-account/id number (doesn't exist today).
@@ -257,11 +257,11 @@ def linkedin_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = ht_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
+	(bh, bp) = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
 	if (bp):
 		print ("created_account, uid = " , str(bp.account))
-		ht_bind_session(bp)
-		print ("ht_bind_session = ", bp)
+		sc_bind_session(bp)
+		print ("sc_bind_session = ", bp)
 		import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
 
 		#send_welcome_email(email.data)
