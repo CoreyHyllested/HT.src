@@ -8,57 +8,56 @@
 
 
 {% block content %}
-<section class="signup-section access-section section">
-	<div class="container">
-
-		<div class="row">
-
-			<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">
-				<div class="form-box-inner">
-					<h2 class="title text-center">Sign Up for Soulcrafting</h2>
-					<div class="row">
-						<div class="col-md-6 col-sm-12 col-xs-12 col-md-offset-3 col-sm-offset-0 col-sm-offset-0">
-							<div class='social-btns'>
-								<ul class="list-unstyled social-login">
-									<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign Up with Facebook</button></a></li>
-								</ul>
-								{% if ref_name %} <label class='text-center'>Referred by {{ref_name}}</label> {% endif %}
-							</div>
-
-
-							<!--p class="note">By joining, you agree to the <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p-->
-							<hr>
-
-							<form action="/join" method="POST" id='signup-form' class="signup-form">
-								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-								{{form.refid}}
-
-								<div class="form-group username">
-									<label class="sr-only" for="uname">Your name</label>
-									{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
-								</div>
-								<div class="form-group email">
-									<label class="sr-only" for="email">Your email</label>
-									{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
-								</div>
-								<div class="form-group password">
-									<label class="sr-only" for="passw">Your password</label>
-									{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
-								</div>
-								<button type="submit" class="btn btn-block blueButton">Sign Up for Soulcrafting</button>
-								<br>
-							</form>
-							<p><a href='/login'><button class='btn btn-block whiteButton'>I have an account</button></a></p>
+<section id='authorize-content' class="access-section">
+	<div class="row">
+		<div class='container'>
+		<div class="form-box col-md-8 col-sm-12 col-xs-12 col-md-offset-2 col-sm-offset-0 xs-offset-0">
+			<div class="form-box-inner">
+				<h2 class="title text-center">Sign Up for Soulcrafting</h2>
+				<div class="row">
+					<div class="col-md-6 col-sm-12 col-xs-12 col-md-offset-3 col-sm-offset-0 col-sm-offset-0">
+						<div class='social-btns'>
+							<ul class="list-unstyled social-login">
+								<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign Up with Facebook</button></a></li>
+							</ul>
+							{% if ref_name %} <label class='text-center'>Referred by {{ref_name}}</label> {% endif %}
 						</div>
 
-						<!--Ending row-->
-					</div>
-				<!--End form-box-inner -->
-				</div>
-			</div>
 
-		<!--End Row-->
+						<!--p class="note">By joining, you agree to the <a href="/terms/service">terms of service</a> and <a href="/terms/privacy">privacy policy</a>.</p-->
+						<hr>
+
+						<form action="/join" method="POST" id='signup-form' class="signup-form">
+							<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+							{{form.refid}}
+
+							<div class="form-group username">
+								<label class="sr-only" for="uname">Your name</label>
+								{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
+							</div>
+							<div class="form-group email">
+								<label class="sr-only" for="email">Your email</label>
+								{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
+							</div>
+							<div class="form-group password">
+								<label class="sr-only" for="passw">Your password</label>
+								{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
+							</div>
+							<button type="submit" class="btn btn-block blueButton">Sign Up for Soulcrafting</button>
+							<br>
+						</form>
+						<p><a href='/login'><button class='btn btn-block whiteButton'>I have an account</button></a></p>
+					</div>
+
+					<!--Ending row-->
+				</div>
+			<!--End form-box-inner -->
+			</div>
 		</div>
+	
+	<!--End Container-->
+	</div>
+	<!--End Row-->
 	</div>
 </section>
 

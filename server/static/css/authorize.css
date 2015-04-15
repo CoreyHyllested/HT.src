@@ -4,39 +4,10 @@ html, body { height: 100%; }
 
 
 
-.page-content,
-.blurred-background {
-	background-image: url('/static/img/grass.jpg');
-	background-size: cover;
-	background-repeat: no-repeat;
+#authorize-content {
+	margin-bottom: 53px;
 }
 
-
-/* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
-.attention::-webkit-input-placeholder { /* WebKit browsers */	color: red; }
-.attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red ; }
-.attention:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-	color: red;
-	opacity:  1;
-}
-.attention::-moz-placeholder { /* Mozilla Firefox 19+ */
-	color: red;
-	opacity:  1;
-}
-
-.access-section {
-  padding-bottom: 200px;
-  padding-top: 90px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-
-.access-section .note {
-	color: #999999;
-	font-size: 13px;
-	margin-bottom: 15px;
-	margin-top: 15px;
-}
 
 .access-section .lead {
 	font-size: 14px;
@@ -125,25 +96,20 @@ html, body { height: 100%; }
 	text-transform: uppercase;
 	color: white;
 }
+
 .blueButton:hover {
 	color: rgba(255,255,255,.8);
 }
 
 
-
 /* rename this --just--  signup section */
-.access-section.signup-section .title,
-.access-section.login-section .title {
+.access-section .title,
+.access-section .title {
 	margin-bottom: 50px;
 }
 
 .access-section .form-box .form-box-inner {
 	background: white;
-	-webkit-border-radius: 7px;
-	-moz-border-radius: 7px;
-	-ms-border-radius: 7px;
-	-o-border-radius: 7px;
-	border-radius: 7px;
 
 	-moz-background-clip: padding;
 	-webkit-background-clip: padding-box;
@@ -159,6 +125,11 @@ html, body { height: 100%; }
 
 .access-section .form-control {
 	padding-left: 30px;
+}
+
+.form-control, 
+.btn.btn-block {
+	max-width: 300px;
 }
 
 .access-section .form-group.username:before {
@@ -209,176 +180,50 @@ html, body { height: 100%; }
 	border: 2px solid black;
 }
 
-.lp-img {
-	background-image: url('/static/img/sc/glass_table.jpg');
-	background-repeat: no-repeat;
-	background-size: cover;
-	width: 100%;
-	height: 80vh;
-	color: white;
-    text-shadow: 0 2px 30px rgba(0,0,0,.8);
-	font-size: 2.4em;
-	line-height: 1.1em;
+
+@media (max-width: 488px) {
+	#authorize-content { background-color: white; }
 }
 
 
-.lp-img1 {
-	/* will not stretch, may not see full img */
-	background-image:url('/static/img/img1.jpg');
-	background-size: cover;
-	height: 750px;
-	color: #fff;
-}
+@media (min-width: 489px) {
+	.access-section {
+		padding-bottom: 200px;
+		padding-top: 30px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
 
-.lp-img2 {
-	/* only use where we can stretch the image */
-	background-image:url('/static/img/img2.jpg');
-	background-size: 100% 100%;
-	height: 750px;
-	color: #fff;
-}
+	.access-section .form-box .form-box-inner {
+		background: white;
+		-webkit-border-radius: 7px;
+		-moz-border-radius: 7px;
+		-ms-border-radius: 7px;
+		-o-border-radius: 7px;
+		border-radius: 7px;
+	}
 
-.img-portfolio {
-    margin-bottom: 30px;
-}
-
-.img-hover:hover {
-    opacity: 0.9;
-/*	background-image:url('/static/img/topo_table.jpg');
-	background-size:cover;
-*/
-}
-
-.press {
-	padding-top: 75px;
-	padding-bottom: 75px;
-}
-
-.press-list {
-	margin-bottom: 15px;
-	list-style: none;
-}
-
-.list-inline {
-	padding-left: 0px;
-	height: 100px;
+	.page-content {
+		background-image: url('/static/img/grass.jpg');
+		background-size: cover;
+		background-repeat: no-repeat;
+	}
 }
 
 
-.press-list li {
-	display: block;
-	vertical-align: middle;	/* img? */
-}
-
-/*press-list and .last */
-.row.last {
-	margin-bottom:  100px;
-}
-
-.greyscale {
-	filter: gray;			/* IE6-9 */
-	filter: grayscale(1);	/* FF35+ */
-	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
-}
-
-
-/* Home Page Carousel */
-.carousel {
-    height: 75%;
-	/* amount of screen space to fill */
-}
-
-.product-container {
-	padding: 100px 75px;
-/*
-	background: -webkit-linear-gradient(white, white); /* For Safari 5.1 to 6.0 *
-	background: -o-linear-gradient(white, white); /* For Opera 11.1 to 12.0 *
-	background: -moz-linear-gradient(white, white); /* For Firefox 3.6 to 15 *
-	background: linear-gradient(white, white); /* Standard syntax 
-*/
-	color: white;
-	background: rgba(76,76,76,1); 
-}
-
-
-.carousel .item,
-.carousel .item.active,
-.carousel .carousel-inner {
-	color: white;
-	width: 100%;
-	/* height: 100vh; */
-}
-
-.carousel .fill {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-}
-
-
-/* 404 Page Styles */
-.error-404 {
-    font-size: 100px;
-}
-
-/* Pricing Page Styles */
-
-.price {
-    display: block;
-    font-size: 50px;
-    line-height: 50px;
-}
-
-.price sup {
-    top: -20px;
-    left: 2px;
-    font-size: 20px;
-}
-
-.period {
-    display: block;
-    font-style: italic;
-}
-
-/* Footer Styles */
-
-/*footer {
-    margin: 50px 0;
-}*/
-
-.footer-menu {
-	float: left;
-}
-
-.footer-menu li {
-	display: inline;
-	padding-right: 20px;
-}
-
-.footer-copy {
-	float: right;
+@media (min-width: 768px) {
 }
 
 
 
-
-@media(max-width:991px) {
-    .customer-img,
-    .img-related {
-        margin-bottom: 30px;
-    }
+/* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
+.attention::-webkit-input-placeholder { /* WebKit browsers */	color: red; }
+.attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red ; }
+.attention:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+	color: red;
+	opacity:  1;
 }
-
-@media(max-width:767px) {
-    .img-portfolio {
-        margin-bottom: 15px;
-    }
-
-    header.carousel .carousel {
-        height: 70%;
-    }
+.attention::-moz-placeholder { /* Mozilla Firefox 19+ */
+	color: red;
+	opacity:  1;
 }
-
-
-
