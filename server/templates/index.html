@@ -9,6 +9,19 @@
 {% endblock %}
 
 {% block content %}
+
+{% if referred %}
+<div id='lp-referrer'>
+	<div id='referrer-content'>
+		<div id="referrer-header">
+			<span id='referrer-title'>Welcome to the new Soulcrafting</span>
+			<div  id='referrer-close'></div>
+		</div>
+		<div id='referrer-message'>We hope you like the new changes. Let us know what you think at team@soulcrafting.co</div>
+	</div>
+</div>
+{% endif %}
+
 <div id='lp-masthead'>
 	<div class='masthead-text'>
 		<h1>The Concierge Service</h1>
@@ -80,4 +93,13 @@
 
 {% block scripts %}
 	{{ super() }}
+	{% if referred %}
+	<script>
+		$(document).ready(function () {
+			$('#referrer-close').click(function () {
+				$('#lp-referrer').hide();
+			});
+		});
+	{% endif %}
+	</script>
 {% endblock %}

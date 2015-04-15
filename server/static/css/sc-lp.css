@@ -1,4 +1,33 @@
 /* ELEMENTS */
+#lp-referrer {
+	background-color: yellow;
+	text-align: center;
+	margin: 0px;
+}
+
+#referrer-content {
+	position: relative;
+	height: 100%;
+	width: 100%;
+}
+
+#referrer-header {
+	/* container for title, close */
+	font-size: 1.2em;
+	padding-bottom:	5px;
+	margin-bottom:	5px;
+}
+
+#referrer-close {
+	/* top-right corner */
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	cursor: pointer;
+	font-size: 1.2em;
+}
+#referrer-close:before	{ content:"\00D7"; }	/* X to close. */
+
 
 #lp-masthead {
 	width: 100%;
