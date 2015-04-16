@@ -15,14 +15,13 @@
 
 .social-btns {
 	text-align: center;
-	margin: 15px;
+	margin: 25px 15px;
 }
 
 .social-login {
 	display: inline-block;
 	margin: 0 auto;
 }
-
 
 .social-btns li { margin-bottom: 10px; }
 .social-btns li .btn {
@@ -45,17 +44,15 @@
 
 .blueButton {
 	text-transform: uppercase;
-	color: white;
+	color: $white;
 }
-
-.blueButton:hover {
-	color: rgba(255,255,255,.8);
-}
+.blueButton:hover { color: $white-80; }
 
 
 
 .form-group { position: relative; }
-input[type='email'], input[type='password'] { padding-left: 30px; }
+
+input[type='name'], input[type='email'], input[type='password'] { padding-left: 30px; }
 
 
 .form-group.username:before {
