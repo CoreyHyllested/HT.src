@@ -1,4 +1,5 @@
-@import 'colors';
+@import 'forms';
+
 
 // a) 240px - 349px (phones)
 // b) 350px - ... (everything else)
@@ -7,14 +8,12 @@
 	padding: 30px 0px 53px;
 }
 
-.recoveryLink {
-	clear: both;
-	display: block;
-	font-size: 0.9em;
-	margin-top: 5px;
-	text-align: center;
+#recovery {
+	background-color: $white;
+	border-radius: $container-border-radius;
+	padding: 20px 20px 10px;
+	margin: 0px auto;
 }
-.recoveryLink:hover { text-decoration: underline; }
 
 #recovery input[type="email"], input[type="password"] {
 	border-radius: 5px;
@@ -33,12 +32,14 @@ h2 {
 	text-align: center;
 }
 
-#recovery {
-	background-color: $white;
-	border-radius: 6px;
-	padding: 20px 20px 10px;
-	margin: 0px auto;
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
 }
+.recoveryLink:hover { text-decoration: underline; }
 
 /* PHONE DESIGN */
 @media (max-width: 349px) {
