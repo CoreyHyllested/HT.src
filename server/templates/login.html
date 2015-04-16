@@ -8,102 +8,47 @@
 
 
 {% block content %}
-<section class="login-section access-section">
-	<div class="container">
+<section id='authorize'>
+	<h2 class='text-center'>Log in to Soulcrafting</h2>
 
-		<div class="row">
-
-			<div class="form-box col-md-8 col-xs-12 col-md-offset-2 xs-offset-0">
-				<div class="form-box-inner">
-					<h2 class="title text-center">Log in to Soulcrafting</h2>
-					<div class="row">
-						<div class="col-md-6 col-xs-12 col-md-offset-3 col-sm-offset-0">
-							<div class="social-btns">
-								<ul class="list-unstyled social-login">
-									<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
-								</ul>
-							</div>
-
-							<hr>
-
-							<form class="login-form" method='POST' action='/login'>
-								<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-								<div class="form-group email">
-									<label class="sr-only" for="login-email">Your email</label>
-									{{form.email(type="email", class="form-control login-email", placeholder="Your email")}}
-								</div>
-
-								<div class="form-group password">
-									<label class="sr-only" for="login-password">Your password</label>
-									{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
-								</div>
-
-								<button type="submit" class="btn btn-block blueButton">Log in</button>
-							</form>
-							<p class='lead'>
-								<a href='/password/recover'><button class='btn btn-block whiteButton'>Forgot password?</button></a>
-								<a href='/join'><button class='btn btn-block whiteButton'>Don't have an account? Sign Up.</button></a>
-							</p>
-						</div>
-					<!--ENDING ROW -->
-					</div>
-				<!--ENDING form-box-inner-->
-				</div>
-			<!--ENDING form-box [COLS COLS COLS] -->
-			</div>
-		<!--ENDING row-->
-		</div>
-	<!--ENDING container-->
+	<div class="social-btns">
+		<ul class="list-unstyled social-login">
+			<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
+		</ul>
 	</div>
+
+	<hr>
+
+	<div id='authorize-form'>
+		<form method='POST' action='/login'>
+			{{form.hidden_tag()}}
+
+			<div class="form-group email">
+				<label class="sr-only" for="login-email">Your email</label>
+				{{form.email(type="email", class="form-control login-email", placeholder="Your email")}}
+			</div>
+
+			<div class="form-group password">
+				<label class="sr-only" for="login-password">Your password</label>
+				{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
+			</div>
+
+			<button type="submit" class="btn btn-block blueButton">Log in</button>
+		</form>
+	</div>
+
+	<p>
+		<a href='/password/recover'><button class='btn btn-block whiteButton'>Forgot password?</button></a>
+		<a href='/join'><button class='btn btn-block whiteButton'>Don't have an account? Sign Up.</button></a>
+	</p>
 </section>
 {% endblock %}
 
 
 
-<!--list-unstyled social-login
-<li><button class="google-btn btn"   type="button"><i class="fa fa-google-plus"></i>Sign up with Google</button></li-->
-
-<!--div class="loginContentWrapper">
-	<div class="loginSwitch">
-		<div class="loginSwitchEmail loginSwitchActive">Email Login</div>
-		<div class="loginSwitchSocial">Social Login</div>
-	</div-->
-
-	<!--div class="loginEmail"  /* child of loginContentWrapper */>
-		<form id="LoginWithEmail" onsubmit="return validateForm();" action="/login" method="POST">		
-			{ {form.hidden_tag()} }
-			<input type="email" id="input_login_email" name="input_login_email" placeholder="Email">
-			<input type="password" id="input_login_password" name="input_login_password" placeholder="Password">
-
-
-			<div class="loginEmailSubmitWrapper">
-				<input type="submit" value="Log in" class="button teal">
-			</div>
-		</form>
-	</div-->
-
-	<!--
-	<h2>Or use these</h2> 
-	<div class="loginSocial">
-		<form method="link" action="/login/linkedin">
-			<input type="submit" class="loginLinkedIn" name="loginLinkedIn" value="LinkedIn"> 
-		</form>
-
-		<form method="link" action="/login/facebook">
-			<input type="submit" class="loginFacebook" name="loginFacebook" value="Facebook"> 
-		</form>
-
-		<div class="loginLinkedInNotice">			
-			By clicking any of the buttons above, you confirm that you have read <a href="terms" target="_blank">Terms of Service</a>, that you understand them, and that you agree to be bound by them.
-		</div>
-	</div>
-	-->
-<!--/div   (loginContentWrapper)-->
-
 
 {% block scripts %}
-{% if errmsg != none %}
+{% if errmsg %}
 <script> openAlertWindow('{{errmsg}}') </script>
 {% endif %}
 {% endblock %}
