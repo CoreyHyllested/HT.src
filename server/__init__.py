@@ -83,6 +83,7 @@ def initialize_server(config_name):
 	css_settings = Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
 	css_projects = Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
 	css_recovery = Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
+	css_loginsys = Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
 
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path
@@ -91,6 +92,7 @@ def initialize_server(config_name):
 	assets.register('scss_settings', css_settings)
 	assets.register('scss_projects', css_projects)
 	assets.register('scss_recovery', css_recovery)
+	assets.register('scss_loginsys', css_loginsys)
 
 	Compress(sc_server)
 

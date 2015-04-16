@@ -13,6 +13,7 @@
 server/static/css/settings.css
 server/static/css/projects.css
 server/static/css/recovery.css
+server/static/css/authorize.css
 
 #HeroTime
 users.db
