@@ -1,14 +1,14 @@
 #################################################################################
-# Copyright (C) 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
@@ -76,7 +76,8 @@ class Profile(Base):
 
 	def __init__(self, name, acct, area=None):
 		if (area and area.get('country_name') == 'Reserved'): area = 'The Internet'
-		if (area and area.get('region_name')  == ''): area = None
+		if ((area and area.get('region_name')  == '') or (not area)): area = None
+
 		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
