@@ -50,31 +50,25 @@ linkedin = sc_oauth.remote_app(  'linkedin',
 
 
 
-@sc_ebody.route('/join', methods=['GET', 'POST'])
 @sc_ebody.route('/signup', methods=['GET', 'POST'])
-def render_signup_page(usrmsg=None):
-	bp = False
-
+def render_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
 		return redirect('/dashboard')
 
-	ref_name = None
-	ref_id = request.values.get('ref', None)
-
 	form = SignupForm(request.form)
 	if form.validate_on_submit():
-		# check if account (email) already exists in db, (use Account.get_by_email instead).
-		account = Account.query.filter_by(email=form.email.data.lower()).all()
-		if (len(account) == 1):
-			trace("email already exists in DB")
-			usrmsg = "An account with that email address exists. Login instead?"
+		account = Account.get_by_email(form.email.data)
+		if (account):
+			trace("Email already exists in DB")
+			sc_msg = "Email address already exists. Login instead?"
 		else:
-			# no account exists in database, create one.
+			# awesome. create a new account.
 			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
 			if (bh):
 				# created new account
 				sc_bind_session(bp)
+
 				session.pop('ref_id', None)
 				session.pop('ref_prof', None)
 				gift_id = session.pop('gift_id', None)
@@ -91,33 +85,15 @@ def render_signup_page(usrmsg=None):
 					except Exception as e:
 						print type(e), e
 						db_session.rollback()
-
-					# TODO set account.referred_by
 				return redirect('/dashboard')
 			else:
-				usrmsg = 'Something went wrong.  Please try again.'
+				sc_msg = 'Something went wrong. Please try again.'
 	elif request.method == 'POST':
-		trace("/signup form invalid" + str(form.errors))
-		usrmsg = 'Sorry, something wasn\'t filled out properly.'
-	else:
-		trace("/signup (GET)")
-		if ref_id:
-			form.refid.data = ref_id
-			referral = Referral.get_by_refid(ref_id)
-			if referral is not None:
-				ref_prof = Profile.get_by_uid(referral.ref_account)
-				ref_name = ref_prof.prof_name
+		print 'render_signup: form invalid ' + str(form.errors)
+		sc_msg = 'Oops. Fill out all fields.'
 
-				# save the work, on successfully creating account -- pop these values
-				session['ref_id']	= ref_id
-				session['gift_id']	= referral.ref_gift_id
-				session['ref_prof']	= ref_prof.prof_id
-
-#		gift = GiftCertificate.get_by_giftid(referral.ref_gift_id)
-#		if (gift):
-#			ref_name = ref_name + ', signup to claim $' + str(gift.gift_value/100)
-
-	return make_response(render_template('signup.html', bp=bp, form=form, ref_name=ref_name, errmsg=usrmsg))
+	ref_name = auth_signup_set_referral(request, form)
+	return make_response(render_template('signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
 
 
 
@@ -126,7 +102,6 @@ def render_signup_page(usrmsg=None):
 @sc_ebody.route('/login', methods=['GET', 'POST'])
 def render_login():
 	""" If successful, sets session cookies and redirects to dash """
-	usrmsg = None
 	sc_msg = session.pop('messages', None)
 
 	if ('uid' in session):
@@ -143,15 +118,12 @@ def render_login():
 			return redirect('/dashboard')
 
 		trace ("POST /login failed, flash name/pass combo failed")
-		usrmsg = "Incorrect username or password."
+		sc_msg = "Incorrect username or password."
 	elif request.method == 'POST':
 		trace("POST /login form isn't valid" + str(form.errors))
-		usrmsg = "Incorrect username or password."
+		sc_msg = "Incorrect username or password."
 
-	if (usrmsg is None and sc_msg):
-		usrmsg = sc_msg
-
-	return make_response(render_template('login.html', form=form, bp=None, errmsg=usrmsg))
+	return make_response(render_template('login.html', form=form, sc_alert=sc_msg))
 
 
 
@@ -401,6 +373,25 @@ def TESTING_render_facebook_info():
 def logout():
 	session.clear()
 	return redirect('/')
+
+
+
+# returns referred by name on success; sets signup_form data.
+def auth_signup_set_referral(request, signup_form):
+	ref_id = request.values.get('ref', None)
+	if ref_id is None: return
+
+	signup_form.refid.data = ref_id
+	referral = Referral.get_by_refid(ref_id)
+	if referral:
+		ref_prof = Profile.get_by_uid(referral.ref_account)
+		ref_name = ref_prof.prof_name
+
+		# save the work, on successfully creating account -- pop these values
+		session['ref_id']	= ref_id
+		session['ref_prof']	= ref_prof.prof_id
+		session['gift_id']	= referral.ref_gift_id
+	return ref_name
 
 
 #TODO 
