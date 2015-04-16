@@ -88,6 +88,8 @@ class ProductionConfig(Config):
 	# gz Compression Opts.
 	#COMPRESS_MIN_SIZE=500
 	#COMPRESS_DEBUG=True
+	STRIPE_PUBLIC =	'pk_live_v7wS391Rplnkq26Dh4hyAu7f'
+	STRIPE_SECRET = 'sk_live_ssYk0yAQMDJFDjfVMYZ1US1R'
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@soulcrafting.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432/scdb'
 	REDIS_URL='redis://ht-redis.h6fyv6.0001.use1.cache.amazonaws.com:6379/'

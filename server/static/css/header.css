@@ -1,0 +1,37 @@
+/* (c) 2015 Soulcrafting */
+
+body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
+
+.page-content { 
+	min-height: 100%; 
+	height: auto !important;
+	height: 100%;			/* TODO: remove this? */
+	margin: 0 auto -53px;	/* the bottom margin is the negative value of the footer's height */
+	padding-bottom: 53px;	/* important to fix the 'forver-scroll problem */
+}
+
+#page-bumper { margin-bottom: 20px;	}
+
+
+footer {
+/*	position: absolute; */
+	bottom: 0;
+	width: 100%;
+	height: 53px;
+	
+	padding: 15px 0;
+	background-color: white; 
+	border: 1px solid #29abe1;
+	border-width: .20em 0 0;
+}
+
+#copyright		{	float: right;	}
+#copyright p	{	margin: 0;		}
+
+
+#footer-menu	{	float: left;	}
+#footer-menu ul,
+#footer-menu li {
+	display: inline;		/* align horizontally */
+	padding-right: 20px;
+}

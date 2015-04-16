@@ -8,9 +8,9 @@
 	<link rel='icon' type="image/png" href="/static/img/favicon.png">
 	<link rel='stylesheet' href='/static/css/master.css'>
 	<link rel='stylesheet' href='/static/css/modals.css'>
+	<link rel='stylesheet' href='/static/css/header.css'>
 	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	<link rel='stylesheet' href='/static/css/headerfooter.css'>
-	<link rel='stylesheet' href='/static/font-awesome/css/font-awesome.min.css'>
+	<link rel="stylesheet" href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Kameron|Poiret+One|Cinzel|Open+Sans:200,400,600,800'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Lustria|Nixie+One|Crete+Round|Ovo|Playfair+Display+SC|Alegreya'>
 	{% block header_css %}{% endblock %}
@@ -77,25 +77,22 @@
 		</div>
 	</nav>
 
+	{% block flashmsg %}
+	{% endblock %}
 
-	<div class="page-content">
-		<div class="page-wrapper">
-			{% block content %}{% endblock %}
-		</div>
+	<div class='page-content'>
+		<div class='page-wrapper'>{% block content %}{% endblock %}</div>
+		<div id='page-bumper'></div>
 	</div>
 
 
 	<footer>
-		<div class="container">
-			<div class="footer-menu">
-				<!--ul>
-					<li><a href="/purchase">Buy Gift Card</a></li>
-				</ul-->
+		<div class='container'>
+			<div id='footer-menu'>
+				<!--ul> <li><a href="/purchase">Buy Gift Card</a></li> </ul-->
 				<!--li><a href="/faq">FAQ</a></li> <li><a href="/terms">Terms &amp; Privacy</a></li-->
 			</div>
-			<div class="footer-copy">
-				<p>&copy; Soulcrafting 2015</p>
-			</div>
+			<div id='copyright'><p>&copy; Soulcrafting 2015</p></div>
 		</div>
 	</footer>
 

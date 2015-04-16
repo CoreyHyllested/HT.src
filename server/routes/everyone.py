@@ -33,12 +33,9 @@ def render_landingpage():
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 
-	print request.referrer
-	# if referrer == 'getsoulcrafting.co'::banner
-	if 'getsoulcrafting.com' in request.referrer:
-		print 'from getsoulcrafting.com'
-		referred = True
-	return make_response(render_template('index.html', bp=bp, referred=None))
+	# if user was referred by getsoulcrafting (request.referrer)... then we add a welcome banner.
+	referred = True if (request.referrer and 'getsoulcrafting.com' in request.referrer) else None
+	return make_response(render_template('index.html', bp=bp, referred=referred))
 
 
 

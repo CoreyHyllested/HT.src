@@ -8,6 +8,29 @@
 	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 {% endblock %}
 
+{% block flashmsg %}
+{% if referred %}
+<div id='lp-referrer'>
+	<div id='referrer-content'>
+		<div id="referrer-header">
+			<span id='referrer-title'>Welcome to the new Soulcrafting</span>
+			<div  id='referrer-close'></div>
+		</div>
+		<div id='referrer-message'>We hope you like the new changes. Let us know what you think at team@soulcrafting.co</div>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$('#referrer-close').click(function () {
+			$('#lp-referrer').hide();
+		});
+	});
+</script>
+{% endif %}
+{% endblock %}
+
+
 {% block content %}
 <div id='lp-masthead'>
 	<div class='masthead-text'>
@@ -20,26 +43,26 @@
 </div>
 
 
-<section id='values' class="container-fluid">
-	<div class="text-center"><h2 class=''>Your vision. Our expertise.</h2></div>
+<section id='values' class="container-fluid text-center">
+	<div><h2 class=''>Your vision. Our expertise.</h2></div>
 
-	<div class="col-xs-12 col-sm-4 text-center">
+	<div class="col-xs-12 col-sm-4">
 		<div class="panel-heading"><h1><i class="icon ion-hammer"></i></h1></div>
 		<div class="container-fluid"> <p><b>Craftsmanship</b><br> We'll help you find the right experts from our community of master craftspeople.</p> </div>
 	</div>
 
-	<div class="col-xs-12 col-sm-4 text-center">
+	<div class="col-xs-12 col-sm-4">
 		<div class="panel-heading"> <h1><i class="fa fa-fw fa-heart"></i></h1></div>
 		<div class="container-fluid"> <p><b>Peace of Mind</b><br> Your Soulcrafting concierge is a knowledgeable project manager committed to your success.</p> </div>
 	</div>
 
-	<div class="col-xs-12 col-sm-4 text-center">
+	<div class="col-xs-12 col-sm-4">
 		<div class="panel-heading"><h1><i class="fa fa-fw fa-dollar"></i></h1></div>
 		<div class="container-fluid"><p><b>Savings</b><br>You'll save money by hiring craftspeople directly and managing parts of the project yourself.</p> </div>
 	</div>
 
 	<div id='getstarted' class="col-xs-12">
-		<a class="btn btn-block jumbotron-btn lp-btn blueButton center text-center" href="/signup">Get Started Now</a>
+		<a class="btn btn-block jumbotron-btn lp-btn blueButton center" href="/signup">Get Started Now</a>
 	</div>
 </section>
 
