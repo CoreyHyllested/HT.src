@@ -3,7 +3,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel='stylesheet' href='/static/css/authorize.css'>
+	{% assets 'scss_loginsys' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
 
 
