@@ -124,6 +124,9 @@ class NoResourceFound(SanitizedException):
 class NoProposalFound(NoResourceFound):
 	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', str(pid))
 
+class NoAccountFound(NoResourceFound):
+	def __init__(self, aid): super(NoAccountFound, self).__init__('Account', str(aid))
+
 class NoMeetingFound(NoResourceFound):
 	def __init__(self, mid): super(NoMeetingFound, self).__init__('Meeting', str(mid))
 
@@ -132,6 +135,9 @@ class NoProfileFound(NoResourceFound):
 
 class NoReviewFound(NoResourceFound):
 	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
+
+class NoEmailFound(NoResourceFound):
+	def __init__(self, email): super(NoEmailFound, self).__init__('Email', str(email))
 
 class NoOauthFound(NoResourceFound):
 	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', str(uid))
