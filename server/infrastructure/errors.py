@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (C) 2015 Soulcrafting, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
 # All information contained is the property of Soulcrafting.  Any intellectual
@@ -69,6 +69,16 @@ class SanitizedException(Exception):
 ################################################################################
 ### SUBCLASS EXCEPTIONS ########################################################
 ################################################################################
+
+class AccountError(SanitizedException):
+	def __init__(self, email, error='Account creation failed'):
+		super(AccountError, self).__init__(error, resp_code=400)
+		self.email = email
+		self.sanitized_msg(msg = error)
+
+	def __str__(self):
+		return '<AccountError:%r:%r>' % (self.email, self._tech_mesg)
+
 
 class PasswordError(SanitizedException):
 	def __init__(self, account, error='Password does not match what is on file'):
