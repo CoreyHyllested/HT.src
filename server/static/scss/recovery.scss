@@ -1,0 +1,85 @@
+/*
+There are two responsive design ranges for the password recovery page (recovery.html):
+a) 240px - 349px (phones)
+b) 350px - ... (everything else)
+*/
+
+.page-content {
+	padding: 35px;
+}
+
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
+}
+
+.recoveryLink:hover {
+	text-decoration: underline;
+}
+
+#recovery input[type="email"], input[type="password"] {
+	border-radius: 5px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 20px 0 20px;
+	width: 100%;
+}
+
+#recovery input[type="submit"] {
+	margin-bottom: 15px;
+	width: 100%;
+}
+
+.recoveryInstructions {
+	font-size: 0.9em;
+	line-height: 1.35em;
+	text-align: center;
+}
+
+h2 {
+	margin: 20px auto 10px;
+	text-align: center;
+}
+
+
+/* PHONE DESIGN */
+@media (max-width: 349px) {
+	.pageWrapper {
+		background-color: white;
+		height: 100%;
+		min-height: 380px;
+	}
+
+	#recovery {
+		margin: 0px auto;
+		overflow-y: scroll;
+		padding-bottom: 10px;
+		width: 90%;
+	}
+
+}
+
+/* DESIGN FOR EVERYTHING ELSE */
+@media (min-width: 350px) {
+	.pageWrapper {
+		background: url('../img/background-blurred.jpg') no-repeat center right;
+		background-position: 100% 30%;
+		background-size: cover;
+		height: 100%;
+		min-height: 460px;
+		overflow-x: hidden;
+		width: 100%;		
+	}
+
+	#recovery {
+		background-color: white;
+		border-radius: 6px;
+		margin: 0px auto;
+		padding: 20px 20px 10px;
+		width: 300px;
+	}
+}
