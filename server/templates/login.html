@@ -46,9 +46,6 @@
 
 
 
-
 {% block scripts %}
-{% if errmsg %}
-<script> openAlertWindow('{{errmsg}}') </script>
-{% endif %}
+	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
 {% endblock %}

@@ -48,6 +48,7 @@
 <script src="/static/js/bootstrap.min.js"></script>
 {% block scripts %}
 	{{ super() }}
+	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
 
 <script>
 	$(document).ready(function() {
@@ -68,7 +69,6 @@
 				console.log('Had ' + errors + ' errors');
 				return false;
 			}
-
 			return true;
 		});
 	});
@@ -77,7 +77,5 @@
 
 
 # TODO.  Fix the responsive issues.  Allow err-msgs.
-# 1) Social-login btns are too big when shrunk down (min-width is set to 220px).  Change this when we shrink.
-# 2) There is a gigantic whitespace between the social login and email login; minimize this when we shrink.
 # 3) When user signs up (again).  No error msg pops-up suggesting to login.  Make this happen.
 
