@@ -13,9 +13,9 @@
 
 	<div class='social-btns'>
 		<ul class='social-login list-unstyled'>
+			{% if ref_name %} <li class='text-center'>Referred by {{ref_name}}</li> {% endif %}
 			<li><a href="/signup/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Sign Up with Facebook</button></a></li>
 		</ul>
-		{% if ref_name %} <label class='text-center'>Referred by {{ref_name}}</label> {% endif %}
 	</div>
 	<hr>
 
