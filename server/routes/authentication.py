@@ -38,14 +38,14 @@ facebook = sc_oauth.remote_app( 'facebook',
 
 
 linkedin = sc_oauth.remote_app(  'linkedin',
-					consumer_key=ht_server.config['LINKEDIN_KEY'],
-					consumer_secret=ht_server.config['LINKEDIN_SEC'],
-					request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
-					base_url='https://api.linkedin.com/v1/',
-					request_token_url=None,
-					access_token_method='POST',
-					access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
-					authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+		consumer_key=ht_server.config['LINKEDIN_KEY'],
+		consumer_secret=ht_server.config['LINKEDIN_SEC'],
+		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+		base_url='https://api.linkedin.com/v1/',
+		request_token_url=None,
+		access_token_method='POST',
+		access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
+		authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
 )
 
 
@@ -124,10 +124,8 @@ def render_signup_page(usrmsg=None):
 
 @sc_csrf.exempt
 @sc_ebody.route('/login', methods=['GET', 'POST'])
-@dbg_enterexit
-def render_login(usrmsg=None):
+def render_login():
 	""" If successful, sets session cookies and redirects to dash """
-	bp = None
 	usrmsg = None
 	sc_msg = session.pop('messages', None)
 
@@ -153,7 +151,7 @@ def render_login(usrmsg=None):
 	if (usrmsg is None and sc_msg):
 		usrmsg = sc_msg
 
-	return make_response(render_template('login.html', title='- Log In', form=form, bp=bp, errmsg=usrmsg))
+	return make_response(render_template('login.html', form=form, bp=None, errmsg=usrmsg))
 
 
 
