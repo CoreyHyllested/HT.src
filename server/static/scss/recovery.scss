@@ -1,10 +1,7 @@
 @import 'colors';
 
-/*
-There are two responsive design ranges for the password recovery page (recovery.html):
-a) 240px - 349px (phones)
-b) 350px - ... (everything else)
-*/
+// a) 240px - 349px (phones)
+// b) 350px - ... (everything else)
 
 .page-content {
 	padding: 30px 0px 53px;
@@ -17,10 +14,7 @@ b) 350px - ... (everything else)
 	margin-top: 5px;
 	text-align: center;
 }
-
-.recoveryLink:hover {
-	text-decoration: underline;
-}
+.recoveryLink:hover { text-decoration: underline; }
 
 #recovery input[type="email"], input[type="password"] {
 	border-radius: 5px;
