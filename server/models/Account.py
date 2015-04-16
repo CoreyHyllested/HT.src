@@ -1,22 +1,21 @@
 #################################################################################
-# Copyright (C) 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
 
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
-from sqlalchemy import ForeignKey
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
-from sqlalchemy import LargeBinary
+from sqlalchemy import ForeignKey, LargeBinary
 from sqlalchemy.orm	import relationship, backref
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy	 import *
@@ -135,7 +134,7 @@ class Account(Base):
 	def get_by_email(email_address):
 		account = None
 		try:
-			account = Account.query.filter_by(email=email_address).one()
+			account = Account.query.filter_by(email=email_address.lower()).one()
 		except NoResultFound as none:
 			pass
 		return account
