@@ -132,10 +132,10 @@ def sc_password_recovery(email):
 
 def sc_create_account(name, email, passwd, ref_id):
 	challenge_hash = uuid.uuid4()
-	geo_location = get_geolocation_from_ip()
+	geo_location = dict() #get_geolocation_from_ip()
 
 	try:
-		print 'create account and profile', str(geo_location.get('region_name')), str(geo_location.get('country_code'))
+		print 'create account and profile', str(email), str(geo_location.get('region_name')), str(geo_location.get('country_code'))
 		account = Account(name, email, generate_password_hash(passwd), ref=ref_id).set_sec_question(str(challenge_hash))
 		profile = Profile(name, account.userid, geo_location)
 		db_session.add(account)
@@ -780,6 +780,7 @@ def get_geolocation_from_ip(ip=None):
 	if not re.match(pattern, ip):
 		return dict()
 
+	# this was hanging.... recheck to make sure it works
 	ip_geo_url= 'http://freegeoip.net/json/' + str(ip)
 	return json.loads((urllib.urlopen(ip_geo_url)).read())
 
