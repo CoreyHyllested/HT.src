@@ -5,9 +5,12 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 .page-content { 
 	min-height: 100%; 
 	height: auto !important;
-    height: 100%;
-    margin: 0 auto -53px; /* the bottom margin is the negative value of the footer's height */
+	height: 100%;
+	margin: 0 auto -53px;	/* the bottom margin is the negative value of the footer's height */
+	padding-bottom: 53px;	/* important to fix the 'forver-scroll problem */
 }
+
+#page-bumper { margin-bottom: 20px;	}
 
 
 footer {
