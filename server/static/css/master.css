@@ -267,8 +267,9 @@ textarea {
 }
 
 
-input[type="text"], input[type="email"], input[type="password"] {
+input[type="text"], input[type="email"], input[type="password"],  input[type="name"] {
 	-o-appearance: none;
+	-ms-appearance: none;
 	-moz-appearance: none;
 	-webkit-appearance: none;
 
@@ -281,8 +282,10 @@ input[type="text"], input[type="email"], input[type="password"] {
 }
 
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus,
+input[type="name"]:focus {
 	-o-appearance: none;
+	-ms-appearance: none;
 	-moz-appearance: none;
 	-webkit-appearance: none;
 
