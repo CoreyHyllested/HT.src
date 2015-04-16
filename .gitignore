@@ -12,6 +12,7 @@
 # SCSS files.
 server/static/css/settings.css
 server/static/css/projects.css
+server/static/css/recovery.css
 
 #HeroTime
 users.db
