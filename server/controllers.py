@@ -106,10 +106,9 @@ def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 
 def sc_password_recovery(email):
-	""" Password recovery
-	"""
-
+	""" Password recovery """
 	trace("Entering password recovery")
+
 	account = Account.get_by_email(email)
 	if (account is None):
 		raise NoEmailFound(email)

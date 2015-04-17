@@ -283,10 +283,8 @@ def render_password_reset_page(challengeHash):
 			trace(type(e) + ' ' + str(e))
 			db_session.rollback()
 		return redirect('/login')
-
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
-
 	return render_template('password_reset.html', form=form)
 
 
