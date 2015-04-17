@@ -54,7 +54,7 @@ class Profile(Base):
 	reviews  = Column(Integer(), nullable=False, default=0)
 
 	prof_img	= Column(String(128), default="no_pic_big.svg",	nullable=False) 
-	prof_url	= Column(String(128), default='http://herotime.co')
+	prof_url	= Column(String(128), default='https://soulcrafting.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
 	prof_rate	= Column(Integer, nullable=False, default=40)
@@ -75,8 +75,10 @@ class Profile(Base):
 	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
 	def __init__(self, name, acct, area=None):
-		if (area and area.get('country_name') == 'Reserved'): area = 'The Internet'
-		if ((area and area.get('region_name')  == '') or (not area)): area = None
+		#if area and (area.get('country_name') == 'Reserved' or area.get('country_name') == ''):
+		#	area = None
+		#else:
+		#	area = area.get('region_name')
 
 		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
