@@ -222,8 +222,8 @@ class ProSignupForm(Form):
 
 	pro_name	= TextField('Business Name',	[validators.Optional(), validators.length(min=4, max=120)])
 	pro_addr	= TextField('Business Address',	[validators.Required()])
+	pro_phone	= TextField('Business Phone',	[validators.Required()])
 	pro_email	= TextField('Business Email',	[validators.Required(), validators.Email()])
-	pro_phone	= TextField('Business Phone',	[validators.Required(), validators.Phone()])
 
 
 
