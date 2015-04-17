@@ -205,8 +205,6 @@ Days = [
 	(6,'Saturday')
 ]
 
-Location = [('location_ip', "Your Location"), ('location_boulder', "Boulder, CO"), ('location_other', "Other")]
-
 
 
 class SignupForm(Form):
@@ -222,7 +220,7 @@ class ProSignupForm(Form):
 	passw	= PasswordField('Password', [validators.Required()])
 	#terms = BooleanField('TOS', [validators.Required()])
 
-	pro_name	= TextField('Business Name',	[validators.Optional(), validators.length(min=4, max=120)])	
+	pro_name	= TextField('Business Name',	[validators.Optional(), validators.length(min=4, max=120)])
 	pro_addr	= TextField('Business Address',	[validators.Required()])
 	pro_email	= TextField('Business Email',	[validators.Required(), validators.Email()])
 	pro_phone	= TextField('Business Phone',	[validators.Required(), validators.Phone()])
@@ -293,20 +291,20 @@ class ProfileForm(Form):
 	edit_avail_day_fri = BooleanField('Friday')
 	edit_avail_day_sat = BooleanField('Saturday')
 
-	edit_avail_time_mon_start	= SelectField('Mon Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_mon_finish		= SelectField('Mon End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_tue_start	= SelectField('Tue Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_tue_finish		= SelectField('Tue End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_wed_start	= SelectField('Wed Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_wed_finish		= SelectField('Wed End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_thu_start	= SelectField('Thu Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_thu_finish		= SelectField('Thu End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_fri_start	= SelectField('Fri Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_fri_finish		= SelectField('Fri End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_sat_start	= SelectField('Sat Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_sat_finish		= SelectField('Sat End', coerce=str, choices=NTS_times_end)
-	edit_avail_time_sun_start	= SelectField('Sun Start', coerce=str, choices=NTS_times_start)
-	edit_avail_time_sun_finish		= SelectField('Sun End', coerce=str, choices=NTS_times_end)
+	edit_avail_time_mon_start	= SelectField('Mon Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_mon_finish	= SelectField('Mon End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_tue_start	= SelectField('Tue Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_tue_finish	= SelectField('Tue End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_wed_start	= SelectField('Wed Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_wed_finish	= SelectField('Wed End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_thu_start	= SelectField('Thu Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_thu_finish	= SelectField('Thu End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_fri_start	= SelectField('Fri Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_fri_finish	= SelectField('Fri End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_sat_start	= SelectField('Sat Start', 	coerce=str, choices=NTS_times_start)
+	edit_avail_time_sat_finish	= SelectField('Sat End',	coerce=str, choices=NTS_times_end)
+	edit_avail_time_sun_start	= SelectField('Sun Start',	coerce=str, choices=NTS_times_start)
+	edit_avail_time_sun_finish	= SelectField('Sun End',	coerce=str, choices=NTS_times_end)
 
 
 
@@ -333,11 +331,6 @@ class RecoverPasswordForm(Form):
 class NewPasswordForm(Form):
     rec_input_newpass = PasswordField('Password', [validators.Required()])
 
-
-class ProposalActionForm(Form):
-	proposal_id   = TextField('id', [validators.Required()])
-	proposal_stat = TextField('status')
-	proposal_challenge = TextField('ch', [validators.Required()])
 
 
 class ReviewForm(Form):
@@ -391,6 +384,11 @@ def checkfile(form,field):
 ################################################################################
 ### DEPRECATED #################################################################
 ################################################################################
+class ProposalActionForm(Form):
+	proposal_id   = TextField('id', [validators.Required()])
+	proposal_stat = TextField('status')
+	proposal_challenge = TextField('ch', [validators.Required()])
+
 
 class LessonForm(Form):
 	Durations = [ (30, '30 minutes'), (60, '1 hour'), (90, '1 hour 30 minutes'), (120, '2 hours'), (150, '2 hours 30 minutes'), (180, '3 hours'), (210, '3 hours 30 minutes'), (240, '4 hours'), (270, '4 hours 30 minutes'), (300, '5 hours'), (330, '5 hours 30 minutes'), (360, '6 hours') ]
@@ -413,6 +411,7 @@ class LessonForm(Form):
 	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
 	lessonAvail = RadioField('Availability', coerce=int, default=0, choices=[(0,'Same as availability set in my profile'), (1,'Specific times (not available yet)')])
 	lessonMakeLive = BooleanField('Make this lesson live and public!', None)
+
 
 class ProposalForm(Form):
 	prop_mentor      = HiddenField("Mentor",	[validators.Required(), validators.length(min=1, max=40)])
