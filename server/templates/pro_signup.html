@@ -16,28 +16,31 @@
 			{{form.hidden_tag()}}
 
 			<div class="form-group address">
+				<label class='sr-only' for='pro_addr'>Business Address</label>
 				{{form.pro_addr(type="address", class="form-control login-addr", Placeholder="Business Address")}}
 			</div>
 
 			<div class="form-group phone">
+				<label class='sr-only' for='pro_phone'>Business Phone</label>
 				{{form.pro_phone(type="email", class="form-control login-phone", Placeholder="Business Phone")}}
 			</div>
 
 			<div class="form-group email">
+				<label class='sr-only' for='pro_email'>Business Email</label>
 				{{form.pro_email(type="email", class="form-control login-email", Placeholder="Business Email")}}
 			</div>
 
 			<hr>
 			<div class="form-group username">
+				<label class='sr-only' for='uname'>Your Name</label>
 				{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
 			</div>
 
 			<div class="form-group password">
-				<label class="sr-only" for="passw">Your password</label>
+				<label class='sr-only' for='passw'>Your Password</label>
 				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
 			</div>
 			<button type="submit" class="btn btn-block blueButton">Sign Up as Professional</button>
-			<br>
 		</form>
 		<p><a href='/login'><button class='btn btn-block whiteButton'>I have an account</button></a></p>
 	</div>
