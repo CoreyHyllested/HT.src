@@ -32,6 +32,7 @@
 #lp-masthead {
 	width: 100%;
 	height: 80vh;
+	min-height: 400px;
 
 	/* TEXT READABILITY */
 	font-weight: bolder;
@@ -108,7 +109,8 @@
 	top: 23%;
 	margin: 0 auto;
 	width: 100%;
-	text-align:center;		 /* center align text too */
+	min-height: 300px;
+	text-align: center;
 }
 
 .kameron { font-family: 'Kameron', serif; }
