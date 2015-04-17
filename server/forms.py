@@ -214,10 +214,19 @@ class SignupForm(Form):
 	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])		#what is max size in DB?
 	email	= TextField('Email', [validators.Required(), validators.Email()])					#what is max size in DB?
 	passw	= PasswordField('Password', [validators.Required()])
-	#location = SelectField("Location", coerce=str, choices=(Location))
 	#accept_tos = BooleanField('TOS', [validators.Required()])
-	#input_signup_password = PasswordField('Password', [validators.Required(), validators.EqualTo('input_signup_confirm', message='Passwords must match')])
-	#input_signup_confirm  = PasswordField('Confirm Password')
+
+
+class ProSignupForm(Form):
+	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])		#what is max size in DB?
+	passw	= PasswordField('Password', [validators.Required()])
+	#terms = BooleanField('TOS', [validators.Required()])
+
+	pro_name	= TextField('Business Name',	[validators.Optional(), validators.length(min=4, max=120)])	
+	pro_addr	= TextField('Business Address',	[validators.Required()])
+	pro_email	= TextField('Business Email',	[validators.Required(), validators.Email()])
+	pro_phone	= TextField('Business Phone',	[validators.Required(), validators.Phone()])
+
 
 
 class LoginForm(Form):
