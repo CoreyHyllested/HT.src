@@ -19,7 +19,7 @@ from server.models import *
 from server.infrastructure.errors import *
 from server.controllers	import *
 from server.sc_utils	import *
-from server.forms import LoginForm, SignupForm
+from server.forms import LoginForm, SignupForm, ProSignupForm
 
 from datetime import datetime as dt
 from httplib2 import Http
@@ -115,7 +115,7 @@ def render_pro_signup_page(sc_msg=None):
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
-	return make_response(render_template('pro_signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
+	return make_response(render_template('pro_signup.html', form=form, sc_alert=sc_msg))
 
 
 
