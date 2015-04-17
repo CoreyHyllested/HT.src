@@ -236,18 +236,20 @@ def render_search(page = 1):
 
 
 @sc_ebody.route("/password/recover", methods=['GET', 'POST'])
-def render_password_reset_request():
+def render_password_reset_request(sc_msg=None):
 	form = RecoverPasswordForm(request.form)
-	usrmsg = None
 	if form.validate_on_submit():
 		print 'password_reset_request() -', form.email.data
-		usrmsg = sc_password_recovery(form.email.data)
-		# TODO on success... AJAX respond with message.  After 10 seconds, redirect user.
-		# TODO if email not found... Let user know?
-		print usrmsg
-		return make_response(redirect(url_for('sc_ebody.render_login')))
-
-	return render_template('password_recover.html', form=form, errmsg=usrmsg)
+		try:
+			sc_password_recovery(form.email.data)
+			session['messages'] = "Reset instructions were sent."
+			return make_response(redirect(url_for('sc_ebody.render_login')))
+		except NoEmailFound as nef:
+			sc_msg = nef.sanitized_msg()
+		except AccountError as ae:
+			sc_msg = ae.sanitized_msg()
+			print ae
+	return render_template('password_recover.html', form=form, sc_alert=sc_msg)
 
 
 

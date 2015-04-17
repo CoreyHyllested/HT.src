@@ -107,13 +107,12 @@ def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 def sc_password_recovery(email):
 	""" Password recovery
-		returns a string provided to the user on success and failure.
 	"""
 
 	trace("Entering password recovery")
 	account = Account.get_by_email(email)
 	if (account is None):
-		return "Invalid email."
+		raise NoEmailFound(email)
 
 	try:
 		account.reset_security_question()
@@ -122,22 +121,20 @@ def sc_password_recovery(email):
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
-		return 'Error' #str(e)
-
+		raise AccountError(str(e), email, 'An error occurred')
 	sc_send_password_recovery_link(account)
-	return "Password recovery email has been sent."
 
 
 
 
 def sc_create_account(name, email, passwd, ref_id):
 	challenge_hash = uuid.uuid4()
-	geo_location = dict() #get_geolocation_from_ip()
+	#geo_location = get_geolocation_from_ip()
 
 	try:
-		print 'create account and profile', str(email), str(geo_location.get('region_name')), str(geo_location.get('country_code'))
+		print 'create account and profile', str(email) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
 		account = Account(name, email, generate_password_hash(passwd), ref=ref_id).set_sec_question(str(challenge_hash))
-		profile = Profile(name, account.userid, geo_location)
+		profile = Profile(name, account.userid) # geo_location)
 		db_session.add(account)
 		db_session.add(profile)
 		db_session.commit()
@@ -781,7 +778,9 @@ def get_geolocation_from_ip(ip=None):
 		return dict()
 
 	# this was hanging.... recheck to make sure it works
+	ip = 'google.com'
 	ip_geo_url= 'http://freegeoip.net/json/' + str(ip)
+	print ip_geo_url
 	return json.loads((urllib.urlopen(ip_geo_url)).read())
 
 
