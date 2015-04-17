@@ -49,53 +49,74 @@
 .blueButton:hover { color: $white-80; }
 
 
-
 .form-group { position: relative; }
 
-input[type='name'], input[type='email'], input[type='password'] { padding-left: 30px; }
+input[type='name'], input[type='password'],
+input[type='email'], input[type='address'] {
+	padding-left: 30px;
+}
 
 
 .form-group.username:before {
   content: "\f007";
   font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   left: 10px;
   top: 12px;
-  color: #999999;
+  color: $icon-gray;
+}
+
+.form-group.address:before {
+  content: "\f041";
+  font-family: FontAwesome;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: $icon-gray;
+}
+
+
+.form-group.phone:before {
+  content: "\f095";
+  font-family: FontAwesome;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: $icon-gray;
 }
 
 
 .form-group.email:before {
   content: "\f003";
   font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   left: 10px;
   top: 12px;
-  color: #999999;
+  color: $icon-gray;
 }
 
 .form-group.password:before {
   content: "\f023";
   font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   position: absolute;
   left: 10px;
   top: 12px;
-  color: #999999;
+  color: $icon-gray;
 }
 
 .btn-signup {
