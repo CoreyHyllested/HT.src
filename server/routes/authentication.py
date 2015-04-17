@@ -97,6 +97,28 @@ def render_signup_page(sc_msg=None):
 
 
 
+@sc_ebody.route('/professional', methods=['GET', 'POST'])
+def render_pro_signup_page(sc_msg=None):
+	if ('uid' in session):
+		# if logged in, take 'em home
+		return redirect('/dashboard')
+
+	form = ProSignupForm(request.form)
+	if form.validate_on_submit():
+		account = Account.get_by_email(form.email.data)
+		if (account):
+			sc_msg = "Email address already exists. Login instead?"
+		else:
+			# awesome. create a new account.
+			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
+			return redirect('/dashboard')
+	elif request.method == 'POST':
+		print 'render_signup: form invalid ' + str(form.errors)
+		sc_msg = 'Oops. Fill out all fields.'
+	return make_response(render_template('pro_signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
+
+
+
 
 @sc_csrf.exempt
 @sc_ebody.route('/login', methods=['GET', 'POST'])
