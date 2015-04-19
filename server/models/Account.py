@@ -77,6 +77,23 @@ class EmailPolicy:
 
 
 
+class AccountRole:
+	CUSTOMER		= 0
+	CRAFTSPERSON	= 16
+	ADMIN			= 1024
+
+	LOOKUP_TABLE = {
+		CUSTOMER		: 'CUSTOMER',
+		CRAFTSPERSON	: 'CRAFTSPERSON',
+		ADMIN			: 'ADMIN',
+	}
+
+	@staticmethod
+	def name(state):
+		return AccountRole.LOOKUP_TABLE.get(state, 'UNDEFINED')
+
+
+
 
 class Account(Base):
 	"""Account maintains identity information each individual."""
@@ -100,21 +117,23 @@ class Account(Base):
 	sec_question = Column(String(128))
 	sec_answer   = Column(String(128))
 	stripe_cust	 = Column(String(64))
-	role		 = Column(Integer, default = 0)
+	role		 = Column(Integer, nullable=False, default=AccountRole.CUSTOMER)
 	email_policy = Column(Integer, default = 0)
 	referred_by	= Column(String(40), ForeignKey('referral.ref_id'))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
 
-	def __init__ (self, user_name, user_email, user_pass, ref=None):
+	def __init__ (self, user_name, user_email, user_pass, ref=None, role=AccountRole.CUSTOMER):
 		self.userid = str(uuid.uuid4())
 		self.name   = user_name
 		self.email  = user_email
 		self.pwhash	= user_pass
+		self.role	= role
 		self.created = dt.utcnow()
 		self.updated = dt.utcnow()
 		self.referred_by = ref
+
 
 	def __repr___ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
