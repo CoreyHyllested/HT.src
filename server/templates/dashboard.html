@@ -42,6 +42,7 @@
 
 		<section id='profile-wrapper' class="col-lg-push-1 col-lg-3 col-md-push-1 col-md-4 col-sm-4 col-xs-12">
 			<div id='profile'>
+				{% if craftsperson %} <h2 id='header'>Professional Account</h2> {% endif %}
 				<h1>{{bp.prof_name}}</h1>
 				<div class="stats"> 
 					<div class="location"> <i class="fa fa-fw fa-map-marker"></i> {{bp.location}} </div>
