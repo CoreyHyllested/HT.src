@@ -124,7 +124,7 @@ class Account(Base):
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
 
-	def __init__ (self, user_name, user_email, user_pass, ref=None, role=AccountRole.CUSTOMER):
+	def __init__ (self, user_name, user_email, user_pass, ref=None, role=None):
 		self.userid = str(uuid.uuid4())
 		self.name   = user_name
 		self.email  = user_email
