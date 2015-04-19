@@ -40,9 +40,11 @@ from werkzeug.datastructures import CallbackDict
 def sc_bind_session(bp):
 	""" preserve userid server-side """
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
-	session['uid'] = bp.account
+	account = Account.get_by_uid(bp.account)
 	session['pid'] = bp.prof_id
-	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + ']')
+	session['uid'] = bp.account
+	session['role'] = account.role
+	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + '] ' + str(session['role']))
 
 
 def sc_get_profile(ba):
