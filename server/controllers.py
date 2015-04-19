@@ -126,13 +126,13 @@ def sc_password_recovery(email):
 
 
 
-def sc_create_account(name, email, passwd, ref_id):
+def sc_create_account(name, email, passwd, ref_id=None, role=None):
 	challenge_hash = uuid.uuid4()
 	#geo_location = get_geolocation_from_ip()
 
 	try:
 		print 'create account and profile', str(email) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
-		account = Account(name, email, generate_password_hash(passwd), ref=ref_id).set_sec_question(str(challenge_hash))
+		account = Account(name, email, generate_password_hash(passwd), ref=ref_id, role=role).set_sec_question(str(challenge_hash))
 		profile = Profile(name, account.userid) # geo_location)
 		db_session.add(account)
 		db_session.add(profile)
@@ -140,9 +140,6 @@ def sc_create_account(name, email, passwd, ref_id):
 	except IntegrityError as ie:
 		print type(ie), ie
 		db_session.rollback()
-		# raise --fail... user already exists
-		# is this a third-party signup-merge?
-			#-- if it is a merge....
 		return (None, None)
 	except Exception as e:
 		print type(e), e
