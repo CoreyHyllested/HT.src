@@ -105,12 +105,13 @@ def render_pro_signup_page(sc_msg=None):
 
 	form = ProSignupForm(request.form)
 	if form.validate_on_submit():
-		account = Account.get_by_email(form.email.data)
+		account = Account.get_by_email(form.pro_email.data)
 		if (account):
 			sc_msg = "Email address already exists. Login instead?"
 		else:
 			# awesome. create a new account.
-			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
+			(account, profile) = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, role=AccountRole.CRAFTSPERSON)
+			if (profile): sc_bind_session(profile)
 			return redirect('/dashboard')
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
