@@ -15,12 +15,12 @@
 
 {% block content %} <div id='dashboard-wrapper'>
 	<div id='dashboard' class='container-fluid'>
-		<div id='projects' class="col-lg-push-1 col-lg-7 col-md-push-1 col-md-7 col-sm-8 col-xs-12">
+		<div id='projects' class="col-md-push-1 col-md-7 col-sm-8 col-xs-12">
 			<h2 id='header'>My Projects</h2>
 
 			{% for project in projects | sort(attribute='updated') %}
 				<div class="project" id="{{project.proj_id}}">
-					<div class='col-lg-4				col-md-5						col-sm-6		 			col-xs-6'>
+					<div class='col-lg-4				col-md-5						col-xs-6'>
 						<div class='details'>{{project.proj_name}}</div>
 						<div class='details minor'><em>{{project.updated.strftime('%A, %b %d %Y')}}</em></div>
 					</div>
