@@ -13,7 +13,8 @@
 {% endblock %}
 
 
-{% block content %} <div id='dashboard-wrapper'>
+{% block content %}
+<div id='dashboard-wrapper'>
 	<div id='dashboard' class='container-fluid'>
 		<div id='projects' class="col-md-push-1 col-md-7 col-sm-8 col-xs-12">
 			<h2 id='header'>My Projects</h2>
@@ -28,13 +29,9 @@
 					<div class='col-md-push-0 col-md-4			col-sm-push-1 col-sm-4		col-xs-push-1 col-xs-5'>
 						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">GO TO PROJECT</button></a>
 					</div>
-					<!--
-					-->
 
 					<div class="clear"></div>
 					<!-- ENDING PROJECT {{project.proj_id}} -->
-				<!--
-					-->
 				</div>
 			{% endfor %}
 			<a href="/project/edit/new"><button id="btn-95" class="whiteButton">Create new project...</button></a>
