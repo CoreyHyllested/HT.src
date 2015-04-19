@@ -44,6 +44,7 @@ def render_dashboard():
 
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
 	usercash = None
+	craftsperson = (session.get('role', None) == AccountRole.CRAFTSPERSON)
 
 	try:
 		projects = sc_get_projects(bp)
@@ -56,8 +57,8 @@ def render_dashboard():
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
-	print 'render_dashboard()'
-	return make_response(render_template('dashboard.html', bp=bp, projects=projects, credit=usercash, usrmsg=message))
+	print 'render_dashboard(), role=', craftsperson
+	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
 
 
 
