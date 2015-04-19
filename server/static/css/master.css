@@ -267,8 +267,8 @@ textarea {
 }
 
 
-input[type='text'], input[type="email"], input[type="password"],
-input[type='name'], input[type='address'] {
+input[type='text'], input[type='email'], input[type='password'],
+input[type='name'], input[type='phone'], input[type='address'] {
 	-o-appearance: none;
 	-ms-appearance: none;
 	-moz-appearance: none;
@@ -283,8 +283,8 @@ input[type='name'], input[type='address'] {
 }
 
 
-input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus,
-input[type="name"]:focus, input[type='address']:focus {
+input[type='text']:focus, input[type='email']:focus, input[type='password']:focus,
+input[type='name']:focus, input[type='phone']:focus, input[type='address']:focus {
 	-o-appearance: none;
 	-ms-appearance: none;
 	-moz-appearance: none;
@@ -295,13 +295,13 @@ input[type="name"]:focus, input[type='address']:focus {
 	outline: none;
 }
 
-	input[type="submit"] {
-		-moz-appearance: none;
-		-o-appearance: none;
-		-webkit-appearance: none;
-		font-size: 0.9em;
-		text-transform: uppercase;
-	}
+input[type='submit'] {
+	-moz-appearance: none;
+	-o-appearance: none;
+	-webkit-appearance: none;
+	font-size: 0.9em;
+	text-transform: uppercase;
+}
 
 	input[type="button"], button {
 		-moz-appearance: none;
