@@ -25,7 +25,7 @@
 						<div class='details minor'><em>{{project.updated.strftime('%A, %b %d %Y')}}</em></div>
 					</div>
 
-					<div class='col-lg-push-0 col-lg-4 	col-md-push-0 col-md-4			col-sm-push-1 col-sm-4		col-xs-push-1 col-xs-5'>
+					<div class='col-md-push-0 col-md-4			col-sm-push-1 col-sm-4		col-xs-push-1 col-xs-5'>
 						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">GO TO PROJECT</button></a>
 					</div>
 					<!--
@@ -71,39 +71,3 @@
 	<script>openAlertWindow('{{usrmsg}}');</script>
 	{% endif %}
 {% endblock %}
-
-<!--
-		<div class='col-xs-push-1 col-xs-10'> Project List </div>
--->
-			<!--
-				-->
-
-<!-- Unused code. 
-
-	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places&key=AIzaSyCK69MRpXo5CQA6HgoPk0tZxqkDD-SkXXk"></script>
-	<script src="/static/js/maps.js"></script>
-	<script>
-		$(document).ready(function() {
-			google.maps.event.addDomListener(window, 'load', initialize_all_dashboard_maps);
-		});
-	</script>
-<a href="/profile"><img src="https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/{{bp.prof_img}}"></a>
-
-right side.
-<div class="dashboardOfferDetails">
-	<div class="scheduleMap" id="map-canvas" data-uuid="{{project.proj_id}}" data-location="{{project.proj_addr}}"></div>
-	<div class="project address"> {{project.proj_addr}} </div>
-	<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">Edit Project...</button></a>
-</div>
-
-<div class="dashboardButtons">
-	<a href="/profile/edit"><button class="whiteButton">Edit Profile</button></a>
-	<a href="/share?back=/"><button class="whiteButton">Share with Friends</button></a>
-</div>
-
-#EXAMPLE CODE
-<!--div class="details">{{project.proj_desc}}</div-->
-<!--div class="details">${{project.proj_max}}</div-->
-
-
-
