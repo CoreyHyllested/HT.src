@@ -14,6 +14,7 @@ server/static/css/settings.css
 server/static/css/projects.css
 server/static/css/recovery.css
 server/static/css/authorize.css
+server/static/css/pro_dashboard.css
 
 #HeroTime
 users.db
