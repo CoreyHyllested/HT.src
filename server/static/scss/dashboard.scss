@@ -9,7 +9,6 @@
 #request-references  { }
 #requests  {
 	display: inline-block;
-//	background-color: #FFF000;
 	width: 100%;
 }
 
@@ -23,8 +22,9 @@
 .request {
 	display: block;
 //	background-color: rgba(128,50,25,.3);
-	margin: 20px auto;
 	width: 90%;
+	height: 40px;
+	margin: 0px auto 10px;
 
 }
 
@@ -45,8 +45,11 @@
 	width: 75%;
 	float:left;
 }
+
 .resend {
 	width: 20%;
+	min-width: 75px;
+	max-width: 99px;
 	float: right;
 }
 .right	{ float:right; }
@@ -72,19 +75,6 @@
 	text-align: center;
 }
 
-.form-group.email:before {
-  content: "\f003";
-  font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: #999999;
-}
 
 /* Responsive Styles */
 @media only screen and (min-device-width: 240px) and (max-width: 500px) {
