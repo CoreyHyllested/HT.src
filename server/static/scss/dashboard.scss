@@ -1,17 +1,21 @@
 /* ELEMENTS */
 
+.page-content {
+	padding: 5px 0px 53px;
+}
+
 
 .darken {
 	position: absolute;
 	width: 100%;
-	height: 60%;
+	height: 200px;
 	background-color: rgba(0,0,0,.3);
 }
 
 
 #lp-masthead {
 	width: 100%;
-	height: 60vh;
+	height: 200px;
 
 	/* TEXT READABILITY */
     text-shadow: 0 2px 30px rgba(0,0,0,.8);
