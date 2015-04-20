@@ -58,6 +58,12 @@ def render_dashboard():
 		db_session.rollback()
 	
 	print 'render_dashboard(), role=', craftsperson
+
+	if craftsperson:
+		invite = InviteForm(request.form)
+		invite.invite_userid.data = bp.account
+		return make_response(render_template('pro_dashboard.html', bp=bp, form=invite, craftsperson=craftsperson, usrmsg=message))
+
 	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
 
 
