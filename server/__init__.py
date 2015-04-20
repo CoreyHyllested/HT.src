@@ -84,7 +84,7 @@ def initialize_server(config_name):
 	css_projects =	Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
 	css_recovery =	Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
 	css_loginsys =	Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
-	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/dashboard.css')
+	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/pro_dashboard.css')
 
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path
