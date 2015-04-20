@@ -6,7 +6,9 @@
 }
 
 #prodashboard { }
-#request-references  { }
+#request-references  { 
+	width: 90%;
+}
 #requests  {
 	display: inline-block;
 	width: 100%;
@@ -14,24 +16,18 @@
 
 #outstanding-title {
 	border-bottom: 1px solid black;
-	width: 90%;
 	margin: 20px auto;
 }
 
 
 .request {
 	display: block;
-//	background-color: rgba(128,50,25,.3);
-	width: 90%;
 	height: 40px;
 	margin: 0px auto 10px;
 
 }
 
-.request-sent {
-	color: $black;
-	font-size: 10px;
-}
+.request-sent { font-size: 10px; }
 .request-sent:before { content: 'Last sent: '; }
 
 .darken {
@@ -72,30 +68,22 @@
 .form-group {
 	position: relative;
 	margin: 0 auto;
-	text-align: center;
 }
 
 
 /* Responsive Styles */
-@media only screen and (min-device-width: 240px) and (max-width: 500px) {
-}
-
 
 @media (min-width: 489px) {
-	#invite_emails {
-		width: 200px;
-	}
+/*	#invite_emails { width: 200px; } */
 }
 
 @media (min-width: 768px) {
-	#invite_emails { width: 350px; }
+/*	#invite_emails { width: 350px; } */
 }
 
 @media (min-width: 980px) {
-	#invite_emails { width: 400px; }
+/*	#invite_emails { width: 400px; } */
 }
-
 @media (min-width: 1200px) { }
-
 @media (min-width: 1450px) { }
 

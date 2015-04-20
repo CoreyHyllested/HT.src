@@ -8,8 +8,8 @@
 
 {% block content %}
 <section id='prodashboard'>
-	<div id='request-references'>
-		<h1 class='lead text-center'>Request References</h1>
+	<div id='request-references' class='container-fluid'>
+		<h3 class='h4'>Request References</h1>
 
 		<form id='review-request' method='POST' action='/review/request'>
 			{{form.hidden_tag()}}
@@ -19,11 +19,11 @@
 				<input id='send-requests' type='submit' class='blueButton' value='Send'>
 			</div>
 		</form>
+
+		<h4 id='outstanding-title' class='text-center'>Outstanding Requests</h1>
+		<div id='requests' class=''> </div>
 	</div>
 
-	<div id='requests' class='container-fluid'>
-		<h1 id='outstanding-title' class='lead text-center'>Outstanding Requests</h1>
-	</div>
 </section>
 {% endblock %}
 
