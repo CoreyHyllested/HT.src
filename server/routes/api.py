@@ -29,7 +29,8 @@ def api_review_request():
 	print 'email =', email
 	resp_code	= 200
 	resp_mesg	= 'Created'
-	return make_response(jsonify(sc_msg=resp_mesg), resp_code)
+	template	= render_template('fragment_request.html', email=email, date=dt.utcnow())
+	return make_response(jsonify(sc_msg=resp_mesg, embed=template), resp_code)
 
 
 @sc_ebody.route('/purchase/create', methods=['POST'])
