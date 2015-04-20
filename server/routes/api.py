@@ -22,12 +22,14 @@ from server.models import *
 
 
 
-@sc_users.route('/reviews/request', methods=['POST'])
+@sc_users.route('/review/request', methods=['POST'])
 def api_review_request():
 	print 'api_review_request(): enter'
+	email = request.values.get('invite_emails', None)
+	print 'email =', email
 	resp_code	= 200
 	resp_mesg	= 'Created'
-	return make_response(jsonify(sc_msg=resp_message), resp_code)
+	return make_response(jsonify(sc_msg=resp_mesg), resp_code)
 
 
 @sc_ebody.route('/purchase/create', methods=['POST'])
