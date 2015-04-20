@@ -13,12 +13,18 @@
 	width: 100%;
 }
 
+#outstanding-title {
+	border-bottom: 1px solid black;
+	width: 90%;
+	margin: 20px auto;
+}
+
 
 .request {
 	display: block;
 //	background-color: rgba(128,50,25,.3);
 	margin: 20px auto;
-	width: 45%;
+	width: 90%;
 
 }
 
@@ -35,14 +41,15 @@
 	background-color: rgba(0,0,0,.3);
 }
 
-
-.left {
+.details {
+	width: 75%;
 	float:left;
 }
-
-.right {
-	float:right;
+.resend {
+	width: 20%;
+	float: right;
 }
+.right	{ float:right; }
 
 
 #invite_emails {
@@ -51,6 +58,7 @@
 }
 
 
+//btn
 #send-requests {
 	display: inline-block;
 	width: 75px;
