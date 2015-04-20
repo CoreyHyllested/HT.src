@@ -79,11 +79,12 @@ def initialize_server(config_name):
 	jsfilter = sc_server.config['JSFILTER']
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
-	css_schedule = Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
-	css_settings = Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
-	css_projects = Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
-	css_recovery = Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
-	css_loginsys = Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
+	css_schedule =	Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
+	css_settings =	Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
+	css_projects =	Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
+	css_recovery =	Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
+	css_loginsys =	Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
+	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/dashboard.css')
 
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path
@@ -93,6 +94,7 @@ def initialize_server(config_name):
 	assets.register('scss_projects', css_projects)
 	assets.register('scss_recovery', css_recovery)
 	assets.register('scss_loginsys', css_loginsys)
+	assets.register('scss_dashboard', css_dashboard)
 
 	Compress(sc_server)
 
