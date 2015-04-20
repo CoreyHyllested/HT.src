@@ -1,5 +1,5 @@
 {% extends 'sc_header.html' %}
-{% set title = 'Soulcrafting - Dashboard' %}
+{% set title = 'Soulcrafting - Professional Dashboard' %}
 
 {% block header_css %}
 	{{ super() }}
@@ -7,48 +7,45 @@
 {% endblock %}
 
 {% block content %}
-<div id='lp-masthead'>
-	<div class='darken'></div>
-	<div class='container masthead-center'>
-		<h1>Share Soulcrafting</h1>
-		<h2>Give a friend $150 and earn $100 towards your next project.</h2>
-	</div>
-</div>
+<section id='prodashboard'>
+	<div id='request-references' class=''>
+		<h1 class='lead text-center'>Request References.</h1>
 
-
-
-<section id='invite' class='container'>
-	<h1 class='lead text-center'>Give Soulcrafting to a friend.</h1>
-
-	<form method='POST' action='/invite'>
-		<div class='col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12'>
-			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+		<form id='review-request' method='POST' action='/review/request'>
+			{{form.hidden_tag()}}
 			{{form.invite_userid}}
 
 			<div class="form-group email">
-				{{form.invite_emails(type='email', class='form-control', autocomplete='off', placeholder="Add your friend's email")}}
-				<input id='send_invite' type="submit" class="blueButton" value="Send">
+				{{form.invite_emails(type='email', class='form-control', autocomplete='off', placeholder="Add your client's email")}}
+				<input id='send-requests' type='submit' class="blueButton" value="Send">
 			</div>
+		</form>
+	</div>
+
+	<h1 class='lead text-center'>Outstanding Requests</h1>
+	<div id='requests' class='container-fluid'>
+		<div class='request row'>
+			<div class='left'>
+				<div class='request-mail'>corey.hyllested@gmail.com</div>
+				<div class='request-sent'>Monday, July 1, 2015</div>
+			</div>
+			<div class='right'> <div class='btn btn-block blueButton'>Resend</div> </div>
 		</div>
-	</form>
 
-	<!--div class='col-lg-offset-2 col-lg-8 col-md-offset-2 col-md-8 col-sm-12 col-xs-12 text-center'>
-		<p>	
-			<h1 class='lead'>Share a link with a friend.</h1>
-			http://soulcrafting.co/gift/{{bp.account}}
-		</p>
-	</div-->
-
+		<div class='request row'>
+			<div class='left'>
+				<div class='request-mail'>JeffHargon@gmail.com</div>
+				<div class='request-sent'>Monday, July 1, 2015</div>
+			</div>
+			<div class='right'> <div class='btn btn-block blueButton'>Resend</div> </div>
+		</div>
+	</div>
 </section>
 {% endblock %}
 
-<section id='how-it-works' class="container">
-	<div class="text-center">
-		<h1 class=''>How it Works</h1>
-	</div>
-</section>
-
-
 {% block scripts %}
 	{{ super() }}
+	<script src='//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js'></script>
+	<script src='//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js'></script>
+	<script src='/static/js/dashboard.js'></script>
 {% endblock %}
