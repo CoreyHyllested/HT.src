@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (C) 2015 Soulcrafting.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
 # All information contained is the property of Soulcrafting. Any intellectual
@@ -20,6 +20,14 @@ from server.controllers import *
 from server.sc_utils import *
 from server.models import *
 
+
+
+@sc_users.route('/reviews/request', methods=['POST'])
+def api_review_request():
+	print 'api_review_request(): enter'
+	resp_code	= 200
+	resp_mesg	= 'Created'
+	return make_response(jsonify(sc_msg=resp_message), resp_code)
 
 
 @sc_ebody.route('/purchase/create', methods=['POST'])
