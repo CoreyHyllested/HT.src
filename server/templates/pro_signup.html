@@ -65,14 +65,14 @@
 		});
 
 		$("#prosignup").validate({
-			rules:
+			rules: {
 				pro_addr:	{ required: true, rangelength:[10,64] },
 				pro_phone:	{ required: true, phoneUS: true},
 				pro_email:	{ required: true, rangelength:[6,64], email: true},
 				uname:		{ required: true, rangelength:[4,64] },
 				passw:		{ required: true, rangelength:[8,64] }
 			},
-			messages:
+			messages: {
 				pro_addr:	{	required: 'Your business address is needed for verification.', },
 				pro_phone:	{	required: 'Your business phone number is needed to contact you.', },
 				pro_email:	{	required: 'Your business email is needed to contact you.', },
