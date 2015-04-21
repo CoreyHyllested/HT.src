@@ -19,7 +19,6 @@ from .Project			import *
 from .Email				import *
 from .Image				import *
 from .Industry			import *
-from .LessonImageMap	import *
 from .Lesson			import *
 from .Oauth				import *
 from .Review			import *
