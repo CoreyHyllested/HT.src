@@ -47,8 +47,6 @@ class Profile(Base):
 	prof_id	= Column(String(40), primary_key=True, index=True)
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
 	prof_name	= Column(String(128), nullable=False)
-	prof_vanity	= Column(String(128))
-	#prof_skills	= relationship('skills', backref='profile', cascade='all,delete') 
 
 	rating   = Column(Float(),   nullable=False, default=-1)
 	reviews  = Column(Integer(), nullable=False, default=0)
@@ -57,7 +55,6 @@ class Profile(Base):
 	prof_url	= Column(String(128), default='https://soulcrafting.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
-	prof_rate	= Column(Integer, nullable=False, default=40)
 
 	industry	= Column(String(64))
 	headline	= Column(String(128))
@@ -70,9 +67,6 @@ class Profile(Base):
 
 	lessons = relationship('Lesson', backref='profile', cascade="all, delete-orphan")
 	timeslots = relationship('Availability', backref='profile', cascade="all, delete")
-
-	#prof_img	= Column(Integer, ForeignKey('image.id'), nullable=True)  #CAH -> image backlog?
-	#timeslots = relationship("Timeslot", backref='profile', cascade='all,delete', lazy=False, uselist=True, ##foreign_keys="[timeslot.profile_id]")
 
 	def __init__(self, name, acct, area=None):
 		#if area and (area.get('country_name') == 'Reserved' or area.get('country_name') == ''):
