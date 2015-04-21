@@ -6,7 +6,7 @@
 }
 
 #prodashboard { }
-#request-references  { 
+#request-references {
 	width: 90%;
 }
 #requests  {
@@ -16,7 +16,8 @@
 
 #outstanding-title {
 	border-bottom: 1px solid black;
-	margin: 20px auto;
+	margin: 20px 0px;
+	//margin: 20px auto; after we get bigger.
 }
 
 
@@ -24,6 +25,7 @@
 	display: block;
 	height: 40px;
 	margin: 0px auto 10px;
+	max-width: 740px;
 
 }
 
@@ -53,7 +55,8 @@
 
 #invite_emails {
 	display: inline-block;
-	width: 200px;
+	width: 75%;
+	max-width: 500px;	//set margins to auto when we hit 768.
 }
 
 
