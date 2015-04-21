@@ -50,6 +50,7 @@ linkedin = sc_oauth.remote_app(  'linkedin',
 
 
 
+@sc_ebody.route('/signup/', methods=['GET', 'POST'])
 @sc_ebody.route('/signup', methods=['GET', 'POST'])
 def render_signup_page(sc_msg=None):
 	if ('uid' in session):
@@ -97,7 +98,7 @@ def render_signup_page(sc_msg=None):
 
 
 
-@sc_ebody.route('/professional', methods=['GET', 'POST'])
+@sc_ebody.route('/signup/professional', methods=['GET', 'POST'])
 def render_pro_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
