@@ -48,9 +48,6 @@ class Profile(Base):
 	account	= Column(String(40), ForeignKey('account.userid'), nullable=False)
 	prof_name	= Column(String(128), nullable=False)
 
-	rating   = Column(Float(),   nullable=False, default=-1)
-	reviews  = Column(Integer(), nullable=False, default=0)
-
 	prof_img	= Column(String(128), default="no_pic_big.svg",	nullable=False) 
 	prof_url	= Column(String(128), default='https://soulcrafting.co')
 	prof_bio	= Column(String(5000), default='About me')
