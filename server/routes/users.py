@@ -327,7 +327,7 @@ def render_edit_profile():
 	form.edit_headline.data = bp.headline
 	form.edit_industry.data = str(x)
 	form.edit_url.data      = bp.prof_url
-	form.edit_rate.data     = bp.prof_rate
+#	form.edit_rate.data     = bp.prof_rate	//removed
 	form.edit_availability.data      = bp.availability
 	form.edit_oauth_stripe.data 	 = stripe
 
@@ -544,17 +544,18 @@ def ht_validate_profile(bp, form, form_page):
 
 
 	if (form_page == "payment" or form_page == "full"):
-		prof_rate = request.values.get("edit_rate")
+		#PROF_RATE was removed
+		#prof_rate = request.values.get("edit_rate")	
 		oauth_stripe = request.values.get("edit_oauth_stripe")
 
-		print "ht_validate_profile: prof rate is: ", prof_rate
+		#print "ht_validate_profile: prof rate is: ", prof_rate
 
-		try:
-			prof_rate = int(prof_rate)
-			if (prof_rate > 10000):
-				errors["edit_rate"] = "Let's keep it below $10,000 for now."
-		except TypeError:
-			errors["edit_rate"] = "Please keep it to a whole dollar amount (or zero)."
+		#try:
+		#	prof_rate = int(prof_rate)
+		#	if (prof_rate > 10000):
+		#		errors["edit_rate"] = "Let's keep it below $10,000 for now."
+		#except TypeError:
+		#	errors["edit_rate"] = "Please keep it to a whole dollar amount (or zero)."
 
 		if (oauth_stripe == ''):
 			errors["edit_oauth_stripe"] = "Stripe activation is required to become a mentor."
@@ -686,10 +687,11 @@ def ht_update_profile(ba, bp, form, form_page):
 		bp.prof_url  = form.edit_url.data
 		return True
 
-	if (form_page == 'payment' or form_page == 'full'):	
-		bp.prof_rate = form.edit_rate.data		
-		ba.stripe_cust = form.edit_oauth_stripe.data
-		return True
+#PROF_RATE was removed
+#	if (form_page == 'payment' or form_page == 'full'):	
+#		bp.prof_rate = form.edit_rate.data		
+#		ba.stripe_cust = form.edit_oauth_stripe.data
+#		return True
 
 	if (form_page == 'schedule' or form_page == 'full'):
 
@@ -848,8 +850,8 @@ def render_new_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonMaterialsNeeded.data = lesson.lesson_materials_needed		
 		form.lessonMakeLive.data = 'y'
 
-		if (form.lessonRate.data <= 0):
-			form.lessonRate.data = bp.prof_rate		
+#		if (form.lessonRate.data <= 0):
+#			form.lessonRate.data = bp.prof_rate		
 
 		if (lesson.lesson_flags < 2):
 			form.lessonMakeLive.data = None
@@ -906,8 +908,8 @@ def render_edit_lesson(lesson_id, form=None, errmsg=None):
 		form.lessonAvail.data = lesson.lesson_avail
 		form.lessonMakeLive.data = 'y'
 
-		if (form.lessonRate.data <= 0):
-			form.lessonRate.data = bp.prof_rate		
+#		if (form.lessonRate.data <= 0):
+#			form.lessonRate.data = bp.prof_rate		
 
 		# if (lesson_state == "INCOMPLETE" or lesson_state == "COMPLETED"):
 		if (lesson.lesson_flags < 2):
