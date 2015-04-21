@@ -52,6 +52,8 @@ class Profile(Base):
 	prof_url	= Column(String(128), default='https://soulcrafting.co')
 	prof_bio	= Column(String(5000), default='About me')
 	prof_tz		= Column(String(20))  #calendar export.
+	prof_phone	= Column(String(20), nullable=True)
+	prof_email	= Column(String(64), nullable=True)
 
 	industry	= Column(String(64))
 	headline	= Column(String(128))
