@@ -111,7 +111,6 @@ class Account(Base):
 	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)   
 	source  = Column(Integer,		nullable=False, default=OAUTH_NONE)
 	phone	= Column(String(20))
-	dob     = Column(DateTime())
 	created = Column(DateTime())
 	updated = Column(DateTime())
 	sec_question = Column(String(128))
@@ -174,11 +173,6 @@ class Account(Base):
 		self.updated = dt.utcnow()
 		return self
 	
-	def set_dob(self, bd):
-		self.dob = bd
-		self.updated = dt.utcnow()
-		return self
-		
 	def set_source(self, src):
 		self.source = src
 		self.updated = dt.utcnow()
@@ -199,8 +193,8 @@ class Account(Base):
 		self.updated = dt.utcnow()
 		return self
 
-	def update(self, new_values_dict):
-		self.__dict__.update(new_values_dict)
+	def update(self, acct_dictionary):
+		self.__dict__.update(acct_dictionary)
 
 
 
