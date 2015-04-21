@@ -62,7 +62,6 @@ class Profile(Base):
 
 	availability = Column(Integer, default=0)	
 
-	lessons = relationship('Lesson', backref='profile', cascade="all, delete-orphan")
 	timeslots = relationship('Availability', backref='profile', cascade="all, delete")
 
 	def __init__(self, name, acct, area=None):
