@@ -1,7 +1,7 @@
-<div class='request' data-id='{{brr}}'>
+<div class='request' data-id='{{brr.br_uuid}}'>
 	<div class='details'>
-		<div class='request-mail'> {{email}} </div>
-		<div class='request-sent'> {{date.strftime('%A, %b %d %Y')}}  </div>
+		<div class='request-mail'> {{brr.br_req_mail}} </div>
+		<div class='request-sent'> {{brr.updated.strftime('%A, %b %d %Y')}}  </div>
 	</div>
 	<div class='resend'> <div class='btn blueButton'>RESEND</div> </div>
 </div>

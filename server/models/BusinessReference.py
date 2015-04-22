@@ -64,7 +64,3 @@ class BusinessReference(Base):
 		except NoResultFound as nrf:
 			pass
 		return brr
-
-
-
-

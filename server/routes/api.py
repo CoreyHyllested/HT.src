@@ -33,19 +33,19 @@ def api_review_request():
 
 	try:
 		# DOESN'T THROW ERRORS.
-		brr = BusinessReference.get_by_email(session['uid'], email)
+		brr = BusinessReference.get_by_email(session['pid'], email)
+		if (brr is not None):
+			resp_mesg	= 'Request exists.'
+			return make_response(jsonify(sc_msg=resp_mesg, brid=brr.br_uuid), resp_code)
+
 		if (brr is None):
-			print 'no brr, create it'
 			brr = BusinessReference(session['uid'], session['pid'], email)
 			db_session.add(brr)
 			db_session.commit()
-			print 'created brr.  make request'
-			fragment = render_template('fragment_request.html', email=email, brr=brr, date=dt.utcnow())
-		if (brr is not None):
-			print 'found brr', brr.br_uuid
+			fragment = render_template('fragment_request.html', brr=brr)
 	except Exception as e:
-		print 'Uh oh fellas.', type(e), e
 		db_session.rollback()
+		print 'Uh oh fellas.', type(e), e
 		resp_code = 400
 		resp_mesg = 'An error occurred'
 
