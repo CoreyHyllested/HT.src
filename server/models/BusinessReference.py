@@ -37,8 +37,8 @@ class BusinessReference(Base):
 	
 	def __init__ (self, acct_id, prof_id, email):
 		self.br_uuid = str(uuid.uuid4())
-		self.br_bus_acct = acct_id
-		self.br_bus_prof = prof_id
+		self.br_bus_acct = str(acct_id)
+		self.br_bus_prof = str(prof_id)
 		self.br_req_mail = email
 		self.created = dt.utcnow()
 		self.updated = dt.utcnow()
@@ -64,3 +64,7 @@ class BusinessReference(Base):
 		except NoResultFound as nrf:
 			pass
 		return brr
+
+	def resend():
+		print 'resending now'
+		self.updated = dt.utcnow()
