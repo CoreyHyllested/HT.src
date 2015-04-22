@@ -69,8 +69,8 @@ def render_signup_page(sc_msg=None):
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
 
-	rid = session.get('ref_id', None)
-	print 'render_signup: something something ref_name', str(rid)
+#	rid = session.get('ref_id', None)
+#	print 'render_signup: something something ref_name', str(rid)
 	ref_name = auth_signup_set_referral(request, form)
 	return make_response(render_template('signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
 
@@ -85,11 +85,11 @@ def render_pro_signup_page(sc_msg=None):
 	form = ProSignupForm(request.form)
 	if form.validate_on_submit():
 		try:
-			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, role=AccountRole.CRAFTSPERSON)
+			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
 			return redirect('/dashboard')
 		except AccountError as ae:
-			print ae
-			sc_msg = str(ae) #'Something went wrong. Please try again.'
+			print 'render_pro_signup: error', ae
+			sc_msg = ae.sanitized_msg()
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
