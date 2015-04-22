@@ -37,6 +37,17 @@ from werkzeug.datastructures import CallbackDict
 
 
 
+def bind_session(account, profile):
+	""" preserve userid server-side """
+	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
+	session['pid']	= profile.prof_id
+	session['uid']	= account.userid
+	session['role'] = account.role
+	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + '] ' + str(session['role']))
+
+
+
+@deprecated
 def sc_bind_session(bp):
 	""" preserve userid server-side """
 	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
@@ -128,37 +139,65 @@ def sc_password_recovery(email):
 
 
 
-def sc_create_account(name, email, passwd, ref_id=None, role=None):
-	challenge_hash = uuid.uuid4()
+def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, role=AccountRole.CUSTOMER):
 	#geo_location = get_geolocation_from_ip()
 
+	account = Account.get_by_email(email)
+	if (account): raise AccountError(email, 'Email exists', user_msg='Email address already exists. Login instead?')
+
 	try:
-		print 'create account and profile', str(email) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
-		account = Account(name, email, generate_password_hash(passwd), ref=ref_id, role=role).set_sec_question(str(challenge_hash))
-		profile = Profile(name, account.userid) # geo_location)
+		print 'create account and profile', str(email), str(phone), str(addr) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
+		account = Account(name, email, generate_password_hash(passwd), phone=phone, ref=ref_id, role=role)
+		profile = Profile(name, account.userid, email, phone=phone) # geo_location)
 		db_session.add(account)
 		db_session.add(profile)
 		db_session.commit()
 	except IntegrityError as ie:
 		print type(ie), ie
 		db_session.rollback()
-		return (None, None)
+		raise AccountError(email, str(ie), user_msg='An error occurred. Please try again.')
 	except Exception as e:
 		print type(e), e
 		db_session.rollback()
-		return (None, None)
+		raise AccountError(email, str(e), user_msg='An error occurred. Please try again.')
+	#finally:
+	# if (account is None): raise AccountError.
 
-	sc_email_welcome_message(email, name, challenge_hash)
-	return (account, profile)
+	print 'bind-session'
+	bind_session(account, profile)
+
+	session.pop('ref_id', None)
+	session.pop('ref_prof', None)
+	gift_id = session.pop('gift_id', None)
+	if (gift_id):
+		try:
+			# claim gift
+			gift = GiftCertificate.get_by_giftid(gift_id)
+			gift.gift_state = CertificateState.CLAIMED
+			gift.gift_recipient_name = profile.prof_name
+			gift.gift_recipient_prof = profile.prof_id
+			gift.gift_dt_updated = dt.utcnow();
+			db_session.add(gift)
+			db_session.commit()
+		except Exception as e:
+			print type(e), e
+			db_session.rollback()
+
+	print 'send-welcome-email'
+	sc_email_welcome_message(email, name, account.sec_question)
+	return profile
 
 
 
 
 def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
 	print 'sc_create_account_with_oauth: ', name, email, oa_provider
-	(account, profile) = sc_create_account(name, email, str(uuid.uuid4()))
+	try:
+		profile = sc_create_account(name, email, str(uuid.uuid4()))
+	except AccountError as ae:
+		print ae
 
-	if (account is None):
+	if (profile is None):
 		print 'create_account failed. happens when same email address is used'
 		print 'Right, now mention an account uses this email address.'
 		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
@@ -166,6 +205,7 @@ def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
 
 	try:
 		print 'create oauth account'
+		#get account from profile.... 
 		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
 		db_session.add(oa_user)
 		db_session.commit()

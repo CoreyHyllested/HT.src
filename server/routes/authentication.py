@@ -59,40 +59,18 @@ def render_signup_page(sc_msg=None):
 
 	form = SignupForm(request.form)
 	if form.validate_on_submit():
-		account = Account.get_by_email(form.email.data)
-		if (account):
-			trace("Email already exists in DB")
-			sc_msg = "Email address already exists. Login instead?"
-		else:
-			# awesome. create a new account.
-			(bh, bp) = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, form.refid.data)
-			if (bh):
-				# created new account
-				sc_bind_session(bp)
-
-				session.pop('ref_id', None)
-				session.pop('ref_prof', None)
-				gift_id = session.pop('gift_id', None)
-				if (gift_id):
-					# claim gift
-					gift = GiftCertificate.get_by_giftid(gift_id)
-					gift.gift_state = CertificateState.CLAIMED
-					gift.gift_recipient_name = bp.prof_name
-					gift.gift_recipient_prof = bp.prof_id
-					gift.gift_dt_updated = dt.utcnow();
-					try:
-						db_session.add(gift)
-						db_session.commit()
-					except Exception as e:
-						print type(e), e
-						db_session.rollback()
-				return redirect('/dashboard')
-			else:
-				sc_msg = 'Something went wrong. Please try again.'
+		try:
+			profile  = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, ref_id=form.refid.data)
+			return redirect('/dashboard')
+		except AccountError as ae:
+			print 'render_signup: error', ae
+			sc_msg = ae.sanitized_msg()
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
 
+	rid = session.get('ref_id', None)
+	print 'render_signup: something something ref_name', str(rid)
 	ref_name = auth_signup_set_referral(request, form)
 	return make_response(render_template('signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
 
@@ -106,14 +84,12 @@ def render_pro_signup_page(sc_msg=None):
 
 	form = ProSignupForm(request.form)
 	if form.validate_on_submit():
-		account = Account.get_by_email(form.pro_email.data)
-		if (account):
-			sc_msg = "Email address already exists. Login instead?"
-		else:
-			# awesome. create a new account.
-			(account, profile) = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, role=AccountRole.CRAFTSPERSON)
-			if (profile): sc_bind_session(profile)
+		try:
+			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, role=AccountRole.CRAFTSPERSON)
 			return redirect('/dashboard')
+		except AccountError as ae:
+			print ae
+			sc_msg = str(ae) #'Something went wrong. Please try again.'
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
@@ -251,19 +227,14 @@ def linkedin_authorized(resp):
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
 	print ("attempting create_account(" , user_name , ")")
-	(bh, bp) = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
-	if (bp):
-		print ("created_account, uid = " , str(bp.account))
-		sc_bind_session(bp)
-		print ("sc_bind_session = ", bp)
-		import_profile(bp, OAUTH_LINKED, oauth_data=me.data)
+	try:
+		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
+		import_profile(profile, OAUTH_LINKED, oauth_data=me.data)
 
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')
-	else:
-		# something failed.
-		print bh if (bh is not None) else 'None'
-		print bp if (bp is not None) else 'None'
+	except AccountError as ae:
+		print 'something failed.', ae
 		print ('create account failed, using', str(email.data))
 		resp = redirect('/dbFailure')
 	return resp
@@ -402,19 +373,25 @@ def logout():
 
 # returns referred by name on success; sets signup_form data.
 def auth_signup_set_referral(request, signup_form):
-	ref_id = request.values.get('ref', None)
-	if ref_id is None: return
+	ref_name = None
+
+	# get referred_id from the session (prev. seen) or URL (request.values)
+	ref_id = session.get('ref_id', None) or request.values.get('ref', None)
+	if ref_id is None: return None
 
 	signup_form.refid.data = ref_id
 	referral = Referral.get_by_refid(ref_id)
+
 	if referral:
 		ref_prof = Profile.get_by_uid(referral.ref_account)
+		if (not ref_prof): return	#may not exist.
 		ref_name = ref_prof.prof_name
 
 		# save the work, on successfully creating account -- pop these values
 		session['ref_id']	= ref_id
 		session['ref_prof']	= ref_prof.prof_id
 		session['gift_id']	= referral.ref_gift_id
+		print 'set session info', session['ref_id'], session['ref_prof'], session['gift_id']
 	return ref_name
 
 
