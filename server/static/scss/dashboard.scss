@@ -1,5 +1,12 @@
 @import 'colors';
 
+$width-90 = 90%;
+$btn-width = 75px;
+$info-sm-width = 75%;
+$info-lg-width = 80%;
+$info-max-width = 500px;
+
+
 /* ELEMENTS */
 .page-content {
 	padding: 5px 0px 53px;
@@ -7,63 +14,60 @@
 
 #prodashboard { }
 #request-references {
-	width: 90%;
+	max-width: $info-max-width;
 }
+
 #requests  {
-	display: inline-block;
+	display: block;
 	width: 100%;
 }
 
 #outstanding-title {
 	border-bottom: 1px solid black;
 	margin: 20px 0px;
-	//margin: 20px auto; after we get bigger.
 }
 
+.resend .blueButton {
+	font-size: 0.9em;
+	line-height: 24px;
+	height: 39px;
+}
 
 .request {
 	display: block;
 	height: 40px;
-	margin: 0px auto 10px;
-	max-width: 740px;
+	max-width: $info-max-width;
+	margin-bottom: 10px;
+	position: relative;
 
 }
 
 .request-sent { font-size: 10px; }
 .request-sent:before { content: 'Last sent: '; }
 
-.darken {
-	position: absolute;
-	width: 100%;
-	height: 200px;
-	background-color: rgba(0,0,0,.3);
-}
-
 .details {
-	width: 75%;
-	float:left;
+	width: $info-sm-width;
 }
 
 .resend {
-	width: 20%;
-	min-width: 75px;
-	max-width: 99px;
-	float: right;
+	width: $btn-width;
+	position: absolute;
+	top: 0px;
+	left: 76%;
 }
-.right	{ float:right; }
 
 
 #invite_emails {
 	display: inline-block;
-	width: 75%;
-	max-width: 500px;	//set margins to auto when we hit 768.
+	width: $info-sm-width;
+	max-width: $info-max-width;
 }
 
 
 //btn
 #send-requests {
 	display: inline-block;
-	width: 75px;
+	width: $btn-width;
 	height: 39px;
 }
 
@@ -73,20 +77,40 @@
 	margin: 0 auto;
 }
 
+.request-sent,
+.request-mail {
+	text-align: left;
+}
 
 /* Responsive Styles */
 
 @media (min-width: 489px) {
 /*	#invite_emails { width: 200px; } */
-}
+	#request-references {
+		margin: 0px auto;
+		width: 95%;
+	}
 
-@media (min-width: 768px) {
-/*	#invite_emails { width: 350px; } */
-}
+	.details {
+		width: $info-lg-width;
+		margin-left: 10px;
+	}
 
-@media (min-width: 980px) {
-/*	#invite_emails { width: 400px; } */
+	#invite_emails {
+		width: $info-lg-width;
+	}
+
+
+	.ltc {
+		text-align: center;
+	}
+
+	.request {
+		margin: 0px auto 10px;
+	}
+	.resend {
+		top: 0px;
+		left: 83%;
+	}
 }
-@media (min-width: 1200px) { }
-@media (min-width: 1450px) { }
 
