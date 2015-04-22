@@ -29,10 +29,28 @@ def api_review_request():
 	print 'email =', email
 	resp_code	= 200
 	resp_mesg	= 'Created'
+	fragment	= None
+
+	try:
+		# DOESN'T THROW ERRORS.
+		brr = BusinessReference.get_by_email(session['uid'], email)
+		if (brr is None):
+			print 'no brr, create it'
+			brr = BusinessReference(session['uid'], session['pid'], email)
+			db_session.add(brr)
+			db_session.commit()
+			print 'created brr.  make request'
+			fragment = render_template('fragment_request.html', email=email, brr=brr, date=dt.utcnow())
+		if (brr is not None):
+			print 'found brr', brr.br_uuid
+	except Exception as e:
+		print 'Uh oh fellas.', type(e), e
+		db_session.rollback()
+		resp_code = 400
+		resp_mesg = 'An error occurred'
 
 	# if email already exists... send back 200 (scroll-to and flash border?)
-	template	= render_template('fragment_request.html', email=email, date=dt.utcnow())
-	return make_response(jsonify(sc_msg=resp_mesg, embed=template), resp_code)
+	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
 
 
 
