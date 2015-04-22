@@ -21,6 +21,7 @@ from .Image				import *
 from .Oauth				import *
 from .Review			import *
 from .Meeting			import *
+from .BusinessReference	import *
 from .Referral			import *
 from .GiftCertificate	import *
 from .UserMessage		import *
