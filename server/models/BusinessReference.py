@@ -52,7 +52,7 @@ class BusinessReference(Base):
 		try:
 			brr = BusinessReference.query.filter_by(br_uuid=uuid).one()
 		except NoResultFound as nrf:
-            pass
+			pass
 		return brr
 
 
@@ -62,7 +62,7 @@ class BusinessReference(Base):
 		try:
 			brr = BusinessReference.query.filter_by(br_req_mail=email, br_bus_prof=bus_prof).one()
 		except NoResultFound as nrf:
-            pass
+			pass
 		return brr
 
 
