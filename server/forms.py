@@ -275,13 +275,13 @@ class ProfileForm(Form):
 	edit_photo	  = FileField('Photo') #, [validators=[checkfile]])
 	edit_headline = TextField('Headline') # [validators.Required(), validators.length(min=4, max=40)])
 	edit_rate     = TextField('Rate' ) # [validators.Required(), validators.NumberRange(min=0, max=100000)])
-	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd2))
+	#edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd2))
 	edit_url      = TextField('Website') #, [validators.URL(require_tld=True), validators.length(min=10, max=40)])
 	edit_oauth_stripe = TextField('Stripe')
 	edit_availability = SelectField('Availability', coerce=int, choices=[(1,'Flexible - will arrange with students'),(2,'Specific (select times below)')])
 	edit_mentor_live = BooleanField('Make my mentor profile live!', None)
 	edit_mentor_tos = BooleanField('I have read and understand Insprite\'s <a href="/tos" target="_new">Terms of Service</a>', [validators.Required()])
-	edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
+	#edit_industry = SelectField('Category', coerce=str, choices=(Industry.enumInd))
 
 	edit_avail_day_sun = BooleanField('Sunday')
 	edit_avail_day_mon = BooleanField('Monday')
@@ -311,7 +311,7 @@ class ProfileForm(Form):
 class SearchForm(Form):
 	keywords_field = TextField('keywords-field')
 	location_field = TextField('location-field')
-	industry_field = SelectField('Industry', coerce=str, choices=(Industry.enumInd))
+#	industry_field = SelectField('Industry', coerce=str, choices=(Industry.enumInd))
 	rate_from_field = IntegerField('rate-from')
 	rate_to_field   = IntegerField('rate-to')
 
@@ -336,7 +336,7 @@ class NewPasswordForm(Form):
 class ReviewForm(Form):
 	review_id	 = HiddenField("id",	[validators.Required(), validators.length(min=1, max=40)])
 	input_review = TextAreaField('Review') #,      [validators.length(min=0, max=5000)])
-	input_rating = SelectField('Industry', coerce=str, default=0, choices=(Review.enumRating))
+#	input_rating = SelectField('Industry', coerce=str, default=0, choices=(Review.enumRating))
 	score_comm = SelectField('Communication', coerce=str, default=0, choices=(Review.enumRating))
 	score_time = SelectField('Promptness', coerce=str, default=0, choices=(Review.enumRating))
 
@@ -405,7 +405,7 @@ class LessonForm(Form):
 	lessonRate		= IntegerField('Rate Amount', None, default=100)
 	lessonRateUnit	= SelectField('Rate Unit', coerce=int, choices=[(0,'Per Hour'),(1,'Per Lesson')])
 	lessonPlace		= RadioField('Lesson Location', coerce=int, default=0, choices=[(0,'Flexible location'), (2, 'My Place: ')])
-	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
+#	lessonIndustry	= SelectField('Lesson Industry', coerce=str, default='Other', choices=(Industry.enumInd2))
 	lessonDuration	= SelectField('Lesson Duration', coerce=int, default=60, choices=(Durations))
 	lessonMaterialsProvided	= TextAreaField('Materials Provided', [validators.length(min=0, max=100000)])
 	lessonMaterialsNeeded	= TextAreaField('Materials Needed', [validators.length(min=0, max=100000)])
