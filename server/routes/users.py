@@ -57,12 +57,14 @@ def render_dashboard():
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
 	
-	print 'render_dashboard(), role=', craftsperson
 
 	if craftsperson:
+		print 'render_dashboard(), craftsperson ', craftsperson
 		invite = InviteForm(request.form)
 		invite.invite_userid.data = bp.account
-		return make_response(render_template('pro_dashboard.html', bp=bp, form=invite, craftsperson=craftsperson, usrmsg=message))
+		# get all references.
+		refreqs = scdb_get_references(bp, True)
+		return make_response(render_template('pro_dashboard.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
 
 	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
 

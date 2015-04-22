@@ -293,6 +293,7 @@ def normalize_oa_account_data(provider, oa_data):
 
 
 
+@deprecated
 def htdb_get_composite_meetings(profile):
 	hero = aliased(Profile, name='hero')
 	user = aliased(Profile, name='user')
@@ -309,6 +310,16 @@ def htdb_get_composite_meetings(profile):
 	map(lambda composite_meeting: display_meeting_lesson(composite_meeting, lesson), meetings)
 	return meetings
 
+
+
+def scdb_get_references(profile, dump=False):
+	""" get all refreqs for 'profile' """
+	references = db_session.query(BusinessReference).filter(BusinessReference.br_bus_prof == profile.prof_id).all();
+
+	if (dump):
+		for r in references:
+			print '\tREF_REQ', r.br_uuid, ':', r.br_bus_prof, 'wants', r.br_req_mail
+	return references
 
 
 
