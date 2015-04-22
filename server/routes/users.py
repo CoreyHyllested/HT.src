@@ -20,8 +20,8 @@ from server.controllers import *
 from . import sc_users
 from .api import ht_api_get_message_thread
 from .helpers import *
-from ..forms import ProfileForm, ProjectForm, SettingsForm, ReviewForm
-from ..forms import InviteForm, ProposalForm, GiftForm
+from ..forms import ProjectForm, SettingsForm, ReviewForm
+from ..forms import InviteForm, GiftForm
 
 # more this into controllers / tasks.
 import boto
@@ -287,165 +287,6 @@ def render_message_page():
 	return make_response(jsonify(usrmsg="These are not the message you are looking for.", next='/inbox'), 400)
 
 
-
-
-
-
-#@insprite_views.route('/profile/edit', methods=['GET', 'POST'])
-#@req_authentication
-def render_edit_profile():
-	# Form to edit a profile
-
-	bp = Profile.get_by_uid(session['uid'])
-	ba = Account.get_by_uid(session['uid'])
-	avail = Availability.get_by_prof_id(bp.prof_id)
-
-	# Days array for avail
-	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
-
-	# StripeConnect req'd for payments
-	pi = Oauth.get_stripe_by_uid(session['uid'])
-	stripe = ''
-	if (pi is not None): stripe = pi.oa_account
-	
-	# session_form = session.pop('form', None)
-	# session_errmsg = session.pop('errmsg', None)
-	
-	# Set session next_url here
-	# session['next_url'] = '/profile/edit#payment'
-
-	form = ProfileForm(request.form)
-	x = 0
-	for x in range(len(Industry.industries)):
-		if Industry.industries[x] == bp.industry:
-			form.edit_industry.data = str(x)
-			break
-
-	form.edit_name.data     = bp.prof_name
-	form.edit_location.data = bp.location	
-	form.edit_bio.data      = bp.prof_bio
-	form.edit_headline.data = bp.headline
-	form.edit_industry.data = str(x)
-	form.edit_url.data      = bp.prof_url
-#	form.edit_rate.data     = bp.prof_rate	//removed
-	form.edit_availability.data      = bp.availability
-	form.edit_oauth_stripe.data 	 = stripe
-
-	slotdays = []
-
-	for timeslot in avail:
-		print "weekday is", timeslot.avail_weekday
-		print "start is", timeslot.avail_start
-		print "finish is", timeslot.avail_finish
-		
-		day = timeslot.avail_weekday
-
-		# # Create variable strings for each start/end time and the day, define them as variables with vars(), and set their values. 
-		# start = "form.edit_avail_time_"+day+"_start.data"
-		# finish = "form.edit_avail_time_"+day+"_end.data"
-		# day = "form.edit_avail_day_"+day+".data"
-
-		if (day == 0):
-			form.edit_avail_time_sun_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_sun_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_sun.data = 'y'
-
-		if (day == 1):
-			form.edit_avail_time_mon_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_mon_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_mon.data = 'y'		
-
-		if (day == 2):
-			form.edit_avail_time_tue_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_tue_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_tue.data = 'y'
-
-		if (day == 3):
-			form.edit_avail_time_wed_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_wed_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_wed.data = 'y'
-
-		if (day == 4):
-			form.edit_avail_time_thu_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_thu_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_thu.data = 'y'
-
-		if (day == 5):
-			form.edit_avail_time_fri_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_fri_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_fri.data = 'y'
-
-		if (day == 6):
-			form.edit_avail_time_sat_start.data = str(timeslot.avail_start)[:-3]
-			form.edit_avail_time_sat_finish.data = str(timeslot.avail_finish)[:-3]
-			form.edit_avail_day_sat.data = 'y'
-
-	flags = bp.availability
-	print "render_edit_profile(): This user's availability is ", bp.availability
-
-	photoURL = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/' + str(bp.prof_img)
-
-
-	return make_response(render_template('edit_profile.html', title="- Edit Profile", form=form, bp=bp, photoURL=photoURL, flags=flags))
-
-
-#@insprite_views.route('/profile/update', methods=['POST'])
-#@req_authentication
-def api_update_profile(usrmsg=None):
-	# Process the edit profile form
-
-	print "api_update_profile: beginning update"
-
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	ba = Account.get_by_uid(uid)
-	
-
-	form_mode = request.values.get('formMode');
-	form_page = request.values.get('formPage');
-	form = ProfileForm(request.form)
-
-	print "api_update_profile: form mode: ", form_mode
-	print "api_update_profile: form page: ", form_page
-
-	# we will validate each submitted page manually so as to allow for partial form submission (not using WTForm validation.)
-
-	try:
-		page_validate, errors = ht_validate_profile(bp, form, form_page)
-
-		if (page_validate):
-			update = ht_update_profile(ba, bp, form, form_page)
-			if (update):
-				print 'api_update_profile: add'
-				db_session.add(bp)
-				db_session.add(ba)
-				print 'api_update_profile: commit'
-				db_session.commit()
-				log_uevent(uid, "update profile")
-				return jsonify(usrmsg="profile updated"), 200
-			else:
-				db_session.rollback()
-				print 'api_update_profile: update error.'
-				return jsonify(usrmsg="We messed something up, sorry"), 500
-
-		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format. Please check the form.', errors=errors), 500
-
-	except AttributeError as ae:
-		print 'api_update_profile: hrm. must have changed an object somehwere'
-		print 'api_update_profile: AttributeError: ', ae
-		db_session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
-
-	except Exception as e:
-		print 'api_update_profile: Exception: ', e
-		db_session.rollback()
-		return jsonify(usrmsg=e), 500	
-
-	print "api_update_profile: Something went wrong - Fell Through."
-	print "here is the form object:"
-	print str(form)
-
-	return jsonify(usrmsg="Something went wrong."), 500
 
 
 
@@ -779,35 +620,6 @@ def render_edit_portfolio_page():
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
 
-
-
-@sc_users.route('/schedule', methods=['GET','POST'])
-@req_authentication
-def render_schedule_page():
-	""" Schedule a new appointment appointment. """
-
-	usrmsg = None
-	form = ProposalForm(request.form)
-
-	try:
-		bp = Profile.get_by_uid(session.get('uid'))
-		ba = Account.get_by_uid(session.get('uid'))
-		#hack.
-		mentor = bp #Profile.get_by_prof_id(request.values.get('mentor'))
-		avail = Availability.get_by_prof_id(mentor.prof_id)	
-		print 'render_schedule() mentor:', mentor
-
-
-		form.process()
-
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-
-
-	form.prop_mentor.data = mentor.prof_id
-	print 'render_schedule(): using STRIPE: ', ht_server.config['STRIPE_SECRET']
-	return make_response(render_template('schedule.html', bp=bp, mentor=mentor, form=form, STRIPE_PK=ht_server.config['STRIPE_PUBLIC'], buyer_email=ba.email, avail=avail, errmsg=usrmsg))
 
 
 #@insprite_views.route('/schedule/getdays', methods=['GET'])

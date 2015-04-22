@@ -19,7 +19,7 @@ from flask.ext.sqlalchemy import Pagination
 from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, ProposalForm, SearchForm
+from server.forms import NewPasswordForm, SearchForm
 from server.forms import GiftForm, RecoverPasswordForm
 from server import sc_csrf
 from pprint import pprint
