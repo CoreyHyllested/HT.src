@@ -18,11 +18,9 @@ from .Profile			import *
 from .Project			import *
 from .Email				import *
 from .Image				import *
-from .Industry			import *
 from .Oauth				import *
 from .Review			import *
 from .Meeting			import *
-from .Skills			import *
 from .Referral			import *
 from .GiftCertificate	import *
 from .UserMessage		import *
