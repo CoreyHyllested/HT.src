@@ -123,12 +123,12 @@ class Account(Base):
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
 
-	def __init__ (self, user_name, user_email, user_pass, user_phone=None, ref=None, role=None):
+	def __init__ (self, user_name, email, passhash, phone=None, ref=None, role=None):
 		self.userid = str(uuid.uuid4())
 		self.name   = user_name
-		self.email  = user_email
-		self.phone	= user_phone
-		self.pwhash	= user_pass
+		self.email  = email
+		self.phone	= phone
+		self.pwhash	= passhash
 		self.role	 = role
 		self.created = dt.utcnow()
 		self.updated = dt.utcnow()
