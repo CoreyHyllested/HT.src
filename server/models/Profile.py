@@ -63,10 +63,9 @@ class Profile(Base):
 	created = Column(DateTime(), nullable=False, default = "")
 
 	availability = Column(Integer, default=0)	
-
 	timeslots = relationship('Availability', backref='profile', cascade="all, delete")
 
-	def __init__(self, name, acct, area=None):
+	def __init__(self, name, userid, email=None, phone=None,  area=None):
 		#if area and (area.get('country_name') == 'Reserved' or area.get('country_name') == ''):
 		#	area = None
 		#else:
@@ -75,7 +74,9 @@ class Profile(Base):
 		print 'Profile: init \'' + str(area) + '\''
 		self.prof_id	= str(uuid.uuid4())
 		self.prof_name	= name
-		self.account	= acct
+		self.account	= userid
+		self.prof_phone = phone
+		self.prof_email = email
 		self.location	= area
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
