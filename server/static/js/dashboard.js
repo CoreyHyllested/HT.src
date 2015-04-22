@@ -1,4 +1,4 @@
-VERSION = 1.3
+VERSION = 1.4
 $(document).ready(function () {
 	console.log('dashboard.js: v' + VERSION);
 
@@ -25,9 +25,14 @@ function sendrequest() {
   			contentType: false,
 			success : function(response) {
 				console.log('ajax Success');
-				console.log(response.embed);
-				console.log([response]);
-				$('#requests').append(response.embed);
+				console.log(response);
+				if (response.brid) {
+					console.log('brid exists' + response.brid);
+					//$('.request[data-id='+response.brid+']').css('background-color', '#ff00ff');
+				} else {
+					console.log(response.embed);
+					$('#requests').append(response.embed);
+				}
 
 			},
 			error: function(xhr, status, error) {
