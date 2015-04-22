@@ -71,10 +71,9 @@ class SanitizedException(Exception):
 ################################################################################
 
 class AccountError(SanitizedException):
-	def __init__(self, email, error='Account creation failed'):
-		super(AccountError, self).__init__(error, resp_code=400)
+	def __init__(self, email, error='Account creation failed', user_msg=None):
+		super(AccountError, self).__init__(error, resp_code=400, user_msg=user_msg)
 		self.email = email
-		self.sanitized_msg(msg = error)
 
 	def __str__(self):
 		return '<AccountError:%r:%r>' % (self.email, self._tech_mesg)
