@@ -1,4 +1,4 @@
-VERSION = 1.2
+VERSION = 1.3
 $(document).ready(function () {
 	console.log('dashboard.js: v' + VERSION);
 
@@ -31,7 +31,10 @@ function sendrequest() {
 
 			},
 			error: function(xhr, status, error) {
-				console.log('ajax failure');
+				console.log(['ajax failure', xhr]);
+				rc = JSON.parse(xhr.responseText);
+				console.log(rc['sc_msg']);
+				//openAlertWindow(rc['sc_msg']);
 			}
 	});
 	return false;
