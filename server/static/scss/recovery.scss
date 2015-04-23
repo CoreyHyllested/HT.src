@@ -43,17 +43,12 @@ h2 {
 
 /* PHONE DESIGN */
 @media (max-width: 349px) {
-	#recovery {
-		overflow-y: scroll;
-		width: 90%;
-	}
+	#recovery { width: 90%; }
 }
 
 /* DESIGN FOR EVERYTHING ELSE */
 @media (min-width: 350px) {
-	#recovery {
-		width: 300px;
-	}
+	#recovery { width: 300px; }
 }
 
 @media (min-width: 489px) {
