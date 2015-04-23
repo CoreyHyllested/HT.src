@@ -79,6 +79,11 @@ def render_giftpage(gift_id):
 
 
 
+@sc_ebody.route('/review/<business>/<hash>', methods=['GET', 'POST'])
+def render_review_business_requested(business, hash):
+	print 'review_business_requested: enter []'
+
+
 #@sc_csrf.exempt
 #@insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
