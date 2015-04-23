@@ -47,19 +47,10 @@
 
 
 
-.blueButton:hover {
-	color: white;
-	font-weight: bolder;
-}
-
 #calendar {
 		max-width: 900px;
 		margin: 0 auto;
 }
-
-
-
-
 
 
 #basic-details {
@@ -67,7 +58,6 @@
 	width: 100%;
 	margin: 20px auto;
 	margin: 25px 0 24;
-	/*border-bottom: 1px dotted #f0f0f0;*/
 }
 
 
@@ -101,9 +91,13 @@
 	height: 300px;
 }
 
+.blueButton:hover {
+	color: white;
+	font-weight: bolder;
+}
 
 
-.p10		{ margin: 10px auto; }
+
 .underlined	{ border-bottom: 1px solid darkgrey; }
 .save-btn-text { }
 
@@ -143,12 +137,6 @@ input.disabled,
 		line-height: 40px;
 		position: absolute;
 		padding-left: 5px;
-		/* color: #999999; Make black if something exists.  */
 		z-index: 1;
 	}
 }
-
-@media (min-width: 1200px) {
-	#project-wrapper { margin: 20px 200px 75px; }
-}
-
