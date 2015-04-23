@@ -2,16 +2,10 @@
 @import 'fonts';
 @import 'forms';
 
-/* a) 240px - 449px (phones)
-   b) 450px - ... (everything else)
-*/
-
-
 .page-content {
 	background-image: url('/static/img/grass.jpg');
 	background-repeat: no-repeat;
 	background-size: cover;
-	overflow-x: hidden;	/* not sure why this is necessary here */
 }
 
 
@@ -32,7 +26,6 @@
 #proj_desc	{ padding-left: 5px;	}	/* override col-XX-sz, which sets 15px padding */
 #proj_addr	{ padding-bottom: 5px;	}
 #actions		{ margin: 10px auto; }
-#actions-next	{ margin-top: 10px;		}
 #save-project	{ visibility: hidden;	}
 #status {
 	display: block;
@@ -40,9 +33,6 @@
 	font-weight: bolder;
 	visibility: hidden;
 }
-
-
-
 
 
 #calendar {
@@ -74,9 +64,6 @@
 }
 */
 
-/*
-	padding: 25px 0 24px;
-*/
 .scheduleMap {
 	background-color: rgba(0,0,0, 0.05);
 	border: 1px #e1e8ed solid;
@@ -89,14 +76,9 @@
 	height: 300px;
 }
 
-.blueButton:hover {
-	color: white;
-	font-weight: bolder;
-}
-
-
 
 .underlined	{ border-bottom: 1px solid darkgrey; }
+.blueButton:hover { color: white; }
 .save-btn-text { }
 
 input.disabled,
@@ -123,7 +105,6 @@ input.disabled,
 	#project-wrapper { margin: 20px 60px 75px; }
 	#save-project { visibility: visible !important; }
 	#actions { margin: 20px auto; }
-	#actions-next { margin-top: 25px; }
 }
 
 @media (min-width: 980px) {
