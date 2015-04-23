@@ -65,6 +65,7 @@ class BusinessReference(Base):
 			pass
 		return brr
 
-	def resend():
+
+	def resend(self):
 		print 'resending now'
 		self.updated = dt.utcnow()

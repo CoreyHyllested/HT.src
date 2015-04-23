@@ -26,7 +26,7 @@ from server.models import *
 def api_review_request():
 	print 'api_review_request(): enter'
 	email = request.values.get('invite_emails', None)
-	print 'email =', email
+	resend = request.values.get('resend_emails', None)
 	resp_code	= 200
 	resp_mesg	= 'Created'
 	fragment	= None
@@ -36,6 +36,13 @@ def api_review_request():
 		brr = BusinessReference.get_by_email(session['pid'], email)
 		if (brr is not None):
 			resp_mesg	= 'Request exists.'
+			ts	= None
+
+			if resend:
+				brr.resend()
+				db_session.add(brr)
+				db_session.commit()
+
 			return make_response(jsonify(sc_msg=resp_mesg, brid=brr.br_uuid), resp_code)
 
 		if (brr is None):
