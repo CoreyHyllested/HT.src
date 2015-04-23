@@ -36,13 +36,12 @@ def api_review_request():
 		brr = BusinessReference.get_by_email(session['pid'], email)
 		if (brr is not None):
 			resp_mesg	= 'Request exists.'
-			ts	= None
 
 			if resend:
 				brr.resend()
 				db_session.add(brr)
 				db_session.commit()
-
+				sc_send_BR_email(session['pid'], email, brr)
 			return make_response(jsonify(sc_msg=resp_mesg, brid=brr.br_uuid), resp_code)
 
 		if (brr is None):
@@ -50,6 +49,7 @@ def api_review_request():
 			db_session.add(brr)
 			db_session.commit()
 			fragment = render_template('fragment_request.html', brr=brr)
+			sc_send_BR_email(session['pid'], email, brr)
 	except Exception as e:
 		db_session.rollback()
 		print 'Uh oh fellas.', type(e), e

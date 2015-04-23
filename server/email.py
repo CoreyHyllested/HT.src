@@ -47,6 +47,14 @@ def create_mandrill_message(template=None):
 	return message
 
 
+def email_team_notification(event, details):
+	print event, '\n', details
+	message = create_mandrill_message(template = 'sc-event')
+	message['to'].append({'email': 'team@soulcrafting.co'})	#TODO
+	message['global_merge_vars'].append({ 'name': 'EVENT',		'content': event})
+	message['global_merge_vars'].append({ 'name': 'DETAILS',	'content': details})
+	sc_send_mandrill_template(message)
+
 
 def sc_email_welcome_message(user_email, user_name, challenge_hash):
 	""" Emails the Welcome message, includes a 'verify your email' link."""
@@ -58,6 +66,10 @@ def sc_email_welcome_message(user_email, user_name, challenge_hash):
 	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': user_name})
 	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': url_verify})
 	sc_send_mandrill_template(message)
+
+	event	= 'New account'
+	details	= 'Name: ' + str(user_name) + ' email: ' + str(user_email)
+	email_team_notification(event, details)
 
 
 def sc_send_password_recovery_link(account):
@@ -96,33 +108,16 @@ def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None)
 	# maybe setup?
 
 
-#def ht_email_welcome_message(user_email, user_name, challenge_hash):
-#	verify_email_url	= 'https://127.0.0.1:5000/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-#	msg_text = "Welcome to Soulcrafting!\n"
-#	msg_html = email_body_verify_account(verify_email_url)
-#	msg = create_msg('Welcome to Soulcrafting', user_email, user_name, 'noreply@getsoulcrafting.com', u'Soulcrafting')
-#	msg.attach(MIMEText(msg_text, 'plain'))
-#	msg.attach(MIMEText(msg_html, 'html' ))
-#	ht_send_email(user_email, msg)
+def sc_send_BR_email(prof_id, email, brr):
+	event	= 'New Reference Requested'
+	details	= str(prof_id) + ' (' + str(prof_id) + ') wants a reference request sent to ' + str(email)
+	email_team_notification(event, details)
 
-#def ht_send_password_recovery_link(account):
-#	""" Emails the password recovery link to a user """
-#	url = 'https://127.0.0.1:5000/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
-#	msg_text = "Go to " + url + " to recover your HeroTime password."
-#	msg_html = email_body_recover_your_password(url)
-#	msg = create_msg('Reset your Insprite password', account.email, account.name, 'noreply@insprite.co', u'Insprite')
-#	msg.attach(MIMEText(msg_text, 'plain'))
-#	msg.attach(MIMEText(msg_html, 'html' ))
-#	ht_send_email(account.email, msg)
 
-#def ht_send_password_changed_confirmation(user_email):
-#	""" email user 'password changed' confirmation notice. """
-#	msg_html = email_body_password_changed_confirmation('url')
-#	msg_text = None	# TODO	 #msg.attach(MIMEText(msg_html, 'plain'))
-#	msg = create_msg('Your Insprite password has been updated', user_email, user_email, 'noreply@insprite.co', u'Insprite')
-#	msg.attach(MIMEText(msg_html, 'html' ))
-#	ht_send_email(user_email, msg)
-
+def sc_email_newproject_created(profile, project):
+	event	= 'New project'
+	details	= str(profile.prof_name) + ' (' + str(profile.prof_id) + ') created a new project ' + str(project.proj_name)
+	email_team_notification(event, details)
 
 
 
