@@ -854,26 +854,23 @@ def upload():
 @req_authentication
 def render_edit_project(pid=None):
 	bp = Profile.get_by_uid(session['uid'])
-	avail = Availability.get_by_prof_id(bp.prof_id)
 	print "render_edit_project: profile[" + str(bp.prof_id) + "] project[" + str(pid) + "]"
 
 	form = ProjectForm(request.form)
-	# This project should be owned by the browsing user (not used right now)
-	project = Project.get_by_proj_id(pid, bp)
+	project = Project.get_by_proj_id(pid, bp) # FEATURE: project should be _owned_ by bp (not checked right now)
 	if (project):
 		form.proj_id.data	= project.proj_id
 		form.proj_name.data	= project.proj_name
 		form.proj_addr.data = project.proj_addr
 		form.proj_desc.data = project.proj_desc
-#		form.proj_min.data	= project.proj_min
 		form.proj_max.data	= project.proj_max
 		form.proj_timeline.data	= project.timeline
 		form.proj_contact.data	= project.contact
 
-		print "render_edit_project: checking for scheduled time."
-		schedule_call = Availability.get_project_scheduled_time(project.proj_id)
-		if (schedule_call is not None):
-				print "render_edit_project: setting values to ", str(schedule_call.avail_weekday), str(schedule_call.avail_start), str(schedule_call.avail_start)[:-3]
+#		print "render_edit_project: checking for scheduled time."
+#		schedule_call = Availability.get_project_scheduled_time(project.proj_id)
+#		if (schedule_call is not None):
+#				print "render_edit_project: setting values to ", str(schedule_call.avail_weekday), str(schedule_call.avail_start), str(schedule_call.avail_start)[:-3]
 #				form.avail_day.data  = schedule_call.avail_weekday
 #				form.avail_time.data = str(schedule_call.avail_start)[:-3]
 	else:
@@ -910,24 +907,17 @@ def api_update_project(usrmsg=None):
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
 	
-	#proj_name     = TextField('Name', [validators.Required(), validators.length(min=1, max=40)])
-	#proj_addr	= TextAreaField('Address', [validators.length(min=0, max=128)])
-	#proj_desc	= TextAreaField('Description', [validators.Required(), validators.length(min=0, max=5000)])
-	#proj_timeline	= TextField('Timeline')
-	#proj_contact	= TextField('Contact')
-
 	# validate all data manually. 
 	form = ProjectForm(request.form)
-#	print "api_proj_update: day", form.avail_day.data, form.avail_time.data
 
 	try:
 		errors = "CAH, no errors"
 		if form.validate_on_submit():
 			print "api_proj_update: valid submit"
 
-			update = True;
-			if (update):
+			if (True):
 				project = None
+				newproj = False
 				print "api_proj_update: id = ", form.proj_id.data
 				if form.proj_id is not 'new':
 					# find project.
@@ -936,6 +926,7 @@ def api_update_project(usrmsg=None):
 				if (project == None):
 					print "api_proj_update: create new project"
 					project = Project(form.proj_name.data, uid)
+					newproj = True;
 					if (project == None):
 						err_msg = 'Error: user(%s) gave us a bad ID(%s), BAIL!' % (uid, form.proj_name.data)
 						raise err_msg
@@ -950,31 +941,10 @@ def api_update_project(usrmsg=None):
 				project.contact		= form.proj_contact.data
 				project.updated		= datetime.utcnow()
 
-
-				# in case of classic user fippery
-#				if (project.proj_min > project.proj_max):
-#					print 'Classic user fippery, SWAP!'
-#					tmp = project.proj_min
-#					project.proj_min = project.proj_max
-#					project.proj_max = tmp
-
-#				print "api_proj_update: set day/time = ", form.avail_day.data, form.avail_time.data
-#				schedule_call = Availability.get_project_scheduled_time(project.proj_id)
-#				print "api_proj_update: ", str(schedule_call)
-#				if (schedule_call is None):
-					# create new availabliity.
-#					schedule_call = Availability(bp, project.proj_id)
-
-#				print "api_proj_update: adding time/date"
-#				schedule_call.avail_weekday = form.avail_day.data
-#				schedule_call.avail_start =  form.avail_time.data
-			
-
-
 				print "api_proj_update: add"
 				db_session.add(project)
-#				db_session.add(schedule_call)
 				db_session.commit()
+				if (newproj): sc_email_newproject_created(bp, project)
 				return jsonify(usrmsg="project updated", proj_id=project.proj_id), 200
 			else:
 				db_session.rollback()
