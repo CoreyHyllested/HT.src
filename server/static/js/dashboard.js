@@ -1,4 +1,4 @@
-VERSION = 1.5
+VERSION = 1.6
 $(document).ready(function () {
 	console.log('dashboard.js: v' + VERSION);
 
@@ -8,9 +8,9 @@ $(document).ready(function () {
 		sendrequest(fd);
 	} );
 
-	$('.resend').click(function(e) {
-		//data = $(this).parent().data('id');
-		//console.log('clicked...' + data + ' ' + mail);
+	$('#requests').on('click', '.request .resend', function(e) {
+//		data = $(this).parent().data('id');
+//		console.log('clicked...' + data);
 		mail = $(this).parent().data('email');
 		csrf = $('#csrf_token').val();
 		fd = new FormData();
