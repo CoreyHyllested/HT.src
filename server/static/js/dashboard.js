@@ -1,22 +1,29 @@
-VERSION = 1.4
+VERSION = 1.5
 $(document).ready(function () {
 	console.log('dashboard.js: v' + VERSION);
 
 	$('#send-requests').click(function (e)	{ 
 		e.preventDefault();
-		email = $('#invite_emails').val()
-		console.log('clicked...' + email);
-		sendrequest();
+		fd = new FormData($('#review-request')[0]);
+		sendrequest(fd);
 	} );
+
+	$('.resend').click(function(e) {
+		//data = $(this).parent().data('id');
+		//console.log('clicked...' + data + ' ' + mail);
+		mail = $(this).parent().data('email');
+		csrf = $('#csrf_token').val();
+		fd = new FormData();
+		fd.append("invite_emails", mail);
+		fd.append("resend_emails", true);
+		fd.append("csrf_token", csrf);
+		sendrequest(fd);
+	});
 });
 	
 
-function sendrequest() {
+function sendrequest(fd) {
 	console.log('send-request()');
-	var fd = new FormData($('#review-request')[0]);
-	$.each(fd, function(k, v) {
-		console.log('project fd['+k+']='+v);
-	});
 
 	$.ajax({ url	: '/review/request',
 			type	: 'POST',
@@ -28,7 +35,7 @@ function sendrequest() {
 				console.log(response);
 				if (response.brid) {
 					console.log('brid exists' + response.brid);
-					//$('.request[data-id='+response.brid+']').css('background-color', '#ff00ff');
+				//	$('.request[data-id='+response.brid+']').css('background-color', '#ff00ff');
 				} else {
 					console.log(response.embed);
 					$('#requests').append(response.embed);
@@ -38,8 +45,7 @@ function sendrequest() {
 			error: function(xhr, status, error) {
 				console.log(['ajax failure', xhr]);
 				rc = JSON.parse(xhr.responseText);
-				console.log(rc['sc_msg']);
-				//openAlertWindow(rc['sc_msg']);
+				openAlertWindow(rc['sc_msg']);
 			}
 	});
 	return false;
