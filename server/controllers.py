@@ -47,22 +47,6 @@ def bind_session(account, profile):
 
 
 
-def sc_get_profile(ba):
-	""" return profile from account """
-	if (ba == None): return None
-
-	profiles = Profile.query.filter_by(account=ba.userid).all()
-	if (len(profiles) == 1): return profiles[0]
-	return None
-
-
-def sc_browsingprofile():
-	bp = Profile.query.filter_by(account=session.get('uid', 0)).all()
-	if (len(bp) == 1): return bp[0]
-	return None
-
-
-
 def sc_authenticate_user(user_email, password):
 	""" Returns authenticated account """
 
@@ -745,22 +729,6 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 #################################################################################
 ### DEPRECATED FUNCTIONS ########################################################
 #################################################################################
-
-@deprecated
-def ht_get_profile(ba):
-	return sc_get_profile(ba)
-
-@deprecated
-def ht_browsingprofile():
-	return sc_browsingprofile()
-
-@deprecated
-def ht_authenticate_user(user_email, password):
-	return sc_authenticate_user(user_email, password)
-
-@deprecated
-def ht_authenticate_user_with_oa(oa_srvc, oa_data_raw):
-	return sc_authenticate_user_with_oa(oa_srvc, oa_data_raw)
 
 @deprecated
 def ht_create_account(name, email, passwd, ref_id):
