@@ -114,7 +114,7 @@ def render_login():
 		if (ba is not None):
 			# successful login, bind session.
 			bp = Profile.get_by_uid(ba.userid)
-			sc_bind_session(bp)
+			bind_session(ba, bp)
 			return redirect('/dashboard')
 
 		trace ("POST /login failed, flash name/pass combo failed")
@@ -162,7 +162,7 @@ def facebook_authorized(resp):
 		print ("created_account, uid = " , str(ba.userid), ', get profile')
 		bp = Profile.get_by_uid(ba.userid)
 		print 'bind session'
-		sc_bind_session(bp)
+		bind_session(ba, bp)
 		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
 		resp = redirect('/dashboard')
 	else:

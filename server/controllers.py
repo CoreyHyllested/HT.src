@@ -47,17 +47,6 @@ def bind_session(account, profile):
 
 
 
-@deprecated
-def sc_bind_session(bp):
-	""" preserve userid server-side """
-	#http://stackoverflow.com/questions/817882/unique-session-id-in-python
-	account = Account.get_by_uid(bp.account)
-	session['pid'] = bp.prof_id
-	session['uid'] = bp.account
-	session['role'] = account.role
-	trace('bound session sid[' + str(session.get_sid()) + '] uid[' + str(session['uid']) + '] ' + str(session['role']))
-
-
 def sc_get_profile(ba):
 	""" return profile from account """
 	if (ba == None): return None
@@ -742,7 +731,7 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 
 	# bind session cookie to this user's profile
 	profile = Profile.get_by_uid(account.userid)
-	ht_bind_session(profile)
+	bind_session(account, profile)
 	if (nexturl is not None):
 		# POSTED from jquery in /settings:verify_email not direct GET
 		return make_response(jsonify(usrmsg="Email successfully verified."), 200)
@@ -756,10 +745,6 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 #################################################################################
 ### DEPRECATED FUNCTIONS ########################################################
 #################################################################################
-
-@deprecated
-def ht_bind_session(bp):
-	sc_bind_session(bp)
 
 @deprecated
 def ht_get_profile(ba):
