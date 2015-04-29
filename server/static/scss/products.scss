@@ -1,0 +1,114 @@
+@import 'colors';
+
+$img-horiz-margin = 20px;
+$img-bordr-rad = 10px;
+
+$img-hmargin		= 5px;
+$img-hmargin-490	= 15px;
+$img-hmargin-768	= 25px;
+$img-hmargin-980	= 35px;
+
+$masthead-height	= 400px;
+$img-frame-color	= darkgray; 
+
+
+/* ELEMENTS */
+#masthead {
+	width: 100%;
+	height: $masthead-height;
+	position: relative;
+
+	/* TEXT READABILITY */
+	text-align:	center;
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-weight: bolder;
+	font-size: 2.1em;
+	line-height: 1.1em;
+	color: white;
+
+	/* background image */
+	background-image: $bg-img-wwms;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+#masthead-text {
+	/* center verically */
+	position: absolute;
+	display: block;
+	top: 50%;
+
+	/* center horizontally */
+	margin: 0 auto;
+	width: 100%;
+}
+
+#masthead h1 {
+	text-transform: uppercase;
+}
+
+#why {
+	position: relative;
+	background-color: grey; /* fallback */
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
+	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
+	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
+	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
+	
+}
+
+#ideas {
+	position: static;
+	display: block;
+}
+
+
+
+.img-container {
+	display: inline-block;
+	border-radius: $img-bordr-rad;
+	background: $img-frame-color; 
+	border: 2px solid $img-frame-color;
+	margin: 0px auto;
+}
+
+/* sizes for img-container */
+.img-width-100	{					max-width: 999px;		}
+.img-width-40	{	width: 40%;		max-width: 500px;		}
+.img-width-28	{	width: 25%;		max-width: 350px;		}
+.img-resp-maxh-650 { max-height: 650px; }
+
+
+.img-responsive { 
+	border-radius: $img-bordr-rad;
+	background: $img-frame-color; 
+	margin: 0 auto;
+}
+
+
+
+/* Responsive Styles */
+@media (max-width: 488px) {
+	.img-container	{	display: block;	margin-top: 5px;	}	/* Issue with FF, imgs bigger than container */
+	.img-width-40	{	width: 100%;	max-width: 100%;	}
+	.img-width-28	{	width: 100%;	max-width: 100%;	}
+}
+
+@media (min-width: 489px) {
+	.img-width-40	{	margin: 0px $img-hmargin-490;	}
+	.img-width-28	{	margin: 0px $img-hmargin-490;	}
+}
+
+@media (min-width: 768px) {
+	.img-width-40	{	margin: 0px $img-hmargin-768;	}
+	.img-width-28	{	margin: 0px $img-hmargin-768;	}
+}
+
+@media (min-width: 980px) {
+	.img-width-40	{	margin: 0px $img-hmargin-980;	}
+	.img-width-28	{	margin: 0px $img-hmargin-980;	}
+}
+
+
