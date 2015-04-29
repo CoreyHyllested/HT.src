@@ -39,6 +39,17 @@ def render_landingpage():
 
 
 
+@sc_ebody.route('/products/furniture/', methods=['GET', 'POST'])
+@sc_ebody.route('/products/furniture',  methods=['GET', 'POST'])
+def render_product_furniture():
+	bp = None
+	if 'uid' in session:
+		bp = Profile.get_by_uid(session['uid'])
+
+	return make_response(render_template('product_furniture.html', bp=bp))
+
+
+
 @sc_ebody.route("/purchase", methods=['GET', 'POST'])
 def render_purchase_page_ebody():
 	bp = None
