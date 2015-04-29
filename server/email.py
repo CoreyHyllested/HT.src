@@ -108,9 +108,16 @@ def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None)
 	# maybe setup?
 
 
-def sc_send_BR_email(prof_id, email, brr):
+def sc_send_BR_email(prof_id, reference_email, brr):
 	event	= 'New Reference Requested'
-	details	= str(prof_id) + ' (' + str(prof_id) + ') wants a reference request sent to ' + str(email)
+	profile = Profile.get_by_prof_id(prof_id)
+	details	= str(prof_id) + ' (' + str(profile.prof_name) + ') wants a reference request sent to ' + str(reference_email)
+
+	message = create_mandrill_message(template='write-fname-a-reference-on-soulcrafting')
+	message['to'].append({'email': reference_email })
+	message['global_merge_vars'].append({ 'name': 'FNAME',	'content': profile.prof_name })
+	sc_send_mandrill_template(message)
+
 	email_team_notification(event, details)
 
 
