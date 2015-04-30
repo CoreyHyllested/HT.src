@@ -86,8 +86,8 @@ section {
 /* Images.  img-container (no margins).  */
 .img-responsive	{	background:	$gray;	margin: 0 auto; }
 .img-width-100	{	max-width: 999px;					}
-.img-width-50	{	max-width: 485px;	width:	49%;	}
-.img-width-33	{	max-width: 350px;	width:	33%;	}
+.img-width-50	{	max-width: 485px;	width:	49%;	display: inline-block;	}
+.img-width-33	{	max-width: 350px;	width:	33%;	display: inline-block;	}
 .img-spacer		{	max-width:  22px;	width:	2px;	display: inline-block;	}
 .img-craftsman	{	height: 150px;		width:  150px;	border-radius: 50%;		}
 
