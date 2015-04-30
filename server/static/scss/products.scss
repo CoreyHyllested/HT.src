@@ -81,6 +81,17 @@ section {
 	height: 500px;
 }
 
+#get-started {
+	padding: $section-margin $section-margin 50px;
+}
+
+#btn-get-started {
+	width: 100%;
+	max-width: 150px;
+	text-transform: uppercase;
+	margin: 0 auto;
+	color: white;
+}
 
 
 /* Images.  img-container (no margins).  */

@@ -57,12 +57,11 @@
 
 
 
-<section id='start' class='text-center'>
-	<h4 class='text-center'>Get Started </h4>
+<div id='get-started' class='text-center'>
 	<p>Create a project and a specialist will contact you.</p>
-	<a href='#signup' class='btn btn-block whiteButton'>Get Started</a>
-		{#<a href='#sharesoulcrafting' class='btn btn-block'>Share Soulcrafting</a> #}
-</section>
+	<a id='btn-get-started' href={% if bp %}'/project/edit/new'{% else %}'/signup'{% endif %} class='btn btn-block blueButton'>Get Started</a>
+	{#<a href='#sharesoulcrafting' class='btn btn-block'>Share Soulcrafting</a> #}
+</div>
 {% endblock %}
 
 
