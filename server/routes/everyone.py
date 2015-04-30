@@ -159,7 +159,9 @@ def render_dmca():
 
 
 
-#@sc_ebody.route("/about", methods=['GET', 'POST'])
+
+@sc_ebody.route('/about',  methods=['GET', 'POST'])
+@sc_ebody.route('/about/', methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
