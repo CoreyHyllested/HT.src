@@ -13,11 +13,12 @@
 <div id='about-furniture' class=''>
 	<h3 class='text-center'>Soulcrafted Furniture</h3>
 	<p id='reasons' class=''>
-		Furniture makes a room function better. 
 		Soulcrafted furniture made is custom made for you and your home.  
-		It's crafted to last.  It's crafted to be functional and elegant. Flashy or austere it will match your personality and style.  
+		It's crafted to last.  It's crafted to be functional and elegant. Flashy or austere &ndash; it will match your personality and style.  
 		And it will be created right here in Boulder by local craftspeople.
 	</p>
+	<br>
+	<a href={% if bp %}'/project/edit/new'{% else %}'/signup'{% endif %} class='btn btn-block blueButton btn-get-started'>Get Started</a>
 </div>
 
 
@@ -59,7 +60,7 @@
 
 <div id='get-started' class='text-center'>
 	<p>Create a project and a specialist will contact you.</p>
-	<a id='btn-get-started' href={% if bp %}'/project/edit/new'{% else %}'/signup'{% endif %} class='btn btn-block blueButton'>Get Started</a>
+	<a href={% if bp %}'/project/edit/new'{% else %}'/signup'{% endif %} class='btn btn-block blueButton btn-get-started'>Get Started</a>
 	{#<a href='#sharesoulcrafting' class='btn btn-block'>Share Soulcrafting</a> #}
 </div>
 {% endblock %}

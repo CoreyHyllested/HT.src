@@ -80,12 +80,12 @@ section { padding: $section-padding 0px; }
 	padding: $section-padding;
 }
 
-#btn-get-started {
+.btn-get-started {
 	width: 100%;
 	max-width: 150px;
 	text-transform: uppercase;
 	margin: 0 auto;
-	color: white;
+	color: white !important;
 }
 
 
