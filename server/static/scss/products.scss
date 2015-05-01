@@ -4,8 +4,7 @@ $masthead-height	= 400px;
 $img-frame-color	= $gray;
 $page-max-width		= 999px;
 $section-padding	= 50px;
-
-section { padding: $section-padding 0px; }
+$closing-text-sz	= 16px;
 
 
 /* ELEMENTS */
@@ -28,7 +27,7 @@ section { padding: $section-padding 0px; }
 }
 
 #masthead-text {
-	/* center verically */
+	/* position verically */
 	position: absolute;
 	display: block;
 	top: 28%;
@@ -42,7 +41,8 @@ section { padding: $section-padding 0px; }
 
 #about-furniture {
 	background: whitesmoke;
-	padding: $section-padding;
+	font-size:	$closing-text-sz;
+	padding:	$section-padding;
 }
 
 #ideas { padding: $section-padding 0px; }
@@ -64,7 +64,9 @@ section { padding: $section-padding 0px; }
 }
 
 #get-started {
-	padding: $section-padding;
+	padding:	$section-padding;
+	font-size:	$closing-text-sz;
+	text-align:	center;
 }
 
 .center-col {
