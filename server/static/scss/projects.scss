@@ -84,8 +84,7 @@ input.disabled,
 /* PHONE DESIGN */
 @media (min-width: 768px) {
 	.page-content {
-		background-image: url('/static/img/grass.jpg');
-		background-repeat: no-repeat;
+		background: $bg-img-grass center no-repeat;
 		background-size: cover;
 	}
 
