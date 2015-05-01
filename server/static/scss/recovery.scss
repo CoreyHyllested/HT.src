@@ -53,9 +53,8 @@ h2 {
 
 @media (min-width: 489px) {
 	.page-content {
-		background-image: $bg-img-grass;
+		background: $bg-img-grass no-repeat center;
 		background-size: cover;
-		background-repeat: no-repeat;
 	}
 
 	#recovery {

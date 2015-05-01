@@ -147,9 +147,8 @@ input[type='email'], input[type='phone'], input[type='address'] {
 /* DESIGN FOR EVERYTHING ELSE */
 @media (min-width: 489px) {
 	.page-content {
-		background-image: $bg-img-grass;
+		background: $bg-img-grass no-repeat center;
 		background-size: cover;
-		background-repeat: no-repeat;
 	}
 
 	#authorize {
