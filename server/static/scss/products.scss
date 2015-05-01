@@ -18,8 +18,8 @@ section { padding: $section-padding 0px; }
 	text-align:	center;
 	text-shadow: 0 2px 30px rgba(0,0,0,.8);
 	font-weight: bolder;
-	font-size: 4em;
-	line-height: 1.2em;
+	font-size: 44px;
+	line-height: 1.1em;
 	color: white;
 
 	/* background image */
@@ -42,32 +42,19 @@ section { padding: $section-padding 0px; }
 
 #about-furniture {
 	background: whitesmoke;
-	padding: $section-padding $section-padding 50px;
+	padding: $section-padding;
 }
 
-#reasons {
-	width: 100%;
-	max-width: $page-max-width;
-	margin: 0 auto;
-}
+#ideas { padding: $section-padding 0px; }
 
-
-#ideas {
-	position: static;
-	display: block;
-	max-width: $page-max-width;
-	padding: $section-padding 0px;
-	margin: 0 auto;
-}
 
 #craftsman {
-	display: block;
 	background: whitesmoke;
-	padding-bottom: 0px;
+	padding: $section-padding 0px 0px;
 }
 
-#craftsman-id		{ width: 35%; display: inline-block; height: 250px; padding: 20px;	}
-#craftsman-about	{ width: 64%; display: inline-block; height: 250px;					}
+#craftsman-id		{ width: 100%; display: inline-block; height: 250px; padding: 20px;	}
+#craftsman-about	{ width: 100%; display: inline-block; height: 250px;				}
 #craftsman-work		{
 	width: 100%;
 	margin-top: 30px;
@@ -78,6 +65,13 @@ section { padding: $section-padding 0px; }
 
 #get-started {
 	padding: $section-padding;
+}
+
+.center-col {
+	width: 100%;
+	max-width: $page-max-width;
+	margin: 0 auto;
+	text-align: center;
 }
 
 .btn-get-started {
@@ -102,16 +96,15 @@ section { padding: $section-padding 0px; }
 
 /* Responsive Styles */
 @media (max-width: 488px) {
-
-	#craftsman-id		{	width: 100%;	}
-	#craftsman-about	{	width: 100%;	}
-
-	.img-container	{	display: block;	margin-top: 5px;	}	/* Issue with FF, imgs bigger than container */
 	.img-width-50	{	width: 100%;	max-width: 100%;	}
 }
 
 @media (min-width: 489px)	{ }
-@media (min-width: 768px)	{ .img-spacer	{	width:	1%;		} }
+@media (min-width: 768px)	{
+	#craftsman-id		{	width: 25%; 	}
+	#craftsman-about	{	width: 74%; 	}
+	.img-spacer			{	width:	1%;		}
+}
 @media (min-width: 1020px)	{ .img-spacer	{	width:	21px;	} }
 
 
