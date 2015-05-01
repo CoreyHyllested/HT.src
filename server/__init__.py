@@ -80,6 +80,7 @@ def initialize_server(config_name):
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
 	css_loginsys =	Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
+	css_about_sc =	Bundle('scss/about-sc.scss', filters='pyscss', output='css/about-sc.css')
 	css_products =	Bundle('scss/products.scss', filters='pyscss', output='css/products.css')
 	css_projects =	Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
 	css_recovery =	Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
@@ -90,6 +91,7 @@ def initialize_server(config_name):
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path
 	assets.register('js_mapformat', js_dashboard_maps_format)
+	assets.register('scss_about_sc', css_about_sc)
 	assets.register('scss_loginsys', css_loginsys)
 	assets.register('scss_recovery', css_recovery)
 	assets.register('scss_products', css_products)
