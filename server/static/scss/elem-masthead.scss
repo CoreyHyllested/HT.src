@@ -1,0 +1,32 @@
+
+#masthead {
+	position: relative;
+
+	height:	500px;
+	width:	100%;
+
+	/* TEXT READABILITY */
+	text-align:	center;
+	text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-weight: bolder;
+	font-size: 44px;
+	line-height: 1.1em;
+	color: white;
+
+	/* background image */
+	background-size: cover;
+}
+
+#masthead-text {
+	position: absolute;
+	display: block;
+	top: 50%;
+
+	/* center horizontally */
+	margin: 0 auto;
+	width: 100%;
+	opacity: 0;
+	transition: opacity 1s ease 1s;
+}
+
+//#masthead h1 { text-transform: uppercase; }

@@ -1,0 +1,64 @@
+@import 'colors';
+@import 'elem-masthead';
+@import 'elem-defaults';
+
+
+$about-mast-height	= 500px;
+$col-max-width		= 999px;
+
+$img-frame-color	= $gray;
+$section-padding	= 50px;
+$closing-text-sz	= 16px;
+
+section		{	padding:	$section-padding;									}
+section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
+
+#masthead {
+	height: $about-mast-height;
+	background: $bg-img-medpatio center no-repeat;
+}
+
+#masthead-text {
+	top: 33%;
+	opacity: 0;
+	transition: opacity 1s ease 1s;
+}
+
+#soulcrafting-what	{ background: whitesmoke; }
+#soulcrafting-faq	{ background: whitesmoke; }
+#faq {
+	display: block; 
+	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
+}		
+
+
+.inline		{	display: inline-block;	}
+.inline-50	{	max-width: 485px;	width:	49%;	display: inline-block;	vertical-align: middle; }
+.inline-33	{	max-width: 350px;	width:	33%;	display: inline-block;	vertical-align: middle;	}
+
+/* Images.  img-container (no margins).  */
+.img-responsive	{	margin: 0 auto; }
+.img-thumbnail	{	width:	100%;	max-width: 170px;	margin: 10px;	border: none;	border-radius: 0px;		}
+.img-craftsman	{	width: 150px;	height: 150px;										border-radius: 50%;		}
+
+.img-thumb		{	width: 100%;	max-width: 170px;	height: auto;	display: inline-block;	margin: 10px;	}
+
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+	.inline-50	{	width: 100%;	max-width: 100%;	}
+}
+
+@media (min-width: 489px)	{ }
+@media (min-width: 768px)	{ .img-spacer	{	width:	1%;		} }
+@media (min-width: 1020px)	{ .img-spacer	{	width:	21px;	} }
+
+
+//	background-color: grey; /* fallback */
+//	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
+//	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
+//	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
+//	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
+//	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
+$img-horiz-margin = 20px;
+$img-bordr-rad = 10px;
