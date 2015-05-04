@@ -3,13 +3,15 @@ $(document).ready(function () {
 	$('#masthead-text').css('opacity', '1');
 
 
-	// Init Skrollr
-	var skrl = skrollr.init({
-		render:	function(data) {
-			//Debugging - Log the current scroll position.
-			//smoothScrolling: false;
-			//console.log(data.curTop);
-			}
-	});
-
+	if(!(/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera)){
+		console.log('init skroller');
+		var skrl = skrollr.init({
+			//forceHeight: false,
+			render:	function(data) {
+				//Debugging - Log the current scroll position.
+				//smoothScrolling: false;
+				//console.log(data.curTop);
+			},
+		});
+	}
 });
