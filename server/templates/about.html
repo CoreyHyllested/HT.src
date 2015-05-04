@@ -8,14 +8,14 @@
 
 
 {% block parallax %}
-	<div class="parallax-image-wrapper" style="background-image:url(/static/img/cover-medpatio.jpg); background-size: cover; background-position: center; height: 520px; top: 0px; z-index: -10;" >
+	<div id='masthead' class="parallax-image-wrapper">
 		<div id='masthead-text'>About Soulcrafting</div> 
 	</div>
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead'> </div>
+<div id='masthead-gap'> </div>
 
 <section id='soulcrafting-who' class=''>
 	<div>
@@ -80,5 +80,5 @@
 {% block scripts %}
 	{{ super() }}
 	<script src='/static/js/about.js'></script>
-	<script src='/static/js/skrollr.min.js'></script>
+{# <script src='/static/js/skrollr.min.js'></script> #}
 {% endblock %}
