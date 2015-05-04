@@ -1,52 +1,22 @@
 @import 'colors';
-@import 'elem-masthead';
 @import 'elem-defaults';
+@import 'elem-masthead';
 @import 'elem-parallax';
 
 
-$about-mast-height	= 450px;
-$col-max-width		= 999px;
-
-$img-frame-color	= $gray;
 $section-padding	= 50px;
-$closing-text-sz	= 16px;
 
-section		{	padding:	$section-padding;									}
-section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
+section		{	background:	white;	padding:	$section-padding;					}
+section div	{	width:	100%;		max-width:	$col-max-width;		margin: 0 auto;	}
 
-#masthead {
-	height: $about-mast-height;
-//	background: $bg-img-medpatio center no-repeat;
-	z-index: -15;
-}
+#masthead			{	background-image: $bg-img-medpatio;	}
+#soulcrafting-what	{	background:	whitesmoke;				}
+#soulcrafting-faq	{	background:	whitesmoke;				}
 
-#masthead-text {
-	position: absolute;
-	top: 50%;
-	opacity: 0;
-	transition: opacity 1s ease 1s;
-
-	//z-index: 1;
-	color: white;
-	text-align:	center;
-	text-shadow: 0 2px 30px rgba(0,0,0,.8);
-	font-weight: bolder;
-	font-size: 44px;
-	line-height: 1.1em;
-}
-
-#soulcrafting-who	{ background: white; }
-#soulcrafting-why	{ background: white; }
-#soulcrafting-what	{ background: whitesmoke; }
-#soulcrafting-faq	{ background: whitesmoke; }
 #faq {
 	display: block; 
 	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
 }		
-#space {
-	height: 250px;
-	background: white;
-}
 
 
 .inline		{	display: inline-block;	}
@@ -55,9 +25,7 @@ section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
 
 /* Images.  img-container (no margins).  */
 .img-responsive	{	margin: 0 auto; }
-.img-thumbnail	{	width:	100%;	max-width: 170px;	margin: 10px;	border: none;	border-radius: 0px;		}
-.img-craftsman	{	width: 150px;	height: 150px;										border-radius: 50%;		}
-
+.img-craftsman	{	width: 150px;						height: 150px;	border-radius: 50%;						}
 .img-thumb		{	width: 100%;	max-width: 170px;	height: auto;	display: inline-block;	margin: 10px;	}
 
 

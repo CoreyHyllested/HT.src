@@ -1,8 +1,9 @@
+$masthead-height	= 450px;
 
 #masthead {
-	position: relative;
+	position: fixed;
 
-	height:	500px;
+	height:	$masthead-height;
 	width:	100%;
 
 	/* TEXT READABILITY */
@@ -14,8 +15,12 @@
 	color: white;
 
 	/* background image */
+	//background-image set upstream
 	background-size: cover;
+	background-position: center;
+	z-index: -5;
 }
+
 
 #masthead-text {
 	position: absolute;
@@ -29,4 +34,5 @@
 	transition: opacity 1s ease 1s;
 }
 
+#masthead-gap 	{ height: $masthead-height; }
 //#masthead h1 { text-transform: uppercase; }

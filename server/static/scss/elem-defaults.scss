@@ -1,3 +1,6 @@
+$col-max-width		= 999px;
+$footer-height		= 53px;
+
 .page-content {
-	padding: 0px 0px 53px;
+	padding: 0px 0px $footer-height;
 }
