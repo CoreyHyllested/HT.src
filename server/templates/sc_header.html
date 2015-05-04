@@ -82,9 +82,9 @@
 	{% endblock %}
 
 
-	{% block parallax %}{% endblock %}
 	<div class='page-content'>
-		<div class='page-wrapper'>
+		{% block parallax %}{% endblock %}
+		<div id='skrollr-body' class='page-wrapper'>
 			{% block content %}{% endblock %}
 		</div>
 	</div>
