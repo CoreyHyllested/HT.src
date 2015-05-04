@@ -4,7 +4,7 @@
 @import 'elem-parallax';
 
 
-$about-mast-height	= 600px;
+$about-mast-height	= 450px;
 $col-max-width		= 999px;
 
 $img-frame-color	= $gray;
@@ -17,6 +17,7 @@ section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
 #masthead {
 	height: $about-mast-height;
 //	background: $bg-img-medpatio center no-repeat;
+	z-index: -15;
 }
 
 #masthead-text {
@@ -25,7 +26,7 @@ section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
 	opacity: 0;
 	transition: opacity 1s ease 1s;
 
-	z-index: 2;
+	//z-index: 1;
 	color: white;
 	text-align:	center;
 	text-shadow: 0 2px 30px rgba(0,0,0,.8);
@@ -34,12 +35,18 @@ section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
 	line-height: 1.1em;
 }
 
+#soulcrafting-who	{ background: white; }
+#soulcrafting-why	{ background: white; }
 #soulcrafting-what	{ background: whitesmoke; }
 #soulcrafting-faq	{ background: whitesmoke; }
 #faq {
 	display: block; 
 	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
 }		
+#space {
+	height: 250px;
+	background: white;
+}
 
 
 .inline		{	display: inline-block;	}
