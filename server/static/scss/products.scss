@@ -1,4 +1,5 @@
 @import 'colors';
+@import 'elem-defaults';
 
 $masthead-height	= 400px;
 $img-frame-color	= $gray;
@@ -55,6 +56,7 @@ $closing-text-sz	= 16px;
 
 #craftsman-id		{ width: 100%; display: inline-block; height: 250px; padding: 20px;	}
 #craftsman-about	{ width: 100%; display: inline-block; height: 250px;				}
+#craftsman-quote	{	text-align: left; 	}
 #craftsman-work		{
 	width: 100%;
 	margin-top: 30px;
