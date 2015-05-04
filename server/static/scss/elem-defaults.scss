@@ -1,6 +1,19 @@
 $col-max-width		= 999px;
+$cntrcol-max-width	= 999px;
 $footer-height		= 53px;
+$section-padding	= 50px;
+
+
+section		{	background:	white;	padding:	$section-padding 0;						}
+section div	{	width:	100%;		max-width:	$cntrcol-max-width;		margin: 0 auto;	}
+
 
 .page-content {
 	padding: 0px 0px $footer-height;
 }
+
+.page-cntrcol {
+	width: 100%;		max-width:	$cntrcol-max-width;
+	margin: 0 auto;
+}
+
