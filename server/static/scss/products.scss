@@ -17,13 +17,8 @@ $closing-text-sz	= 16px;
 }
 
 
-#about-furniture {
-	background: whitesmoke;
-	font-size:	$closing-text-sz;
-	padding:	$section-padding;
-}
-
-#ideas { padding: $section-padding 0px; text-align: center;}
+#about-furniture { background: whitesmoke; font-size:	$closing-text-sz; }
+#ideas			 { text-align: center;}
 
 
 #craftsman {
@@ -34,6 +29,7 @@ $closing-text-sz	= 16px;
 #craftsman-id		{ width: 100%; display: inline-block; height: 250px; text-align: center;	padding: 20px;	}
 #craftsman-about	{ width: 100%; display: inline-block; height: 250px; text-align: center;					}
 #craftsman-quote	{	text-align: left; 	}
+#craftsman-name		{	text-indent: 20px;	}
 #craftsman-work		{
 	background: $bg-img-patio center no-repeat;
 	background-size: cover;
