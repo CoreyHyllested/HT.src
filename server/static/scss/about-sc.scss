@@ -1,9 +1,10 @@
 @import 'colors';
 @import 'elem-masthead';
 @import 'elem-defaults';
+@import 'elem-parallax';
 
 
-$about-mast-height	= 500px;
+$about-mast-height	= 600px;
 $col-max-width		= 999px;
 
 $img-frame-color	= $gray;
@@ -15,13 +16,22 @@ section div	{	width:	100%;	max-width:	$col-max-width;		margin: 0 auto;	}
 
 #masthead {
 	height: $about-mast-height;
-	background: $bg-img-medpatio center no-repeat;
+//	background: $bg-img-medpatio center no-repeat;
 }
 
 #masthead-text {
-	top: 33%;
+	position: absolute;
+	top: 50%;
 	opacity: 0;
 	transition: opacity 1s ease 1s;
+
+	z-index: 2;
+	color: white;
+	text-align:	center;
+	text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-weight: bolder;
+	font-size: 44px;
+	line-height: 1.1em;
 }
 
 #soulcrafting-what	{ background: whitesmoke; }

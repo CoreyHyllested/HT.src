@@ -7,8 +7,9 @@ $(document).ready(function () {
 	var skrl = skrollr.init({
 		render:	function(data) {
 			//Debugging - Log the current scroll position.
-			console.log(data.curTop);
-				}
+			//smoothScrolling: false;
+			//console.log(data.curTop);
+			}
 	});
 
 });

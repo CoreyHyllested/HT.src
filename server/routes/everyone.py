@@ -38,6 +38,14 @@ def render_landingpage():
 	return make_response(render_template('index.html', bp=bp, referred=referred))
 
 
+@sc_ebody.route('/test', methods=['GET', 'POST'])
+def render_test():
+	bp = None
+	if 'uid' in session:
+		bp = Profile.get_by_uid(session['uid'])
+
+	return make_response(render_template('test.html', bp=bp))
+
 
 @sc_ebody.route('/products/furniture/', methods=['GET', 'POST'])
 @sc_ebody.route('/products/furniture',  methods=['GET', 'POST'])

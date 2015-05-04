@@ -7,8 +7,27 @@
 {% endblock %}
 
 
+{% block parallax %}
+	<div class="parallax-image-wrapper" style="background-image:url(/static/img/cover-medpatio.jpg)" >
+		<div id='masthead-text'>About Soulcrafting</div> 
+
+		<div
+			class="parallax-image parallax-image-100"
+			style="background-image:url(/static/img/cover-medpatio.jpg);"
+			data-anchor-target="#masthead + .gap"
+			data-bottom-top="transform: translate3d(0px, -80%, 0px);"
+			data-top-bottom="transform: translate3d(0px, 80%, 0px);"
+		></div>
+{#
+#}
+		<!--the +/-80% translation can be adjusted to control the speed difference of the image-->
+	</div>
+{% endblock %}
+
+
 {% block content %}
-<div id='masthead'> <div id='masthead-text'>About Soulcrafting</div> </div>
+<div id='masthead'> </div>
+<div class='gap'></div>
 
 <section id='soulcrafting-who' class=''>
 	<div>
