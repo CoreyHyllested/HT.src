@@ -7,21 +7,26 @@
 {% endblock %}
 
 
-{% block content %}
-<div id='masthead'> <div id='masthead-text'>Custom Furniture</div> </div>
 
-<div id='about-furniture'>
+{% block parallax %}
+	<div id='masthead'> <div id='masthead-text'>Custom Furniture</div> </div>
+{% endblock %}
+
+
+{% block content %}
+
+<section id='about-furniture'>
 	<h3 class='text-center'>Soulcrafted Furniture</h3>
-	<p class='center-col'>
+	<p class='page-cntrcol'>
 		We partner with extraordinary local woodworkers and furniture makers to help you create unique, timeless pieces for your home. Soulcrafters specialize in sustainable building practices, sourcing wood from locally-felled trees and salvaged materials whenever possible. Whatever your style, designing a piece of custom furniture ensures the perfect fit because it's made just for you.
 	</p>
 	<br>
 	<a href={% if bp %}'/project/edit/new'{% else %}'/signup'{% endif %} class='btn btn-block blueButton btn-get-started'>Get Started</a>
-</div>
+</section>
 
 
-<div id='ideas' class='center-col'>
-	<h3 class='text-center'>The Soulcrafting Advantage</h3>
+<section id='ideas' class='page-cntrcol'>
+	<h3>The Soulcrafting Advantage</h3>
 	<br>
 
 	<h4>Furniture designed to complement your style and meet your specifications.</h4>
@@ -34,12 +39,12 @@
 		<div class='img-spacer'></div>
 		<div class='img-width-50'> <img src='/static/img/ex-bedroom.jpg' alt='Bedroom' class='img-responsive'></img> </div>
 	</div>
-</div>
+</section>
 
 
-<div id='craftsman'>
+<section id='craftsman'>
 	<h3 class='text-center'>Soulcrafter Spotlight</h3>
-	<div class='center-col'>
+	<div class='page-cntrcol'>
 		<div id='craftsman-id'>
 			<img src='/static/img/professional-austin.jpg' class='img-craftsman' alt='Austin Aaron'>
 			<div id='craftsman-name'> <h4>Austin Aaron</h4> </div>
@@ -51,16 +56,16 @@
 			</blockquote>
 		</div>
 	</div>
-	<div id='craftsman-work'> </div>
-</div>
+</section>
+
+<div id='craftsman-work'> </div>
 
 
-
-<div id='get-started' class='center-col'>
+<section id='get-started' class='page-cntrcol'>
 	<p>The next step is easy. You'll start by sharing your goals and then one of our project specialists will be in touch to get more details in order to match you with the right Soulcrafter for your job.</p>
 	<a href='/project/edit/new' class='btn btn-block blueButton btn-get-started'>Get Started</a>
 	{#<a href='#sharesoulcrafting' class='btn btn-block'>Share Soulcrafting</a> #}
-</div>
+</section>
 {% endblock %}
 
 
