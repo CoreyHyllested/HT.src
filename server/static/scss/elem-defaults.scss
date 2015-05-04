@@ -1,5 +1,4 @@
-$col-max-width		= 999px;
-$cntrcol-max-width	= 999px;
+$column-max-width	= 999px;
 $footer-height		= 53px;
 $section-padding	= 50px;
 $text-padding		= 20px;
@@ -9,13 +8,13 @@ h3			{	text-align: center;	}
 h4			{	text-align: center;	}
 
 section		{	background:	white;	padding:	$section-padding 0;						}
-section div	{	width:	100%;		max-width:	$cntrcol-max-width;		margin: 0 auto;	}
+section div	{	width:	100%;		max-width:	$column-max-width;		margin: 0 auto;	}
 
 .text-content	{	padding: 0px $text-padding;			}
 .page-content	{	padding: 0px 0px $footer-height;	}
 
 .page-cntrcol {
-	width: 100%;		max-width:	$cntrcol-max-width;
+	width: 100%;		max-width:	$column-max-width;
 	margin: 0 auto;
 }
 
