@@ -10,24 +10,13 @@
 {% block parallax %}
 	<div class="parallax-image-wrapper" style="background-image:url(/static/img/cover-medpatio.jpg); background-size: cover; background-position: center; height: 520px; top: 0px; z-index: -10;" >
 		<div id='masthead-text'>About Soulcrafting</div> 
-
-{#
-		<div
-			class="parallax-image parallax-image-100"
-			data-anchor-target=".page-content"
-			data-bottom-top="transform: translate3d(0px, -100%, 0px);"
-			data-top-bottom="transform: translate3d(0px, -100%, 0px);"
-		></div>
-			style="background-image:url(/static/img/cover-medpatio.jpg);"
-#}
-		<!--the +/-80% translation can be adjusted to control the speed difference of the image-->
 	</div>
 {% endblock %}
 
 
 {% block content %}
 <div id='masthead'> </div>
-<div class='gap'></div>
+<div id='skrollr-body'> </div>
 
 <section id='soulcrafting-who' class=''>
 	<div>
