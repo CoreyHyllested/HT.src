@@ -26,20 +26,18 @@ $closing-text-sz	= 16px;
 	padding:	$section-padding;
 }
 
-#ideas { padding: $section-padding 0px; }
+#ideas { padding: $section-padding 0px; text-align: center;}
 
 
 #craftsman {
 	background: whitesmoke;
-	padding: $section-padding 0px 0px;
+	padding: $section-padding 0px;
 }
 
-#craftsman-id		{ width: 100%; display: inline-block; height: 250px; padding: 20px;	}
-#craftsman-about	{ width: 100%; display: inline-block; height: 250px;				}
+#craftsman-id		{ width: 100%; display: inline-block; height: 250px; text-align: center;	padding: 20px;	}
+#craftsman-about	{ width: 100%; display: inline-block; height: 250px; text-align: center;					}
 #craftsman-quote	{	text-align: left; 	}
 #craftsman-work		{
-	width: 100%;
-	margin-top: 30px;
 	background: $bg-img-patio center no-repeat;
 	background-size: cover;
 	height: 500px;
