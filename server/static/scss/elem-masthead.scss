@@ -1,4 +1,5 @@
-$masthead-height	= 450px;
+$masthead-height		= 450px;
+$masthead-height-mobile	= 330px;
 
 #masthead {
 	position: fixed;
@@ -36,3 +37,5 @@ $masthead-height	= 450px;
 
 #masthead-gap 	{ height: $masthead-height; }
 //#masthead h1 { text-transform: uppercase; }
+
+@media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }

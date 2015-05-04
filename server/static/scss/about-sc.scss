@@ -35,15 +35,6 @@ section div	{	width:	100%;		max-width:	$col-max-width;		margin: 0 auto;	}
 }
 
 @media (min-width: 489px)	{ }
-@media (min-width: 768px)	{ .img-spacer	{	width:	1%;		} }
-@media (min-width: 1020px)	{ .img-spacer	{	width:	21px;	} }
+@media (min-width: 768px)	{ }
+@media (min-width: 1020px)	{ }
 
-
-//	background-color: grey; /* fallback */
-//	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
-//	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
-//	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
-//	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
-//	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
-$img-horiz-margin = 20px;
-$img-bordr-rad = 10px;
