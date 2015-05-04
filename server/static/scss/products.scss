@@ -2,9 +2,6 @@
 @import 'elem-defaults';
 @import 'elem-masthead';
 
-$img-frame-color	= $gray;
-$page-max-width		= 999px;
-$section-padding	= 50px;
 $closing-text-sz	= 16px;
 
 
@@ -49,12 +46,6 @@ $closing-text-sz	= 16px;
 	text-align:	center;
 }
 
-.center-col {
-	width: 100%;
-	max-width: $page-max-width;
-	margin: 0 auto;
-	text-align: center;
-}
 
 .btn-get-started {
 	width: 100%;
@@ -88,11 +79,3 @@ $closing-text-sz	= 16px;
 	.img-spacer			{	width:	1%;		}
 }
 @media (min-width: 1020px)	{ .img-spacer	{	width:	21px;	} }
-
-
-//	background-color: grey; /* fallback */
-//	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
-//	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
-//	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
-//	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
-//	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
