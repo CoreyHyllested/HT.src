@@ -2,8 +2,17 @@
 <html>
 <head>
 	<title>{{title}}</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<meta charset='UTF-8'>
+	<meta name='viewport' content='initial-scale=1.0, user-scalable=no'>
+
+	<meta name='twitter:card'	content='summary_large_image'>
+	<meta name='twitter:site'	content='@soulcrafting'>
+	<meta name='twitter:title'	content='Smarter home renovation projects'>
+	<meta name='twitter:image'	content='https://soulcrafting.co/static/img/cover.jpg' />
+	<meta name='twitter:url'	content='https://soulcrafting.co/static/img/cover.jpg' />
+	<meta name='twitter:creator' content='@soulcrafting'>
+	<meta name='twitter:description' content='Soulcrafting is the smartest, most trusted way to renovate your home.'>
+	{% block header_meta %}{% endblock %}
 
 	<link rel='icon' type="image/png" href="/static/img/favicon.png">
 	<link rel='stylesheet' href='/static/css/master.css'>
@@ -56,8 +65,8 @@
 		</div>
 
 		<!-- the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="navbar-collapse">
-			<ul class="nav navbar-nav navbar-right" style="padding-right: 30px">
+		<div id='navbar-collapse' class='collapse navbar-collapse'>
+			<ul id='navbar-menu' class='nav navbar-nav navbar-right'>
 				{% if bp %}
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{bp.prof_name}}<b class="caret"></b></a>
