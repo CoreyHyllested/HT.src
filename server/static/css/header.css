@@ -9,9 +9,12 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 	padding-bottom: 53px;	/* important to fix the 'forver-scroll problem */
 }
 
-#navbar-menu {
-	padding-right: 30px;
-}
+#navbar-menu { padding-right: 30px; }
+/*
+#navbar-menu li			{ border-top: 2px solid rgba(0,0,0,0);	}
+#navbar-menu li:hover	{ border-top: 2px solid #29abe1;		}
+*/
+
 
 footer {
 	bottom: 0;
