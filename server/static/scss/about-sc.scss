@@ -4,20 +4,18 @@
 @import 'elem-parallax';
 
 
-$section-padding	= 50px;
-
-section		{	background:	white;	padding:	$section-padding;					}
-section div	{	width:	100%;		max-width:	$col-max-width;		margin: 0 auto;	}
-
+section				{	background:	white;	}
 #masthead			{	background-image: $bg-img-medpatio;	}
+#masthead-text		{	top: 40%;							}
 #soulcrafting-what	{	background:	whitesmoke;				}
 #soulcrafting-faq	{	background:	whitesmoke;				}
 
+
 #faq {
+	margin-top: 40px;
 	display: block; 
 	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
 }		
-
 
 .inline		{	display: inline-block;	}
 .inline-50	{	max-width: 485px;	width:	49%;	display: inline-block;	vertical-align: middle; }
@@ -27,11 +25,18 @@ section div	{	width:	100%;		max-width:	$col-max-width;		margin: 0 auto;	}
 .img-responsive	{	margin: 0 auto; }
 .img-craftsman	{	width: 150px;						height: 150px;	border-radius: 50%;						}
 .img-thumb		{	width: 100%;	max-width: 170px;	height: auto;	display: inline-block;	margin: 10px;	}
+.img-small		{	width: 100%;	max-width: 170px;															}
 
+
+.faq-question {
+  font-weight: bolder;
+  text-align: left !important;
+}
 
 /* Responsive Styles */
 @media (max-width: 767px) {
 	.inline-50	{	width: 100%;	max-width: 100%;	}
+	.img-thumb	{	width: 100%;	max-width: 100%;	margin: 10px 0; }
 }
 
 @media (min-width: 489px)	{ }
