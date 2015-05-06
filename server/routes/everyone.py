@@ -173,6 +173,8 @@ def render_about_version_page():
 
 
 
+@sc_ebody.route('/terms/', 		  methods=['GET'])
+@sc_ebody.route('/terms', 		  methods=['GET'])
 @sc_ebody.route('/terms/service', methods=['GET'])
 def render_terms_service_page():
 	bp = None
