@@ -37,3 +37,8 @@ footer {
 }
 #footer-menu li:after				{ content: ' | ';	}
 #footer-menu li:last-of-type:after	{ content: '';		}
+
+@media (max-width: 768px) {
+	#navbar-menu li a:hover	{ border-top: 4px solid rgba(0,0,0,0);	}
+	/* background: rgba(41,171,225,.5); */
+}
