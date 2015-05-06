@@ -68,6 +68,7 @@ def render_purchase_page_ebody():
 	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
 
 
+
 @sc_ebody.route('/gift/<gift_id>', methods=['GET', 'POST'])
 def render_giftpage(gift_id):
 	print 'render_gift(): enter [' + str(gift_id) + ']'
@@ -147,16 +148,6 @@ def render_profile(usrmsg=None):
 
 
 
-#@insprite_views.route('/terms/service', methods=['GET'])
-def render_terms_of_service():
-	bp = None
-	if 'uid' in session:
-		bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('tos.html', title = '- Terms and Conditions', bp=bp))
-
-
-
-
 #@insprite_views.route("/dmca", methods=['GET', 'POST'])
 def render_dmca():
 	bp = None
@@ -166,15 +157,14 @@ def render_dmca():
 
 
 
-
-
-@sc_ebody.route('/about',  methods=['GET', 'POST'])
 @sc_ebody.route('/about/', methods=['GET', 'POST'])
+@sc_ebody.route('/about',  methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('about.html', bp=bp))
+
 
 
 @sc_ebody.route('/about/version', methods=['GET'])
@@ -183,7 +173,19 @@ def render_about_version_page():
 
 
 
+@sc_ebody.route('/terms/service', methods=['GET'])
+def render_terms_service_page():
+	bp = None
+	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('terms-service.html', bp=bp))
 
+
+
+@sc_ebody.route('/terms/privacy', methods=['GET'])
+def render_terms_privacy_page():
+	bp = None
+	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('terms-privacy.html', bp=bp))
 
 
 
