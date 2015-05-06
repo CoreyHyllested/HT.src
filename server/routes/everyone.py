@@ -279,7 +279,7 @@ def render_password_reset_request(sc_msg=None):
 		except AccountError as ae:
 			sc_msg = ae.sanitized_msg()
 			print ae
-	return render_template('password_recover.html', form=form, sc_alert=sc_msg)
+	return render_template('password-recover.html', form=form, sc_alert=sc_msg)
 
 
 
@@ -315,7 +315,7 @@ def render_password_reset_page(challengeHash):
 		return redirect('/login')
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
-	return render_template('password_reset.html', form=form)
+	return render_template('password-reset.html', form=form)
 
 
 
