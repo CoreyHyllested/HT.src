@@ -267,6 +267,10 @@ def render_search(page = 1):
 
 @sc_ebody.route("/password/recover", methods=['GET', 'POST'])
 def render_password_reset_request(sc_msg=None):
+	bp = None
+	if 'uid' in session:
+		bp = Profile.get_by_uid(session['uid'])
+
 	form = RecoverPasswordForm(request.form)
 	if form.validate_on_submit():
 		print 'password_reset_request() -', form.email.data
@@ -279,7 +283,7 @@ def render_password_reset_request(sc_msg=None):
 		except AccountError as ae:
 			sc_msg = ae.sanitized_msg()
 			print ae
-	return render_template('password-recover.html', form=form, sc_alert=sc_msg)
+	return render_template('password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
 
 
 
