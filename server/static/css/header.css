@@ -6,7 +6,6 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 	min-height: 100%; 
 	height: auto !important;
 	margin: 0 auto -53px;	/* the bottom margin is the negative value of the footer's height */
-	padding-bottom: 53px;	/* important to fix the 'forver-scroll problem */
 }
 
 #navbar-menu { padding-right: 30px; }
