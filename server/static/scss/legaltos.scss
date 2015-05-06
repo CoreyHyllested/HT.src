@@ -1,0 +1,16 @@
+@import 'defaults';
+@import 'elem-defaults';
+
+
+section div	{	padding: 0 $section-padding;	}
+
+#legal-nav {
+	background: black;
+	height: 250px;
+}
+
+
+#tos { }
+
+@media only screen and (min-device-width: 240px) and (max-width: 549px) { }
+@media only screen and (min-width: 550px) 		 and (max-width: 767px) { } 
