@@ -11,8 +11,8 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 
 #navbar-menu { padding-right: 30px; }
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
-#navbar-menu li	a		{ border-top: 4px solid rgba(0,0,0,0);	padding-top: 11px;	}
-#navbar-menu li a:hover	{ border-top: 4px solid #29abe1;							}
+.navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}
+.hhl:hover 		{ border-top: 3px solid #29abe1;										}
 
 
 footer {
@@ -38,7 +38,12 @@ footer {
 #footer-menu li:after				{ content: ' | ';	}
 #footer-menu li:last-of-type:after	{ content: '';		}
 
+@media (max-width: 426px) {
+	#copyright	{	display: none;	}
+}
 @media (max-width: 768px) {
-	#navbar-menu li a:hover	{ border-top: 4px solid rgba(0,0,0,0);	}
-	/* background: rgba(41,171,225,.5); */
+	/*
+	#navbar-menu li a:hover	{ border-top: 3px solid rgba(0,0,0,0);	}
+	background: rgba(41,171,225,.5);
+	*/
 }
