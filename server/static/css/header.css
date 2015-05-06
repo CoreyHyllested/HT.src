@@ -12,7 +12,7 @@ body { padding-top: 50px; /* Shift main content down by 50px (sz of navbar) */ }
 #navbar-menu { padding-right: 30px; }
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
 .navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}
-.hhl:hover 		{ border-top: 3px solid #29abe1;										}
+.hhl:hover 		{ border-top-color: #29abe1;												}
 
 
 footer {
@@ -42,8 +42,8 @@ footer {
 	#copyright	{	display: none;	}
 }
 @media (max-width: 768px) {
-	/*
-	#navbar-menu li a:hover	{ border-top: 3px solid rgba(0,0,0,0);	}
-	background: rgba(41,171,225,.5);
-	*/
+	/* remove border-color that impacts nav-menu *NAME*; apparently has non-zero border*/
+	.hhl:hover	{ border-top-color: rgba(0,0,0,0);	}
+	.hhl:focus	{ border-top-color: rgba(0,0,0,0) !important;	}
+	/* background: rgba(41,171,225,.5); */
 }
