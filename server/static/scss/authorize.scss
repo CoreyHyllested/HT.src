@@ -54,6 +54,7 @@
 
 
 .form-group { position: relative; }
+label[for='terms'] { height: $field-height; }
 
 input[type='name'], input[type='password'],
 input[type='email'], input[type='phone'], input[type='address'] {
