@@ -1,5 +1,6 @@
+@import 'elem-navigation';
+
 $column-max-width	= 999px;
-$footer-height		= 53px;
 $section-padding	= 50px;
 $form-padding		= 20px;
 $text-padding		= 20px;
@@ -13,7 +14,6 @@ section		{	background:	white;	padding:	$section-padding 0;						}
 section div	{	width:	100%;		max-width:	$column-max-width;		margin: 0 auto;	}
 
 .text-content	{	padding: 0px $text-padding;			}
-.page-content	{	padding: 0px 0px $footer-height;	}
 
 .page-cntrcol {
 	width: 100%;		max-width:	$column-max-width;
