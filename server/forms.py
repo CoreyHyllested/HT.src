@@ -35,7 +35,7 @@ class SignupForm(Form):
 class ProSignupForm(Form):
 	uname	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])		#what is max size in DB?
 	passw	= PasswordField('Password', [validators.Required()])
-	#terms = BooleanField('TOS', [validators.Required()])
+	terms	= BooleanField('Terms of Service', [validators.Required()])
 
 	pro_name	= TextField('Business Name',	[validators.Optional(), validators.length(min=4, max=120)])
 	pro_addr	= TextField('Business Address',	[validators.Required()])
