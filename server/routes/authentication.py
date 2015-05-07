@@ -83,7 +83,7 @@ def render_pro_signup_page(sc_msg=None):
 		return redirect('/dashboard')
 
 	form = ProSignupForm(request.form)
-	if form.validate_on_submit():
+	if form.validate_on_submit() and form.terms.data == True:
 		try:
 			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
 			return redirect('/dashboard')
