@@ -17,9 +17,9 @@
 	<link rel='icon' type="image/png" href="/static/img/favicon.png">
 	<link rel='stylesheet' href='/static/css/master.css'>
 	<link rel='stylesheet' href='/static/css/modals.css'>
-	<link rel='stylesheet' href='/static/css/header.css'>
+	{% assets 'navigate.css' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	<link rel="stylesheet" href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+	<link rel='stylesheet' href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Kameron|Poiret+One|Cinzel|Open+Sans:200,400,600,800'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Lustria|Nixie+One|Crete+Round|Ovo|Playfair+Display+SC|Alegreya'>
 	{% block header_css %}{% endblock %}
@@ -98,16 +98,24 @@
 	</div>
 
 	<footer>
-		<div class='container'>
-			<div id='footer-menu'>
-				<ul>
-					<li><a href='https://facebook.com/SoulcraftingHQ'>Facebook</a></li>
-					<li><a href='https://twitter.com/Soulcrafting'>Twitter</a></li>
-					<li><a href='https://instagram.com/Soulcrafting'>Instagram</a></li>
-				</ul>
-				<!--li><a href="/faq">FAQ</a></li> <li><a href="/terms">Terms &amp; Privacy</a></li-->
-			</div>
-			<div id='copyright'><p>&copy; Soulcrafting 2015</p></div>
+		<div id='footer-menu'>
+			<ul>
+				<li><a href='/terms/privacy'>About</a></li>
+				<li><a href='/terms/service'>Terms & Privacy</a></li>
+				<li><a href='/products/furniture'>Custom Furniture</a></li>
+			</ul>
+		</div>
+		<div id='footer-sns'>
+			<ul>
+				<li class='sns'><a href='https://facebook.com/SoulcraftingHQ'	target='_facebook'><i class='fa fa-facebook-f'></i></a></li>
+				<li class='sns'><a href='https://twitter.com/Soulcrafting'		target='_twitter'><i class='fa fa-twitter'></i></a></li>
+				<li class='sns'><a href='https://www.linkedin.com/company/soulcrafting' target='_linkedin'> <i class='fa fa-linkedin'></i></a></li>
+				<li class='sns'><a href='https://instagram.com/Soulcrafting'	target='_instagram'><i class='fa fa-instagram'></i></a></li>
+				<li class='sns'><a href='https://pinterest.com/SoulcraftingHQ'	target='_pinterest'><i class='fa fa-pinterest-p'></i></a></li>
+			</ul>
+		</div>
+		<div id='copyright'>
+			<i class='fa fa-copyright'></i> Soulcrafting, Inc.
 		</div>
 	</footer>
 
