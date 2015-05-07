@@ -40,8 +40,15 @@
 				<label class='sr-only' for='passw'>Your Password</label>
 				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
 			</div>
+
+			<div class="form-group checkbox checkbox-circle">
+				{{form.terms(type="checkbox", value='wtf')}}
+				<label for="terms"><span id='terms-text'>Of course, I have read the <a href='/terms/service'>Terms of service</a>.</span></label>
+			</div>
+
 			<button type="submit" class="btn btn-block blueButton">Sign Up as Professional</button>
 		</form>
+
 		<br>
 		<p><a href='/login'><button class='btn btn-block whiteButton'>I have an account</button></a></p>
 	</div>
@@ -70,16 +77,18 @@
 				pro_phone:	{ required: true, phoneUS: true},
 				pro_email:	{ required: true, rangelength:[6,64], email: true},
 				uname:		{ required: true, rangelength:[4,64] },
+				terms:		{ required: true,					 },
 				passw:		{ required: true, rangelength:[8,64] }
 			},
 			messages: {
 				pro_addr:	{	required: 'Your business address is needed for verification.', },
 				pro_phone:	{	required: 'Your business phone number is needed to contact you.', },
 				pro_email:	{	required: 'Your business email is needed to contact you.', },
+				terms:		{	required: 'Please review the Terms of Service.',			},
 				uname:		{	required: 'Your name is needed for clients.', },
 				passw:		{	required: 'You need a good, safe password for logging in.',
 								rangelength: 'For a good password. Use at least 8 characters'
-							},
+							}
 			}
 
 		});

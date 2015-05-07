@@ -36,7 +36,11 @@
 				<label class="sr-only" for="passw">Your password</label>
 				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
 			</div>
-			<button type="submit" class="btn btn-block blueButton">Sign Up for Soulcrafting</button>
+			<div class="form-group checkbox checkbox-circle">
+				{{form.terms(type="checkbox")}}
+				<label for="terms"><span id='terms-text'>Of course, I have read the <a href='/terms/service'>Terms of service</a>.</span></label>
+			</div>
+			<button id='btn-signup' type="submit" class="btn btn-block blueButton">Sign Up for Soulcrafting</button>
 			<br>
 		</form>
 		<p>
@@ -55,21 +59,23 @@
 
 <script>
 	$(document).ready(function() {
-		$(".form-control").blur(function (e) {
-			$(this).removeClass('attention');
-		});
+		/* remove attention class once user has made a change */
+		$('.form-control').blur(function (e) { $(this).removeClass('attention');	});
+		$('#terms').click(function (e){ $('#terms-text').removeClass('attention');	});
 
-		$('.btn-signup').click(function(e) {
+		$('#btn-signup').click(function(e) {
 			var errors = 0;
 			var uname = document.forms["signup-form"]["uname"];
 			var email = document.forms["signup-form"]["email"];
 			var passw = document.forms["signup-form"]["passw"];
+			var terms = document.forms["signup-form"]["terms"];
 
-			if (uname.value == '') {	$(uname).addClass('attention');	errors++;	}
-			if (email.value == '') {	$(email).addClass('attention');	errors++;	}
-			if (passw.value == '') {	$(passw).addClass('attention');	errors++;	}
+			if (uname.value == '')	{	$(uname).addClass('attention');	errors++;	}
+			if (email.value == '')	{	$(email).addClass('attention');	errors++;	}
+			if (passw.value == '')	{	$(passw).addClass('attention');	errors++;	}
+			if (!terms.checked)		{	$('#terms-text').addClass('attention'); errors++; 	}
 			if (errors) {
-				console.log('Had ' + errors + ' errors');
+				console.log('Submit had ' + errors + ' errors');
 				return false;
 			}
 			return true;
