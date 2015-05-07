@@ -20,8 +20,8 @@
 	margin-left: -20px;
 	border: 1px solid darkgray;
 	border-radius: 3px;
-	//background: #FAEE13; //rgba(255, 10, 10, .9);
-	background: rgba(255, 10, 10, 1);
+	background: #FAEE13; //rgba(255, 10, 10, .9);
+//	background: rgba(255, 10, 10, 1);
   -webkit-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
   -o-transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
   transition: border 0.15s ease-in-out, color 0.15s ease-in-out;
@@ -30,14 +30,14 @@
 /* checkbox content. */
 .checkbox label::after {
 	font-family: 'FontAwesome';
-	content: '\f00d';	//X
-	content: '\f128';	//? left: 2
+//	content: '\f00d';	//X
+	content: '\f128';	//? left: 3 
 	color: black;
 	display: inline-block;
 	position: absolute;
 	width: 16px;
 	height: 16px;
-	left: 2px;
+	left: 3px;
 	top: -1px;
 	margin-left: -20px;
 	padding-left: 3px;
