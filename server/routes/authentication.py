@@ -58,7 +58,7 @@ def render_signup_page(sc_msg=None):
 		return redirect('/dashboard')
 
 	form = SignupForm(request.form)
-	if form.validate_on_submit():
+	if form.validate_on_submit() and form.terms.data == True:
 		try:
 			profile  = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, ref_id=form.refid.data)
 			return redirect('/dashboard')
