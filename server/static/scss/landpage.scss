@@ -24,10 +24,10 @@
 #btn-email:hover	{ background: $signup-btn-color;		}
 
 #values			{ background: whitesmoke; }
-#get-started	{ text-align: center; 	margin: 25px auto;		}
-#press			{ display: none;		margin: 20px auto 40px;	}
-#press-row		{ text-align: center;	margin: 30px 10px;		}
-#press-row div:last-child {	display: none; 	}
+#get-started	{ margin: 25px auto;	text-align: center;	}
+#press			{ display: none;			}
+#press-row		{ margin: 25px auto;			text-align: center;	}
+#press-row a:last-child {	display: none; 	}
 
 
 .spinX {
@@ -56,22 +56,17 @@
 }
 
 
-.value-panel			{	display: inline-block;	padding: 10px 20px;	}
+.value-panel		{	display: inline-block;	padding: 10px 20px;	}
 .panel-title		{	position: static;		text-align: center; }
 
 
-.press-img {
-	display: inline-block;
-	height: 50px;
-	padding-right: 2px;
-}
 
 
 .btn-masthead {
+	width: 240px;
 	color: white !important;
 	border: 2px solid white;
 	transition: background 80ms ease-out;
-	width: 240px;
 }
 
 
@@ -89,44 +84,38 @@
 }
 
 
-
-.greyscale {
-	height: 35px;
-	filter: gray;			/* IE6-9 */
-	filter: grayscale(1);	/* FF35+ */
-	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
+.press-img {
+	display: inline-block;
+	margin: 0 0.75em;
 }
 
-.greyscale:hover {
-	filter: grayscale(0);	/* FF35+ */
-	-webkit-filter: grayscale(0); /* Chrome, Safari 6+ & Opera 15+ */
-}
-
-
+/* MAP: 				[FF35+]					[Chrome, Safari6+ & Opera 15+]	[IE6-9]							*/
+.greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
+.greyscale:hover	{	filter: grayscale(0);	-webkit-filter: grayscale(0); 									}
 
 
 
 @media (min-width: 489px) {
-	#press { display: block; }
+	#press	{ display: block; }
 }
 
+@media (min-width: 640px) {
+}
 
 @media (min-width: 768px) {
 	.value-panel { width: 33%;	}
 	.value-panel-values { height: 80px;	}
-	.greyscale { height: 40px; }
-	.press-img { padding-right: 15px; }
+	.greyscale { height: 35px; }
+	#press-row a:last-child {	display: inline-block; 	}
 }
 
 @media (min-width: 980px) {
-	#press-row div:last-child {	display: inline-block; 	}
 	#masthead-title {	font-size: 2.0em;	}
 	#masthead-text  {	font-size: 2.0em;	}
 }
 
 
 @media (min-width: 1200px) {
-	.press-img { padding-right: 25px; }
 }
 
 @media (min-width: 1450px) { }
