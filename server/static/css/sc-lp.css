@@ -58,6 +58,23 @@
 #lp-email { background: #5b8a08; }
 
 
+.spinX {
+	position: absolute;
+	top: 0;
+	left: 150px;
+}
+.spin-left {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg); /* Firefox */
+	-ms-transform: rotate(-45deg); /* IE */
+	-o-transform: rotate(-45deg); /* Opera */
+	transform: rotate(-45deg);
+}
+
+.spin-right {
+}
+
 
 /* SECTION: VALUES */
 #values {
@@ -74,10 +91,15 @@
 	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
 }
 
-#getstarted { margin: 25px auto 25px; }
+#getstarted { margin: 25px auto 25px; width: 100%;}
 
 .panel-heading 		{ padding: 0; }
 .panel-heading h1	{ font-size: 64px; }
+
+.cah-panel {
+	display: inline-block;
+	width: 32%;
+}
 
 
 
