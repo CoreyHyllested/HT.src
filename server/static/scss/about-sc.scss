@@ -5,8 +5,8 @@
 
 
 section				{	background:	white;	}
-#masthead			{	background-image: $bg-img-medpatio;	}
-#masthead-text		{	top: 40%;							}
+#masthead			{	background-image: $bg-img-medpatio;	z-index: -5;	}
+#masthead-text		{	top: 40%;	opacity: 0;				}
 #soulcrafting-what	{	background:	whitesmoke;				}
 #soulcrafting-faq	{	background:	whitesmoke;				}
 
