@@ -8,33 +8,41 @@ $masthead-height-mobile	= 330px;
 	width:	100%;
 
 	/* TEXT READABILITY */
-	text-align:	center;
-	text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 40px;
 	font-weight: bolder;
-	font-size: 44px;
-	line-height: 1.1em;
+	line-height: 1.2em;
+	text-shadow: 0 0 30px rgba(0,0,0,.8);
+	text-align:	center;
 	color: white;
 
 	/* background (img upstream) */
 	background-size: cover;
+	background-repeat: no-repeat;
 	background-position: center;
-	z-index: -5;
 }
 
 
-#masthead-text {
-	position: absolute;
-	display: block;
-	top: 50%;
+#masthead-title {	width: 100%;	position: absolute;	display: block; top: 33%;		margin: 0 auto; 									}
+#masthead-text	{	width: 100%;	position: absolute;	display: block; top: 50%;		margin: 0 auto;		transition: opacity 1s ease 1s;	}
+#masthead-btns	{	width: 100%;	position: relative;	display: block; top: 70%;		margin: 0 auto;						}
 
-	/* center horizontally */
-	margin: 0 auto;
-	width: 100%;
-	opacity: 0;
-	transition: opacity 1s ease 1s;
-}
 
 #masthead-gap 	{ height: $masthead-height; }
 //#masthead h1 { text-transform: uppercase; }
 
 @media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }
+
+@media (min-width: 489px) {
+	#masthead-title {	font-size: 1.30em;	}
+	#masthead-text  {	font-size: 1.25em;	}
+}
+
+@media (min-width: 768px) {
+	#masthead-title {	font-size: 1.5em;	}
+	#masthead-text  {	font-size: 1.5em;	}
+}
+
+@media (min-width: 980px)	{ }
+@media (min-width: 1200px)	{ }
+@media (min-width: 1450px)	{ }
+
