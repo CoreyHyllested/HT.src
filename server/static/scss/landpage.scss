@@ -1,0 +1,196 @@
+@import 'colors';
+
+/* ELEMENTS */
+#referred			{ background-color: yellow; position: relative; text-align: center; padding: 10px; font-size: 1.2em; }
+#referred-close		{ position: absolute; top: 0px; right: 5px; cursor: pointer; font-size: 1.2em; }	/* top-right corner */
+#referred-close:before	{ content:"\00D7"; }															/* X to close. */
+
+
+#lp-masthead {
+	width: 100%;
+	height: 80vh;
+	min-height: 400px;
+
+	/* TEXT READABILITY */
+	font-weight: bolder;
+    text-shadow: 0 2px 30px rgba(0,0,0,.8);
+	font-size: 2.1em;
+	line-height: 1.1em;
+	color: white;
+
+	/* background image */
+	background-image: url('/static/img/cover.jpg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+#lp-masthead h1 {
+	line-height: 1.0em;
+	text-transform: uppercase;
+	font-weight: bolder;
+}
+
+#lp-fbook { background: #3b5998; }
+#lp-email { background: #5b8a08; }
+
+
+.spinX {
+	position: relative;
+	text-align: center;
+	top: 0;
+	left: 150px;
+}
+.spin-left {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg); /* Firefox */
+	-ms-transform: rotate(45deg); /* IE */
+	-o-transform: rotate(45deg); /* Opera */
+	transform: rotate(45deg);
+}
+
+.spin-right {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg); /* Firefox */
+	-ms-transform: rotate(-90deg); /* IE */
+	-o-transform: rotate(-90deg); /* Opera */
+	transform: rotate(-90deg);
+}
+
+
+/* SECTION: VALUES */
+#values {
+	/* positioning */
+	padding: 50px 0;
+
+	background-color: grey; /* fallback */
+	background-repeat: repeat-x;
+
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
+	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
+	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
+	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
+	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
+}
+
+#getstarted { margin: 25px auto 25px; width: 100%;}
+
+
+.value-panel			{	display: inline-block;	padding: 10px 20px;	}
+.value-panel-title		{	position: static;		text-align: center; }
+.value-panel-title h1	{	font-size: 64px;							}
+
+
+
+/* SECTION: PRESS */
+#press {
+	display: none;
+	margin: 20px auto 40px;
+}
+
+#press-row {
+	margin: 30px 10px;
+	text-align: center;
+}
+
+#press-title { padding: 0 0 10px; }
+#press-row div:last-child {	display: none; 	}
+
+.press-img {
+	display: inline-block;
+	height: 50px;
+	padding-right: 2px;
+}
+
+
+.masthead-text {
+	display: block;
+
+	position: absolute;
+	top: 23%;
+	margin: 0 auto;
+	width: 100%;
+	min-height: 300px;
+	text-align: center;
+}
+
+.kameron { font-family: 'Kameron', serif; }
+
+
+
+
+
+
+.jumbotron-btn {
+	color: white !important;
+	text-transform: uppercase;
+	text-align: center;
+	text-decoration: none;
+	letter-spacing: 2px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+	border-width: 2px;
+	border-style: solid;
+	border-color: #fff;
+	border-radius: 4px;
+	transition: background 80ms ease-out;
+}
+
+.jumbotron-btn:hover {
+	text-decoration: none;
+	background-color: white;
+	color: black !important;
+}
+
+.lp-btn {
+	width: 240px;
+	color: white;
+	text-transform: uppercase;
+}
+
+
+
+.greyscale {
+	height: 35px;
+
+	filter: gray;			/* IE6-9 */
+	filter: grayscale(1);	/* FF35+ */
+	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
+}
+.greyscale:hover {
+	filter: grayscale(0);	/* FF35+ */
+	-webkit-filter: grayscale(0); /* Chrome, Safari 6+ & Opera 15+ */
+}
+
+
+
+
+
+/* Responsive Styles */
+@media only screen and (min-device-width: 240px) and (max-width: 500px) {
+	.lp-img { font-size: 1em; }
+}
+
+
+@media (min-width: 489px) {
+	#press { display: block; }
+}
+
+@media (min-width: 768px) {
+	.value-panel { width: 33%;	}
+	.value-panel-values { height: 80px;	}
+	.greyscale { height: 40px; }
+	.press-img { padding-right: 15px; }
+}
+
+@media (min-width: 980px) {
+	#press-row div:last-child {	display: inline-block; 	}
+}
+
+@media (min-width: 1200px) {
+	.press-img { padding-right: 25px; }
+}
+
+@media (min-width: 1450px) { }
+

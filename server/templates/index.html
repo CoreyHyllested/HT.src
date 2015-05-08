@@ -3,7 +3,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel="stylesheet" href="/static/css/sc-lp.css">
+	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 	<link rel="stylesheet" href="/static/css/share.css">
 	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 {#	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">#}
@@ -11,21 +11,16 @@
 
 {% block flashmsg %}
 {% if referred %}
-<div id='lp-referrer'>
-	<div id='referrer-content'>
-		<div id="referrer-header">
-			<span id='referrer-title'>Welcome to the new Soulcrafting</span>
-			<div  id='referrer-close'></div>
-		</div>
-		<div id='referrer-message'>We hope you like the new changes. Let us know what you think at team@soulcrafting.co</div>
-	</div>
+<div id='referred'>
+	<span id='referred-title'>Welcome to the new Soulcrafting</span>
+	<div  id='referred-close'></div>
+	<br><br>
+	We hope you like the new changes. Let us know what you think at <a href='mailto:team@soulcrafting.co'>team@soulcrafting.co</a>.
 </div>
 
 <script>
 	$(document).ready(function () {
-		$('#referrer-close').click(function () {
-			$('#lp-referrer').hide();
-		});
+		$('#referred-close').click(function () { $('#referred').hide(); });
 	});
 </script>
 {% endif %}
