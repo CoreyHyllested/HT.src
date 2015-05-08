@@ -11,9 +11,8 @@
 
 #masthead {
 	position: relative;
-	height: 450px;
-	font-size: 20px;
 	background-image: url('/static/img/cover.jpg');
+	font-size: 20px;	/* make this a default */
 }
 
 
@@ -22,9 +21,14 @@
 #masthead-text  	{	top: 20%;	font-size: 0.9em;			}
 #masthead-btns		{	top: 33%;	}
 
+#btn-fbook	{ background: #3b5998; }
+#btn-email	{ background: #5b8a08; }
+#values		{ background: whitesmoke; }
+#getstarted	{ margin: 25px auto 25px; }
 
-#btn-fbook { background: #3b5998; }
-#btn-email { background: #5b8a08; }
+#press		{ display: none;		margin: 20px auto 40px; }
+#press-row	{ text-align: center;	margin: 30px 10px;		}
+#press-row div:last-child {	display: none; 	}
 
 
 .spinX {
@@ -53,22 +57,6 @@
 }
 
 
-/* SECTION: VALUES */
-#values {
-	/* positioning */
-	padding: 50px 0;
-
-	background-color: grey; /* fallback */
-	background-repeat: repeat-x;
-
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(lightgrey), to(white));	/* Safari 4-5, Chrome 1-9 */
-	background: -webkit-linear-gradient(top, lightgrey, white);		/* Safari 5.1, Chrome 10+ */
-	background: -moz-linear-gradient(top, lightgrey, white);		/* Firefox 3.6+ */
-	background: -ms-linear-gradient(top, lightgrey, white);			/* IE 10 */
-	background: -o-linear-gradient(top, lightgrey, white);			/* Opera 11.10+ */
-}
-
-#getstarted { margin: 25px auto 25px; width: 100%;}
 
 
 .value-panel			{	display: inline-block;	padding: 10px 20px;	}
@@ -77,19 +65,6 @@
 
 
 
-/* SECTION: PRESS */
-#press {
-	display: none;
-	margin: 20px auto 40px;
-}
-
-#press-row {
-	margin: 30px 10px;
-	text-align: center;
-}
-
-#press-title { padding: 0 0 10px; }
-#press-row div:last-child {	display: none; 	}
 
 .press-img {
 	display: inline-block;
@@ -108,13 +83,6 @@
 	min-height: 300px;
 	text-align: center;
 }
-
-.kameron { font-family: 'Kameron', serif; }
-
-
-
-
-
 
 .jumbotron-btn {
 	color: white !important;
