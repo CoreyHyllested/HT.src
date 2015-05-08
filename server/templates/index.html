@@ -28,13 +28,12 @@
 
 
 {% block content %}
-<div id='lp-masthead'>
-	<div class='masthead-text'>
-		<h1>The Concierge Service</h1>
-		<p>For smarter home renovation projects</p>
-		<br>
-		<p><a id='lp-fbook' class="btn jumbotron-btn lp-btn" href="/signup/facebook">Sign up with Facebook</a></p>
-		<p><a id='lp-email' class="btn jumbotron-btn lp-btn" href='/signup'>Sign up with email</a></p>
+<div id='masthead'>
+	<div id='masthead-title'>The Concierge Service</div>
+	<div id='masthead-text'> For smarter home renovation projects</div>
+	<div id='masthead-btns'>
+		<p><a id='btn-fbook' class="btn jumbotron-btn lp-btn" href='/signup/facebook'>Sign up with Facebook</a></p>
+		<p><a id='btn-email' class="btn jumbotron-btn lp-btn" href='/signup'>Sign up with email</a></p>
 	</div>
 </div>
 
@@ -46,7 +45,7 @@
 
 		<div class='value-panel'>
 			<div class='value-panel-title'>
-				<div class='spin spin-left'><h1><i class="icon ion-hammer"></i></h1> </div>
+				<div class='value-panel-icon spin spin-left '><i class="icon ion-hammer"></i></div>
 				<h4>Craftsmanship</h4>
 					{#<div class='spin spin-right'>	<h1 class='text-center'><i class="icon ion-wrench"></i></h1> </div>#}
 			</div>
@@ -57,7 +56,7 @@
 
 		<div class='value-panel'>
 			<div class='value-panel-title'>
-				<h1><i class='icon ion-map'></i></h1>
+				<div class='value-panel-icon'><i class='icon ion-map'></i></div>
 				<h4>Support</h4>
 			</div>
 			<div class='value-panel-values'>

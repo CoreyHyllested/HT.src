@@ -1,4 +1,7 @@
 @import 'colors';
+@import 'elem-defaults';
+@import 'elem-masthead';
+
 
 /* ELEMENTS */
 #referred			{ background-color: yellow; position: relative; text-align: center; padding: 10px; font-size: 1.2em; }
@@ -6,33 +9,22 @@
 #referred-close:before	{ content:"\00D7"; }															/* X to close. */
 
 
-#lp-masthead {
-	width: 100%;
-	height: 80vh;
-	min-height: 400px;
-
-	/* TEXT READABILITY */
-	font-weight: bolder;
-    text-shadow: 0 2px 30px rgba(0,0,0,.8);
-	font-size: 2.1em;
-	line-height: 1.1em;
-	color: white;
-
-	/* background image */
+#masthead {
+	position: relative;
+	height: 450px;
+	font-size: 20px;
 	background-image: url('/static/img/cover.jpg');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: cover;
 }
 
-#lp-masthead h1 {
-	line-height: 1.0em;
-	text-transform: uppercase;
-	font-weight: bolder;
-}
 
-#lp-fbook { background: #3b5998; }
-#lp-email { background: #5b8a08; }
+
+#masthead-title 	{	top: 12%;	text-transform: uppercase;	}
+#masthead-text  	{	top: 20%;	font-size: 0.9em;			}
+#masthead-btns		{	top: 33%;	}
+
+
+#btn-fbook { background: #3b5998; }
+#btn-email { background: #5b8a08; }
 
 
 .spinX {
@@ -41,6 +33,7 @@
 	top: 0;
 	left: 150px;
 }
+
 .spin-left {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 	-webkit-transform: rotate(45deg);
@@ -80,7 +73,7 @@
 
 .value-panel			{	display: inline-block;	padding: 10px 20px;	}
 .value-panel-title		{	position: static;		text-align: center; }
-.value-panel-title h1	{	font-size: 64px;							}
+.value-panel-icon		{	font-size: 64px;							}
 
 
 
@@ -153,11 +146,11 @@
 
 .greyscale {
 	height: 35px;
-
 	filter: gray;			/* IE6-9 */
 	filter: grayscale(1);	/* FF35+ */
 	-webkit-filter: grayscale(1); /* Chrome, Safari 6+ & Opera 15+ */
 }
+
 .greyscale:hover {
 	filter: grayscale(0);	/* FF35+ */
 	-webkit-filter: grayscale(0); /* Chrome, Safari 6+ & Opera 15+ */
@@ -167,15 +160,10 @@
 
 
 
-/* Responsive Styles */
-@media only screen and (min-device-width: 240px) and (max-width: 500px) {
-	.lp-img { font-size: 1em; }
-}
-
-
 @media (min-width: 489px) {
 	#press { display: block; }
 }
+
 
 @media (min-width: 768px) {
 	.value-panel { width: 33%;	}
@@ -186,7 +174,10 @@
 
 @media (min-width: 980px) {
 	#press-row div:last-child {	display: inline-block; 	}
+	#masthead-title {	font-size: 2.0em;	}
+	#masthead-text  {	font-size: 2.0em;	}
 }
+
 
 @media (min-width: 1200px) {
 	.press-img { padding-right: 25px; }
