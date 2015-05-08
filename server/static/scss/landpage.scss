@@ -14,20 +14,19 @@
 	background-image: url('/static/img/cover.jpg');
 	font-size: 20px;	/* make this a default */
 }
-
-
-
 #masthead-title 	{	top: 12%;	text-transform: uppercase;	}
 #masthead-text  	{	top: 20%;	font-size: 0.9em;			}
-#masthead-btns		{	top: 33%;	}
+#masthead-btns		{	top: 33%;	text-transform: uppercase;	letter-spacing: 2px;	}	/* impact just the buttons */
 
-#btn-fbook	{ background: #3b5998; }
-#btn-email	{ background: #5b8a08; }
-#values		{ background: whitesmoke; }
-#getstarted	{ margin: 25px auto 25px; }
+#btn-fbook			{ background: $facebk-btn-color;		}
+#btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
+#btn-email			{ background: $signup-btn-color;		}
+#btn-email:hover	{ background: $signup-btn-color;		}
 
-#press		{ display: none;		margin: 20px auto 40px; }
-#press-row	{ text-align: center;	margin: 30px 10px;		}
+#values			{ background: whitesmoke; }
+#get-started	{ text-align: center; 	margin: 25px auto;		}
+#press			{ display: none;		margin: 20px auto 40px;	}
+#press-row		{ text-align: center;	margin: 30px 10px;		}
 #press-row div:last-child {	display: none; 	}
 
 
@@ -57,13 +56,8 @@
 }
 
 
-
-
 .value-panel			{	display: inline-block;	padding: 10px 20px;	}
 .value-panel-title		{	position: static;		text-align: center; }
-.value-panel-icon		{	font-size: 64px;							}
-
-
 
 
 .press-img {
@@ -73,41 +67,25 @@
 }
 
 
-.masthead-text {
-	display: block;
-
-	position: absolute;
-	top: 23%;
-	margin: 0 auto;
-	width: 100%;
-	min-height: 300px;
-	text-align: center;
-}
-
-.jumbotron-btn {
+.btn-masthead {
 	color: white !important;
-	text-transform: uppercase;
-	text-align: center;
-	text-decoration: none;
-	letter-spacing: 2px;
-	box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
-	border-width: 2px;
-	border-style: solid;
-	border-color: #fff;
-	border-radius: 4px;
+	border: 2px solid white;
 	transition: background 80ms ease-out;
+	width: 240px;
 }
 
-.jumbotron-btn:hover {
-	text-decoration: none;
-	background-color: white;
-	color: black !important;
-}
 
 .lp-btn {
 	width: 240px;
-	color: white;
+	color: white !important;
+	margin: 0 auto;
 	text-transform: uppercase;
+	transition: background 80ms ease-out;
+}
+
+.lp-btn:hover {
+	background-color: white;
+	color: black !important;
 }
 
 
