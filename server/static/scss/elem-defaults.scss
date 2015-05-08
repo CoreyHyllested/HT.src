@@ -20,6 +20,8 @@ section div	{	width:	100%;		max-width:	$column-max-width;		margin: 0 auto;	}
 	margin: 0 auto;
 }
 
+.big-icon	{	font-size: 64px;	}
+
 @media (max-width: 767px) {
 	.text-content { padding-left: $text-padding-wide; padding-right: $text-padding-wide; }
 }
