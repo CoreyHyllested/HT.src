@@ -23,7 +23,7 @@
 #btn-email			{ background: $signup-btn-color;		}
 #btn-email:hover	{ background: $signup-btn-color;		}
 
-#values			{ background: whitesmoke; }
+#values-section			{ background: whitesmoke; }
 #get-started	{ margin: 25px auto;	text-align: center;	}
 #press			{ display: none;			}
 #press-row		{ margin: 25px auto;			text-align: center;	}
@@ -56,8 +56,9 @@
 }
 
 
-.value-panel		{	display: inline-block;	padding: 10px 20px;	}
-.panel-title		{	position: static;		text-align: center; }
+.values 		{	display: inline-block;	padding: 10px 20px;	}
+.panel-title	{	position: static;		text-align: center; }
+.panel-value	{ }
 
 
 
@@ -84,10 +85,8 @@
 }
 
 
-.press-img {
-	display: inline-block;
-	margin: 0 0.75em;
-}
+.press-img { display: inline-block; margin: 102px 0.75em; border: 1px solid rgba(0, 0, 0, 0);}
+.press-img:hover { border-color: #19abe1;  border-radius: 50%;}
 
 /* MAP: 				[FF35+]					[Chrome, Safari6+ & Opera 15+]	[IE6-9]							*/
 .greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
@@ -99,13 +98,10 @@
 	#press	{ display: block; }
 }
 
-@media (min-width: 640px) {
-}
 
 @media (min-width: 768px) {
-	.value-panel { width: 33%;	}
-	.value-panel-values { height: 80px;	}
-	.greyscale { height: 35px; }
+	.values			{ width: 33%;	}
+	.panel-value	{ height: 80px;	}
 	#press-row a:last-child {	display: inline-block; 	}
 }
 
@@ -114,9 +110,7 @@
 	#masthead-text  {	font-size: 2.0em;	}
 }
 
-
-@media (min-width: 1200px) {
-}
-
+@media (min-width: 640px) { }
+@media (min-width: 1200px) { }
 @media (min-width: 1450px) { }
 
