@@ -85,12 +85,12 @@
 }
 
 
-.press-img { display: inline-block; margin: 102px 0.75em; border: 1px solid rgba(0, 0, 0, 0);}
-.press-img:hover { border-color: #19abe1;  border-radius: 50%;}
+.press-img 			{ display: inline-block;	margin: 0 0.75em;	border: 1px solid rgba(0, 0, 0, 0);	}
+.press-img:hover	{ border-bottom-color: #19abe1;	border-top-color: #19abe1; 		}
 
 /* MAP: 				[FF35+]					[Chrome, Safari6+ & Opera 15+]	[IE6-9]							*/
 .greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
-.greyscale:hover	{	filter: grayscale(0);	-webkit-filter: grayscale(0); 									}
+//.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
 
 
 
