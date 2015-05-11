@@ -9,7 +9,7 @@
 
 {% block content %}
 <section id='authorize'>
-	<h2 class="text-center">Sign Up for Soulcrafting</h2>
+	<h2 class='text-center'>Sign Up for Soulcrafting</h2>
 
 	<div class='social-btns'>
 		<ul class='social-login list-unstyled'>
@@ -36,11 +36,10 @@
 				<label class="sr-only" for="passw">Your password</label>
 				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
 			</div>
-			<div class="form-group checkbox checkbox-circle">
-				{{form.terms(type="checkbox")}}
-				<span id='terms-text'>By signing up, I agree to Soulcrating's <a href='/terms/service'>Terms of service</a> and <a href='/terms/privacy'>Privacy Policy</a>.</span>
+			<div class='form-group'>
+				By signing up, I agree to Soulcrating's <a href='/terms/service'>Terms of service</a> and <a href='/terms/privacy'>Privacy Policy</a>.
 			</div>
-			<button id='btn-signup' type="submit" class="btn btn-block blueButton">Sign Up for Soulcrafting</button>
+			<button id='btn-signup' type='submit' class='btn btn-block blueButton'>Sign Up as Professional</button>
 			<br>
 		</form>
 		<p>
