@@ -16,12 +16,12 @@
 }
 #masthead-title 	{	top: 12%;	text-transform: uppercase;	}
 #masthead-text  	{	top: 20%;	font-size: 0.9em;			}
-#masthead-btns		{	top: 33%;	text-transform: uppercase;	letter-spacing: 2px;	}	/* impact just the buttons */
+#masthead-btns		{	top: 35%;	text-transform: uppercase;	letter-spacing: 2px;	}	/* impact just the buttons */
 
 #btn-fbook			{ background: $facebk-btn-color;		}
 #btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
 #btn-email			{ background: $signup-btn-color;		}
-#btn-email:hover	{ background: $signup-btn-color;		}
+#btn-email:hover	{ background: $signup-btn-color-hover;	}
 
 #values-section			{ background: whitesmoke; }
 #get-started	{ margin: 25px auto;	text-align: center;	}
@@ -30,13 +30,6 @@
 #press-row a:last-child {	display: none; 	}
 
 
-.spinX {
-	position: relative;
-	text-align: center;
-	top: 0;
-	left: 150px;
-}
-
 .spin-left {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 	-webkit-transform: rotate(45deg);
@@ -44,15 +37,6 @@
 	-ms-transform: rotate(45deg); /* IE */
 	-o-transform: rotate(45deg); /* Opera */
 	transform: rotate(45deg);
-}
-
-.spin-right {
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
-	-webkit-transform: rotate(-90deg);
-	-moz-transform: rotate(-90deg); /* Firefox */
-	-ms-transform: rotate(-90deg); /* IE */
-	-o-transform: rotate(-90deg); /* Opera */
-	transform: rotate(-90deg);
 }
 
 
