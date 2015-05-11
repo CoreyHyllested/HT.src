@@ -22,7 +22,7 @@
 #btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
 #btn-email			{ background: $signup-btn-color;		}
 #btn-email:hover	{ background: $signup-btn-color-hover;	}
-#btn-get-started	{ position: relative; top: 66%; font-weight: bolder;		}
+#btn-get-started	{ position: relative; top: 66%; font-weight: 600;		}
 
 #values-section			{ background: whitesmoke; }
 #get-started			{ background: $bg-img-wkitchen center;	background-size: cover;  height: 300px;	text-align: center;	}
@@ -60,6 +60,7 @@
 	width: 240px;
 	color: white !important;
 	margin: 0 auto;
+	border: 2px solid white;
 	text-transform: uppercase;
 	transition: background 80ms ease-out;
 }
