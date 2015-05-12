@@ -12,20 +12,24 @@
 #masthead {
 	position: relative;
 	background-image: url('/static/img/cover.jpg');
+	background-position-y: 60%;
 	font-size: 20px;	/* make this a default */
+	height:	70vh;
+	min-height: 400px;
 }
-#masthead-title 	{	top: 12%;	text-transform: uppercase;	}
-#masthead-text  	{	top: 20%;	font-size: 0.9em;			}
-#masthead-btns		{	top: 35%;	text-transform: uppercase;	letter-spacing: 2px;	}	/* impact just the buttons */
+#masthead-text  	{	top: 25%;	}
+#masthead-title 	{	font-size: 1.4em;	font-weight: 600;	}
+#masthead-btns		{	letter-spacing: 2px;	}	/* impact just the buttons */
+
 
 #btn-fbook			{ background: $facebk-btn-color;		}
 #btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
 #btn-email			{ background: $signup-btn-color;		}
 #btn-email:hover	{ background: $signup-btn-color-hover;	}
-#btn-get-started	{ position: relative; top: 66%; font-weight: 600;		}
+#btn-get-started	{ position: relative; top: 50%; font-weight: 600;		}
 
 #values-section			{ background: whitesmoke; }
-#get-started			{ background: $bg-img-wkitchen center;	background-size: cover;  height: 300px;	text-align: center;	}
+#get-started			{ background: $bg-img-wkitchen 50% 70%;	background-size: cover;  height: 350px;	text-align: center;	}
 #press			{ display: none;			}
 #press-row		{ margin: 25px auto;			text-align: center;	}
 #press-row a:last-child {	display: none; 	}
@@ -44,7 +48,6 @@
 .value	 		{	display: inline-block;	padding: 10px 20px;		vertical-align: middle;	}
 .value-title	{	position: static;		text-align: center; }
 .value-panel	{ }
-
 
 
 
@@ -78,7 +81,6 @@
 //.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
 
 
-
 @media (min-width: 489px) {
 	#press	{ display: block; }
 }
@@ -91,8 +93,8 @@
 }
 
 @media (min-width: 980px) {
-	#masthead-title {	font-size: 2.0em;	}
-	#masthead-text  {	font-size: 2.0em;	}
+	#masthead-title {	font-size: 1.5em;	}
+	#masthead-text  {	font-size: 1.5em;	}
 }
 
 @media (min-width: 640px) { }
