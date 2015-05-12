@@ -1,17 +1,17 @@
 #################################################################################
-# Copyright (C) 2013 - 2014 Insprite, LLC.
+# Copyright (C) 2015 Soulcrafting
 # All Rights Reserved.
 #
-# All information contained is the property of Insprite, LLC.  Any intellectual
+# All information contained is the property of Soulcrafting. Any intellectual
 # property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents.  All intellectual
+# services may be protected by U.S. and Foreign Patents. All intellectual
 # property contained within is covered by trade secret and copyright law.
 #
 # Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Insprite, LLC.
+# consent has been obtained from Soulcrafting.
 #################################################################################
 
-from . import insprite_views
+from . import sc_meta
 from flask import render_template, session, request
 from server.models import Profile
 from server.infrastructure.errors import *
@@ -30,7 +30,7 @@ def create_error_response(resp_code, resp_text, resp_template):
 
 
 
-@insprite_views.app_errorhandler(StateTransitionError)
+@sc_meta.app_errorhandler(StateTransitionError)
 def error_400_bad_request_ste(ste):
 	profile = None
 	if 'uid' in session:
@@ -47,7 +47,7 @@ def error_400_bad_request_ste(ste):
 
 
 
-@insprite_views.app_errorhandler(NoResourceFound)
+@sc_meta.app_errorhandler(NoResourceFound)
 def error_400_no_resource_found(nrf):
 	profile = None
 	if 'uid' in session:
@@ -63,7 +63,7 @@ def error_400_no_resource_found(nrf):
 
 
 
-@insprite_views.app_errorhandler(400)
+@sc_meta.app_errorhandler(400)
 def error_400_bad_request(e):
 	profile = None
 	if 'uid' in session:
@@ -75,7 +75,7 @@ def error_400_bad_request(e):
 
 
 
-@insprite_views.app_errorhandler(401)
+@sc_meta.app_errorhandler(401)
 def error_401_unauthorized(e):
 	profile = None
 	if 'uid' in session:
@@ -87,7 +87,7 @@ def error_401_unauthorized(e):
 
 
 
-@insprite_views.app_errorhandler(403)
+@sc_meta.app_errorhandler(403)
 def error_403_forbidden(e):
 	profile = None
 	if 'uid' in session:
@@ -99,7 +99,7 @@ def error_403_forbidden(e):
 
 
 
-@insprite_views.app_errorhandler(404)
+@sc_meta.app_errorhandler(404)
 def error_404_not_found(e):
 	profile = None
 	if 'uid' in session:
@@ -110,7 +110,7 @@ def error_404_not_found(e):
 
 
 
-@insprite_views.app_errorhandler(405)
+@sc_meta.app_errorhandler(405)
 def error_405_method_not_allowed(e):
 	profile = None
 	if 'uid' in session:
@@ -127,13 +127,13 @@ def error_405_method_not_allowed(e):
 
 
 
-@insprite_views.app_errorhandler(SanitizedException)
+@sc_meta.app_errorhandler(SanitizedException)
 def generic_error_sanitizedexception_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')
 
 
-@insprite_views.app_errorhandler(500)
+@sc_meta.app_errorhandler(500)
 def error_500_internal_server_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')
