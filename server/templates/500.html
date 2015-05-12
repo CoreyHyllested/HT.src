@@ -1,13 +1,11 @@
-{% extends "ht_header.html" %}
+{% extends 'sc-header.html' %}
+{% set title='Soulcrafting hit an error' %}
 
-  <script type="text/javascript">
-   function isNumberKey(evt) {
-     var charCode = (evt.which) ? evt.which : event.keyCode;
-     if (charCode > 31 && (charCode < 48 || charCode > 57))
-       return false;
-     return true;
-   }
-</script>
+{% block header_css %}
+	{{ super() }}
+	<link rel="stylesheet" href="/static/css/modern-business.css">
+{% endblock %}
+
 
 {% block content %}
 <div id="error-wrap">
@@ -18,12 +16,8 @@
 			<a href="/dashboard"><p>Back to Dashboard</p></a>
 		</div>
 
-	
 		<div style="clear:both"></div>
-
 	</div>
 </div>
-
-<!-- Bottom bar -->
 
 {% endblock %}
