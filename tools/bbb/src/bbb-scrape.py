@@ -1,7 +1,7 @@
 ''' BBB-Scrape '''
 
 import urllib2
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 from bs4 import BeautifulSoup as Soup
 from soupselect import select
 import feedparser
@@ -146,11 +146,9 @@ def get_bbb_types_cached():
 
 
 def bbb_parse_address(name, addr, phone, link, image=None, bbb_uri=None):
-	uri = None
 	addrStreet	= addr.find(itemprop='streetAddress').get_text()
 	addrCity	= addr.find(itemprop='addressLocality').get_text()
 	addrState	= addr.find(itemprop='addressRegion').get_text()
-
 
 	print
 	print name, phone
@@ -191,22 +189,133 @@ def get_businesses_by_type(page):
 
 		for uri in links:
 			URI = uri.attrs.get('href')
-			#print URI
+			print URI
 			if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
 				link = URI
 
 
 		bbb_parse_address(name, addr, phone, link, image, bbb_uri)
-		#look for .sponsorBx (looks like they're advertising on BBB) # ELSE === .businesbox [itemtype=LocalBusiness']
-		# div.sponsor_info
-		# 	a itemprop=name id=HASH (save?) HREF=(reviews)
-		#	a itemprop=address ...
-		# 		itemprop=StreetAddress, addressLocality, Region.
-		#	div div div a.link.newtab href=[WEBADDR]
-		# itemprop=phone
-		# accreddit=True.
+		bbb_parse_business(bbb_uri)
+		bbb_parse_business_reviews(bbb_uri)
 
+
+def bbb_parse_business_reviews(page):
+	print 'About to scrape "BBB Business Page": ' + str(page)
+	page = page + '/customer-reviews'
+	reviews_dom	= urllib2.urlopen(page).read()
+	reviews_soup = BeautifulSoup(reviews_dom)
+	positive = reviews_soup.find(id='cr-pos-listing')
+	reviews	= positive.find_all('tr')
+	for r in reviews:
+		r_date		= r.find(class_=['td_h']).get_text()
+		r_details	= r.find(class_=['td_detail']).get_text()
+		comments	= r.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
+		print r_date
+		details = r_details[0:r_details.find('This customer had a')]
+		print details
+
+	negative = reviews_soup.find(id='cr-neg-listing')
+	reviews	= negative.find_all('tr')
+	for r in reviews:
+		r_date		= r.find(class_=['td_h']).get_text()
+		r_details	= r.find(class_=['td_detail']).get_text()
+		#comments	= r.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
+		print r_date
+		details = r_details[0:r_details.find('This customer had a')]
+		print details
+		
+	neutral	 = reviews_soup.find(id='cr-neu-listing')
+	reviews	= neutral.find_all('tr')
+	for r in reviews:
+		r_date		= r.find(class_=['td_h']).get_text()
+		r_details	= r.find(class_=['td_detail']).get_text()
+		#comments	= r.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
+		print r_date
+		details = r_details[0:r_details.find('This customer had a')]
+		print details
 	
+
+
+def bbb_parse_business(page):
+	print 'About to scrape "BBB Business Page": ' + str(page)
+	dom	= urllib2.urlopen(page).read()
+	dom_soup = BeautifulSoup(dom)
+
+	print 'Finding LocalBusiness'
+	business = dom_soup.find_all(itemtype='http://schema.org/LocalBusiness')[0]
+
+	print 'Get name, telephone, address'
+	bus_name	= business.find_all(itemprop='name')[0].get_text()
+	bus_phone	= business.find_all(itemprop='telephone')[0].get_text()
+	bus_address	= business.find_all(itemtype='http://schema.org/PostalAddress')[0]
+	bus_addr_street	= bus_address.find_all(itemprop='streetAddress')[0].get_text()
+	bus_addr_locale	= bus_address.find_all(itemprop='addressLocality')[0].get_text()
+	bus_addr_region	= bus_address.find_all(itemprop='addressRegion')[0].get_text()
+	bus_addr_postal = bus_address.find_all(itemprop='postalCode')[0].get_text()
+	print bus_name, bus_phone, bus_addr_street, bus_addr_locale, bus_addr_region, bus_addr_postal
+
+#	bus_contact_url	= business.find_all(class_='business-link')[0].get_text()
+
+	print 'Get accredited information'
+	accredited_since	= business.find_all(class_='accredited-since')[0].get_text()
+	accredited_rating	= business.find_all(id='accedited-rating')	#BBB misspells this, check to see if it got fixed
+#	print accredited_since, accredited_rating
+	rating = accredited_rating[0].img.attrs.get('title')
+	print accredited_since, rating
+	
+	print 'Get additional business information'
+	bus_additional = business.find(id='business-additional-info-container')
+	bus_bbb_open = bus_additional.find('span').get_text()
+	bus_founding	= bus_additional.find(itemprop='foundingDate').get_text()	#also just business.search
+
+	bus_info_legal = bus_additional.find('h5', text='Type of Entity')
+	if bus_info_legal is not None:
+		bus_info_legal = bus_info_legal.nextSibling.get_text()
+
+	print bus_bbb_open
+	print bus_founding
+	print bus_info_legal
+
+	print 'Get employee information'
+	bus_info_employees = bus_additional.find(itemprop='employees')
+	if bus_info_employees == None:
+		bus_emp = bus_additional.find('h5', text='Business Management').nextSibling.get_text()
+		print bus_emp
+		bus_info_employees = []
+	for emp in bus_info_employees:
+		print 'Job title?: ', emp.get_text()
+		emp_name = emp.find(itemprop='name')
+		if (emp_name is not None): emp_name = emp_name.get_text()
+		emp_title = emp.find(itemprop='jobTitle')
+		if (emp_title is not None): emp_title = emp_title.get_text()
+		print 'person name:', emp_name
+		print 'person job:', emp_title
+
+
+	print 'Get category information'
+	bus_info_categories	= bus_additional.find('h5', text='Business Category').nextSibling.get_text().split(',')
+	print bus_info_categories
+	
+	print 'Get additional names'
+	bus_alt_names = bus_additional.find('h5', text='Alternate Business Names')
+	if bus_alt_names is not None: 
+		bus_alt_names = bus_alt_names.nextSibling.get_text().split(',')
+	print bus_alt_names
+
+
+	print 'Get rating information'
+	bus_agg_rating = bus_additional.find(itemtype='http://schema.org/AggregateRating')
+	print 'bus_agg_rating:', bus_agg_rating
+	if bus_agg_rating is not None:
+		bus_agg_score	= bus_agg_rating.find(itemprop='ratingValue')
+		if (bus_agg_score): bus_agg_score = bus_agg_score.attrs.get('content')
+		bus_agg_best	= bus_agg_rating.find(itemprop='bestRating')
+		if (bus_agg_best): bus_agg_best = bus_agg_best.attrs.get('content')
+		bus_agg_count	= bus_agg_rating.find(itemprop='reviewCount')
+		if (bus_agg_count): bus_agg_count = bus_agg_count.attrs.get('content')
+
+		print bus_agg_count, 'reviews, with an avg score of', bus_agg_score
+		print 'Best score', bus_agg_best
 
 
 if __name__ == '__main__':
@@ -215,6 +324,8 @@ if __name__ == '__main__':
 	types = get_bbb_types_cached()
 	for business_type in types:
 		get_businesses_by_type(business_type)
+#	bbb_parse_business('http://www.bbb.org/denver/business-reviews/roofing-contractors/303-933-roof-in-littleton-co-75003621')
+#	bbb_parse_business_reviews('http://www.bbb.org/denver/business-reviews/roofing-contractors/303-933-roof-in-littleton-co-75003621')
 		
 
 
