@@ -1,18 +1,46 @@
-''' BBB-Scrape '''
+#################################################################################
+# Copyright (C) 2015 Soulcrafting
+# All Rights Reserved.
+#
+# All information contained is the property of Soulcrafting. Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents. All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Soulcrafting.
+#################################################################################
 
-import urllib2
+import sys, os, argparse
+import urllib2, feedparser
 from bs4 import BeautifulSoup, Comment
 from bs4 import BeautifulSoup as Soup
-from soupselect import select
-import feedparser
-import re, os
+import re
 
 
 
-def open_file(name):
-	filename = os.getcwd() + '/data/preprocessed/reviews/' + name
+def create_directories():
+	safe_mkdir('/data/preprocessed/reviews/')
+
+
+def safe_mkdir(path):
+	directory = os.getcwd() + path
+	if (os.path.exists(directory) == False):
+		os.makedirs(directory)
+
+
+
+def open_file(path_from_cwd):
+	filename = os.getcwd() + path_from_cwd
 	print 'creating file ' + str(filename)
 	fp = open(filename, 'a+')
+	return fp
+
+
+def create_review(filename):
+	fn = '/data/preprocessed/reviews/' + filename
+	fp = open_file(fn)
+	fp.truncate()
 	return fp
 
 
@@ -23,11 +51,9 @@ def get_bbb_types(page):
 
 	links = []
 	tobs = dom_soup.find_all('ul', class_=['industry-tobs'])
-	for tob in tobs:
-#		print '\tTOB', tob
+	for tob in tobs:		#what is a TOB?
 		LIs	= tob.find_all('a')
 		for li in LIs:
-#			print '\t\tTOB-LI', li
 			uri	= li.attrs.get('href')
 			print '\"' + str(uri) + '\",'
 			links.append(uri)
@@ -147,9 +173,11 @@ def get_bbb_types_cached():
 				"http://www.bbb.org/denver/accredited-business-directory/water-main-contractors",
 				"http://www.bbb.org/denver/accredited-business-directory/windows"
 	]
-	#return types
+	return types
+
 	testing = [	"http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
 	return testing
+
 
 
 def bbb_parse_address(name, addr, phone, link, image=None, bbb_uri=None):
@@ -190,6 +218,7 @@ def get_businesses_by_type(page):
 			img	= image[0].attrs.get('src')
 			#print 'found logo', image
 
+		link = None
 		for uri in links:
 			URI = uri.attrs.get('href')
 			#print URI
@@ -212,16 +241,21 @@ def bbb_parse_business_reviews(name, page):
 	neg_reviews	= reviews_soup.find(id='cr-neg-listing')
 	neu_reviews	= reviews_soup.find(id='cr-neu-listing')
 
-	positive	= pos_reviews.find_all('tr')
-	negative	= neg_reviews.find_all('tr')
-	neutral		= neu_reviews.find_all('tr')
-	nr_reviews	= len(positive) + len(negative) + len(neutral)
-	print nr_reviews
+	if (pos_reviews): positive	= pos_reviews.find_all('tr')
+	if (neg_reviews): negative	= neg_reviews.find_all('tr')
+	if (neu_reviews): neutral	= neu_reviews.find_all('tr')
 
+	nr_reviews	= 0
+	if (positive):	nr_reviews	+= len(positive)
+	if (negative):	nr_reviews	+= len(negative)
+	if (neutral):	nr_reviews	+= len(neutral)
+
+	if (not nr_reviews):
+		return
+
+	print 'There are', str(nr_reviews), 'reviews'
 	fp = None
-	if (nr_reviews):
-		# pass in business name to bbb_parse_bus_page & replace 'weirdchars'
-		fp = open_file(name)
+	fp = create_review(name) # pass in business name to bbb_parse_bus_page & replace 'weirdchars'
 	
 	for review in positive:
 		r_date		= review.find(class_=['td_h']).get_text()
@@ -271,10 +305,15 @@ def bbb_parse_business(page):
 #	bus_contact_url	= business.find_all(class_='business-link')[0].get_text()
 
 	#print 'Get accredited information'
+	rating = None
 	accredited_since	= business.find_all(class_='accredited-since')[0].get_text()
-	accredited_rating	= business.find_all(id='accedited-rating')	#BBB misspells this, check to see if it got fixed
-	rating = accredited_rating[0].img.attrs.get('title')
+	accredited_rating	= business.find_all(id='accedited-rating')	#BBB misspells this, check to see if it got fixed, not always present.
+	if (accredited_rating):
+		rating = accredited_rating[0].img.attrs.get('title')
 	print accredited_since, rating
+	#TODO look for <span class='business-email'><a href=mailto:>
+	#TODO also look for addtional email addresses; parse mailto?  <div id='addtional-email-pop'><li><a href=mailto?>
+
 	
 	#print 'Get additional business information'
 	bus_additional = business.find(id='business-additional-info-container')
@@ -332,7 +371,19 @@ def bbb_parse_business(page):
 
 
 if __name__ == '__main__':
-	print 'Scrape BBB'
+	create_directories()
+
+	parser = argparse.ArgumentParser(description='Collect BBB directory of businesses; scrape, normalize, and process BBB information')
+	parser.add_argument('-V', '--verbose', help="increase output verbosity", action="store_true")
+	parser.add_argument('-U', '--update', help="Update business directory",	action="store_true")
+	args = parser.parse_args()
+	if (args.verbose):
+		print 'verbosity is on'
+	if (args.update):
+		print 'Update business directory!'
+		types = get_bbb_types_cached()
+		#scrape_bbb_businesses()
+
 #	types = get_bbb_types('http://www.bbb.org/denver/accredited-business-directory/contractors-construction-and-building-materials-industry')
 	types = get_bbb_types_cached()
 	for business_type in types:
