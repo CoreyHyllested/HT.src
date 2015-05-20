@@ -6,6 +6,21 @@
 	{% assets 'scss_about_sc' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
 
+{% block flashmsg %}
+{% if referred %}
+<div id='referred'>
+	<span id='referred-title'>Welcome to the new Soulcrafting</span>
+	<div  id='referred-close'></div>
+	<br><br>
+	You can read more about <a href='https://medium.com/@bryanmuir/what-s-old-is-new-on-soulcrafting-3301b0be1044' target='_blank'>Soulcrafting's evolution</a>.
+</div>
+
+<script>
+	$(document).ready(function () {
+		$('#referred-close').click(function () { $('#referred').hide(); });
+	});
+</script>
+{% endif %}
 
 {% block parallax %}
 	<div id='masthead'><div id='masthead-text'>About Soulcrafting</div></div>

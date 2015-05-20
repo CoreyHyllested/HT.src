@@ -155,7 +155,8 @@ def render_about_page():
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('about.html', bp=bp))
+	referred = True if (request.referrer and 'getsoulcrafting.com' in request.referrer) else None
+	return make_response(render_template('about.html', bp=bp, referred=referred))
 
 
 
