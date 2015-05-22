@@ -1,42 +1,18 @@
-@import 'colors';
+/* (c) 2015 Soulcrafting */
+@import 'elem-defaults';
 @import 'fonts';
 @import 'sizes';
 @import 'forms';
 
-/*
-a) 240px - 449px (phones)
-b) 450px - ... (everything else)
-*/
-
-
-#settings-content {
-	background-color: white;
-	padding: 40px;
-	margin-bottom: 50px;
-}
-
-
-#settings-title {
-	color: $black;
-	font-size: 1.5em;
-	font-weight: 400;
-	line-height: 1.2em;
-	padding-bottom: 20px;
-}
-
-#settings-actions { width: 100%; }
-
-#settings-btn-container {
-	float: left;
-	text-align: left;
-	width: 100%; }
-
+section div			{	max-width:	550px !important;	}
+#settings-content	{	padding: 40px 25px;				}
 
 #settings-status {
 	color: rgba(0,0,0,.4);
 	text-align: left;
 	font-size: .9em;
 	height: 30px;
+	margin: 10px;
 	line-height: 36px;
 	font-weight: $font-weight-ltbold;
 }
@@ -58,27 +34,14 @@ b) 450px - ... (everything else)
 
 .empty { display: none !important; }
 
-@media only screen and (min-device-width: 240px) and (max-width: 449px) {
-	#settings-content {
-		padding: 40px 10px;
-		margin: 20px 50px 75px;
-	}
-}
-
-@media only screen and (min-width: 450px) {
-	#settings-content {
-		padding: 40px 35px;
-	}
-}
+@media only screen and (min-device-width: 240px) and (max-width: 449px) {}
+@media only screen and (min-width: 450px) {}
 
 @media (min-width: 489px) {}
 @media (min-width: 768px) {}
 @media (min-width: 768px) {}
-@media (min-width: 980px) {
-}
-
-@media (min-width: 1200px) {
-}
+@media (min-width: 980px) {}
+@media (min-width: 1200px) { }
 
 
 
