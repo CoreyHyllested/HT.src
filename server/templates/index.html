@@ -4,9 +4,10 @@
 {% block header_css %}
 	{{ super() }}
 	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
-	<link rel="stylesheet" href="/static/css/share.css">
 	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-{#	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">#}
+{#	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+	<link rel="stylesheet" href="/static/css/share.css">
+#}
 {% endblock %}
 
 {% block flashmsg %}
