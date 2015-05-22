@@ -6,15 +6,8 @@ $closing-text-sz	= 16px;
 
 
 //overrides
-#masthead {
-	position: relative;
-	background: $bg-img-kitchen center no-repeat;
-}
-
-#masthead-text {
-	top: 33%;
-	opacity: 1;
-}
+#masthead		{ background: $bg-img-kitchen center no-repeat;	z-index: -5; }
+#masthead-text	{ top: 33%; opacity: 0; }
 
 
 #about-furniture { background: whitesmoke; font-size:	$closing-text-sz; }

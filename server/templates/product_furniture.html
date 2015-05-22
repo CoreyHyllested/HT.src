@@ -7,13 +7,14 @@
 {% endblock %}
 
 
-
 {% block parallax %}
 	<div id='masthead'> <div id='masthead-text'>Custom Furniture</div> </div>
 {% endblock %}
 
 
 {% block content %}
+<div id='masthead-gap'></div>
+
 <section id='about-furniture'>
 	<h3>Soulcrafted Furniture</h3>
 	<div>
@@ -84,4 +85,5 @@
 
 {% block scripts %}
 	{{ super() }}
+	<script src='/static/js/products.js'></script>
 {% endblock %}
