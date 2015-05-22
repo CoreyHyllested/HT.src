@@ -741,7 +741,7 @@ def render_settings():
 
 
 @sc_users.route('/settings/update', methods=['POST'])
-@req_authentication
+@sc_authenticated
 def sc_api_update_settings():
 	print "sc_api_update_settings: begin"
 
@@ -792,7 +792,8 @@ def sc_api_update_settings():
 			# successfully updated account
 			# user changed email, password. For security, send confimration email.
 			if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
-			if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
+# TODO -- create send_passwd_change_email.  Need to look up Mandrill template.
+			#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
 			print "sc_api_update_settings() Update should be complete"
 			return jsonify(usrmsg="Settings updated"), 200
 	except PasswordError as pe:
