@@ -3,15 +3,26 @@
 
 {% block header_css %}
 	{{ super() }}
+	{% assets 'scss_errors' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
 
 {% block content %}
-<div id="error-wrap" class="container">
-	<div id="error-panel">
-		<div id="error-message">
-			<h2>Error 404: Page not found.</h2>
-		</div>
-		<p>Maybe we'll have this in the future.  But right now, we don't.  Sorry.</p>
+<div id='masthead'>
+	<div id='masthead-text'>
+		<span id='masthead-title'>Well, this is awkward</span>
+		<p>We cannot find the page you were looking for</p>
 	</div>
 </div>
+
+<section>
+	<div>
+		<h3>Let's get back on track</h3>
+		<ul id='error-list'>
+			<li><a href='/'>Home</a></li>
+			<li><a href='/about'>About</a></li>
+			<li><a href='/products/furniture'>Custom Furniture</a></li>
+		</ul>
+	</div>
+</section>
 {% endblock %}
+
