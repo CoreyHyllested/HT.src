@@ -22,11 +22,12 @@ $container-border-radius: 6px;
 
 .field {
 	color: $field-info-color;
+	width: 100%;
 	font-family: "Open Sans", Helvetica, sans-serif;
 	font-size: .9em;
 }
 
-.field.info			{ padding: 7px 0 5px; 	}
+.field.info			{ padding: 15px 0 5px; 	margin-left: 0px;	}
 .field.info.first	{ padding-top: 0px;		}
 .field.info.notice	{ font-weight: 600;		}
 
@@ -70,9 +71,10 @@ $container-border-radius: 6px;
 }
 
 .btn-settings {
-	float: left;
 	min-width: 110px;
 	height: $field-height;
-	padding: 10px 20px;
-	margin-right: 20px;
+	//padding: 10px 20px;
+	margin: 20px 0px 0px;
+	//margin-right: 20px;
+	//mv to settings.scss (only used there)
 }
