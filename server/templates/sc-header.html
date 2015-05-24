@@ -4,7 +4,9 @@
 	<title>{{title}}</title>
 	<meta charset='UTF-8'>
 	<meta name='viewport' content='initial-scale=1.0, user-scalable=no'>
+	<link rel='icon' type="image/png" href="/static/img/favicon.png">
 
+	{% block header_meta %}
 	<meta name='twitter:card'	content='summary_large_image'>
 	<meta name='twitter:site'	content='@soulcrafting'>
 	<meta name='twitter:title'	content='Smarter home renovation projects'>
@@ -12,9 +14,9 @@
 	<meta name='twitter:url'	content='https://soulcrafting.co/static/img/cover.jpg' />
 	<meta name='twitter:creator' content='@soulcrafting'>
 	<meta name='twitter:description' content='Soulcrafting is the smartest, most trusted way to renovate your home.'>
-	{% block header_meta %}{% endblock %}
+	{% endblock %}
 
-	<link rel='icon' type="image/png" href="/static/img/favicon.png">
+	{% block header_css %}
 	<link rel='stylesheet' href='/static/css/master.css'>
 	<link rel='stylesheet' href='/static/css/modals.css'>
 	{% assets 'navigate.css' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
@@ -22,11 +24,11 @@
 	<link rel='stylesheet' href='//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
 	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Kameron|Poiret+One|Cinzel|Open+Sans:200,400,600,800'>
 {#	<link rel='stylesheet' href='//fonts.googleapis.com/css?family=Lustria|Nixie+One|Crete+Round|Ovo|Playfair+Display+SC|Alegreya'> #}
-	{% block header_css %}{% endblock %}
+	{% endblock %}
 
-	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
+	{% block header_js %}
 	<script src='/static/js/modals.js' async></script>
-	{% block header_js %}{% endblock %}
+	{% endblock %}
 
 	<!--[if lt IE 9]>
 		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -120,6 +122,7 @@
 
 
 	<script src="/static/js/bootstrap.min.js"></script>
+	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
 	<script src='//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
 	{% block scripts %}{% endblock %}
 	<script>
