@@ -23,7 +23,6 @@
 {% block header_css %}
 	{{ super() }}
 	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
-	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 {% endblock %}
 
 
@@ -105,4 +104,9 @@
 		<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'><img class='greyscale press-img' src='/static/img/press-examiner-100.png' alt='The Examiner'></a>
 	</div>
 </section>
+{% endblock %}
+
+{% block scripts  %}
+	{{ super() }}
+	<script>window.addEventListener('load', load_css('//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'));</script>
 {% endblock %}
