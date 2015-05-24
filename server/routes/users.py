@@ -984,7 +984,7 @@ def api_update_project(usrmsg=None):
 #@insprite_views.route('/uploads/<filename>')
 #def uploaded_file(filename):
 	# add sec protection?
-	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
+#	return send_from_directory(ht_server.config['SC_UPLOAD_DIR'], filename)
 
 
 
@@ -1013,7 +1013,7 @@ def ht_create_image(profile, image_data, comment=None):
 
 
 def ht_upload_image_to_S3(image, image_data):
-	f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], image.img_id), 'w')
+	f = open(os.path.join(ht_server.config['SC_UPLOAD_DIR'], image.img_id), 'w')
 	f.write(image_data)
 	f.close()
 
