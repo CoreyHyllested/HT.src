@@ -3,10 +3,17 @@
 <head>
 	<title>{{title}}</title>
 	<meta charset='UTF-8'>
-	<meta name='viewport' content='initial-scale=1.0, user-scalable=no'>
+	<meta name='viewport'	 content='initial-scale=1.0, user-scalable=no'>
+	<meta name='description' content={{meta_desc}}>
 	<link rel='icon' type="image/png" href="/static/img/favicon.png">
 
 	{% block header_meta %}
+		<meta property='og:title'	content='Soulcrafting'/>
+		<meta property='og:type'	content='website'/>
+		<meta property='og:url'		content='https://soulcrafting.co/'/>
+		<meta property='og:image'	content='https://soulcrafting.co/static/img/cover.jpg'/>
+		<meta property='og:description'	content='The smartest way to invest in your home.'/>
+
 		<meta name='twitter:card'	content='summary_large_image'>
 		<meta name='twitter:site'	content='@soulcrafting'>
 		<meta name='twitter:title'	content='Smarter home renovation projects'>
