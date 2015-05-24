@@ -14,7 +14,7 @@
 
 import os
 
-HT_BASEDIR	= os.path.abspath(os.path.dirname(__file__))
+SC_BASEDIR	= os.path.abspath(os.path.dirname(__file__))
 LOCAL_DB	= os.environ.get('INSPRITE_DB', None)
 
 
@@ -24,11 +24,11 @@ class Config:
 	MAX_CONTENT_LENGTH = 2**23			# Maxiumum size of request cannot exeed 8MB.
 	SECRET_KEY = "\xd8\x84.\xdbfk\x14]\x86\x10\x89\xbf\xcb\x04a\xd6'\xa7}\xc2\x019\x84\xc5"
 
-	SEND_FILE_MAX_AGE_DEFAULT= 60 * 60 * 24 * 60
+	SEND_FILE_MAX_AGE_DEFAULT= 365 #60 * 60 * 24 * 60
 	USE_SENDFILE=False
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@soulcrafting.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432/scdb'
-	SQLALCHEMY_MIGRATE_REPO = HT_BASEDIR + '/database/'
+	SQLALCHEMY_MIGRATE_REPO = SC_BASEDIR + '/database/'
 	DATABASE_QUERY_TIMEOUT = 1.0
 
 	SC_UPLOAD_DIR='/tmp/soulcrafting/upload/'
