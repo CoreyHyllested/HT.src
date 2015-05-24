@@ -24,14 +24,29 @@ from server.sc_utils import *
 @sc_meta.route('/humans.txt')
 @sc_meta.route('/sitemap.xml')
 def meta_serve_from_root():
-	server_root_dir = sc_server.static_folder + '/root'
+	server_root_dir = sc_server.static_folder + '/root/'
 	print server_root_dir
 	return send_from_directory(server_root_dir, request.path[1:])
+
+
+
+#  FOR MORE INFO.
+#	http://flask.pocoo.org/docs/0.10/api/#flask.after_this_request
+#	http://flask.pocoo.org/docs/0.10/api/#flask.send_file (kwargs)
+#
+#@sc_meta.route('/static/img/<image>')
+#def meta_serve_static_img(image):
+#	server_root_dir = sc_server.static_folder + '/img/'
+#	@after_this_request
+#	def add_header(response):
+#		response.headers['Cache-Control'] = '84600'
+#		return response
+#	return send_from_directory(server_root_dir, str(image))
+
 
 
 @sc_meta.route('/about/version', methods=['GET', 'POST'])
 def meta_about_version():
 	return make_response(render_template('version'))
-
 
 
