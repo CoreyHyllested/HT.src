@@ -6,7 +6,7 @@ $closing-text-sz	= 16px;
 
 
 //overrides
-#masthead		{ background: $bg-img-kitchen center no-repeat;	z-index: -5; }
+#masthead		{ background-image: $bg-img-kitchen;	z-index: -5; }
 #masthead-text	{ top: 33%; opacity: 0; }
 
 
