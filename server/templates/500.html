@@ -8,16 +8,21 @@
 
 
 {% block content %}
-<div id="error-wrap">
-	<div id="error-panel">
-		<div id="error-code">500</div>
-		<div id="error-message">
-			<h2>Error 500:<br/>Internal server error.</h2>
-			<a href="/dashboard"><p>Back to Dashboard</p></a>
-		</div>
-
-		<div style="clear:both"></div>
+<div id='masthead'>
+	<div id='masthead-text'>
+		<span id='masthead-title'>Well, this is embarrassing.</span>
+		<p>We made a huge mistake.  We'll get on it.</p>
 	</div>
 </div>
 
+<section>
+	<div>
+		<h3>In the meanwhile, let's get you back on track</h3>
+		<ul id='error-list'>
+			<li><a href='/'>Home</a></li>
+			<li><a href='/about'>About</a></li>
+			<li><a href='/products/furniture'>Custom Furniture</a></li>
+		</ul>
+	</div>
+</section>
 {% endblock %}
