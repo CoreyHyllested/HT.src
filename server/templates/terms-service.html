@@ -1,9 +1,10 @@
 {% extends 'sc-header.html' %}
-{% set title='Terms of Service' %}
+{% set meta_title	= 'Soulcrafting's Terms of Service' %}
+{% set meta_desc	= 'Soulcrafting's Terms of Service' %}
 
 {% block header_css %}
-	{% assets 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 	{{ super() }}
+	{% assets 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
