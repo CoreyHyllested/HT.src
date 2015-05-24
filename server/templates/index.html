@@ -3,19 +3,20 @@
 
 
 {% block header_meta %}
-<script type="application/ld+json"> {
-	"@context" : "'http://schema.org", "@type"	: "Organization",
-	"name"	: "Soulcrafting",
-	"url"	: "https://soulcrafting.co",
-	"sameAs":	[
-					"https://www.facebook.com/SoulcraftingHQ",
-					"https://www.twitter.com/Soulcrafting",
-					"https://www.instagram.com/Soulcrafting",
-					"https://www.pinterest.com/SoulcraftingHQ"
-				],
-	"description" : "The smartest way to invest in your home."
-}
-</script>
+	{{ super() }}
+	<script type="application/ld+json"> {
+		"@context" : "'http://schema.org", "@type"	: "Organization",
+		"name"	: "Soulcrafting",
+		"url"	: "https://soulcrafting.co",
+		"sameAs":	[
+						"https://www.facebook.com/SoulcraftingHQ",
+						"https://www.twitter.com/Soulcrafting",
+						"https://www.instagram.com/Soulcrafting",
+						"https://www.pinterest.com/SoulcraftingHQ"
+					],
+		"description" : "The smartest way to invest in your home."
+	}
+	</script>
 {% endblock %}
 
 
@@ -24,6 +25,7 @@
 	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 {% endblock %}
+
 
 {% block flashmsg %}
 {% if referred %}
