@@ -3,15 +3,21 @@
 
 
 {% block header_meta %}
-<span itemscope itemtype="http://schema.org/Organization">
-	<link itemprop='url' href='https://soulcrafting.co'>
-	<span itemprop='description'>The smartest way to invest in your home.</span>
-	<a itemprop='sameAs' href='https://www.facebook.com/SoulcraftingHQ'>Facebook</a>
-	<a itemprop='sameAs' href='https://www.twitter.com/Soulcrafting'>Twitter</a>
-	<a itemprop='sameAs' href='https://www.instagram.com/Soulcrafting'>Instagram</a>
-	<a itemprop='sameAs' href='https://www.pinterest.com/SoulcraftingHQ'>Pinterest</a>
-</span>
+<script type="application/ld+json"> {
+	'@context' : 'http://schema.org', '@type'	: 'Organization',
+	'name'	: 'Soulcrafting',
+	'url'	: 'https://soulcrafting.co',
+	'sameAs':	[
+					'https://www.facebook.com/SoulcraftingHQ',
+					'https://www.twitter.com/Soulcrafting',
+					'https://www.instagram.com/Soulcrafting',
+					'https://www.pinterest.com/SoulcraftingHQ'
+				],
+	'description' : 'The smartest way to invest in your home.'
+}
+</script>
 {% endblock %}
+
 
 {% block header_css %}
 	{{ super() }}
