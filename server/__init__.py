@@ -43,7 +43,7 @@ sc_server = None
 
 def create_upload_directory(sc_server):
 	try:
-		dir_upload = sc_server.config['HT_UPLOAD_DIR']
+		dir_upload = sc_server.config['SC_UPLOAD_DIR']
 		os.makedirs(dir_upload)
 	except OSError as oe:
 		if (oe.errno != 17):
@@ -62,6 +62,8 @@ def initialize_server(config_name):
 	sc_server.config.from_object(server_configuration[config_name])
 	if (config_name == 'production' or config_name == 'devel_money'):
 		print 'using configuration... ', config_name
+	sc_server.use_x_sendfile = sc_server.config.get('USE_SENDFILE', False)
+
 
 	sc_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	sc_server.debug = True
