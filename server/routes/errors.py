@@ -22,11 +22,15 @@ from jinja2.exceptions import *
 
 def create_error_response(resp_code, resp_text, resp_template):
 	# when a request originates from an API client, return an API type-of response (json).
+	profile = None
+	if 'uid' in session:
+		profile = Profile.get_by_uid(session.get('uid'))
+
 	if (request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html):
 		json_resp = jsonify({'error' : resp_text})
 		json_resp.status_code = resp_code
 		return json_resp
-	return render_template(resp_template), resp_code
+	return render_template(resp_template, bp=profile), resp_code
 
 
 
