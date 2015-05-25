@@ -64,7 +64,7 @@ def render_dashboard():
 		invite.invite_userid.data = bp.account
 		# get all references.
 		refreqs = scdb_get_references(bp, True)
-		return make_response(render_template('pro_dashboard.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
+		return make_response(render_template('dashboard-professional.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
 
 	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
 
@@ -741,7 +741,7 @@ def render_settings():
 
 
 @sc_users.route('/settings/update', methods=['POST'])
-@req_authentication
+@sc_authenticated
 def sc_api_update_settings():
 	print "sc_api_update_settings: begin"
 
@@ -792,7 +792,8 @@ def sc_api_update_settings():
 			# successfully updated account
 			# user changed email, password. For security, send confimration email.
 			if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
-			if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
+# TODO -- create send_passwd_change_email.  Need to look up Mandrill template.
+			#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
 			print "sc_api_update_settings() Update should be complete"
 			return jsonify(usrmsg="Settings updated"), 200
 	except PasswordError as pe:
@@ -983,7 +984,7 @@ def api_update_project(usrmsg=None):
 #@insprite_views.route('/uploads/<filename>')
 #def uploaded_file(filename):
 	# add sec protection?
-	return send_from_directory(ht_server.config['HT_UPLOAD_DIR'], filename)
+#	return send_from_directory(ht_server.config['SC_UPLOAD_DIR'], filename)
 
 
 
@@ -1012,7 +1013,7 @@ def ht_create_image(profile, image_data, comment=None):
 
 
 def ht_upload_image_to_S3(image, image_data):
-	f = open(os.path.join(ht_server.config['HT_UPLOAD_DIR'], image.img_id), 'w')
+	f = open(os.path.join(ht_server.config['SC_UPLOAD_DIR'], image.img_id), 'w')
 	f.write(image_data)
 	f.close()
 

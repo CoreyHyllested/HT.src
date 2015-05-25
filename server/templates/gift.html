@@ -1,5 +1,6 @@
 {% extends 'sc-header.html' %}
-{% set title='Soulcrafting' %}
+{% set meta_title	= 'Give the gift of Soulcrafting' %}
+{% set meta_desc	= 'Give the gift of Soulcrafting.' %}
 
 {% block header_css %}
 	{{ super() }}
@@ -25,19 +26,19 @@
 	<div id='idea-list'>
 		<div class='idea'>
 			<div class='dark'> <p>AirBnB Conversion</p> </div>
-			<img class="img-responsive" src="/static/img/idea-conversion.jpg">
+			<img class="img-responsive" src="/static/img/idea-conversion.jpg" alt='AirBnB conversion'>
 		</div>
 		<div class='idea'>
 			<div class='dark'> <p>Custom Furniture</p> </div>
-			<img class="img-responsive" src="/static/img/idea-furniture.jpg">
+			<img class="img-responsive" src="/static/img/idea-furniture.jpg" alt='Custom furniture'>
 		</div>
 		<div class='idea'>
 			<div class='dark'> <p>Update Deck</p> </div>
-			<img class="img-responsive" src="/static/img/idea-deck.jpg">
+			<img class="img-responsive" src="/static/img/idea-deck.jpg" alt='Updated Deck'>
 		</div>
 		<div class='idea'>
 			<div class='dark'> <p>Kitchen Remodel</p> </div>
-			<img class="img-responsive" src="/static/img/kitchen-red.jpg">
+			<img class="img-responsive" src="/static/img/kitchen-red.jpg" alt='Kitchen Remodel'>
 		</div>
 	</div>
 </section>
@@ -60,7 +61,6 @@
 		<div class="container-fluid"><p><b>Savings</b><br>You'll save money by hiring craftspeople directly and managing parts of the project yourself.</p> </div>
 	</div>
 </section>
-
 {% endblock %}
 
 

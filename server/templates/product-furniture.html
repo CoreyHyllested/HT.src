@@ -1,11 +1,11 @@
 {% extends 'sc-header.html' %}
-{% set title='Soulcrafted Furniture' %}
+{% set meta_title	= 'Soulcrafted Furniture.' %}
+{% set meta_desc	= 'Buy Soulcrafted Furniture.' %}
 
 {% block header_css %}
 	{{ super() }}
 	{% assets 'scss_products' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
-
 
 
 {% block parallax %}
@@ -14,6 +14,8 @@
 
 
 {% block content %}
+<div id='masthead-gap'></div>
+
 <section id='about-furniture'>
 	<h3>Soulcrafted Furniture</h3>
 	<div>
@@ -33,7 +35,7 @@
 
 	<div>
 		<h4 class='text-content'>Furniture designed to complement your style and meet your specifications.</h4>
-		<img src='/static/img/ex-dining.jpg' class='img-responsive'></img> <br>
+		<img src='/static/img/ex-dining.jpg' class='img-responsive' alt='Furniture for a dining room'></img><br>
 	</div>
 
 	<div>
@@ -84,4 +86,5 @@
 
 {% block scripts %}
 	{{ super() }}
+	<script src='/static/js/products.js'></script>
 {% endblock %}

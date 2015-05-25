@@ -1,13 +1,31 @@
 {% extends 'sc-header.html' %}
-{% set title='Soulcrafting' %}
+{% set meta_title	= 'Soulcrafting' %}
+{% set meta_desc	= "The smartest way to invest in your home." %}
+
+
+{% block header_meta %}
+	{{ super() }}
+	<script type="application/ld+json"> {
+		"@context" : "'http://schema.org", "@type"	: "Organization",
+		"name"	: "Soulcrafting",
+		"url"	: "https://soulcrafting.co",
+		"sameAs":	[
+						"https://www.facebook.com/SoulcraftingHQ",
+						"https://www.twitter.com/Soulcrafting",
+						"https://www.instagram.com/Soulcrafting",
+						"https://www.pinterest.com/SoulcraftingHQ"
+					],
+		"description" : "The smartest way to invest in your home."
+	}
+	</script>
+{% endblock %}
+
 
 {% block header_css %}
 	{{ super() }}
 	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
-	<link rel="stylesheet" href="/static/css/share.css">
-	<link rel="stylesheet" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-{#	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">#}
 {% endblock %}
+
 
 {% block flashmsg %}
 {% if referred %}
@@ -15,7 +33,7 @@
 	<span id='referred-title'>Welcome to the new Soulcrafting</span>
 	<div  id='referred-close'></div>
 	<br><br>
-	We hope you like the new changes. Let us know what you think at <a href='mailto:team@soulcrafting.co'>team@soulcrafting.co</a>.
+	You can read more about <a href='https://medium.com/@bryanmuir/what-s-old-is-new-on-soulcrafting-3301b0be1044' target='_blank'>Soulcrafting's evolution</a>.
 </div>
 
 <script>
@@ -29,14 +47,14 @@
 
 {% block content %}
 <div id='masthead'>
-		<div id='masthead-text'>
-			<span id='masthead-title' class='h1'>The Concierge Service</span>
-			<p>For smarter home renovation projects</p><br>
-			<div id='masthead-btns'>
-				<p><a id='btn-fbook' class='btn btn-masthead' href='/signup/facebook'>Sign up with Facebook</a></p>
-				<p><a id='btn-email' class='btn btn-masthead' href='/signup'>Sign up with email</a></p>
-			</div>
+	<div id='masthead-text'>
+		<span id='masthead-title' class='h1'>The Concierge Service</span>
+		<p>For smarter home renovation projects</p><br>
+		<div id='masthead-btns'>
+			<p><a id='btn-fbook' class='btn btn-masthead' href='/signup/facebook'>Sign up with Facebook</a></p>
+			<p><a id='btn-email' class='btn btn-masthead' href='/signup'>Sign up with email</a></p>
 		</div>
+	</div>
 </div>
 
 
@@ -74,17 +92,22 @@
 </section>
 
 <div id='get-started'>
-		<a id='btn-get-started' class='btn lp-btn blueButton' href="/signup">Get Started</a>
+	<a id='btn-get-started' class='btn lp-btn blueButton' href="/signup">Get Started</a>
 </div>
 
 <section id='press' class='text-center'>
 	<h2>Press Coverage</h2>
 	<div id='press-row'>
-		<a href='http://www.denverpost.com/yhbiz/ci_27101638/business-q-amp-soulcrafting-denver'><img class='greyscale press-img' src='/static/img/press-dp-big.jpg'></a>
-		<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'><img class='greyscale press-img' src='/static/img/press-cpr-100.png'></a>
-		<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'><img class='greyscale press-img' src='/static/img/press-5280-100.png'></a>
-		<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'><img class='greyscale press-img' src='/static/img/press-dc-100.png'></a>
-		<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'><img class='greyscale press-img' src='/static/img/press-examiner-100.png'></a>
+		<a href='http://www.denverpost.com/yhbiz/ci_27101638/business-q-amp-soulcrafting-denver'><img class='greyscale press-img' src='/static/img/press-dp-big.jpg' alt='Denver Post'></a>
+		<a href='http://www.cpr.org/news/story/plus-gallery-exits-booming-rino-district-after-selling-out-current-exhibition'><img class='greyscale press-img' src='/static/img/press-cpr-100.png' alt='Colorado Public Radio'></a>
+		<a href='http://www.5280.com/dwell/magazine/2014/10/summer-school'><img class='greyscale press-img' src='/static/img/press-5280-100.png' alt='5280 Magazine'></a>
+		<a href='http://www.dailycamera.com/lifestyles/ci_25595677/soulcrafting-startup-venture-brings-experts-and-novice-together'><img class='greyscale press-img' src='/static/img/press-dc-100.png' alt='Daily Camera'></a>
+		<a href='http://www.examiner.com/article/experience-food-as-art-with-soulcrafting'><img class='greyscale press-img' src='/static/img/press-examiner-100.png' alt='The Examiner'></a>
 	</div>
 </section>
+{% endblock %}
+
+{% block scripts  %}
+	{{ super() }}
+	<script>window.addEventListener('load', load_css('//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css'));</script>
 {% endblock %}

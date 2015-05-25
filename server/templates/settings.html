@@ -1,5 +1,6 @@
 {% extends 'sc-header.html' %}
-{% set title='Edit your Settings' %}
+{% set meta_title	= 'Update your Soulcrafting settings.' %}
+{% set meta_desc	= 'Update your Soulcrafting settings.' %}
 
 {% block header_css %}
 	{{ super() }}
@@ -9,26 +10,26 @@
 
 
 {% block content %}
-<div id='settings-content'>
-	<div id="settings-title">Account Settings</div>
+<section id='settings-content'>
+	<div><h3>Account Settings</h3></div>
 
 	<form id='settings-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<input type="hidden" id="csrf"	  value='{{csrf_token()}}'>
-		<input type="hidden" id="nexturl" value='{{nexturl}}'>
+		<input type='hidden' id='csrf'	  value='{{csrf_token()}}'>
+		<input type='hidden' id='nexturl' value='{{nexturl}}'>
 
-		<div class='row field-container' id='update-name'>
+		<div id='update-name'>
 			<div class='field info'>Your legal name</div>
 			<div class='field error'></div>
 			{{form.name(placeholder="Your Name", class="field input span9")}}
 		</div>
 
-		<div class='row field-container' id='update-email'>
+		<div id='update-email'>
 			<div class='field info'>Your email address</div>
 			<div class='field error'></div>
 
-			{{form.email(placeholder="Your Email", class="field input span9 left")}}
-			<div class='field action'>
+			{{form.email(placeholder="Your Email", class='field input span9')}}
+{#			<div class='field action'>
 				{% if verified_email == True %}
 					<div id='email-verified'><i class="fa fa-fw fa-check"></i>&nbsp;Verified</div>
 				{% else %}
@@ -36,38 +37,35 @@
 					<div id="verify-notice"></div>
 				{% endif %}
 			</div>
-
 			<div class='empty' id='verify-email'>
 				<input type="text" id="challenge" placeholder="Enter verification code." class="field input span9 left">
 				<div class='field action'>
 					<button id='btn-validate-code' class="whiteButton">Submit Code</button>
 				</div>
 			</div>
+#}
 		</div>
 
-
-		<div class='row field-container' id='update-password'>
+		<div id='update-password'>
 			<div class='field info'>Update your password</div>
 			<div class='field error'></div>
 			{{form.update_password(placeholder="New password",    class="field input span9", autocomplete="off")}}
 			{{form.verify_password(placeholder="Verify password", class="field input span9", autocomplete="off")}}
 		</div>
 
-		<div class='row field-container' id='current-password'>
-			<div class='field info notice'>Enter current password to save changes.</div>
+		<div id='current-password'>
+			<div class='field info notice'>Enter current password to save changes</div>
 			<div class='field error'></div>
 			{{form.current_password(placeholder="Current password", class="field input span9", autocomplete="off")}}
 		</div>
 	</form>
 
-	<div id='settings-actions' class='field-container'>
-		<div id="settings-btn-container">
-			<button class='btn-settings span4 blueButton ' id='btn-save'>Save Settings</button>
-			<button class='btn-settings span4 whiteButton' id='btn-back'>Go Back</button>
-		</div>
-		<div id="settings-status"></div>
+	<div>
+		<button class='btn-settings blueButton'	 id='btn-save'>Save Settings</button>
+		<button class='btn-settings whiteButton' id='btn-back'>Go Back</button>
+		<div id='settings-status'></div>
 	</div>
-</div>
+</section>
 {% endblock %}
 
 
@@ -76,8 +74,8 @@
 	<script src="/static/js/settings.js"></script>
 	<script src="/static/js/forms.js"></script>
 	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
+	{#
 	<script>
-
 	var verifiedEmail = '{{verified_email}}';
 
 	if (verifiedEmail === 'True') {
@@ -88,4 +86,5 @@
 		$('#email-verified').hide();
 	}
 	</script>
+	#}
 {% endblock %}

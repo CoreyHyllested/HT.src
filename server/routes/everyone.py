@@ -45,8 +45,7 @@ def render_product_furniture():
 	bp = None
 	if 'uid' in session:
 		bp = Profile.get_by_uid(session['uid'])
-
-	return make_response(render_template('product_furniture.html', bp=bp))
+	return make_response(render_template('product-furniture.html', bp=bp))
 
 
 

@@ -15,17 +15,22 @@ from . import sc_meta
 from flask import render_template, session, request
 from server.models import Profile
 from server.infrastructure.errors import *
+from jinja2.exceptions import *
 
 
 
 
 def create_error_response(resp_code, resp_text, resp_template):
 	# when a request originates from an API client, return an API type-of response (json).
-	if (request.accept_mimetypes.accept_json and not request.accept_mimetpes.accept_html):
+	profile = None
+	if 'uid' in session:
+		profile = Profile.get_by_uid(session.get('uid'))
+
+	if (request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html):
 		json_resp = jsonify({'error' : resp_text})
 		json_resp.status_code = resp_code
 		return json_resp
-	return render_template(resp_template), resp_code
+	return render_template(resp_template, bp=profile), resp_code
 
 
 
@@ -69,7 +74,6 @@ def error_400_bad_request(e):
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid or inconsistent (with our expectations).'
-	print 'Missing Template.  returning. 404 template instead.\n\nTODO: create 400 template.\n\n'
 	return render_template('404.html', bp=profile), 400
 
 
@@ -130,6 +134,13 @@ def error_405_method_not_allowed(e):
 @sc_meta.app_errorhandler(SanitizedException)
 def generic_error_sanitizedexception_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
+	return create_error_response(500, 'Internal server error', '500.html')
+
+@sc_meta.app_errorhandler(IOError)
+@sc_meta.app_errorhandler(TemplateNotFound)
+def no_template_error(e):
+	print 'Returning 500 response. An unexpected server error occurred while processing request.'
+	print 'Error:', str(e)
 	return create_error_response(500, 'Internal server error', '500.html')
 
 

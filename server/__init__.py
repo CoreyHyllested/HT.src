@@ -43,7 +43,7 @@ sc_server = None
 
 def create_upload_directory(sc_server):
 	try:
-		dir_upload = sc_server.config['HT_UPLOAD_DIR']
+		dir_upload = sc_server.config['SC_UPLOAD_DIR']
 		os.makedirs(dir_upload)
 	except OSError as oe:
 		if (oe.errno != 17):
@@ -62,6 +62,8 @@ def initialize_server(config_name):
 	sc_server.config.from_object(server_configuration[config_name])
 	if (config_name == 'production' or config_name == 'devel_money'):
 		print 'using configuration... ', config_name
+#	sc_server.use_x_sendfile = sc_server.config.get('USE_SENDFILE', False)	mod_xsendfile not installed on AWS/httpd
+
 
 	sc_server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	sc_server.debug = True
@@ -80,6 +82,7 @@ def initialize_server(config_name):
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
 	css_loginsys =	Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
+	css_errors	=	Bundle('scss/errors.scss', filters='pyscss', output='css/errors.css')
 	css_about_sc =	Bundle('scss/about-sc.scss', filters='pyscss', output='css/about-sc.css')
 	css_landpage =	Bundle('scss/landpage.scss', filters='pyscss', output='css/landpage.css')
 	css_legaltos =	Bundle('scss/legaltos.scss', filters='pyscss', output='css/legaltos.css')
@@ -89,12 +92,13 @@ def initialize_server(config_name):
 	#css_schedule =	Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
 	css_settings =	Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
 	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/pro_dashboard.css')
-	elem_header	=	Bundle('scss/elem-navigate.scss', filters='pyscss', output='css/navigate.css')
+	elem_header	=	Bundle('scss/elem-navigate.scss', 'scss/modals.scss', filters='pyscss', output='css/navigate.css')
 
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('scss_about_sc', css_about_sc)
+	assets.register('scss_errors',	css_errors)
 	assets.register('scss_landpage', css_landpage)
 	assets.register('scss_legaltos', css_legaltos)
 	assets.register('scss_loginsys', css_loginsys)
