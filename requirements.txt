@@ -29,7 +29,7 @@ botocore==0.55.0
 celery==3.1.11
 colorama==0.2.5
 decorator==3.4.0
-feedparser==5.2.0
+feedparser==5.1
 gunicorn==18.0
 httplib2==0.9
 mandrill==1.0.57
