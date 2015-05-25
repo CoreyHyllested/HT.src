@@ -92,7 +92,7 @@ def initialize_server(config_name):
 	#css_schedule =	Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
 	css_settings =	Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
 	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/pro_dashboard.css')
-	elem_header	=	Bundle('scss/elem-navigate.scss', filters='pyscss', output='css/navigate.css')
+	elem_header	=	Bundle('scss/elem-navigate.scss', 'scss/modals.scss', filters='pyscss', output='css/navigate.css')
 
 	assets = Environment(sc_server)
 	assets.url = sc_server.static_url_path

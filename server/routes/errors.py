@@ -74,7 +74,6 @@ def error_400_bad_request(e):
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid or inconsistent (with our expectations).'
-	print 'Missing Template.  returning. 404 template instead.\n\nTODO: create 400 template.\n\n'
 	return render_template('404.html', bp=profile), 400
 
 
@@ -137,9 +136,11 @@ def generic_error_sanitizedexception_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')
 
+@sc_meta.app_errorhandler(IOError)
 @sc_meta.app_errorhandler(TemplateNotFound)
 def no_template_error(e):
-	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
+	print 'Returning 500 response. An unexpected server error occurred while processing request.'
+	print 'Error:', str(e)
 	return create_error_response(500, 'Internal server error', '500.html')
 
 
