@@ -4,6 +4,7 @@
 
 {% block header_css %}
 	{{ super() }}
+	{% assets 'scss_errors' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
 
 

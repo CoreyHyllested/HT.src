@@ -15,13 +15,14 @@ from . import sc_meta
 from flask import render_template, session, request
 from server.models import Profile
 from server.infrastructure.errors import *
+from jinja2.exceptions import *
 
 
 
 
 def create_error_response(resp_code, resp_text, resp_template):
 	# when a request originates from an API client, return an API type-of response (json).
-	if (request.accept_mimetypes.accept_json and not request.accept_mimetpes.accept_html):
+	if (request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html):
 		json_resp = jsonify({'error' : resp_text})
 		json_resp.status_code = resp_code
 		return json_resp
@@ -129,6 +130,11 @@ def error_405_method_not_allowed(e):
 
 @sc_meta.app_errorhandler(SanitizedException)
 def generic_error_sanitizedexception_error(e):
+	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
+	return create_error_response(500, 'Internal server error', '500.html')
+
+@sc_meta.app_errorhandler(TemplateNotFound)
+def no_template_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')
 
