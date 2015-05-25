@@ -64,7 +64,7 @@ def render_dashboard():
 		invite.invite_userid.data = bp.account
 		# get all references.
 		refreqs = scdb_get_references(bp, True)
-		return make_response(render_template('pro_dashboard.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
+		return make_response(render_template('dashboard-professional.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
 
 	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
 
