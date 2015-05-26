@@ -22,6 +22,10 @@ server/static/css/settings.css
 server/static/css/pro_dashboard.css
 server/static/css/errors.css
 
+# scrapter data
+server/tools/data
+server/tools/framework/data
+
 users.db
 run.py
 
