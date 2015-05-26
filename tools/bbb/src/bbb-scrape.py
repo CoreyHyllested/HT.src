@@ -175,9 +175,9 @@ def get_bbb_types_cached():
 	]
 	return types
 
-	testing = [	"http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
-	return testing
 
+def get_bbb_types_cached_testing():
+	return  [ "http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
 
 
 def bbb_parse_address(name, addr, phone, link, image=None, bbb_uri=None):
