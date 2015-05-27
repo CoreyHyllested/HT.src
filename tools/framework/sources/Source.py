@@ -11,8 +11,9 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-import sys, os
+import sys, os, time
 import urllib2, json
+import socks, socket
 from pprint import pprint as pp
 
 
@@ -27,12 +28,25 @@ def webcache_url(URI):
 	return 'https://webcache.googleusercontent.com/search?q=cache:' + strip_http(URI)
 
 
+def safe_mkdir_local(path):
+	directory = os.getcwd() + path
+	safe_mkdir(directory)
+
+
+def safe_mkdir(directory):
+	if (os.path.exists(directory) == False):
+		os.makedirs(directory)
+
+
 class Source(object):
 	USE_WEBCACHE = False
+	SECONDS= 90	# get from robots.txt
 	SOURCE_DIR = ''
 
 	def __init__(self):
 		print '\tinit src object'
+		socks.setdefaultproxy(proxy_type=socks.PROXY_TYPE_SOCKS5, addr="127.0.0.1", port=9050)
+		socket.socket = socks.socksocket
 	
 	def get_top_directory(self):
 		return []
