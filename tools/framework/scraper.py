@@ -21,19 +21,19 @@ from bs4 import BeautifulSoup as Soup
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
 
+VERSION = 0.9
 BOT_VER = 0.8
-VERSION = 0.7
 THREADS	= 2
 
-URIS = []
 DIR_RAWHTML = '/data/raw/'
 DIR_REVIEWS	= '/data/reviews/'
+dl_uris	= []
 threads = []
 
 
 def create_directories():
 	safe_mkdir_local(DIR_RAWHTML)
-	safe_mkdir_local(DIR_REVIEWS)
+	#safe_mkdir_local(DIR_REVIEWS)
 	print 'Created directories'
 
 def config_urllib():
@@ -70,8 +70,8 @@ def create_review(review_id):
 
 
 def dump_uris():
-	print 'URIs: (%d)' % len(URIS)
-	pp(URIS)
+	print 'URIs: (%d)' % len(dl_uris)
+	pp(dl_uris)
 	print 
 
 def get_googlecache(URI):
@@ -81,22 +81,14 @@ def setup_useragent():
 	UA='SoulcraftBot'
 	return UA
 
-def get_bbb_types_cached_test():
-	return [ "http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
-
 
 def prime_queue():
 	#dump_uris()
-	URIS.append ('http://twitter.com')
-	URIS.append ('https://google.com')
-	URIS.append ('http://linkedin.com')
-	URIS.append ('https://127.0.0.1:5000/')
-	URIS.append ('https://soulcrafting.co/')
-	URIS.append ('http://www.lastfm.com')
-	random.shuffle(URIS, random.random)
+	dl_uris.append ("http://www.bbb.org/denver/accredited-business-directory/deck-builder")
+	random.shuffle(dl_uris, random.random)
 	#dump_uris()
 	q = Queue.Queue()
-	for uri in URIS:
+	for uri in dl_uris:
 		q.put(uri)
 	return q
 
@@ -104,7 +96,6 @@ def prime_queue():
 
 def recent_snapshot_exists(directory, days=30):
 	if os.path.exists(directory) is False: 
-		print directory, 'does not exist.  download document.'
 		return False
 
 	for fp in os.listdir(directory):
@@ -115,7 +106,6 @@ def recent_snapshot_exists(directory, days=30):
 		if (timedelta.days < days):
 			#print directory + '/' + fp + ' is ' + str(timedelta.days) + ' old, and within ' + str(days) + ' window'
 			return True
-	print 'update snapshot'
 	return False
 
 
@@ -127,25 +117,42 @@ def strip_http(uri):
 		return uri[7:]
 
 
+def clean_uri(uri):
+	uri = strip_http(uri)
+	uri = re.sub('[/:]','_', uri)
+	return uri
 
-def get_snapshot(useragent, uri):
-	print 'collect page:', uri
+
+def get_snapshot(thread, uri):
+	print 'Thread(%d)\tcollect page: %s' % (thread.id, uri)
 	
 	# does page already exist?, do I need to escape URI?
-	directory = os.getcwd() + DIR_RAWHTML + strip_http(uri)
+	directory = os.getcwd() + DIR_RAWHTML + clean_uri(uri)
 	ts = dt.now().strftime('%Y-%m-%d')
-#	print directory, ts
+	#print 'Thread(%d)\tdirectory %s/%s' % (thread.id, directory, ts)
 
-	try:
-		snapshot = recent_snapshot_exists(directory, days=7)
-		if (snapshot == False): 
-			doc = useragent.open(uri).read()
-			save_document(uri, doc, directory + '/' + ts)
-	except Exception as e:
-		print e
-	
+	snapshot = recent_snapshot_exists(directory, days=7)
+	if (snapshot == False): 
+		print 'Thread(%d)\tdownloading: %s' % (thread.id, uri)
+		try:
+			document = dl_document(thread, uri)
+			save_document(uri, document, directory + '/' + ts)
+		except Exception as e:
+			print e
 
-	
+
+
+def dl_document(thread, uri):
+	user_agent = thread.ua
+	document = user_agent.open(uri).read()
+	webcache = get_googlecache(uri)
+
+	if 'Sorry, we had to limit your access to this website.' in document:
+		thread.ratelimited.append(uri)
+		print 'Thread(%d)\trate-limited: %d times, retry with %s' % (thread.id, len(thread.ratelimited), webcache)
+		document = user_agent.open(webcache).read()
+	return document
+
 
 
 
@@ -170,14 +177,15 @@ class Scrape(threading.Thread):
 		self.q	= q
 		self.ua	= agent
 		self.id	= id
+		self.ratelimited = []
 		threading.Thread.__init__(self)
 
 	def run(self):
 		while not q.empty():
 			page = q.get()
-			print 'Thread: get ' + str(page)
-			get_snapshot(self.ua, page)
-			print 'Thread: finished'
+			print 'Thread(%d): get %s' % (self.id, str(page))
+			get_snapshot(self, page)
+			#print 'Thread: finished'
 			time.sleep(10);
 		
 
@@ -208,6 +216,4 @@ if __name__ == '__main__':
 	for thread in threads:
 		thread.join()
 	
-
-
 
