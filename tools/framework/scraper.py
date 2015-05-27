@@ -23,23 +23,23 @@ from datetime	import datetime as dt
 from sources	import *
 
 
-VERSION = 0.10
+VERSION = 0.11
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
 
 DIR_RAWHTML = '/data/raw/'
 DIR_REVIEWS	= '/data/reviews/'
+DIR_SOURCES	= '/data/sources/'
 dl_uris	= []
 threads = []
-
-#src = Source()
 
 
 def create_directories():
 	safe_mkdir_local(DIR_RAWHTML)
 	#safe_mkdir_local(DIR_REVIEWS)
-	print 'Created directories'
+	safe_mkdir_local(DIR_SOURCES)
+	print 'created directories'
 
 
 def config_urllib():
@@ -99,9 +99,7 @@ def prime_queue():
 
 def prime_queue_with_bbb():
 	source_bbb = BBB()
-	uris_bbb = source_bbb.get_top_directory()
-	print 'printing bbb_uris'
-	pp(uris_bbb)
+	source_bbb.update_company_directory()
 	dl_uris.append ("http://www.bbb.org/denver/accredited-business-directory/deck-builder")
 
 
@@ -220,10 +218,10 @@ if __name__ == '__main__':
 	ua = config_urllib()
 
 	q = prime_queue()
-	for thread_id in xrange(THREADS): 
-		t = Scrape(q, ua, id=thread_id)
-		t.start()
-		threads.append(t)
+	#for thread_id in xrange(THREADS):
+	#	t = Scrape(q, ua, id=thread_id)
+	#	t.start()
+	#	threads.append(t)
 	
 	for thread in threads:
 		thread.join()
