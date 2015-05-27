@@ -20,21 +20,27 @@ from bs4 import BeautifulSoup, Comment
 from bs4 import BeautifulSoup as Soup
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
+from sources	import *
 
-VERSION = 0.9
+
+VERSION = 0.10
 BOT_VER = 0.8
 THREADS	= 2
+SECONDS = 1		#CHANGE to 90
 
 DIR_RAWHTML = '/data/raw/'
 DIR_REVIEWS	= '/data/reviews/'
 dl_uris	= []
 threads = []
 
+#src = Source()
+
 
 def create_directories():
 	safe_mkdir_local(DIR_RAWHTML)
 	#safe_mkdir_local(DIR_REVIEWS)
 	print 'Created directories'
+
 
 def config_urllib():
 	bot_id = 'SoulcraftingBot/v%d' % BOT_VER
@@ -74,23 +80,29 @@ def dump_uris():
 	pp(dl_uris)
 	print 
 
+
 def get_googlecache(URI):
 	return 'https://webcache.googleusercontent.com/search?q=cache:' + strip_http(URI)
-
-def setup_useragent():
-	UA='SoulcraftBot'
-	return UA
 
 
 def prime_queue():
 	#dump_uris()
-	dl_uris.append ("http://www.bbb.org/denver/accredited-business-directory/deck-builder")
+	prime_queue_with_bbb()
 	random.shuffle(dl_uris, random.random)
 	#dump_uris()
 	q = Queue.Queue()
 	for uri in dl_uris:
 		q.put(uri)
 	return q
+
+
+
+def prime_queue_with_bbb():
+	source_bbb = BBB()
+	uris_bbb = source_bbb.get_top_directory()
+	print 'printing bbb_uris'
+	pp(uris_bbb)
+	dl_uris.append ("http://www.bbb.org/denver/accredited-business-directory/deck-builder")
 
 
 
@@ -186,7 +198,7 @@ class Scrape(threading.Thread):
 			print 'Thread(%d): get %s' % (self.id, str(page))
 			get_snapshot(self, page)
 			#print 'Thread: finished'
-			time.sleep(10);
+			time.sleep(SECONDS);
 		
 
 
