@@ -19,12 +19,15 @@ from bs4 import BeautifulSoup, Comment
 
 class BBB(Source):
 	SOURCE_DIR	= 'bbb/'
-	USE_WEBCACHE = True
+	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + '/cache'
+	USE_WEBCACHE = False #True
+	SECONDS= 90	# get from robots.txt
 
 	def __init__(self):
 		super(BBB, self).__init__()
 		self.errors = {}
-		print '\tcreating BBB obj'
+		safe_mkdir_local(self.SOURCE_CACHE)
+
 
 
 	def bbb_top_directories(self):
@@ -37,6 +40,14 @@ class BBB(Source):
 	def bbb_top_directories_testing(self):
 		return  [ "http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
 
+
+	def bbb_get_all_companies(self):
+		rel_path = '/data/sources/' + self.SOURCE_DIR + '/companies.json'
+		json_data	= self.read_json_file(rel_path)
+		companies = json_data.get('companies', [])
+		pp(companies)
+		return companies
+		
 
 	def bbb_scrape_directory_page(self, page):
 		if (self.USE_WEBCACHE):
@@ -85,9 +96,13 @@ class BBB(Source):
 
 
 	def update_company_directory(self):
-		tl_directories = self.bbb_top_directories()
+		tl_directories = self.bbb_top_directories_testing()
+		companies	= self.bbb_get_all_companies()
 		for company_directory_by_type in tl_directories:
-			self.bbb_scrape_directory_page(company_directory_by_type)
+			print company_directory_by_type
+			pass
+			#self.bbb_scrape_directory_page(company_directory_by_type)
+			#time.sleep(self.SECONDS);
 			#get_businesses_by_type(business_type)
 
 		for k, v in self.errors:

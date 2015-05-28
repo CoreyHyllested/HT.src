@@ -21,9 +21,10 @@ from bs4 import BeautifulSoup as Soup
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
 from sources	import *
+from models		import *
 
 
-VERSION = 0.11
+VERSION = 0.14
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -91,16 +92,21 @@ def prime_queue():
 	random.shuffle(dl_uris, random.random)
 	#dump_uris()
 	q = Queue.Queue()
-	for uri in dl_uris:
-		q.put(uri)
+	for ss in dl_uris:
+		print 'adding to Q,', ss.uri
+		q.put(ss)
 	return q
 
 
 
 def prime_queue_with_bbb():
 	source_bbb = BBB()
-	source_bbb.update_company_directory()
-	dl_uris.append ("http://www.bbb.org/denver/accredited-business-directory/deck-builder")
+	uris_bbb = source_bbb.get_company_directory()
+	for uri in uris_bbb:
+		print 'uri from uris_bbb', uri
+		ss = Snapshot(uri)
+		dl_uris.append(ss)
+	dl_uris.append (Snapshot("http://www.bbb.org/denver/accredited-business-directory/deck-builder"))
 
 
 
@@ -203,8 +209,8 @@ class Scrape(threading.Thread):
 
 
 if __name__ == '__main__':
-
 	print 'SCraper v' + str(VERSION)
+	#print 'ensure tor is running on :9050'
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
 	parser.add_argument('-U', '--update',	help="Update business directory",	action="store_true")
