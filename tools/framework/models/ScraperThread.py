@@ -11,7 +11,27 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-print 'loading', __name__
 
-from .Snapshot		import *
-from .ScraperThread	import *
+import threading, time
+import random
+import Queue
+from . import Snapshot
+from pprint		import pprint as pp
+from datetime	import datetime as dt 
+
+
+class ScraperThread(threading.Thread):
+	def __init__(self, q, agent, id, seconds=90):
+		threading.Thread.__init__(self)
+		self.q	= q
+		self.ua	= agent
+		self.id	= id
+		self.seconds = seconds
+
+	def run(self):
+		while not self.q.full():
+			ss = self.q.get()
+			print 'Thread(%d): get %s' % (self.id, str(ss.uri))
+			ss.save_snapshot(self)
+			print 'Thread: finished, sleep for', self.seconds, 'seconds'
+			time.sleep(self.seconds);

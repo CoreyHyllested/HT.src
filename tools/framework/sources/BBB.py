@@ -53,17 +53,10 @@ class BBB(Source):
 		if (self.USE_WEBCACHE):
 			page = webcache_url(page)
 
-		print 'checkout out :', page
+		print 'inspect page:', page
 
-		try:
-			document = urllib2.urlopen(page).read()
-		except urllib2.HTTPError as e:
-			print e
-			self.errors[e.geturl()] = e.code
-			return
-		except Exception as e:
-			print type(e), e
-			return
+		document = self.dl_document()
+		if (document == None): return
 
 		dom_soup = BeautifulSoup(document)
 		local_businesses = dom_soup.find_all(itemtype='http://schema.org/LocalBusiness')
@@ -100,7 +93,6 @@ class BBB(Source):
 		companies	= self.bbb_get_all_companies()
 		for company_directory_by_type in tl_directories:
 			print company_directory_by_type
-			pass
 			#self.bbb_scrape_directory_page(company_directory_by_type)
 			#time.sleep(self.SECONDS);
 			#get_businesses_by_type(business_type)
