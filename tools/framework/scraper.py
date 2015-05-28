@@ -21,9 +21,10 @@ from pprint		import pprint as pp
 from datetime	import datetime as dt 
 from sources	import *
 from models		import *
+from controllers import *
 
 
-VERSION = 0.15
+VERSION = 0.17
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -60,16 +61,6 @@ def config_urllib():
 	return ua
 
 
-def safe_mkdir_local(path):
-	directory = os.getcwd() + path
-	safe_mkdir(directory)
-
-
-def safe_mkdir(directory):
-	if (os.path.exists(directory) == False):
-		os.makedirs(directory)
-
-
 def open_file(path_from_cwd):
 	filename = os.getcwd() + path_from_cwd
 	print 'creating file ' + str(filename)
@@ -97,7 +88,11 @@ def dump_ss_uris():
 def prime_queue():
 	prime_queue_with_bbb()
 	random.shuffle(ss_uris, random.random)
-	dump_ss_uris()
+	#dump_ss_uris()
+
+	ss_uris.append(Snapshot("https://linkedin.com/"))
+	ss_uris.append(Snapshot("https://google.com/"))
+	ss_uris.append(Snapshot("http://www.jsonline.com/packers"))
 
 	q = Queue.Queue()
 	for ss in ss_uris:
@@ -113,13 +108,6 @@ def prime_queue_with_bbb():
 		print 'uri from uris_bbb', uri
 		ss = Snapshot(uri)
 		ss_uris.append(ss)
-	ss_uris.append(Snapshot("https://linkedin.com/"))
-	ss_uris.append(Snapshot("https://google.com/"))
-	ss_uris.append(Snapshot("http://www.jsonline.com/"))
-
-
-
-
 
 
 
@@ -140,11 +128,10 @@ if __name__ == '__main__':
 
 	q = prime_queue()
 	for thread_id in xrange(THREADS):
-		t = ScraperThread(q, ua, id=thread_id)
+		t = ScraperThread(q, ua, id=thread_id, seconds=5)
 		t.start()
 		threads.append(t)
 	
 	for thread in threads:
 		thread.join()
 	
-

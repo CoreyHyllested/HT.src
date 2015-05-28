@@ -14,22 +14,12 @@
 import sys, os, time
 import urllib2, json
 from pprint import pprint as pp
+from controllers import *
 
-
-
-def safe_mkdir_local(path):
-	directory = os.getcwd() + path
-	safe_mkdir(directory)
-
-
-def safe_mkdir(directory):
-	if (os.path.exists(directory) == False):
-		os.makedirs(directory)
 
 
 class Source(object):
 	USE_WEBCACHE = False
-	SECONDS= 90	# get from robots.txt
 	SOURCE_DIR = ''
 	errors = {}
 	ratelimited = []

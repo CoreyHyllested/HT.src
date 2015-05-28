@@ -11,28 +11,23 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
+import re
+import json
 
-import threading, time
-import random
-import Queue
-from . import Snapshot
-from pprint		import pprint as pp
-from datetime	import datetime as dt 
+def uri_strip_http(uri):
+	if 'https://' in uri[0:8]:
+		return uri[8:]
+	if 'http://' in uri[0:7]:
+		return uri[7:]
 
 
-class ScraperThread(threading.Thread):
-	def __init__(self, q, agent, id, seconds=90):
-		threading.Thread.__init__(self)
-		self.q	= q
-		self.ua	= agent
-		self.id	= id
-		self.seconds = seconds
+def url_clean(uri):
+	uri = uri_strip_http(uri)
+	uri = uri.rstrip('/ ')
+	uri = re.sub('[/:]','_', uri)
+	return uri
 
-	def run(self):
-		while not self.q.empty():
-			ss = self.q.get()
-			print 'Thread(%d): get %s' % (self.id, str(ss.uri))
-			ss.save_snapshot(self)
-			print 'Thread: finished, sleep for', self.seconds, 'seconds'
-			time.sleep(self.seconds);
+
+def webcache_url(URI):
+	return 'https://webcache.googleusercontent.com/search?q=cache:' + uri_strip_http(URI)
 

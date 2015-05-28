@@ -11,28 +11,16 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-
-import threading, time
-import random
-import Queue
-from . import Snapshot
-from pprint		import pprint as pp
-from datetime	import datetime as dt 
+import sys, os
+from pprint import pprint as pp
 
 
-class ScraperThread(threading.Thread):
-	def __init__(self, q, agent, id, seconds=90):
-		threading.Thread.__init__(self)
-		self.q	= q
-		self.ua	= agent
-		self.id	= id
-		self.seconds = seconds
+def safe_mkdir_local(path):
+	directory = os.getcwd() + path
+	safe_mkdir(directory)
 
-	def run(self):
-		while not self.q.empty():
-			ss = self.q.get()
-			print 'Thread(%d): get %s' % (self.id, str(ss.uri))
-			ss.save_snapshot(self)
-			print 'Thread: finished, sleep for', self.seconds, 'seconds'
-			time.sleep(self.seconds);
+
+def safe_mkdir(directory):
+	if (os.path.exists(directory) == False):
+		os.makedirs(directory)
 

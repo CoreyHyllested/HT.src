@@ -19,36 +19,8 @@ import re, random, time
 import Queue
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
+from controllers import *
 
-
-
-def uri_strip_http(uri):
-	if 'https://' in uri[0:8]:
-		return uri[8:]
-	if 'http://' in uri[0:7]:
-		return uri[7:]
-
-
-def url_clean(uri):
-	uri = uri_strip_http(uri)
-	uri = uri.rstrip('/ ')
-	uri = re.sub('[/:]','_', uri)
-	return uri
-
-
-def webcache_url(URI):
-	return 'https://webcache.googleusercontent.com/search?q=cache:' + uri_strip_http(URI)
-
-
-
-def safe_mkdir_local(path):
-	directory = os.getcwd() + path
-	safe_mkdir(directory)
-
-
-def safe_mkdir(directory):
-	if (os.path.exists(directory) == False):
-		os.makedirs(directory)
 
 
 class Snapshot(object):
