@@ -25,7 +25,7 @@ class Source(object):
 	ratelimited = []
 
 	def __init__(self):
-		print '\tinit src object'
+		pass
 	
 	def get_top_directory(self):
 		return []

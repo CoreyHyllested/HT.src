@@ -24,7 +24,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.17
+VERSION = 0.18
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -102,8 +102,10 @@ def prime_queue():
 
 
 def prime_queue_with_bbb():
-	source_bbb = BBB()
-	uris_bbb = source_bbb.get_company_directory()
+	bbb = BBB()
+	bbb.update_company_directory()
+
+	uris_bbb = bbb.get_company_directory()
 	for uri in uris_bbb:
 		print 'uri from uris_bbb', uri
 		ss = Snapshot(uri)
