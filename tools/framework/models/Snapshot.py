@@ -57,7 +57,7 @@ class Snapshot(object):
 	def save_snapshot(self, thread):
 		# check if a recent snapshot already exists?
 		snapshot_exists = self.snapshot_exists(days=7)
-		if (snapshot_exists == True): return
+		if (snapshot_exists == True): return False
 
 		print 'Thread(%d)\tdownloading: %s' % (thread.id, self.uri)
 		try:
@@ -65,6 +65,9 @@ class Snapshot(object):
 			self.save_document()
 		except Exception as e:
 			print e
+		return True
+
+
 
 	def get_snapshot(self):
 		snapshot_exists = self.snapshot_exists(days=90)
@@ -132,3 +135,12 @@ class Snapshot(object):
 		finally:
 			if (file_pointer): file_pointer.close()
 		return { "data" : None }
+
+
+
+	def __repr__ (self):
+		return '<Snapshot %r>'% (self.uri)
+
+	def __str__ (self):
+		return '<Snapshot %s>' % (self.uri)
+
