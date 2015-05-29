@@ -22,17 +22,40 @@ from datetime	import datetime as dt
 from controllers import *
 
 
+class DocumentType(object):
+	UNKNOWN		= 0
+
+	BBB_DIRECTORY	= 0x11
+	BBB_BUSINESS	= 0x12
+	BBB_REVIEW		= 0x14
+
+
+	LOOKUP_TABLE = {
+		UNKNOWN		: 'UNKNOWN',
+		BBB_DIRECTORY	: 'BBB_DIRECTORY',
+		BBB_BUSINESS	: 'BBB_BUSINESS',
+		BBB_REVIEW		: 'BBB_REVIEW'
+	}
+
+	@staticmethod
+	def name(state):
+		return BBBDocument.LOOKUP_TABLE.get(state, 'UNDEFINED')
+
+
+
+
 
 class Snapshot(object):
 	errors = {}
 	ratelimited = Queue.Queue()
 	DIR_RAWHTML = os.getcwd() + '/data/raw/'
 
-	def __init__(self, uri, force_webcache=False):
+	def __init__(self, uri, doc_type=None, force_webcache=False):
 		self.uri = uri
 		self.webcache = webcache_url(uri)
 		self.snap_dir = self.DIR_RAWHTML + url_clean(uri)
 		self.document = None
+		self.doc_type = doc_type
 		self.use_webcache = force_webcache 
 
 
@@ -58,7 +81,7 @@ class Snapshot(object):
 	def save_snapshot(self, useragent):
 		# check if a recent snapshot already exists?
 		snapshot_file = self.snapshot_exists(days=7)
-		if (snapshot_file): return False
+		if (snapshot_file): return self.read_cache()
 
 		print 'Thread()\tdownloading: %s' % (self.uri)
 		try:
@@ -66,25 +89,25 @@ class Snapshot(object):
 			self.save_document()
 		except Exception as e:
 			print e
+			raise e
 		return True
 
 
 
 
-	def get_cached(self):
+	def read_cache(self):
 		fp_content = None
 
 		snapshot_file = self.snapshot_exists(days=90)
 		if (snapshot_file):
 			try:
+				print 'Thread()\tloading cache of %s' % (self.uri)
 				fp = open(snapshot_file, 'r')
-				fp_content = fp.read()
+				self.document = fp.read()
 			except Exception as e:
 				print e
 			finally:
 				if (fp): fp.close()
-		return fp_content
-
 
 
 	def dl_webcache(self):
