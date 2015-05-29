@@ -21,22 +21,20 @@ from controllers import *
 
 class BBB(Source):
 	SOURCE_DIR	= 'bbb/'
-	SOURCE_CACHE = 'data/sources/bbb/cache'
+	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
 	USE_WEBCACHE = False #True
 	SECONDS= 90	# get from robots.txt
 
 	def __init__(self, queue=None):
 		super(BBB, self).__init__()
-		safe_mkdir_local(self.SOURCE_CACHE)
 		self.companies = None
 		self.directories = None
-
 
 
 	def bbb_get_directories_cache(self):
 		def source_snapshot(uri):
 			snap = Snapshot(uri)
-			snap.snap_dir = self.SOURCE_CACHE + url_clean(url)
+			snap.snap_dir = self.SOURCE_CACHE + url_clean(uri)
 			return snap
 
 		rel_path = '/data/sources/' + self.SOURCE_DIR + '/directories.json'
@@ -58,7 +56,7 @@ class BBB(Source):
 		return companies
 		
 
-	def bbb_scrape_directory(self, dir_page, companies):
+	def bbb_scrape_directory(self, dir_page, company_dir):
 		if (dir_page.document is None):
 			print dir_page, 'is none'
 			return
@@ -67,7 +65,6 @@ class BBB(Source):
 		local_businesses = dom_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 		print len(local_businesses), 'businesses found'
 		for business in local_businesses:
-			company = {}
 			addr	= business.find_all(itemtype='http://schema.org/PostalAddress')[0]
 			name	= business.find_all(itemprop='name')[0].get_text()
 			phone	= business.find_all(itemprop='phone')[0].get_text()
@@ -89,20 +86,44 @@ class BBB(Source):
 				if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
 					link = URI
 
-			company['name'] = name 
-			if (addr):	company['addr'] = addr
-			if (link):	company['link'] = link
-			if (phone):	company['phone'] = phone
-			if (img):	company['image'] = img 
-			if (bbb_uri):	company['bbb_uri'] = bbb_uri
-			pp(companies)
-			print 
-			print '=COMPANY========================='
-			pp(company)
-			print '================================='
-	#		bbb_parse_address(name, addr, phone, link, img, bbb_uri)
+			self.bbb_parse_address(name, addr, phone, link, company_dir, img, bbb_uri)
 	#		bbb_parse_business(bbb_uri)
 	#		bbb_parse_business_reviews(name, bbb_uri)
+
+
+
+	def bbb_parse_address(self, name, addr, phone, link, company_dir, image=None, bbb_uri=None):
+		company = {}
+		addrStreet	= addr.find(itemprop='streetAddress').get_text()
+		addrCity	= addr.find(itemprop='addressLocality').get_text()
+		addrState	= addr.find(itemprop='addressRegion').get_text()
+
+		company['name'] = name
+		if (addr):	company['addr'] = {
+			"full"		: addrStreet + '\n' + addrCity + ', ' + addrState,
+			"street"	: addrStreet,
+			"city"		: addrCity,
+			"state"		: addrState
+		}
+		if (link):	company['link'] = link
+		if (phone):	company['phone'] = phone
+		if (image):	company['image'] = image
+		if (bbb_uri):	company['bbb_uri'] = bbb_uri
+#		pp(company_dir)
+#		print '=COMPANY========================='
+#		pp(company)
+#		print '================================='
+		company_dir.append(company)
+
+		#print
+		#print name, phone
+		#print link
+		#print addrStreet
+		#print str(addrCity) + ', ' + str(addrState)
+		#print 'Logo:', image
+		#print 'BBB:  ', bbb_uri
+		#print
+		#print
 
 
 	def update_company_directory(self, ua):
@@ -121,14 +142,13 @@ class BBB(Source):
 				continue
 
 			print 'saved', business_directory, 'now sleeping'
-			time.sleep(self.SECONDS);
 			self.bbb_scrape_directory(business_directory, self.companies)
-			print 'BREAK'
-			break
+			time.sleep(self.SECONDS);
 			#get_businesses_by_type(business_type)
 
 		#for k, v in self.errors:
 		#	print 'Error on ', k, v
+
 
 	def get_company_directory(self):
 		full_directory = []
