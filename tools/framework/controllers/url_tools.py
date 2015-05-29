@@ -19,6 +19,7 @@ def uri_strip_http(uri):
 		return uri[8:]
 	if 'http://' in uri[0:7]:
 		return uri[7:]
+	return uri
 
 
 def url_clean(uri):
