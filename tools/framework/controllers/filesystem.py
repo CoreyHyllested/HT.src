@@ -15,6 +15,11 @@ import sys, os
 from pprint import pprint as pp
 
 
+DIR_RAWHTML = '/data/raw/'
+DIR_REVIEWS	= '/data/reviews/'
+DIR_SOURCES	= '/data/sources/'
+
+
 def safe_mkdir_local(path):
 	directory = os.getcwd() + path
 	safe_mkdir(directory)
@@ -24,3 +29,23 @@ def safe_mkdir(directory):
 	if (os.path.exists(directory) == False):
 		os.makedirs(directory)
 
+
+def open_file(path_from_cwd):
+	filename = os.getcwd() + path_from_cwd
+	print 'creating file ' + str(filename)
+	fp = open(filename, 'a+')
+	return fp
+
+
+def create_review(review_id):
+	fn = '/data/reviews/' + review_id
+	fp = open_file(fn)
+	fp.truncate()
+	return fp
+
+
+def create_directories():
+	safe_mkdir_local(DIR_RAWHTML)
+	#safe_mkdir_local(DIR_REVIEWS)
+	safe_mkdir_local(DIR_SOURCES)
+	print 'created directories'

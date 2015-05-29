@@ -25,23 +25,13 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.19
+VERSION = 0.21
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
 
-DIR_RAWHTML = '/data/raw/'
-DIR_REVIEWS	= '/data/reviews/'
-DIR_SOURCES	= '/data/sources/'
 ss_uris	= []
 threads = []
-
-
-def create_directories():
-	safe_mkdir_local(DIR_RAWHTML)
-	#safe_mkdir_local(DIR_REVIEWS)
-	safe_mkdir_local(DIR_SOURCES)
-	print 'created directories'
 
 
 def config_urllib():
@@ -62,21 +52,7 @@ def config_urllib():
 	return ua
 
 
-def open_file(path_from_cwd):
-	filename = os.getcwd() + path_from_cwd
-	print 'creating file ' + str(filename)
-	fp = open(filename, 'a+')
-	return fp
-
-
-def create_review(review_id):
-	fn = '/data/reviews/' + review_id 
-	fp = open_file(fn)
-	fp.truncate()
-	return fp
-
 	
-
 
 def dump_ss_uris():
 	print 'URIs: (%d)' % len(ss_uris)
