@@ -25,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.21
+VERSION = 0.23
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -67,9 +67,9 @@ def prime_queue(ua):
 	random.shuffle(ss_uris, random.random)
 	#dump_ss_uris()
 
-	ss_uris.append(Snapshot("https://linkedin.com/"))
-	ss_uris.append(Snapshot("https://google.com/"))
-	ss_uris.append(Snapshot("http://www.jsonline.com/packers"))
+	ss_uris.append(Document("https://linkedin.com/"))
+	ss_uris.append(Document("https://google.com/"))
+	ss_uris.append(Document("http://www.jsonline.com/packers"))
 
 	q = Queue.Queue()
 	for ss in ss_uris:
@@ -85,7 +85,7 @@ def prime_queue_with_bbb(ua):
 	uris_bbb = bbb.get_company_directory()
 	for uri in uris_bbb:
 		print 'uri from uris_bbb', uri
-		ss = Snapshot(uri)
+		ss = Document(uri)
 		ss_uris.append(ss)
 
 

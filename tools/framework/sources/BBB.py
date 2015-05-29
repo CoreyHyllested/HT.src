@@ -22,6 +22,8 @@ from controllers import *
 class BBB(Source):
 	SOURCE_TYPE	= 'BBB'
 	SOURCE_DIR	= 'bbb/'
+	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
+	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
 	USE_WEBCACHE = False #True
 	SECONDS= 90	# get from robots.txt
@@ -30,11 +32,13 @@ class BBB(Source):
 		super(BBB, self).__init__()
 		self.companies = None
 		self.directories = None
+		self.doc_companies = None
+		self.doc_directories = None
 
 
 	def bbb_get_directories_cache(self):
 		def source_snapshot(uri):
-			snap = Snapshot(uri, doc_type=DocumentType.BBB_DIRECTORY)
+			snap = Document(uri, doc_type=DocumentType.BBB_DIRECTORY)
 			snap.snap_dir = self.SOURCE_CACHE + url_clean(uri)
 			return snap
 
@@ -47,8 +51,11 @@ class BBB(Source):
 
 
 	def bbb_get_companies_cache(self, dump_results=False):
-		rel_path = '/data/sources/' + self.SOURCE_DIR + '/companies.json'
-		json_data	= self.read_json_file(rel_path)
+		doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
+		doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
+		doc_companies.filename = 'companies.json'
+		doc_companies.read_cache()
+		json_data = json.loads(doc_companies.content)
 		companies = json_data.get('companies', [])
 		if (dump_results): pp(companies)
 		return companies
@@ -56,7 +63,7 @@ class BBB(Source):
 
 
 	def bbb_scrape_document(self, document):
-		print '\tscraping...', document.uri
+		print '\t\tscraping...', document.uri
 		if (document is None): return None
 
 		if (document.doc_type == DocumentType.BBB_DIRECTORY):
@@ -66,8 +73,8 @@ class BBB(Source):
 
 
 
-	def bbb_scrape_directory(self, snapshot, company_dir):
-		document_soup	= BeautifulSoup(snapshot.document)
+	def bbb_scrape_directory(self, document, company_dir):
+		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
 		# WALK ALL BUSINESSES IN DIR.
@@ -134,8 +141,8 @@ class BBB(Source):
 
 	def bbb_cache_companies(self):
 		print
-		print 'Company listing'
-		pp(self.companies)
+		print 'Company listing - done'
+		#pp(self.companies)
 		print
 		print
 		

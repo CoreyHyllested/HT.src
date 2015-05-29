@@ -28,13 +28,14 @@ class DocumentType(object):
 	BBB_DIRECTORY	= 0x11
 	BBB_BUSINESS	= 0x12
 	BBB_REVIEW		= 0x14
-
+	JSON_METADATA	= 0xFF
 
 	LOOKUP_TABLE = {
 		UNKNOWN		: 'UNKNOWN',
 		BBB_DIRECTORY	: 'BBB_DIRECTORY',
 		BBB_BUSINESS	: 'BBB_BUSINESS',
-		BBB_REVIEW		: 'BBB_REVIEW'
+		BBB_REVIEW		: 'BBB_REVIEW',
+		JSON_METADATA	: 'JSON_METADATA'
 	}
 
 	@staticmethod
@@ -45,107 +46,110 @@ class DocumentType(object):
 
 
 
-class Snapshot(object):
+class Document(object):
 	errors = {}
 	ratelimited = Queue.Queue()
 	DIR_RAWHTML = os.getcwd() + '/data/raw/'
 
 	def __init__(self, uri, doc_type=None, force_webcache=False):
 		self.uri = uri
-		self.webcache = webcache_url(uri)
-		self.snap_dir = self.DIR_RAWHTML + url_clean(uri)
-		self.document = None
+		if (uri):
+			self.webcache = webcache_url(uri)
+			self.location = self.DIR_RAWHTML + url_clean(uri)
+		self.filename = 'document.html'
 		self.doc_type = doc_type
+		self.content = None
 		self.use_webcache = force_webcache 
 
-
-
+	
 	def snapshot_exists(self, days=30):
-		if os.path.exists(self.snap_dir) is False:
+		if os.path.exists(self.location) is False:
 			return None
 
 		last_ss = None
 		last_ts = days
-		for filename in os.listdir(self.snap_dir):
-			if (os.path.isdir(self.snap_dir + '/' + filename) is False):
+		for dir_name in os.listdir(self.location):
+			if (os.path.isdir(self.location + '/' + dir_name) is False):
 				continue
 
-			timedelta = dt.now() - dt.strptime(filename, '%Y-%m-%d')
+			timedelta = dt.now() - dt.strptime(dir_name, '%Y-%m-%d')
 			if (timedelta.days < last_ts):
 				last_ts = timedelta.days
-				last_ss = self.snap_dir + '/' + filename + '/document.html'
+				last_ss = self.location + '/' + dir_name + '/' + self.filename
 		return last_ss
 
 
 
 	def save_snapshot(self, useragent):
-		# check if a recent snapshot already exists?
+		# check if a recent document already exists?
 		snapshot_file = self.snapshot_exists(days=7)
+		print 'Thread()\tsnapshot = %s' % snapshot_file
 		if (snapshot_file): return self.read_cache()
 
 		print 'Thread()\tdownloading: %s' % (self.uri)
 		try:
-			self.dl_document(useragent)
-			self.save_document()
+			self.download(useragent)
+			self.write_cache()
 		except Exception as e:
 			print e
 			raise e
 		return True
 
 
+	def __get_cache_path(self):
+		# for metadata, files should ALWAYS exist.
+		if self.doc_type == DocumentType.JSON_METADATA:
+			return self.location + '/' + self.filename
+		return	self.snapshot_exists(days=365)
 
 
 	def read_cache(self):
-		fp_content = None
-
-		snapshot_file = self.snapshot_exists(days=90)
-		if (snapshot_file):
+		file_path = self.__get_cache_path()
+		if (file_path):
+			fp = None
 			try:
-				print 'Thread()\tloading cache of %s' % (self.uri)
-				fp = open(snapshot_file, 'r')
-				self.document = fp.read()
+				print '\t\tloading cache... %s' % (self.uri)
+				fp = open(file_path, 'r')
+				self.content = fp.read()
 			except Exception as e:
 				print e
 			finally:
 				if (fp): fp.close()
 
 
-	def dl_webcache(self):
-		pass
 
-
-	def dl_document(self, useragent):
+	def download(self, useragent):
 		try:
-			document = useragent.open(self.uri).read()
+			content = useragent.open(self.uri).read()
 
 			# if document was rate limited, try using the webcache
-			if 'Sorry, we had to limit your access to this website.' in document:
+			if 'Sorry, we had to limit your access to this website.' in content:
 				self.ratelimited.put(self.uri)
 				print 'rate-limited: %d times, retry with %s' % (len(self.ratelimited.qsize()), self.webcache)
-				document = useragent.open(self.webcache).read()
+				content = useragent.open(self.webcache).read()
 
-			if (document): self.document = document
+			if (content): self.content = content
 		except urllib2.HTTPError as e:
 			print e
 			self.errors[e.geturl()] = e.code
 		except Exception as e:
 			print type(e), e
-		return self.document
+		return self.content
 
 
 
-	def save_document(self):
+	def write_cache(self):
 		fp = None
-		if (not self.document): return 
+		if (not self.content): return
 
 		timestamp = dt.now().strftime('%Y-%m-%d')
-		directory = self.snap_dir + '/' + str(timestamp)
+		directory = self.location + '/' + str(timestamp)
 		try:
-			# saving full, raw document
+			# saving raw content
 			safe_mkdir(directory)
-			fp = open(directory + '/document.html', 'w+')
+			fp = open(directory + '/' + self.filename, 'w+')
 			fp.truncate()
-			fp.write(self.document)
+			fp.write(self.content)
 		except Exception as e:
 			print e
 		finally:
@@ -171,10 +175,10 @@ class Snapshot(object):
 
 
 	def __repr__ (self):
-		return '<Snapshot %r>'% (self.uri)
+		return '<Document %r>'% (self.uri)
 
 	def __str__ (self):
-		return '<Snapshot %s>' % (self.uri)
+		return '<Document %s>' % (self.uri)
 
 
 #class SourceSnapshot(object):
