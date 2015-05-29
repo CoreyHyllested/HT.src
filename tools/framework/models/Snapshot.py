@@ -39,25 +39,26 @@ class Snapshot(object):
 
 	def snapshot_exists(self, days=30):
 		if os.path.exists(self.snap_dir) is False:
-			return False
+			return None
 
+		last_ss = None
+		last_ts = days
 		for filename in os.listdir(self.snap_dir):
 			if (os.path.isdir(self.snap_dir + '/' + filename) is False):
 				continue
 
 			timedelta = dt.now() - dt.strptime(filename, '%Y-%m-%d')
-			if (timedelta.days < days):
-				#print self.snap_dir + '/' + fp + ' is ' + str(timedelta.days) + ' old, and within ' + str(days) + ' window'
-				#maybe return the document itself?
-				return True
-		return False
+			if (timedelta.days < last_ts):
+				last_ts = timedelta.days
+				last_ss = self.snap_dir + '/' + filename + '/document.html'
+		return last_ss
 
 
 
 	def save_snapshot(self, useragent):
 		# check if a recent snapshot already exists?
-		snapshot_exists = self.snapshot_exists(days=7)
-		if (snapshot_exists == True): return False
+		snapshot_file = self.snapshot_exists(days=7)
+		if (snapshot_file): return False
 
 		print 'Thread()\tdownloading: %s' % (self.uri)
 		try:
@@ -69,12 +70,20 @@ class Snapshot(object):
 
 
 
-	def get_snapshot(self):
-		snapshot_exists = self.snapshot_exists(days=90)
-		if (snapshot_exists == True): 
-			#get file
-			return 'File Exists, gotta write code'
-		pass
+
+	def get_cached(self):
+		fp_content = None
+
+		snapshot_file = self.snapshot_exists(days=90)
+		if (snapshot_file):
+			try:
+				fp = open(snapshot_file, 'r')
+				fp_content = fp.read()
+			except Exception as e:
+				print e
+			finally:
+				if (fp): fp.close()
+		return fp_content
 
 
 

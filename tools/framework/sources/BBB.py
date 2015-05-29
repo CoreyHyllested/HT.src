@@ -106,24 +106,12 @@ class BBB(Source):
 			"state"		: addrState
 		}
 		if (link):	company['link'] = link
+		if (image):	company['logo'] = image
 		if (phone):	company['phone'] = phone
-		if (image):	company['image'] = image
 		if (bbb_uri):	company['bbb_uri'] = bbb_uri
-#		pp(company_dir)
-#		print '=COMPANY========================='
-#		pp(company)
-#		print '================================='
 		company_dir.append(company)
 
-		#print
-		#print name, phone
-		#print link
-		#print addrStreet
-		#print str(addrCity) + ', ' + str(addrState)
-		#print 'Logo:', image
-		#print 'BBB:  ', bbb_uri
-		#print
-		#print
+
 
 
 	def update_company_directory(self, ua):
@@ -138,6 +126,7 @@ class BBB(Source):
 		for business_directory in self.directories:
 			saved = business_directory.save_snapshot(ua)
 			if (not saved):
+				content = business_directory.get_cached()
 				print business_directory, 'prev. saved, continue'
 				continue
 
@@ -146,8 +135,6 @@ class BBB(Source):
 			time.sleep(self.SECONDS);
 			#get_businesses_by_type(business_type)
 
-		#for k, v in self.errors:
-		#	print 'Error on ', k, v
 
 
 	def get_company_directory(self):
