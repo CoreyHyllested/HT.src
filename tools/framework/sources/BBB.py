@@ -27,8 +27,9 @@ class BBB(Source):
 	USE_WEBCACHE = False #True
 	SECONDS= 90	# get from robots.txt
 
-	def __init__(self, queue=None):
+	def __init__(self, ua, queue=None):
 		super(BBB, self).__init__()
+		self.ua = ua
 		self.companies = None
 		self.directories = None
 		self.doc_companies = None
@@ -36,15 +37,15 @@ class BBB(Source):
 
 
 	def bbb_get_directories_cache(self):
-		def source_snapshot(uri):
+		def source_document(uri):
 			snap = Document(uri, doc_type=DocumentType.BBB_DIRECTORY)
-			snap.snap_dir = self.SOURCE_CACHE + url_clean(uri)
+			snap.location = self.SOURCE_CACHE + url_clean(uri)
 			return snap
 
 		rel_path = '/data/sources/' + self.SOURCE_DIR + '/directories.json'
 		json_data	= self.read_json_file(rel_path)
 		directories	= json_data.get('directories', [])
-		directories = map(source_snapshot, directories)
+		directories = map(source_document, directories)
 		return directories
 
 
@@ -115,7 +116,7 @@ class BBB(Source):
 
 
 
-	def update_company_directory(self, ua):
+	def update_company_directory(self):
 		print 'BBB.update_co_directory()'
 		if (self.companies is None):
 			self.companies = self.bbb_get_companies_cache()
@@ -125,7 +126,7 @@ class BBB(Source):
 			self.directories = self.bbb_get_directories_cache()
 
 		for business_directory in self.directories:
-			downloaded = business_directory.save_snapshot(ua)
+			downloaded = business_directory.save_snapshot(self.ua)
 			if (downloaded): time.sleep(self.SECONDS);
 
 			# scrape directory, add to companies
@@ -138,7 +139,10 @@ class BBB(Source):
 		
 
 
-	def get_company_directory(self):
+	def get_company_directory(self, update=False):
+		if (update):
+			self.update_company_directory()
+			
 		if (self.companies is None):
 			self.companies = self.bbb_get_companies_cache()
 		return [] #self.companies

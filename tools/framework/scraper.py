@@ -25,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.25
+VERSION = 0.26
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -46,6 +46,7 @@ def config_urllib():
 	socket.create_connection = create_connection
 
 
+	# setup user-agent information
 	bot_id = 'SoulcraftingBot/v%d' % BOT_VER
 	ua = urllib2.build_opener()
 	ua.addheaders = [('User-agent', bot_id)]
@@ -67,10 +68,6 @@ def prime_queue(ua):
 	random.shuffle(ss_uris, random.random)
 	#dump_ss_uris()
 
-	ss_uris.append(Document("https://linkedin.com/"))
-	ss_uris.append(Document("https://google.com/"))
-	ss_uris.append(Document("http://www.jsonline.com/packers"))
-
 	q = Queue.Queue()
 	for ss in ss_uris:
 		q.put(ss)
@@ -79,10 +76,10 @@ def prime_queue(ua):
 
 
 def prime_queue_with_bbb(ua):
-	bbb = BBB()
-	bbb.update_company_directory(ua)
+	bbb = BBB(ua)
+	bbb.update_company_directory()
 
-	uris_bbb = bbb.get_company_directory()
+	uris_bbb = bbb.get_company_directory(update=False)
 	print 'Adding all URLs from BBB directory (%d)' % len(uris_bbb)
 	for uri in uris_bbb:
 		ss = Document(uri)
