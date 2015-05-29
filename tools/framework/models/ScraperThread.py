@@ -32,7 +32,7 @@ class ScraperThread(threading.Thread):
 		while not self.q.empty():
 			ss = self.q.get()
 			print 'Thread(%d): get %s' % (self.id, str(ss.uri))
-			saved = ss.save_snapshot(self)
+			saved = ss.save_snapshot(self.ua)
 			if (saved): time.sleep(self.seconds);
 			#print 'Thread: finished, sleep for', self.seconds, 'seconds'
 

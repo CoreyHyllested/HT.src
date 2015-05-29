@@ -21,25 +21,32 @@ from controllers import *
 
 class BBB(Source):
 	SOURCE_DIR	= 'bbb/'
-	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + '/cache'
+	SOURCE_CACHE = 'data/sources/bbb/cache'
 	USE_WEBCACHE = False #True
 	SECONDS= 90	# get from robots.txt
 
-	def __init__(self):
+	def __init__(self, queue=None):
 		super(BBB, self).__init__()
 		safe_mkdir_local(self.SOURCE_CACHE)
 		self.companies = None
 		self.directories = None
 
 
-	def bbb_top_directories(self):
+
+	def bbb_get_directories_cache(self):
+		def source_snapshot(uri):
+			snap = Snapshot(uri)
+			snap.snap_dir = self.SOURCE_CACHE + url_clean(url)
+			return snap
+
 		rel_path = '/data/sources/' + self.SOURCE_DIR + '/directories.json'
 		json_data	= self.read_json_file(rel_path)
 		directories	= json_data.get('directories', [])
+		directories = map(source_snapshot, directories)
 		return directories
 
 
-	def bbb_get_directories_cache(self):
+	def bbb_get_directories_cache_testing(self):
 		return  [ Snapshot("http://www.bbb.org/denver/accredited-business-directory/deck-builder") ]
 
 
@@ -52,6 +59,10 @@ class BBB(Source):
 		
 
 	def bbb_scrape_directory(self, dir_page, companies):
+		if (dir_page.document is None):
+			print dir_page, 'is none'
+			return
+
 		dom_soup = BeautifulSoup(dir_page.document)
 		local_businesses = dom_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 		print len(local_businesses), 'businesses found'
@@ -86,13 +97,15 @@ class BBB(Source):
 			if (bbb_uri):	company['bbb_uri'] = bbb_uri
 			pp(companies)
 			print 
+			print '=COMPANY========================='
 			pp(company)
+			print '================================='
 	#		bbb_parse_address(name, addr, phone, link, img, bbb_uri)
 	#		bbb_parse_business(bbb_uri)
 	#		bbb_parse_business_reviews(name, bbb_uri)
 
 
-	def update_company_directory(self, threadpool=None):
+	def update_company_directory(self, ua):
 		if (self.companies is None):
 			print 'update_company_directory: got company cache'
 			self.companies = self.bbb_get_companies_cache()
@@ -102,12 +115,15 @@ class BBB(Source):
 			self.directories = self.bbb_get_directories_cache()
 
 		for business_directory in self.directories:
-			print str(business_directory)
-			saved = dir_page.save_snapshot(thread)
-			if (not saved): continue
+			saved = business_directory.save_snapshot(ua)
+			if (not saved):
+				print business_directory, 'prev. saved, continue'
+				continue
 
-			time.sleep(thread.seconds);
-			self.bbb_scrape_directory(dir_page.document, self.companies)
+			print 'saved', business_directory, 'now sleeping'
+			time.sleep(self.SECONDS);
+			self.bbb_scrape_directory(business_directory, self.companies)
+			print 'BREAK'
 			break
 			#get_businesses_by_type(business_type)
 

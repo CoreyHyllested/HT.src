@@ -15,6 +15,7 @@ import sys, os, threading, argparse
 import socks, socket, urllib2
 import re, random, time
 import Queue
+from multiprocessing import Process
 from bs4 import BeautifulSoup, Comment
 from bs4 import BeautifulSoup as Soup
 from pprint		import pprint as pp
@@ -24,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.18
+VERSION = 0.19
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -85,8 +86,8 @@ def dump_ss_uris():
 
 
 
-def prime_queue():
-	prime_queue_with_bbb()
+def prime_queue(ua):
+	prime_queue_with_bbb(ua)
 	random.shuffle(ss_uris, random.random)
 	#dump_ss_uris()
 
@@ -101,9 +102,9 @@ def prime_queue():
 
 
 
-def prime_queue_with_bbb():
+def prime_queue_with_bbb(ua):
 	bbb = BBB()
-	bbb.update_company_directory()
+	bbb.update_company_directory(ua)
 
 	uris_bbb = bbb.get_company_directory()
 	for uri in uris_bbb:
@@ -128,7 +129,7 @@ if __name__ == '__main__':
 	create_directories()
 	ua = config_urllib()
 
-	q = prime_queue()
+	q = prime_queue(ua)
 	for thread_id in xrange(THREADS):
 		t = ScraperThread(q, ua, id=thread_id, seconds=5)
 		t.start()

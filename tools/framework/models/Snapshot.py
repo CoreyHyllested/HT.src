@@ -54,14 +54,14 @@ class Snapshot(object):
 
 
 
-	def save_snapshot(self, thread):
+	def save_snapshot(self, useragent):
 		# check if a recent snapshot already exists?
 		snapshot_exists = self.snapshot_exists(days=7)
 		if (snapshot_exists == True): return False
 
-		print 'Thread(%d)\tdownloading: %s' % (thread.id, self.uri)
+		print 'Thread()\tdownloading: %s' % (self.uri)
 		try:
-			self.dl_document(thread)
+			self.dl_document(useragent)
 			self.save_document()
 		except Exception as e:
 			print e
@@ -82,15 +82,15 @@ class Snapshot(object):
 		pass
 
 
-	def dl_document(self, thread):
+	def dl_document(self, useragent):
 		try:
-			document = thread.ua.open(self.uri).read()
+			document = useragent.open(self.uri).read()
 
 			# if document was rate limited, try using the webcache
 			if 'Sorry, we had to limit your access to this website.' in document:
 				self.ratelimited.put(self.uri)
 				print 'rate-limited: %d times, retry with %s' % (len(self.ratelimited.qsize()), self.webcache)
-				document = thread.ua.open(self.webcache).read()
+				document = useragent.open(self.webcache).read()
 
 			if (document): self.document = document
 		except urllib2.HTTPError as e:
@@ -144,3 +144,9 @@ class Snapshot(object):
 	def __str__ (self):
 		return '<Snapshot %s>' % (self.uri)
 
+
+#class SourceSnapshot(object):
+#	def __init__(self, uri, snapshot_dir=None, force_webcache=False):
+#		super(SourceSnapshot, self).__init__(self, uri, force_webcache=force_webcache)
+#		self.snap_dir = snapshot_dir
+#		print 'init SourceSnapshot, set dir = ', self.snap_dir, snapshot_dir
