@@ -24,7 +24,6 @@ class BBB(Source):
 	SOURCE_DIR	= 'bbb/'
 	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
 	USE_WEBCACHE = False #True
 	SECONDS= 90	# get from robots.txt
 
@@ -51,29 +50,28 @@ class BBB(Source):
 
 
 	def bbb_get_companies_cache(self, dump_results=False):
-		doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
-		doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
-		doc_companies.filename = 'companies.json'
-		doc_companies.read_cache()
-		json_data = json.loads(doc_companies.content)
-		companies = json_data.get('companies', [])
+		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
+		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
+		self.doc_companies.filename = 'companies.json'
+		self.doc_companies.read_cache()
+		companies = json.loads(self.doc_companies.content)
 		if (dump_results): pp(companies)
 		return companies
 
 
 
+
 	def bbb_scrape_document(self, document):
-		print '\t\tscraping...', document.uri
 		if (document is None): return None
 
 		if (document.doc_type == DocumentType.BBB_DIRECTORY):
-			nr = self.bbb_scrape_directory(document, self.companies)
+			nr = self.bbb_scrape_directory(document)
+			print '\t\tscraped %s, added %d entries' % (document.uri, nr)
 
 
 
 
-
-	def bbb_scrape_directory(self, document, company_dir):
+	def bbb_scrape_directory(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
@@ -109,7 +107,7 @@ class BBB(Source):
 					company['http'] = URI
 			if (phone):		company['phone']	= phone
 			if (bbburl):	company['src_bbb']	= bbburl
-			if (company_dir): company_dir.append(company)
+			if (self.companies): self.companies.append(company)
 		return len(business_dir)
 	#		bbb_parse_business(bbb_uri)
 	#		bbb_parse_business_reviews(name, bbb_uri)
@@ -118,8 +116,8 @@ class BBB(Source):
 
 
 	def update_company_directory(self, ua):
+		print 'BBB.update_co_directory()'
 		if (self.companies is None):
-			#print 'update_company_directory: got company cache'
 			self.companies = self.bbb_get_companies_cache()
 
 		if (self.directories is None):
@@ -134,21 +132,14 @@ class BBB(Source):
 			self.bbb_scrape_document(business_directory)
 			#get_businesses_by_type(business_type)
 
-		self.bbb_cache_companies()
-
-
-
-
-	def bbb_cache_companies(self):
-		print
-		print 'Company listing - done'
-		#pp(self.companies)
-		print
-		print
+		print 'BBB.Company listing - done'
+		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
+		self.doc_companies.write_cache()
 		
 
 
 	def get_company_directory(self):
-		full_directory = []
-		return full_directory
+		if (self.companies is None):
+			self.companies = self.bbb_get_companies_cache()
+		return [] #self.companies
 

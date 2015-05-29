@@ -25,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.23
+VERSION = 0.25
 BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
@@ -83,8 +83,8 @@ def prime_queue_with_bbb(ua):
 	bbb.update_company_directory(ua)
 
 	uris_bbb = bbb.get_company_directory()
+	print 'Adding all URLs from BBB directory (%d)' % len(uris_bbb)
 	for uri in uris_bbb:
-		print 'uri from uris_bbb', uri
 		ss = Document(uri)
 		ss_uris.append(ss)
 

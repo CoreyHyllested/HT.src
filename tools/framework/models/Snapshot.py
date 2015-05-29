@@ -61,6 +61,7 @@ class Document(object):
 		self.content = None
 		self.use_webcache = force_webcache 
 
+
 	
 	def snapshot_exists(self, days=30):
 		if os.path.exists(self.location) is False:
@@ -83,7 +84,6 @@ class Document(object):
 	def save_snapshot(self, useragent):
 		# check if a recent document already exists?
 		snapshot_file = self.snapshot_exists(days=7)
-		print 'Thread()\tsnapshot = %s' % snapshot_file
 		if (snapshot_file): return self.read_cache()
 
 		print 'Thread()\tdownloading: %s' % (self.uri)
@@ -96,7 +96,7 @@ class Document(object):
 		return True
 
 
-	def __get_cache_path(self):
+	def __read_cache_path(self):
 		# for metadata, files should ALWAYS exist.
 		if self.doc_type == DocumentType.JSON_METADATA:
 			return self.location + '/' + self.filename
@@ -104,7 +104,7 @@ class Document(object):
 
 
 	def read_cache(self):
-		file_path = self.__get_cache_path()
+		file_path = self.__read_cache_path()
 		if (file_path):
 			fp = None
 			try:
@@ -138,22 +138,32 @@ class Document(object):
 
 
 
-	def write_cache(self):
-		fp = None
-		if (not self.content): return
+	def __write_cache_path(self):
+		if self.doc_type == DocumentType.JSON_METADATA:
+			return self.location + '/' + self.filename
 
 		timestamp = dt.now().strftime('%Y-%m-%d')
 		directory = self.location + '/' + str(timestamp)
+		safe_mkdir(directory)
+
+		return directory + '/' + self.filename
+
+
+
+	def write_cache(self):
+		if (not self.content): return
+
 		try:
 			# saving raw content
-			safe_mkdir(directory)
-			fp = open(directory + '/' + self.filename, 'w+')
+			file_path = self.__write_cache_path()
+			fp = open(file_path, 'w+')
 			fp.truncate()
 			fp.write(self.content)
 		except Exception as e:
 			print e
 		finally:
 			if (fp): fp.close()
+
 
 
 
@@ -180,9 +190,3 @@ class Document(object):
 	def __str__ (self):
 		return '<Document %s>' % (self.uri)
 
-
-#class SourceSnapshot(object):
-#	def __init__(self, uri, snapshot_dir=None, force_webcache=False):
-#		super(SourceSnapshot, self).__init__(self, uri, force_webcache=force_webcache)
-#		self.snap_dir = snapshot_dir
-#		print 'init SourceSnapshot, set dir = ', self.snap_dir, snapshot_dir
