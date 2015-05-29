@@ -49,3 +49,18 @@ def create_directories():
 	#safe_mkdir_local(DIR_REVIEWS)
 	safe_mkdir_local(DIR_SOURCES)
 	print 'created directories'
+
+
+
+def update(filename, content):
+	fp = None
+	try:
+		fp = open(filename, 'w+')
+		fp.truncate()
+		fp.write(content)
+	except Exception as e:
+		print e
+	finally:
+		if (fp): fp.close()
+	
+
