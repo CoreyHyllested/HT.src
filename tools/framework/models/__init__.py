@@ -11,7 +11,5 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-print 'loading', __name__
-
 from .Snapshot		import *
 from .ScraperThread	import *

@@ -11,6 +11,4 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-print 'loading', __name__
-
 from .BBB	import *
