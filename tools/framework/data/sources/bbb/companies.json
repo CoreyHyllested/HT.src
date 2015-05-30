@@ -1,13 +1,5 @@
 [
     {
-        "addr": "1507 Pine St, Boulder, CO", 
-        "cache": "relative/file/path", 
-        "email": "734-604-5463", 
-        "name": "Soulcrafing", 
-        "phone": "734-604-5463", 
-        "www": "https://soulcrafting.co/"
-    }, 
-    {
         "addr": {
             "city": "Golden", 
             "full": "16490 W 51st Ave\nGolden, CO", 
