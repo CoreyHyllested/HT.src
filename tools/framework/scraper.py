@@ -25,10 +25,10 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.27
+VERSION = 0.28
 BOT_VER = 0.8
-THREADS	= 2
-SECONDS = 100	#CHANGE to 90
+THREADS	= 1
+SECONDS = 100
 
 dl_queue = []
 threads	= []
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
 	q = prime_queue(ua)
 	for thread_id in xrange(THREADS):
-		t = ScraperThread(q, ua, id=thread_id, seconds=5)
+		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS)
 		t.start()
 		threads.append(t)
 

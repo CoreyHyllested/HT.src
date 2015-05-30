@@ -96,11 +96,24 @@ class Document(object):
 		return True
 
 
+
 	def __read_cache_path(self):
 		# for metadata, files should ALWAYS exist.
 		if self.doc_type == DocumentType.JSON_METADATA:
 			return self.location + '/' + self.filename
 		return	self.snapshot_exists(days=365)
+
+
+
+	def __write_cache_path(self):
+		if self.doc_type == DocumentType.JSON_METADATA:
+			return self.location + '/' + self.filename
+
+		timestamp = dt.now().strftime('%Y-%m-%d')
+		directory = self.location + '/' + str(timestamp)
+		safe_mkdir(directory)
+		return directory + '/' + self.filename
+
 
 
 	def read_cache(self):
@@ -137,16 +150,6 @@ class Document(object):
 		return self.content
 
 
-
-	def __write_cache_path(self):
-		if self.doc_type == DocumentType.JSON_METADATA:
-			return self.location + '/' + self.filename
-
-		timestamp = dt.now().strftime('%Y-%m-%d')
-		directory = self.location + '/' + str(timestamp)
-		safe_mkdir(directory)
-
-		return directory + '/' + self.filename
 
 
 
