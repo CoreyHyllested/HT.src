@@ -1,69 +1,10 @@
-#################################################################################
-# Copyright (C) 2015 Soulcrafting
-# All Rights Reserved.
-#
-# All information contained is the property of Soulcrafting. Any intellectual
-# property about the design, implementation, processes, and interactions with
-# services may be protected by U.S. and Foreign Patents. All intellectual
-# property contained within is covered by trade secret and copyright law.
-#
-# Dissemination or reproduction is strictly forbidden unless prior written
-# consent has been obtained from Soulcrafting.
-#################################################################################
-
-import sys, os, argparse
-import urllib2, feedparser
-from bs4 import BeautifulSoup, Comment
-from bs4 import BeautifulSoup as Soup
-import re
-
-
-
-
-def open_file(path_from_cwd):
-	filename = os.getcwd() + path_from_cwd
-	print 'creating file ' + str(filename)
-	fp = open(filename, 'a+')
-	return fp
-
-
-def create_review(filename):
-	fn = '/data/preprocessed/reviews/' + filename
-	fp = open_file(fn)
-	fp.truncate()
-	return fp
-
-
-def get_bbb_types(page):
-	print 'About to scrape "Business Types": ' + str(page)
-	dom	= urllib2.urlopen(page).read()
-	dom_soup = BeautifulSoup(dom)
-
-	links = []
-	tobs = dom_soup.find_all('ul', class_=['industry-tobs'])
-	for tob in tobs:		#what is a TOB?
-		LIs	= tob.find_all('a')
-		for li in LIs:
-			uri	= li.attrs.get('href')
-			print '\"' + str(uri) + '\",'
-			links.append(uri)
-	return links
-
-def get_bbb_types_cached_testing():
-	return  [ "http://www.bbb.org/denver/accredited-business-directory/deck-builder" ]
-
-
-
-
-
 def bbb_parse_business_reviews(name, page):
 	print 'About to scrape "BBB Business Page": ' + str(page)
 	page = page + '/customer-reviews'
 	reviews_dom	= urllib2.urlopen(page).read()
 	reviews_soup = BeautifulSoup(reviews_dom)
 
-	pos_reviews	= reviews_soup.find(id='cr-pos-listing')
-	neg_reviews	= reviews_soup.find(id='cr-neg-listing')
+	pos_reviews	= reviews_soup.find(id='cr-pos-listing') neg_reviews	= reviews_soup.find(id='cr-neg-listing')
 	neu_reviews	= reviews_soup.find(id='cr-neu-listing')
 
 	if (pos_reviews): positive	= pos_reviews.find_all('tr')
@@ -196,26 +137,6 @@ def bbb_parse_business(page):
 
 
 if __name__ == '__main__':
-	parser = argparse.ArgumentParser(description='Collect BBB directory of businesses; scrape, normalize, and process BBB information')
-	parser.add_argument('-V', '--verbose', help="increase output verbosity", action="store_true")
-	parser.add_argument('-U', '--update', help="Update business directory",	action="store_true")
-	args = parser.parse_args()
-	if (args.verbose):
-		print 'verbosity is on'
-	if (args.update):
-		print 'Update business directory!'
-		types = get_bbb_types_cached()
-		#scrape_bbb_businesses()
-
-#	types = get_bbb_types('http://www.bbb.org/denver/accredited-business-directory/contractors-construction-and-building-materials-industry')
 	types = get_bbb_types_cached()
 	for business_type in types:
 		get_businesses_by_type(business_type)
-
-		
-
-
-
-#EXAMPLE dom_soup.find_all(id=re.compile('list[0-9]+'))
-#	testbbb_parse_business('http://www.bbb.org/denver/business-reviews/roofing-contractors/303-933-roof-in-littleton-co-75003621')
-#	testbbb_parse_business_reviews('http://www.bbb.org/denver/business-reviews/roofing-contractors/303-933-roof-in-littleton-co-75003621')
