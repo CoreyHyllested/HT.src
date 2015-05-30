@@ -139,11 +139,12 @@ class BBB(Source):
 		
 
 
+
 	def get_company_directory(self, update=False):
 		if (update):
 			self.update_company_directory()
 			
 		if (self.companies is None):
 			self.companies = self.bbb_get_companies_cache()
-		return [] #self.companies
+		return self.companies
 

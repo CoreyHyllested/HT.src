@@ -30,8 +30,8 @@ BOT_VER = 0.8
 THREADS	= 2
 SECONDS = 1		#CHANGE to 90
 
-ss_uris	= []
-threads = []
+dl_queue = []
+threads	= []
 
 
 def config_urllib():
@@ -56,34 +56,32 @@ def config_urllib():
 	
 
 def dump_ss_uris():
-	print 'URIs: (%d)' % len(ss_uris)
-	for ss in ss_uris:
-		print ss.uri
+	print 'URIs: (%d)' % len(dl_queue)
+	for doc in dl_queue: print doc.uri
 	print 
 
 
 
 def prime_queue(ua):
 	prime_queue_with_bbb(ua)
-	random.shuffle(ss_uris, random.random)
+	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
 	q = Queue.Queue()
-	for ss in ss_uris:
-		q.put(ss)
+	for document in dl_queue:
+		q.put(document)
 	return q
 
 
 
 def prime_queue_with_bbb(ua):
 	bbb = BBB(ua)
-	bbb.update_company_directory()
 
-	uris_bbb = bbb.get_company_directory(update=False)
-	print 'Adding all URLs from BBB directory (%d)' % len(uris_bbb)
-	for uri in uris_bbb:
-		ss = Document(uri)
-		ss_uris.append(ss)
+	companies = bbb.get_company_directory(update=False)	#set to args.update
+	print 'Adding all URLs from BBB directory (%d)' % len(companies)
+	for business in companies:
+		document = Document(business['src_bbb'], doc_type=DocumentType.BBB_BUSINESS)
+		dl_queue.append(document)
 
 
 
@@ -94,11 +92,10 @@ if __name__ == '__main__':
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
 	parser.add_argument('-U', '--update',	help="Update business directory",	action="store_true")
 	args = parser.parse_args()
-	if (args.verbose):
-		print 'verbosity is on'
+	if (args.verbose): print 'verbosity is on'
 	if (args.update):
 		print 'Update business directory!'
-	
+
 	create_directories()
 	ua = config_urllib()
 
@@ -107,7 +104,7 @@ if __name__ == '__main__':
 		t = ScraperThread(q, ua, id=thread_id, seconds=5)
 		t.start()
 		threads.append(t)
-	
+
 	for thread in threads:
 		thread.join()
-	
+
