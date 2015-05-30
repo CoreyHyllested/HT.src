@@ -25,13 +25,14 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.26
+VERSION = 0.27
 BOT_VER = 0.8
 THREADS	= 2
-SECONDS = 1		#CHANGE to 90
+SECONDS = 100	#CHANGE to 90
 
 dl_queue = []
 threads	= []
+
 
 
 def config_urllib():
@@ -80,8 +81,14 @@ def prime_queue_with_bbb(ua):
 	companies = bbb.get_company_directory(update=False)	#set to args.update
 	print 'Adding all URLs from BBB directory (%d)' % len(companies)
 	for business in companies:
-		document = Document(business['src_bbb'], doc_type=DocumentType.BBB_BUSINESS)
-		dl_queue.append(document)
+		bbb_url	= business.get('src_bbb')
+		if (bbb_url):
+			document = Document(business['src_bbb'], doc_type=DocumentType.BBB_BUSINESS)
+			dl_queue.append(document)
+		else:
+			print 'Weird, missing src_bbb'
+			print 'Name %s, %s %s' % (business.get('name'), business.get('phone'), business.get('email'))
+			print 'Addr %b, %s' % (business.get('addr'), business.get('src_logo'))
 
 
 
