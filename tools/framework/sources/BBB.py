@@ -25,7 +25,7 @@ class BBB(Source):
 	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
 	USE_WEBCACHE = False #True
-	SECONDS= 90	# get from robots.txt
+	SECONDS = 90	# get from robots.txt
 
 	def __init__(self, ua, queue=None):
 		super(BBB, self).__init__()

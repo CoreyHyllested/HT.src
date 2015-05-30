@@ -25,10 +25,10 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.28
+VERSION = 0.29
 BOT_VER = 0.8
 THREADS	= 1
-SECONDS = 100
+SECONDS = 85
 
 dl_queue = []
 threads	= []
