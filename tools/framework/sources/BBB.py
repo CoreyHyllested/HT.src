@@ -54,7 +54,7 @@ class BBB(Source):
 		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
-		self.doc_companies.read_cache()
+		self.doc_companies.read_cache(debug=True)
 		companies = json.loads(self.doc_companies.content)
 		if (dump_results): pp(companies)
 		return companies

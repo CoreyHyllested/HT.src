@@ -86,7 +86,6 @@ class Document(object):
 		snapshot_file = self.snapshot_exists(days=7)
 		if (snapshot_file): return self.read_cache()
 
-		print 'Thread()\tdownloading: %s' % (self.uri)
 		try:
 			self.download(useragent)
 			self.write_cache()
@@ -116,12 +115,12 @@ class Document(object):
 
 
 
-	def read_cache(self):
+	def read_cache(self, debug=False):
 		file_path = self.__read_cache_path()
 		if (file_path):
 			fp = None
 			try:
-				print '\t\tloading cache... %s' % (self.uri)
+				if (debug): print '\t\tloading cache... %s' % (self.uri)
 				fp = open(file_path, 'r')
 				self.content = fp.read()
 			except Exception as e:
@@ -159,6 +158,7 @@ class Document(object):
 		try:
 			# saving raw content
 			file_path = self.__write_cache_path()
+			print 'Thread()\tcache %s' % (file_path)
 			fp = open(file_path, 'w+')
 			fp.truncate()
 			fp.write(self.content)

@@ -25,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.29
+VERSION = 0.30
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
