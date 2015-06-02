@@ -23,9 +23,10 @@ from datetime	import datetime as dt
 from sources	import *
 from models		import *
 from controllers import *
+import requests
 
 
-VERSION = 0.34
+VERSION = 0.37
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -37,6 +38,7 @@ threads	= []
 
 def config_urllib():
 	# configure the network.
+	pre_response = requests.get('http://icanhazip.com')
 	def create_connection(address, timeout=None, source_address=None):
 		sock = socks.socksocket()
 		sock.connect(address)
@@ -46,11 +48,15 @@ def config_urllib():
 	socket.socket = socks.socksocket
 	socket.create_connection = create_connection
 
+	post_response = requests.get('http://icanhazip.com')
+
+	print 'SCraper IP:', pre_response._content, post_response._content
 
 	# setup user-agent information
-	bot_id = 'SoulcraftingBot/v%d' % BOT_VER
 	ua = urllib2.build_opener()
-	ua.addheaders = [('User-agent', bot_id)]
+	#ua_string = 'SoulcraftingBot/v%d' % BOT_VER
+	ua_string = 'Mozilla/5.0 (Linux; U; Android 4.0.4; en-gb; GT-I9300 Build/IMM76D) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30'
+	ua.addheaders = [('User-agent', ua_string)]
 	return ua
 
 
@@ -63,9 +69,9 @@ def dump_ss_uris():
 
 
 
-def prime_queue(ua, update_directories):
-#	prime_queue_with_yelp(ua, update_directories)
-	prime_queue_with_bbb(ua, update_directories)
+def prime_queue(ua, config_params):
+	prime_queue_with_yelp(ua, config_params)
+	prime_queue_with_bbb(ua, config_params)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
@@ -76,27 +82,28 @@ def prime_queue(ua, update_directories):
 
 
 
-def prime_queue_with_yelp(ua, update_dirs):
+def prime_queue_with_yelp(ua, config_params):
 	yelp = Yelp(ua)
-	companies = yelp.get_company_directory(update=update_dirs)
-	print 'SCraper - got Yelp companies, update? %d' % (len(companies))
-
-
-
-def prime_queue_with_bbb(ua, update_dirs):
-	bbb = BBB(ua)
-
-	companies = bbb.get_company_directory(update=update_dirs)	#set to args.update
+	companies = yelp.get_company_directory(update=config_params.update)
 	print 'SCraper - get all companies in BBB directory (%d)' % len(companies)
 	for business in companies:
-		bbb_url	= business.get('src_bbb')
-		if (bbb_url):
-			document = Document(business['src_bbb'], doc_type=DocumentType.BBB_BUSINESS)
+		url	= business.get('src_yelp')
+		if (url):
+			document = Document(url, doc_type=DocumentType.YELP_BUSINESS)
 			dl_queue.append(document)
-#		else:
-#			print 'Weird, missing src_bbb'
-#			print 'Name %s, %s %s' % (business.get('name'), business.get('phone'), business.get('email'))
-#			print 'Addr %b, %s' % (business.get('addr'), business.get('src_logo'))
+
+
+
+def prime_queue_with_bbb(ua, config_params):
+	bbb = BBB(ua)
+
+	companies = bbb.get_company_directory(update=config_params.update)	#set to args.update
+	print 'SCraper - get all companies in BBB directory (%d)' % len(companies)
+	for business in companies:
+		url = business.get('src_bbb')
+		if (url):
+			document = Document(url, doc_type=DocumentType.BBB_BUSINESS)
+			dl_queue.append(document)
 
 
 
@@ -106,9 +113,11 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
+	parser.add_argument('-S', '--source',	help='Single source [BBB, Yelp, Houzz]')
 	args = parser.parse_args()
 	if (args.verbose): print 'SCraper - verbosity enabled.'
 	if (args.update): print 'SCraper - update company directory.' 
+	if (args.source): print 'SCraper - ', args.source
 
 	create_directories()
 	ua = config_urllib()
@@ -122,3 +131,4 @@ if __name__ == '__main__':
 	for thread in threads:
 		thread.join()
 
+	sys.exit()
