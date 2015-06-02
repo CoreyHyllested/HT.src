@@ -61,13 +61,13 @@ class Yelp(Source):
 		if (document is None): return None
 
 		if (document.doc_type == DocumentType.YELP_DIRECTORY):
-			nr = self.yelp_scrape_directory(document)
+			nr = self.yelp_scrape_biz_page(document)
 			print '\t\tscraped %s, added %d entries' % (document.uri, nr)
 
 
 
 
-	def yelp_scrape_directory(self, document):
+	def yelp_scrape_biz_page(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
@@ -176,93 +176,3 @@ class Yelp(Source):
 			self.update_company_directory()
 		return self.companies
 
-
-
-
-
-
-
-	def yelp_parse_business(self, page):
-		print 'scraping "YELP Business Page"  ' + str(page)
-		dom	= urllib2.urlopen(page).read()
-		dom_soup = BeautifulSoup(dom)
-
-		#print 'Finding LocalBusiness'
-		business = dom_soup.find_all(itemtype='http://schema.org/LocalBusiness')[0]
-
-		#print 'Get name, telephone, address'
-		bus_name	= business.find_all(itemprop='name')[0].get_text()
-		bus_phone	= business.find_all(itemprop='telephone')[0].get_text()
-		bus_address	= business.find_all(itemtype='http://schema.org/PostalAddress')[0]
-		bus_addr_street	= bus_address.find_all(itemprop='streetAddress')[0].get_text()
-		bus_addr_locale	= bus_address.find_all(itemprop='addressLocality')[0].get_text()
-		bus_addr_region	= bus_address.find_all(itemprop='addressRegion')[0].get_text()
-		bus_addr_postal = bus_address.find_all(itemprop='postalCode')[0].get_text()
-		print bus_name, bus_phone, bus_addr_street, bus_addr_locale, bus_addr_region, bus_addr_postal
-
-#	bus_contact_url	= business.find_all(class_='business-link')[0].get_text()
-
-		#print 'Get accredited information'
-		rating = None
-		accredited_since	= business.find_all(class_='accredited-since')[0].get_text()
-		accredited_rating	= business.find_all(id='accedited-rating')	#BBB misspells this, check to see if it got fixed, not always present.
-		if (accredited_rating):
-			rating = accredited_rating[0].img.attrs.get('title')
-		print accredited_since, rating
-		#TODO look for <span class='business-email'><a href=mailto:>
-		#TODO also look for addtional email addresses; parse mailto?  <div id='addtional-email-pop'><li><a href=mailto?>
-
-		
-		#print 'Get additional business information'
-		bus_additional = business.find(id='business-additional-info-container')
-		bus_bbb_open = bus_additional.find('span').get_text()
-		bus_founding	= bus_additional.find(itemprop='foundingDate').get_text()	#also just business.search
-
-		bus_info_legal = bus_additional.find('h5', text='Type of Entity')
-		if bus_info_legal is not None:
-			bus_info_legal = bus_info_legal.nextSibling.get_text()
-
-		print 'Business Opened:  ' + str(bus_bbb_open)
-		print 'Business Founded: ' + str(bus_founding)
-		print 'Business Legal Status: ' + str(bus_info_legal)
-
-		#print 'Get employee information'
-		bus_info_employees = bus_additional.find(itemprop='employees')
-		if bus_info_employees == None:
-			bus_emp = bus_additional.find('h5', text='Business Management').nextSibling.get_text()
-			print bus_emp
-			bus_info_employees = []
-		for emp in bus_info_employees:
-			#print 'Job title?: ', emp.get_text()
-			emp_name = emp.find(itemprop='name')
-			if (emp_name is not None): emp_name = emp_name.get_text()
-			emp_title = emp.find(itemprop='jobTitle')
-			if (emp_title is not None): emp_title = emp_title.get_text()
-			#print 'person name:', emp_name
-			#print 'person job:', emp_title
-
-
-		#print 'Get category information'
-		bus_info_categories	= bus_additional.find('h5', text='Business Category').nextSibling.get_text().split(',')
-		print bus_info_categories
-		
-		print 'Get additional names'
-		bus_alt_names = bus_additional.find('h5', text='Alternate Business Names')
-		if bus_alt_names is not None: 
-			bus_alt_names = bus_alt_names.nextSibling.get_text().split(',')
-		print bus_alt_names
-
-
-		print 'Get rating information'
-		bus_agg_rating = bus_additional.find(itemtype='http://schema.org/AggregateRating')
-		print 'bus_agg_rating:', bus_agg_rating
-		if bus_agg_rating is not None:
-			bus_agg_score	= bus_agg_rating.find(itemprop='ratingValue')
-			if (bus_agg_score): bus_agg_score = bus_agg_score.attrs.get('content')
-			bus_agg_best	= bus_agg_rating.find(itemprop='bestRating')
-			if (bus_agg_best): bus_agg_best = bus_agg_best.attrs.get('content')
-			bus_agg_count	= bus_agg_rating.find(itemprop='reviewCount')
-			if (bus_agg_count): bus_agg_count = bus_agg_count.attrs.get('content')
-
-			print bus_agg_count, 'reviews, with an avg score of', bus_agg_score
-			print 'Best score', bus_agg_best
