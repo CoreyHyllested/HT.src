@@ -48,7 +48,6 @@ def create_directories():
 	safe_mkdir_local(DIR_RAWHTML)
 	#safe_mkdir_local(DIR_REVIEWS)
 	safe_mkdir_local(DIR_SOURCES)
-	print 'created directories'
 
 
 
