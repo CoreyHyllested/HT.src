@@ -25,7 +25,7 @@ from models		import *
 from controllers import *
 
 
-VERSION = 0.30
+VERSION = 0.34
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -63,8 +63,9 @@ def dump_ss_uris():
 
 
 
-def prime_queue(ua):
-	prime_queue_with_bbb(ua)
+def prime_queue(ua, update_directories):
+#	prime_queue_with_yelp(ua, update_directories)
+	prime_queue_with_bbb(ua, update_directories)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
@@ -75,20 +76,27 @@ def prime_queue(ua):
 
 
 
-def prime_queue_with_bbb(ua):
+def prime_queue_with_yelp(ua, update_dirs):
+	yelp = Yelp(ua)
+	companies = yelp.get_company_directory(update=update_dirs)
+	print 'SCraper - got Yelp companies, update? %d' % (len(companies))
+
+
+
+def prime_queue_with_bbb(ua, update_dirs):
 	bbb = BBB(ua)
 
-	companies = bbb.get_company_directory(update=False)	#set to args.update
-	print 'Adding all URLs from BBB directory (%d)' % len(companies)
+	companies = bbb.get_company_directory(update=update_dirs)	#set to args.update
+	print 'SCraper - get all companies in BBB directory (%d)' % len(companies)
 	for business in companies:
 		bbb_url	= business.get('src_bbb')
 		if (bbb_url):
 			document = Document(business['src_bbb'], doc_type=DocumentType.BBB_BUSINESS)
 			dl_queue.append(document)
-		else:
-			print 'Weird, missing src_bbb'
-			print 'Name %s, %s %s' % (business.get('name'), business.get('phone'), business.get('email'))
-			print 'Addr %b, %s' % (business.get('addr'), business.get('src_logo'))
+#		else:
+#			print 'Weird, missing src_bbb'
+#			print 'Name %s, %s %s' % (business.get('name'), business.get('phone'), business.get('email'))
+#			print 'Addr %b, %s' % (business.get('addr'), business.get('src_logo'))
 
 
 
@@ -97,18 +105,17 @@ if __name__ == '__main__':
 	#print 'ensure tor is running on :9050'
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
-	parser.add_argument('-U', '--update',	help="Update business directory",	action="store_true")
+	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	args = parser.parse_args()
-	if (args.verbose): print 'verbosity is on'
-	if (args.update):
-		print 'Update business directory!'
+	if (args.verbose): print 'SCraper - verbosity enabled.'
+	if (args.update): print 'SCraper - update company directory.' 
 
 	create_directories()
 	ua = config_urllib()
 
-	q = prime_queue(ua)
+	q = prime_queue(ua, args.update)
 	for thread_id in xrange(THREADS):
-		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS)
+		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=False)
 		t.start()
 		threads.append(t)
 

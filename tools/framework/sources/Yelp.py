@@ -16,40 +16,36 @@ from pprint import pprint as pp
 from bs4 import BeautifulSoup, Comment
 from models import *
 from controllers import *
+import yelp
 
 
 
-class BBB(Source):
-	SOURCE_TYPE	= 'BBB'
-	SOURCE_DIR	= 'bbb/'
+CONSUMER_KEY='oLi59t3R6L2_6uQiUVgBzg'
+CONSUMER_SECRET='BdeJ-Wityo8UhKPedbs8FauzWUI'
+TOKEN='6UkGwKjDntk9zu-xC-LUPnFPX_RpSHib'
+TOKEN_SECRET='v78DKVyg1kJGGzjWZh7HeJYLDn0'
+
+
+
+
+class Yelp(Source):
+	SOURCE_TYPE	= 'Yelp'
+	SOURCE_DIR	= 'yelp/'
 	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-	USE_WEBCACHE = False #True
+	USE_WEBCACHE = False
 	SECONDS = 90	# get from robots.txt
 
 	def __init__(self, ua, queue=None):
-		super(BBB, self).__init__()
+		super(Yelp, self).__init__()
+		self.yelp_api = yelp.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=TOKEN, access_token_secret=TOKEN_SECRET)
 		self.ua = ua
 		self.companies = None
-		self.directories = None
 		self.doc_companies = None
-		self.doc_directories = None
 
 
 
-	def __load_directory_of_directories(self):
-		def source_document(uri):
-			snap = Document(uri, doc_type=DocumentType.BBB_DIRECTORY)
-			snap.location = self.SOURCE_CACHE + url_clean(uri)
-			return snap
-
-		rel_path = '/data/sources/' + self.SOURCE_DIR + '/directories.json'
-		json_data	= self.read_json_file(rel_path)
-		directories	= json_data.get('directories', [])
-		self.directories = map(source_document, directories)
-
-
-	def bbb_get_companies_cache(self, dump_results=False):
+	def __read_companies_cache(self, dump_results=False):
 		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
@@ -61,17 +57,17 @@ class BBB(Source):
 
 
 
-	def bbb_scrape_document(self, document):
+	def yelp_scrape_document(self, document):
 		if (document is None): return None
 
-		if (document.doc_type == DocumentType.BBB_DIRECTORY):
-			nr = self.bbb_scrape_directory(document)
-			#print '\t\tscraped %s, added %d entries to companies %d' % (document.uri, nr, len(self.companies))
+		if (document.doc_type == DocumentType.YELP_DIRECTORY):
+			nr = self.yelp_scrape_directory(document)
+			print '\t\tscraped %s, added %d entries' % (document.uri, nr)
 
 
 
 
-	def bbb_scrape_directory(self, document):
+	def yelp_scrape_directory(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
@@ -85,7 +81,7 @@ class BBB(Source):
 			name	= business.find_all(itemprop='name')[0].get_text()
 			phone	= business.find_all(itemprop='phone')[0].get_text()
 			image	= business.find_all(itemtype='http://schema.org/ImageObject')
-			bbburl	= business.find_all(itemprop='name')[0].attrs.get('href')
+			yelurl	= business.find_all(itemprop='name')[0].attrs.get('href')
 			links	= business.find_all(class_=['link', 'newtab'])
 
 			# create metadata
@@ -103,43 +99,80 @@ class BBB(Source):
 
 			for uri in links:
 				URI = uri.attrs.get('href')
-				if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
+				if (('maps.google.com' not in URI) and ('www.yelp.com' not in URI)):
 					company['http'] = URI
 			if (phone):		company['phone']	= phone
 			if (bbburl):	company['src_bbb']	= bbburl
-			self.companies.append(company)
+			if (self.companies): self.companies.append(company)
 		return len(business_dir)
-	#		bbb_parse_business(bbb_uri)
-	#		bbb_parse_business_reviews(name, bbb_uri)
+
 
 
 
 
 	def update_company_directory(self):
-		if (self.directories is None): self.__load_directory_of_directories()
+		boulder_results = self.yelp_api.Search(category_filter='contractors', location='Boulder, CO', radius_filter='40000')
+		print 'Yelp.yelp_api Boulder search() -- ', boulder_results.total
 
-		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
-		for business_directory in self.directories:
-			downloaded = business_directory.save_snapshot(self.ua)
-			if (downloaded): time.sleep(self.SECONDS);
+		for results_offset in range((boulder_results.total/20)+1):
+			offset=results_offset * 20
+			boulder_results = self.yelp_api.Search(category_filter='contractors', location='Boulder, CO', offset=offset, radius_filter='40000')
 
-			# scrape directory, add to companies
-			self.bbb_scrape_document(business_directory)
+			for business in boulder_results.businesses:
+				company = self.__extract_info_from_search_results(business)
+				self.companies.append(company)
+#			print 'Yelp.yelp_api Denver search()'
+#			search_results = self.yelp_api.Search(category_filter='contractors', location='Denver, CO', radius_filter='40000')
 
-		print 'BBB.Company listing - done; companies (%d)' % (len(self.companies))
+		print 'Yelp.Company listing - done'
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
+				
+
+
+
+	def __extract_info_from_search_results(self, business):
+		company = {}
+		company['name']		= business.name
+		company['yelp_id']	= business.id
+		business.catlist	= []
+
+		if business.phone:		company['phone'] = business.phone
+		if business.rating:		company['yelp_rating'] = business.rating
+		if business.image_url:	company['src_logo'] = business.image_url
+		if business.url:		company['src_yelp'] = business.url
+		if business.is_closed:	company['permanently_closed']	= business.is_closed
+		if business.is_claimed:	company['meta_claimed']	= business.is_claimed
+		if business.review_count:	company['total_reviews'] = business.review_count
+		if business.snippet_text:	company['yelp_snippet'] = business.snippet_text
 		
+		# simplify list ['Window Install', 'windowinstall']
+		for category in business.categories:
+			business.catlist.append(category[0])
+		if business.catlist:	company['categories'] = business.catlist
+
+		if business.location:
+			addr = {}
+			if business.location.display_address: 	addr['display']	= business.location.display_address
+			if business.location.address:			addr['street']	= business.location.address
+			if business.location.city:				addr['city']	= business.location.city
+			if business.location.state_code:		addr['state']	= business.location.state_code
+			if business.location.postal_code:		addr['post']	= business.location.postal_code
+			if business.location.cross_streets:		addr['cross']	= business.location.cross_streets
+			company['addr'] = addr
+		return company
+
 
 
 
 	def get_company_directory(self, update=False):
 		if (self.companies is None):
-			self.companies = self.bbb_get_companies_cache()
-			print 'BBB.get_company_directory(), found %d companies' % (len(self.companies))
+			self.companies = self.__read_companies_cache()
+			print 'Yelp.get_company_directory(), found %d companies' % (len(self.companies))
 
-		if (update):
-			self.companies = [] # reset
+		# if update, move and save old copy
+		if (update): 
+			self.companies = []	# reset
 			self.update_company_directory()
 		return self.companies
 
@@ -149,63 +182,8 @@ class BBB(Source):
 
 
 
-
-
-	def bbb_parse_business_reviews(self, name, page):
-		print 'About to scrape "BBB Business Page": ' + str(page)
-		page = page + '/customer-reviews'
-		reviews_dom	= urllib2.urlopen(page).read()
-		reviews_soup = BeautifulSoup(reviews_dom)
-
-		pos_reviews	= reviews_soup.find(id='cr-pos-listing')
-		neg_reviews	= reviews_soup.find(id='cr-neg-listing')
-		neu_reviews	= reviews_soup.find(id='cr-neu-listing')
-
-		if (pos_reviews): positive	= pos_reviews.find_all('tr')
-		if (neg_reviews): negative	= neg_reviews.find_all('tr')
-		if (neu_reviews): neutral	= neu_reviews.find_all('tr')
-
-		nr_reviews	= 0
-		if (positive):	nr_reviews	+= len(positive)
-		if (negative):	nr_reviews	+= len(negative)
-		if (neutral):	nr_reviews	+= len(neutral)
-
-		if (not nr_reviews):
-			return
-
-		print 'There are', str(nr_reviews), 'reviews'
-		fp = None
-		fp = create_review(name) # pass in business name to bbb_parse_bus_page & replace 'weirdchars'
-		
-		for review in positive:
-			r_date		= review.find(class_=['td_h']).get_text()
-			r_details	= review.find(class_=['td_detail']).get_text()
-			details		= r_details[0:r_details.find('This customer had a')]
-			comments	= review.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
-			if (fp is not None): fp.write(details)
-			#print details
-
-		for review in negative:
-			r_date		= review.find(class_=['td_h']).get_text()
-			r_details	= review.find(class_=['td_detail']).get_text()
-			details		= r_details[0:r_details.find('This customer had a')]
-			#comments	= review.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
-			print details
-			if (fp is not None): fp.write(details)
-			
-		for review in neutral:
-			r_date		= review.find(class_=['td_h']).get_text()
-			r_details	= review.find(class_=['td_detail']).get_text()
-			details = r_details[0:r_details.find('This customer had a')]
-			#comments	= review.findAll(text=lambda text:isinstance(text, Comment))	#has email address, use the get project price by pulling permits?
-			print details
-			if (fp is not None): fp.write(details)
-		
-		if (fp is not None): fp.close()
-
-
-	def bbb_parse_business(self, page):
-		print 'scraping "BBB Business Page"  ' + str(page)
+	def yelp_parse_business(self, page):
+		print 'scraping "YELP Business Page"  ' + str(page)
 		dom	= urllib2.urlopen(page).read()
 		dom_soup = BeautifulSoup(dom)
 

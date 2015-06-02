@@ -81,6 +81,7 @@ class Document(object):
 
 
 
+	#rename get_snapshot()
 	def save_snapshot(self, useragent):
 		# check if a recent document already exists?
 		snapshot_file = self.snapshot_exists(days=7)
@@ -158,7 +159,7 @@ class Document(object):
 		try:
 			# saving raw content
 			file_path = self.__write_cache_path()
-			print 'Thread()\tcache %s' % (file_path)
+			print '\tcaching document: %s' % (file_path)
 			fp = open(file_path, 'w+')
 			fp.truncate()
 			fp.write(self.content)
