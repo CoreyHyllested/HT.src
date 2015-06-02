@@ -33,6 +33,6 @@ class ScraperThread(threading.Thread):
 		while not self.q.empty():
 			ss = self.q.get()
 			if (self.debug): print 'Thread(%d): get %s' % (self.id, str(ss.uri))
-			saved = ss.save_snapshot(self.ua)
+			saved = ss.get_document()
 			if (saved): time.sleep(self.seconds + random.randint(0, 10))
 

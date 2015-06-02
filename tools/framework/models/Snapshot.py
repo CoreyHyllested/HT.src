@@ -13,7 +13,7 @@
 
 
 import sys, os, time
-import urllib2, json
+import requests, urllib2, json
 import socks, socket
 import re, random, time
 import Queue
@@ -28,6 +28,7 @@ class DocumentType(object):
 	BBB_DIRECTORY	= 0x11
 	BBB_BUSINESS	= 0x12
 	BBB_REVIEW		= 0x14
+	YELP_BUSINESS	= 0x22
 	JSON_METADATA	= 0xFF
 
 	LOOKUP_TABLE = {
@@ -35,6 +36,7 @@ class DocumentType(object):
 		BBB_DIRECTORY	: 'BBB_DIRECTORY',
 		BBB_BUSINESS	: 'BBB_BUSINESS',
 		BBB_REVIEW		: 'BBB_REVIEW',
+		YELP_BUSINESS	: 'YELP_BUSINESS',
 		JSON_METADATA	: 'JSON_METADATA'
 	}
 
@@ -81,14 +83,14 @@ class Document(object):
 
 
 
-	#rename get_snapshot()
-	def save_snapshot(self, useragent):
+	def get_document(self):
 		# check if a recent document already exists?
 		snapshot_file = self.snapshot_exists(days=7)
 		if (snapshot_file): return self.read_cache()
 
 		try:
-			self.download(useragent)
+			print '\tdownload document %s' % (self.uri)
+			self.download()
 			self.write_cache()
 		except Exception as e:
 			print e
@@ -131,22 +133,34 @@ class Document(object):
 
 
 
-	def download(self, useragent):
+	def download(self):
 		try:
-			content = useragent.open(self.uri).read()
+			s = requests.Session()
+			response = s.get(self.uri)
+			response.raise_for_status()
 
-			# if document was rate limited, try using the webcache
-			if 'Sorry, we had to limit your access to this website.' in content:
+			# check document for any rate-limited message, if so, try using the webcache
+			if 'Sorry, we had to limit your access to this website.' in response._content:
 				self.ratelimited.put(self.uri)
 				print 'rate-limited: %d times, retry with %s' % (len(self.ratelimited.qsize()), self.webcache)
-				content = useragent.open(self.webcache).read()
+				response = s.get(self.webcache)
+				if 'Sorry, we had to limit your access to this website.' in response._content:
+					print 'Rate limited again.'
+					raise Exception('WEBCACHE-FAILED')
+			content = response._content
 
 			if (content): self.content = content
-		except urllib2.HTTPError as e:
+		except requests.exceptions.HTTPError as e:
+			print '%d: %s' % (response.status_code, self.uri)
 			print e
-			self.errors[e.geturl()] = e.code
 		except Exception as e:
-			print type(e), e
+			print e
+#content = useragent.open(self.uri).read()
+#		except urllib2.HTTPError as e:
+#			print e
+#			self.errors[e.geturl()] = e.code
+#		except Exception as e:
+#			print type(e), e
 		return self.content
 
 
