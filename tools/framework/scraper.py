@@ -26,7 +26,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.37
+VERSION = 0.39
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -39,6 +39,7 @@ threads	= []
 def config_urllib():
 	# configure the network.
 	pre_response = requests.get('http://icanhazip.com')
+
 	def create_connection(address, timeout=None, source_address=None):
 		sock = socks.socksocket()
 		sock.connect(address)
@@ -49,8 +50,8 @@ def config_urllib():
 	socket.create_connection = create_connection
 
 	post_response = requests.get('http://icanhazip.com')
-
-	print 'SCraper IP:', pre_response._content, post_response._content
+	print 'SCraper - real IP: %s\ttor IP: %s ' % (pre_response._content.rstrip(), post_response._content.rstrip())
+	if (pre_response._content == post_response._content): print 'SCraper - Not running tor:9050; likely to fail'
 
 	# setup user-agent information
 	ua = urllib2.build_opener()
@@ -69,9 +70,15 @@ def dump_ss_uris():
 
 
 
+
 def prime_queue(ua, config_params):
-	prime_queue_with_yelp(ua, config_params)
-	prime_queue_with_bbb(ua, config_params)
+	bbb = BBB(ua)
+	houzz = Houzz(ua)
+#	yelp = Yelp(ua)
+
+	prime_queue_with_source(bbb, DocumentType.BBB_BUSINESS, config_params)
+	prime_queue_with_source(houzz, DocumentType.HOUZ_DIRECTORY, config_params)
+#	prime_queue_with_source(yelp, DocumentType.YELP_BUSINESS, config_params)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
@@ -82,47 +89,38 @@ def prime_queue(ua, config_params):
 
 
 
-def prime_queue_with_yelp(ua, config_params):
-	yelp = Yelp(ua)
-	companies = yelp.get_company_directory(update=config_params.update)
-	print 'SCraper - get all companies in BBB directory (%d)' % len(companies)
-	for business in companies:
-		url	= business.get('src_yelp')
-		if (url):
-			document = Document(url, doc_type=DocumentType.YELP_BUSINESS)
+
+def prime_queue_with_source(source, document_type, config_params):
+	if ((config_params.source) and (config_params.source != source.SOURCE_TYPE)):
+		print 'SCraper - single source (%s) doesnt match (%s)' % (config_params.source, source.SOURCE_TYPE)
+		return
+
+	directory = source.get_company_directory(update=config_params.update)
+	print 'SCraper - loaded %s directory. (%d businesses)' % (source.SOURCE_TYPE, len(directory))
+	for business in directory:
+		uri = business.get('src_' + source.SOURCE_TYPE.lower())
+		if (uri):
+			document = Document(uri, doc_type=document_type)
 			dl_queue.append(document)
 
-
-
-def prime_queue_with_bbb(ua, config_params):
-	bbb = BBB(ua)
-
-	companies = bbb.get_company_directory(update=config_params.update)	#set to args.update
-	print 'SCraper - get all companies in BBB directory (%d)' % len(companies)
-	for business in companies:
-		url = business.get('src_bbb')
-		if (url):
-			document = Document(url, doc_type=DocumentType.BBB_BUSINESS)
-			dl_queue.append(document)
 
 
 
 if __name__ == '__main__':
 	print 'SCraper v' + str(VERSION)
-	#print 'ensure tor is running on :9050'
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	parser.add_argument('-S', '--source',	help='Single source [BBB, Yelp, Houzz]')
 	args = parser.parse_args()
-	if (args.verbose): print 'SCraper - verbosity enabled.'
-	if (args.update): print 'SCraper - update company directory.' 
-	if (args.source): print 'SCraper - ', args.source
+	if (args.verbose):	print 'SCraper - verbosity enabled.'
+	if (args.update):	print 'SCraper - update company directory.'
+	if (args.source):	print 'SCraper - single source', args.source
 
 	create_directories()
 	ua = config_urllib()
 
-	q = prime_queue(ua, args.update)
+	q = prime_queue(ua, args)
 	for thread_id in xrange(THREADS):
 		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=False)
 		t.start()
