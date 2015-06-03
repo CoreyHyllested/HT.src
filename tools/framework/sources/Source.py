@@ -12,7 +12,8 @@
 #################################################################################
 
 import sys, os, time
-import urllib2, json
+import urllib2, requests
+import json, random
 from pprint import pprint as pp
 from controllers import *
 
@@ -20,7 +21,9 @@ from controllers import *
 
 class Source(object):
 	USE_WEBCACHE = False
+	SECONDS = 90	# get from robots.txt
 	SOURCE_DIR = ''
+	SOURCE_TYPE	= 'UnknownSource'
 	errors = {}
 	ratelimited = []
 
@@ -32,6 +35,10 @@ class Source(object):
 		
 	def get_full_directory(self):
 		return []
+
+	def sleep(self):
+		#print '%s.update_co_directory: (downloaded) so sleeping...' % (self.SOURCE_TYPE)
+		time.sleep(self.SECONDS + random.randint(0, 10))
 
 
 	def read_json_file(self, rel_file_path, DEBUG=False):
