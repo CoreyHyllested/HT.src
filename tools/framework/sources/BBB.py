@@ -21,10 +21,6 @@ from controllers import *
 
 class BBB(Source):
 	SOURCE_TYPE	= 'BBB'
-	SOURCE_DIR	= 'bbb/'
-	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
-	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-
 
 	def __init__(self, ua, queue=None):
 		super(BBB, self).__init__()
@@ -35,21 +31,17 @@ class BBB(Source):
 
 
 	def __load_directory_of_directories(self):
-		def source_document(uri):
-			snap = Document(uri, doc_type=DocType.BBB_DIRECTORY)
-			snap.location = self.SOURCE_CACHE + url_clean(uri)
-			return snap
-
-		rel_path = '/data/sources/' + self.SOURCE_DIR + '/directories.json'
+		rel_path = self.get_source_directory() + '/directories.json'
 		json_data	= self.read_json_file(rel_path)
 		directories	= json_data.get('directories', [])
-		self.directories = map(source_document, directories)
-
+		for directory in directories:
+			directory_doc = self.create_source_document(directory, DocType.BBB_DIRECTORY)
+			self.directories.append(directory_doc)
 
 
 	def __read_companies_cache(self, dump_results=False):
 		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
-		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
+		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies = json.loads(self.doc_companies.content)

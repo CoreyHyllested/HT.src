@@ -16,13 +16,13 @@ import urllib2, requests
 import json, random
 from pprint import pprint as pp
 from controllers import *
+from models import *
 
 
 
 class Source(object):
 	USE_WEBCACHE = False
 	SECONDS = 90	# get from robots.txt
-	SOURCE_DIR = ''
 	SOURCE_TYPE	= 'UnknownSource'
 	errors = {}
 	ratelimited = []
@@ -37,6 +37,18 @@ class Source(object):
 		
 	def get_full_directory(self):
 		return []
+
+	def get_source_directory(self):
+		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/'
+
+	def get_source_cache_directory(self):
+		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/cache/'
+
+
+	def create_source_document(self, uri, document_type):
+		doc = Document(uri, doc_type=document_type)
+		doc.location = self.get_source_cache_directory() + url_clean(uri)
+		return doc
 
 
 	def sleep(self, secs=None):

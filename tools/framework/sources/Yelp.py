@@ -30,10 +30,6 @@ TOKEN_SECRET='v78DKVyg1kJGGzjWZh7HeJYLDn0'
 
 class Yelp(Source):
 	SOURCE_TYPE	= 'Yelp'
-	SOURCE_DIR	= 'yelp/'
-	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
-	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-
 
 	def __init__(self, ua, queue=None):
 		super(Yelp, self).__init__()
@@ -44,7 +40,7 @@ class Yelp(Source):
 
 	def __read_companies_cache(self, dump_results=False):
 		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
-		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
+		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies = json.loads(self.doc_companies.content)

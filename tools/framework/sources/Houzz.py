@@ -21,20 +21,15 @@ from controllers import *
 
 class Houzz(Source):
 	SOURCE_TYPE	= 'Houzz'
-	SOURCE_DIR	= 'houzz/'
-	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
-	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-	USE_WEBCACHE = False
 
 	def __init__(self, ua, queue=None):
 		super(Houzz, self).__init__()
 		self.ua = ua
 
 
-
 	def __read_companies_cache(self, dump_results=False):
 		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
-		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
+		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies = json.loads(self.doc_companies.content)
@@ -141,11 +136,6 @@ class Houzz(Source):
 	def update_company_directory(self):
 		print 'Houzz.update_co_directory'
 
-		def source_document(uri):
-			doc = Document(uri, doc_type=DocType.HOUZ_DIRECTORY)
-			doc.location = self.SOURCE_CACHE + url_clean(uri)
-			return doc
-
 		total_results = 46824	 #total joke, but there it is.
 		base = 'http://www.houzz.com/professionals/c/Boulder--CO/p/'
 		page = 0
@@ -154,7 +144,7 @@ class Houzz(Source):
 			uri = base + str(page)
 			page = page + 15
 
-			directory_page = source_document(uri)
+			directory_page = self.create_source_document(uri, DocType.HOUZ_DIRECTORY)
 			print 'Houzz.update_directory\tget_document(%r)' % (directory_page)
 			directory_page.get_document(debug=True)
 			if (directory_page.doc_state == DocState.READ_WWW): self.sleep()

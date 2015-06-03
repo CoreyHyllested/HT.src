@@ -26,7 +26,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.47
+VERSION = 0.48
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -76,9 +76,9 @@ def prime_queue(ua, config_params):
 	houz = Houzz(ua)
 	yelp = Yelp(ua)
 
-	prime_queue_with_source(bbb, DocumentType.BBB_BUSINESS, config_params)
-	prime_queue_with_source(houz, DocumentType.HOUZ_BUSINESS, config_params)
-	prime_queue_with_source(yelp, DocumentType.YELP_BUSINESS, config_params)
+	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
+	prime_queue_with_source(houz, DocType.HOUZ_BUSINESS, config_params)
+	prime_queue_with_source(yelp, DocType.YELP_BUSINESS, config_params)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
