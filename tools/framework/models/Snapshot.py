@@ -13,9 +13,8 @@
 
 
 import sys, os, time
-import requests, urllib2, json
-import socks, socket
-import re, random, time
+import requests, urllib2, socks, socket
+import re, random, time, json
 import Queue
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
@@ -48,7 +47,7 @@ class DocumentType(object):
 
 	@staticmethod
 	def name(state):
-		return BBBDocument.LOOKUP_TABLE.get(state, 'UNDEFINED')
+		return DocumentType.LOOKUP_TABLE.get(state, 'UNDEFINED')
 
 
 
@@ -89,10 +88,10 @@ class Document(object):
 
 
 
-	def get_document(self):
+	def get_document(self, debug=False):
 		# check if a recent document already exists?
 		snapshot_file = self.snapshot_exists(days=7)
-		if (snapshot_file): return self.read_cache()
+		if (snapshot_file): return self.read_cache(debug)
 
 		try:
 			print '\tdownload document %s' % (self.uri)
@@ -109,7 +108,7 @@ class Document(object):
 		# for metadata, files should ALWAYS exist.
 		if self.doc_type == DocumentType.JSON_METADATA:
 			return self.location + '/' + self.filename
-		return	self.snapshot_exists(days=365)
+		return self.snapshot_exists(days=365)
 
 
 
@@ -209,8 +208,8 @@ class Document(object):
 
 
 	def __repr__ (self):
-		return '<Document %r>'% (self.uri)
+		return '<Document %r %r>'% (self.uri, DocumentType.name(self.doc_type))
 
 	def __str__ (self):
-		return '<Document %s>' % (self.uri)
+		return '<Document %r %r>'% (self.uri, DocumentType.name(self.doc_type))
 
