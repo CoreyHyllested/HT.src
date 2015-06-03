@@ -67,16 +67,17 @@ class Document(object):
 	ratelimited = Queue.Queue()
 	DIR_RAWHTML = os.getcwd() + '/data/raw/'
 
-	def __init__(self, uri, doc_type=None, force_webcache=False):
+	def __init__(self, uri, source, doc_type=None, force_webcache=False):
 		self.uri = uri
-		if (uri):
-			self.webcache = webcache_url(uri)
+		if (source):
 			self.location = self.DIR_RAWHTML + url_clean(uri)
+			self.webcache = webcache_url(uri)
+			self.use_webcache = force_webcache
 		self.filename = 'document.html'
-		self.doc_type = doc_type
+		self.doc_type	= doc_type
 		self.doc_state	= DocState.EMPTY
+		self.doc_source	= source
 		self.content = None
-		self.use_webcache = force_webcache 
 	
 
 
@@ -105,7 +106,7 @@ class Document(object):
 		if (snapshot_file): return self.read_cache(debug)
 
 		try:
-			print '\tdownload document %s' % (self.uri)
+			if (debug): print '\tdownload document %s' % (self.uri)
 			self.download()
 			self.write_cache()
 		except Exception as e:
@@ -166,25 +167,25 @@ class Document(object):
 				response = s.get(self.webcache)
 				if 'Sorry, we had to limit your access to this website.' in response._content:
 					print 'Rate limited again.'
-					raise Exception('WEBCACHE-FAILED')
+					#raise Exception('WEBCACHE-FAILED')
 			if (response._content): 
 				self.content	= response._content
 				self.doc_state	= DocState.READ_WWW
+			else:
+				print 'Something fucked up'
+				print 'status code(%d|%s) elapsed %s, encoding %s' % (response.status_code, response.reason, response.elapsed, response.encoding)
+				pp(response.headers)
 		except requests.exceptions.HTTPError as e:
 			print 'HTTPError %d: %s' % (response.status_code, self.uri)
 			print e
+			self.doc_source.add_error('HTTPError', self.uri)
 		except Exception as e:
 			print 'General Exception'
 			print e
-
-
-#content = useragent.open(self.uri).read()
-#		except urllib2.HTTPError as e:
-#			print e
-#			self.errors[e.geturl()] = e.code
-#		except Exception as e:
-#			print type(e), e
-		#return self.content
+			self.doc_source.add_error('download_failed', self.uri)
+		finally:
+			# hit URL, always sleep
+			self.doc_source.sleep()
 
 
 

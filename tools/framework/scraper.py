@@ -26,7 +26,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.49
+VERSION = 0.51
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -98,7 +98,7 @@ def prime_queue_with_source(source, document_type, config_params):
 	for business in directory:
 		uri = business.get('src_' + source.SOURCE_TYPE.lower())
 		if (uri):
-			document = Document(uri, doc_type=document_type)
+			document = Document(uri, source, doc_type=document_type)
 			dl_queue.append(document)
 
 

@@ -36,7 +36,7 @@ class Source(object):
 
 
 	def read_companies_cache(self, dump_results=False):
-		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
+		self.doc_companies = Document('companies.json', self, doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
@@ -53,7 +53,7 @@ class Source(object):
 
 
 	def create_source_document(self, uri, document_type):
-		doc = Document(uri, doc_type=document_type)
+		doc = Document(uri, self, doc_type=document_type)
 		doc.location = self.get_source_cache_directory() + url_clean(uri)
 		return doc
 

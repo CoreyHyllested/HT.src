@@ -99,10 +99,7 @@ class BBB(Source):
 
 		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
 		for business_directory in self.directories:
-			downloaded = business_directory.save_snapshot(self.ua)
-			if (downloaded): self.sleep()
-
-			# scrape directory, add to companies
+			business_directory.save_snapshot(self.ua)
 			self.bbb_scrape_document(business_directory)
 
 		print 'BBB.Company listing - done; companies (%d)' % (len(self.companies))
@@ -119,10 +116,6 @@ class BBB(Source):
 			self.companies = [] # reset
 			self.update_company_directory()
 		return self.companies
-
-
-
-
 
 
 

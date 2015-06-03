@@ -27,16 +27,6 @@ class Houzz(Source):
 		self.ua = ua
 
 
-	def __read_companies_cache(self, dump_results=False):
-		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
-		self.doc_companies.location = self.get_source_directory()
-		self.doc_companies.filename = 'companies.json'
-		self.doc_companies.read_cache(debug=True)
-		self.companies = json.loads(self.doc_companies.content)
-		if (dump_results): pp(companies)
-
-
-
 	def houzz_scrape_document(self, document):
 		if (document is None): return None
 		if (document.content is None): return None
@@ -45,7 +35,6 @@ class Houzz(Source):
 			nr = self.houzz_scrape_directory(document)
 		if (document.doc_type == DocType.HOUZ_BUSINESS):
 			nr = self.houzz_scrape_business(document)
-
 
 
 	def houzz_scrape_business(self, document):
@@ -93,10 +82,6 @@ class Houzz(Source):
 			addrState	= addr.find(itemprop='addressRegion') #.get_text()
 			addrPostal	= addr.find(itemprop='postalCode') #.get_text()
 
-#			image	= business.find_all(itemtype='http://schema.org/ImageObject')
-#			yelurl	= business.find_all(itemprop='name')[0].attrs.get('href')
-#			links	= business.find_all(class_=['link', 'newtab'])
-
 			# create metadata
 			company['name'] = name.get_text()
 			if (src_url):	company['src_houzz'] =	src_url
@@ -115,18 +100,8 @@ class Houzz(Source):
 #				"display"	: addrDisplay
 				company["addr"] = company_addr
 
-#			if len(image) > 0:
-#				logo = image[0].attrs.get('src')
-#				company['src_logo'] = logo
-
-#			for uri in links:
-#				URI = uri.attrs.get('href')
-#				if (('maps.google.com' not in URI) and ('www.yelp.com' not in URI)):
-#					company['http'] = URI
 			self.companies.append(company)
-			if (len(self.companies) % 50 == 0): 
-				print 'company list:', len(self.companies)
-				pp(company)
+			#if (len(self.companies) % 250 == 0): pp(company)
 		return len(business_list)
 
 
@@ -147,10 +122,7 @@ class Houzz(Source):
 			directory_page = self.create_source_document(uri, DocType.HOUZ_DIRECTORY)
 			print 'Houzz.update_directory\tget_document(%r)' % (directory_page)
 			directory_page.get_document(debug=True)
-			if (directory_page.doc_state == DocState.READ_WWW): self.sleep()
-			if (directory_page.doc_state == DocState.READ_FAIL): self.add_error('get_document_failed', document.uri)
 			self.houzz_scrape_document(directory_page)
-
 
 		print 'Houzz.company listing - done'
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
@@ -160,9 +132,7 @@ class Houzz(Source):
 
 
 	def get_company_directory(self, update=False):
-		if (self.companies is None):
-			self.__read_companies_cache()
-			print 'Houzz.get_company_directory(), found %d companies' % (len(self.companies))
+		if (self.companies is None): self.read_companies_cache()
 
 		# if update, move and save old copy
 		if (update or len(self.companies) == 0): 
