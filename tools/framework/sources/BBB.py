@@ -27,6 +27,7 @@ class BBB(Source):
 		self.ua = ua
 		self.directories = None
 		self.doc_directories = None
+		self.doc_scrapemap = self.BBB_SCRAPEMAP
 
 
 
@@ -40,17 +41,7 @@ class BBB(Source):
 
 
 
-	def bbb_scrape_document(self, document):
-		if (document is None): return None
-
-		if (document.doc_type == DocType.BBB_DIRECTORY):
-			nr = self.bbb_scrape_directory(document)
-			#print '\t\tscraped %s, added %d entries to companies %d' % (document.uri, nr, len(self.companies))
-
-
-
-
-	def bbb_scrape_directory(self, document):
+	def __scrape_directory(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
@@ -88,9 +79,6 @@ class BBB(Source):
 			if (bbburl):	company['src_bbb']	= bbburl
 			self.companies.append(company)
 		return len(business_dir)
-	#		bbb_parse_business(bbb_uri)
-	#		bbb_parse_business_reviews(name, bbb_uri)
-
 
 
 
@@ -100,7 +88,7 @@ class BBB(Source):
 		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
 		for business_directory in self.directories:
 			business_directory.save_snapshot(self.ua)
-			self.bbb_scrape_document(business_directory)
+			self.scrape_document(business_directory)
 
 		print 'BBB.Company listing - done; companies (%d)' % (len(self.companies))
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
@@ -121,7 +109,7 @@ class BBB(Source):
 
 
 
-	def bbb_parse_business_reviews(self, name, page):
+	def __scrape_reviews(self, name, page):
 		print 'About to scrape "BBB Business Page": ' + str(page)
 		page = page + '/customer-reviews'
 		reviews_dom	= urllib2.urlopen(page).read()
@@ -174,7 +162,8 @@ class BBB(Source):
 		if (fp is not None): fp.close()
 
 
-	def bbb_parse_business(self, page):
+
+	def __scrape_business(self, page):
 		print 'scraping "BBB Business Page"  ' + str(page)
 		dom	= urllib2.urlopen(page).read()
 		dom_soup = BeautifulSoup(dom)
@@ -258,3 +247,10 @@ class BBB(Source):
 
 			print bus_agg_count, 'reviews, with an avg score of', bus_agg_score
 			print 'Best score', bus_agg_best
+
+	BBB_SCRAPEMAP = {
+		DocType.BBB_DIRECTORY	: __scrape_directory,
+		DocType.BBB_REVIEW		: __scrape_reviews,
+		DocType.BBB_BUSINESS	: __scrape_business
+	}
+
