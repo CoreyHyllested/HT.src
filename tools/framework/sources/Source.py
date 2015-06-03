@@ -30,6 +30,7 @@ class Source(object):
 	def __init__(self):
 		self.companies = None
 		self.doc_companies = None
+		self.doc_scrapemap = {}
 	
 	def __repr__(self):	return '<%r>'% (self.SOURCE_TYPE)
 	def __str__(self):	return '<%r>'% (self.SOURCE_TYPE)
@@ -56,6 +57,15 @@ class Source(object):
 		doc = Document(uri, self, doc_type=document_type)
 		doc.location = self.get_source_cache_directory() + url_clean(uri)
 		return doc
+
+
+	def scrape_document(self, document):
+		if (document is None or document.content is None): return 0
+
+		scrape = self.doc_scrapemap[document.doc_type]
+		if (scrape is None): raise Exception('function doesn\'t exist')
+		return scrape(self, document)
+
 
 
 	def sleep(self, secs=None):

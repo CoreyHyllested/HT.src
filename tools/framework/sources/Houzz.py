@@ -22,19 +22,11 @@ from controllers import *
 class Houzz(Source):
 	SOURCE_TYPE	= 'Houzz'
 
+
 	def __init__(self, ua, queue=None):
 		super(Houzz, self).__init__()
 		self.ua = ua
-
-
-	def houzz_scrape_document(self, document):
-		if (document is None): return None
-		if (document.content is None): return None
-
-		if (document.doc_type == DocType.HOUZ_DIRECTORY):
-			nr = self.houzz_scrape_directory(document)
-		if (document.doc_type == DocType.HOUZ_BUSINESS):
-			nr = self.houzz_scrape_business(document)
+		self.doc_scrapemap = self.HOUZZ_SCRAPEMAP
 
 
 	def houzz_scrape_business(self, document):
@@ -105,6 +97,10 @@ class Houzz(Source):
 		return len(business_list)
 
 
+	HOUZZ_SCRAPEMAP = {
+		DocType.HOUZ_DIRECTORY	: houzz_scrape_directory,
+		DocType.HOUZ_BUSINESS	: houzz_scrape_business
+	}
 
 
 
@@ -122,7 +118,7 @@ class Houzz(Source):
 			directory_page = self.create_source_document(uri, DocType.HOUZ_DIRECTORY)
 			print 'Houzz.update_directory\tget_document(%r)' % (directory_page)
 			directory_page.get_document(debug=True)
-			self.houzz_scrape_document(directory_page)
+			self.scrape_document(directory_page)
 
 		print 'Houzz.company listing - done'
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
