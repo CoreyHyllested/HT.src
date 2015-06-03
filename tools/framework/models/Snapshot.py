@@ -177,16 +177,18 @@ class Document(object):
 				pp(response.headers)
 		except requests.exceptions.HTTPError as e:
 			print 'HTTPError %d: %s' % (response.status_code, self.uri)
-			print e
 			self.doc_source.add_error('HTTPError', self.uri)
+			print e
+		except requests.exceptions.ConnectionError as e:
+			print 'ConnectionError: %s' % (response.status_code, self.uri)
+			self.doc_source.add_error('download_failed', self.uri)
+			print e
+			print 'content:', response._content
 		except Exception as e:
 			print 'General Exception'
-			print type(e), e.errno, e.filename, e.message
-			if (response == e.response): print 'I KNEW it'
-			pp(e.args)
-			print e
-			print reponse._content
 			self.doc_source.add_error('download_failed', self.uri)
+			print type(e), e
+			print 'content:', response._content
 		finally:
 			# hit URL, always sleep
 			self.doc_source.sleep()
