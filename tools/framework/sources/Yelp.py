@@ -38,18 +38,6 @@ class Yelp(Source):
 
 
 
-	def __read_companies_cache(self, dump_results=False):
-		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
-		self.doc_companies.location = self.get_source_directory()
-		self.doc_companies.filename = 'companies.json'
-		self.doc_companies.read_cache(debug=True)
-		self.companies = json.loads(self.doc_companies.content)
-		print 'Yelp.get_company_directory(), found %d companies' % (len(self.companies))
-		if (dump_results): pp(companies)
-
-
-
-
 	def yelp_scrape_document(self, document):
 		if (document is None): return None
 
@@ -159,7 +147,7 @@ class Yelp(Source):
 
 
 	def get_company_directory(self, update=False):
-		if (self.companies is None): self.__read_companies_cache()
+		if (self.companies is None): self.read_companies_cache()
 
 		# if update, move and save old copy
 		if (update): 

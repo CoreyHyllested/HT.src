@@ -30,13 +30,20 @@ class Source(object):
 	def __init__(self):
 		self.companies = None
 		self.doc_companies = None
-		pass
 	
-	def get_top_directory(self):
-		return []
-		
-	def get_full_directory(self):
-		return []
+	def __repr__(self):	return '<%r>'% (self.SOURCE_TYPE)
+	def __str__(self):	return '<%r>'% (self.SOURCE_TYPE)
+
+
+	def read_companies_cache(self, dump_results=False):
+		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
+		self.doc_companies.location = self.get_source_directory()
+		self.doc_companies.filename = 'companies.json'
+		self.doc_companies.read_cache(debug=True)
+		self.companies = json.loads(self.doc_companies.content)
+		print '%s.read_company_cache(%d companies)' % (self.SOURCE_TYPE, len(self.companies))
+		if (dump_results): pp(companies)
+
 
 	def get_source_directory(self):
 		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/'
@@ -66,7 +73,6 @@ class Source(object):
 
 	def dump_errors(self):
 		pp(self.errors)
-
 
 
 	def read_json_file(self, rel_file_path, DEBUG=False):
