@@ -21,7 +21,7 @@ from datetime	import datetime as dt
 from controllers import *
 
 
-class DocumentType(object):
+class DocType(object):
 	UNKNOWN		= 0
 
 	BBB_DIRECTORY	= 0x11
@@ -47,19 +47,17 @@ class DocumentType(object):
 
 	@staticmethod
 	def name(state):
-		return DocumentType.LOOKUP_TABLE.get(state, 'UNDEFINED')
+		return DocType.LOOKUP_TABLE.get(state, 'UNDEFINED')
 
 
 
 
 
 class DocState(object):
-	UNKNOWN	= 0
-	# SAVED_ON_FS
-	# READ_FROM_FS
-	# LIVE_CACHE
-	DOC_READ	= 0x0
-	DOC_CACHE	= 0x10
+	EMPTY		= 0
+	READ_WWW	= 0x200
+	READ_CACHE	= 0x201
+	READ_FAIL	= 0x404
 
 
 
@@ -76,8 +74,10 @@ class Document(object):
 			self.location = self.DIR_RAWHTML + url_clean(uri)
 		self.filename = 'document.html'
 		self.doc_type = doc_type
+		self.doc_state	= DocState.EMPTY
 		self.content = None
 		self.use_webcache = force_webcache 
+	
 
 
 	
@@ -110,6 +110,7 @@ class Document(object):
 			self.write_cache()
 		except Exception as e:
 			print e
+			print 're-raising'
 			raise e
 		return True
 
@@ -117,14 +118,14 @@ class Document(object):
 
 	def __read_cache_path(self):
 		# for metadata, files should ALWAYS exist.
-		if self.doc_type == DocumentType.JSON_METADATA:
+		if self.doc_type == DocType.JSON_METADATA:
 			return self.location + '/' + self.filename
 		return self.snapshot_exists(days=365)
 
 
 
 	def __write_cache_path(self):
-		if self.doc_type == DocumentType.JSON_METADATA:
+		if self.doc_type == DocType.JSON_METADATA:
 			return self.location + '/' + self.filename
 
 		timestamp = dt.now().strftime('%Y-%m-%d')
@@ -141,7 +142,8 @@ class Document(object):
 			try:
 				if (debug): print '\t\tloading cache... %s' % (self.uri)
 				fp = open(file_path, 'r')
-				self.content = fp.read()
+				self.content	= fp.read()
+				self.doc_state	= DocState.READ_CACHE
 			except Exception as e:
 				print e
 			finally:
@@ -150,6 +152,8 @@ class Document(object):
 
 
 	def download(self):
+		self.doc_state	= DocState.READ_FAIL
+
 		try:
 			s = requests.Session()
 			response = s.get(self.uri)
@@ -163,21 +167,24 @@ class Document(object):
 				if 'Sorry, we had to limit your access to this website.' in response._content:
 					print 'Rate limited again.'
 					raise Exception('WEBCACHE-FAILED')
-			content = response._content
-
-			if (content): self.content = content
+			if (response._content): 
+				self.content	= response._content
+				self.doc_state	= DocState.READ_WWW
 		except requests.exceptions.HTTPError as e:
-			print '%d: %s' % (response.status_code, self.uri)
+			print 'HTTPError %d: %s' % (response.status_code, self.uri)
 			print e
 		except Exception as e:
+			print 'General Exception'
 			print e
+
+
 #content = useragent.open(self.uri).read()
 #		except urllib2.HTTPError as e:
 #			print e
 #			self.errors[e.geturl()] = e.code
 #		except Exception as e:
 #			print type(e), e
-		return self.content
+		#return self.content
 
 
 
@@ -219,8 +226,8 @@ class Document(object):
 
 
 	def __repr__ (self):
-		return '<Document %r %r>'% (self.uri, DocumentType.name(self.doc_type))
+		return '<Document %r %r>'% (self.uri, DocType.name(self.doc_type))
 
 	def __str__ (self):
-		return '<Document %r %r>'% (self.uri, DocumentType.name(self.doc_type))
+		return '<Document %r %r>'% (self.uri, DocType.name(self.doc_type))
 

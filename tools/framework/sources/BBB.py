@@ -36,7 +36,7 @@ class BBB(Source):
 
 	def __load_directory_of_directories(self):
 		def source_document(uri):
-			snap = Document(uri, doc_type=DocumentType.BBB_DIRECTORY)
+			snap = Document(uri, doc_type=DocType.BBB_DIRECTORY)
 			snap.location = self.SOURCE_CACHE + url_clean(uri)
 			return snap
 
@@ -48,7 +48,7 @@ class BBB(Source):
 
 
 	def __read_companies_cache(self, dump_results=False):
-		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
+		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
@@ -62,7 +62,7 @@ class BBB(Source):
 	def bbb_scrape_document(self, document):
 		if (document is None): return None
 
-		if (document.doc_type == DocumentType.BBB_DIRECTORY):
+		if (document.doc_type == DocType.BBB_DIRECTORY):
 			nr = self.bbb_scrape_directory(document)
 			#print '\t\tscraped %s, added %d entries to companies %d' % (document.uri, nr, len(self.companies))
 

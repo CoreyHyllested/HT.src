@@ -33,8 +33,7 @@ class Yelp(Source):
 	SOURCE_DIR	= 'yelp/'
 	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-	USE_WEBCACHE = False
-	SECONDS = 90	# get from robots.txt
+
 
 	def __init__(self, ua, queue=None):
 		super(Yelp, self).__init__()
@@ -44,7 +43,7 @@ class Yelp(Source):
 
 
 	def __read_companies_cache(self, dump_results=False):
-		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
+		self.doc_companies = Document('companies.json', doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
@@ -58,7 +57,7 @@ class Yelp(Source):
 	def yelp_scrape_document(self, document):
 		if (document is None): return None
 
-		if (document.doc_type == DocumentType.YELP_DIRECTORY):
+		if (document.doc_type == DocType.YELP_DIRECTORY):
 			nr = self.yelp_scrape_biz_page(document)
 			print '\t\tscraped %s, added %d entries' % (document.uri, nr)
 
