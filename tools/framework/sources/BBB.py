@@ -24,15 +24,12 @@ class BBB(Source):
 	SOURCE_DIR	= 'bbb/'
 	SOURCE_DATA	= 'data/sources/' + SOURCE_DIR
 	SOURCE_CACHE = 'data/sources/' + SOURCE_DIR + 'cache/'
-	USE_WEBCACHE = False #True
-	SECONDS = 90	# get from robots.txt
+
 
 	def __init__(self, ua, queue=None):
 		super(BBB, self).__init__()
 		self.ua = ua
-		self.companies = None
 		self.directories = None
-		self.doc_companies = None
 		self.doc_directories = None
 
 
@@ -49,14 +46,15 @@ class BBB(Source):
 		self.directories = map(source_document, directories)
 
 
-	def bbb_get_companies_cache(self, dump_results=False):
+
+	def __read_companies_cache(self, dump_results=False):
 		self.doc_companies = Document('companies.json', doc_type=DocumentType.JSON_METADATA)
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
-		companies = json.loads(self.doc_companies.content)
+		self.companies = json.loads(self.doc_companies.content)
+		print 'BBB.get_company_cache(), found %d companies' % (len(self.companies))
 		if (dump_results): pp(companies)
-		return companies
 
 
 
@@ -121,7 +119,7 @@ class BBB(Source):
 		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
 		for business_directory in self.directories:
 			downloaded = business_directory.save_snapshot(self.ua)
-			if (downloaded): time.sleep(self.SECONDS);
+			if (downloaded): self.sleep()
 
 			# scrape directory, add to companies
 			self.bbb_scrape_document(business_directory)
@@ -134,9 +132,7 @@ class BBB(Source):
 
 
 	def get_company_directory(self, update=False):
-		if (self.companies is None):
-			self.companies = self.bbb_get_companies_cache()
-			print 'BBB.get_company_directory(), found %d companies' % (len(self.companies))
+		if (self.companies is None): self.__read_companies_cache()
 
 		if (update):
 			self.companies = [] # reset

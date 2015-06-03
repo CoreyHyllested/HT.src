@@ -40,8 +40,6 @@ class Yelp(Source):
 		super(Yelp, self).__init__()
 		self.yelp_api = yelp.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=TOKEN, access_token_secret=TOKEN_SECRET)
 		self.ua = ua
-		self.companies = None
-		self.doc_companies = None
 
 
 
@@ -50,9 +48,9 @@ class Yelp(Source):
 		self.doc_companies.location = os.getcwd() + '/' + self.SOURCE_DATA
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
-		companies = json.loads(self.doc_companies.content)
+		self.companies = json.loads(self.doc_companies.content)
+		print 'Yelp.get_company_directory(), found %d companies' % (len(self.companies))
 		if (dump_results): pp(companies)
-		return companies
 
 
 
@@ -166,9 +164,7 @@ class Yelp(Source):
 
 
 	def get_company_directory(self, update=False):
-		if (self.companies is None):
-			self.companies = self.__read_companies_cache()
-			print 'Yelp.get_company_directory(), found %d companies' % (len(self.companies))
+		if (self.companies is None): self.__read_companies_cache()
 
 		# if update, move and save old copy
 		if (update): 

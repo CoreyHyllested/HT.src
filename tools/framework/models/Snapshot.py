@@ -53,6 +53,17 @@ class DocumentType(object):
 
 
 
+class DocState(object):
+	UNKNOWN	= 0
+	# SAVED_ON_FS
+	# READ_FROM_FS
+	# LIVE_CACHE
+	DOC_READ	= 0x0
+	DOC_CACHE	= 0x10
+
+
+
+
 class Document(object):
 	errors = {}
 	ratelimited = Queue.Queue()

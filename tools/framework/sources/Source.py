@@ -28,6 +28,8 @@ class Source(object):
 	ratelimited = []
 
 	def __init__(self):
+		self.companies = None
+		self.doc_companies = None
 		pass
 	
 	def get_top_directory(self):
@@ -36,9 +38,23 @@ class Source(object):
 	def get_full_directory(self):
 		return []
 
-	def sleep(self):
-		#print '%s.update_co_directory: (downloaded) so sleeping...' % (self.SOURCE_TYPE)
-		time.sleep(self.SECONDS + random.randint(0, 10))
+
+	def sleep(self, secs=None):
+		if (not secs):
+			secs = self.SECONDS + random.randint(0, 10)
+		#print '%s.update_co_directory: (downloaded) so sleeping (%d)...' % (self.SOURCE_TYPE, seconds)
+		time.sleep(secs)
+
+
+	def add_error(self, error_class, name):
+		err_array = self.errors.get(error_class, [])
+		err_array.append(name)
+		self.errors[error_class] = err_array
+		self.dump_errors()	#remove eventually
+
+	def dump_errors(self):
+		pp(self.errors)
+
 
 
 	def read_json_file(self, rel_file_path, DEBUG=False):
