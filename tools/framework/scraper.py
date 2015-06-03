@@ -26,7 +26,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.39
+VERSION = 0.45
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -50,7 +50,7 @@ def config_urllib():
 	socket.create_connection = create_connection
 
 	post_response = requests.get('http://icanhazip.com')
-	print 'SCraper - real IP: %s\ttor IP: %s ' % (pre_response._content.rstrip(), post_response._content.rstrip())
+	print 'SCraper - real IP: %s,\ttor IP: %s ' % (pre_response._content.rstrip(), post_response._content.rstrip())
 	if (pre_response._content == post_response._content): print 'SCraper - Not running tor:9050; likely to fail'
 
 	# setup user-agent information
@@ -61,7 +61,7 @@ def config_urllib():
 	return ua
 
 
-	
+
 
 def dump_ss_uris():
 	print 'URIs: (%d)' % len(dl_queue)
@@ -73,12 +73,12 @@ def dump_ss_uris():
 
 def prime_queue(ua, config_params):
 	bbb = BBB(ua)
-	houzz = Houzz(ua)
-#	yelp = Yelp(ua)
+	houz = Houzz(ua)
+	yelp = Yelp(ua)
 
 	prime_queue_with_source(bbb, DocumentType.BBB_BUSINESS, config_params)
-	prime_queue_with_source(houzz, DocumentType.HOUZ_DIRECTORY, config_params)
-#	prime_queue_with_source(yelp, DocumentType.YELP_BUSINESS, config_params)
+	prime_queue_with_source(houz, DocumentType.HOUZ_BUSINESS, config_params)
+	prime_queue_with_source(yelp, DocumentType.YELP_BUSINESS, config_params)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
 
@@ -91,9 +91,7 @@ def prime_queue(ua, config_params):
 
 
 def prime_queue_with_source(source, document_type, config_params):
-	if ((config_params.source) and (config_params.source != source.SOURCE_TYPE)):
-		print 'SCraper - single source (%s) doesnt match (%s)' % (config_params.source, source.SOURCE_TYPE)
-		return
+	if ((config_params.source) and (config_params.source != source.SOURCE_TYPE)): return
 
 	directory = source.get_company_directory(update=config_params.update)
 	print 'SCraper - loaded %s directory. (%d businesses)' % (source.SOURCE_TYPE, len(directory))
