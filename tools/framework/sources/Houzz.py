@@ -98,8 +98,8 @@ class Houzz(Source):
 
 
 	HOUZZ_SCRAPEMAP = {
-		DocType.HOUZ_DIRECTORY	: houzz_scrape_directory,
-		DocType.HOUZ_BUSINESS	: houzz_scrape_business
+		DocType.HOUZZ_DIRECTORY	: houzz_scrape_directory,
+		DocType.HOUZZ_BUSINESS	: houzz_scrape_business
 	}
 
 
@@ -115,7 +115,7 @@ class Houzz(Source):
 			uri = base + str(page)
 			page = page + 15
 
-			directory_page = self.create_source_document(uri, DocType.HOUZ_DIRECTORY)
+			directory_page = self.create_source_document(uri, DocType.HOUZZ_DIRECTORY)
 			directory_page.get_document(debug=False)
 			self.scrape_document(directory_page)
 
