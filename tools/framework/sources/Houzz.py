@@ -116,8 +116,7 @@ class Houzz(Source):
 			page = page + 15
 
 			directory_page = self.create_source_document(uri, DocType.HOUZ_DIRECTORY)
-			print 'Houzz.update_directory\tget_document(%r)' % (directory_page)
-			directory_page.get_document(debug=True)
+			directory_page.get_document(debug=False)
 			self.scrape_document(directory_page)
 
 		print 'Houzz.company listing - done'
