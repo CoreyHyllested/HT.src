@@ -111,13 +111,13 @@ class Document(object):
 
 	def get_document(self, debug=False):
 		# check if a recent document already exists?
+		if (debug): print '%s.get_document(%r)' % (self.doc_source.SOURCE_TYPE, self)
 		snapshot_file = self.snapshot_exists(days=7)
 		if (snapshot_file): return self.read_cache(debug)
 
 		try:
-			if (debug): print '\tdownload document %s' % (self.uri)
-			self.download()
-			self.write_cache()
+			self.download(debug)
+			self.write_cache(debug)
 		except Exception as e:
 			print e
 			print 're-raising'
@@ -150,7 +150,7 @@ class Document(object):
 		if (file_path):
 			fp = None
 			try:
-				if (debug): print '\t\tloading cache... %s' % (self.uri)
+				if (debug): print '%s.reading cache...' % (self.doc_source.SOURCE_TYPE)
 				fp = open(file_path, 'r')
 				self.content	= fp.read()
 				self.doc_state	= DocState.READ_CACHE
@@ -161,7 +161,8 @@ class Document(object):
 
 
 
-	def download(self):
+	def download(self, debug=False):
+		if (debug): print '%s.download doc' % (self.doc_source.SOURCE_TYPE)
 		self.doc_state	= DocState.READ_FAIL
 
 		try:
@@ -204,13 +205,13 @@ class Document(object):
 
 
 
-	def write_cache(self):
+	def write_cache(self, debug=False):
 		if (not self.content): return
 
 		try:
 			# saving raw content
 			file_path = self.__write_cache_path()
-			print '\tcaching document: %s' % (file_path)
+			if (debug): print '%s.caching file %s' % (self.doc_source.SOURCE_TYPE, file_path)
 			fp = open(file_path, 'w+')
 			fp.truncate()
 			fp.write(self.content)

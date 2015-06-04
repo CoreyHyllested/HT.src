@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.56
+VERSION = 0.57
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
