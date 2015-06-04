@@ -124,15 +124,3 @@ class Houzz(Source):
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
-
-
-
-	def get_company_directory(self, update=False):
-		if (self.companies is None): self.read_companies_cache()
-
-		# if update, move and save old copy
-		if (update or len(self.companies) == 0): 
-			self.companies = []	# reset
-			self.update_company_directory()
-		return self.companies
-

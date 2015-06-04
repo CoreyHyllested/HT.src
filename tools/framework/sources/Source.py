@@ -52,6 +52,15 @@ class Source(object):
 	def get_source_cache_directory(self):
 		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/cache/'
 
+	def get_company_directory(self, update=False):
+		if (self.companies is None): self.read_companies_cache()
+
+		# if update, move and save old copy
+		if (update):
+			self.companies = []	# reset
+			self.update_company_directory()
+		return self.companies
+
 
 	def create_source_document(self, uri, document_type):
 		doc = Document(uri, self, doc_type=document_type)
@@ -99,4 +108,5 @@ class Source(object):
 		finally:
 			if (file_pointer): file_pointer.close()
 		return { "data" : None }
+
 

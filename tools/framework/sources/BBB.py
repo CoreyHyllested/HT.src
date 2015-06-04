@@ -97,18 +97,6 @@ class BBB(Source):
 
 
 
-	def get_company_directory(self, update=False):
-		if (self.companies is None): self.read_companies_cache()
-
-		if (update):
-			self.companies = [] # reset
-			self.update_company_directory()
-		return self.companies
-
-
-
-
-
 	def __scrape_reviews(self, name, page):
 		print 'About to scrape "BBB Business Page": ' + str(page)
 		page = page + '/customer-reviews'

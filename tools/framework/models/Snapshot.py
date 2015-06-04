@@ -32,16 +32,25 @@ class DocType(object):
 	HOUZ_DIRECTORY	= 0x31
 	HOUZ_BUSINESS	= 0x32
 
+	HOME_DIRECTORY	= 0x41
+	HOME_BUSINESS	= 0x42
+
 	JSON_METADATA	= 0xFF
 
 	LOOKUP_TABLE = {
-		UNKNOWN		: 'UNKNOWN',
 		BBB_DIRECTORY	: 'BBB_DIRECTORY',
 		BBB_BUSINESS	: 'BBB_BUSINESS',
 		BBB_REVIEW		: 'BBB_REVIEW',
+
 		YELP_BUSINESS	: 'YELP_BUSINESS',
+
 		HOUZ_DIRECTORY	: 'HOUZZ_DIRECTORY',
 		HOUZ_BUSINESS	: 'HOUZZ_BUSINESS',
+
+		HOME_DIRECTORY	: 'HOME_ADV_DIRECTORY',
+		HOME_BUSINESS	: 'HOME_ADV_BUSINESS',
+
+		UNKNOWN			: 'UNKNOWN',
 		JSON_METADATA	: 'JSON_METADATA'
 	}
 
@@ -180,8 +189,8 @@ class Document(object):
 			self.doc_source.add_error('HTTPError', self.uri)
 			print e
 		except requests.exceptions.ConnectionError as e:
-			self.doc_source.add_error('ConnectionError', self.uri)
 			print e
+			self.doc_source.add_error('ConnectionError', self.uri)
 		except Exception as e:
 			print 'General Exception'
 			self.doc_source.add_error('download_failed', self.uri)

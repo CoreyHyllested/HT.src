@@ -136,15 +136,3 @@ class Yelp(Source):
 			company['addr'] = addr
 		return company
 
-
-
-
-	def get_company_directory(self, update=False):
-		if (self.companies is None): self.read_companies_cache()
-
-		# if update, move and save old copy
-		if (update): 
-			self.companies = []	# reset
-			self.update_company_directory()
-		return self.companies
-
