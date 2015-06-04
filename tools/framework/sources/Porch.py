@@ -34,9 +34,9 @@ class Porch(Source):
 		file_path	= self.get_source_directory() + '/directories.json'
 		directories = self.read_json_file(file_path)
 		for directory in directories:
-			directory = directory.replace('LOCATION', 'Boulder.CO')
-			directory_doc = self.create_source_document(directory, DocType.HOME_DIRECTORY)
-			self.directories.append(directory_doc)
+			print directory
+			directory_doc = self.create_source_document(directory, DocType.PORCH_DIRECTORY)
+			#self.directories.append(directory_doc)
 
 	def __scrape_business(self, document):
 		print '%s.scrape_business(%s)' % (self.SOURCE_TYPE, document.location)
@@ -60,8 +60,8 @@ class Porch(Source):
 
 
 	PORCH_SCRAPEMAP = {
-		DocType.HOME_DIRECTORY	: __scrape_directory,
-		DocType.HOME_BUSINESS	: __scrape_business
+		DocType.PORCH_DIRECTORY	: __scrape_directory,
+		DocType.PORCH_BUSINESS	: __scrape_business
 	}
 
 
@@ -71,11 +71,11 @@ class Porch(Source):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
 		for directory in self.directories:
-			print
-			directory.get_document(debug=True)
-			self.scrape_document(directory)
+			pass
+			#directory.get_document(debug=True)
+			#self.scrape_document(directory)
 
-		print 'Porch.company listing - done'
+		print 'Porch.update_directory; now contains %d entries' % (len(self.companies))
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
