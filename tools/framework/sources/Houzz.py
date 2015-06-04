@@ -29,11 +29,11 @@ class Houzz(Source):
 		self.doc_scrapemap = self.HOUZZ_SCRAPEMAP
 
 
-	def houzz_scrape_business(self, document):
+	def __scrape_business(self, document):
 		print 'Houzz.scrape_business(%s)' % (document.location)
 
 
-	def houzz_scrape_directory(self, document):
+	def __scrape_directory(self, document):
 		print 'Houzz.scrape_directory(%s)' % (document.location)
 		# scrape 15 companies, available info... name, URL, phone #
 		# add to self.companies
@@ -98,14 +98,14 @@ class Houzz(Source):
 
 
 	HOUZZ_SCRAPEMAP = {
-		DocType.HOUZZ_DIRECTORY	: houzz_scrape_directory,
-		DocType.HOUZZ_BUSINESS	: houzz_scrape_business
+		DocType.HOUZZ_DIRECTORY	: __scrape_directory,
+		DocType.HOUZZ_BUSINESS	: __scrape_business
 	}
 
 
 
 	def update_company_directory(self):
-		print 'Houzz.update_co_directory'
+		print 'Houzz.update_directory'
 
 		total_results = 46824	 #total joke, but there it is.
 		base = 'http://www.houzz.com/professionals/c/Boulder--CO/p/'
@@ -119,7 +119,7 @@ class Houzz(Source):
 			directory_page.get_document(debug=False)
 			self.scrape_document(directory_page)
 
-		print 'Houzz.company listing - done'
+		print 'Houzz.update_directory; now contains %d entries' % (len(self.companies))
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 

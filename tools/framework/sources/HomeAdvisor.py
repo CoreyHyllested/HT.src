@@ -74,7 +74,7 @@ class HomeAdvisor(Source):
 			directory.get_document(debug=False)
 			self.scrape_document(directory)
 
-		print 'HomeAdvisor.company listing - done'
+		print 'HomeAdvisor.update_directory; now contains %d entries' % (len(self.companies))
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
