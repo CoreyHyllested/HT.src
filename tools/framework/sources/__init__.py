@@ -11,6 +11,7 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-from .BBB	import *
-from .Houzz	import *
-from .Yelp	import *
+from .BBB			import *
+from .HomeAdvisor	import *
+from .Houzz			import *
+from .Yelp			import *
