@@ -97,11 +97,7 @@ class Source(object):
 	def read_json_file(self, file_path, DEBUG=False):
 		# FOR TESTING.  http://jsonlint.com/
 		if (file_path[0] is not '/'):
-			print 'read_json_file... relative path', file_path
 			file_path = os.getcwd() + file_path
-		else:
-			print 'read_json_file... full path', file_path
-
 		try:
 			file_pointer = open (file_path, 'r')
 			file_content = file_pointer.read()

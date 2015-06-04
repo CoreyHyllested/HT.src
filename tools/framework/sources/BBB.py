@@ -32,8 +32,8 @@ class BBB(Source):
 
 
 	def __load_directory_of_directories(self):
-		rel_path = self.get_source_directory() + '/directories.json'
-		json_data	= self.read_json_file(rel_path)
+		full_path = self.get_source_directory() + '/directories.json'
+		json_data	= self.read_json_file(full_path)
 		directories	= json_data.get('directories', [])
 		for directory in directories:
 			directory_doc = self.create_source_document(directory, DocType.BBB_DIRECTORY)

@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.55
+VERSION = 0.56
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -94,13 +94,14 @@ def prime_queue(ua, config_params):
 def prime_queue_with_source(source, document_type, config_params):
 	if ((config_params.source) and (config_params.source != source.SOURCE_TYPE)): return
 
+	print 'SCraper - load %s directory' % (source.SOURCE_TYPE)
 	directory = source.get_company_directory(update=config_params.update)
-	print 'SCraper - loaded %s directory. (%d businesses)' % (source.SOURCE_TYPE, len(directory))
 	for business in directory:
 		uri = business.get('src_' + source.SOURCE_TYPE.lower())
 		if (uri):
 			document = Document(uri, source, doc_type=document_type)
 			dl_queue.append(document)
+	print 'SCraper - loaded %s directory. (%d businesses)' % (source.SOURCE_TYPE, len(directory))
 
 
 
@@ -121,6 +122,7 @@ if __name__ == '__main__':
 
 	q = prime_queue(ua, args)
 	for thread_id in xrange(THREADS):
+		print 'SCraper - starting thread %d' % (thread_id)
 		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=False)
 		t.start()
 		threads.append(t)
