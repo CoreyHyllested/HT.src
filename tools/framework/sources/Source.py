@@ -56,7 +56,7 @@ class Source(object):
 		if (self.companies is None): self.read_companies_cache()
 
 		# if update, move and save old copy
-		if (update):
+		if (update or len(self.companies) == 0):
 			self.companies = []	# reset
 			self.update_company_directory()
 		return self.companies
@@ -94,10 +94,16 @@ class Source(object):
 		pp(self.errors)
 
 
-	def read_json_file(self, rel_file_path, DEBUG=False):
+	def read_json_file(self, file_path, DEBUG=False):
 		# FOR TESTING.  http://jsonlint.com/
+		if (file_path[0] is not '/'):
+			print 'read_json_file... relative path', file_path
+			file_path = os.getcwd() + file_path
+		else:
+			print 'read_json_file... full path', file_path
+
 		try:
-			file_pointer = open (os.getcwd() + rel_file_path, 'r')
+			file_pointer = open (file_path, 'r')
 			file_content = file_pointer.read()
 			json_content = json.loads(file_content)
 			if (DEBUG): pp(json_content)
