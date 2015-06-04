@@ -25,7 +25,7 @@ def uri_strip_http(uri):
 def url_clean(uri):
 	uri = uri_strip_http(uri)
 	uri = uri.rstrip('/ ')
-	uri = re.sub('[/:]','_', uri)
+	uri = re.sub('[/: ]','_', uri)
 	return uri
 
 

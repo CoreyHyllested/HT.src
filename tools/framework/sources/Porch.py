@@ -34,9 +34,11 @@ class Porch(Source):
 		file_path	= self.get_source_directory() + '/directories.json'
 		directories = self.read_json_file(file_path)
 		for directory in directories:
-			print directory
-			directory_doc = self.create_source_document(directory, DocType.PORCH_DIRECTORY)
-			#self.directories.append(directory_doc)
+			base = 'https://porch.com/search/results?q=%s&loc=Boulder, CO&zip=80302&lat=40.0149856&lon=-105.27054559999999&view=list&offset=%d'
+			for offset in xrange(10):
+				url = base % (directory, 10*offset)
+				directory_doc = self.create_source_document(url, DocType.PORCH_DIRECTORY)
+				self.directories.append(directory_doc)
 
 	def __scrape_business(self, document):
 		print '%s.scrape_business(%s)' % (self.SOURCE_TYPE, document.location)
@@ -71,9 +73,8 @@ class Porch(Source):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
 		for directory in self.directories:
-			pass
-			#directory.get_document(debug=True)
-			#self.scrape_document(directory)
+			directory.get_document(debug=True)
+			self.scrape_document(directory)
 
 		print 'Porch.update_directory; now contains %d entries' % (len(self.companies))
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
