@@ -80,7 +80,7 @@ class Yelp(Source):
 
 
 
-	YELP_SCRAPEMAP = { DocType.YELP_DIRECTORY: __scrape_biz_page }
+	YELP_SCRAPEMAP = { DocType.YELP_BUSINESS: __scrape_biz_page }
 
 
 
