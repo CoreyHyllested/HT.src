@@ -34,21 +34,12 @@ class Yelp(Source):
 	def __init__(self, ua, queue=None):
 		super(Yelp, self).__init__()
 		self.yelp_api = yelp.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=TOKEN, access_token_secret=TOKEN_SECRET)
+		self.doc_scrapemap = self.YELP_SCRAPEMAP
 		self.ua = ua
 
 
 
-	def yelp_scrape_document(self, document):
-		if (document is None): return None
-
-		if (document.doc_type == DocType.YELP_DIRECTORY):
-			nr = self.yelp_scrape_biz_page(document)
-			print '\t\tscraped %s, added %d entries' % (document.uri, nr)
-
-
-
-
-	def yelp_scrape_biz_page(self, document):
+	def __scrape_biz_page(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
@@ -88,6 +79,8 @@ class Yelp(Source):
 		return len(business_dir)
 
 
+
+	YELP_SCRAPEMAP = { DocType.YELP_DIRECTORY: __scrape_biz_page }
 
 
 

@@ -17,7 +17,6 @@ import re, random, time
 import Queue
 from multiprocessing import Process
 from bs4 import BeautifulSoup, Comment
-from bs4 import BeautifulSoup as Soup
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
 from sources	import *
@@ -26,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.51
+VERSION = 0.53
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85

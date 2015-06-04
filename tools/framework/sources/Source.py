@@ -63,7 +63,7 @@ class Source(object):
 		if (document is None or document.content is None): return 0
 
 		scrape = self.doc_scrapemap[document.doc_type]
-		if (scrape is None): raise Exception('function doesn\'t exist')
+		if (scrape is None): raise Exception('BUG: scrape function doesn\'t exist')
 		return scrape(self, document)
 
 

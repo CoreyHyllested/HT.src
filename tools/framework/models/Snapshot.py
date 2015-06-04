@@ -112,7 +112,7 @@ class Document(object):
 		except Exception as e:
 			print e
 			print 're-raising'
-			raise e
+			#raise e
 		return True
 
 
@@ -180,10 +180,8 @@ class Document(object):
 			self.doc_source.add_error('HTTPError', self.uri)
 			print e
 		except requests.exceptions.ConnectionError as e:
-			print 'ConnectionError: %s' % (response.status_code, self.uri)
-			self.doc_source.add_error('download_failed', self.uri)
+			self.doc_source.add_error('ConnectionError', self.uri)
 			print e
-			print 'content:', response._content
 		except Exception as e:
 			print 'General Exception'
 			self.doc_source.add_error('download_failed', self.uri)
