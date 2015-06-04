@@ -111,7 +111,7 @@ class Document(object):
 
 	def get_document(self, debug=False):
 		# check if a recent document already exists?
-		if (debug): print '%s.get_document(%r)' % (self.doc_source.SOURCE_TYPE, self)
+		if (debug): print '\n%s.get_document(%r)' % (self.doc_source.SOURCE_TYPE, self)
 		snapshot_file = self.snapshot_exists(days=7)
 		if (snapshot_file): return self.read_cache(debug)
 

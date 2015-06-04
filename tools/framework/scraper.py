@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.57
+VERSION = 0.58
 BOT_VER = 0.8
 THREADS	= 1
 SECONDS = 85
@@ -73,12 +73,14 @@ def dump_ss_uris():
 def prime_queue(ua, config_params):
 	bbb = BBB(ua)
 	home = HomeAdvisor(ua)
-	houz = Houzz(ua)
+	houzz = Houzz(ua)
+	porch = Porch(ua)
 	yelp = Yelp(ua)
 
 	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
 	prime_queue_with_source(home, DocType.HOUZ_BUSINESS, config_params)
-	prime_queue_with_source(houz, DocType.HOUZ_BUSINESS, config_params)
+	prime_queue_with_source(houzz, DocType.HOUZ_BUSINESS, config_params)
+	#prime_queue_with_source(porch, DocType.HOUZ_BUSINESS, config_params)
 	prime_queue_with_source(yelp, DocType.YELP_BUSINESS, config_params)
 	random.shuffle(dl_queue, random.random)
 	#dump_ss_uris()
@@ -86,6 +88,7 @@ def prime_queue(ua, config_params):
 	q = Queue.Queue()
 	for document in dl_queue:
 		q.put(document)
+	print 'SCraper - queue size %d' % (q.qsize())
 	return q
 
 
@@ -123,7 +126,7 @@ if __name__ == '__main__':
 	q = prime_queue(ua, args)
 	for thread_id in xrange(THREADS):
 		print 'SCraper - starting thread %d' % (thread_id)
-		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=False)
+		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=True)
 		t.start()
 		threads.append(t)
 

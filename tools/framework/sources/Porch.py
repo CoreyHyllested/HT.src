@@ -19,15 +19,15 @@ from controllers import *
 
 
 
-class HomeAdvisor(Source):
-	SOURCE_TYPE	= 'HomeAdvisor'
+class Porch(Source):
+	SOURCE_TYPE	= 'Porch'
 
 	def __init__(self, ua, queue=None):
-		super(HomeAdvisor, self).__init__()
+		super(Porch, self).__init__()
 		self.ua = ua
 		self.directories = []
 		self.doc_directories = None
-		self.doc_scrapemap = self.HOMEADV_SCRAPEMAP
+		self.doc_scrapemap = self.PORCH_SCRAPEMAP
 
 
 	def __load_directory_of_directories(self):
@@ -43,7 +43,7 @@ class HomeAdvisor(Source):
 
 
 	def __scrape_directory(self, document):
-		#print '%s.scrape_directory(%s)' % (self.SOURCE_TYPE, document.location)
+		print '%s.scrape_directory(%s)' % (self.SOURCE_TYPE, document.location)
 		return
 		# scrape 15 companies, available info... name, URL, phone #
 		# add to self.companies
@@ -59,7 +59,7 @@ class HomeAdvisor(Source):
 		return len(business_list)
 
 
-	HOMEADV_SCRAPEMAP = {
+	PORCH_SCRAPEMAP = {
 		DocType.HOME_DIRECTORY	: __scrape_directory,
 		DocType.HOME_BUSINESS	: __scrape_business
 	}
@@ -67,14 +67,15 @@ class HomeAdvisor(Source):
 
 
 	def update_company_directory(self):
-		print 'HomeAdvisor.update_directory'
+		print 'Porch.update_directory'
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
 		for directory in self.directories:
-			directory.get_document(debug=False)
+			print
+			directory.get_document(debug=True)
 			self.scrape_document(directory)
 
-		print 'HomeAdvisor.company listing - done'
+		print 'Porch.company listing - done'
 		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
