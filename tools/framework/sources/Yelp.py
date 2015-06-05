@@ -108,16 +108,16 @@ class Yelp(Source):
 	def __extract_info_from_search_results(self, business):
 		company = {}
 		company['name']		= business.name
-		company['yelp_id']	= business.id
+		company['id_yelp']	= business.id
 		business.catlist	= []
 
 		if business.phone:		company['phone'] = business.phone
-		if business.rating:		company['yelp_rating'] = business.rating
+		if business.rating:		company['rating_yelp'] = business.rating
 		if business.image_url:	company['src_logo'] = business.image_url
 		if business.url:		company['src_yelp'] = business.url
-		if business.is_closed:	company['permanently_closed']	= business.is_closed
-		if business.is_claimed:	company['meta_claimed']	= business.is_claimed
-		if business.review_count:	company['total_reviews'] = business.review_count
+		if business.is_claimed:	company['claimed_yelp']	= business.is_claimed
+		if business.is_closed:	company['yelp_permanently_closed']	= business.is_closed
+		if business.review_count:	company['reviews_yelp'] = business.review_count
 		if business.snippet_text:	company['yelp_snippet'] = business.snippet_text
 		
 		# simplify list ['Window Install', 'windowinstall']
