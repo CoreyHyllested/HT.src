@@ -1,4 +1,4 @@
-{ "directories" : [
+[
 	"http://www.bbb.org/denver/accredited-business-directory/air-conditioning-and-heating-contractors-residential",
 	"http://www.bbb.org/denver/accredited-business-directory/asphalt",
 	"http://www.bbb.org/denver/accredited-business-directory/backflow-prevention-devices-and-services",
@@ -111,5 +111,5 @@
 	"http://www.bbb.org/denver/accredited-business-directory/water-damage-restoration",
 	"http://www.bbb.org/denver/accredited-business-directory/water-main-contractors",
 	"http://www.bbb.org/denver/accredited-business-directory/windows"
-	]
-}
+]
+

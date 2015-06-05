@@ -25,19 +25,17 @@ class BBB(Source):
 	def __init__(self, ua, queue=None):
 		super(BBB, self).__init__()
 		self.ua = ua
-		self.directories = None
-		self.doc_directories = None
+		self.directories = []
 		self.doc_scrapemap = self.BBB_SCRAPEMAP
 
 
 
 	def __load_directory_of_directories(self):
-		full_path = self.get_source_directory() + '/directories.json'
-		json_data	= self.read_json_file(full_path)
-		directories	= json_data.get('directories', [])
+		file_path = self.get_source_directory() + '/directories.json'
+		directories = self.read_json_file(file_path)
 		for directory in directories:
-			directory_doc = self.create_source_document(directory, DocType.BBB_DIRECTORY)
-			self.directories.append(directory_doc)
+			document = self.create_source_document(directory, DocType.BBB_DIRECTORY)
+			self.directories.append(document)
 
 
 
@@ -74,7 +72,7 @@ class BBB(Source):
 			for uri in links:
 				URI = uri.attrs.get('href')
 				if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
-					company['http'] = URI
+					company['src_www'] = URI
 			if (phone):		company['phone']	= phone
 			if (bbburl):	company['src_bbb']	= bbburl
 			self.companies.append(company)
@@ -83,11 +81,11 @@ class BBB(Source):
 
 
 	def update_company_directory(self):
-		if (self.directories is None): self.__load_directory_of_directories()
+		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
 		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
 		for business_directory in self.directories:
-			business_directory.save_snapshot(self.ua)
+			business_directory.get_document(debug=False)
 			self.scrape_document(business_directory)
 
 		print 'BBB.Company listing - done; companies (%d)' % (len(self.companies))
