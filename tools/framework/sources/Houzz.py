@@ -93,7 +93,6 @@ class Houzz(Source):
 				company["addr"] = company_addr
 
 			self.companies.append(company)
-			#if (len(self.companies) % 250 == 0): pp(company)
 		return len(business_list)
 
 

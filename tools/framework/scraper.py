@@ -70,12 +70,19 @@ def dump_ss_uris():
 
 
 
-def prime_queue(ua, config_params):
+def load_sources(ua, config_params):
 	bbb = BBB(ua)
 	home = HomeAdvisor(ua)
 	houzz = Houzz(ua)
 	porch = Porch(ua)
 	yelp = Yelp(ua)
+	if (config_params.combine):
+		print 'combining'
+		#pp(bbb.get_company_directory())
+		#pp(home.get_company_directory())
+		#pp(houzz.get_company_directory())
+		pp(yelp.get_company_directory())
+		sys.exit(1);
 
 	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
 	prime_queue_with_source(home, DocType.HOME_BUSINESS, config_params)
@@ -113,17 +120,19 @@ if __name__ == '__main__':
 	print 'SCraper v' + str(VERSION)
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
+	parser.add_argument('-C', '--combine',	help='Combine all company directories.',	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	parser.add_argument('-S', '--source',	help='Single source [BBB, HomeAdvisor, Houzz, Porch, Yelp]')
 	args = parser.parse_args()
 	if (args.verbose):	print 'SCraper - verbosity enabled.'
+	if (args.combine):	print 'SCraper - combining data sources'
 	if (args.update):	print 'SCraper - update company directory.'
 	if (args.source):	print 'SCraper - single source', args.source
 
 	create_directories()
 	ua = config_urllib()
 
-	q = prime_queue(ua, args)
+	q = load_sources(ua, args)
 	for thread_id in xrange(THREADS):
 		print 'SCraper - starting thread %d' % (thread_id)
 		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=True)
