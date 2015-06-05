@@ -90,17 +90,18 @@ class HomeAdvisor(Source):
 
 
 			company['name'] = name
+			company['id_homeadvisor']	= http[http[0:-5].rfind('.')+1:-5]
 			company['phone']			= phone
 			company['phone_display']	= phone
 			company['src_homeadvisor']	= http
-			if (rating):	company['rating']	= rating
-			if (reviews):	company['reviews']	= reviews
+			if (rating):	company['rating_homeadvisor']	= rating
+			if (reviews):	company['reviews_homeadvisor']	= reviews
 			if (addr): company['addr'] = {
 					"full"		: addrStreet + '\n' + addrCity + ', ' + addrState + ', ' + addrPostal,
 					"street"	: addrStreet,
 					"city"		: addrCity,
 					"state"		: addrState,
-					"postal"	: addrPostal
+					"post"		: addrPostal
 				}
 
 
