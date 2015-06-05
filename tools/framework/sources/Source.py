@@ -94,6 +94,18 @@ class Source(object):
 		pp(self.errors)
 
 
+
+	def uri_exists_in_directory(self, uri):
+		doc_exists = False
+		for document in self.directories:
+			if document.uri == uri:
+				doc_exists  =  True
+				break
+		if (not doc_exists):
+			# add uri to 'SHOULD BE ON' directory/array
+			print '\n\nADD ANOTHER DIRECTORY: ', '"' + uri.replace('Boulder.CO', 'LOCATION') + '",'
+
+
 	def read_json_file(self, file_path, DEBUG=False):
 		# FOR TESTING.  http://jsonlint.com/
 		if (file_path[0] is not '/'):
