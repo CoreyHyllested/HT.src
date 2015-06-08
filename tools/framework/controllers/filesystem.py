@@ -16,6 +16,8 @@ from pprint import pprint as pp
 
 
 DIR_RAWHTML = '/data/raw/'
+DIR_PROCESS	= '/data/process/'
+DIR_MERGED	= '/data/process/merged/'
 DIR_REVIEWS	= '/data/reviews/'
 DIR_SOURCES	= '/data/sources/'
 
@@ -36,6 +38,8 @@ def open_file(path_from_cwd):
 	fp = open(filename, 'a+')
 	return fp
 
+def path_from_cwd_to(path_from_cwd):
+	return os.getcwd() + path_from_cwd
 
 def create_review(review_id):
 	fn = '/data/reviews/' + review_id
