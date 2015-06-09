@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.66
+VERSION = 0.71
 BOT_VER = 0.8
 THREADS	= 1
 
@@ -52,10 +52,11 @@ def config_urllib():
 	if (pre_response._content == post_response._content): print 'SCraper - Not running tor:9050; likely to fail'
 
 	# setup user-agent information
-	ua = urllib2.build_opener()
+	ua = None #urllib2.build_opener()
+	#ua = urllib2.build_opener()
 	#ua_string = 'SoulcraftingBot/v%d' % BOT_VER
-	ua_string = 'Mozilla/5.0 (Linux; U; Android 4.0.4; en-gb; GT-I9300 Build/IMM76D) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30'
-	ua.addheaders = [('User-agent', ua_string)]
+	#ua_string = 'Mozilla/5.0 (Linux; U; Android 4.0.4; en-gb; GT-I9300 Build/IMM76D) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30'
+	#ua.addheaders = [('User-agent', ua_string)]
 	return ua
 
 
@@ -211,6 +212,7 @@ if __name__ == '__main__':
 	parser.add_argument('-C', '--combine',	help='Combine all company directories.',	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	parser.add_argument('-S', '--source',	help='Single source [BBB, HomeAdvisor, Houzz, Porch, Yelp]')
+	parser.add_argument('-D', '--duplicates',	help='When updating, check for duplicates', action="store_true")
 	args = parser.parse_args()
 	if (args.verbose):	print 'SCraper - verbosity enabled.'
 	if (args.combine):	print 'SCraper - combining data sources'
