@@ -25,10 +25,9 @@ from controllers import *
 import requests
 
 
-VERSION = 0.65
+VERSION = 0.66
 BOT_VER = 0.8
 THREADS	= 1
-SECONDS = 85
 
 dl_queue = []
 threads	= []
@@ -224,7 +223,7 @@ if __name__ == '__main__':
 	q = load_sources(ua, args)
 	for thread_id in xrange(THREADS):
 		print 'SCraper - starting thread %d' % (thread_id)
-		t = ScraperThread(q, ua, id=thread_id, seconds=SECONDS, debug=True)
+		t = ScraperThread(q, id=thread_id, debug=True)
 		t.start()
 		threads.append(t)
 

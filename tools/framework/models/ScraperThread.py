@@ -21,12 +21,10 @@ from datetime	import datetime as dt
 
 
 class ScraperThread(threading.Thread):
-	def __init__(self, q, agent, id, seconds=60, debug=False):
+	def __init__(self, q, id, debug=False):
 		threading.Thread.__init__(self)
 		self.q	= q
-		self.ua	= agent
 		self.id	= id
-		self.seconds = seconds
 		self.debug	= debug
 		self.total_docs	= q.qsize()
 		self.downloaded = 0
