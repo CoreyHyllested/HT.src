@@ -87,6 +87,8 @@ class Business(object):
 				pass
 
 
+	def update_attr(self, key, value):
+		pass
 
 	def update(self, b_dictionary, checked=True):
 		if (not checked):
