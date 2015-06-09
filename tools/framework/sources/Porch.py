@@ -41,27 +41,86 @@ class Porch(Source):
 				if (url in self.doc_invaliddirs): break
 				directory_doc = self.create_source_document(url, DocType.PORCH_DIRECTORY)
 				self.directories.append(directory_doc)
+		print 'Porch.loaded %d directories' % (len(self.directories))
 
 
 	def __scrape_business(self, document):
 		print '%s.scrape_business(%s)' % (self.SOURCE_TYPE, document.location)
 
 
+	def __find_company_id(self, business_soup):
+		company_info = business_soup.find('a', class_=['pro-profile-link'])
+		return company_info.attrs['href']
+
+
 	def __scrape_directory(self, document):
-		#print '%s.scrape_directory(%s)' % (self.SOURCE_TYPE, document.location)
-		return
-		# scrape 15 companies, available info... name, URL, phone #
-		# add to self.companies
 		document_soup	= BeautifulSoup(document.content)
-		business_list	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
+		business_list	= document_soup.find_all(class_=['card'])
 
 		# WALK ALL BUSINESSES IN DIR.
 		for business in business_list:
-			company = {}
-			company_addr = {}
+			porch_id	= business.attrs['data-company-id']
+			porch_url	= self.__find_company_id(business)
 
-			self.companies.append(company)
+			company = self.co_index.get(porch_id, {})
+			if (company): print 'Found co, updating'
+
+
+			company['id_porch'] = porch_id
+			porch_links = business.find_all('a')
+			for link in porch_links:
+				self.__scrape_tag_link(link, company)
+
+			#pp(company)
+			if (company.get('phone', None) and (company['phone'] != company['phone_display'])): raise Exception('wtf-different numbers')
 		return len(business_list)
+
+
+	def __scrape_tag_link(self, link, company):
+		interaction = link.attrs.get('data-interaction-id')
+		href = link.attrs.get('href')
+		if (interaction == None):
+			pass
+		elif (interaction == 'search-result_company-name'):
+			company['name'] = link.get_text().strip()
+			company['src_' + self.source_type()] = link.attrs.get('href')
+		elif (interaction == 'search-result_company-headshot'):
+			headshot = link.find('div')
+			if ('https://cdn.porch.com/bootstrap/headshot-professional.jpg' not in headshot.attrs['data-original']):
+				company['src_headshot'] = headshot.attrs['data-original']
+		elif (interaction == 'search-result_bbb-rating'):
+			company['porch_bbb_rating']  = link.get_text().strip()
+		elif (interaction == 'search-result_years-in-business'):
+			company['porch_age'] = link.get_text().replace('in business', '').strip()
+		elif (interaction == 'search-result_company-phone-link'):
+			company['phone'] = link.get_text().strip()
+		elif (interaction == 'search-result_company-phone-link-mobile'):
+			company['phone_display'] = link.attrs['href'].replace('tel:', '').strip()
+		elif (interaction == 'search-result_reviewers'):
+			#print link
+			div_rat	= link.find(class_=['starFill'])
+			rating	= div_rat.attrs['data-stars']
+
+			company['porch_rating'] = rating
+			company['porch_reviews'] = re.sub('[()]', '', link.get_text().strip())
+			company['src_porch_rating'] = link.attrs.get('href')
+		elif (interaction == 'search-result_photo-projects'):
+			projects = link.get_text().replace('with photos', '').strip()
+			company['porch_projects'] = projects
+			company['src_porch_projects'] = link.attrs.get('href')
+		elif ('learn-more' in interaction):
+			pass
+		elif (interaction == 'search-result_nearby-projects') or (interaction == 'search-result_home-value'):
+			# need to be logged in to get home-value
+			# not sure what value is in the neighbors doing projects
+			pass
+		elif (interaction == 'search-result_company-type'):
+			print link
+			pass
+		else:
+			print href, interaction
+
+
 
 
 	PORCH_SCRAPEMAP = {
@@ -79,7 +138,9 @@ class Porch(Source):
 			directory.get_document(debug=False)
 			self.scrape_document(directory)
 
-		print 'Porch.update_directory; now contains %d entries' % (len(self.companies))
-		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
+		# self.companies = must become a dump of co
+#		self.companies = self.co_index.values()
+		print 'Porch.update_directory; now contains %d entries' % (len(self.co_index.values()))
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
