@@ -21,6 +21,7 @@ from controllers import *
 
 class HomeAdvisor(Source):
 	SOURCE_TYPE	= 'HomeAdvisor'
+	SECONDS	= 60
 
 	def __init__(self, ua, queue=None):
 		super(HomeAdvisor, self).__init__()
