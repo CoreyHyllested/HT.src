@@ -37,24 +37,46 @@ class Source(object):
 	def __str__(self):	return '<%r>'% (self.SOURCE_TYPE)
 
 
-	def read_companies_cache(self, dump_results=False):
+	def __check_for_company_duplicates(self):
+		companies = self.companies
+		all_duplicates = []
+		self.companies = []
+		links = {}
+
+		for co in companies:
+			if not links.get(co['src_'+self.source_type()]):
+				links[co['src_'+self.source_type()]] = co
+				self.companies.append(co)
+			else:
+				all_duplicates.append(co)
+		return len(all_duplicates)
+
+
+
+	def read_companies_cache(self, duplicates=False, dump_results=False):
+		self.companies	= []
 		self.doc_companies = Document('companies.json', self, doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies = json.loads(self.doc_companies.content)
-		print '%s.read_company_cache(%d companies)' % (self.SOURCE_TYPE, len(self.companies))
-		if (dump_results): pp(companies)
+		if (duplicates): duplicates = self.__check_for_company_duplicates()
 
+		print '%s.read_company_cache(%s|%d companies)' % (self.SOURCE_TYPE, str(duplicates), len(self.companies))
+		if (dump_results): pp(self.companies)
+
+
+	def source_type(self):
+		return self.SOURCE_TYPE.lower()
 
 	def get_source_directory(self):
-		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/'
+		return os.getcwd() + '/data/sources/' + self.source_type() + '/'
 
 	def get_source_cache_directory(self):
-		return os.getcwd() + '/data/sources/' + self.SOURCE_TYPE.lower() + '/cache/'
+		return os.getcwd() + '/data/sources/' + self.source_type() + '/cache/'
 
-	def get_company_directory(self, update=False):
-		if (self.companies is None): self.read_companies_cache()
+	def get_company_directory(self, update=False, dupes=False):
+		if (self.companies is None): self.read_companies_cache(duplicates=dupes)
 
 		# if update, move and save old copy
 		if (update or len(self.companies) == 0):

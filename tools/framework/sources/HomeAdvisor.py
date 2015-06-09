@@ -127,7 +127,7 @@ class HomeAdvisor(Source):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
 		for directory in self.directories:
-			directory.get_document(debug=True)
+			directory.get_document(debug=False)
 			self.scrape_document(directory)
 
 		#print 'HomeAdvisor.update_directory; now contains %d entries' % (len(self.companies))

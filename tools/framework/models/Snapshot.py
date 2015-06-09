@@ -167,7 +167,7 @@ class Document(object):
 
 
 	def download(self, debug=False):
-		if (debug): print '%s.download doc' % (self.doc_source.SOURCE_TYPE)
+		print '%s.download doc' % (self.doc_source.SOURCE_TYPE)
 		self.doc_state	= DocState.READ_FAIL
 
 		try:
