@@ -31,6 +31,7 @@ class Source(object):
 		self.companies = None
 		self.doc_companies = None
 		self.doc_scrapemap = {}
+		self.doc_invaliddirs = []		# populated in __update_directory
 	
 	def __repr__(self):	return '<%r>'% (self.SOURCE_TYPE)
 	def __str__(self):	return '<%r>'% (self.SOURCE_TYPE)

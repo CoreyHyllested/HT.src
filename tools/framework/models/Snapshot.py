@@ -71,6 +71,7 @@ class DocState(object):
 	READ_WWW	= 0x200
 	READ_CACHE	= 0x201
 	READ_FAIL	= 0x404
+	READ_QUIT	= 0xFFF
 
 
 
@@ -192,6 +193,8 @@ class Document(object):
 		except requests.exceptions.HTTPError as e:
 			print 'HTTPError %d: %s' % (response.status_code, self.uri)
 			self.doc_source.add_error('HTTPError', self.uri)
+			# perhaps take this URL out of rotation.
+			if (response.status_code == 500): self.doc_state = DocState.READ_QUIT
 			print e
 		except requests.exceptions.ConnectionError as e:
 			print e
