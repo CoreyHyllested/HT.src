@@ -78,9 +78,7 @@ class Source(object):
 
 
 	def sleep(self, secs=None):
-		if (not secs):
-			secs = self.SECONDS + random.randint(0, 10)
-		#print '%s.update_co_directory: (downloaded) so sleeping (%d)...' % (self.SOURCE_TYPE, seconds)
+		if (not secs): secs = self.SECONDS + random.randint(0, 10)
 		time.sleep(secs)
 
 

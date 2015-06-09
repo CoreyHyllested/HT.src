@@ -21,18 +21,27 @@ from datetime	import datetime as dt
 
 
 class ScraperThread(threading.Thread):
-	def __init__(self, q, agent, id, seconds=90, debug=False):
+	def __init__(self, q, agent, id, seconds=60, debug=False):
 		threading.Thread.__init__(self)
 		self.q	= q
 		self.ua	= agent
 		self.id	= id
 		self.seconds = seconds
 		self.debug	= debug
+		self.total_docs	= q.qsize()
+		self.downloaded = 0
+		self.dl_attempt	= 0
+
 
 	def run(self):
 		while not self.q.empty():
-			ss = self.q.get()
-			if (self.debug): print 'Thread(%d): get %s' % (self.id, ss.uri)
-			saved = ss.get_document()
-			if (saved): time.sleep(self.seconds + random.randint(0, 10))
+			document = self.q.get()
+			self.dl_attempt = self.dl_attempt + 1
+			if (self.debug): print 'Thread(%d): %d|%d|%d\t%s' % (self.id, self.downloaded, self.dl_attempt, self.total_docs, document.uri)
+			doc_ts = dt.now()
+			saved = document.get_document()
+			if (saved):
+				self.downloaded = self.downloaded + 1
+				ts_diff = dt.now() - doc_ts
+				if (self.debug): print 'Thread(%d): %d|%d|%d\t%s' % (self.id, self.downloaded, self.dl_attempt, self.total_docs, ts_diff)
 
