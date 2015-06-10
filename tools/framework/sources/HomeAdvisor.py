@@ -57,62 +57,61 @@ class HomeAdvisor(Source):
 
 	def __scrape_directory(self, document):
 		#print '%s.scrape_directory(%s)' % (self.SOURCE_TYPE, document.location)
-		# scrape up to 25 companies, available info... name, URL, phone #
 		document_soup	= BeautifulSoup(document.content)
 		business_list	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
 		# WALK ALL BUSINESSES IN DIR.
 		for business in business_list:
-			company = {}
-			company_addr = {}
-			name	= business.find(itemprop='name').get_text()
-			phone	= business.find(itemprop='telephone').get_text()
-			http	= business.find(itemprop='url').attrs.get('href')
+			http = business.find(itemprop='url').attrs.get('href')
 			if (http): http = 'http://www.homeadvisor.com' + http
 
-			addr	= business.find(itemtype='http://schema.org/PostalAddress')
-			addrStreet	= addr.find(itemprop='streetAddress').get_text()
-			addrCity	= addr.find(itemprop='addressLocality').get_text()
-			addrState	= addr.find(itemprop='addressRegion').get_text()
-			addrPostal	= addr.find(itemprop='postalCode').get_text()
+			company = self.co_index.get(http, {})
 
-			rating	= business.find(class_=['t-stars-small-inner'])
-			if (rating): rating = rating.attrs['style'].replace('width: ', '').rstrip(';')
-			reviews = business.find(class_=['l-small-top-space', 'l-small-bottom-space'])
-			if (reviews):
-				reviews = reviews.get_text().strip()
+			business_address = business.find(itemtype='http://schema.org/PostalAddress')
+			self.__scrape_directory_addr(business_address, company)
+			self.__scrape_directory_rating(business, company)
 
-				reviews = reviews.replace('Verified Reviews', '')
-				reviews = reviews.replace('Verified Review', '')
-				if ('Available' in reviews):
-					reviews = 0
-					if (rating): print 'CHECK it out.  rating w/ reviews? (%s)' % name
-				reviews = int(reviews)
-
-
-			company['name'] = name
+			company['name'] 			= business.find(itemprop='name').get_text()
+			company['phone_display']	= business.find(itemprop='telephone').get_text()
+			company['phone']			= re.sub('[ +()-.,]', '', company['phone_display'])
 			company['id_homeadvisor']	= http[http[0:-5].rfind('.')+1:-5]
-			company['phone']			= phone
-			company['phone_display']	= phone
 			company['src_homeadvisor']	= http
-			if (rating):	company['rating_homeadvisor']	= rating
-			if (reviews):	company['reviews_homeadvisor']	= reviews
-			if (addr): company['addr'] = {
-					"full"		: addrStreet + '\n' + addrCity + ', ' + addrState + ', ' + addrPostal,
-					"street"	: addrStreet,
-					"city"		: addrCity,
-					"state"		: addrState,
-					"post"		: addrPostal
-				}
+			self.co_index[http] = company
 
-
-			#pp(company)
-			self.companies.append(company)
 		if (len(business_list) == 25):
 			test_url = self.__build_directory_uri(document.uri, update=True)
 			self.uri_exists_in_directory(test_url)
-		#print '%s.scrape_directory added %d entries' % (self.SOURCE_TYPE, len(business_list))
 		return len(business_list)
+
+
+
+	def __scrape_directory_addr(self, addr_soup, company):
+		if (not addr_soup): return
+
+		addrStreet	= addr_soup.find(itemprop='streetAddress').get_text()
+		addrCity	= addr_soup.find(itemprop='addressLocality').get_text()
+		addrState	= addr_soup.find(itemprop='addressRegion').get_text()
+		addrPostal	= addr_soup.find(itemprop='postalCode').get_text()
+
+		addr = company.get('addr', {})
+		if (addrStreet):	addr['street'] = addrStreet
+		if (addrCity):		addr['city'] = addrCity
+		if (addrState):		addr['state'] = addrState
+		if (addrPostal):	addr['post'] = addrPostal
+		company['addr'] = addr
+
+
+	def __scrape_directory_rating(self, business_soup, company):
+		rating	= business_soup.find(class_=['t-stars-small-inner'])
+		if (rating): company['rating_homeadvisor']	= rating.attrs['style'].replace('width: ', '').rstrip(';')
+
+		reviews = business_soup.find(class_=['l-small-top-space', 'l-small-bottom-space'])
+		if (reviews):
+			reviews = reviews.get_text().strip()
+			reviews = reviews.replace('Verified Reviews', '')
+			reviews = reviews.replace('Verified Review', '')
+			if ('Available' in reviews): reviews = 0
+			company['reviews_homeadvisor']	= int(reviews)
 
 
 	HOMEADV_SCRAPEMAP = {
@@ -123,14 +122,15 @@ class HomeAdvisor(Source):
 
 
 	def update_company_directory(self):
-		print 'HomeAdvisor.update_directory'
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
+		print '%s.update_companies, %d directories' % (self.SOURCE_TYPE, len(self.directories))
 
 		for directory in self.directories:
 			directory.get_document(debug=False)
 			self.scrape_document(directory)
 
-		#print 'HomeAdvisor.update_directory; now contains %d entries' % (len(self.companies))
-		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
+		print '%s.update_companies; %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
+		self.companies = self.co_index.values()
 
