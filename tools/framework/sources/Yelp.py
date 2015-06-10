@@ -31,12 +31,10 @@ TOKEN_SECRET='v78DKVyg1kJGGzjWZh7HeJYLDn0'
 class Yelp(Source):
 	SOURCE_TYPE	= 'Yelp'
 
-	def __init__(self, ua, queue=None):
+	def __init__(self, queue=None):
 		super(Yelp, self).__init__()
 		self.yelp_api = yelp.Api(consumer_key=CONSUMER_KEY, consumer_secret=CONSUMER_SECRET, access_token_key=TOKEN, access_token_secret=TOKEN_SECRET)
 		self.doc_scrapemap = self.YELP_SCRAPEMAP
-		self.ua = ua
-
 
 
 	def __scrape_biz_page(self, document):

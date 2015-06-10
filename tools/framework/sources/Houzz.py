@@ -23,9 +23,8 @@ class Houzz(Source):
 	SOURCE_TYPE	= 'Houzz'
 
 
-	def __init__(self, ua, queue=None):
+	def __init__(self, queue=None):
 		super(Houzz, self).__init__()
-		self.ua = ua
 		self.doc_scrapemap = self.HOUZZ_SCRAPEMAP
 
 

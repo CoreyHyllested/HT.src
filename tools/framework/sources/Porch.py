@@ -22,11 +22,9 @@ from controllers import *
 class Porch(Source):
 	SOURCE_TYPE	= 'Porch'
 
-	def __init__(self, ua, queue=None):
+	def __init__(self, queue=None):
 		super(Porch, self).__init__()
-		self.ua = ua
 		self.directories = []
-		self.doc_directories = None
 		self.doc_scrapemap = self.PORCH_SCRAPEMAP
 
 

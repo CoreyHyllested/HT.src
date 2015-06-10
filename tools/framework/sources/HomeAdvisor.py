@@ -23,9 +23,8 @@ class HomeAdvisor(Source):
 	SOURCE_TYPE	= 'HomeAdvisor'
 	SECONDS	= 60
 
-	def __init__(self, ua, queue=None):
+	def __init__(self, queue=None):
 		super(HomeAdvisor, self).__init__()
-		self.ua = ua
 		self.directories = []
 		self.doc_directories = None
 		self.doc_scrapemap = self.HOMEADV_SCRAPEMAP

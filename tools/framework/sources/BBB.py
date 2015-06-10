@@ -22,9 +22,8 @@ from controllers import *
 class BBB(Source):
 	SOURCE_TYPE	= 'BBB'
 
-	def __init__(self, ua, queue=None):
+	def __init__(self, queue=None):
 		super(BBB, self).__init__()
-		self.ua = ua
 		self.directories = []
 		self.doc_scrapemap = self.BBB_SCRAPEMAP
 

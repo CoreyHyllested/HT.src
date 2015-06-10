@@ -38,7 +38,7 @@ class Source(object):
 	def __str__(self):	return '<%r>'% (self.SOURCE_TYPE)
 
 
-	def __build_company_index(self, update=False):
+	def __build_company_index(self, save_index):
 		company_lst = self.companies
 		company_idx	= {}
 		duplicates	= []
@@ -49,21 +49,20 @@ class Source(object):
 			else:
 				duplicates.append(business)
 
-		# update companies, used everywhere.
-		if (update): self.co_index = company_idx
+		if (save_index): self.co_index = company_idx
 		self.companies = company_idx.values()
 		print '%s.read_company_cache(%d|%d dupes|%d companies)' % (self.SOURCE_TYPE, len(company_lst), len(duplicates), len(self.companies))
 
 
 
-	def read_companies_cache(self, update, dump_results=False):
+	def __read_companies_cache(self, update, save_index, dump_results=False):
 		self.companies	= []
 		self.doc_companies = Document('companies.json', self, doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies	= json.loads(self.doc_companies.content)
-		self.__build_company_index(update)
+		self.__build_company_index(save_index)
 		if (dump_results): pp(self.companies)
 
 
@@ -76,8 +75,13 @@ class Source(object):
 	def get_source_cache_directory(self):
 		return os.getcwd() + '/data/sources/' + self.source_type() + '/cache/'
 
-	def get_company_directory(self, update=False):
-		if (self.companies is None): self.read_companies_cache(update)
+	def get_company_index(self):
+		self.get_company_directory(False, save_index=True)
+		return self.co_index
+
+	def get_company_directory(self, update=False, save_index=False):
+		if (self.companies is None or (save_index and not self.co_index)):
+			self.__read_companies_cache(update, save_index)
 
 		# if update, move and save old copy
 		if (update or len(self.companies) == 0):
