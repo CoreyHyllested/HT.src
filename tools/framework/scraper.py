@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.74
+VERSION = 0.75
 BOT_VER = 0.8
 THREADS	= 1
 
@@ -141,6 +141,12 @@ def load_sources(ua, config_params):
 			except Exception as e:
 				print e
 		for bus_info in home.get_company_directory():
+			try:
+				business = Business(bus_info)
+				business_index.insert(business)
+			except Exception as e:
+				print e
+		for bus_info in porch.get_company_directory():
 			try:
 				business = Business(bus_info)
 				business_index.insert(business)
