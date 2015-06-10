@@ -62,7 +62,7 @@ class Source(object):
 		self.doc_companies.filename = 'companies.json'
 		self.doc_companies.read_cache(debug=True)
 		self.companies	= json.loads(self.doc_companies.content)
-		self.__build_company_index(save_index)
+		self.__build_company_index(update or save_index)
 		if (dump_results): pp(self.companies)
 
 

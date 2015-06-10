@@ -26,20 +26,23 @@ class ScraperThread(threading.Thread):
 		self.q	= q
 		self.id	= id
 		self.debug	= debug
-		self.total_docs	= q.qsize()
-		self.downloaded = 0
-		self.dl_attempt	= 0
+		self.doc_total	= q.qsize()
+		self.doc_count	= 0
+		self.doc_error	= 0
+		self.doc_dload	= 0
 
 
 	def run(self):
 		while not self.q.empty():
+			ts = dt.now()
 			document = self.q.get()
-			self.dl_attempt = self.dl_attempt + 1
-			if (self.debug): print 'Thread(%d): %d|%d|%d\t%s' % (self.id, self.downloaded, self.dl_attempt, self.total_docs, document.uri)
-			doc_ts = dt.now()
-			saved = document.get_document()
-			if (saved):
-				self.downloaded = self.downloaded + 1
-				ts_diff = dt.now() - doc_ts
-				if (self.debug): print 'Thread(%d): %d|%d|%d\t%s' % (self.id, self.downloaded, self.dl_attempt, self.total_docs, ts_diff)
+			document.get_document()
+			ts_diff = dt.now() - ts
+
+			self.doc_count = self.doc_count + 1
+			if (document.doc_state == 0x200):	self.doc_dload = self.doc_dload + 1
+			if (document.doc_state & 0x400):	self.doc_error = self.doc_error + 1
+			print 'Thread(%d): %d %d|%d|%d\t%s\t%s' % (self.id, self.doc_total, self.doc_count, self.doc_error, self.doc_dload, ts_diff, document.uri)
+
+
 
