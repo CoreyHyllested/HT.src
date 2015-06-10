@@ -31,6 +31,7 @@ class Porch(Source):
 
 
 	def __load_directory_of_directories(self):
+		print 'Porch.loading_directories'
 		file_path	= self.get_source_directory() + '/directories.json'
 		file_json	= self.read_json_file(file_path)
 		self.doc_invaliddirs = file_json.get('invalid_directories')
@@ -41,42 +42,44 @@ class Porch(Source):
 				if (url in self.doc_invaliddirs): break
 				directory_doc = self.create_source_document(url, DocType.PORCH_DIRECTORY)
 				self.directories.append(directory_doc)
-		print 'Porch.loaded %d directories' % (len(self.directories))
 
 
 	def __scrape_business(self, document):
 		print '%s.scrape_business(%s)' % (self.SOURCE_TYPE, document.location)
 
 
-	def __find_company_id(self, business_soup):
-		company_info = business_soup.find('a', class_=['pro-profile-link'])
-		return company_info.attrs['href']
-
-
 	def __scrape_directory(self, document):
+		print '%s.scrape_business(%s)' % (self.SOURCE_TYPE, document.location)
 		document_soup	= BeautifulSoup(document.content)
 		business_list	= document_soup.find_all(class_=['card'])
 
-		# WALK ALL BUSINESSES IN DIR.
+		# WALK ALL BUSINESSES IN LIST.
 		for business in business_list:
-			porch_id	= business.attrs['data-company-id']
-			porch_url	= self.__find_company_id(business)
+			porch_url	= self.__scrape_directory_href(business)
 
-			company = self.co_index.get(porch_id, {})
-			if (company): print 'Found co, updating'
+			company = self.co_index.get(porch_url, {})
+			company['id_porch'] = business.attrs['data-company-id']
+			company['src_porch'] = porch_url
+			self.__scrape_directory_addr(business, company)
 
-
-			company['id_porch'] = porch_id
 			porch_links = business.find_all('a')
 			for link in porch_links:
-				self.__scrape_tag_link(link, company)
-
-			#pp(company)
-			if (company.get('phone', None) and (company['phone'] != company['phone_display'])): raise Exception('wtf-different numbers')
+				self.__scrape_directory_link(link, company)
 		return len(business_list)
 
 
-	def __scrape_tag_link(self, link, company):
+	def __scrape_directory_href(self, business_soup):
+		company_info = business_soup.find('a', class_=['pro-profile-link'])
+		return company_info.attrs['href']
+
+	def __scrape_directory_addr(self, business_soup, company):
+		for span in business_soup.find_all('span', class_=['desc']):
+			if (span.attrs.get('data-interaction-id') == 'search-result_company-address'):
+				addr = company.get('addr', {})
+				addr['full'] = span.get_text().strip()
+				company['addr'] = addr
+
+	def __scrape_directory_link(self, link, company):
 		interaction = link.attrs.get('data-interaction-id')
 		href = link.attrs.get('href')
 		if (interaction == None):
@@ -93,7 +96,8 @@ class Porch(Source):
 		elif (interaction == 'search-result_years-in-business'):
 			company['porch_age'] = link.get_text().replace('in business', '').strip()
 		elif (interaction == 'search-result_company-phone-link'):
-			company['phone'] = link.get_text().strip()
+			company['phone'] = re.sub('[ +()-.,]', '', link.get_text().strip())
+			company['phone_display'] = link.get_text().strip()
 		elif (interaction == 'search-result_company-phone-link-mobile'):
 			company['phone_display'] = link.attrs['href'].replace('tel:', '').strip()
 		elif (interaction == 'search-result_reviewers'):
@@ -129,18 +133,16 @@ class Porch(Source):
 	}
 
 
-
 	def update_company_directory(self):
-		print 'Porch.update_directory'
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
+		print 'Porch.update_companies, %d directories' % (len(self.directories))
 
 		for directory in self.directories:
-			directory.get_document(debug=False)
+			directory.get_document(debug=True)
 			self.scrape_document(directory)
 
-		# self.companies = must become a dump of co
-#		self.companies = self.co_index.values()
-		print 'Porch.update_directory; now contains %d entries' % (len(self.co_index.values()))
+		print 'Porch.update_companies; %d entries' % (len(self.co_index.values()))
 		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
+		self.companies = self.co_index.values()
 
