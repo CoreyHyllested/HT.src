@@ -49,12 +49,10 @@ class BBB(Source):
 			company['src_bbb']	= httpid
 			company['id_bbb']	= httpid
 			company['name']		= business.find(itemprop='name').get_text()
-			addr_soup = business.find(itemtype='http://schema.org/PostalAddress')
-			self.__scrape_directory_addr(addr_soup,	company)
+			self.__scrape_directory_addr(business,	company)
 			self.__scrape_directory_http(business,	company)
 			self.__scrape_directory_logo(business,	company)
 			self.__scrape_directory_phone(business,	company)
-
 			self.co_index[httpid] = company
 		return len(business_dir)
 
@@ -64,7 +62,8 @@ class BBB(Source):
 		return bus_soup.find(itemprop='name').attrs['href']
 
 
-	def __scrape_directory_addr(self, addr_soup, company):
+	def __scrape_directory_addr(self, business_soup, company):
+		addr_soup = business_soup.find(itemtype='http://schema.org/PostalAddress')
 		if (not addr_soup): return
 
 		addrStreet	= addr_soup.find(itemprop='streetAddress')
