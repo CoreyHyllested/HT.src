@@ -29,7 +29,6 @@ class BBB(Source):
 		self.doc_scrapemap = self.BBB_SCRAPEMAP
 
 
-
 	def __load_directory_of_directories(self):
 		file_path = self.get_source_directory() + '/directories.json'
 		directories = self.read_json_file(file_path)
@@ -38,60 +37,81 @@ class BBB(Source):
 			self.directories.append(document)
 
 
-
 	def __scrape_directory(self, document):
 		document_soup	= BeautifulSoup(document.content)
 		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
 
 		# WALK ALL BUSINESSES IN DIR.
 		for business in business_dir:
-			addr	= business.find_all(itemtype='http://schema.org/PostalAddress')[0]
-			addrStreet	= addr.find(itemprop='streetAddress').get_text()
-			addrCity	= addr.find(itemprop='addressLocality').get_text()
-			addrState	= addr.find(itemprop='addressRegion').get_text()
+			httpid	= self.__scrape_directory_href(business)
+			company = self.co_index.get(httpid, {})
 
-			name	= business.find_all(itemprop='name')[0].get_text()
-			phone	= business.find_all(itemprop='phone')[0].get_text()
-			image	= business.find_all(itemtype='http://schema.org/ImageObject')
-			bbburl	= business.find_all(itemprop='name')[0].attrs.get('href')
-			links	= business.find_all(class_=['link', 'newtab'])
+			company['src_bbb']	= httpid
+			company['id_bbb']	= httpid
+			company['name']		= business.find(itemprop='name').get_text()
+			addr_soup = business.find(itemtype='http://schema.org/PostalAddress')
+			self.__scrape_directory_addr(addr_soup,	company)
+			self.__scrape_directory_http(business,	company)
+			self.__scrape_directory_logo(business,	company)
+			self.__scrape_directory_phone(business,	company)
 
-			# create metadata
-			company = {}
-			company['name'] = name
-			if (addr): company['addr'] = {
-					"full"		: addrStreet + '\n' + addrCity + ', ' + addrState,
-					"street"	: addrStreet,
-					"city"		: addrCity,
-					"state"		: addrState
-				}
-			if len(image) > 0:
-				logo = image[0].attrs.get('src')
-				company['src_logo'] = logo
-
-			for uri in links:
-				URI = uri.attrs.get('href')
-				if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
-					company['src_www'] = URI
-			if (phone):		company['phone']	= phone
-			if (bbburl):	company['src_bbb']	= bbburl
-			self.companies.append(company)
+			self.co_index[httpid] = company
 		return len(business_dir)
 
 
 
+	def __scrape_directory_href(self, bus_soup):
+		return bus_soup.find(itemprop='name').attrs['href']
+
+
+	def __scrape_directory_addr(self, addr_soup, company):
+		if (not addr_soup): return
+
+		addrStreet	= addr_soup.find(itemprop='streetAddress')
+		addrCity	= addr_soup.find(itemprop='addressLocality')
+		addrState	= addr_soup.find(itemprop='addressRegion')
+		addrPostal	= addr_soup.find(itemprop='postalCode')
+
+		addr = company.get('addr', {})
+		if (addrStreet):	addr['street'] = addrStreet.get_text()
+		if (addrCity):		addr['city'] = addrCity.get_text()
+		if (addrState):		addr['state'] = addrState.get_text()
+		if (addrPostal):	addr['post'] = addrPostal.get_text()
+		company['addr'] = addr
+
+
+	def __scrape_directory_http(self, bus_soup, company):
+		links = bus_soup.find_all(class_=['link', 'newtab'])
+		for uri in links:
+			URI = uri.attrs.get('href')
+			if (('maps.google.com' not in URI) and ('www.bbb.org' not in URI)):
+				company['business_www'] = URI
+
+
+	def __scrape_directory_logo(self, bus_soup, company):
+		image = bus_soup.find(itemtype='http://schema.org/ImageObject')
+		if (image): company['src_logo'] = image.attrs.get('src')
+
+
+	def __scrape_directory_phone(self, bus_soup, company):
+		phone	= bus_soup.find(itemprop='phone').get_text()
+		if (phone): 
+			company['phone_display'] = phone
+			company['phone'] = re.sub('[ +()-.,]', '', phone)
+
+
 	def update_company_directory(self):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
+		print '%s.update_companies, %d directories' % (self.SOURCE_TYPE, len(self.directories))
 
-		print 'BBB.update_company_directory() %d entries' % (len(self.directories))
 		for business_directory in self.directories:
 			business_directory.get_document(debug=False)
 			self.scrape_document(business_directory)
 
-		print 'BBB.Company listing - done; companies (%d)' % (len(self.companies))
-		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
+		print '%s.update_companies; %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
-		
+		self.companies = self.co_index.values()
 
 
 
