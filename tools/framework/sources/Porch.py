@@ -65,6 +65,7 @@ class Porch(Source):
 			porch_links = business.find_all('a')
 			for link in porch_links:
 				self.__scrape_directory_link(link, company)
+			self.co_index[porch_url] = company
 		return len(business_list)
 
 
