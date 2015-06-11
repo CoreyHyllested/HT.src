@@ -14,10 +14,77 @@
 
 import uuid
 import re, random, time, json
+import urltools, phonenumbers
 from json	import JSONEncoder 
 from pprint	import pprint as pp
 from datetime	import datetime as dt 
 from Levenshtein import distance
+
+
+class Business(object):
+	def __init__(self, b_dictionary, source=None):
+		#print 'Creating business'
+		self.name	= None
+		self.business_phone	= None
+		self.business_www	= None
+		self.business_id	= None
+		self.source	= source
+
+		self.update(b_dictionary, checked=False)
+
+		if (self.business_id == None):
+			self.business_id = str(uuid.uuid4())
+
+		# business --must-- have a name
+		if (not self.name):
+			pp(b_dictionary)
+			raise Exception('No name')
+
+		self.__normalize_phone()
+		self.__normalize_www()
+
+
+	def __normalize_phone(self):
+		if (not self.__dict__.get('phone')): return
+		self.business_phone = phonenumbers.parse(self.phone, 'US')
+		#phonenumbers.format_number(, phonenumbers.PhoneNumberFormat.NATIONAL)
+
+	def __normalize_www(self):
+		if (not self.business_www): return
+		self.business_www = urltools.normalize(self.business_www)
+
+
+	def merge (self, business, why):
+		#print 'MERGING (matched on %s):\n\t%s.%s %s\n\t%s.%s %s' % (why, self.source, self.name, self.business_www, business.source, business.name, business.business_www)
+		pass
+
+	def update_attr(self, key, value):
+		pass
+
+	def update(self, b_dictionary, checked=True):
+		if (not checked):
+			self.__dict__.update(b_dictionary)
+			return
+
+		contested = self.__dict__.get('contested', [])
+		for k, v in b_dictionary.items():
+			#print 'k =', k, v
+			if (k == 'business_id'): continue
+			if (k == 'phone'): continue
+			#if (k == 'src_logo'): continue	#ignore
+			if (self.__dict__.get(k) == None): 
+#				print 'CAH %s adding [%r => %r]' % (self.business_id, k, v)
+				self.__dict__[k] = v
+			elif (self.__dict__.get(k) != v):
+				#dist = distance(self.__dict__.get(k), v)
+			#	print 'CAH %s.%s' % (self.business_id, k)
+			#	print '%r' % (self.__dict__.get(k))
+			#	print '%r' % (v)
+				contested.append((k, v))
+				self.contested = contested
+
+
+
 
 class BusinessIndex(object):
 
@@ -64,53 +131,6 @@ class BusinessIndex(object):
 		for k in self.index.keys():
 			companies.append(self.index.get(k))
 		return companies
-
-
-
-class Business(object):
-	def __init__(self, b_dictionary):
-		#print 'Creating business'
-		self.update(b_dictionary, checked=False)
-
-		# business --must-- have a name
-		if (not hasattr(self, 'name')):
-			pp(b_dictionary)
-			raise Exception('No name')
-
-		if (not hasattr(self, 'business_id')):
-			self.business_id = str(uuid.uuid4())
-
-		if (hasattr(self, 'phone')):
-			self.phone = re.sub('[()-.,+ ]', '', self.phone)
-			if len(self.phone) > 10 and self.phone.isnumeric():
-				#print 'tricky phone #, check for ext', self.phone #, check for ext
-				pass
-
-
-	def update_attr(self, key, value):
-		pass
-
-	def update(self, b_dictionary, checked=True):
-		if (not checked):
-			self.__dict__.update(b_dictionary)
-			return
-
-		contested = self.__dict__.get('contested', [])
-		for k, v in b_dictionary.items():
-			#print 'k =', k, v
-			if (k == 'business_id'): continue
-			if (k == 'phone'): continue
-			#if (k == 'src_logo'): continue	#ignore
-			if (self.__dict__.get(k) == None): 
-#				print 'CAH %s adding [%r => %r]' % (self.business_id, k, v)
-				self.__dict__[k] = v
-			elif (self.__dict__.get(k) != v):
-				#dist = distance(self.__dict__.get(k), v)
-			#	print 'CAH %s.%s' % (self.business_id, k)
-			#	print '%r' % (self.__dict__.get(k))
-			#	print '%r' % (v)
-				contested.append((k, v))
-				self.contested = contested
 
 
 class BusinessEncoder(JSONEncoder):
