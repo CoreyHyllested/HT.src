@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.76
+VERSION = 0.77
 BOT_VER = 0.8
 THREADS	= 1
 
@@ -34,7 +34,8 @@ threads	= []
 
 
 
-def config_urllib():
+def config_urllib(args):
+	if (args.combine):	return 
 	# configure the network.
 	pre_response = requests.get('http://icanhazip.com')
 
@@ -69,8 +70,9 @@ def dump_queue_uris():
 
 
 
-def load_sources(ua, config_params):
+def load_sources(config_params):
 	bbb = BBB()
+	fact = Factual()
 	home = HomeAdvisor()
 	houzz = Houzz()
 	porch = Porch()
@@ -87,6 +89,7 @@ def load_sources(ua, config_params):
 		sys.exit(1);
 
 	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
+	prime_queue_with_source(fact, DocType.FACT_BUSINESS, config_params)
 	prime_queue_with_source(home, DocType.HOME_BUSINESS, config_params)
 	prime_queue_with_source(houzz, DocType.HOUZZ_BUSINESS, config_params)
 	prime_queue_with_source(porch, DocType.PORCH_BUSINESS, config_params)
@@ -124,7 +127,7 @@ if __name__ == '__main__':
 	parser.add_argument('-V', '--verbose',	help="increase output verbosity",	action="store_true")
 	parser.add_argument('-C', '--combine',	help='Combine all company directories.',	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
-	parser.add_argument('-S', '--source',	help='Single source [BBB, HomeAdvisor, Houzz, Porch, Yelp]')
+	parser.add_argument('-S', '--source',	help='Single source [BBB, Factual, HomeAdvisor, Houzz, Porch, Yelp]')
 	parser.add_argument('-D', '--duplicates',	help='When updating, check for duplicates', action="store_true")
 	args = parser.parse_args()
 	if (args.verbose):	print 'SCraper - verbosity enabled.'
@@ -133,9 +136,9 @@ if __name__ == '__main__':
 	if (args.source):	print 'SCraper - single source', args.source
 
 	create_directories()
-	ua = config_urllib()
+	config_urllib(args)
 
-	q = load_sources(ua, args)
+	q = load_sources(args)
 	for thread_id in xrange(THREADS):
 		print 'SCraper - starting thread %d' % (thread_id)
 		t = ScraperThread(q, id=thread_id, debug=True)

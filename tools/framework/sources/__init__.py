@@ -12,6 +12,7 @@
 #################################################################################
 
 from .BBB			import *
+from .Factual		import *
 from .HomeAdvisor	import *
 from .Houzz			import *
 from .Porch			import *

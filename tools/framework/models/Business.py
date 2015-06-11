@@ -28,6 +28,7 @@ class Business(object):
 		self.business_phone	= None
 		self.business_www	= None
 		self.business_id	= None
+		self.phone	= None
 		self.source	= source
 
 		self.update(b_dictionary, checked=False)
@@ -45,8 +46,10 @@ class Business(object):
 
 
 	def __normalize_phone(self):
-		if (not self.__dict__.get('phone')): return
-		self.business_phone = phonenumbers.parse(self.phone, 'US')
+		if (not self.phone): return
+		normalized = phonenumbers.parse(self.phone, 'US')
+		self.business_phone		= normalized.national_number
+		self.phone_normalized	= normalized
 		#phonenumbers.format_number(, phonenumbers.PhoneNumberFormat.NATIONAL)
 
 	def __normalize_www(self):
@@ -55,7 +58,7 @@ class Business(object):
 
 
 	def merge (self, business, why):
-		#print 'MERGING (matched on %s):\n\t%s.%s %s\n\t%s.%s %s' % (why, self.source, self.name, self.business_www, business.source, business.name, business.business_www)
+		print 'MERGING (matched on %s):\n\t%s.%s %s\n\t%s.%s %s' % (why, self.source, self.name, self.business_www, business.source, business.name, business.business_www)
 		pass
 
 	def update_attr(self, key, value):
