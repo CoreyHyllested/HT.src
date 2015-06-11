@@ -60,7 +60,7 @@ class Source(object):
 		self.doc_companies = Document('companies.json', self, doc_type=DocType.JSON_METADATA)
 		self.doc_companies.location = self.get_source_directory()
 		self.doc_companies.filename = 'companies.json'
-		self.doc_companies.read_cache(debug=True)
+		self.doc_companies.read_cache(debug=False)
 		self.companies	= json.loads(self.doc_companies.content)
 		self.__build_company_index(update or save_index)
 		if (dump_results): pp(self.companies)

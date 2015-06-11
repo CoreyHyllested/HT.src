@@ -199,6 +199,8 @@ class Document(object):
 		except requests.exceptions.ConnectionError as e:
 			print e
 			self.doc_source.add_error('ConnectionError', self.uri)
+			print 'Connection Error: trying to sleep for 5min'
+			self.doc_source.sleep(5 * 60)
 		except Exception as e:
 			print 'General Exception'
 			self.doc_source.add_error('download_failed', self.uri)
