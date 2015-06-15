@@ -81,6 +81,7 @@ def load_sources(config_params):
 	if (config_params.combine):
 		print 'Combine sources'
 		Combine.add_source(bbb)
+		Combine.add_source(fact)
 		Combine.add_source(home)
 		Combine.add_source(houzz)
 		Combine.add_source(porch)

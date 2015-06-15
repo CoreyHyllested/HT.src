@@ -16,7 +16,9 @@ from pprint import pprint as pp
 from bs4 import BeautifulSoup, Comment
 from models import *
 from controllers import *
-from factual import Factual as FactualTool
+from factual		import Factual as FactualTool
+from factual.utils	import *
+
 
 
 
@@ -30,106 +32,116 @@ class Factual(Source):
 	def __init__(self, queue=None):
 		super(Factual, self).__init__()
 		self.factual_api = FactualTool(TOKEN, TOKEN_SECRET)
-#		self.doc_scrapemap = self.YELP_SCRAPEMAP
+		self.factual_places = self.factual_api.table('places')
+		self.doc_scrapemap = { }		#intentionally
+		self.directories = []
 
 
-	def __scrape_biz_page(self, document):
-		document_soup	= BeautifulSoup(document.content)
-		business_dir	= document_soup.find_all(itemtype='http://schema.org/LocalBusiness')
-
-		# WALK ALL BUSINESSES IN DIR.
-		for business in business_dir:
-			addr	= business.find_all(itemtype='http://schema.org/PostalAddress')[0]
-			addrStreet	= addr.find(itemprop='streetAddress').get_text()
-			addrCity	= addr.find(itemprop='addressLocality').get_text()
-			addrState	= addr.find(itemprop='addressRegion').get_text()
-
-			name	= business.find_all(itemprop='name')[0].get_text()
-			phone	= business.find_all(itemprop='phone')[0].get_text()
-			image	= business.find_all(itemtype='http://schema.org/ImageObject')
-			yelurl	= business.find_all(itemprop='name')[0].attrs.get('href')
-			links	= business.find_all(class_=['link', 'newtab'])
-
-			# create metadata
-			company = {}
-			company['name'] = name
-			if (addr): company['addr'] = {
-					"full"		: addrStreet + '\n' + addrCity + ', ' + addrState,
-					"street"	: addrStreet,
-					"city"		: addrCity,
-					"state"		: addrState
-				}
-			if len(image) > 0:
-				logo = image[0].attrs.get('src')
-				company['src_logo'] = logo
-
-			for uri in links:
-				URI = uri.attrs.get('href')
-				if (('maps.google.com' not in URI) and ('www.yelp.com' not in URI)):
-					company['http'] = URI
-			if (phone):		company['phone']	= phone
-			if (bbburl):	company['src_bbb']	= bbburl
-			if (self.companies): self.companies.append(company)
-		return len(business_dir)
-
-
-
-	YELP_SCRAPEMAP = { DocType.YELP_BUSINESS: __scrape_biz_page }
+	def __load_directory_of_directories(self):
+		file_path	= self.get_source_directory() + '/directories.json'
+		file_json	= self.read_json_file(file_path)
+		self.directories = file_json.get('directories')
+		self.co_zipcodes = file_json.get('zipcodes')
 
 
 
 	def update_company_directory(self):
-		print 'Yo, so far so good'
-		return
+		if (len(self.directories) == 0): self.__load_directory_of_directories()
 
-		boulder_results = self.yelp_api.Search(category_filter='contractors', location='Boulder, CO', radius_filter='40000')
-		print 'Yelp.yelp_api Boulder search() -- ', boulder_results.total
+		for zipcode in self.co_zipcodes:
+			fact_filter	= { "region" : "CO",
+							"postcode" : zipcode,
+#								"$or" : [ {"locality"	: { "$eq" : "boulder" }}, {"locality"	: { "$eq" : "boulder" }} ],
+												#{"locality"	: { "$eq" : "denver"  }}
+									"category_ids"	: { "$includes_any" : self.directories }
+			}
+			print 'using zipcode', zipcode
+			self.__update_company_directory_using_filter(fact_filter)
 
-		for results_offset in range((boulder_results.total/20)+1):
-			offset=results_offset * 20
-			boulder_results = self.yelp_api.Search(category_filter='contractors', location='Boulder, CO', offset=offset, radius_filter='40000')
 
-			for business in boulder_results.businesses:
-				company = self.__extract_info_from_search_results(business)
-				self.companies.append(company)
-#			print 'Yelp.yelp_api Denver search()'
-#			search_results = self.yelp_api.Search(category_filter='contractors', location='Denver, CO', radius_filter='40000')
 
-		print 'Yelp.Company listing - done'
-		self.doc_companies.content = json.dumps(self.companies, indent=4, sort_keys=True)
+	def __update_company_directory_using_filter(self, fact_filter):
+		api_places_rc	= self.factual_places.filters(fact_filter).include_count(True).limit(50)
+		api_places_nr	= api_places_rc.total_row_count()
+		api_collected	= self.__extract_info_from_search_results(api_places_rc)
+		api_places = min(api_places_nr, 500)
+		while (api_collected < api_places):
+			api_places_rc	= self.factual_places.filters(fact_filter).limit(50).offset(api_collected)
+			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc)
+			print 'Factual.update_company_list: %d/%d' % (api_collected, api_places)
+			self.sleep(10 + random.randint(0, 15))
+
+		print 'Factual.update_company_list -- %d / %d' % (api_collected, api_places_nr)
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
-				
 
 
 
-	def __extract_info_from_search_results(self, business):
-		company = {}
-		company['name']		= business.name
-		company['id_yelp']	= business.id
-		business.catlist	= []
+	def __extract_info_from_search_results(self, api_search):
+		try:
+			results = api_search.data()
+			print '__extract %s ' % (api_search.get_url())
+		except factual_api.api.APIException as e:
+			print '__extract %s failed.  retry.' % (api_search.get_url())
+			print type(e), e
+		except Exception as e:
+			print type(e), e
+			
+			
+		for business in results:
+			#pp(business)
+			company = {}
+			### http://www.factual.com/data/t/places/schema
+			company['id_factual']	= business['factual_id']
+			company['src_factual']	= 'http://factual.com/' + business['factual_id']
+			company['name']			= business['name']
+			company['email']		= business.get('email', None)
+			company['phone']		= business.get('tel', None)
+			company['website']		= business.get('website', None)
+			
+			self.__extract_address(business, company)
+			self.__extract_hours_open(business, company)
+			self.__extract_chain_info(business, company)
+			self.__extract_categories(business, company)
+			#pp(company)
+			if (not self.co_index.get(company['src_factual'])):
+				self.co_index[company['src_factual']] = company
+		return len(results)
 
-		if business.phone:		company['phone'] = business.phone
-		if business.rating:		company['rating_yelp'] = business.rating
-		if business.image_url:	company['src_logo'] = business.image_url
-		if business.url:		company['src_yelp'] = business.url
-		if business.is_claimed:	company['claimed_yelp']	= business.is_claimed
-		if business.is_closed:	company['yelp_permanently_closed']	= business.is_closed
-		if business.review_count:	company['reviews_yelp'] = business.review_count
-		if business.snippet_text:	company['yelp_snippet'] = business.snippet_text
+	def __extract_address(self, business, company):
+		address = {}
+		address['street']	= business['address']
+		#address['suite']	= business['address_extended']
+		address['city']		= business['locality']
+		address['state']	= business['region']
+		address['post']		= business['postcode']
+
+		address['address']	= business['address']
+		address['locality']	= business['locality']
+		address['region']	= business['region']
+		if (business.get('latitude')):		address['latitude'] =	business['latitude']
+		if (business.get('longitude')):		address['longitude'] =	business['longitude']
+		if (business.get('neighborhood')):	address['neighborhood'] = business.get('neighborhood')
+		company['addr'] = address
+#		if business.location.display_address: 	addr['display']	= business.location.display_address
+#		if business.location.cross_streets:		addr['cross']	= business.location.cross_streets
+
+
+	def __extract_categories(self, business, company):
+		categories = business.get('category_labels', None)
+		if (not categories): return
+		if (len(categories) > 1):
+			for x in categories:
+				print x
+		company['factual_categories'] = categories[0]
 		
-		# simplify list ['Window Install', 'windowinstall']
-		for category in business.categories:
-			business.catlist.append(category[0])
-		if business.catlist:	company['categories'] = business.catlist
 
-		if business.location:
-			addr = {}
-			if business.location.display_address: 	addr['display']	= business.location.display_address
-			if business.location.address:			addr['street']	= business.location.address
-			if business.location.city:				addr['city']	= business.location.city
-			if business.location.state_code:		addr['state']	= business.location.state_code
-			if business.location.postal_code:		addr['post']	= business.location.postal_code
-			if business.location.cross_streets:		addr['cross']	= business.location.cross_streets
-			company['addr'] = addr
-		return company
+	def __extract_open_hours(self, business, company):
+		pass
 
+	def __extract_chain_info(self, business, company):
+		if (business.get('chain_id') or business.get('chain_name')):
+			chain_info = {}
+			chain_info['chain_id']	 	= business.get('chain_id')
+			chain_info['chain_name']	= business.get('chain_name')
+			company['business_chain'] = chain_info
