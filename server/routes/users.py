@@ -35,6 +35,7 @@ from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
+
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
 @sc_authenticated
@@ -121,9 +122,19 @@ def render_invite_page():
 
 
 
-
-@sc_users.route("/purchase_me", methods=['GET', 'POST'])
+@sc_users.route('/referral/create', methods=['GET', 'POST'])
 @sc_authenticated
+def render_referral_create():
+	bp = Profile.get_by_uid(session['uid'])
+	ba = Account.get_by_uid(session['uid'])
+	invite = InviteForm(request.form)
+	return make_response(render_template('referral-create.html', bp=bp, form=invite))
+
+
+
+
+#@testing.route("/purchase_me", methods=['GET', 'POST'])
+#@sc_authenticated
 def render_purchase_page():
 	bp = Profile.get_by_uid(session['uid'])
 	gift = GiftForm(request.form)

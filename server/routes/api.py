@@ -11,7 +11,7 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-
+import os, re
 from . import sc_ebody, sc_users
 from flask import render_template
 from ..forms import ReviewForm
@@ -20,6 +20,54 @@ from server.controllers import *
 from server.sc_utils import *
 from server.models import *
 
+
+def api_prime_search():
+	print 'Prime Search.'
+
+	try:
+		fp = open(os.getcwd() + '/tools/framework/data/sources/factual/companies.json')
+		content = fp.read()
+		sc_server.index_pros = json.loads(content)
+	except Exception as e:
+		print type(e), e
+	finally:
+		if (fp): fp.close()
+
+	print len(sc_server.index_pros), type(sc_server.index_pros)
+	return sc_server.index_pros
+
+
+
+@sc_users.route('/referral/find/<string:identifier>', methods=['GET','POST'])
+def api_referral_find(identifier):
+	index = sc_server.__dict__.get('index_pros')
+	if (not index): index = api_prime_search()
+	added = 0
+
+	identifier = identifier.rstrip('.json').strip().lower()
+	identphone = re.sub('[() \-,.]', '', identifier)
+
+	response = {}
+	for pro in index:
+		if identifier in pro['name'].lower():
+			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
+			added = added + 1
+			continue
+		email = pro.get('email', '')
+		if email and (identifier in pro['email'].lower()):
+			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
+			added = added + 1
+			continue
+		phone = pro.get('phone', '')
+		if phone: phone = re.sub('[() \-,.]', '', phone)
+		if phone and (identphone in phone):
+			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
+			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
+			added = added + 1
+		if (added > 5):
+			break
+	pp (response)
+	return make_response(jsonify(response), 200)
 
 
 @sc_users.route('/review/request', methods=['POST'])

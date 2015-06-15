@@ -1,0 +1,32 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Refer a professional.' %}
+{% set meta_desc	= 'Refer a professional on Soulcrafting.' %}
+
+
+{% block header_css %}
+	{{ super() }}
+	{% assets "scss_referral" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+{% endblock %}
+
+{% block content %}
+<section id='invite'>
+	<div class='h3 text-center'>Make a Referral.</div>
+
+	<form method='POST' action='/invite'>
+		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+		<div>
+			<div id='refer_a_pro' class="form-group email">
+				{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
+			</div>
+		</div>
+	</form>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+	<script src="/static/js/typeahead.bundle.js"></script>
+	<script src="/static/js/referral.js"></script>
+{% endblock %}

@@ -1,0 +1,49 @@
+@import 'colors';
+@import 'elem-defaults';
+
+
+#invite			{ margin: 25px auto 55px; }
+#invite_emails	{ display: inline-block; width: 200px; }
+
+
+
+/* Responsive Styles */
+@media only screen and (min-device-width: 240px) and (max-width: 500px) {
+}
+
+
+@media (min-width: 489px) {
+	#invite_emails { width: 200px; }
+}
+
+@media (min-width: 768px) {
+	#invite_emails { width: 350px; }
+}
+
+@media (min-width: 980px) {
+	#invite_emails { width: 400px; }
+}
+
+@media (min-width: 1200px) { }
+@media (min-width: 1450px) { }
+
+
+.form-group {
+	position: relative;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.access-section .form-group.email:before {
+  content: "\f003";
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
