@@ -109,20 +109,21 @@ class Factual(Source):
 				self.co_index[company['src_factual']] = company
 		return len(results)
 
+
 	def __extract_address(self, business, company):
 		address = {}
-		address['street']	= business['address']
-		#address['suite']	= business['address_extended']
-		address['city']		= business['locality']
-		address['state']	= business['region']
-		address['post']		= business['postcode']
+		if business.get('address'): 			address['street']	= business['address']
+		if business.get('address_extended'):	address['suite']	= business['address_extended']
+		if business.get('locality'):			address['city']		= business['locality']
+		if business.get('region'):				address['state']	= business['region']
+		if business.get('postcode'):			address['post']		= business['postcode']
 
-		address['address']	= business['address']
-		address['locality']	= business['locality']
-		address['region']	= business['region']
-		if (business.get('latitude')):		address['latitude'] =	business['latitude']
-		if (business.get('longitude')):		address['longitude'] =	business['longitude']
-		if (business.get('neighborhood')):	address['neighborhood'] = business.get('neighborhood')
+		if business.get('address'):			address['address']	= business['address']
+		if business.get('locality'):		address['locality']	= business['locality']
+		if business.get('region'):			address['region']	= business['region']
+		if business.get('latitude'):		address['latitude'] =	business['latitude']
+		if business.get('longitude'):		address['longitude'] =	business['longitude']
+		if business.get('neighborhood'):	address['neighborhood'] = business.get('neighborhood')
 		company['addr'] = address
 #		if business.location.display_address: 	addr['display']	= business.location.display_address
 #		if business.location.cross_streets:		addr['cross']	= business.location.cross_streets
