@@ -52,7 +52,7 @@ class Combine(object):
 			m_phone = Combine.idx_phone.get(b.business_phone)
 			m_name	= Combine.idx_name.get(b.name)
 			m_site	= Combine.idx_site.get(b.business_www)
-
+			
 			if (not m_phone) and (not m_name) and (not m_site):
 				# implies a new business
 				Combine.companies.append(b)
@@ -68,7 +68,7 @@ class Combine(object):
 			if (m_site and m_phone):
 				if (m_site != m_phone): raise Exception('phone != site', m_phone, m_site, b)
 
-				#m_phone.merge(b, 'phone_site')
+				m_phone.merge(b, 'phone_site')
 				Combine.matched['phone_site'] = Combine.matched['phone_site'] + 1
 				Combine.matched[m_phone.source][b.source] = Combine.matched[m_phone.source][b.source] + 1
 				continue
@@ -76,34 +76,42 @@ class Combine(object):
 			if (m_site and m_name):
 				if (m_name != m_site): raise Exception('phone != site', m_name, m_site, b)
 
-				m_name.merge(b, 'name_site')
+#				m_name.merge(b, 'name_site')
 				Combine.matched['name_site'] = Combine.matched['name_site'] + 1
 				Combine.matched[m_phone.source][b.source] = Combine.matched[m_phone.source][b.source] + 1
 				continue
 
 
 			if (m_phone and m_name):
+				if (m_phone != m_name):	
+					print '===================================================='
+					print 'QUA? phone != name', b.phone, b.name
+					print 'matched phone:', m_phone.phone, m_phone.name, distance(m_phone.name, b.name)
+					print 'matched name:',  m_name.phone, m_name.name
+					print '-addr-----------------------------------------------'
+					pp(b.addr)
+					pp(m_phone.addr)
+					pp(m_name.addr)
+					#print m_phone.addr.street
+					#print m_name.addr.street
+					print '----------------------------------------------------'
+					print '====================================================\n'
+
 				if (m_phone == m_name):
-			#		m_phone.merge(b, 'phone_name')
+#					m_phone.merge(b, 'phone_name')
 					Combine.matched['phone_name'] = Combine.matched['phone_name'] + 1
 					Combine.matched[m_phone.source][b.source] = Combine.matched[m_phone.source][b.source] + 1
 					continue
 
-#				if (m_phone != m_name):	
-#					print '=========================================='
-#					print 'QUA? phone != name', b.phone, b.name
-#					print 'matched phone:', m_phone.phone, m_phone.name
-#					print 'matched name:',  m_name.phone, m_name.name
-#					print '==========================================\n'
 
 
+#			if (m_site):
+#				m_site.merge(b, 'website')
 
-			if (m_site):
-				m_site.merge(b, 'website')
-
-#			if (m_phone):
+			if (m_phone):
 				# does not match name or site.
-#				m_phone.merge(b)
+#				m_phone.merge(b, 'just phone')
+				pass
 				
 			#print b.business_id, b.name
 			
@@ -111,6 +119,7 @@ class Combine(object):
 			#Combine.companies[business.get(source_id)] = business
 
 		print 'Combine.companies sz[%d]' % (len(Combine.companies))
+		print 'Combine.phone_idx sz[%d]' % (len(Combine.idx_phone))
 
 
 	@staticmethod

@@ -18,6 +18,7 @@ from models import *
 from controllers import *
 from factual		import Factual as FactualTool
 from factual.utils	import *
+import factual
 
 
 
@@ -80,14 +81,14 @@ class Factual(Source):
 	def __extract_info_from_search_results(self, api_search):
 		try:
 			results = api_search.data()
-			print '__extract %s ' % (api_search.get_url())
-		except factual_api.api.APIException as e:
-			print '__extract %s failed.  retry.' % (api_search.get_url())
+		except factual.api.APIException as e:
 			print type(e), e
+			print '__extract %s failed.  retry.' % (api_search.get_url())
 		except Exception as e:
 			print type(e), e
 			
 			
+		print '__extract %s ' % (api_search.get_url())
 		for business in results:
 			#pp(business)
 			company = {}
@@ -136,7 +137,7 @@ class Factual(Source):
 		company['factual_categories'] = categories[0]
 		
 
-	def __extract_open_hours(self, business, company):
+	def __extract_hours_open(self, business, company):
 		pass
 
 	def __extract_chain_info(self, business, company):
