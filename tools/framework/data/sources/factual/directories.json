@@ -1,5 +1,5 @@
 {
-	"directories" : [ "235", "236", "237",
+	"directories" : [ "236", "237",
 		"238", "239", "240", "241", "242",
 		"243", "244", "245", "246", "247",
 		"249", "251", "252", "253", "254",
@@ -145,5 +145,5 @@
 		"81654", "81655", "81656", "81657", "81658"
 	],
 
-	"comments" : "see the Factual documentations for each category" 
+	"comments" : "see the Factual documentations for each category: http://developer.factual.com/working-with-categories/"
 }

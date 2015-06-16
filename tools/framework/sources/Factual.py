@@ -48,31 +48,32 @@ class Factual(Source):
 
 	def update_company_directory(self):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
+		
+		cat_grp_1	= self.directories[0:13]
+		cat_grp_2	= self.directories[13:]
+		categories	= [cat_grp_1, cat_grp_2] # cat_grp_3, cat_grp_4]
 
 		for zipcode in self.co_zipcodes:
-			fact_filter	= { "region" : "CO",
-							"postcode" : zipcode,
-#								"$or" : [ {"locality"	: { "$eq" : "boulder" }}, {"locality"	: { "$eq" : "boulder" }} ],
-												#{"locality"	: { "$eq" : "denver"  }}
-									"category_ids"	: { "$includes_any" : self.directories }
-			}
-			print 'using zipcode', zipcode
-			self.__update_company_directory_using_filter(fact_filter)
+			for category_list in categories:
+				fact_filter	= { "region" : "CO",
+								"postcode" : zipcode,
+								"category_ids"	: { "$includes_any" : category_list}
+				}
+				self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
 
 
 
-	def __update_company_directory_using_filter(self, fact_filter):
+	def __update_company_directory_using_filter(self, fact_filter, zipcode=None, category_list=None):
 		api_places_rc	= self.factual_places.filters(fact_filter).include_count(True).limit(50)
 		api_places_nr	= api_places_rc.total_row_count()
 		api_collected	= self.__extract_info_from_search_results(api_places_rc)
 		api_places = min(api_places_nr, 500)
+		print 'Factual.update_company_list: [%s|%s] %d/%d' % (zipcode, category_list, api_places, api_places_nr)
 		while (api_collected < api_places):
 			api_places_rc	= self.factual_places.filters(fact_filter).limit(50).offset(api_collected)
 			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc)
-			print 'Factual.update_company_list: %d/%d' % (api_collected, api_places)
 			self.sleep(10 + random.randint(0, 15))
 
-		print 'Factual.update_company_list -- %d / %d' % (api_collected, api_places_nr)
 		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
@@ -84,11 +85,13 @@ class Factual(Source):
 		except factual.api.APIException as e:
 			print type(e), e
 			print '__extract %s failed.  retry.' % (api_search.get_url())
+			return 0
 		except Exception as e:
 			print type(e), e
+			return 0
 			
 			
-		print '__extract %s ' % (api_search.get_url())
+#		print '__extract %s ' % (api_search.get_url())
 		for business in results:
 			#pp(business)
 			company = {}
