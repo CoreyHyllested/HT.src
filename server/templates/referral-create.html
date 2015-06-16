@@ -15,7 +15,7 @@
 	<div id='refer_a_pro' class="form-group email">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 		{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-		<input id='send_invite' type="submit" class="blueButton" value="Send">
+		<!--input id='send_invite' type="submit" class="blueButton" value="Send"-->
 	</div>
 </section>
 {% endblock %}
@@ -28,18 +28,38 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script>
 		$(document).ready(function () {
-			$('#send_invite').click(function() {
-				alert( "Handler for .click() called." );
-				return false;
+			$('#invite_emails').keydown(function(event) {
+				if (event.keyCode == 13) {
+					get_profile();
+					return false;
+					this.form.submit();
+				 }
 			});
 
+			function get_profile() {
+				alert( "Handler for submit() called." );
+				console.log('here');
+			}
+
 			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
-			  console.log('Selection: ' + suggestion);
+
+				var fd = {};
+				fd.csrf_token = "{{ csrf_token() }}";
+				console.log('selected: ' + suggestion.id + 'id?');
+
+				$.ajax({url		: "/professional/" + suggestion.id + '/',
+						type	: "POST",
+						data	: fd,
+						success : function(data) {
+							console.log(data);
+							//window.location.href = data.nexturl;
+						},
+						error	: function(data) {
+							console.log("Oops, AJAX Error.");
+						}
+				})
 			});
-		
-			$('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {
-				console.log('Render=' + suggestion); // + "; flag (async?)=" + flag + "; dataset=" + dataset);
-			});
+			{# $('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {   //code  }); #}
 		});
 	</script>
 {% endblock %}

@@ -22,25 +22,29 @@ from server.models import *
 
 
 def api_prime_search():
+	if (sc_server.__dict__.get('pro_index_id')): return
 	print 'Prime Search.'
 
 	try:
 		fp = open(os.getcwd() + '/tools/framework/data/sources/factual/companies.json')
-		content = fp.read()
-		sc_server.index_pros = json.loads(content)
+		sc_server.pro_list = json.loads(fp.read())
+
+		sc_server.pro_index_id = {}
+		for account in sc_server.pro_list:
+			sc_server.pro_index_id[account['id_factual']] = account
 	except Exception as e:
 		print type(e), e
 	finally:
 		if (fp): fp.close()
 
-	print len(sc_server.index_pros), type(sc_server.index_pros)
-	return sc_server.index_pros
+	print len(sc_server.pro_list), type(sc_server.pro_list)
+	return sc_server.pro_list
 
 
 
 @sc_users.route('/professional/search/<string:identifier>', methods=['GET','POST'])
 def api_referral_find(identifier):
-	index = sc_server.__dict__.get('index_pros')
+	index = sc_server.__dict__.get('pro_list')
 	if (not index): index = api_prime_search()
 	added = 0
 
@@ -52,9 +56,8 @@ def api_referral_find(identifier):
 		if (added > 5): break
 
 		if identifier in pro['name'].lower():
-			#response[pro['id_factual']] = pro['name'] + ' ' + pro['addr']['street']
 			print 'adding', pro['name'], 'because we matched', pro['name'].lower(), 'to', identifier, 'added = ', added 
-			response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 			added = added + 1
 			continue
 
@@ -62,25 +65,28 @@ def api_referral_find(identifier):
 	#	email = pro.get('email', '')
 	#	if email and (identifier in pro['email'].lower()):
 	#		print 'adding', pro['name'], 'because we matched', pro['email'].lower(), 'to', identifier 
-			#response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+			#response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 	#		added = added + 1
 	#		continue
 		phone = pro.get('phone', '')
 		if phone: phone = re.sub('[() \-,.]', '', phone)
 		if phone and (identphone in phone):
 			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
-			#response[pro['id_factual']] = pro['name'] + ' ' + pro['addr']['street']
-			response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 			added = added + 1
 	pp (response)
 	return make_response(jsonify(response), 200)
 
 
 
-@sc_users.route('/professional/<string:identifier>', methods=['POST'])
+@sc_users.route('/professional/<string:identifier>/', methods=['POST'])
 def api_professional_info(identifier):
-	print 'api_review_(): enter'
-	return make_response(jsonify(welldone=True), 200)
+	api_prime_search()
+	print 'api_professional(%s) %d' % (identifier, len(sc_server.pro_index_id))
+	info = sc_server.pro_index_id.get(identifier, { "id" : "Not Found"})
+
+	return make_response(jsonify(info), 200)
+
 
 
 @sc_users.route('/review/request', methods=['POST'])

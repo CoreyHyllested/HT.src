@@ -20,16 +20,11 @@ $(document).ready(function () {
 		minLength: 4,
 	},
 	{
-		name: 'coreyisaverytallman',
-		display: 'value',
+		display: 'name',
 		source: pro_finder,
 		templates: {
-			empty: [
-					'<div class="empty-message">',
-					'We did not find any contractors matching that query',
-					'</div>'
-			].join('\n'),
-			suggestion: Handlebars.compile('<div style="width: 100%; height: 20px;"><span style="float: left;">{{value}}</span> <span style="font-size: .9em; color: gray; float: right;">{{addr}}</span></div>')
+			empty: '<div class="empty-message">We did not find any contractors matching that query</div>',
+			suggestion: Handlebars.compile('<div style="width: 100%; height: 20px;" data-id={{id}}><span style="float: left;">{{name}}</span> <span style="font-size: .9em; color: gray; float: right;">{{addr}}</span></div>')
 		}
 	});
 
