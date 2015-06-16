@@ -38,7 +38,7 @@ def api_prime_search():
 
 
 
-@sc_users.route('/referral/find/<string:identifier>', methods=['GET','POST'])
+@sc_users.route('/professional/search/<string:identifier>', methods=['GET','POST'])
 def api_referral_find(identifier):
 	index = sc_server.__dict__.get('index_pros')
 	if (not index): index = api_prime_search()
@@ -49,25 +49,38 @@ def api_referral_find(identifier):
 
 	response = {}
 	for pro in index:
+		if (added > 5): break
+
 		if identifier in pro['name'].lower():
-			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
+			#response[pro['id_factual']] = pro['name'] + ' ' + pro['addr']['street']
+			print 'adding', pro['name'], 'because we matched', pro['name'].lower(), 'to', identifier, 'added = ', added 
+			response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 			added = added + 1
 			continue
-		email = pro.get('email', '')
-		if email and (identifier in pro['email'].lower()):
-			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
-			added = added + 1
-			continue
+
+		
+	#	email = pro.get('email', '')
+	#	if email and (identifier in pro['email'].lower()):
+	#		print 'adding', pro['name'], 'because we matched', pro['email'].lower(), 'to', identifier 
+			#response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+	#		added = added + 1
+	#		continue
 		phone = pro.get('phone', '')
 		if phone: phone = re.sub('[() \-,.]', '', phone)
 		if phone and (identphone in phone):
 			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
-			response[pro['id_factual']] = pro['name'] + pro['addr']['street']
+			#response[pro['id_factual']] = pro['name'] + ' ' + pro['addr']['street']
+			response[pro['id_factual']] = { "value" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 			added = added + 1
-		if (added > 5):
-			break
 	pp (response)
 	return make_response(jsonify(response), 200)
+
+
+
+@sc_users.route('/professional/<string:identifier>', methods=['POST'])
+def api_professional_info(identifier):
+	print 'api_review_(): enter'
+	return make_response(jsonify(welldone=True), 200)
 
 
 @sc_users.route('/review/request', methods=['POST'])

@@ -6,6 +6,8 @@
 #invite_emails	{ display: inline-block; width: 200px; }
 
 
+#refer_a_pro { display: inline-block; }
+#send_invite { display: inline-block; width: 75px; height: 40px; }
 
 /* Responsive Styles */
 @media only screen and (min-device-width: 240px) and (max-width: 500px) {
@@ -34,7 +36,7 @@
 	text-align: center;
 }
 
-.access-section .form-group.email:before {
+.access-section .form-group.text:before {
   content: "\f003";
   font-family: FontAwesome;
   font-style: normal;

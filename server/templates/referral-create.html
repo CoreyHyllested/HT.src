@@ -12,15 +12,11 @@
 <section id='invite'>
 	<div class='h3 text-center'>Make a Referral.</div>
 
-	<form method='POST' action='/invite'>
+	<div id='refer_a_pro' class="form-group email">
 		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-		<div>
-			<div id='refer_a_pro' class="form-group email">
-				{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-			</div>
-		</div>
-	</form>
+		{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
+		<input id='send_invite' type="submit" class="blueButton" value="Send">
+	</div>
 </section>
 {% endblock %}
 
@@ -29,4 +25,21 @@
 	{{ super() }}
 	<script src="/static/js/typeahead.bundle.js"></script>
 	<script src="/static/js/referral.js"></script>
+	<script src="/static/js/handlebars.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#send_invite').click(function() {
+				alert( "Handler for .click() called." );
+				return false;
+			});
+
+			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
+			  console.log('Selection: ' + suggestion);
+			});
+		
+			$('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {
+				console.log('Render=' + suggestion); // + "; flag (async?)=" + flag + "; dataset=" + dataset);
+			});
+		});
+	</script>
 {% endblock %}

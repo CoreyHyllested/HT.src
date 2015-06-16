@@ -1,42 +1,13 @@
-var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-	'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-	'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-	'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-	'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-	'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-	'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-	'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-];
+var referral_version = 0.5;
 
-var referral_version = 0.4;
 $(document).ready(function () {
 	console.log('referral.js: v' + referral_version);
-
-	var substringMatcher = function(strs) {
-		return function findMatches(q, cb) {
-			var matches, substringRegex;
-				   
-			matches = [];						// array populated with substring matches
-			substrRegex = new RegExp(q, 'i');	// regex used to determine if a string contains the substring `q`
-					 
-			// iterate through the pool of strings and for any string that
-			// contains the substring `q`, add it to the `matches` array
-			$.each(strs, function(i, str) {
-				if (substrRegex.test(str)) {
-					matches.push(str);
-				}
-			});
-								  
-			cb(matches);
-		};
-	};
-
 
 	var pro_finder = new Bloodhound({
 		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
 		queryTokenizer: Bloodhound.tokenizers.whitespace,
 		remote: {
-			url: '/referral/find/%QUERY.json',
+			url: '/professional/search/%QUERY.json',
 			wildcard: '%QUERY'
 		}
 	});
@@ -49,7 +20,17 @@ $(document).ready(function () {
 		minLength: 4,
 	},
 	{
-		source: pro_finder 
-//		source: substringMatcher(states)
+		name: 'coreyisaverytallman',
+		display: 'value',
+		source: pro_finder,
+		templates: {
+			empty: [
+					'<div class="empty-message">',
+					'We did not find any contractors matching that query',
+					'</div>'
+			].join('\n'),
+			suggestion: Handlebars.compile('<div style="width: 100%; height: 20px;"><span style="float: left;">{{value}}</span> <span style="font-size: .9em; color: gray; float: right;">{{addr}}</span></div>')
+		}
 	});
+
 });
