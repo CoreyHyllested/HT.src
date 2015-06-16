@@ -2,28 +2,36 @@
 @import 'elem-defaults';
 
 
-#invite			{ margin: 25px auto 55px; }
-#invite_emails	{ display: inline-block; width: 200px; }
+#invite_emails		{	display: inline-block;	}
+#refer_professional	{	display: inline-block;	width: 70%;		max-width: 690px;	background-color: white;		vertical-align: top;	}
+#refer_explanation	{	display: inline-block;	width: 29%;		max-width: 280px; 	background-color: red;		margin-left: 15px;		} 
+
+#profile-card {
+  background-color: lightgray;
+  border: 1px solid darkgray;
+}
 
 
-#refer_a_pro { display: inline-block; }
-#send_invite { display: inline-block; width: 75px; height: 40px; }
+.twitter-typeahead		{	display: inline !important;	} 	//fixes bug. #invite-emails is too small
+.tt-menu				{	top: inherit !important;	}	//fixes bug. .tt-menu is setup too high 
+.tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	}
+.tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
+.no-profile				{ 	display: none !important;	}
 
 /* Responsive Styles */
-@media only screen and (min-device-width: 240px) and (max-width: 500px) {
-}
+@media only screen and (min-device-width: 240px) and (max-width: 500px) { }
 
 
 @media (min-width: 489px) {
-	#invite_emails { width: 200px; }
+	#invite_emails { }
 }
 
 @media (min-width: 768px) {
-	#invite_emails { width: 350px; }
+	#invite_emails { }
 }
 
 @media (min-width: 980px) {
-	#invite_emails { width: 400px; }
+	#invite_emails {  }
 }
 
 @media (min-width: 1200px) { }
@@ -49,3 +57,7 @@
   top: 12px;
   color: #999999;
 }
+
+
+//unused
+#send_invite	{	display: inline-block; width: 75px; height: 40px; }

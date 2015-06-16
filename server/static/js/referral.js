@@ -14,7 +14,7 @@ $(document).ready(function () {
 
 
 
-	$('#refer_a_pro .typeahead').typeahead({
+	$('#refer_professional .typeahead').typeahead({
 		hint: true,
 		highlight: true,
 		minLength: 4,
@@ -23,9 +23,8 @@ $(document).ready(function () {
 		display: 'name',
 		source: pro_finder,
 		templates: {
-			empty: '<div class="empty-message">We did not find any contractors matching that query</div>',
+			empty: '<div>We did not find any contractors that matched that query.</div>',
 			suggestion: Handlebars.compile('<div style="width: 100%; height: 20px;" data-id={{id}}><span style="float: left;">{{name}}</span> <span style="font-size: .9em; color: gray; float: right;">{{addr}}</span></div>')
 		}
 	});
-
 });

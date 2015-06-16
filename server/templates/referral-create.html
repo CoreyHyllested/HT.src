@@ -8,14 +8,30 @@
 	{% assets "scss_referral" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
-{% block content %}
-<section id='invite'>
-	<div class='h3 text-center'>Make a Referral.</div>
 
-	<div id='refer_a_pro' class="form-group email">
-		<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-		{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-		<!--input id='send_invite' type="submit" class="blueButton" value="Send"-->
+{% block content %}
+<section>
+	<div>
+		<div id='refer_professional' class=''>
+			<h3 style="text-align: left;">Help Corey find a professional</h3>
+
+			{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
+			<!--input id='send_invite' type="submit" class="blueButton" value="Send"-->
+			<div id='profile-card' class='no-profile' data-id=''>
+				<div id='pro-name' class='profile-field'></div>
+				<div id='pro-category' class='profile-field'></div>
+				<div id='pro-addr' class='profile-field'></div>
+				<div id='pro-email' class='profile-field'></div>
+				<div id='pro-phone' class='profile-field'></div>
+				<div id='pro-media' class='profile-field'></div>
+			</div>
+		</div>
+		<div id='refer_explanation' class=''>
+			<h3>Help Corey learn about the pros you know</h3>
+			<p>Most people need to know a bit about the project you did -- and why you would recommend them.</p>
+			<p>Your recommendation will be public.</p>
+		</div>
+
 	</div>
 </section>
 {% endblock %}
@@ -33,7 +49,9 @@
 					get_profile();
 					return false;
 					this.form.submit();
-				 }
+				} else {
+					clr_profile();
+				}
 			});
 
 			function get_profile() {
@@ -41,8 +59,12 @@
 				console.log('here');
 			}
 
-			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
+			function clr_profile() {
+				console.log('clear everything!');
+				$('#profile-card').addClass('no-profile');
+			}
 
+			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 				var fd = {};
 				fd.csrf_token = "{{ csrf_token() }}";
 				console.log('selected: ' + suggestion.id + 'id?');
@@ -52,7 +74,22 @@
 						data	: fd,
 						success : function(data) {
 							console.log(data);
-							//window.location.href = data.nexturl;
+							$('#profile-card').removeClass('no-profile');
+							$('#profile-card').attr('data-id', data.id_factual);
+
+							busname = data.name
+							if (data.website) {
+								busname = '<a href="' + data.website + '" target="_blank">' + busname + '</a>'
+							}
+							$('#pro-name').html(busname);
+	
+
+							$('#pro-email').html(data.email);
+							$('#pro-phone').html(data.phone);
+							$('#pro-addr').html(data.addr.street + ' ' + data.addr.city + ', ' + data.addr.state + ' ' + data.addr.post);
+
+							sz = data.factual_categories.length;
+							$('#pro-category').html(data.factual_categories[sz-1]);
 						},
 						error	: function(data) {
 							console.log("Oops, AJAX Error.");
