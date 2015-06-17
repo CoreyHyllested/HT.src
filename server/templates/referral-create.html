@@ -12,28 +12,39 @@
 {% block content %}
 <section>
 	<div>
+		<div><h3 style="text-align: left;">Help Corey find a professional</h3></div>
 		<div id='refer-professional' class=''>
-			<h3 style="text-align: left;">Help Corey find a professional</h3>
 
 			{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-			<!--input id='send_invite' type="submit" class="blueButton" value="Send"-->
 			<div id='profile-card' class='no-profile' data-id=''>
 				<div id='pro-category'	class='ff header'></div>
 				<div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div>
 				<div id='pro-addr'	class='ff value'></div> <div id='pro-phone' class='ff contact'></div>
 
-				<br>
 				<div id='profile-reference'>
-					<div class='ff header'>Why do you recommend <span>them<span>? (<span id="count">200</span> chars left.)</div>
-					<input id='refer-why' type="textarea" class="ff"></input>
-					<input id='btn-save-referral' type="button" value="Save"></input>
+					<div class='ff header'>Why do you recommend <span>them<span>? (<span id="refer-why-nr">200</span> chars left.)</div>
+					<input id='refer-why' type="textarea" class="ff"
+							placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time."
+							maxlength=200
+							minlength=20
+							required
+							spellcheck=true
+					>
+					</input>
+					<input id='btn-cancel' 			type="button" class='btn-referral whiteButton' value="Cancel"></input>
+					<input id='btn-save-referral'	type="button" class='btn-referral blueButton'  value="Save Reference"></input>
 				</div>
 			</div>
 		</div>
+
 		<div id='refer-explanation' class=''>
 			<h3>Help Corey learn about the pros you know</h3>
 			<p>Most people need to know a bit about the project you did -- and why you would recommend them.</p>
 			<p>Your recommendation will be public.</p>
+
+			<div id='refer-usrfeedback'>
+				<ul id='feedback'></ul>
+			</div>
 		</div>
 
 	</div>
@@ -48,6 +59,14 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script>
 		$(document).ready(function () {
+
+			$('#refer-why').keyup(function(evt) {
+				txt = $(this).val();
+				max	= $(this).attr('maxlength');
+				nr	= max - txt.length;
+				$('#refer-why-nr').text(nr);
+			});
+
 			$('#invite_emails').keydown(function(event) {
 				if (event.keyCode == 13) {
 					get_profile();
@@ -57,14 +76,20 @@
 				}
 			});
 
-			function get_profile() {
-				console.log('here');
+			function get_profile()			{	return;										}
+			function clr_profile()			{	$('#profile-card').addClass('no-profile');	}
+			function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
+			function feedback_remove(id)	{	$('#'+id).remove();			}
+
+			function save_reference(evt) {
+				html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
+				uid	 = $(html).attr('id');
+				setTimeout(feedback_fade,	2500, uid);
+				setTimeout(feedback_remove, 5000, uid);
 			}
 
-			function clr_profile() {
-				console.log('clear everything!');
-				$('#profile-card').addClass('no-profile');
-			}
+
+			$('#btn-save-referral').click(save_reference);
 
 			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 				var fd = {};
