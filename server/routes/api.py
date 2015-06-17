@@ -56,8 +56,27 @@ def api_referral_find(identifier):
 		if (added > 5): break
 
 		if identifier in pro['name'].lower():
-			print 'adding', pro['name'], 'because we matched', pro['name'].lower(), 'to', identifier, 'added = ', added 
-			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+			print 'adding', pro['name'], 'because we matched', pro['name'].lower(), 'to', identifier, 'added = ', added
+			address = 'No address listed'
+			if (pro['addr']):
+				street	= pro['addr'].get('street')
+				suite	= pro['addr'].get('suite')
+				city	= pro['addr'].get('city')
+				state	= pro['addr'].get('state')
+
+				if (street and suite):
+					address = street + ', ' + suite + ' '
+				elif (street):
+					address = street + ' '
+
+				if (city and state):
+					address = address + city + ', ' + state
+				elif (city):
+					address = address + city
+
+
+			print 'address: "' +  address + '"'
+			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : address }
 			added = added + 1
 			continue
 
