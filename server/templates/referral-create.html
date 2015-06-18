@@ -6,6 +6,7 @@
 {% block header_css %}
 	{{ super() }}
 	{% assets "scss_referral" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	<link rel='stylesheet' href='/static/css/bootstrap-tagsinput.css'>
 {% endblock %}
 
 
@@ -28,9 +29,14 @@
 							maxlength=200
 							minlength=20
 							required
-							spellcheck=true
-					>
-					</input>
+							spellcheck=true></input>
+					<div class=''>
+						<div id='' class='ff header'> What project was this for?</div>
+						<input id='refer-proj' type="text" class="ff"> </input>
+					</div>
+
+				</div>
+				<div class=''>
 					<input id='btn-cancel' 			type="button" class='btn-referral whiteButton' value="Cancel"></input>
 					<input id='btn-save-referral'	type="button" class='btn-referral blueButton'  value="Save Reference"></input>
 				</div>
@@ -57,9 +63,39 @@
 	<script src="/static/js/typeahead.bundle.js"></script>
 	<script src="/static/js/referral.js"></script>
 	<script src="/static/js/handlebars.js"></script>
+	<script src="/static/js/bootstrap-tagsinput.js"></script>
 	<script>
-		$(document).ready(function () {
+	
+	$(document).ready(function () {
+		var blood = new Bloodhound({
+			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+			queryTokenizer: Bloodhound.tokenizers.whitespace,
+			limit: 3,
+			prefetch: {
+				url: "/projects.json",
+				filter: function(list) {
+					console.log(this);
+					return $.map(list, function(tag) {
+						return { 'name' : tag };
+					});
+				}
+			}
+		});
 
+		$('#refer-proj').tagsinput({
+			typeaheadjs: {
+				name: 'fucket',
+				displayKey: 'name',
+				valueKey: 'name',
+				source: blood.ttAdapter()
+			}
+		});
+	});
+
+
+
+
+		$(document).ready(function () {
 			$('#refer-why').keyup(function(evt) {
 				txt = $(this).val();
 				max	= $(this).attr('maxlength');
@@ -69,7 +105,6 @@
 
 			$('#invite_emails').keydown(function(event) {
 				if (event.keyCode == 13) {
-					get_profile();
 					return false;
 				} else {
 					clr_profile();
@@ -94,13 +129,11 @@
 			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 				var fd = {};
 				fd.csrf_token = "{{ csrf_token() }}";
-				console.log('selected: ' + suggestion.id + 'id?');
-
 				$.ajax({url		: "/professional/" + suggestion.id + '/',
 						type	: "POST",
 						data	: fd,
 						success : function(data) {
-							console.log(data);
+							//console.log(data);
 							$('#profile-card').removeClass('no-profile');
 							$('#profile-card').attr('data-id', data.id_factual);
 
@@ -132,7 +165,6 @@
 									category = category + " » ";
 								}
 							});
-							console.log(category);
 							//$('#pro-category').html(data.factual_categories[sz-1]);
 							$('#pro-category').html(category);
 						},
@@ -142,6 +174,7 @@
 				})
 			});
 			{# $('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {   //code  }); #}
+
 		});
 	</script>
 {% endblock %}
