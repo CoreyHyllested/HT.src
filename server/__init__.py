@@ -114,10 +114,13 @@ def initialize_server(config_name):
 
 	Compress(sc_server)
 
-	from routes import authentication, everyone, users, api, meta, errors, testing
+	from routes import authentication, everyone, users, api
+	from routes import admin, errors, meta, testing
+	from routes import sc_admin
 	from routes import sc_users as sc_allusers
 	from routes import sc_ebody as sc_everyone
 	from routes import sc_meta	as sc_metaserv
+	sc_server.register_blueprint(sc_admin)
 	sc_server.register_blueprint(sc_everyone)
 	sc_server.register_blueprint(sc_allusers)
 	sc_server.register_blueprint(sc_metaserv)

@@ -11,13 +11,15 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-from flask import Blueprint
 
-# create the Blueprints available to use.
-sc_admin = Blueprint('sc_admin', __name__)
-sc_users = Blueprint('sc_users', __name__)
-sc_ebody = Blueprint('sc_ebody', __name__)
-sc_tests = Blueprint('sc_tests', __name__)
-sc_meta	= Blueprint('sc_meta', __name__)
-print 'loading', __name__
+from . import sc_admin
+from flask import render_template
+from .helpers import *
+from server.controllers import *
+from server.sc_utils import *
 
+
+@sc_admin.route('/admin', methods=['GET', 'POST'])
+def render_admin_dashboard():
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('dashboard-admin.html', bp=bp))
