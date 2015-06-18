@@ -137,7 +137,7 @@ class Porch(Source):
 		print 'Porch.update_companies, %d directories' % (len(self.directories))
 
 		for directory in self.directories:
-			directory.get_document(debug=True)
+			directory.get_document(debug=False)
 			self.scrape_document(directory)
 
 		print 'Porch.update_companies; %d entries' % (len(self.co_index.values()))
