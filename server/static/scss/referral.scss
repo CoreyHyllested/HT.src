@@ -28,7 +28,7 @@
 #refer-proj	{	}
 
 .twitter-typeahead		{	display: inline !important;	} 	//fixes bug. #invite-emails is too small
-.tt-menu				{	top: inherit !important;	}	//fixes bug. .tt-menu is setup too high 
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
 .tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
 .tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
 .no-profile				{ 	display: none !important;	}
