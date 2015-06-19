@@ -53,7 +53,7 @@ class Factual(Source):
 			categories = [ self.directories ]
 			if ('-sp' in zipcode):
 				zipcode		= zipcode.strip('-sp')
-				categories	= [ self.directories[0:13], self.directories[13:] ]
+				categories	= [ self.directories[0:8], self.directories[8:16], self.directories[16:] ]
 
 			for category_list in categories:
 				fact_filter	= { "region" : "CO",
@@ -61,7 +61,7 @@ class Factual(Source):
 								"category_ids"	: { "$includes_any" : category_list}
 				}
 				try:
-					self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
+					self.__update_company_directory_using_filter(fact_filter, zipcode)
 				except factual.api.APIException as e:
 					print type(e), e
 					print '__update_company_dir failed.'
@@ -78,7 +78,7 @@ class Factual(Source):
 		api_places_nr	= api_places_rc.total_row_count()
 		api_collected	= self.__extract_info_from_search_results(api_places_rc, zipcode, 0)
 		api_places = min(api_places_nr, 500)
-		print 'Factual.update_company_list: [%s] %d/%d' % (zipcode, api_places, api_places_nr)
+		print 'Factual.update_company_list: [%s|%s] %d/%d' % (zipcode, category_list, api_places, api_places_nr)
 		while (api_collected < api_places):
 			api_places_rc	= self.factual_places.filters(fact_filter).limit(50).offset(api_collected)
 			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc, zipcode, api_collected)
@@ -106,7 +106,7 @@ class Factual(Source):
 			company = {}
 			source	= []
 			### http://www.factual.com/data/t/places/schema
-			company['_id_factual']	= business['factual_id']
+			company['_id_factual']		= business['factual_id']
 			company['business_name']	= business['name']
 			source =	{
 							'factual' : {
@@ -114,7 +114,7 @@ class Factual(Source):
 								'src'	: 'http://factual.com/' + business['factual_id']
 							}
 						}
-			company['source'] = [].append(source)
+			company['source'] = [ source ]
 
 			self.__extract_address(business, company)
 			self.__extract_contact(business, company)
