@@ -61,7 +61,7 @@ class Factual(Source):
 				}
 				self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
 
-		print '%s.update_companies; %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
 		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
@@ -98,7 +98,7 @@ class Factual(Source):
 		for business in results:
 			company = {}
 			### http://www.factual.com/data/t/places/schema
-			company['id_factual']	= business['factual_id']
+			company['_id_factual']	= business['factual_id']
 			company['src_factual']	= 'http://factual.com/' + business['factual_id']
 			company['business_name']	= business['name']
 			company['business_website']	= business.get('website', None)
@@ -109,8 +109,8 @@ class Factual(Source):
 			self.__extract_chain_info(business, company)
 			self.__extract_hours_info(business, company)
 
-			if (not self.co_index.get(company['src_factual'])):
-				self.co_index[company['src_factual']] = company
+			#if (not self.co_index.get(company['src_factual'])):
+			self.co_index[company['src_factual']] = company
 		return len(results)
 
 
