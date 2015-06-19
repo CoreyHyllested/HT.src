@@ -49,33 +49,39 @@ class Factual(Source):
 	def update_company_directory(self):
 		if (len(self.directories) == 0): self.__load_directory_of_directories()
 		
-		cat_grp_1	= self.directories[0:13]
-		cat_grp_2	= self.directories[13:]
-		categories	= [cat_grp_1, cat_grp_2] # cat_grp_3, cat_grp_4]
-
 		for zipcode in self.co_zipcodes:
+			categories = [ self.directories ]
+			if ('-sp' in zipcode):
+				zipcode		= zipcode.strip('-sp')
+				categories	= [ self.directories[0:13], self.directories[13:] ]
+
 			for category_list in categories:
 				fact_filter	= { "region" : "CO",
 								"postcode" : zipcode,
 								"category_ids"	: { "$includes_any" : category_list}
 				}
-				self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
+				try:
+					self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
+				except factual.api.APIException as e:
+					print type(e), e
+					print '__update_company_dir failed.'
 
-		print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
-		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
-		self.doc_companies.write_cache()
+		# CAH-move back here.
+			print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+			self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+			self.doc_companies.write_cache()
 
 
 
 	def __update_company_directory_using_filter(self, fact_filter, zipcode=None, category_list=None):
 		api_places_rc	= self.factual_places.filters(fact_filter).include_count(True).limit(50)
 		api_places_nr	= api_places_rc.total_row_count()
-		api_collected	= self.__extract_info_from_search_results(api_places_rc)
+		api_collected	= self.__extract_info_from_search_results(api_places_rc, zipcode, 0)
 		api_places = min(api_places_nr, 500)
-		print 'Factual.update_company_list: [%s|%s] %d/%d' % (zipcode, category_list, api_places, api_places_nr)
+		print 'Factual.update_company_list: [%s] %d/%d' % (zipcode, api_places, api_places_nr)
 		while (api_collected < api_places):
 			api_places_rc	= self.factual_places.filters(fact_filter).limit(50).offset(api_collected)
-			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc)
+			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc, zipcode, api_collected)
 			self.sleep(10 + random.randint(0, 15))
 
 		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
@@ -83,12 +89,13 @@ class Factual(Source):
 
 
 
-	def __extract_info_from_search_results(self, api_search):
+	def __extract_info_from_search_results(self, api_search, zipcode, collected):
 		try:
 			results = api_search.data()
 		except factual.api.APIException as e:
-			print type(e), e
-			print '__extract %s failed.  retry.' % (api_search.get_url())
+			print type(e),'api_search.data() failed.'
+			print 'zip %d, offset %d' % (zipcode, collected)
+			print 'retry.' % (api_search.get_url())
 			return 0
 		except Exception as e:
 			print type(e), e
@@ -97,11 +104,17 @@ class Factual(Source):
 
 		for business in results:
 			company = {}
+			source	= []
 			### http://www.factual.com/data/t/places/schema
 			company['_id_factual']	= business['factual_id']
-			company['src_factual']	= 'http://factual.com/' + business['factual_id']
 			company['business_name']	= business['name']
-			company['business_website']	= business.get('website', None)
+			source =	{
+							'factual' : {
+								'id'	: business['factual_id'],
+								'src'	: 'http://factual.com/' + business['factual_id']
+							}
+						}
+			company['source'] = [].append(source)
 
 			self.__extract_address(business, company)
 			self.__extract_contact(business, company)
@@ -109,31 +122,35 @@ class Factual(Source):
 			self.__extract_chain_info(business, company)
 			self.__extract_hours_info(business, company)
 
-			#if (not self.co_index.get(company['src_factual'])):
-			self.co_index[company['src_factual']] = company
+			#if (not self.co_index.get(company['_id_factual'])):
+			self.co_index[company['_id_factual']] = company
 		return len(results)
 
 
 
 	def __extract_address(self, business, company):
 		address = {}
+		meta = {}
+
+		meta['lat'] = business.get('latitude',	None)
+		meta['lng'] = business.get('longitude',	None)
+		meta['neighborhood'] = business.get('neighborhood', None)
+
+		# done alphabetically, for your own ease of reading.
+		address['city']		= business.get('locality',	None)
+		address['meta']		= meta
+		address['state']	= business.get('region',	None)
 		address['street']	= business.get('address',	None)
 		address['suite']	= business.get('address_extended', None)
-		address['city']		= business.get('locality',	None)
-		address['state']	= business.get('region',	None)
 		address['post']		= business.get('postcode',	None)
 
-		address['meta_lat'] = business.get('latitude',	None)
-		address['meta_lng'] = business.get('longitude',	None)
-		address['meta_neighborhood'] = business.get('neighborhood', None)
-
-		company['addr'] = address
+		company['address'] = address
 
 
 	def __extract_contact(self, business, company):
-			# maybe multiple?
-			company['email']	= business.get('email', None)
-			company['phone']	= business.get('tel', None)
+			self.normalize_email(business.get('email'), company)
+			self.normalize_phone(business.get('tel'), company)
+			self.normalize_website(business.get('website'), company)
 
 
 	def __extract_categories(self, business, company):

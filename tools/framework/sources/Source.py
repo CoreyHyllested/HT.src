@@ -44,8 +44,10 @@ class Source(object):
 		duplicates	= []
 
 		for business in company_lst:
-			if not company_idx.get(business['src_'+self.source_type()]):
-				company_idx[business['src_'+self.source_type()]] = business
+			# companies not using proper format are ignored, deleted on write
+			if (business.get('_id_' + self.source_type()) == None):	continue
+			if not company_idx.get(business['_id_' + self.source_type()]):
+				company_idx[business['_id_' + self.source_type()]] = business
 			else:
 				duplicates.append(business)
 
@@ -132,6 +134,7 @@ class Source(object):
 			print '\n\nADD ANOTHER DIRECTORY: ', '"' + uri.replace('Boulder.CO', 'LOCATION') + '",'
 
 
+
 	def read_json_file(self, file_path, DEBUG=False):
 		# FOR TESTING.  http://jsonlint.com/
 		if (file_path[0] is not '/'):
@@ -149,4 +152,24 @@ class Source(object):
 			if (file_pointer): file_pointer.close()
 		return { "data" : None }
 
+
+
+	def normalize_email(self, email_address, company):
+		emails = company.get('business_emails', [])
+		if (emails): emails.append(email_address)
+		company['business_emails'] = emails
+
+
+	def normalize_phone(self, phone, company):
+		phones = company.get('business_phones', [])
+		if (phone):
+			# compare: business_phones[idx].national_number
+			# display: phonenumbers.format_number(business_phones.idx.national_number, PhoneNumberFormat.NATIONAL)?
+			phones.append(phonenumbers.parse(phone, 'US').national_number)
+		company['business_phones'] = phones
+
+
+	def normalize_website(self, website, company):
+		if (website): website = urltools.normalize(website)
+		company['business_website'] = website
 
