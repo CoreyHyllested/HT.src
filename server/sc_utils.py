@@ -18,7 +18,7 @@ from flask import *
 
 
 def trace(msg):
-	sc_server.logger.info(msg)
+	sc_server.logger.info(msg) 
 
 def sc_debug(msg):
 	if sc_server.debug: print(msg)
@@ -45,6 +45,20 @@ def sc_authenticated(function):
 	return verify_authenticated_user
 
 
+def sc_administrator(function):
+	@functools.wraps(function)
+	def verify_authenticated_admin(*args, **kwargs):
+		if 'uid' not in session:
+			trace("no uid; " + function.__name__ + ': redirect to login')
+			return make_response(redirect('/login'))
+		if 'admin' not in session:
+			trace("no uid; " + function.__name__ + ': return 400')
+			raise Exception('Missing authenication')
+		return function(*args, **kwargs)
+	return verify_authenticated_admin
+
+
+
 def deprecated(function):
 	@functools.wraps(function)
 	def print_deprecated(*args, **kwargs):
@@ -65,6 +79,8 @@ def dbg_enterexit(orig_fn):
 	return logged_fn
 
 
+
+@deprecated
 def req_authentication(orig_fn):
 	@functools.wraps(orig_fn)
 	def verify_authenticated_user(*args, **kwargs):

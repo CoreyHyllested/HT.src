@@ -34,7 +34,7 @@ class Factual(Source):
 		super(Factual, self).__init__()
 		self.factual_api = FactualTool(TOKEN, TOKEN_SECRET)
 		self.factual_places = self.factual_api.table('places')
-		self.doc_scrapemap = { }		#intentionally
+		self.doc_scrapemap = {}		#intentionally empty
 		self.directories = []
 
 
@@ -60,6 +60,10 @@ class Factual(Source):
 								"category_ids"	: { "$includes_any" : category_list}
 				}
 				self.__update_company_directory_using_filter(fact_filter, zipcode, category_list)
+
+		print '%s.update_companies; %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+		self.doc_companies.write_cache()
 
 
 
@@ -89,47 +93,47 @@ class Factual(Source):
 		except Exception as e:
 			print type(e), e
 			return 0
-			
-			
-#		print '__extract %s ' % (api_search.get_url())
+
+
 		for business in results:
-			#pp(business)
 			company = {}
 			### http://www.factual.com/data/t/places/schema
 			company['id_factual']	= business['factual_id']
 			company['src_factual']	= 'http://factual.com/' + business['factual_id']
-			company['name']			= business['name']
-			company['email']		= business.get('email', None)
-			company['phone']		= business.get('tel', None)
-			company['website']		= business.get('website', None)
-			
+			company['business_name']	= business['name']
+			company['business_website']	= business.get('website', None)
+
 			self.__extract_address(business, company)
-			self.__extract_hours_open(business, company)
-			self.__extract_chain_info(business, company)
+			self.__extract_contact(business, company)
 			self.__extract_categories(business, company)
-			#pp(company)
+			self.__extract_chain_info(business, company)
+			self.__extract_hours_info(business, company)
+
 			if (not self.co_index.get(company['src_factual'])):
 				self.co_index[company['src_factual']] = company
 		return len(results)
 
 
+
 	def __extract_address(self, business, company):
 		address = {}
-		if business.get('address'): 			address['street']	= business['address']
-		if business.get('address_extended'):	address['suite']	= business['address_extended']
-		if business.get('locality'):			address['city']		= business['locality']
-		if business.get('region'):				address['state']	= business['region']
-		if business.get('postcode'):			address['post']		= business['postcode']
+		address['street']	= business.get('address',	None)
+		address['suite']	= business.get('address_extended', None)
+		address['city']		= business.get('locality',	None)
+		address['state']	= business.get('region',	None)
+		address['post']		= business.get('postcode',	None)
 
-		if business.get('address'):			address['address']	= business['address']
-		if business.get('locality'):		address['locality']	= business['locality']
-		if business.get('region'):			address['region']	= business['region']
-		if business.get('latitude'):		address['latitude'] =	business['latitude']
-		if business.get('longitude'):		address['longitude'] =	business['longitude']
-		if business.get('neighborhood'):	address['neighborhood'] = business.get('neighborhood')
+		address['meta_lat'] = business.get('latitude',	None)
+		address['meta_lng'] = business.get('longitude',	None)
+		address['meta_neighborhood'] = business.get('neighborhood', None)
+
 		company['addr'] = address
-#		if business.location.display_address: 	addr['display']	= business.location.display_address
-#		if business.location.cross_streets:		addr['cross']	= business.location.cross_streets
+
+
+	def __extract_contact(self, business, company):
+			# maybe multiple?
+			company['email']	= business.get('email', None)
+			company['phone']	= business.get('tel', None)
 
 
 	def __extract_categories(self, business, company):
@@ -138,11 +142,13 @@ class Factual(Source):
 		if (len(categories) > 1):
 			for x in categories:
 				print x
-		company['factual_categories'] = categories[0]
+		company['categories'] = [ { 'factual' : categories[0] } ]
 		
 
-	def __extract_hours_open(self, business, company):
-		pass
+	def __extract_hours_info(self, business, company):
+		if business.get('hours_display'):
+			company['hours'] = [ { 'factual' : business.get('hours_display') } ]
+
 
 	def __extract_chain_info(self, business, company):
 		if (business.get('chain_id') or business.get('chain_name')):
@@ -150,3 +156,4 @@ class Factual(Source):
 			chain_info['chain_id']	 	= business.get('chain_id')
 			chain_info['chain_name']	= business.get('chain_name')
 			company['business_chain'] = chain_info
+

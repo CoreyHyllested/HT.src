@@ -22,27 +22,34 @@ import urltools
 
 class Combine(object):
 	companies	= []
-	idx_phone	= {}
+
 	idx_name	= {}
-	idx_site	= {}
+	idx_street	= {}
+	idx_phone	= {}
+	idx_email	= {}
+	idx_website	= {}
 
 	matched		= {}
 	matched['phone_name']	= 0
 	matched['phone_site']	= 0
-	matched['site_name']	= 0
+	matched['website']		= 0
 
-	matched['bbb']			= { 'bbb' : 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
-	matched['homeadvisor']	= { 'bbb' : 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
-	matched['houzz']		= { 'bbb' : 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
-	matched['porch']		= { 'bbb' : 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
-	matched['yelp']			= { 'bbb' : 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['bbb']			= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['factual']		= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['homeadvisor']	= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['houzz']		= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['porch']		= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+	matched['yelp']			= { 'bbb' : 0, 'factual': 0, 'homeadvisor' : 0, 'houzz' : 0, 'porch' : 0, 'yelp' : 0 }
+
 
 	def __init__(self):
 		super(Combine, self).__init__()
 
 
 	@staticmethod
-	def add_source(source):
+	def add_source(source, params):
+		if (params.source) and (params.source != source.SOURCE_TYPE): return
+
 		directory = source.get_company_directory()
 		source_id = 'src_' + source.source_type()
 		
@@ -51,14 +58,14 @@ class Combine(object):
 			b = Business(company, source.source_type())
 			m_phone = Combine.idx_phone.get(b.business_phone)
 			m_name	= Combine.idx_name.get(b.name)
-			m_site	= Combine.idx_site.get(b.business_www)
+			m_site	= Combine.idx_website.get(b.business_www)
 			
 			if (not m_phone) and (not m_name) and (not m_site):
 				# implies a new business
 				Combine.companies.append(b)
 				if (b.name):			Combine.idx_name[b.name] = b
 				if (b.business_phone):	Combine.idx_phone[b.business_phone] = b
-				if (b.business_www):	Combine.idx_site[b.business_www] = b
+				if (b.business_www):	Combine.idx_website[b.business_www] = b
 				#print 'Adding', b.business_id, b.name
 				continue
 			
@@ -131,7 +138,7 @@ class Combine(object):
 		#data_manual	= json.dumps(business_index.merge_manual, indent=4, sort_keys=True)
 		master_list	= json.dumps(Combine.companies, cls=BusinessEncoder, indent=4, sort_keys=True)
 		write_file(filename_master, master_list)
-		#stats(business_index.get_list())
+		stats(business_index.get_list())
 		#update(merge_man,	data_manual)
 		#update(merge_auto,	data_merged)
 

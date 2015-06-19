@@ -25,7 +25,7 @@ from controllers import *
 import requests
 
 
-VERSION = 0.77
+VERSION = 0.78
 BOT_VER = 0.8
 THREADS	= 1
 
@@ -63,12 +63,6 @@ def config_urllib(args):
 
 
 
-def dump_queue_uris():
-	print 'URIs: (%d)' % len(dl_queue)
-	for doc in dl_queue: print doc.uri
-	print 
-
-
 
 def load_sources(config_params):
 	bbb = BBB()
@@ -80,12 +74,12 @@ def load_sources(config_params):
 
 	if (config_params.combine):
 		print 'Combine sources'
-		Combine.add_source(bbb)
-		Combine.add_source(fact)
-		Combine.add_source(home)
-		Combine.add_source(houzz)
-		Combine.add_source(porch)
-		Combine.add_source(yelp)
+		Combine.add_source(bbb, config_params)
+		Combine.add_source(fact, config_params)
+		Combine.add_source(home, config_params)
+		Combine.add_source(houzz, config_params)
+		Combine.add_source(porch, config_params)
+		Combine.add_source(yelp, config_params)
 		Combine.save_output()
 		sys.exit(1);
 
@@ -96,7 +90,6 @@ def load_sources(config_params):
 	prime_queue_with_source(porch, DocType.PORCH_BUSINESS, config_params)
 	prime_queue_with_source(yelp, DocType.YELP_BUSINESS, config_params)
 	random.shuffle(dl_queue, random.random)
-	#dump_queue_uris()
 
 	q = Queue.Queue()
 	for document in dl_queue:
@@ -130,6 +123,7 @@ if __name__ == '__main__':
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	parser.add_argument('-S', '--source',	help='Single source [BBB, Factual, HomeAdvisor, Houzz, Porch, Yelp]')
 	parser.add_argument('-D', '--duplicates',	help='When updating, check for duplicates', action="store_true")
+	parser.add_argument('-M', '--master',	help='When updating, check for duplicates', action="store_true")
 	args = parser.parse_args()
 	if (args.verbose):	print 'SCraper - verbosity enabled.'
 	if (args.combine):	print 'SCraper - combining data sources'
