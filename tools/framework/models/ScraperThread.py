@@ -47,6 +47,7 @@ class ScraperThread(threading.Thread):
 				self.errors[document.doc_state] = document.uri
 			print 'Thread(%d): %d %d|%d|%d\t%s\t%s' % (self.id, self.doc_total, self.doc_count, self.doc_error, self.doc_dload, ts_diff, document.uri)
 		print 'Finished with Queue'
-		print 'Errors:'
-		pp(self.errors)
+		if (self.doc_error):
+			print 'Errors:'
+			pp(self.errors)
 
