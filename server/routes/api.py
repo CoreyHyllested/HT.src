@@ -28,10 +28,9 @@ def api_prime_search():
 	try:
 		fp = open(os.getcwd() + '/tools/framework/data/sources/factual/companies.json')
 		sc_server.pro_list = json.loads(fp.read())
-
 		sc_server.pro_index_id = {}
 		for account in sc_server.pro_list:
-			sc_server.pro_index_id[account['id_factual']] = account
+			sc_server.pro_index_id[account['_id_factual']] = account
 	except Exception as e:
 		print type(e), e
 	finally:
@@ -55,14 +54,14 @@ def api_referral_find(identifier):
 	for pro in index:
 		if (added > 5): break
 
-		if identifier in pro['name'].lower():
-			print 'adding', pro['name'], 'because we matched', pro['name'].lower(), 'to', identifier, 'added = ', added
+		if identifier in pro['business_name'].lower():
+			print 'adding', pro['business_name'], 'because we matched', pro['business_name'].lower(), 'to', identifier, 'added = ', added
 			address = 'No address listed'
-			if (pro['addr']):
-				street	= pro['addr'].get('street')
-				suite	= pro['addr'].get('suite')
-				city	= pro['addr'].get('city')
-				state	= pro['addr'].get('state')
+			if (pro['address']):
+				street	= pro['address'].get('street')
+				suite	= pro['address'].get('suite')
+				city	= pro['address'].get('city')
+				state	= pro['address'].get('state')
 
 				if (street and suite):
 					address = street + ', ' + suite + ' '
@@ -75,10 +74,8 @@ def api_referral_find(identifier):
 					address = address + city
 
 
-			print 'address: "' +  address + '"'
-			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : address }
+			response[pro['_id_factual']] = { "id": pro["_id_factual"], "name" : pro['business_name'], "addr" : address }
 			added = added + 1
-			continue
 
 		
 	#	email = pro.get('email', '')
@@ -99,13 +96,19 @@ def api_referral_find(identifier):
 
 
 @sc_users.route('/professional/<string:identifier>/', methods=['POST'])
-def api_professional_info(identifier):
+@sc_users.route('/professional/id/<string:identifier>/', methods=['POST'])
+def api_professional_info_by_id(identifier):
 	api_prime_search()
-	print 'api_professional(%s) %d' % (identifier, len(sc_server.pro_index_id))
+	print 'api_professional(%s)' % (identifier)
 	info = sc_server.pro_index_id.get(identifier, { "id" : "Not Found"})
 
 	return make_response(jsonify(info), 200)
 
+
+
+def api_professional_info_by_phone(identifier):
+	api_prime_search()
+	print 'api_professional(%s)' % (identifier)
 
 
 @sc_users.route('/review/request', methods=['POST'])

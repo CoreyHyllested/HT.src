@@ -82,18 +82,16 @@
 			}
 		});
 
+		blood.initialize();
 		$('#refer-proj').tagsinput({
 			typeaheadjs: {
-				name: 'fucket',
+				name: 'bucket',
 				displayKey: 'name',
 				valueKey: 'name',
 				source: blood.ttAdapter()
 			}
 		});
 	});
-
-
-
 
 		$(document).ready(function () {
 			$('#refer-why').keyup(function(evt) {
@@ -137,8 +135,8 @@
 							$('#profile-card').removeClass('no-profile');
 							$('#profile-card').attr('data-id', data.id_factual);
 
-							busname = data.name
-							if (data.website) {
+							busname = data.business_name
+							if (data.business_website) {
 								busname = '<a href="' + data.website + '" target="_blank">' + busname + '</a>'
 							}
 							$('#pro-name').html(busname);
@@ -154,18 +152,17 @@
 								contact_phone = data.phone
 								$('#pro-phone').html(contact_phone);
 							}
-							$('#pro-addr').html(data.addr.street + '<br>' + data.addr.city + ', ' + data.addr.state + ' ' + data.addr.post);
+							$('#pro-addr').html(data.address.street + '<br>' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
 
-							sz = data.factual_categories.length;
+							sz = data.categories[0].factual.length;
 							category = ''
-							data.factual_categories.forEach(function (elem, idx) {
+							data.categories[0].factual.forEach(function (elem, idx) {
 								if (idx == 0) { return; }
 								category = category + elem;
-								if (idx < data.factual_categories.length - 1) {
+								if (idx < data.categories[0].factual.length - 1) {
 									category = category + " » ";
 								}
 							});
-							//$('#pro-category').html(data.factual_categories[sz-1]);
 							$('#pro-category').html(category);
 						},
 						error	: function(data) {
@@ -174,7 +171,6 @@
 				})
 			});
 			{# $('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {   //code  }); #}
-
 		});
 	</script>
 {% endblock %}

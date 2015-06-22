@@ -49,7 +49,7 @@ def config_urllib(args):
 	socket.create_connection = create_connection
 
 	post_response = requests.get('http://icanhazip.com')
-	print 'SCraper - real IP: %s\ttor IP: %s ' % (pre_response._content.rstrip(), post_response._content.rstrip())
+	print 'SCraper - real IP: %s\t TOR IP: %s ' % (pre_response._content.rstrip(), post_response._content.rstrip())
 	if (pre_response._content == post_response._content): print 'SCraper - Not running tor:9050; likely to fail'
 
 	# setup user-agent information
@@ -74,13 +74,13 @@ def load_sources(config_params):
 
 	if (config_params.combine):
 		print 'Combine sources'
-		Combine.add_source(bbb, config_params)
-		Combine.add_source(fact, config_params)
-		Combine.add_source(home, config_params)
-		Combine.add_source(houzz, config_params)
-		Combine.add_source(porch, config_params)
-		Combine.add_source(yelp, config_params)
-		Combine.save_output()
+		#Business.add_source(bbb, config_params)
+		Business.add_source(fact, config_params)
+		#Combine.add_source(home, config_params)
+		#Combine.add_source(houzz, config_params)
+		#Combine.add_source(porch, config_params)
+		#Combine.add_source(yelp, config_params)
+		#Combine.save_output()
 		sys.exit(1);
 
 	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
