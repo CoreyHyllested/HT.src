@@ -65,8 +65,29 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/bootstrap-tagsinput.js"></script>
 	<script>
-	
 	$(document).ready(function () {
+		citynames = new Bloodhound({
+		  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+		  queryTokenizer: Bloodhound.tokenizers.whitespace,
+		  prefetch: {
+			url: '/citynames.json',
+			filter: function(list) {
+			  return $.map(list, function(cityname) {
+				return { name: cityname }; });
+			}
+		  }
+		});
+		citynames.initialize();
+
+		$('#example').tagsinput({
+		  typeaheadjs: {
+			name: 'citynames',
+			displayKey: 'name',
+			valueKey: 'name',
+			source: citynames.ttAdapter()
+		  }
+		});
+	
 		var blood = new Bloodhound({
 			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
 			queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -137,21 +158,22 @@
 
 							busname = data.business_name
 							if (data.business_website) {
-								busname = '<a href="' + data.website + '" target="_blank">' + busname + '</a>'
+								busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
 							}
 							$('#pro-name').html(busname);
 
 
-							if (data.email) {
-								contact_email = '<a href="mailto:' + data.email + '">' + data.email + '</a>'
-								$('#pro-email').html(contact_email);
-							}
+							contact_email = ''
+							data.business_emails.forEach(function (elem, idx) {
+								contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
+							});
+							$('#pro-email').html(contact_email);
 
-							if (data.phone) {
-								//contact_phone = '<a href="tel:' + data.phone+ '">' + data.phone + '</a>'
-								contact_phone = data.phone
-								$('#pro-phone').html(contact_phone);
-							}
+							contact_phone = ''
+							data.business_phones.forEach(function (elem, idx) {
+								contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>'
+							});
+							$('#pro-phone').html(contact_phone);
 							$('#pro-addr').html(data.address.street + '<br>' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
 
 							sz = data.categories[0].factual.length;
