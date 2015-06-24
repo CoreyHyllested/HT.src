@@ -136,30 +136,11 @@ class Source(object):
 
 
 	def transform_companies(self, backup=True):
-		print '%s.transform_companies: probably not since this is running; backup? %r' % (self.SOURCE_TYPE, backup)
+		print '%s.transform_companies(): backup? %r' % (self.SOURCE_TYPE, backup)
 		self.get_company_index()
 		self.doc_companies.backup()
-		rewrite = self.doc_scrapemap['rewrite']
-		rewrite(self)
-
-
-
-	def read_json_file(self, file_path, DEBUG=False):
-		# FOR TESTING.  http://jsonlint.com/
-		if (file_path[0] is not '/'):
-			file_path = os.getcwd() + file_path
-		try:
-			file_pointer = open (file_path, 'r')
-			file_content = file_pointer.read()
-			json_content = json.loads(file_content)
-			if (DEBUG): pp(json_content)
-			#directory = data.get('directory', [])
-			return json_content
-		except Exception as e:
-			print str(e)
-		finally:
-			if (file_pointer): file_pointer.close()
-		return { "data" : None }
+		rewrite = self.doc_scrapemap.get('rewrite')
+		if (rewrite): rewrite(self)
 
 
 
