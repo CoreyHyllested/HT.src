@@ -40,9 +40,11 @@ def open_file(path_from_cwd):
 	return fp
 
 
+def read_json_file(file_path, DEBUG=False):
+	return read_file(file_path, DEBUG)
 
 def read_file(file_path, DEBUG=False):
-	if (DEBUG): print 'opening file', file_path
+	# FOR TESTING.  http://jsonlint.com/
 	if (file_path[0] is not '/'):
 		file_path = os.getcwd() + '/' + file_path
 
@@ -61,7 +63,8 @@ def read_file(file_path, DEBUG=False):
 	finally:
 		if (fp): fp.close()
 	return { "data" : None }
-	
+
+
 
 
 def path_from_cwd_to(path_from_cwd):
