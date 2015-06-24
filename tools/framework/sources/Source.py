@@ -161,33 +161,6 @@ class Source(object):
 
 	def normalize_website(self, website, company):
 		if (website): website = urltools.normalize(website.lower())
-		website.replace('http://www',	'http://')
-		website.replace('https://www',	'https://')
-		website = self.normalize_website_remove_nonsense(website)
 		company['business_website'] = website
 
 
-	def normalize_website_remove_nonsense(self, website):
-		dumb = [	'adzzup.com',
-					'datasphere.com'
-					'dnslink.com'
-					'donotproxy.com',
-					'google.com',
-					'googlesyndication.com',
-					'homeadvisor.com',
-					'hostmonster.com',
-					'hugedomains.com',
-					'ibizlocal.net',
-					'justgoodbusiness.biz',
-					'secureserver.net',
-					'servicemagic.com',
-					'usdirectory.com',
-					'yourlocalbusinessreviews.com',
-					'zipweb.com'
-				]
-		strip = [ 'http://ferguson.com/branch/denver-co-plumbing/?CID=YPM_Ad___YPM___YELPAG__BRAF' ]
-		
-		for host in dumb:
-			if host in website:
-				return None
-		return website
