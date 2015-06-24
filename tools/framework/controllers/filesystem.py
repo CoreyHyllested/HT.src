@@ -16,6 +16,7 @@ import json
 from pprint import pprint as pp
 
 
+DIR_DATA	= '/data/raw/'
 DIR_RAWHTML = '/data/raw/'
 DIR_PROCESS	= '/data/process/'
 DIR_MERGED	= '/data/process/merged/'
@@ -42,6 +43,7 @@ def open_file(path_from_cwd):
 
 def read_json_file(file_path, DEBUG=False):
 	return read_file(file_path, DEBUG)
+
 
 def read_file(file_path, DEBUG=False):
 	# FOR TESTING.  http://jsonlint.com/
@@ -83,10 +85,14 @@ def create_directories():
 	safe_mkdir_local(DIR_SOURCES)
 
 
-def write_file(filename, content):
+
+def write_file(file_path, content):
+	if (file_path[0] is not '/'):
+		file_path = os.getcwd() + '/' + file_path
+
 	fp = None
 	try:
-		fp = open(filename, 'w+')
+		fp = open(file_path, 'w+')
 		fp.truncate()
 		fp.write(content)
 	except Exception as e:
