@@ -34,7 +34,7 @@ class Factual(Source):
 		super(Factual, self).__init__()
 		self.factual_api = FactualTool(TOKEN, TOKEN_SECRET)
 		self.factual_places = self.factual_api.table('places')
-		self.doc_scrapemap = {}		#intentionally empty
+		self.doc_scrapemap	= self.FACT_SCRAPEMAP #intentionally empty, #rename operations_map
 		self.directories = []
 
 
@@ -53,7 +53,7 @@ class Factual(Source):
 			categories = [ self.directories ]
 			if ('-sp' in zipcode):
 				zipcode		= zipcode.strip('-sp')
-				categories	= [ self.directories[0:8], self.directories[8:16], self.directories[16:] ]
+				categories	= [ self.directories[0:8], self.directories[8:] ] #, self.directories[16:] ]
 
 			for category_list in categories:
 				fact_filter	= { "region" : "CO",
@@ -66,10 +66,9 @@ class Factual(Source):
 					print type(e), e
 					print '__update_company_dir failed.'
 
-		# CAH-move back here.
-			print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
-			self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
-			self.doc_companies.write_cache()
+		print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+		self.doc_companies.write_cache()
 
 
 
@@ -109,12 +108,11 @@ class Factual(Source):
 			company['_id_factual']		= business['factual_id']
 			company['business_name']	= business['name']
 			source =	{
-							'factual' : {
-								'id'	: business['factual_id'],
-								'src'	: 'http://factual.com/' + business['factual_id']
-							}
+							'name'	: self.source_type(self),
+							'id'	: business['factual_id'],
+							'src'	: 'http://factual.com/' + business['factual_id']
 						}
-			company['source'] = [ source ]
+			company['sources'] = [ source ]
 
 			self.__extract_address(business, company)
 			self.__extract_contact(business, company)
@@ -174,3 +172,27 @@ class Factual(Source):
 			chain_info['chain_name']	= business.get('chain_name')
 			company['business_chain'] = chain_info
 
+
+
+	def __transform_companies(self, dry=False):
+		print 'be careful, padwan'
+		prettyprints = ['0b4349ec-5cf3-426c-8e57-c42ebb7c707a']
+		for company in self.co_index.values():
+			source = company['source']
+			newsrc = {}
+			for e in source:
+				newsrc['id']	= e['factual']['id']
+				newsrc['src']	= e['factual']['src']
+				newsrc['name']	= 'factual'
+			company['sources'] = [ newsrc ] 
+			del company['source']
+			if company['_id_factual'] in prettyprints: pp(company)
+		if (not dry):
+			print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+			self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+			self.doc_companies.write_cache()
+
+
+	FACT_SCRAPEMAP = {
+		'rewrite' : __transform_companies
+	}
