@@ -40,7 +40,7 @@ class Factual(Source):
 
 	def __load_directory_of_directories(self):
 		file_path	= self.get_source_directory() + '/directories.json'
-		file_json	= self.read_json_file(file_path)
+		file_json	= filesystem.read_file(file_path)
 		self.directories = file_json.get('directories')
 		self.co_zipcodes = file_json.get('zipcodes')
 
@@ -53,7 +53,7 @@ class Factual(Source):
 			categories = [ self.directories ]
 			if ('-sp' in zipcode):
 				zipcode		= zipcode.strip('-sp')
-				categories	= [ self.directories[0:8], self.directories[8:] ] #, self.directories[16:] ]
+				categories	= [ self.directories[0:8], self.directories[8:16], self.directories[16:] ]
 
 			for category_list in categories:
 				fact_filter	= { "region" : "CO",
@@ -108,7 +108,7 @@ class Factual(Source):
 			company['_id_factual']		= business['factual_id']
 			company['business_name']	= business['name']
 			source =	{
-							'name'	: self.source_type(self),
+							'name'	: self.source_type(),
 							'id'	: business['factual_id'],
 							'src'	: 'http://factual.com/' + business['factual_id']
 						}
