@@ -135,6 +135,15 @@ class Source(object):
 
 
 
+	def transform_companies(self, backup=True):
+		print '%s.transform_companies: probably not since this is running; backup? %r' % (self.SOURCE_TYPE, backup)
+		self.get_company_index()
+		self.doc_companies.backup()
+		rewrite = self.doc_scrapemap['rewrite']
+		rewrite(self)
+
+
+
 	def read_json_file(self, file_path, DEBUG=False):
 		# FOR TESTING.  http://jsonlint.com/
 		if (file_path[0] is not '/'):
@@ -170,6 +179,34 @@ class Source(object):
 
 
 	def normalize_website(self, website, company):
-		if (website): website = urltools.normalize(website)
+		if (website): website = urltools.normalize(website.lower())
+		website.replace('http://www',	'http://')
+		website.replace('https://www',	'https://')
+		website = self.normalize_website_remove_nonsense(website)
 		company['business_website'] = website
 
+
+	def normalize_website_remove_nonsense(self, website):
+		dumb = [	'adzzup.com',
+					'datasphere.com'
+					'dnslink.com'
+					'donotproxy.com',
+					'google.com',
+					'googlesyndication.com',
+					'homeadvisor.com',
+					'hostmonster.com',
+					'hugedomains.com',
+					'ibizlocal.net',
+					'justgoodbusiness.biz',
+					'secureserver.net',
+					'servicemagic.com',
+					'usdirectory.com',
+					'yourlocalbusinessreviews.com',
+					'zipweb.com'
+				]
+		strip = [ 'http://ferguson.com/branch/denver-co-plumbing/?CID=YPM_Ad___YPM___YELPAG__BRAF' ]
+		
+		for host in dumb:
+			if host in website:
+				return None
+		return website
