@@ -143,7 +143,6 @@ class Document(object):
 		return self.snapshot_exists(days=365)
 
 
-
 	def __write_cache_path(self):
 		if self.doc_type == DocType.JSON_METADATA:
 			return self.location + '/' + self.filename
@@ -217,41 +216,18 @@ class Document(object):
 
 
 
-
-
 	def write_cache(self, debug=False):
 		if (not self.content): return
-
-		try:
-			# saving raw content
-			file_path = self.__write_cache_path()
-			if (debug): print '%s.caching file %s' % (self.doc_source.SOURCE_TYPE, file_path)
-			fp = open(file_path, 'w+')
-			fp.truncate()
-			fp.write(self.content)
-		except Exception as e:
-			print e
-		finally:
-			if (fp): fp.close()
+		file_path = self.__write_cache_path()
+		if (debug): print '%s.caching file %s' % (self.doc_source.SOURCE_TYPE, file_path)
+		filesystem.write_file(file_path, self.content)
 
 
-
-
-	def read_json_file(self, rel_file_path, DEBUG=False):
-		# FOR TESTING.  http://jsonlint.com/
-		try:
-			file_pointer = open (os.getcwd() + rel_file_path, 'r')
-			file_content = file_pointer.read()
-			json_content = json.loads(file_content)
-			if (DEBUG): pp(json_content)
-			#directory = data.get('directory', [])
-			return json_content
-		except Exception as e:
-			print str(e)
-		finally:
-			if (file_pointer): file_pointer.close()
-		return { "data" : None }
-
+	def backup(self, file_path=None, debug=False):
+		if (not file_path):
+			file_path = self.location + '/' + self.filename[:-5] + '-' + dt.now().strftime('%Y-%m-%d') + '.backup'
+			filesystem.write_file(file_path, self.content)
+		
 
 
 	def __repr__ (self):

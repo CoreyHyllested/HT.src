@@ -12,6 +12,7 @@
 #################################################################################
 
 import sys, os
+import json
 from pprint import pprint as pp
 
 
@@ -38,6 +39,31 @@ def open_file(path_from_cwd):
 	fp = open(filename, 'a+')
 	return fp
 
+
+
+def read_file(file_path, DEBUG=False):
+	if (DEBUG): print 'opening file', file_path
+	if (file_path[0] is not '/'):
+		file_path = os.getcwd() + '/' + file_path
+
+	fp = None
+	if (DEBUG): print 'opening file', file_path
+	try:
+		fp = open(file_path)
+		file_content = fp.read()
+		if (DEBUG): print 'reading file ', len(file_content)
+		json_content = json.loads(file_content)
+		if (DEBUG): pp(json_content)
+		#directory = data.get('directory', [])
+		return json_content
+	except Exception as e:
+		print e
+	finally:
+		if (fp): fp.close()
+	return { "data" : None }
+	
+
+
 def path_from_cwd_to(path_from_cwd):
 	return os.getcwd() + path_from_cwd
 
@@ -53,6 +79,18 @@ def create_directories():
 	#safe_mkdir_local(DIR_REVIEWS)
 	safe_mkdir_local(DIR_SOURCES)
 
+
+def write_file(filename, content):
+	fp = None
+	try:
+		fp = open(filename, 'w+')
+		fp.truncate()
+		fp.write(content)
+	except Exception as e:
+		print e
+	finally:
+		if (fp): fp.close()
+	
 
 
 def update(filename, content):
