@@ -68,6 +68,13 @@ class Source(object):
 		if (dump_results): pp(self.companies)
 
 
+	def save_company_directory(self):
+		print '%s.update_companies_dir; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+		self.doc_companies.backup()
+		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+		self.doc_companies.write_cache()
+
+
 	def source_type(self):
 		return self.SOURCE_TYPE.lower()
 
