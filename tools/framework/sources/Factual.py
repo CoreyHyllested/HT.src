@@ -65,10 +65,7 @@ class Factual(Source):
 				except factual.api.APIException as e:
 					print type(e), e
 					print '__update_company_dir failed.'
-
-		print '%s.update_companies; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
-		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
-		self.doc_companies.write_cache()
+		self.save_company_directory()
 
 
 
@@ -82,9 +79,7 @@ class Factual(Source):
 			api_places_rc	= self.factual_places.filters(fact_filter).limit(50).offset(api_collected)
 			api_collected	= api_collected + self.__extract_info_from_search_results(api_places_rc, zipcode, api_collected)
 			self.sleep(10 + random.randint(0, 15))
-
-		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
-		self.doc_companies.write_cache()
+		self.save_company_directory()
 
 
 
