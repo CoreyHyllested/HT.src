@@ -225,7 +225,7 @@ class Document(object):
 
 	def backup(self, file_path=None, debug=False):
 		if (not file_path):
-			file_path = self.location + '/' + self.filename[:-5] + '-' + dt.now().strftime('%Y-%m-%d') + '.backup'
+			file_path = self.location + '/' + self.filename[:-5] + '-' + dt.now().strftime('%Y-%m-%d-%H') + '.backup'
 			filesystem.write_file(file_path, self.content)
 		
 
