@@ -361,7 +361,7 @@ class BusinessIndex(object):
 
 		print 'Business.add_source\t%s\t%d' % (source.source_type(), len(directory))
 		src_businesses = []
-		for company in directory[0:1000]:
+		for company in directory:
 			try:
 				b = BusinessIndex.create_business(company)
 			except Exception as e:
