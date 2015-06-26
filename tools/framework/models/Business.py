@@ -12,7 +12,7 @@
 #################################################################################
 
 
-import uuid
+import uuid, copy
 import re, random, time, json
 import urltools, phonenumbers
 from json	import JSONEncoder 
@@ -23,75 +23,168 @@ from controllers import filesystem, url_tools
 
 
 
-
 class Business(object):
-	bus_list	= []
-
-	resolve		= {	'factual' : {}	}
-	idx_source	= {	'factual' : {}	}
-
-	idx_website	= {}
-	idx_street	= {}
-	idx_phone	= {}
-	idx_email	= {}
-	idx_names	= {}
-
-
 	def __init__(self, b_dictionary, source=None, index=False):
 		self._id				= None
 		self.business_name		= None
 		self.business_website	= None
 		self.business_phones	= []
 		self.business_emails	= []
-		self.sources	= [] 				#[ source ] if source else []
-		self.collisions = []				# when added to index
+		self.location_ids		= []
+		self.sources	= []
+		self.collisions = {}				# when added to index
 		self.update(b_dictionary, checked=False)
 
 		if (not self._id): self._id = str(uuid.uuid4())
 		if (self.__dict__.get('chain_id')):
 			print 'CHAIN %s %s %s' % (self.business_name, self.chain_id, self._id_factual)
 
+		# add location (from source list)
+		if (b_dictionary.get('address')):
+			bus_location = BusinessLocation(b_dictionary.get('address'), self)
+			self.location_ids.append(bus_location._id)
+		self.__remove_attrs()
+
+
+	def __remove_attrs(self):
+		if (self.__dict__.get('address')):	del self.address
+		if (self.__dict__.get('hours')):	del self.hours
+		if (self.__dict__.get('_id_factual')): del self._id_factual
+
+
 	def contact_phone(self):	return self.business_phones
 	def contact_email(self):	return self.business_emails
+	def get_location_ids(self):	return self.location_ids
 	def get_collisions(self):	return self.collisions
 	def get_sources(self):	return self.sources
 	def get_webaddr(self):	return url_tools.normalize_webaddr(self.business_website)
 
+	def get_all_locations(self):
+		rc = []
+		for location_id in self.location_ids:
+			location = BusinessLocation.get_location(location_id)
+			if (location is None):
+				print location_id
+				raise Exception ('WTF is this null?')
+			rc.append(location)
+		return rc
+
+	def get_location_id(self):
+		# expect exactly one location_id; throw excpetion on any other outcome.
+		if (len(self.location_ids) != 1): raise Exception("More than one (or zero) location exists")
+		return self.location_ids[0]
+
+	def get_location(self):
+		return BusinessLocation.get_location(self.get_location_id())
 
 
-	def oldthing(b, src, src_id):
-		# add business to two main lists
-		Business.idx_source[src][src_id] = b
-		Business.resolve[src][src_id] = {}
-		#if (merge_candidate_website(b, companies)): return
-
-	def match_website_index(self, index):
+	def match_website_index(self, index, collisions):
 		match = index.get(self.get_webaddr())
 		if (self.get_webaddr() and match):
-			self.add_index_collision(match, 'website')
+			collisions.append( (match._id, 'website', match.business_name) )
+			return match.add_collision(self, 'website')
+		return False
 
-	def match_address_index(self, index):
-		match = index.get(self.address.get('street'))
-		if (self.address.get('street') and match):
-			self.add_index_collision(match, 'address')
 
-	def match_phone_index(self, index):
+	def match_address_index(self, index, collisions):
+		for location in self.get_all_locations():
+			match = index.get(location.street)
+			if (match):
+				collisions.append( (match._id, 'address', match.business_name) )
+				return match.add_collision(self, 'address')
+		return False
+
+
+	def match_names_index(self, index, collisions):
+		match = index.get(self.business_name)
+		if (match):
+			collisions.append( (match._id, 'name', match.business_name) )
+			return match.add_collision(self, 'name')
+		return False
+
+
+	def match_phone_index(self, index, collisions): 
 		for phone in self.contact_phone():
 			match = index.get(phone)
-			if (match): self.add_index_collision(match, 'phone')
+			if (match):
+				collisions.append( (match._id, 'phone', match.business_name) )
+				return match.add_collision(self, 'phone')
+		return False
 
-	def match_email_index(self, index):
+
+	def match_email_index(self, index, collisions):
 		for email in self.contact_email():
 			match = index.get(email)
-			if (match): self.add_index_collision(match, 'email')
+			if (match):
+				collisions.append( (match._id, 'email', match.business_name) )
+				return match.add_collision(self, 'email')
+		return False
 
-	def add_index_collision(self, match, type):
-		self.collisions.append( (match._id, type, match.business_name, match.get_webaddr(), match.address.get('street'), match.contact_phone(), match.contact_email()) )
+
+	def add_collision(self, match, type):
+		# Heads up, the logic is reversed
+		# The master list (i.e. SELF) has pointer to non-business
+		similarity = {}
+		self.define_similarity(match, similarity, type)
+		self.collisions[match.get_sources()[0]['id']] = similarity
+		return True
 
 
-	def merge (self, business, why):
-		print 'MERGING (matched on %s):\n\t%s.%s %s\n\t%s.%s %s' % (why, self.source, self.name, self.business_www, business.sources, business.name, business.business_www)
-		pass
+	def define_similarity(self, b, same, matched_on):
+		same['type'] = matched_on
+		same['name'] = b.get_sources()[0]['name']
+		same['id']	 = b.get_sources()[0]['id']
+
+		attr = {}
+		attr['name']  = distance(self.business_name, b.business_name)
+		attr['website'] = None
+		attr['address'] = None	# really, street & city
+		attr['phone']	= None
+		attr['email']	= None
+
+		if self.business_website and b.business_website:
+			attr['website'] = False
+			if self.business_website == b.business_website: attr['website'] = True
+		if (len(self.get_all_locations()) and len(b.get_all_locations())):
+			attr['address'] = []
+			for this_location in self.get_all_locations():
+				for that_location in b.get_all_locations():
+					if this_location.street == that_location.street and this_location.city == that_location.city:
+						attr['address'].append( (this_location.street, this_location.city) )
+		if (len(self.contact_phone()) and len(b.contact_phone())):
+			attr['phone'] = []
+			for phone in self.contact_phone():
+				if phone in b.contact_phone(): attr['phone'].append(phone)
+		if (len(self.contact_email()) and len(b.contact_email())):
+			attr['email'] = []
+			for email in self.contact_email():
+				if email in b.contact_email(): attr['email'].append(email)
+		same['attr'] = attr
+
+
+
+	# merging requires manual intevention
+	# an admin adds 'merge'; id & operations to json
+	def merge_attributes(self, index, company_dict):
+		merge = self.__dict__.get('merge')
+		if (not merge): return
+
+		business_id	= merge['id']
+		operations	= merge['operations']
+		business = index.get(business_id)
+		if (not business): raise Exception('Merging w/ non-business %s' % business_id)
+		for operation in operations:
+			if operation == 'add_location':
+				location = BusinessLocation(company_dict.get('address'), business)
+				business.location_ids.append(location._id)
+				del business.collisions[self.sources[0]['id']]
+
+				# add location to the master list of locations.
+				BusinessIndex.master_addr[location._id] = location
+			company_dict['_status'] = 'merged'
+		if company_dict.get('merge'): del company_dict['merge']
+		company_dict['_id'] = business_id
+		#print 'MERGING:\n\t%s.%s %s\n\t%s.%s %s' % (self._id, self.business_name, self.business_website, business._id, business.business_name, business.business_website)
 
 
 	def update(self, b_dictionary, checked=True):
@@ -101,7 +194,8 @@ class Business(object):
 
 		contested = self.__dict__.get('contested', [])
 		for k, v in b_dictionary.items():
-			#print 'k =', k, v
+			if (k == '_id'):
+				print 'Word, id exists now?', k, v
 			if (k == 'business_id'): continue
 			if (k == 'phone'): continue
 			#if (k == 'src_logo'): continue	#ignore
@@ -150,6 +244,45 @@ def mc_website_compare_phones(b1, b2):
 
 
 
+class BusinessLocation(object):
+	location_index = {}
+
+	def __init__(self, location_dict, business=None):
+		self._id	= None
+		self._bid	= business._id if business else None
+		self.city	= None
+		self.street	= None
+		self.state	= None
+		self.suite	= None
+		self.post	= None
+
+		self.hours	= None
+		self.sources = None
+		self.contact = {}
+
+		self.__dict__.update(location_dict)
+
+		if (not self._bid):	raise Exception("No business id")
+		if (not self._id):	self._id = str(uuid.uuid4())
+		if (business):
+			if business.__dict__.get('hours'):
+				self.hours = ''
+				for src_hours in business.hours:
+					self.hours = self.hours + src_hours.values()[0]
+			self.contact['phone'] = business.contact_phone()
+			self.contact['email'] = business.contact_email()
+			self.sources = business.sources
+		BusinessLocation.location_index[self._id] = self
+
+
+	@staticmethod
+	def get_location_index():
+		return BusinessLocation.location_index
+
+	@staticmethod
+	def get_location(id):
+		return BusinessLocation.location_index.get(id)
+
 
 class BusinessIndex(object):
 	idx_source	= {}
@@ -157,33 +290,64 @@ class BusinessIndex(object):
 	idx_address	= {}
 	idx_phone	= {}
 	idx_email	= {}
+	idx_names	= {}
+
 	master_bidx = {}
+	master_addr	= {}
+
+	src_collisions = []
 
 	def __init__(self):
-		master_list_path = 'data/companies.json'
-		self.master_list = self.__load_company_list(master_list_path)
-		self.__index_master_list(self.master_list)
+		self.master_list_path = 'data/companies.json'
+		self.__load_company_list(self.master_list_path)
+		self.__index_master_list()
 
 
 	def __load_company_list(self, file_path, source=None, debug=False):
 		content = filesystem.read_file(file_path, debug)
+		self.businesses	= content['businesses']
+		self.locations	= content['locations']
 		if (debug): print 'Loaded company list: %d in size' % (len(content))
 		return content
 
 
-	def __index_master_list(self, companies):
-		for business_dict in companies:
+	def __save_master_file(self, file_path, debug=False):
+		if (debug): print 'saving company list: %d in size' % (len(BusinessIndex.master_bidx))
+		complete = {}
+		complete['businesses']	= BusinessIndex.master_bidx.values()
+		complete['locations']	= BusinessIndex.master_addr.values()
+		filesystem.write_file(file_path, json.dumps(complete, cls=BusinessEncoder, indent=4, sort_keys=True))
+
+
+
+	def __index_master_list(self):
+		for business_dict in self.businesses:
 			b = Business(business_dict)
 			if (not b._id): raise Exception ('WTF, no _id')
 			BusinessIndex.master_bidx[b._id] = b
+			BusinessIndex.idx_names[b.business_name] = b
 			BusinessIndex.idx_website[b.get_webaddr()] = b
-			BusinessIndex.idx_address[b.address.get('street')] = b
 			for phone in b.contact_phone():
 				BusinessIndex.idx_phone[phone] = b
 			for email in b.contact_email():
 				BusinessIndex.idx_email[email] = b
-		print 'Master List: %d' % (len(BusinessIndex.master_bidx))
+
+		for location_dict in self.locations:
+			location = BusinessLocation(location_dict)
+			BusinessIndex.master_addr[location._id] = location
+			business = BusinessIndex.get_business(location._bid)
+			if (not business):
+				print location._bid
+				raise Exception('WTF - business does not exist')
+			BusinessIndex.idx_address[location.street] = business
+		print 'Master List: businesses %d, locations %d' % (len(BusinessIndex.master_bidx), len(BusinessIndex.master_addr))
 		print 'Indexed websites(%d) Phones(%d) Emails(%d)' % (len(BusinessIndex.idx_website), len(BusinessIndex.idx_phone), len(BusinessIndex.idx_email))
+
+
+	def save(self):
+		print 'Writing master list. Businesses %d, locations %d collisions %d' % (len(BusinessIndex.master_bidx), len(BusinessIndex.master_addr), len(BusinessIndex.src_collisions))
+		print 'Indexed websites(%d) Phones(%d) Emails(%d)' % (len(BusinessIndex.idx_website), len(BusinessIndex.idx_phone), len(BusinessIndex.idx_email))
+		self.__save_master_file(self.master_list_path, debug=True)
 
 
 
@@ -192,47 +356,48 @@ class BusinessIndex(object):
 		if (params.source) and (params.source != source.SOURCE_TYPE): return
 		BusinessIndex.idx_source[source.source_type()] = {}
 
-		directory = source.get_company_directory()
+		directory = source.get_company_directory(save_index=True)
 		source_id = '_id_' + source.source_type()
 
 		print 'Business.add_source\t%s\t%d' % (source.source_type(), len(directory))
 		src_businesses = []
-		src_collisions = []
 		for company in directory[0:1000]:
-			b = BusinessIndex.create_business(company)
+			try:
+				b = BusinessIndex.create_business(company)
+			except Exception as e:
+				#print type(e), e
+				continue
+			if (not b): continue
+
+			src_businesses.append(b)
 			if (BusinessIndex.index_business(b)):
-				src_businesses.append(b)
+				company['_id'] = b._id
 			else:
-				src_collisions.append(b)
+				b.merge_attributes(BusinessIndex.master_bidx, company)
+				#BusinessIndex.src_collisions.append(b.collsions)
 
+		#for c in BusinessIndex.src_collisions:
+		#	pp (c)
 
-		print 'Master List: %d collisions(%d)' % (len(BusinessIndex.master_bidx), len(src_collisions))
-		print 'Indexed websites(%d) Phones(%d) Emails(%d)' % (len(BusinessIndex.idx_website), len(BusinessIndex.idx_phone), len(BusinessIndex.idx_email))
-
-		for src in Business.resolve.keys():
-			print 'INSPECTING Websites:', len(BusinessIndex.idx_website.keys())
-			for website in BusinessIndex.idx_website.keys():
-				b = BusinessIndex.idx_website[website]
-				#print website, b._id, b.get_sources()[0]['id']
-
-			print 'Phonebook sz', len(BusinessIndex.idx_phone)
-			for phone in BusinessIndex.idx_phone.keys():
-				#sz = len(BusinessIndex.idx_phone[phone])
-				#	for b in BusinessIndex.idx_phone[phone]:
-						#print sz, phone, b.business_phones, b.categories[0].get('factual'), b.business_name
-				pass
+		source.save_company_directory()
 		return
 
 
 
 	@staticmethod
 	def create_business(business_dict):
-		# business --must-- have a name
+		# all businesses -- must -- have a name.
+		if (business_dict.get('_ignore')):
+			print business_dict['_ignore']
+			raise Exception('IgnoreBusiness')
 		if (not business_dict['business_name']):
-			raise Exception('No name')
+			raise Exception('No Name')
 
 		id = business_dict.get('_id')
-			
+		if (id and BusinessIndex.master_bidx.get(id)):
+			raise Exception('Exists')
+			return None
+
 		b = Business(business_dict)
 		for source in b.get_sources():
 			src_id		= source['id']
@@ -243,37 +408,35 @@ class BusinessIndex(object):
 
 	@staticmethod
 	def index_business(b):
-		b.match_website_index(BusinessIndex.idx_website)
-		b.match_address_index(BusinessIndex.idx_address)
-		b.match_phone_index(BusinessIndex.idx_phone)
-		b.match_email_index(BusinessIndex.idx_email)
-		if (b.get_collisions()):
-			print 'Had Collisions', len(b.get_collisions())
+		collisions = []
+		b.match_website_index(BusinessIndex.idx_website, collisions)
+		b.match_address_index(BusinessIndex.idx_address, collisions)
+		b.match_phone_index(BusinessIndex.idx_phone, collisions)
+		b.match_email_index(BusinessIndex.idx_email, collisions)
+		b.match_names_index(BusinessIndex.idx_names, collisions)
+		if (collisions):
+			print 'collision', collisions
 			return False
 
-		print 'No collisions add to main index'
 		BusinessIndex.master_bidx[b._id] = b
+		BusinessIndex.master_addr[b.get_location_id()] = b.get_location()
+		BusinessIndex.idx_names[b.business_name] = b
 		if (b.get_webaddr()):
 			BusinessIndex.idx_website[b.get_webaddr()] = b
+		for location in b.get_all_locations():
+			BusinessIndex.idx_address[location.street] = b
 		for phone in b.contact_phone():
 			BusinessIndex.idx_phone[phone] = b
 		for email in b.contact_email():
 			BusinessIndex.idx_email[email] = b
 		return True
 
-
 	@staticmethod
-	def save():
-		pass
-		#save	master_index
-		#update source_index
-
-
-
+	def get_business(id):
+		return BusinessIndex.master_bidx.get(id)
 
 
 class BusinessEncoder(JSONEncoder):
 	def default(self, obj):
 		return obj.__dict__
-
 
