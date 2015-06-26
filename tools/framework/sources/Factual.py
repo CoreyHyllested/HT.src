@@ -115,7 +115,6 @@ class Factual(Source):
 			self.__extract_chain_info(business, company)
 			self.__extract_hours_info(business, company)
 
-			#if (not self.co_index.get(company['_id_factual'])):
 			self.co_index[company['_id_factual']] = company
 		return len(results)
 

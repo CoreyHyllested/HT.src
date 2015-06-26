@@ -11,21 +11,22 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-import sys, os, threading, argparse
-import socks, socket, urllib2
+import sys, os, threading
+import socks, socket, urllib2, requests
 import re, random, time
+import cmd, argparse
 import Queue
 from multiprocessing import Process
 from bs4 import BeautifulSoup, Comment
 from pprint		import pprint as pp
 from datetime	import datetime as dt 
 from sources	import *
+from models		import InteractiveShell as shell
 from models		import *
 from controllers import *
-import requests
 
 
-VERSION = 0.78
+VERSION = 0.81
 BOT_VER = 0.8
 THREADS	= 1
 
@@ -35,7 +36,7 @@ threads	= []
 
 
 def config_urllib(args):
-	if (args.combine):	return 
+	if (args.combine):	return
 	# configure the network.
 	pre_response = requests.get('http://icanhazip.com')
 
@@ -62,8 +63,6 @@ def config_urllib(args):
 
 
 
-
-
 def load_sources(config_params):
 	bbb = BBB()
 	fact = Factual()
@@ -72,15 +71,20 @@ def load_sources(config_params):
 	porch = Porch()
 	yelp = Yelp()
 
+	if (config_params.rewrite):
+		fact.transform_companies(True)
+
 	if (config_params.combine):
 		print 'Combine sources'
-		#Business.add_source(bbb, config_params)
-		Business.add_source(fact, config_params)
-		#Combine.add_source(home, config_params)
-		#Combine.add_source(houzz, config_params)
+		bi = BusinessIndex()
+		bi.add_source(fact, config_params)
+		#bi.add_source(bbb, config_params)
+		#bi.add_source(home, config_params)
+		#bi.add_source(houzz, config_params)
 		#Combine.add_source(porch, config_params)
 		#Combine.add_source(yelp, config_params)
 		#Combine.save_output()
+		bi.save()
 		sys.exit(1);
 
 	prime_queue_with_source(bbb, DocType.BBB_BUSINESS, config_params)
@@ -99,7 +103,6 @@ def load_sources(config_params):
 
 
 
-
 def prime_queue_with_source(source, document_type, config_params):
 	if ((config_params.source) and (config_params.source != source.SOURCE_TYPE)): return
 
@@ -113,8 +116,6 @@ def prime_queue_with_source(source, document_type, config_params):
 	print 'SCraper - loaded %s directory. (%d businesses)' % (source.SOURCE_TYPE, len(directory))
 
 
-
-
 if __name__ == '__main__':
 	print 'SCraper v' + str(VERSION)
 	parser = argparse.ArgumentParser(description='Scrape, normalize, and process information')
@@ -122,9 +123,14 @@ if __name__ == '__main__':
 	parser.add_argument('-C', '--combine',	help='Combine all company directories.',	action="store_true")
 	parser.add_argument('-U', '--update',	help='Check all business directories for updates',	action="store_true")
 	parser.add_argument('-S', '--source',	help='Single source [BBB, Factual, HomeAdvisor, Houzz, Porch, Yelp]')
-	parser.add_argument('-D', '--duplicates',	help='When updating, check for duplicates', action="store_true")
-	parser.add_argument('-M', '--master',	help='When updating, check for duplicates', action="store_true")
+	parser.add_argument('-R', '--rewrite',	help='Rewrite output file [BBB, Factual, HomeAdvisor, Houzz, Porch, Yelp]', action="store_true")
+	parser.add_argument('-I', '--shell',	help='Setup interactive shell', action="store_true")
 	args = parser.parse_args()
+
+	if (args.shell):
+		shell.InteractiveShell().cmdloop()
+		sys.exit()
+
 	if (args.verbose):	print 'SCraper - verbosity enabled.'
 	if (args.combine):	print 'SCraper - combining data sources'
 	if (args.update):	print 'SCraper - update company directory.'
