@@ -26,6 +26,7 @@ server/static/css/errors.css
 # scrapter data
 server/tools/data
 server/tools/framework/data
+tools/framework/data/sources/factual/*.backup
 
 users.db
 run.py
