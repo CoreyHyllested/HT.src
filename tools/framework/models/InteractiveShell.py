@@ -27,7 +27,7 @@ class InteractiveShell(cmd.Cmd):
 	#	source['houzz']	= Houzz()
 	#	source['porch']	= Porch()
 	#	source['yelp'] = Yelp()
-		self.collisions = None
+		self.idx_collisions = None
 		self.bi	= None
 		self.op_business = None
 
@@ -73,7 +73,7 @@ class InteractiveShell(cmd.Cmd):
 
 
 	def do_getcollisions(self, line):
-		if (not self.collisions): self.__load_collisions()
+		if (not self.idx_collisions): self.__load_collisions()
 
 		if (line == ''):
 			# save to re-run / re-use
@@ -81,18 +81,23 @@ class InteractiveShell(cmd.Cmd):
 
 
 	def do_next(self, line):
-		if (not self.collisions):
+		if (not self.idx_collisions):
 			print 'run collisions first'
 			return
 		b = self.__get_next_collision()
 		print b._id, b.business_name
 
 
-	def do_emails(self, line):
+
+	def do_address(self, line):
 		if (not self.op_business):
 			print 'No business selected'
 			return
-		print self.op_business._id, self.op_business.contact_email()
+
+		locations = self.op_business.get_all_locations()
+		print self.op_business._id, len(locations)
+		for location in locations:
+			location.print_address()
 
 
 	def do_collisions(self, line):
@@ -122,11 +127,19 @@ class InteractiveShell(cmd.Cmd):
 			print '\tcontact:', 'Email', c['attr']['email'], 'Phone', c['attr']['phone']
 
 
+	def do_emails(self, line):
+		if (not self.op_business):
+			print 'No business selected'
+			return
+		print self.op_business._id, self.op_business.contact_email()
+
+
 	def do_name(self, line):
 		if (not self.op_business):
 			print 'No business selected'
 			return
 		print self.op_business._id, self.op_business.business_name
+
 
 	def do_phones(self, line):
 		if (not self.op_business):
@@ -148,6 +161,9 @@ class InteractiveShell(cmd.Cmd):
 		print self.op_business._id, self.op_business.business_website
 
 
+	def do_uuid(self, line):
+		print str(uuid.uuid4())
+		
 	def do_find(self, line):
 		for src in self.source.values():
 			company = src.co_index.get(line)

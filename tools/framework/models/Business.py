@@ -275,6 +275,11 @@ class BusinessLocation(object):
 		BusinessLocation.location_index[self._id] = self
 
 
+	def print_address(self):
+		print '\t' + self.street,
+		if (self.suite): print ';', self.suite,
+		print '\n\t', self.city + ',', self.state + ',', + self.post
+
 	@staticmethod
 	def get_location_index():
 		return BusinessLocation.location_index
