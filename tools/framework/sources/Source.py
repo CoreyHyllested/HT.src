@@ -68,10 +68,12 @@ class Source(object):
 		if (dump_results): pp(self.companies)
 
 
-	def save_company_directory(self):
-		print '%s.update_companies_dir; writing %d entries' % (self.SOURCE_TYPE, len(self.co_index.values()))
+	def save_company_directory(self, sort_key=None):
+		if (not sort_key): sort_key = '_id_' + self.source_type()
+		print '%s.update_companies_dir; writing %d entries; %s' % (self.SOURCE_TYPE, len(self.co_index.values()), sort_key)
 		self.doc_companies.backup()
-		self.doc_companies.content = json.dumps(self.co_index.values(), indent=4, sort_keys=True)
+		ordered = sorted(self.co_index.values(), key=lambda k: k[sort_key])
+		self.doc_companies.content = json.dumps(ordered, indent=4, sort_keys=True)
 		self.doc_companies.write_cache()
 
 

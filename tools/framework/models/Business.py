@@ -295,6 +295,7 @@ class BusinessIndex(object):
 	master_bidx = {}
 	master_addr	= {}
 
+	all_collisions = {}
 	src_collisions = []
 
 	def __init__(self):
@@ -314,10 +315,9 @@ class BusinessIndex(object):
 	def __save_master_file(self, file_path, debug=False):
 		if (debug): print 'saving company list: %d in size' % (len(BusinessIndex.master_bidx))
 		complete = {}
-		complete['businesses']	= BusinessIndex.master_bidx.values()
-		complete['locations']	= BusinessIndex.master_addr.values()
+		complete['businesses']	= sorted(BusinessIndex.master_bidx.values(), key=lambda k: k._id)
+		complete['locations']	= sorted(BusinessIndex.master_addr.values(), key=lambda k: k._id)
 		filesystem.write_file(file_path, json.dumps(complete, cls=BusinessEncoder, indent=4, sort_keys=True))
-
 
 
 	def __index_master_list(self):
@@ -345,16 +345,25 @@ class BusinessIndex(object):
 
 
 	def save(self):
-		print 'Writing master list. Businesses %d, locations %d collisions %d' % (len(BusinessIndex.master_bidx), len(BusinessIndex.master_addr), len(BusinessIndex.src_collisions))
+		print 'Writing master list. Businesses %d, locations %d' % (len(BusinessIndex.master_bidx), len(BusinessIndex.master_addr))
 		print 'Indexed websites(%d) Phones(%d) Emails(%d)' % (len(BusinessIndex.idx_website), len(BusinessIndex.idx_phone), len(BusinessIndex.idx_email))
 		self.__save_master_file(self.master_list_path, debug=True)
 
+
+	def get_collisions_index(self, force=False):
+		# return collision index
+		if not len(self.all_collisions) or force:
+			for b in BusinessIndex.master_bidx.values():
+				if b.get_collisions():
+					self.all_collisions[b._id] = b
+		return self.all_collisions
 
 
 	@staticmethod
 	def add_source(source, params):
 		if (params.source) and (params.source != source.SOURCE_TYPE): return
 		BusinessIndex.idx_source[source.source_type()] = {}
+		BusinessIndex.src_collisions = []		# applies only to this source
 
 		directory = source.get_company_directory(save_index=True)
 		source_id = '_id_' + source.source_type()
@@ -375,13 +384,10 @@ class BusinessIndex(object):
 			else:
 				b.merge_attributes(BusinessIndex.master_bidx, company)
 				#BusinessIndex.src_collisions.append(b.collsions)
-
-		#for c in BusinessIndex.src_collisions:
-		#	pp (c)
-
+				#BusinessIndex.all_collisions[] = (b.collsions)
+				
 		source.save_company_directory()
 		return
-
 
 
 	@staticmethod
