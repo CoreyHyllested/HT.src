@@ -20,7 +20,7 @@ from server.infrastructure.srvc_database import db_session
 from server.models import * 
 from server.controllers import *
 from server.forms import NewPasswordForm, SearchForm
-from server.forms import GiftForm, RecoverPasswordForm
+from server.forms import RecoverPasswordForm
 from server import sc_csrf
 from pprint import pprint
 
@@ -49,54 +49,6 @@ def render_product_furniture():
 
 
 
-@sc_ebody.route("/purchase", methods=['GET', 'POST'])
-def render_purchase_page_ebody():
-	bp = None
-	if (session.get('uid') is not None):
-		bp = Profile.get_by_uid(session.get('uid'))
-
-	gift = GiftForm(request.form)
-	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
-
-
-
-@sc_ebody.route('/gift/<gift_id>', methods=['GET', 'POST'])
-def render_giftpage(gift_id):
-	print 'render_gift(): enter [' + str(gift_id) + ']'
-	bp = None
-	if (session.get('uid') is not None):
-		bp = Profile.get_by_uid(session.get('uid'))
-
-
-	if (gift_id):
-		print 'render_gift(): getting gift [' + str(gift_id) + ']'
-		gift = GiftCertificate.get_by_giftid(gift_id)
-
-	if ((gift is None) or (gift_id is None)):
-		#raise 'Gift Not Found' #GiftNotFoundError(from_user)
-		return make_response("Gift Not Found", 500)
-
-
-	# Was this a referral?  If so, set ref=ref_id
-	referral = Referral.get_by_gift_id(gift_id)
-	ref_id = (referral.ref_id) if (referral) else None
-	#print gift
-	#print referral
-	#if (referral):
-	#	prof_referral = Profile.get_by_uid(referral.ref_account)	#
-
-	print 'render_gift(): render page'
-	return make_response(render_template('gift.html', bp=bp, gift=gift, referral=ref_id))
-
-
-
-@sc_ebody.route('/review/<business>/<hash>', methods=['GET', 'POST'])
-def render_review_business_requested(business, hash):
-	print 'review_business_requested: enter []'
-
-
-#@sc_csrf.exempt
-#@insprite_views.route('/profile', methods=['GET', 'POST'])
 def render_profile(usrmsg=None):
 	bp = None
 	if (session.get('uid') is not None):
@@ -138,8 +90,6 @@ def render_profile(usrmsg=None):
 
 
 
-
-#@insprite_views.route("/dmca", methods=['GET', 'POST'])
 def render_dmca():
 	bp = None
 	if 'uid' in session:
@@ -176,10 +126,6 @@ def render_terms_privacy_page():
 
 
 
-
-#@sc_csrf.exempt
-#@insprite_views.route('/search',  methods=['GET', 'POST'])
-#@insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
 	""" Provides ability to find Mentors. """
 	bp = None
