@@ -164,8 +164,11 @@ class InteractiveShell(cmd.Cmd):
 	def do_uuid(self, line):
 		print str(uuid.uuid4())
 		
+
 	def do_find(self, line):
 		for src in self.source.values():
+			if (not src.__dict__.get('co_index')): continue
+
 			company = src.co_index.get(line)
 			if (company): pp(company)
 
