@@ -276,9 +276,8 @@ class BusinessLocation(object):
 
 
 	def print_address(self):
-		print '\t' + self.street,
-		if (self.suite): print ';', self.suite,
-		print '\n\t', self.city + ',', self.state + ',', + self.post
+		print '\t', self.street, ';', self.suite
+		print '\t', self.city, self.state, self.post
 
 	@staticmethod
 	def get_location_index():
@@ -287,6 +286,7 @@ class BusinessLocation(object):
 	@staticmethod
 	def get_location(id):
 		return BusinessLocation.location_index.get(id)
+
 
 
 class BusinessIndex(object):
@@ -385,6 +385,7 @@ class BusinessIndex(object):
 
 			src_businesses.append(b)
 			if (BusinessIndex.index_business(b)):
+				print 'No collisions, adding', b._id
 				company['_id'] = b._id
 			else:
 				b.merge_attributes(BusinessIndex.master_bidx, company)
@@ -408,6 +409,8 @@ class BusinessIndex(object):
 		if (id and BusinessIndex.master_bidx.get(id)):
 			raise Exception('Exists')
 			return None
+		if (id):
+			print 'Hmm, id', id, 'and not in bidx'
 
 		b = Business(business_dict)
 		for source in b.get_sources():
@@ -426,7 +429,7 @@ class BusinessIndex(object):
 		b.match_email_index(BusinessIndex.idx_email, collisions)
 		b.match_names_index(BusinessIndex.idx_names, collisions)
 		if (collisions):
-			print 'collision', collisions
+			#print 'collision', collisions
 			return False
 
 		BusinessIndex.master_bidx[b._id] = b
