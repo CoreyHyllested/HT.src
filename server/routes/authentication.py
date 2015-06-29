@@ -69,10 +69,7 @@ def render_signup_page(sc_msg=None):
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
 
-#	rid = session.get('ref_id', None)
-#	print 'render_signup: something something ref_name', str(rid)
-	ref_name = auth_signup_set_referral(request, form)
-	return make_response(render_template('signup.html', form=form, ref_name=ref_name, sc_alert=sc_msg))
+	return make_response(render_template('signup.html', form=form, sc_alert=sc_msg))
 
 
 
@@ -295,6 +292,7 @@ def settings_verify_stripe():
 	postdata['code']          = authr
 
 	print "verify -- post Token to stripe"
+	#TODO rewrite using Requests library
 	resp, content = Http().request("https://connect.stripe.com/oauth/token", "POST", urlencode(postdata))
 	rc = json.loads(content)
 	print "verify -- got response\n", rc
@@ -345,9 +343,6 @@ def settings_verify_stripe():
 
 
 
-
-
-
 @facebook.tokengetter
 def get_facebook_oauth_token():
 	return session.get('oauth_token')
@@ -368,31 +363,6 @@ def TESTING_render_facebook_info():
 def logout():
 	session.clear()
 	return redirect('/')
-
-
-
-# returns referred by name on success; sets signup_form data.
-def auth_signup_set_referral(request, signup_form):
-	ref_name = None
-
-	# get referred_id from the session (prev. seen) or URL (request.values)
-	ref_id = session.get('ref_id', None) or request.values.get('ref', None)
-	if ref_id is None: return None
-
-	signup_form.refid.data = ref_id
-	referral = Referral.get_by_refid(ref_id)
-
-	if referral:
-		ref_prof = Profile.get_by_uid(referral.ref_account)
-		if (not ref_prof): return	#may not exist.
-		ref_name = ref_prof.prof_name
-
-		# save the work, on successfully creating account -- pop these values
-		session['ref_id']	= ref_id
-		session['ref_prof']	= ref_prof.prof_id
-		session['gift_id']	= referral.ref_gift_id
-		print 'set session info', session['ref_id'], session['ref_prof'], session['gift_id']
-	return ref_name
 
 
 #TODO 
