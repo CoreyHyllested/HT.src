@@ -21,7 +21,7 @@ from . import sc_users
 from .api import ht_api_get_message_thread
 from .helpers import *
 from ..forms import ProjectForm, SettingsForm, ReviewForm
-from ..forms import InviteForm, GiftForm
+from ..forms import InviteForm
 
 # more this into controllers / tasks.
 import boto
@@ -35,6 +35,7 @@ from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
+
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
 @sc_authenticated
@@ -43,20 +44,15 @@ def render_dashboard():
 	message = session.pop('message', None)
 
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
-	usercash = None
 	craftsperson = (session.get('role', None) == AccountRole.CRAFTSPERSON)
 
 	try:
 		projects = sc_get_projects(bp)
-		for p in projects:
-			pprint(p)
-		usercash = GiftCertificate.get_user_credit_amount(bp)
-		print usercash
-		#(props, appts, rview) = ht_get_active_meetings(bp)
+		for p in projects: pprint(p)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		db_session.rollback()
-	
+
 
 	if craftsperson:
 		print 'render_dashboard(), craftsperson ', craftsperson
@@ -66,73 +62,10 @@ def render_dashboard():
 		refreqs = scdb_get_references(bp, True)
 		return make_response(render_template('dashboard-professional.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
 
-	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
+	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, usrmsg=message))
 
 
 
-
-@sc_users.route('/invite', methods=['GET', 'POST'])
-@sc_authenticated
-def render_invite_page():
-	bp = Profile.get_by_uid(session['uid'])
-	ba = Account.get_by_uid(session['uid'])
-
-	invite = InviteForm(request.form)
-	invite.invite_userid.data = bp.account
-	if invite.validate_on_submit():
-		try:
-			print 'invite: valid post from user ', invite.invite_userid.data, invite.invite_emails.data
-
-			print 'invite: create gift'
-			r = {}
-			r['mail'] = invite.invite_emails.data
-			r['name'] = 'Unknown'
-			p = {}
-			p['prof'] = bp.prof_id
-			p['name'] = bp.prof_name
-			p['mail'] = ba.email
-			p['cost'] = 0
-			s = {}
-			s['gift_value'] = 15000		# $150.00
-			gift = GiftCertificate(r, p, s)
-			print gift
-
-			referral = Referral(bp.account, gift_id=gift.gift_id)
-			print referral
-
-			db_session.add(gift)
-			db_session.add(referral)
-			db_session.commit()
-#			print 'invite: check post from user personalized', invite.invite_personalized.data
-			sc_email_invite_friend(invite.invite_emails.data, friend_name=bp.prof_name, referral_id=referral.ref_id, gift_id=bp.account)
-			return redirect('/dashboard')
-
-		except Exception as e:
-			print e
-			db_session.rollback()
-			print 'need to set error message and post to user'
-	elif request.method == 'POST':
-		print 'invite: invalid POST', invite.errors
-	else:
-		pass
-
-	print 'render_invite(): render page'
-	return make_response(render_template('invite.html', bp=bp, form=invite))
-
-
-
-
-@sc_users.route("/purchase_me", methods=['GET', 'POST'])
-@sc_authenticated
-def render_purchase_page():
-	bp = Profile.get_by_uid(session['uid'])
-	gift = GiftForm(request.form)
-	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
-
-
-
-#@insprite_views.route("/inbox", methods=['GET', 'POST'])
-#@req_authentication
 def render_inbox_page():
 	bp = Profile.get_by_uid(session['uid'])
 	msg_from = aliased(Profile, name='msg_from')
@@ -159,8 +92,6 @@ def render_inbox_page():
 
 
 
-#@req_authentication
-#@insprite_views.route("/compose", methods=['GET', 'POST'])
 def render_compose_page():
 	hid = request.values.get('hp')
 	bp = Profile.get_by_uid(session['uid'])
@@ -172,9 +103,6 @@ def render_compose_page():
 
 
 
-
-#@req_authentication
-#@insprite_views.route("/get_threads", methods=['GET', 'POST'])
 def get_threads():
 	bp = Profile.get_by_uid(session['uid'])
 	threads = []
@@ -208,9 +136,6 @@ def get_threads():
 
 
 
-
-#@req_authentication
-#@insprite_views.route("/message", methods=['GET', 'POST'])
 def render_message_page():
 	msg_thread_id = request.values.get('msg_thread_id')
 	action = request.values.get('action')
