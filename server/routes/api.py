@@ -61,96 +61,19 @@ def api_review_request():
 
 
 
-@sc_ebody.route('/purchase/create', methods=['POST'])
-def sc_api_purchase_create():
-	print 'sc_api_purchase_create(): enter'
-	resp_message = 'Purchase created'
-	resp_code = 200
-
-	try:
-		recipient = {};
-		purchaser = {};
-		stripe = {};
-
-		# There should be a better way of getting this data, right?
-		recipient['name'] = request.values.get('recipient[name]')
-		recipient['addr'] = request.values.get('recipient[addr]')
-		recipient['mail'] = request.values.get('recipient[mail]')
-		recipient['cell'] = request.values.get('recipient[cell]')
-		recipient['note'] = request.values.get('recipient[note]')
-		print recipient['name'], recipient['addr'], recipient['mail'], recipient['cell'], recipient['note']
-
-		purchaser['name'] = request.values.get('purchaser[name]')
-		purchaser['cost'] = request.values.get('purchaser[cost]')
-		purchaser['mail'] = request.values.get('stripe_mail')
-		print purchaser['name'], purchaser['mail'], purchaser['cost']
-
-		stripe['token'] = request.values.get('stripe_tokn')				# used to charge, *I think this points at CC*
-		#stripe['amountpaid'] = request.values.get('purchaser[paid]')		# Should be grabbed from stripe somewhere.
-		stripe['creditcard'] = request.values.get('stripe_card')	# save to sc customer
-		stripe['customerid'] = request.values.get('stripe_cust')	# stripe customer id
-		stripe['transaction'] = request.values.get('stripe_trnx')
-		stripe['fingerprint'] = request.values.get('stripe_fngr')
-		print 'sc_api_purchase_gift: stripe::', stripe['token'], stripe['creditcard'], stripe['transaction']
-
-		for k in request.values:
-			pass
-			#print k, values[k]
-
-		print 'sc_api_purchase_create(): purchase_gift'
-		sc_purchase_gift(recipient, purchaser, stripe, session.get('uid'))
-	except SanitizedException as se:
-		print 'sc_api_purchase_create() sanitized messages',  se.sanitized_msg()
-		return se.api_response(request.method)
-
-	print 'sc_api_purchase_create(): response'
-	return make_response(jsonify(usrmsg=resp_message, nexturl="/dashboard"), resp_code)
-
-
-
-
-def sc_purchase_gift(recipient, purchaser, stripe, uid):
-	""" Create a Purchase (gift). """
-
-	print 'sc_purchase_gift: enter()'
-	try:
-		# check if recipient, purchaser are users...
-		#	recipient_prof = Column(String(40), ForeignKey('profile.prof_id'))			# THE PROFILE who can make a decision. (to accept, etc)
-
-#		print 'sc_purchase_gift: (' + str(prof_name) + ', ' + str(stripe_cust) + ')'
-		gift = GiftCertificate(recipient, purchaser, stripe)
-		db_session.add(gift)
-		db_session.commit()
-		print "sc_purchase_gift: successfully added gift"
-
-		print "sc_purchase_gift: now charge and capture"
-		gift.capture()
-	except Exception as e:
-		# IntegrityError, from commit()
-		# SanitizedException(None), from Meeting.init()
-		print type(e), e
-		db_session.rollback()
-		ht_sanitize_error(e)
-	print "sc_purchase_gift: sending notifications"
-	# add code to send notification.
-	#ht_send_meeting_proposed_notifications(meeting, ha, hp, ba, bp)
-
-
-
-#@insprite_views.route('/meeting/accept', methods=['GET','POST'])
 @sc_authenticated
-def ht_api_meeting_accept():
+def sc_api_meeting_accept():
 	meet_id = request.values.get('meet_id', None)
-	print 'ht_api_meeting_accept(' + meet_id + ')\tenter'
+	print 'sc_api_meeting_accept(' + meet_id + ')\tenter'
 	resp_code = 200
 	resp_message = 'Proposed meeting accepted.'
 
 	try:
 		profile = Profile.get_by_uid(session['uid'])
 		ht_meeting_accept(meet_id, profile)
-		print 'ht_api_meeting_accept\t success'
+		print 'sc_api_meeting_accept\t success'
 	except SanitizedException as se:
-		print "ht_api_meeting_accept: sanitized exception", se
+		print "sc_api_meeting_accept: sanitized exception", se
 		return se.api_response(request.method)
 
 	if (request.method == 'GET'):
@@ -161,20 +84,14 @@ def ht_api_meeting_accept():
 
 
 
-#@insprite_views.route('/meeting/negotiate', methods=['POST'])
 @sc_authenticated
-def ht_api_meeting_negotiate():
-	#meeting = Meeting.get_by_id(form.proposal_id.data)
-	#meeting.set_state(MeetingState.NEGOTIATE)
-	#meeting.prop_count = meeting.prop_count + 1
+def sc_api_meeting_negotiate():
 	return jsonify(usrmsg='nooope'), 404 #notimplemented?
 
 
 
-
-#@insprite_views.route('/meeting/reject', methods=['GET', 'POST'])
 @sc_authenticated
-def ht_api_meeting_reject():
+def sc_api_meeting_reject():
 	# cannot use form to validate inputs. do manually
 	meet_id = request.values.get('meet_id', None)
 	resp_code = 200
@@ -197,9 +114,8 @@ def ht_api_meeting_reject():
 
 
 
-#@insprite_views.route('/meeting/cancel', methods=['GET', 'POST'])
 @sc_authenticated
-def ht_api_meeting_cancel():
+def sc_api_meeting_cancel():
 	# cannot use form to validate inputs. do manually
 	meet_id = request.values.get('meet_id', None)
 	resp_code = 200
@@ -215,11 +131,9 @@ def ht_api_meeting_cancel():
 
 
 
-
-#@insprite_views.route("/inbox/message/<msg_thread>", methods=['GET', 'POST'])
 @sc_authenticated
-def ht_api_get_message_thread(msg_thread):
-	print 'ht_api_get_message_thread: ', msg_thread
+def sc_api_get_message_thread(msg_thread):
+	print 'sc_api_get_message_thread: ', msg_thread
 	bp = Profile.get_by_uid(session['uid'])
 
 	msg_from = aliased(Profile, name='msg_from')
@@ -278,7 +192,7 @@ def ht_api_get_message_thread(msg_thread):
 
 #@insprite_views.route('/sendmsg', methods=['POST'])
 @sc_authenticated
-def ht_api_send_message():
+def sc_api_send_message():
 	""" Send a user message. """
 
 	try:
@@ -292,7 +206,7 @@ def ht_api_send_message():
 		subject = request.values.get('subject')
 		next	= request.values.get('next')
 
-		print "ht_api_send_message() - MESSAGE DETAILS"
+		print "sc_api_send_message() - MESSAGE DETAILS"
 		print 'message from ' + bp.prof_name
 		print 'message to ' + msg_to
 		print 'subject=', subject
@@ -335,10 +249,8 @@ def ht_api_send_message():
 
 
 
-
-#@insprite_views.route("/review/create/<review_id>", methods=['GET','POST'])
 @sc_authenticated
-def ht_api_review_create(review_id):
+def sc_api_review_create(review_id):
 	msg = None
 	uid = session['uid']
 	bp = Profile.get_by_uid(session['uid'])
@@ -464,6 +376,5 @@ def ht_post_review(review):
 	print 'ht_posting_review_update_proposal(): profile', profile_buyer.prof_name
 	ht_profile_update_reviews(profile_sellr)
 	ht_profile_update_reviews(profile_buyer)
-
 
 
