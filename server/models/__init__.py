@@ -13,16 +13,17 @@
 
 
 from .Account			import *
-from .Availability		import *
 from .Profile			import *
 from .Project			import *
 from .Email				import *
-from .Image				import *
 from .Oauth				import *
-from .Review			import *
-from .Meeting			import *
 from .BusinessReference	import *
-from .Referral			import *
-from .GiftCertificate	import *
-from .UserMessage		import *
+
+from .Availability		import *
+#from .Meeting			import *
+#from .Image				import *
+#from .Review			import *
+#from .Referral			import *
+#from .GiftCertificate	import *
+#from .UserMessage		import *
 

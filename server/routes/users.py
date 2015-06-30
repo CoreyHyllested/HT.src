@@ -18,7 +18,6 @@ from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
 from . import sc_users
-from .api import ht_api_get_message_thread
 from .helpers import *
 from ..forms import ProjectForm, SettingsForm, ReviewForm
 from ..forms import InviteForm
@@ -143,7 +142,9 @@ def render_message_page():
 	print 'message_thread() ', msg_thread_id, action
 
 	if (action == None):
-		return ht_api_get_message_thread(msg_thread_id)
+		#reinstate: return sc_api_get_message_thread(msg_thread_id)
+		pass
+
 	
 	elif (action == "archive"):
 		bp = Profile.get_by_uid(session['uid'])

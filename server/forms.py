@@ -111,8 +111,8 @@ class NewPasswordForm(Form):
 class ReviewForm(Form):
 	review_id	 = HiddenField("id",	[validators.Required(), validators.length(min=1, max=40)])
 	input_review = TextAreaField('Review') #,      [validators.length(min=0, max=5000)])
-	score_comm = SelectField('Communication', coerce=str, default=0, choices=(Review.enumRating))
-	score_time = SelectField('Promptness', coerce=str, default=0, choices=(Review.enumRating))
+#	score_comm = SelectField('Communication', coerce=str, default=0, choices=(Review.enumRating))
+#	score_time = SelectField('Promptness', coerce=str, default=0, choices=(Review.enumRating))
 
 
 def checkfile(form,field):
