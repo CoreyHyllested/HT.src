@@ -13,7 +13,6 @@
 
 
 from server.sc_utils import *
-from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
 from server.controllers import *
@@ -50,7 +49,7 @@ def render_dashboard():
 		for p in projects: pprint(p)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
-		db_session.rollback()
+		database.session.rollback()
 
 
 	if craftsperson:
@@ -71,7 +70,7 @@ def render_inbox_page():
 	msg_to	 = aliased(Profile, name='msg_to')
 
 	try:
-		messages = db_session.query(UserMessage, msg_from, msg_to)													\
+		messages = database.session.query(UserMessage, msg_from, msg_to)													\
 							 .filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id))		\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)								\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
@@ -83,7 +82,7 @@ def render_inbox_page():
 
 	except Exception as e:
 		print e
-		db_session.rollback()
+		database.session.rollback()
 
 	(inbox_threads, archived_threads) = ht_assign_msg_threads_to_mbox(bp.prof_id, c_threads)
 	return make_response(render_template('inbox.html', bp=bp, inbox_threads=inbox_threads, archived_threads=archived_threads))
@@ -107,7 +106,7 @@ def get_threads():
 	threads = []
 
 	try:
-		threads = db_session.query(UserMessage).filter(UserMessage.msg_parent == None)	\
+		threads = database.session.query(UserMessage).filter(UserMessage.msg_parent == None)	\
 												.filter(or_(UserMessage.msg_to == bp.prof_id, UserMessage.msg_from == bp.prof_id)).all();
 
 		json_inbox = []
@@ -129,7 +128,7 @@ def get_threads():
 
 	except Exception as e:
 		print e
-		db_session.rollback()
+		database.session.rollback()
 
 	return jsonify(inbox=json_inbox, archive=json_archive, bp=bp.prof_id)
 
@@ -149,7 +148,7 @@ def render_message_page():
 	elif (action == "archive"):
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_messages = database.session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
 			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
 			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
 
@@ -164,24 +163,24 @@ def render_message_page():
 			for msg in thread_messages:
 				msg.msg_flags = (msg.msg_flags | archive_flag)
 				updated_messages = updated_messages + 1
-				db_session.add(msg)
+				database.session.add(msg)
 
 			if (updated_messages > 0):
 				print '\"archiving\" ' + str(updated_messages) + " msgs"
-				db_session.commit()
+				database.session.commit()
 
 			return make_response(jsonify(usrmsg="Message thread archived.", next='/inbox'), 200)
 
 		except Exception as e:
 			print type(e), e
-			db_session.rollback()
+			database.session.rollback()
 		return make_response(jsonify(usrmsg="Message thread failed.", next='/inbox'), 500)
 	
 	elif (action == "restore"):
 		print 'restoring msg_thread' + str(msg_thread_id)
 		bp = Profile.get_by_uid(session['uid'])
 		try:
-			thread_messages = db_session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
+			thread_messages = database.session.query(UserMessage).filter(UserMessage.msg_thread == msg_thread_id).all();
 			thread_msg_zero = filter(lambda msg: (msg.msg_id == msg.msg_thread), thread_messages)[0]
 			print "msg_thread id and len: ", msg_thread_id, len(thread_messages), thread_msg_zero
 
@@ -196,18 +195,18 @@ def render_message_page():
 
 			for msg in thread_messages:
 				msg.msg_flags = msg.msg_flags & ~archive_flag
-				db_session.add(msg)
+				database.session.add(msg)
 				updated_messages = updated_messages + 1
 
 			if (updated_messages > 0):
 				print '\"restoring\" ' + str(updated_messages) + " msgs"
-				db_session.commit()
+				database.session.commit()
 
 			return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 200)
 
 		except Exception as e:
 			print type(e), e
-			db_session.rollback()
+			database.session.rollback()
 
 		return make_response(jsonify(usrmsg="Message thread restored.", next='/inbox'), 500)	
 
@@ -350,89 +349,6 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def ht_update_avail_timeslots(bp, form):
-	print "ht_update_avail_timeslots: begin"
-	update = False
-	d = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
-
-	# First delete the existing entries in the Availability table for this profile.
-	avail = Availability.get_by_prof_id(bp.prof_id)
-	for o in avail:
-		print "ht_update_avail_timeslots: deleting a slot."
-		db_session.delete(o)
-
-	if (bp.availability == 1): # They chose flexible scheduling. All we do is delete any existing timeslots.
-		print "ht_update_avail_timeslots: availability is flexible - remove existing timeslots."
-		db_session.commit()
-		return True
-	elif (bp.availability == 2): # They chose timeslot scheduling - need to parse and insert.
-		print "ht_update_avail_timeslots: availability is specific - extract preferences."
-
-		# Now we go through the submitted form and see what was chosen. We will need to do a separate db add for each time slot.
-		
-		days = []
-
-		if (request.values.get("edit_avail_day_sun") == 'y'):
-			days.append("sun")
-		if (request.values.get("edit_avail_day_mon") == 'y'):
-			days.append("mon")
-		if (request.values.get("edit_avail_day_tue") == 'y'):
-			days.append("tue")
-		if (request.values.get("edit_avail_day_wed") == 'y'):
-			days.append("wed")
-		if (request.values.get("edit_avail_day_thu") == 'y'):
-			days.append("thu")
-		if (request.values.get("edit_avail_day_fri") == 'y'):
-			days.append("fri")
-		if (request.values.get("edit_avail_day_sat") == 'y'):
-			days.append("sat")
-
-		print "ht_update_avail_timeslots: avail days: ", days
-		for day in days:
-			# generate the variable name string, and extract its value using eval
-			start = eval("form.edit_avail_time_"+day+"_start.data")
-			finish = eval("form.edit_avail_time_"+day+"_finish.data")
-			print "-"*24
-			print "ht_update_avail_timeslots: adding slot on", day
-
-			try:
-				# Initialize the avail timeslot
-				print "ht_update_avail_timeslots: initializing timeslot"
-				newavail = ht_create_avail_timeslot(bp)
-				if (newavail):
-					print "ht_update_avail_timeslots: initializing timeslot successful"
-					
-					# Add the new fields
-					for k, v in d.iteritems():
-						if v == day:
-							thisday = v
-							newavail.avail_weekday = k
-
-					newavail.avail_start = start
-					newavail.avail_finish = finish
-
-					print "ht_update_avail_timeslots: db add for new timeslot:", newavail.avail_weekday, "(", thisday, ") -", newavail.avail_start, "=>", newavail.avail_finish
-					db_session.add(newavail)
-					update = True
-				else:
-					print "ht_update_avail_timeslots: initializing timeslot FAILED"
-			except:
-				print "ht_update_avail_timeslots: Error - something went wrong."
-				update = False
-
-		if (update == True):	
-			print "ht_update_avail_timeslots: commit"	
-			db_session.commit()
-			return True
-		else:
-			print "ht_update_avail_timeslots: fail"	
-			db_session.rollback()
-			return False
-	else:
-		print "ht_update_avail: Availability wasn't set - something screwed up."
-		db_session.rollback()
-		return False
-
 def ht_update_profile(ba, bp, form, form_page):
 	print 'ht_update_profile:', bp.prof_id
 	print 'ht_update_profile: form_page: ', form_page
@@ -451,41 +367,12 @@ def ht_update_profile(ba, bp, form, form_page):
 		return True
 
 	if (form_page == 'details' or form_page == 'full'):	
-		# bp.industry = Industry.industries[int(form.edit_industry.data)]
 		bp.headline = form.edit_headline.data 			
 		bp.prof_url  = form.edit_url.data
 		return True
 
-#PROF_RATE was removed
-#	if (form_page == 'payment' or form_page == 'full'):	
-#		bp.prof_rate = form.edit_rate.data		
-#		ba.stripe_cust = form.edit_oauth_stripe.data
-#		return True
-
-	if (form_page == 'schedule' or form_page == 'full'):
-
-		bp.availability = form.edit_availability.data
-
-		# Send to ht_update_avail_timeslots to update the user's availability, and their time slots in the Availability table.
-		avail_update = ht_update_avail_timeslots(bp, form)
-		if (avail_update):
-			print 'ht_update_profile: avail timeslot update successful.'
-		else:
-			print 'ht_update_profile: avail update failed.'
-
-		return True
-
-	if (form_page == 'mentor'):
-		if (bp.availability == 0):
-			bp.availability = 1
-			return True
-		else:
-			print "Already a mentor. Moving on..."
-			return True
-
 	# check for photo, name should be PHOTO_HASH.VER[#].SIZE[SMLX]
 	if (form_page == 'profile_photo' or form_page == 'full'):
-
 		file = request.files[form.edit_photo.name]
 		print "ht_validate_page: uploaded filename is ", file.filename
 		if (file and allowed_file(file.filename)):
@@ -494,7 +381,6 @@ def ht_update_profile(ba, bp, form, form_page):
 			destination_filename = str(hashlib.sha1(image_data).hexdigest()) + '.jpg'
 			trace (destination_filename + ", sz = " + str(len(image_data)))
 
-			#print source_extension
 			print 'api_update_profile: s3'
 			conn = boto.connect_s3(sc_server.config["S3_KEY"], sc_server.config["S3_SECRET"]) 
 			b = conn.get_bucket(sc_server.config["S3_BUCKET"])
@@ -508,23 +394,12 @@ def ht_update_profile(ba, bp, form, form_page):
 			if (bp.prof_url[:8] != "https://"):
 				if (bp.prof_url[:7] != "http://"):
 					bp.prof_url = "http://" + bp.prof_url;
-
 		return True
-
-	#TODO: re-enable this; fails on commit (can't compare offset-naive and offset-aware datetimes)
-	# bp.updated  = dt.utcnow()
 
 
 #@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
 #@req_authentication
 def upgrade_profile():
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-
-	if (bp.availability > 0):
-		print "upgrade_profile(): Whahappen? User is already a mentor!"
-
-	# return make_response(render_edit_profile(activate="true"))
 	return redirect('/profile/edit#mentor')
 
 
@@ -544,55 +419,9 @@ def render_edit_portfolio_page():
 	bp = Profile.get_by_uid(session['uid'])
 
 	print "render_edit_portfolio_page(): get all images for profile:"
-	portfolio = db_session.query(Image).filter(Image.img_profile == bp.prof_id).all()
+	portfolio = database.session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
-
-
-
-#@insprite_views.route('/schedule/getdays', methods=['GET'])
-#@req_authentication
-def get_schedule_days():
-	print "get_schedule_days: start"
-	mentor_id = request.values.get('mentor_id')
-	availdays = []
-	print "get_schedule_days: mentor_id:", mentor_id
-	avail = Availability.get_by_prof_id(mentor_id)
-
-	try:
-		availdays = Availability.get_avail_days(mentor_id)
-		if (len(availdays) > 0):
-			print "get_schedule_days: user available on days ", str(availdays)
-		else:
-			print "get_schedule_days: user availability not found"
-
-	except Exception as e:
-		print "get_schedule_days: exception:", e
-		print "get_schedule_days: Couldn't find availability for that user."
-
-	return jsonify(availdays=availdays), 200	
-
-
-#@insprite_views.route('/schedule/gettimes', methods=['GET'])
-#@req_authentication
-def get_schedule_times():
-	print "get_schedule_times: start"
-	day = request.values.get('day')
-	mentor_id = request.values.get('mentor_id')
-	print "get_schedule_times: day:", day
-	print "get_schedule_times: mentor_id:", mentor_id
-	avail = Availability.get_by_prof_id(mentor_id)
-
-	try:
-		start, finish = Availability.get_avail_by_day(mentor_id, day)
-		print "get_schedule_times: start:", start
-		print "get_schedule_times: finish:", finish
-
-		return jsonify(start=str(start), finish=str(finish)), 200
-
-	except Exception as e:
-		print "get_schedule_times: exception:", e
-		print "get_schedule_times: Couldn't find availability for that day."
 
 
 
@@ -629,15 +458,15 @@ def render_review_meeting_page(review_id):
 
 	except SanitizedException as se:
 		print se
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg=se.sanitized_msg())
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 		raise e
 	except IndexError as ie:
 		print 'trying to access, review, author or reviewer account and failed'
-		db_session.rollback()
+		database.session.rollback()
 		raise ie
 
 
@@ -724,17 +553,17 @@ def sc_api_update_settings():
 			return jsonify(usrmsg="Settings updated"), 200
 	except PasswordError as pe:
 		print 'sc_api_update_settings: Password (CodeBug):', pe
-		db_session.rollback()
+		database.session.rollback()
 		badpassword = {}
 		badpassword['current_password'] = pe.sanitized_msg()
 		return jsonify(usrmsg='We messed something up, sorry', errors=badpassword), pe.http_resp_code()
 	except AttributeError as ae:
 		print 'sc_api_update_settings: AttributeError (CodeBug):', ae
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
 	except Exception as e:
 		print 'sc_api_update_settings: Exception: ', e
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg=e, errors=form.errors), 500
 
 	print "sc_api_update_settings: Something went wrong - Fell Through."
@@ -869,12 +698,12 @@ def api_update_project(usrmsg=None):
 				project.updated		= datetime.utcnow()
 
 				print "api_proj_update: add"
-				db_session.add(project)
-				db_session.commit()
+				database.session.add(project)
+				database.session.commit()
 				if (newproj): sc_email_newproject_created(bp, project)
 				return jsonify(usrmsg="project updated", proj_id=project.proj_id), 200
 			else:
-				db_session.rollback()
+				database.session.rollback()
 				print "api_proj_update: update error"
 				return jsonify(usrmsg="We messed something up, sorry", errors=form.errors), 500
 		else:
@@ -885,12 +714,12 @@ def api_update_project(usrmsg=None):
 
 	except AttributeError as ae:
 		print "api_proj_update: exception", ae
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg='We messed something up, sorry'), 500
 	except Exception as e:
 		print type(e), e
 		print "api_proj_update: exception", e
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg=e), 500
 
 	print "api_update_profile: Something went wrong - Fell Through."
@@ -924,16 +753,16 @@ def ht_create_image(profile, image_data, comment=None):
 		image = Image(imgid, profile.prof_id, comment)
 		try:
 			ht_upload_image_to_S3(image, image_data)
-			db_session.add(image)
-			db_session.commit()
+			database.session.add(image)
+			database.session.commit()
 		except IntegrityError as ie:
 			# image already exists.
 			print 'upload()\tht_image_create() funny seeing image already exist here.'
 			print 'upload: exception', type(e), e
-			db_session.rollback()
+			database.session.rollback()
 		except Exception as e:
 			print 'upload: exception', type(e), e
-			db_session.rollback()
+			database.session.rollback()
 	return image
 
 

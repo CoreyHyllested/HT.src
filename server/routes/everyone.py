@@ -16,7 +16,7 @@ from . import sc_ebody
 from flask import render_template, make_response, redirect
 from flask import session, request
 from flask.ext.sqlalchemy import Pagination
-from server.infrastructure.srvc_database import db_session
+from server import database
 from server.models import * 
 from server.controllers import *
 from server.forms import NewPasswordForm, SearchForm
@@ -73,19 +73,18 @@ def render_profile(usrmsg=None):
 
 	try:
 		# complicated search queries can fail and lock up DB.
-		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		profile_imgs = database.session.query(Image).filter(Image.img_profile == hp.prof_id).all()
 		hp_c_reviews = htdb_get_composite_reviews(hp)
 		hp_lessons = ht_get_active_lessons(hp)
-		avail = Availability.get_by_prof_id(hp.prof_id)	
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 
 
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=avail))
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=None))	# removed availability model
 
 
 
@@ -172,7 +171,7 @@ def render_search(page = 1):
 		total_results = htdb_search_mentors_and_lessons(find_keywords, find_cost_min, find_cost_max)
 	except Exception as e:
 		print e, type(e)
-		db_session.rollback()
+		database.session.rollback()
 
 	PER_PAGE = 10
 	start_pg = (page - 1) * PER_PAGE
@@ -240,12 +239,12 @@ def render_password_reset_page(challengeHash):
 		trace("hash " + account.pwhash)
 
 		try:
-			db_session.add(account)
-			db_session.commit()
+			database.session.add(account)
+			database.session.commit()
 			sc_send_password_changed_confirmation(email)
 		except Exception as e:
 			trace(type(e) + ' ' + str(e))
-			db_session.rollback()
+			database.session.rollback()
 		return redirect('/login')
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
@@ -304,11 +303,11 @@ def ht_send_verification_to_list(account, email_set):
 	print 'ht_send_verification_to_list() enter'
 	try:
 		account.reset_security_question()
-		db_session.add(account)
-		db_session.commit()
+		database.session.add(account)
+		database.session.commit()
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 
 	for email in email_set:
 		print 'sending email to', email

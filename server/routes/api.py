@@ -16,10 +16,10 @@ from . import sc_ebody, sc_users
 from flask import render_template
 from ..forms import ReviewForm
 from .helpers import *
+from server import database
 from server.controllers import *
 from server.sc_utils import *
 from server.models import *
-
 
 
 @sc_users.route('/review/request', methods=['POST'])
@@ -39,19 +39,19 @@ def api_review_request():
 
 			if resend:
 				brr.resend()
-				db_session.add(brr)
-				db_session.commit()
+				database.session.add(brr)
+				database.session.commit()
 				sc_send_BR_email(session['pid'], email, brr)
 			return make_response(jsonify(sc_msg=resp_mesg, brid=brr.br_uuid), resp_code)
 
 		if (brr is None):
 			brr = BusinessReference(session['uid'], session['pid'], email)
-			db_session.add(brr)
-			db_session.commit()
+			database.session.add(brr)
+			database.session.commit()
 			fragment = render_template('fragment_request.html', brr=brr)
 			sc_send_BR_email(session['pid'], email, brr)
 	except Exception as e:
-		db_session.rollback()
+		database.session.rollback()
 		print 'Uh oh fellas.', type(e), e
 		resp_code = 400
 		resp_mesg = 'An error occurred'
@@ -141,9 +141,9 @@ def sc_api_get_message_thread(msg_thread):
 	thread_messages = []
 
 	try:
-		thread_messages = db_session.query(UserMessage, msg_from, msg_to)					\
-							 .filter(UserMessage.msg_thread == msg_thread)					\
-							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)		\
+		thread_messages = database.session.query(UserMessage, msg_from, msg_to)			\
+							 .filter(UserMessage.msg_thread == msg_thread)				\
+							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)	\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
 		print "number of thread_messages", len(thread_messages)
 	except Exception as e:
@@ -159,9 +159,7 @@ def sc_api_get_message_thread(msg_thread):
 			thread_partner_id = msg_zero.UserMessage.msg_from
 
 		thread_partner = Profile.get_by_prof_id(thread_partner_id)
-			
 		subject = msg_zero.UserMessage.msg_subject
-		
 		if ((msg_zero.msg_from != bp) and (msg_zero.msg_to != bp)):
 			print 'user doesn\'t have access'
 			thread_messages = []
@@ -174,13 +172,13 @@ def sc_api_get_message_thread(msg_thread):
 				updated_messages = updated_messages + 1
 				msg.UserMessage.msg_opened = dt.utcnow();
 				msg.UserMessage.msg_flags = (msg.UserMessage.msg_flags | MSG_STATE_LASTMSG_READ)
-				db_session.add(msg.UserMessage)
+				database.session.add(msg.UserMessage)
 		if (updated_messages > 0):
 			print 'committing ' + str(updated_messages) + ' messages'
-			db_session.commit()
+			database.session.commit()
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 
 	thread_timestamp = msg_zero.UserMessage.msg_created
 
@@ -229,11 +227,11 @@ def sc_api_send_message():
 			archive_flags = (MSG_STATE_RECV_ARCHIVE | MSG_STATE_SEND_ARCHIVE)
 			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags | MSG_STATE_THRD_UPDATED
 			msg_thread_leader.msg_flags = msg_thread_leader.msg_flags & ~(archive_flags)
-			db_session.add(msg_thread_leader)
+			database.session.add(msg_thread_leader)
 
 		message = UserMessage(msg_to, bp.prof_id, content, subject=subject, thread=thread, parent=parent)
-		db_session.add(message)
-		db_session.commit()
+		database.session.add(message)
+		database.session.commit()
 
 		hp = Profile.get_by_prof_id(msg_to)
 		ht_send_peer_message(bp, hp, subject, thread, message)
@@ -244,7 +242,7 @@ def sc_api_send_message():
 		return jsonify(usrmsg="Weird, couldn't find something", next=next, valid="true"), 505
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 		return jsonify(usrmsg='Bizarre, something failed', next=next, valid="true"), 500
 
 
@@ -275,8 +273,8 @@ def sc_api_review_create(review_id):
 			review.set_state(REV_STATE_FINSHED)
 			print 'ht_api_review_create() form is updated'
 
-			db_session.add(review)
-			db_session.commit()
+			database.session.add(review)
+			database.session.commit()
 			#log_uevent(uid, "posting " + str(review))
 
 			print 'ht_api_review_create() data has been posted'
@@ -287,7 +285,7 @@ def sc_api_review_create(review_id):
 			return jsonify(usrmsg='Thanks for submitting review. It will be posted shortly'), 200
 		except Exception as e:
 			print "ht_api_review_create().  Exception...\n", type(e), e
-			db_session.rollback()
+			database.session.rollback()
 			raise e
 	elif request.method == 'POST':
 		print "ht_api_review_create()  POST isn't valid " + str(review_form.errors)
@@ -330,11 +328,11 @@ def ht_profile_update_reviews(profile):
 		profile.rating  = float(profile_rating) / len(all_visible_reviews)
 
 		print(profile.prof_id, "now has " + str(profile_rating) + " points, and " + str(len(all_visible_reviews)) + " for a rating of " + str(profile.rating)) #log_uevent
-		db_session.add(profile)
-		db_session.commit()
+		database.session.add(profile)
+		database.session.commit()
 	except Exception as e:
 		print 'updating profile,', profile.prof_id, '...\n', type(e), e
-		db_session.rollback()
+		database.session.rollback()
 		raise e
 
 
@@ -363,11 +361,11 @@ def ht_post_review(review):
 		review_twin.updated = dt.utcnow()
 
 		print 'ht_posting_review_update_proposal():  commit to DB'
-		db_session.add(review)
-		db_session.add(review_twin)
+		database.session.add(review)
+		database.session.add(review_twin)
 	except Exception as e:
 		print 'ht_posting_review_update_proposal(): ', type(e), e
-		db_session.rollback()
+		database.session.rollback()
 
 	print 'ht_posting_review_update_proposal(): update profiles'
 	profile_sellr = Profile.get_by_prof_id(review.prof_authored)		# authored profile
