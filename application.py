@@ -2,30 +2,35 @@
 import os, sys
 from server import  initialize_server
 from config import	server_configuration
-from flask.ext.script import Manager, Shell
+from flask.ext.script	import Manager, Shell
+from flask.ext.migrate	import Migrate, MigrateCommand
 from OpenSSL import SSL
 
 
 ENV_CONFIG	= os.getenv('INSPRITE_CONFIG')
 if (ENV_CONFIG == 'devel_money'):
 	print "\n\n\n\nI too like to live dangerously.\n Serious.\nYou're entering the DangerZone"
+
+# used by shell
+def make_shell_ctx():
+	return dict(app=application)
+
+
 application = initialize_server(ENV_CONFIG or 'default')
+migrate	= Migrate(application, application.database)
 manager = Manager(application)
+manager.add_command('db', MigrateCommand)
+manager.add_command('shell', Shell(make_context=make_shell_ctx))
 
 
-def run_manager():
-	def make_shell_ctx():
-		return dict(app=application)
-	manager.add_command("shell", Shell(make_context=make_shell_ctx))
-	manager.run()
-
-
-def main():
+@manager.command
+def runserver():
 	# print 'Run with SSH'
 	context = SSL.Context(SSL.SSLv23_METHOD)
 	context.use_privatekey_file('security/soulcrafting.co.pem.key')
 	context.use_certificate_file('security/soulcrafting.co.crt')
 	application.run(debug = True, ssl_context=context)
+
 
 @manager.command
 def test():
@@ -38,7 +43,4 @@ def test():
 
 
 if __name__ == "__main__":
-	if (len(sys.argv) >= 2):
-		run_manager()
-	else:
-		main()
+	manager.run()
