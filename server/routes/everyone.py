@@ -21,7 +21,6 @@ from server.models import *
 from server.controllers import *
 from server.forms import NewPasswordForm, SearchForm
 from server.forms import RecoverPasswordForm
-from server import sc_csrf
 from pprint import pprint
 
 

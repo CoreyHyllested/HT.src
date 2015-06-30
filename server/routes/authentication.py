@@ -13,7 +13,6 @@
 
 from . import sc_ebody, sc_tests
 from flask import render_template
-from server import sc_csrf, sc_oauth
 from server.infrastructure.srvc_database import db_session
 from server.models import *
 from server.infrastructure.errors import *
@@ -26,20 +25,20 @@ from httplib2 import Http
 from urllib import urlencode
 
 
-facebook = sc_oauth.remote_app( 'facebook',
+facebook = sc_server.oauth.remote_app( 'facebook',
 		base_url='https://graph.facebook.com',
 		request_token_url=None,
 		access_token_url='/oauth/access_token',
 		authorize_url='https://www.facebook.com/dialog/oauth',
-		consumer_key=ht_server.config['FACEBOOK_APP_ID'],
-		consumer_secret=ht_server.config['FACEBOOK_APP_SEC'],
+		consumer_key=sc_server.config['FACEBOOK_APP_ID'],
+		consumer_secret=sc_server.config['FACEBOOK_APP_SEC'],
 		request_token_params={ 'scope': 'email' }
 )
 
 
-linkedin = sc_oauth.remote_app(  'linkedin',
-		consumer_key=ht_server.config['LINKEDIN_KEY'],
-		consumer_secret=ht_server.config['LINKEDIN_SEC'],
+linkedin = sc_server.oauth.remote_app(  'linkedin',
+		consumer_key=sc_server.config['LINKEDIN_KEY'],
+		consumer_secret=sc_server.config['LINKEDIN_SEC'],
 		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
 		base_url='https://api.linkedin.com/v1/',
 		request_token_url=None,
@@ -95,7 +94,7 @@ def render_pro_signup_page(sc_msg=None):
 
 
 
-@sc_csrf.exempt
+@sc_server.csrf.exempt
 @sc_ebody.route('/login', methods=['GET', 'POST'])
 def render_login():
 	""" If successful, sets session cookies and redirects to dash """
@@ -287,7 +286,7 @@ def settings_verify_stripe():
 
 
 	postdata = {}
-	postdata['client_secret'] = ht_server.config['STRIPE_SECRET']
+	postdata['client_secret'] = sc_server.config['STRIPE_SECRET']
 	postdata['grant_type']    = 'authorization_code'
 	postdata['code']          = authr
 
