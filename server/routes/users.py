@@ -23,13 +23,13 @@ from ..forms import ProjectForm, SettingsForm, ReviewForm
 from ..forms import InviteForm
 
 # more this into controllers / tasks.
+import os
 import boto
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
 from pprint import pprint
-import os
 from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -496,9 +496,9 @@ def ht_update_profile(ba, bp, form, form_page):
 
 			#print source_extension
 			print 'api_update_profile: s3'
-			conn = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"]) 
-			b = conn.get_bucket(ht_server.config["S3_BUCKET"])
-			sml = b.new_key(ht_server.config["S3_DIRECTORY"] + destination_filename)
+			conn = boto.connect_s3(sc_server.config["S3_KEY"], sc_server.config["S3_SECRET"]) 
+			b = conn.get_bucket(sc_server.config["S3_BUCKET"])
+			sml = b.new_key(sc_server.config["S3_DIRECTORY"] + destination_filename)
 			sml.set_contents_from_file(StringIO(image_data))
 			imglink   = 'https://s3-us-west-1.amazonaws.com/htfileupload/htfileupload/'+destination_filename
 			bp.prof_img = destination_filename
@@ -910,7 +910,7 @@ def api_update_project(usrmsg=None):
 #@insprite_views.route('/uploads/<filename>')
 #def uploaded_file(filename):
 	# add sec protection?
-#	return send_from_directory(ht_server.config['SC_UPLOAD_DIR'], filename)
+#	return send_from_directory(sc_server.config['SC_UPLOAD_DIR'], filename)
 
 
 
@@ -939,14 +939,14 @@ def ht_create_image(profile, image_data, comment=None):
 
 
 def ht_upload_image_to_S3(image, image_data):
-	f = open(os.path.join(ht_server.config['SC_UPLOAD_DIR'], image.img_id), 'w')
+	f = open(os.path.join(sc_server.config['SC_UPLOAD_DIR'], image.img_id), 'w')
 	f.write(image_data)
 	f.close()
 
 	print 'upload()\tupload_image_to_S3\tpush image to S3.'
-	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
-	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
+	s3_con = boto.connect_s3(sc_server.config["S3_KEY"], sc_server.config["S3_SECRET"])
+	s3_bkt = s3_con.get_bucket(sc_server.config["S3_BUCKET"])
+	s3_key = s3_bkt.new_key(sc_server.config["S3_DIRECTORY"] + image.img_id)
 	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
 	s3_key.set_contents_from_file(StringIO(image_data))
 
