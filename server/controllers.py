@@ -22,7 +22,6 @@ from datetime import timedelta, datetime as dt
 from flask import request
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
-from server.infrastructure.srvc_database import db_session
 from server.infrastructure.tasks  import *
 from server.infrastructure import errors
 from server.models import *
@@ -72,12 +71,12 @@ def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 	try:
 		print 'search Oauth for', oa_srvc, oa_data['oa_account']
-		oauth_accounts = db_session.query(Oauth)																		\
+		oauth_accounts = sc_server.database.session.query(Oauth)																		\
 								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
 								   .all()
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 
 	if len(oauth_accounts) == 1:
 		print 'found oauth account for individual'
@@ -101,11 +100,11 @@ def sc_password_recovery(email):
 
 	try:
 		account.reset_security_question()
-		db_session.add(account)
-		db_session.commit()
+		sc_server.database.session.add(account)
+		sc_server.database.session.commit()
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		raise AccountError(str(e), email, 'An error occurred')
 	sc_send_password_recovery_link(account)
 
@@ -122,16 +121,16 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 		print 'create account and profile', str(email), str(phone), str(addr) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
 		account = Account(name, email, generate_password_hash(passwd), phone=phone, ref=ref_id, role=role)
 		profile = Profile(name, account.userid, email, phone=phone) # geo_location)
-		db_session.add(account)
-		db_session.add(profile)
-		db_session.commit()
+		sc_server.database.session.add(account)
+		sc_server.database.session.add(profile)
+		sc_server.database.session.commit()
 	except IntegrityError as ie:
 		print type(ie), ie
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		raise AccountError(email, str(ie), user_msg='An error occurred. Please try again.')
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		raise AccountError(email, str(e), user_msg='An error occurred. Please try again.')
 	#finally:
 	# if (account is None): raise AccountError.
@@ -150,11 +149,11 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 			gift.gift_recipient_name = profile.prof_name
 			gift.gift_recipient_prof = profile.prof_id
 			gift.gift_dt_updated = dt.utcnow();
-			db_session.add(gift)
-			db_session.commit()
+			sc_server.database.session.add(gift)
+			sc_server.database.session.commit()
 		except Exception as e:
 			print type(e), e
-			db_session.rollback()
+			sc_server.database.session.rollback()
 
 	print 'send-welcome-email'
 	sc_email_welcome_message(email, name, account.sec_question)
@@ -180,15 +179,15 @@ def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
 		print 'create oauth account'
 		#get account from profile.... 
 		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
-		db_session.add(oa_user)
-		db_session.commit()
+		sc_server.database.session.add(oa_user)
+		sc_server.database.session.commit()
 	except IntegrityError as ie:
 		print type(ie), ie
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		return None, None 
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		return None, None
 	return (account , profile)
 
@@ -214,16 +213,16 @@ def import_profile(bp, oauth_provider, oauth_data):
 		print 'hero & prof created', bp.account, oauth_provider 
 		oauth = Oauth(str(bp.account), oauth_provider, linked_id, token=session.get('linkedin_token'))
 
-		db_session.add(bp)
-		db_session.add(oauth)
+		sc_server.database.session.add(bp)
+		sc_server.database.session.add(oauth)
 		print ("committ update bp")
-		db_session.commit()
+		sc_server.database.session.commit()
 	except IntegrityError as ie:
 		print 'ah fuck, it failed', ie
-		db_session.rollback()
+		sc_server.database.session.rollback()
 	except Exception as e:
 		print 'ah fuck, it failed other place', e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 
 
 
@@ -272,7 +271,7 @@ def htdb_get_composite_meetings(profile):
 	user = aliased(Profile, name='user')
 	lesson = aliased(Lesson, name='lesson')
 
-	meetings	= db_session.query(Meeting, user, hero, lesson)															\
+	meetings	= sc_server.database.session.query(Meeting, user, hero, lesson)															\
 							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
 							.join(user, user.prof_id == Meeting.meet_buyer)												\
 							.join(hero, hero.prof_id == Meeting.meet_sellr)												\
@@ -287,7 +286,7 @@ def htdb_get_composite_meetings(profile):
 
 def scdb_get_references(profile, dump=False):
 	""" get all refreqs for 'profile' """
-	references = db_session.query(BusinessReference).filter(BusinessReference.br_bus_prof == profile.prof_id).all();
+	references = sc_server.database.session.query(BusinessReference).filter(BusinessReference.br_bus_prof == profile.prof_id).all();
 
 	if (dump):
 		for r in references:
@@ -317,8 +316,8 @@ def meeting_timedout(composite_meeting, profile):
 			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
 				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
 				meeting.set_state(MeetingState.TIMEDOUT, profile)
-				db_session.add(meeting)
-				db_session.commit()
+				sc_server.database.session.add(meeting)
+				sc_server.database.session.commit()
 			else:
 				timeout = meet_to - utc_now
 				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + sc_print_timedelta(timeout)
@@ -331,12 +330,12 @@ def meeting_timedout(composite_meeting, profile):
 				meeting.set_state(MeetingState.OCCURRED)	# Hack, see above
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 
 
 
 def sc_get_projects(profile):
-	projects = db_session.query(Project)									\
+	projects = sc_server.database.session.query(Project)									\
 							.filter(Project.account == profile.account)		\
 							.all();
 	return projects
@@ -362,7 +361,7 @@ def sc_get_composite_messages(profile):
 	msg_from = aliased(Profile, name='msg_from')
 	msg_to	 = aliased(Profile, name='msg_to')
 
-	messages = db_session.query(UserMessage, msg_from, msg_to)																		\
+	messages = sc_server.database.session.query(UserMessage, msg_from, msg_to)																		\
 							 .filter(or_(UserMessage.msg_to == profile.prof_id, UserMessage.msg_from == profile.prof_id))			\
 							 .join(msg_from, msg_from.prof_id == UserMessage.msg_from)												\
 							 .join(msg_to,   msg_to.prof_id   == UserMessage.msg_to).all();
@@ -410,7 +409,7 @@ def htdb_search_mentors_and_lessons(keywords, cost_min=0, cost_max=99999):
 	# OBJ.lesson	# Lesson by the mentor.
 
 	lesson = aliased(Lesson, name='lesson')
-	q_results	= db_session.query(Profile, lesson)										\
+	q_results	= sc_server.database.session.query(Profile, lesson)										\
 							.filter(Profile.availability > PROF_MENTOR_NONE) 			\
 							.filter(Profile.prof_rate.between(cost_min, cost_max))		\
 							.join(lesson, Profile.prof_id == lesson.lesson_profile)		\
@@ -500,7 +499,7 @@ def htdb_get_composite_reviews(profile):
 	# OBJ.meet		# Meeting object
 	# OBJ.display	# <ptr> Profile of other person (not me)
 
-	all_reviews = db_session.query(Review, meet, hero, user).distinct(Review.review_id)											\
+	all_reviews = sc_server.database.session.query(Review, meet, hero, user).distinct(Review.review_id)											\
 								.filter(or_(Review.prof_reviewed == profile.prof_id, Review.prof_authored == profile.prof_id))	\
 								.join(meet, meet.meet_id == Review.rev_appt)													\
 								.join(user, user.prof_id == Review.prof_authored)												\
@@ -623,10 +622,10 @@ def modifyAccount(uid, current_pw, new_pass=None, new_mail=None, new_status=None
 		ba.name = new_name
 
 	try:
-		db_session.add(ba)
-		db_session.commit()
+		sc_server.database.session.add(ba)
+		sc_server.database.session.commit()
 	except Exception as e:
-		db_session.rollback()
+		sc_server.database.session.rollback()
 		return False, e
 	return True, True
 
@@ -659,21 +658,21 @@ def ht_create_avail_timeslot(profile):
 	try:
 		avail = Availability(profile)
 		print 'ht_create_avail_timeslot: creating timeslot.'
-		db_session.add(avail)
-		db_session.commit()
+		sc_server.database.session.add(avail)
+		sc_server.database.session.commit()
 	except IntegrityError as ie:
 		print 'ht_create_avail_timeslot: ERROR ie:', ie
-		db_session.rollback()
+		sc_server.database.session.rollback()
 	except Exception as e:
 		print 'ht_create_avail_timeslot: ERROR e:', type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 	return avail
 
 
 
 def htdb_get_lesson_images(lesson_id):
 	try:
-		lesson_images = db_session.query(LessonImageMap)				\
+		lesson_images = sc_server.database.session.query(LessonImageMap)				\
 						.filter(LessonImageMap.map_lesson == lesson_id)	\
 						.order_by(LessonImageMap.map_order).all()
 	except Exception as e:
@@ -683,7 +682,7 @@ def htdb_get_lesson_images(lesson_id):
 
 
 def ht_get_active_lessons(profile):
-	lessons = db_session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
+	lessons = sc_server.database.session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
 	print "ht_get_active_lessons() \ttotal:", len(lessons)
 	return lessons
 
@@ -706,12 +705,12 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 		account.set_sec_question("")
 		account.set_status(Account.USER_ACTIVE)
 
-		db_session.add(account)
-		db_session.commit()
+		sc_server.database.session.add(account)
+		sc_server.database.session.commit()
 		print 'sc_email_verify: account updated.'
 	except Exception as e:
 		print "sc_email_verify: Exception: ", type(e), e
-		db_session.rollback()
+		sc_server.database.session.rollback()
 
 	# bind session cookie to this user's profile
 	profile = Profile.get_by_uid(account.userid)

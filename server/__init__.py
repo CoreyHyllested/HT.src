@@ -29,14 +29,12 @@ from config import server_configuration
 
 
 sc_server	= None
-server		= None
-#database = None
+database	= None
 
 
 def initialize_server(config_name):
-	global sc_server, server
+	global sc_server
 	sc_server = Flask(__name__)
-	server = sc_server
 
 	server_init_environment(sc_server, config_name)
 	server_init_logging(sc_server)
@@ -82,21 +80,28 @@ def	server_init_logging(server):
 	server.logger.addHandler(log_hndlr)	 #sc_server.logger.addHandler(logging.FileHandler("/tmp/ht.log", mode="a"))
 	
 
+
 def server_init_service_sessions(server):
 	redis_cache = Redis(server)
 	server.session_interface = RedisSessionInterface(redis=redis_cache)
 
 
+
 def server_init_service_database(server):
+	global database		# import database
+
 	server.database = SQLAlchemy(server)
+	database = server.database
 	from server import models
 	#initialize_database(server.config)
+
 
 
 def server_init_service_oauth(server):
 	server.oauth = OAuth()
 	server.oauth.init_app(sc_server)
-	
+
+
 
 def	server_init_assets(server):
 	jsfilter = server.config['JSFILTER']
