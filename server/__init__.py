@@ -18,6 +18,7 @@ from logging import StreamHandler
 from flask import Flask
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
+from flask.ext.sqlalchemy	import SQLAlchemy
 from flask.ext.assets	import Environment, Bundle
 from flask.ext.mail		import Mail
 from flask_wtf.csrf		import CsrfProtect
@@ -27,24 +28,25 @@ from server.infrastructure.srvc_database	import initialize_database
 from config import server_configuration
 
 
-sc_server = None
+sc_server	= None
+server		= None
+#database = None
 
 
 def initialize_server(config_name):
-	global sc_server
+	global sc_server, server
 	sc_server = Flask(__name__)
+	server = sc_server
 
 	server_init_environment(sc_server, config_name)
 	server_init_logging(sc_server)
 
-	server_init_service_sessions(sc_server)
 	server_init_service_database(sc_server)
+	server_init_service_sessions(sc_server)
 	server_init_service_oauth(sc_server)
 
 	server_init_assets(sc_server)
 	server_init_routes(sc_server)
-
-	Compress(sc_server)
 	return sc_server
 
 
@@ -86,7 +88,9 @@ def server_init_service_sessions(server):
 
 
 def server_init_service_database(server):
-	initialize_database(server.config)
+	server.database = SQLAlchemy(server)
+	from server import models
+	#initialize_database(server.config)
 
 
 def server_init_service_oauth(server):
@@ -133,6 +137,7 @@ def	server_init_assets(server):
 def server_init_routes(server):
 	server.csrf	= CsrfProtect()
 	server.csrf.init_app(server)
+	Compress(sc_server)
 
 	from routes import authentication, everyone, users, api, meta, errors, testing
 	from routes import sc_users as sc_allusers
