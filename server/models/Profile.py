@@ -12,10 +12,10 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base, db_session
+from server import database
 from server.infrastructure.errors	import *
-from sqlalchemy import ForeignKey, LargeBinary
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
+from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship, backref
 from factory.fuzzy	 import *
 from factory.alchemy import SQLAlchemyModelFactory
@@ -39,7 +39,7 @@ PROF_STATE_AVAIL_FLEX = (0x1 << PROF_FLAG_AVAIL_FLEX)
 PROF_STATE_AVAIL_SPEC = (0x1 << PROF_FLAG_AVAIL_SPEC)
 
 
-class Profile(Base):
+class Profile(database.Model):
 	""" Profile maintains information for each "instance" of a users identity.
 		- i.e. Corey's 'DJ Core' profile, which is different from Corey's 'Financial Analyst' ident
 	"""
@@ -61,9 +61,6 @@ class Profile(Base):
 
 	updated = Column(DateTime(), nullable=False, default = "")
 	created = Column(DateTime(), nullable=False, default = "")
-
-	availability = Column(Integer, default=0)	
-	timeslots = relationship('Availability', backref='profile', cascade="all, delete")
 
 	def __init__(self, name, userid, email=None, phone=None,  area=None):
 		#if area and (area.get('country_name') == 'Reserved' or area.get('country_name') == ''):
@@ -94,8 +91,7 @@ class Profile(Base):
 		profile = None
 		try:
 			profile = Profile.query.filter_by(prof_id=profile_id).one()
-		except NoResultFound as nrf:
-			pass
+		except NoResultFound as nrf: pass
 		return profile
 
 
@@ -105,8 +101,7 @@ class Profile(Base):
 		try:
 			# cannot throw MultipleResultsFound, DB uniqueness
 			profile = Profile.query.filter_by(account=uid).one()
-		except NoResultFound as nrf:
-			pass
+		except NoResultFound as nrf: pass
 		return profile
 
 
@@ -137,13 +132,13 @@ class Profile(Base):
 
 		try:
 			# save updated images, self
-			db_session.add(replace_img)
-			db_session.add(newprof_img)
-			db_session.add(self)
-			db_session.commit()
+			database.session.add(replace_img)
+			database.session.add(newprof_img)
+			database.session.add(self)
+			database.session.commit()
 		except Exception as e:
 			print type(e), e
-			db_session.rollback()
+			database.session.rollback()
 		return self
 
 
@@ -156,7 +151,7 @@ class Profile(Base):
 class ProfileFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Profile
-		sqlalchemy_session = db_session
+		sqlalchemy_session = database.session
 
 	prof_name = factory.Sequence(lambda n: u'TestProfile %d' % n)
 	prof_acct = factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='test-acct-')

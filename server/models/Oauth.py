@@ -12,6 +12,8 @@
 #################################################################################
 
 
+from server import database
+from server.models.shared	import *
 from server.infrastructure.srvc_database import Base, db_session
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
@@ -23,15 +25,10 @@ from datetime import datetime as dt, timedelta
 import factory
 
 
-OAUTH_NONE   = 0
-OAUTH_LINKED = 1
-OAUTH_STRIPE = 2
-OAUTH_GOOGLE = 3
-OAUTH_FACEBK = 4
-OAUTH_TWITTR = 5
 
 
-class Oauth(Base):
+
+class Oauth(database.Model):
 	__tablename__ = "oauth"
 	id      = Column(Integer, primary_key = True)
 	ht_account	= Column(String(40), ForeignKey('account.userid'), nullable=False, index=True)		#HT UserID
@@ -68,7 +65,7 @@ class Oauth(Base):
 	@staticmethod
 	def get_stripe_by_uid(uid):
 		try:
-			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OAUTH_STRIPE)).one()
+			stripe_user = Oauth.query.filter_by(ht_account=uid).filter_by(oa_service=str(OauthProvider.STRIPE)).one()
 		except MultipleResultsFound as multiple:
 			print 'Never Happen Error: found multiple Stripe customers for UID', uid
 			stripe_user = None
@@ -101,7 +98,7 @@ class Oauth(Base):
 class OauthFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Oauth
-		sqlalchemy_session = db_session
+		sqlalchemy_session = database.session
 
 	oa_account	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-oa_account-')
 	ht_account	= factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='oauth-ht_account-')
@@ -112,7 +109,7 @@ class OauthFactory(SQLAlchemyModelFactory):
 
 		oa_account = kwargs.pop('oa_account', cls.oa_account)
 		ht_account = kwargs.pop('ht_account', cls.ht_account)
-		service = kwargs.pop('service',	OAUTH_STRIPE)
+		service = kwargs.pop('service',	OauthProvider.STRIPE)
 		#token	= 'pk_test_d3gRvdhkXhLBS3ABhRPhOort'
 		#secret	= 'sk_test_wNvqK0VIg7EqgmeXxiOC62md'
 

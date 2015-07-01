@@ -19,7 +19,6 @@ from .Email				import *
 from .Oauth				import *
 from .BusinessReference	import *
 
-from .Availability		import *
 #from .Meeting			import *
 #from .Image				import *
 #from .Review			import *

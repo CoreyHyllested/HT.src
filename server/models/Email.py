@@ -12,12 +12,10 @@
 #################################################################################
 
 
-from __future__ import absolute_import
-from server.infrastructure.srvc_database import Base, db_session
+from server import database
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime, LargeBinary
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime as dt, timedelta
 from pytz import timezone
 import datetime
@@ -25,7 +23,7 @@ import uuid
 
 
 
-class Email(Base):
+class Email(database.Model):
 	__tablename__ = "email"
 
 	id = Column(Integer, primary_key = True)
@@ -40,7 +38,7 @@ class Email(Base):
 		self.email = email
 		self.flags = flags
 		self.created = dt.utcnow()
-	
+
 
 	def __repr__(self):
 		print '<%r>' % (self.email)

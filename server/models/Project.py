@@ -12,7 +12,7 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base, db_session
+from server import database
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, LargeBinary
 from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
@@ -24,7 +24,7 @@ from pytz import timezone
 import uuid, factory
 
 
-class Project(Base):
+class Project(database.Model):
 	""" Project maintains information for each project.  """
 	__tablename__ = "project"
 	proj_id	= Column(String(40), primary_key=True, index=True)
@@ -92,7 +92,7 @@ class Project(Base):
 class ProjectFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Project
-		sqlalchemy_session = db_session
+		sqlalchemy_session = database.session
 
 	proj_name = factory.Sequence(lambda n: u'TestProject %d' % n)
 	proj_acct = factory.fuzzy.FuzzyText(length=30, chars="1234567890-", prefix='test-acct-')
