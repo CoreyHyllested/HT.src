@@ -12,17 +12,17 @@
 #################################################################################
 
 
-from .Account			import *
-from .Profile			import *
-from .Project			import *
-from .Email				import *
-from .Oauth				import *
-from .BusinessReference	import *
+from server.models.Account	import *
+from server.models.Profile	import *
+from server.models.Project	import *
+from server.models.Email	import *
+from server.models.Oauth	import *
+from server.models.Referral	import *
+from server.models.BusinessReference	import *
 
 #from .Meeting			import *
 #from .Image				import *
 #from .Review			import *
-#from .Referral			import *
 #from .GiftCertificate	import *
 #from .UserMessage		import *
 

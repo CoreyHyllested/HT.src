@@ -12,17 +12,17 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base
+from server import database
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 import uuid
 
 
 
-class Referral(Base):
+class Referral(database.Model):
 	__tablename__ = "referral"
 	ref_uuid	= Column(String(40), primary_key=True, index=True, unique=True)
 	ref_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
@@ -51,7 +51,7 @@ class Referral(Base):
 
 
 
-class RefList(Base):
+class RefList(database.Model):
 	__tablename__ = "referral_list"
 	list_uuid		= Column(String(40), primary_key=True, index=True, unique=True)
 	list_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
@@ -73,7 +73,7 @@ class RefList(Base):
 
 
 
-class RefListMemberMap(Base):
+class RefListMemberMap(database.Model):
 	__tablename__ = "referral_list_member_map"
 
 	id				= Column(Integer, primary_key=True, unique=True)
@@ -88,7 +88,7 @@ class RefListMemberMap(Base):
 
 
 
-class RefListReferralMap(Base):
+class RefListReferralMap(database.Model):
 	__tablename__ = "referral_list_referral_map"
 
 	id				= Column(Integer, primary_key=True, unique=True)
