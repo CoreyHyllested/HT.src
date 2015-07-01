@@ -90,6 +90,10 @@ def server_init_service_sessions(server):
 def server_init_service_database(server):
 	global database		# import database
 
+#	if (database and database.session):
+#		print 'reset database session'
+#		database.session.remove()
+
 	server.database = SQLAlchemy(server)
 	database = server.database
 	from server import models
