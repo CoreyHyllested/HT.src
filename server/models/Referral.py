@@ -19,6 +19,7 @@ from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 import uuid
+from pprint import pprint as pp
 
 
 
@@ -38,13 +39,24 @@ class Referral(database.Model):
 		self.ref_created = dt.utcnow()
 
 	def __repr__ (self):
-		return '<Referral %r, %r, %r>'% (self.ref_id, self.ref_profile, self.ref_content[:20])
+		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_profile, self.ref_content[:20])
 
+	@property
+	def serialize(self):
+		return {
+			'ref_uuid'		: self.ref_uuid,
+			'ref_profile'	: self.ref_profile,
+			'ref_project'	: self.ref_project,
+			'ref_content'	: self.ref_content
+		}
 
 	@staticmethod
-	def get_by_refid(ref):
-		referral = None
-		try: referral = Referral.query.filter_by(ref_uuid=ref).one()
+	def get_by_refid(ref_id):
+		referral = session.get('referrals', {}).get(ref_id, None)
+		if (referral): return referral
+
+		try:
+			referral = Referral.query.filter_by(ref_uuid=ref_id).one()
 		except NoResultFound as nrf: pass
 		return referral
 
