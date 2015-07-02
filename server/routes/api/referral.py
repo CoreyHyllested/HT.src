@@ -15,9 +15,9 @@
 from server import sc_server
 from server.models import *
 from server.routes import api_routing as api
+from server.routes import test_routes as test
 from server.routes.helpers import *
 from server.controllers import *
-from server.sc_utils import *
 
 
 @api.route('/referral/<string:ref_id>/', methods=['GET'])
@@ -61,10 +61,39 @@ def api_referral_create():
 @api.route('/referral/<string:ref_id>/update/', methods=['POST'])
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
 def api_referral_edit(ref_id):
-	print 'api_referral_edit(): enter'
-	referral = Referral.get_by_refid(ref_id)
-	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+	referral	= Referral.get_by_refid(ref_id)
+	operation	= request.values.get('operation')
+	if (not referral):	return make_response(jsonify(request='missing valid resource'),  400)
+	if (not operation): return make_response(jsonify(request='missing valid operation'), 400)
+
 	return make_response(jsonify(project='found'), 200)
 
 
+
+
+#################################################################################
+### TEST ROUTES #################################################################
+#################################################################################
+
+@test.route('/referral/<string:ref_id>/valid/',	methods=['GET','POST'])
+@test.route('/referral/<string:ref_id>/valid',	methods=['GET','POST'])
+def test_reflist_valid(ref_id):
+	referral = Referral.get_by_refid(ref_id)
+	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+
+	referral.set_valid()
+	return make_response(jsonify(flags=referral.ref_flags), 200)
+	return make_response(jsonify(referral=referral.serialize), 200)
+
+
+@test.route('/referral/<string:ref_id>/invalid/',	methods=['GET','POST'])
+@test.route('/referral/<string:ref_id>/invalid',	methods=['GET','POST'])
+def test_reflist_setinvalid(ref_id):
+	referral = Referral.get_by_refid(ref_id)
+	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+
+	referral.set_invalid()
+	flags = referral.serialize['ref_flags']
+	return make_response(jsonify(flags=referral.ref_flags), 200)
+	return make_response(jsonify(referral=referral.ref_flags), 200)
 
