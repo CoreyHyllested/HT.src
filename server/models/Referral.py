@@ -13,6 +13,7 @@
 
 
 from server import database
+from server.models.shared import ReferralFlags
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, String, Integer, DateTime
@@ -29,6 +30,8 @@ class Referral(database.Model):
 	ref_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
 	ref_content	= Column(String(200), nullable=False)	# referral content
 	ref_project	= Column(String(128))					# project description
+
+	ref_flags	= Column(Integer)
 	ref_created = Column(DateTime(), nullable=False)
 
 	def __init__ (self, profile, content, project=None):
@@ -36,10 +39,23 @@ class Referral(database.Model):
 		self.ref_profile = profile
 		self.ref_content = content
 		self.ref_project = project
+
+		self.ref_flags	 = 0
 		self.ref_created = dt.utcnow()
 
 	def __repr__ (self):
 		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_profile, self.ref_content[:20])
+
+	def invalid(self):
+		return ReferralFlags.test_invalid(self.ref_flags)
+
+	def set_invalid(self):
+		self.ref_flags = ReferralFlags.set_invalid(self.ref_flags)
+		return self.ref_flags
+
+	def set_valid(self):
+		self.ref_flags = ReferralFlags.clear_invalid(self.ref_flags)
+		return self.ref_flags
 
 	@property
 	def serialize(self):
@@ -47,7 +63,8 @@ class Referral(database.Model):
 			'ref_uuid'		: self.ref_uuid,
 			'ref_profile'	: self.ref_profile,
 			'ref_project'	: self.ref_project,
-			'ref_content'	: self.ref_content
+			'ref_content'	: self.ref_content,
+			'ref_flags'		: "0x%08X" % self.ref_flags
 		}
 
 	@staticmethod
@@ -84,6 +101,47 @@ class RefList(database.Model):
 		self.list_created = dt.utcnow()
 
 
+	def add_referral(self, referral):
+		# only do this at commit time.
+		print 'Appending referral', referral, 'to list', self.list_uuid
+		if (referral.invalid()): return	#raise exception(Invalid Referral)
+		if (self.contains_referral(referral)): return # raise referral exists
+
+		try:
+			print 'referral is valid -- adding to session / committing'
+			database.session.add(self)
+			database.session.add(referral)
+
+			print 'referral is valid -- adding to session / committing, mapping'
+			mapping = RefListReferralMap(self, referral)
+			database.session.add(mapping)
+			database.session.commit()
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
+
+
+	def contains_referral(self, referral):
+		try:
+			print 'lets query for ', self.list_uuid, referral.ref_uuid
+			reflist = RefListReferralMap.query.filter_by(map_reflist=self.list_uuid)	\
+								 			  .filter_by(map_referal=referral.ref_uuid)	\
+											  .all()
+			print reflist
+		except Exception as e:
+			print type(e), e
+		return reflist
+
+
+	def profile_can_modify(self, profile):
+		try:
+			reflist = RefListMemberMap.query.filter_by(map_reflist=self.list_uuid)	\
+											.filter_by(map_profile=profile.prof_id)	\
+											.all()
+		except Exception as e:
+			print type(e), e
+		return reflist
+
 	@property
 	def serialize(self):
 		return {
@@ -101,7 +159,7 @@ class RefList(database.Model):
 		if (reflist): return reflist
 
 		try:
-			reflist = RefList.query.filter_by(ref_uuid=list_id).one()
+			reflist = RefList.query.filter_by(list_uuid=list_id).one()
 		except NoResultFound as nrf: pass
 		return reflist
 
@@ -110,7 +168,7 @@ class RefList(database.Model):
 class RefListMemberMap(database.Model):
 	__tablename__ = "referral_list_member_map"
 
-	id				= Column(Integer, primary_key=True, unique=True)
+	id			= Column(Integer, primary_key=True, unique=True)
 	map_reflist	= Column(String(40), ForeignKey('referral_list.list_uuid'), nullable=False, index=True)
 	map_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)		# member
 	map_control	= Column(Integer, default=0)											# member's ACL
@@ -122,14 +180,18 @@ class RefListMemberMap(database.Model):
 
 
 
+
+
 class RefListReferralMap(database.Model):
 	__tablename__ = "referral_list_referral_map"
 
 	id				= Column(Integer, primary_key=True, unique=True)
 	map_reflist	= Column(String(40), ForeignKey('referral_list.list_uuid'), nullable=False, index=True)
-	map_referal	= Column(String(40), ForeignKey('referral.ref_uuid'), nullable=False, index=True)
+	map_referal	= Column(String(40), ForeignKey('referral.ref_uuid'),       nullable=False, index=True)
 
-	def __init__ (self, reflist, referal):
-		self.map_reflist = reflist
-		self.map_referal = referal
+	def __init__ (self, reflist, referral):
+		#if (referral.invalid()): raise exception(Invalid Referral)
+		self.map_reflist = reflist.list_uuid
+		self.map_referal = referral.ref_uuid
 
+	
