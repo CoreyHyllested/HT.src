@@ -3,3 +3,4 @@ INSPRITE_DB=postgresql://htdb:pass@localhost:5432/beta4 python application.py
 locally
 INSPRITE_DB=postgresql://htdb:passw0rd@localhost:5432/sctest python application.py 
 
+git describe --tags > server/templates/version
