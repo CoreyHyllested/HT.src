@@ -11,16 +11,13 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-from . import sc_ebody, sc_tests
-from flask import render_template
-from server.infrastructure.srvc_database import db_session
 from server.models import *
+from server.routes import sc_ebody
+from server.routes import test_routes as test
 from server.infrastructure.errors import *
 from server.controllers	import *
-from server.sc_utils	import *
 from server.forms import LoginForm, SignupForm, ProSignupForm
 
-from datetime import datetime as dt
 from httplib2 import Http
 from urllib import urlencode
 
@@ -331,13 +328,13 @@ def settings_verify_stripe():
 		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
 
 	try:
-		db_session.add(oauth_stripe)
-		db_session.commit()
+		database.session.add(oauth_stripe)
+		database.session.commit()
 		next_url = session.pop('next_url', '/settings')
 		return make_response(redirect(next_url))
 	except Exception as e:
 		print type(e), e
-		db_session.rollback()
+		database.session.rollback()
 	return "good - but must've failed on create", 200
 
 
@@ -352,12 +349,6 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-@sc_tests.route('/facebook')
-def TESTING_render_facebook_info():
-	me = facebook.get('/me')
-	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
-	
-
 @sc_ebody.route('/logout', methods=['GET', 'POST'])
 def logout():
 	session.clear()
@@ -366,3 +357,10 @@ def logout():
 
 #TODO 
 # Pop the referred_by / reference values when account creations succeeds.
+
+@test.route('/facebook')
+def TESTING_render_facebook_info():
+	me = facebook.get('/me')
+	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
+	
+
