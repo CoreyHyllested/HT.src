@@ -83,7 +83,7 @@ class Profile(database.Model):
 		tmp_headline = self.headline
 		if (tmp_headline is not None):
 			tmp_headline = tmp_headline[:20]
-		return '<profile, %r, %r, %r, %r>' % (self.prof_id, self.prof_name, self.prof_rate, tmp_headline)
+		return '<profile, %r, %r, %r>' % (self.prof_id, self.prof_name, tmp_headline)
 
 
 	@staticmethod
@@ -113,7 +113,6 @@ class Profile(database.Model):
 			'prof_name'	: str(self.prof_name),
 			'prof_img'	: str(self.prof_img),
 			'prof_bio'	: str(self.prof_bio),
-			'prof_rate'	: str(self.prof_rate),
 			'headline'	: str(self.headline),
 			'industry'	: str(self.industry),
 		}
