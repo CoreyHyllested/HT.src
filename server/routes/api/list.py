@@ -77,12 +77,13 @@ def api_reflist_update(list_id):
 			return make_response(jsonify(request='missing permission to update'), 400)
 
 	if (ref_op == 'ADD_REFERRAL'):
+		print 'Add referal operation'
 		referral = Referral.get_by_refid(request.values.get('referral'))
 		if (not referral): return make_response(jsonify(request='missing valid referral'), 400)
 
 		try:
-			reflist.add_referral(referral)
-			return make_response(jsonify(project='succesfully added to list'), 200)
+			rc = reflist.add_referral(referral)
+			if (rc): return make_response(jsonify(project='succesfully added to list'), 200)
 		except Exception as e:
 			database.session.rollback()
 			print type(e), e
@@ -90,7 +91,19 @@ def api_reflist_update(list_id):
 	return make_response(jsonify(project='found'), 200)
 
 
+
+@api.route('/list/<string:list_id>/referrals/', methods=['GET'])
+@api.route('/list/<string:list_id>/referrals',  methods=['GET'])
+def api_reflist_get_referrals(list_id):
+	reflist = RefList.get_by_listid(list_id)
+	if (not reflist): return make_response(jsonify(request='missing valid resource'), 400)
+
+	referral_ids = reflist.get_referral_ids()
+	return make_response(jsonify(referrals=referral_ids), 200)
+
+
 #################################################################################
 ### TEST ROUTES #################################################################
 #################################################################################
+
 
