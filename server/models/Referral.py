@@ -203,6 +203,17 @@ class RefListMemberMap(database.Model):
 		self.map_profile = profile
 		self.map_control = control
 
+	
+	@staticmethod
+	def profile_can_modify_list(profile, reflist):
+		try:
+			reflist = RefListMemberMap.query.filter_by(map_reflist=reflist.list_uuid)	\
+											.filter_by(map_profile=profile.prof_id)	\
+											.all()
+		except Exception as e:
+			print type(e), e
+		return reflist
+
 
 
 
