@@ -14,14 +14,14 @@
 
 from server import sc_server
 from server.models import *
-from server.routes import api_routing
+from server.routes import api_routing as api
 from server.routes.helpers import *
 from server.controllers import *
 from server.sc_utils import *
 
 
-@api_routing.route('/referral/<string:ref_id>/', methods=['GET'])
-@api_routing.route('/referral/<string:ref_id>',  methods=['GET'])
+@api.route('/referral/<string:ref_id>/', methods=['GET'])
+@api.route('/referral/<string:ref_id>',  methods=['GET'])
 def api_referral_view(ref_id):
 	referral = Referral.get_by_refid(ref_id)
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
@@ -30,7 +30,7 @@ def api_referral_view(ref_id):
 
 
 @sc_server.csrf.exempt
-@api_routing.route('/referral/create', methods=['POST'])
+@api.route('/referral/create', methods=['POST'])
 def api_referral_create():
 	print 'api_referral_create(): enter'
 	profile	= request.values.get('profile')
@@ -58,8 +58,8 @@ def api_referral_create():
 
 
 @sc_server.csrf.exempt
-@api_routing.route('/referral/<string:ref_id>/update/', methods=['POST'])
-@api_routing.route('/referral/<string:ref_id>/update',	methods=['POST'])
+@api.route('/referral/<string:ref_id>/update/', methods=['POST'])
+@api.route('/referral/<string:ref_id>/update',	methods=['POST'])
 def api_referral_edit(ref_id):
 	print 'api_referral_edit(): enter'
 	referral = Referral.get_by_refid(ref_id)

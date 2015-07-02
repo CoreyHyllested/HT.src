@@ -84,6 +84,28 @@ class RefList(database.Model):
 		self.list_created = dt.utcnow()
 
 
+	@property
+	def serialize(self):
+		return {
+			'list_id'		: self.list_uuid,
+			'list_profile'	: self.list_profile,
+			'list_project'	: self.list_project,
+			'list_name'		: self.list_name,
+			'list_desc'		: self.list_desc
+		}
+
+
+	@staticmethod
+	def get_by_listid(list_id):
+		reflist = session.get('lists', {}).get(list_id, None)
+		if (reflist): return reflist
+
+		try:
+			reflist = RefList.query.filter_by(ref_uuid=list_id).one()
+		except NoResultFound as nrf: pass
+		return reflist
+
+
 
 class RefListMemberMap(database.Model):
 	__tablename__ = "referral_list_member_map"

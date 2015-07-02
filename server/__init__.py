@@ -148,7 +148,7 @@ def server_init_routes(server):
 	server.csrf.init_app(server)
 	Compress(sc_server)
 
-	from routes.api import referral
+	from routes.api import referral, list
 	from routes import authentication, everyone, users, meta, errors, testing
 	from routes import api_routing
 	from routes import meta_routes
