@@ -18,9 +18,11 @@ from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
 from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
-from datetime import datetime as dt, timedelta
+from sqlalchemy.orm.exc import DetachedInstanceError
+
 import uuid
 from pprint import pprint as pp
+from datetime import datetime as dt, timedelta
 
 
 
@@ -67,10 +69,18 @@ class Referral(database.Model):
 			'ref_flags'		: "0x%08X" % self.ref_flags
 		}
 
+
 	@staticmethod
 	def get_by_refid(ref_id):
 		referral = session.get('referrals', {}).get(ref_id, None)
-		if (referral): return referral
+		try:
+			if (referral and referral.ref_uuid): return referral
+		except DetachedInstanceError as die:
+			# committing / adding to db.session deletes instance;
+			# thus we need to remove object reference in session
+			del session['referrals'][ref_id]
+		except Exception as e:
+			print type(e), e
 
 		try:
 			referral = Referral.query.filter_by(ref_uuid=ref_id).one()
@@ -103,22 +113,30 @@ class RefList(database.Model):
 
 	def add_referral(self, referral):
 		# only do this at commit time.
-		print 'Appending referral', referral, 'to list', self.list_uuid
-		if (referral.invalid()): return	#raise exception(Invalid Referral)
-		if (self.contains_referral(referral)): return # raise referral exists
+		if (referral.invalid()): return	False #raise exception(Invalid Referral)
+		if (self.contains_referral(referral)): return True# raise referral exists
 
 		try:
-			print 'referral is valid -- adding to session / committing'
 			database.session.add(self)
 			database.session.add(referral)
 
-			print 'referral is valid -- adding to session / committing, mapping'
 			mapping = RefListReferralMap(self, referral)
 			database.session.add(mapping)
 			database.session.commit()
+			return True
 		except Exception as e:
+			print type (e), e
 			database.session.rollback()
-			print type(e), e
+		return False
+
+
+	def get_referral_ids(self):
+		return RefListReferralMap.get_referral_ids(self)
+
+	def get_referrals(self):
+		referral_ids = self.get_referral_ids()
+		# for each, get the obj
+		return referral_ids
 
 
 	def contains_referral(self, referral):
@@ -156,7 +174,14 @@ class RefList(database.Model):
 	@staticmethod
 	def get_by_listid(list_id):
 		reflist = session.get('lists', {}).get(list_id, None)
-		if (reflist): return reflist
+		try:
+			if (reflist and reflist.list_uuid): return reflist
+		except DetachedInstanceError as die:
+			# committing / adding to db.session deletes instance;
+			# thus we need to remove object reference in session
+			del session['lists'][list_id]
+		except Exception as e:
+			print type(e), e
 
 		try:
 			reflist = RefList.query.filter_by(list_uuid=list_id).one()
@@ -195,3 +220,7 @@ class RefListReferralMap(database.Model):
 		self.map_referal = referral.ref_uuid
 
 	
+	@staticmethod
+	def get_referral_ids(reflist):
+		return [ r.map_referal for r in RefListReferralMap.query.filter_by(map_reflist=reflist.list_uuid).all() ]
+
