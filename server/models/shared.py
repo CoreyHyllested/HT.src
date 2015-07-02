@@ -12,6 +12,20 @@
 #################################################################################
 
 
+class Flags(object):
+	@staticmethod
+	def test(input, test_flag):
+		return (input &	test_flag)
+
+	@staticmethod
+	def set(input, set_flag):
+		return (input | set_flag)
+
+	@staticmethod
+	def clear(input, set_flag):
+		return (input & (~0 ^ set_flag))
+
+
 ################################################################################
 ### EMAIL POLICY FIELD #########################################################
 ################################################################################
@@ -94,3 +108,20 @@ class OauthProvider:
 	TWITTR = 5
 
 
+
+class ReferralFlags(Flags):
+	BIT_INVALID	= 1
+
+	INVALID	= (0x1 << BIT_INVALID)
+
+	@staticmethod
+	def set_invalid(flags):
+		return ReferralFlags.set(flags,		ReferralFlags.INVALID)
+
+	@staticmethod
+	def test_invalid(flags):
+		return ReferralFlags.test(flags, 	ReferralFlags.INVALID)
+
+	@staticmethod
+	def clear_invalid(flags):
+		return ReferralFlags.clear(flags,	ReferralFlags.INVALID)
