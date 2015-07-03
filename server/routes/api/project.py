@@ -143,5 +143,3 @@ def api_project_schedule_consultation(mode, pid=None):
 	return redirect('/dashboard')
 
 
-
-
