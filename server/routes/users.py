@@ -237,34 +237,6 @@ def ht_update_profile(ba, bp, form, form_page):
 		return True
 
 
-#@insprite_views.route('/profile/upgrade', methods=['GET', 'POST'])
-#@req_authentication
-def upgrade_profile():
-	return redirect('/profile/edit#mentor')
-
-
-
-#@req_authentication
-#@insprite_views.route("/upload_portfolio", methods=['GET', 'POST'])
-def render_multiupload_page():
-	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('upload_portfolio.html', bp=bp))
-
-
-
-
-#@req_authentication
-#@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
-def render_edit_portfolio_page():
-	bp = Profile.get_by_uid(session['uid'])
-
-	print "render_edit_portfolio_page(): get all images for profile:"
-	portfolio = database.session.query(Image).filter(Image.img_profile == bp.prof_id).all()
-	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
-
-
-
-
 
 @authenticated.route('/settings/', methods=['GET', 'POST'])
 @authenticated.route('/settings',  methods=['GET', 'POST'])
