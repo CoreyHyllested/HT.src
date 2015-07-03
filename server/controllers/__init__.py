@@ -803,3 +803,20 @@ def get_day_string(day):
 	d = {0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday', 5: 'Friday', 6: 'Saturday'}
 	return d[day]
 
+
+def display_lastmsg_timestamps(msg, prof_id, all_messages):
+	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
+	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
+	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
+	#for msg in thread_msgs:
+	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
+	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
+	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
+	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
+	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
+	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
+
+def error_sanitize(message):
+	if (message[0:16] == "(IntegrityError)"):
+		message = "Email already in use."
+	return message
