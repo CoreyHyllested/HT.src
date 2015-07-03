@@ -19,8 +19,8 @@ from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
+from server.controllers.email import *
 from server.models	import *
-from server.email	import *
 from pprint import pprint as pp
 from pytz import timezone
 import json, smtplib
