@@ -12,14 +12,11 @@
 #################################################################################
 
 
-from server.sc_utils import *
 from server.models import *
+from server.routes import sc_users
+from server.routes.helpers import *
 from server.infrastructure.errors import *
 from server.controllers import *
-from . import sc_users
-from .helpers import *
-from ..forms import ProjectForm, SettingsForm, ReviewForm
-from ..forms import InviteForm
 
 # more this into controllers / tasks.
 import os
@@ -28,7 +25,6 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from werkzeug          import secure_filename
 from StringIO import StringIO
-from pprint import pprint
 from datetime import datetime
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -46,7 +42,7 @@ def render_dashboard():
 
 	try:
 		projects = sc_get_projects(bp)
-		for p in projects: pprint(p)
+		for p in projects: pp(p)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
 		database.session.rollback()
@@ -270,34 +266,23 @@ def ht_validate_profile(bp, form, form_page):
 
 		if (new_avail == "2"):
 			days = []
-			if (request.values.get("edit_avail_day_sun") == 'y'):
-				days.append("sun")
-			if (request.values.get("edit_avail_day_mon") == 'y'):
-				days.append("mon")
-			if (request.values.get("edit_avail_day_tue") == 'y'):
-				days.append("tue")
-			if (request.values.get("edit_avail_day_wed") == 'y'):
-				days.append("wed")
-			if (request.values.get("edit_avail_day_thu") == 'y'):
-				days.append("thu")
-			if (request.values.get("edit_avail_day_fri") == 'y'):
-				days.append("fri")
-			if (request.values.get("edit_avail_day_sat") == 'y'):
-				days.append("sat")
+			if (request.values.get("edit_avail_day_sun") == 'y'): days.append("sun")
+			if (request.values.get("edit_avail_day_mon") == 'y'): days.append("mon")
+			if (request.values.get("edit_avail_day_tue") == 'y'): days.append("tue")
+			if (request.values.get("edit_avail_day_wed") == 'y'): days.append("wed")
+			if (request.values.get("edit_avail_day_thu") == 'y'): days.append("thu")
+			if (request.values.get("edit_avail_day_fri") == 'y'): days.append("fri")
+			if (request.values.get("edit_avail_day_sat") == 'y'): days.append("sat")
 
-			print "ht_validate_profile: days: ", pprint(days)	
+			print "ht_validate_profile: days: ", pp(days)
 
 			for day in days:
 				print "ht_validate_profile: day is: ", day
 				start = eval("form.edit_avail_time_"+day+"_start.data")
 				finish = eval("form.edit_avail_time_"+day+"_finish.data")
 				
-				# print "start is", start
-				# print "finish is", finish
-
 				if (start == '' or finish == ''):
 					errors[day] = "Please select both a start and end time."
-
 				else:
 					try: 
 						starttime = datetime.strptime(start, '%H:%M')
@@ -339,7 +324,7 @@ def ht_validate_profile(bp, form, form_page):
 		print "ht_validate_profile: form is valid."
 		valid = True
 	else:
-		print "ht_validate_profile: errors: ", pprint(errors)
+		print "ht_validate_profile: errors: ", pp(errors)
 		valid = False
 	return valid, errors
 

@@ -12,16 +12,11 @@
 #################################################################################
 
 
-from . import sc_ebody
-from flask import render_template, make_response, redirect
-from flask import session, request
 from flask.ext.sqlalchemy import Pagination
 from server import database
+from server.routes import sc_ebody
 from server.models import * 
 from server.controllers import *
-from server.forms import NewPasswordForm, SearchForm
-from server.forms import RecoverPasswordForm
-from pprint import pprint
 
 
 @sc_ebody.route('/index.html')
@@ -257,7 +252,7 @@ def render_password_reset_page(challengeHash):
 def render_share_page():
 	back = request.values.get('back')
 	print 'render_share_page()'
-	pprint(request.args)
+	pp(request.args)
 	for idx in request.args:
 		print idx, request.values.get (idx)
 

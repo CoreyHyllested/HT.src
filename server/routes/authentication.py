@@ -16,7 +16,6 @@ from server.routes import sc_ebody
 from server.routes import test_routes as test
 from server.infrastructure.errors import *
 from server.controllers	import *
-from server.forms import LoginForm, SignupForm, ProSignupForm
 
 from httplib2 import Http
 from urllib import urlencode

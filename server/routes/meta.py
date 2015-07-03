@@ -16,7 +16,6 @@ from flask import render_template
 from server.routes import meta_routes as meta
 from server.routes import helpers
 from server.controllers import *
-from server.sc_utils import *
 
 
 @meta.route('/robots.txt')
