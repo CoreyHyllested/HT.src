@@ -251,7 +251,7 @@ def render_multiupload_page():
 	return make_response(render_template('upload_portfolio.html', bp=bp))
 
 
-	
+
 
 #@req_authentication
 #@insprite_views.route("/edit_portfolio", methods=['GET', 'POST'])
@@ -262,52 +262,6 @@ def render_edit_portfolio_page():
 	portfolio = database.session.query(Image).filter(Image.img_profile == bp.prof_id).all()
 	return make_response(render_template('edit_portfolio.html', bp=bp, portfolio=portfolio))
 
-
-
-
-#@insprite_views.route("/review/new/<review_id>", methods=['GET', 'POST'])
-#@req_authentication
-def render_review_meeting_page(review_id):
-	"""renders review page.  Results posted to ht_api_review"""
-	print 'render_review_meeting()\treview_id =', review_id
-	# if review already exists, return a kind message.
-
-	try:
-		review = Review.get_by_id(review_id)
-		review_days_left = review.time_until_review_disabled()
-		if (review_days_left < 0):
-			return jsonify(msg='Reviews are only available for 30 days after a meeting'), 400
-		if (review.completed()):
-			raise StateTransitionError(review.review_id, review.rev_status, review.rev_status, msg="Reviews cannot be modified once submitted")
-			#return make_response(jsonify(msg='Reviews cannot be modified once submitted'), 400
-
-		bp = Profile.get_by_uid(session['uid'])
-		ba = Account.get_by_uid(bp.account)
-
-		author = bp
-		review.validate_author(author.prof_id)
-
-		reviewed = Profile.get_by_prof_id(review.prof_reviewed)
-		print 'render_review()\t, author =', author.prof_id, author.prof_name, ba.email
-		print 'render_review()\t, review author =', review.prof_authored
-		print 'render_review()\t, review revied =', review.prof_reviewed
-
-		review_form = ReviewForm(request.form)
-		review_form.review_id.data = str(review_id)
-		return make_response(render_template('review.html', title = '- Write Review', bp=bp, hero=reviewed, form=review_form))
-
-	except SanitizedException as se:
-		print se
-		database.session.rollback()
-		return jsonify(usrmsg=se.sanitized_msg())
-	except Exception as e:
-		print type(e), e
-		database.session.rollback()
-		raise e
-	except IndexError as ie:
-		print 'trying to access, review, author or reviewer account and failed'
-		database.session.rollback()
-		raise ie
 
 
 
