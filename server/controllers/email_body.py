@@ -12,14 +12,7 @@
 #################################################################################
 
 
-from __future__ import absolute_import
-from datetime import datetime as dt, timedelta
-from email.mime.multipart	import MIMEMultipart
-from email.mime.text		import MIMEText
-from email.header			import Header
-from server.infrastructure.srvc_database import db_session
 from server.models		 import *
-from server.infrastructure.errors		 import *
 import json, urllib
 
 

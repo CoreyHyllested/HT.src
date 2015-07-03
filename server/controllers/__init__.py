@@ -25,7 +25,8 @@ from flask.sessions import SessionInterface, SessionMixin
 from server.infrastructure.tasks  import *
 from server.infrastructure import errors
 from server.models import *
-from server.sc_utils import *
+from server.controllers.annotations import *
+from server.controllers.forms		import *
 from server import sc_server
 from string import Template
 from sqlalchemy     import distinct, and_, or_

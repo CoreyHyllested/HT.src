@@ -20,9 +20,9 @@ from email.header			import Header
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.models		 import *
-from server.infrastructure.errors		 import *
-from server.infrastructure.basics		 import *
-from server.email_body import *
+from server.infrastructure.errors	import *
+from server.infrastructure.basics	import *
+from server.controllers.email_body	import *
 from pprint import pprint as pp
 import mandrill
 import json, smtplib, urllib
