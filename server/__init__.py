@@ -147,13 +147,13 @@ def server_init_routes(server):
 	server.csrf.init_app(server)
 	Compress(sc_server)
 
-	from routes.api import referral, list
+	from routes.api import list, project, referral
 	from routes import authentication, everyone, users, meta, errors
 	from routes import api_routing
 	from routes import meta_routes
-	from routes import sc_users as sc_allusers
+	from routes import sc_users as user_routes
 	from routes import sc_ebody as sc_everyone
 	server.register_blueprint(sc_everyone)
-	server.register_blueprint(sc_allusers)
+	server.register_blueprint(user_routes)
 	server.register_blueprint(meta_routes)
 	server.register_blueprint(api_routing)
