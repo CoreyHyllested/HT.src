@@ -14,7 +14,7 @@
 
 from flask.ext.sqlalchemy import Pagination
 from server import database
-from server.routes import sc_ebody
+from server.routes import sc_ebody, api_routing as api
 from server.models import * 
 from server.controllers import *
 
@@ -246,7 +246,6 @@ def render_password_reset_page(challengeHash):
 	return render_template('password-reset.html', form=form)
 
 
-
 @sc_ebody.route("/share/", methods=['GET', 'POST'])
 @sc_ebody.route("/share",	 methods=['GET', 'POST'])
 def render_share_page():
@@ -255,7 +254,6 @@ def render_share_page():
 	pp(request.args)
 	for idx in request.args:
 		print idx, request.values.get (idx)
-
 	return make_response(render_template('share.html', back=back))
 
 
@@ -293,17 +291,9 @@ def sc_email_operations(operation, data):
 
 
 
-
-def ht_send_verification_to_list(account, email_set):
-	print 'ht_send_verification_to_list() enter'
-	try:
-		account.reset_security_question()
-		database.session.add(account)
-		database.session.commit()
-	except Exception as e:
-		print type(e), e
-		database.session.rollback()
-
-	for email in email_set:
-		print 'sending email to', email
-		ht_send_email_address_verify_link(email, account)
+@api.route("/share/email", methods=['POST'])
+def api_share_via_email():
+	fragment	= render_template('fragment_share-email.html')
+	resp_code	= 200
+	resp_mesg	= 'Done'
+	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)

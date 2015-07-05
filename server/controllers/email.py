@@ -448,4 +448,17 @@ def ht_send_email(email_addr, msg):
 	#s.sendmail('noreply@getsoulcrafting.com', email_addr, msg.as_string())
 	#s.quit()
 
+def ht_send_verification_to_list(account, email_set):
+	print 'ht_send_verification_to_list() enter'
+	try:
+		account.reset_security_question()
+		database.session.add(account)
+		database.session.commit()
+	except Exception as e:
+		print type(e), e
+		database.session.rollback()
+
+	for email in email_set:
+		print 'sending email to', email
+		ht_send_email_address_verify_link(email, account)
 
