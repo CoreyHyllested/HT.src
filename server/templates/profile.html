@@ -1,0 +1,145 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'My trusted network on Soulcrafting' %}
+{% set meta_desc	= 'My trusted network on Soulcrafting' %}
+
+
+{% block header_css %}
+	{{ super() }}
+	<link rel='stylesheet' href='/static/css/tagsinput.css'>
+	{% assets 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+
+
+{% block content %}
+<section id='profile-header'>
+	<div id='profile-info'>
+		<h3 class='left-align'>Corey Andrew Trapper Hyllested</h3>
+		<div id='profile-image'><img src="http://fakeimg.pl/85/fca852/?text=World"></div>
+		<div id='profile-location'>Boulder, CO</div>
+		<div id='profile-networks'>
+			<ul>
+				<li class='sns'><i class='fa fa-facebook-f'></i></li>
+				<li class='sns'><i class='fa fa-twitter'></i></li>
+				<li class='sns'><i class='fa fa-linkedin'></i></li>
+				<li class='sns'><i class='fa fa-instagram'></i></li>
+				<li class='sns'><i class='fa fa-pinterest-p'></i></li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<section id='referrals'>
+	<div id='ref-content'>
+			<article class='referral'>
+				<div class='ref-content'>
+					<div class='ref-name'>John Williams</div>
+					<ul class='ref-skills'>
+						<li>Handyman</li>
+						<li>Plumber</li>
+						<li>Electrician</li>
+					</ul>
+					<div class='ref-location'><span id='addr'>Boulder, CO</span></div>
+				</div>
+
+				<div class='ref-content'>
+					<p> Johns is unfailingly reliable and a true friend and neighbor.  
+						He's helped me on countless plumbing, electrical, and other tasks around the home.
+					</p>
+				</div>
+				<div class='ref-content'>
+					<input type='text' value="Leak Repair, Electrical, Carpentry" data-role='tagsinput' readonly disabled>
+				</div>
+				<div class='ref-content align-right'>
+					<ul class='ref-operations'>
+						<li><span class="fa-stack "><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></li>
+						<li><a class='share-popover' rel='popover'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+						<li><span class="fa-stack "><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></li>
+					</ul>
+				</div>
+			</article>
+			<hr class='what'>
+			<article class='referral'>
+				<div class='ref-content'>
+					<div class='ref-name'>Thaddius Corneiellus Williams III </div>
+					<ul class='ref-skills'>
+						<li>Handyman</li>
+						<li>Electrician</li>
+					</ul>
+					<div class='ref-location'><span id='addr'>Longmont, CO</span></div>
+				</div>
+
+				<div class='ref-content'>
+					<p> Thaddius is a scholor and a gentleman. He once sacrificed his leg for an extra slice of bacon for the old widow Jamison.  Cool cat.</p>
+				</div>
+				<div class='ref-content'>
+					<input type='text' value="Snow Cat, Jesus Harvesting, Carpentry" data-role='tagsinput' readonly disabled>
+				</div>
+				<div class='ref-content align-right'>
+					<ul class='ref-operations'>
+						<li><span class="fa-stack "><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></li>
+						<li><a class='share-popover' rel='popover'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+						<li><span class="fa-stack "><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></li>
+					</ul>
+				</div>
+			</article>
+	</div>
+</section>
+
+<section>
+<div>
+	<input id='SaveAccount' type=button value='Save Account'>
+</div>
+</section>
+
+
+<div id='popover-content' class='hide'>
+	<div class='ref-content'> 
+		<ul class='ref-share'>
+			<li><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li><br>
+			<li><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></li><br>
+			<li><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></li><br>
+		</ul>
+	</div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+	{{ super() }}
+	<script src='/static/js/tagsinput.js'></script>
+	<script src='/static/js/bs-popover.js'></script>
+	<script>
+
+	$(document).ready(function () {
+		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
+		$(".share-popover").popover({ 
+			html: true,
+			animation: false,
+			title: 'Share this referral',
+			content: function() {
+				return $('#popover-content').html();
+			},
+			placement: 'left',
+			trigger: "manual"
+		}).on("mouseenter", function () {
+		    var _this = this;
+		    $(this).popover("show");
+		    $(".popover").on("mouseleave", function () { $(_this).popover('hide'); });
+		}).on("mouseleave", function () {
+		    var _this = this;
+		    setTimeout(function () {
+		        if (!$(".popover:hover").length) {
+		            $(_this).popover("hide");
+		        }
+		    }, 500);
+		});
+
+
+		$("#SaveAccount").click(function () { 
+			console.log('Hey-ho hideyho');
+		});
+	});
+	</script>
+{% endblock %}

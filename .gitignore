@@ -16,7 +16,9 @@ server/static/css/landpage.css
 server/static/css/legaltos.css
 server/static/css/navigate.css
 server/static/css/products.css
+server/static/css/profiles.css
 server/static/css/projects.css
+server/static/css/referral.css
 server/static/css/recovery.css
 server/static/css/settings.css
 server/static/css/pro_dashboard.css

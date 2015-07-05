@@ -1,0 +1,72 @@
+@import 'elem-defaults';
+
+#profile-header {
+	background-color: lightgray;
+	height: 100px;
+}
+
+#profile-name { text-align: left; width: 30%; }
+
+#profile-info {
+	position: relative;
+	top: -30px;
+	padding-left: 20px;
+}
+
+#referrals { background: aliceblue; }
+#ref-content	{	background: white;	}
+.ref-content	{	padding: 5px 0;		}
+
+.referral {	padding: 0 10px 0 125px; }
+.what { margin-left: 135px;	margin-right: 10px ; }
+.left-align { text-align: left; }
+.align-left	 { text-align: left; }
+.align-right { text-align: right; }
+.sns {	margin: 3px 2px;	}
+
+ul 	{ padding-left: 0px; } 
+
+.inline 		{	display: inline;	}
+
+.ref-name		{	font-weight: bold;	display: inline; }
+.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }
+
+.ref-skills		{	color: gray;	display: inline; }
+.ref-skills li	{					display: inline; 	padding-left: 0; } 
+.ref-skills li:after				{ content: ' | ';	}
+.ref-skills li:last-of-type:after	{ content: '';		}
+//.ref-skills li:before { content: ' | ';	}
+
+.ref-location {
+	position: relative;
+	right: 5px;
+	top: -20px;
+	display: inline-block;
+	text-align: right;
+}
+
+#addr {
+	background-color: white;
+	padding: 0 5px;
+}
+
+
+.ref-operations		{	display: inline;	font-size: 0.8em;	color: gray;	padding: 0 5px;	}
+.ref-operations li	{	display: inline; 	padding-left: 0; } 
+
+
+// if this css file is pulled in BEFORE tagsinput.css; we need to add !important;
+.bootstrap-tagsinput {	border: inherit ; box-shadow: inherit ; padding: 0 0 ;}
+.bootstrap-tagsinput .tag [data-role="remove"] { margin-left: 0; }
+.bootstrap-tagsinput .tag [data-role="remove"]:after { content: "" !important; padding: 0 0 !important; }
+.bootstrap-tagsinput input { display: none !important; }
+
+.share {
+	text-align: left;
+}
+.icon {
+	text-align: center;
+	width: 15px;
+	margin-right: 15px;
+}
+
