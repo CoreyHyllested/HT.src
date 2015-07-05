@@ -291,6 +291,7 @@ def sc_email_operations(operation, data):
 
 
 
+@sc_server.csrf.exempt
 @api.route("/share/email", methods=['POST'])
 def api_share_via_email():
 	fragment	= render_template('fragment_share-email.html')

@@ -12,7 +12,7 @@
 #################################################################################
 
 from server.models import *
-from server.routes import sc_ebody
+from server.routes import sc_ebody, api_routing as api
 from server.routes import test_routes as test
 from server.infrastructure.errors import *
 from server.controllers	import *
@@ -354,12 +354,31 @@ def logout():
 	return redirect('/')
 
 
+
+@sc_server.csrf.exempt
+@api.route('/login/save', methods=['POST'])
+def api_login_save_state():
+	# check for session; uid; if so... save
+	fragment	= None
+	resp_code	= 200
+	resp_mesg	= 'Done'
+
+	try:
+		fragment = render_template('fragment_account-create.html')
+	except Exception as e:
+		#database.session.rollback()
+		resp_code = 400
+		resp_mesg = 'An error occurred'
+	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
+
+
+
+
 #TODO 
 # Pop the referred_by / reference values when account creations succeeds.
-
 @test.route('/facebook')
 def TESTING_render_facebook_info():
 	me = facebook.get('/me')
-	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))	
-	
+	return 'Logged in as id=%s name=%s f=%s l=%s email=%s tz=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], me.data['timezone'], request.args.get('next'))
+
 

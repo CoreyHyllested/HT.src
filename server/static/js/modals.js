@@ -24,7 +24,6 @@ function openAlertWindow(text) {
 	$('#modal-message').html(text);
 	$('#modal-wrap').addClass('modal-active')
 	$('#modal-window').addClass('window-alert');
-
 	return false;
 }
 
@@ -35,11 +34,68 @@ function notifyUser(txt) {
 
 function closeNotification() { }
 
+function openModalLogin() {
+	fd = new FormData();
+	fd.append("csrf_token", $('#csrf_token').val());
+
+	$.ajax({ url	: '/login/save',
+			type	: 'POST',
+			data	: fd,
+			processData: false,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				if (response.embed) {
+					console.log(response.embed);
+					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#modal-message').html(response.embed);
+					$('#modal-wrap').addClass('modal-active');
+					$('#modal-window').addClass('window-alert').addClass('window-border');
+					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+				}
+			},
+			error: function(xhr, status, error) {
+				console.log(['ajax failure', xhr]);
+				rc = JSON.parse(xhr.responseText);
+			}
+	});
+	return false;
+}
+
+
+function openModalShare() {
+	console.log('here');
+	fd = new FormData();
+	fd.append("csrf_token", $('#csrf_token').val());
+
+	$.ajax({ url	: '/share/email',
+			type	: 'POST',
+			data	: fd,
+			processData: false,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				if (response.embed) {
+					console.log(response.embed);
+					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#modal-message').html(response.embed);
+					$('#modal-wrap').addClass('modal-active');
+					$('#modal-window').addClass('window-alert').addClass('window-border');
+					$('#modal-dismiss').html("<input type='button' class='btn btn-block whiteButton' value='Cancel'></input><input type='button' class='btn btn-block blueButton' value='Share'></input>");
+				}
+			},
+			error: function(xhr, status, error) {
+				console.log(['ajax failure', xhr]);
+				rc = JSON.parse(xhr.responseText);
+			}
+	});
+}
+
 function closeAlertWindow() {
-	$('#overlay').removeClass('overlay-dark');
+	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
 	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
 	$('#modal-wrap').removeClass('modal-active');
-	$('#modal-window').removeClass('window-alert');
+	$('#modal-window').removeClass('window-alert').removeClass('window-border');
 	$('#modal-message').html('');
 	return false;
 }

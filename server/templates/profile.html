@@ -15,7 +15,7 @@
 <section id='profile-header'>
 	<div id='profile-info'>
 		<h3 class='left-align'>Corey Andrew Trapper Hyllested</h3>
-		<div id='profile-image'><img src="http://fakeimg.pl/85/fca852/?text=World"></div>
+		<div id='profile-image'><img src="https://fakeimg.pl/85/fca852/?text=World"></div>
 		<div id='profile-location'>Boulder, CO</div>
 		<div id='profile-networks'>
 			<ul>
@@ -88,17 +88,19 @@
 
 <section>
 <div>
-	<input id='SaveAccount' type=button value='Save Account'>
+	<input id='SaveAccount' type=button value='Save Account'></input>
+	<input id='Share'		type=button value='Share'>		 </input>
 </div>
+<div id='appendable'></div>
 </section>
 
 
 <div id='popover-content' class='hide'>
 	<div class='ref-content'> 
 		<ul class='ref-share'>
-			<li><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li><br>
-			<li><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></li><br>
-			<li><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></li><br>
+			<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li></a><br>
+			<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></a></li><br>
+			<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></a></li><br>
 		</ul>
 	</div>
 </div>
@@ -137,9 +139,7 @@
 		});
 
 
-		$("#SaveAccount").click(function () { 
-			console.log('Hey-ho hideyho');
-		});
+		$("#SaveAccount").click(function () { openModalLogin(); });
 	});
 	</script>
 {% endblock %}

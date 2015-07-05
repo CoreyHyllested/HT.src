@@ -93,6 +93,23 @@
 }
 
 
+.overlay-light {
+	/* whole screen */
+	display:	block;
+	position:	fixed;
+	top:	0;
+	left:	0;
+	height:	100%;
+	width:	100%;
+	z-index: 99998;
+
+    background-color: white; /* fallback */
+    background-color: rgba(255,255,255,.8);
+}
+
+
+
+
 /* doesn't appear to be working */
 .modal-dismiss { z-index: 99998; }
 
@@ -118,8 +135,18 @@
 }
 
 
-.window-alert { display: inline-block !important; }
+.window-alert	{ display:	inline-block !important;	width: 290px; }
+.window-border	{ border:	1px solid black;	}
+.request input	{ width: 85%;	}
+.btn-modal		{ margin: 0 10px;	display: inline-block;	width: 33%; }
 
 
-@media only screen and (min-device-width: 240px) and (max-width: 349px)	{ #modal-window {	width: 80%;		}	}
-@media only screen and (min-width: 350px)								{ #modal-window {	width: 240px;	}	}
+@media (min-width: 489px)	{
+	.window-alert { width: 400px; }
+}
+@media (min-width: 767px)	{
+	.window-alert { width: 600px; }
+}
+@media (min-width: 979px)	{
+	.window-alert { width: 750px; }
+}
