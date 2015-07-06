@@ -20,12 +20,12 @@ from server.controllers import *
 from server.sc_utils import *
 
 
+@sc_meta.route('/google5feb31e1e5dc741b.html')
 @sc_meta.route('/robots.txt')
 @sc_meta.route('/humans.txt')
 @sc_meta.route('/sitemap.xml')
 def meta_serve_from_root():
 	server_root_dir = sc_server.static_folder + '/root/'
-	print server_root_dir
 	return send_from_directory(server_root_dir, request.path[1:])
 
 
