@@ -121,7 +121,7 @@ def error_405_method_not_allowed(e):
 	print 'Error, returning 405 response. The requested method (GET, POST, HEAD, etC) is not supported for the given resource.'
 	print 'Missing Template.  returning. 404 template instead.\n\nTODO: create 405 template.\n\n'
 
-	if (request.accept_mimetypes.accept_json and not request.accept_mimetpes.accept_html):
+	if (request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html):
 		json_resp = jsonify({'error' : 'method not allowed'})
 		json_resp.status_code = 405
 		return json_resp
