@@ -12,18 +12,17 @@
 #################################################################################
 
 
-from flask import render_template
 from server.routes import meta_routes as meta
 from server.routes import helpers
 from server.controllers import *
 
 
+@meta.route('/google5feb31e1e5dc741b.html')
 @meta.route('/robots.txt')
 @meta.route('/humans.txt')
 @meta.route('/sitemap.xml')
 def meta_serve_from_root():
 	server_root_dir = sc_server.static_folder + '/root/'
-	#print server_root_dir
 	return send_from_directory(server_root_dir, request.path[1:])
 
 
