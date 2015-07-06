@@ -14,10 +14,21 @@
 
 from server import sc_server
 from server.models import *
-from server.routes import api_routing as api
+from server.routes import api_routing as api, sc_ebody
 from server.routes import test_routes as test
+from server.routes import sc_ebody as public
 from server.routes.helpers import *
 from server.controllers import *
+
+
+@public.route('/referral/', methods=['GET'])
+@public.route('/referral',  methods=['GET'])
+@sc_authenticated
+def render_create_referral_page():
+	bp = Profile.get_by_uid(session['uid'])
+	invite = InviteForm(request.form)
+	return make_response(render_template('referral.html', bp=bp, form=invite))
+
 
 
 @api.route('/referral/<string:ref_id>/', methods=['GET'])
@@ -60,7 +71,7 @@ def api_referral_create():
 @sc_server.csrf.exempt
 @api.route('/referral/<string:ref_id>/update/', methods=['POST'])
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
-def api_referral_edit(ref_id):
+def api_referral_update(ref_id):
 	referral	= Referral.get_by_refid(ref_id)
 	operation	= request.values.get('operation')
 	if (not referral):	return make_response(jsonify(request='missing valid resource'),  400)
