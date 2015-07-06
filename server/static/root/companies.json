@@ -1,0 +1,41 @@
+[
+    {
+        "_id_factual": "00010335-d8b9-4f16-8f1d-92643ec08456", 
+        "address": {
+            "city": "Englewood", 
+            "meta": {
+                "lat": 39.629381, 
+                "lng": -104.978805, 
+                "neighborhood": [
+                    "Cherry Ridge"
+                ]
+            }, 
+            "post": "80113", 
+            "state": "CO", 
+            "street": "4801 S Clarkson St", 
+            "suite": null
+        }, 
+        "business_emails": [], 
+        "business_name": "Belcaro Fence", 
+        "business_phones": [
+            3033216167
+        ], 
+        "business_website": null, 
+        "categories": [
+            {
+                "factual": [
+                    "Businesses and Services", 
+                    "Construction"
+                ]
+            }
+        ], 
+        "sources": [
+            {
+                "id": "00010335-d8b9-4f16-8f1d-92643ec08456", 
+                "name": "factual", 
+                "src": "http://factual.com/00010335-d8b9-4f16-8f1d-92643ec08456"
+            }
+        ]
+    } 
+]
+
