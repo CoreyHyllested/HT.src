@@ -246,18 +246,6 @@ def render_password_reset_page(challengeHash):
 	return render_template('password-reset.html', form=form)
 
 
-@sc_ebody.route("/share/", methods=['GET', 'POST'])
-@sc_ebody.route("/share",	 methods=['GET', 'POST'])
-def render_share_page():
-	back = request.values.get('back')
-	print 'render_share_page()'
-	pp(request.args)
-	for idx in request.args:
-		print idx, request.values.get (idx)
-	return make_response(render_template('share.html', back=back))
-
-
-
 
 @sc_ebody.route("/email/<operation>/<data>", methods=['GET','POST'])
 def sc_email_operations(operation, data):
@@ -288,6 +276,18 @@ def sc_email_operations(operation, data):
 		ht_send_verification_to_list(account, email_set)
 		return jsonify(rc=200), 200
 	return jsonify(bug=400), 400 #pageNotFound('Not sure what you were looking for')
+
+
+
+
+#@sc_ebody.route("/share/", methods=['GET', 'POST'])
+#@sc_ebody.route("/share",	methods=['GET', 'POST'])
+def render_share_page():
+	print 'render_share_page()'
+	back = request.values.get('back')
+	pp(request.args)
+	for idx in request.args: print idx, request.values.get (idx)
+	return make_response(render_template('share.html', back=back))
 
 
 
