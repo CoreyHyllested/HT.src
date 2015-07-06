@@ -79,14 +79,3 @@ def dbg_enterexit(orig_fn):
 		return rc
 	return logged_fn
 
-
-@deprecated
-def req_authentication(orig_fn):
-	@functools.wraps(orig_fn)
-	def verify_authenticated_user(*args, **kwargs):
-		if 'uid' not in session:
-			trace("no uid; " + orig_fn.__name__ + ': redirect to login')
-			return make_response(redirect('/login'))
-		return orig_fn(*args, **kwargs)
-	return verify_authenticated_user
-

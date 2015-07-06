@@ -252,7 +252,7 @@ linkedin.pre_request = change_linkedin_query
 
 
 @public.route('/authorize/stripe', methods=['GET', 'POST'])
-@req_authentication
+@sc_authenticated
 def settings_verify_stripe():
 	uid = session['uid']
 	bp = Profile.get_by_uid(uid)
