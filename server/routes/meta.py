@@ -21,6 +21,7 @@ from server.controllers import *
 @meta.route('/robots.txt')
 @meta.route('/humans.txt')
 @meta.route('/sitemap.xml')
+@meta.route('/projects.json')
 def meta_serve_from_root():
 	server_root_dir = sc_server.static_folder + '/root/'
 	return send_from_directory(server_root_dir, request.path[1:])
