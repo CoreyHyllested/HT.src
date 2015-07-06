@@ -23,10 +23,14 @@ from pprint import pprint as pp
 from datetime import datetime as dt, timedelta
 import json, uuid
 
-sc_users = Blueprint('sc_users', __name__)
-sc_ebody = Blueprint('sc_ebody', __name__)
+sc_admin	= Blueprint('sc_admin', __name__)
+sc_public	= Blueprint('sc_public', __name__)
+auth_routes	= Blueprint('auth_routes', __name__)
 test_routes = Blueprint('test_routes', __name__)
 meta_routes = Blueprint('meta_routes', __name__)
 api_routing = Blueprint('routing_api', __name__)
-print 'loading', __name__
 
+sc_users = auth_routes
+sc_ebody = sc_public
+
+print 'loading', __name__

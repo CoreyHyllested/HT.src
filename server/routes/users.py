@@ -193,10 +193,3 @@ def upload():
 
 	return jsonify(tmp="/uploads/" + str(image.img_id))
 
-
-
-
-
-#HELPER FUNCTIONS.
-
-
