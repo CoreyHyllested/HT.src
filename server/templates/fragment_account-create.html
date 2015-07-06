@@ -1,5 +1,23 @@
 <div class='request'>
+
 	<h3>Soulcrafting</h3>
-	<p>Enter your email address to sign in or create an account</p>
-	<p><input type='email'></input></p>
+	<p>Sign in to Soulcrafting or create an account</p>
+
+	<div id='account-email' class='modal-account'>
+		<p><input type='email'></input></p>
+	</div>
+	<div id='account-email-submit' class='modal-account'>
+		Last question.  What is your name.
+		<p><input type='text'></input></p>
+	</div>
+
+
+	<div id='account-social' class='modal-account'>
+		<ul class="list-unstyled social-login">
+			<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
+			<li><a href="/login/twitter"><button class="facebook-btn btn" type="button"><i class="fa fa-twitter"></i>Log in with Twitter</button></a></li>
+		</ul>
+		<p>or sign up <a href='javascript:modal_to_email();'>with email</a></p>
+	</div>
+
 </div>

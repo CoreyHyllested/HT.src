@@ -8,15 +8,10 @@ $(document).ready(function () {
 		/* close overlay if ESC is hit */
 		if (e.keyCode == 27) /* ESC */ {
 			if ($('#modal-wrap').hasClass('modal-active') && $('#modal-window').hasClass('window-alert')) {
-					closeAlertWindow();
+				closeAlertWindow();
 			}
 		}
 	});
-
-	/* MAYBE:
-		$('#overlay').click( function (e) { closeAlertWindow(); } );
-		$('.alertButton').click( function (e) { closeAlertWindow(); } );
-	*/
 });
 
 function openAlertWindow(text) {
@@ -38,7 +33,7 @@ function openModalLogin() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 
-	$.ajax({ url	: '/login/save',
+	$.ajax({ url	: '/login/modal/email',
 			type	: 'POST',
 			data	: fd,
 			processData: false,
@@ -52,6 +47,7 @@ function openModalLogin() {
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
 					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+					$('#account-email').addClass('active');
 				}
 			},
 			error: function(xhr, status, error) {
@@ -62,6 +58,40 @@ function openModalLogin() {
 	return false;
 }
 
+function openModalSocial() {
+	fd = new FormData();
+	fd.append("csrf_token", $('#csrf_token').val());
+
+	$.ajax({ url	: '/login/modal/email',
+			type	: 'POST',
+			data	: fd,
+			processData: false,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				if (response.embed) {
+					console.log(response.embed);
+					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#modal-message').html(response.embed);
+					$('#modal-wrap').addClass('modal-active');
+					$('#modal-window').addClass('window-alert').addClass('window-border');
+					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+					$('#account-social').addClass('active');
+				}
+			},
+			error: function(xhr, status, error) {
+				console.log(['ajax failure', xhr]);
+				rc = JSON.parse(xhr.responseText);
+			}
+	});
+	return false;
+}
+
+
+function modal_to_email() {
+	$('#account-social').removeClass('active');
+	$('#account-email').addClass('active');
+}
 
 function openModalShare() {
 	console.log('here');

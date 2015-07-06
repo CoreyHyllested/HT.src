@@ -140,6 +140,9 @@
 .request input	{ width: 85%;	}
 .btn-modal		{ margin: 0 10px;	display: inline-block;	width: 33%; }
 
+.modal-account	{ display: none;	}
+.active			{ display: block;	}
+
 
 @media (min-width: 489px)	{
 	.window-alert { width: 400px; }
