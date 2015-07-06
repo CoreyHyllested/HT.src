@@ -13,7 +13,7 @@
 
 
 from server.models import *
-from server.routes import sc_users as authenticated
+from server.routes import auth_routes as authenticated
 from server.routes.helpers import *
 from server.infrastructure.errors import *
 from server.controllers import *
@@ -165,8 +165,6 @@ def sc_api_update_settings():
 
 # rename /image/create
 #@insprite_views.route('/upload', methods=['POST'])
-#@dbg_enterexit
-#@req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
 

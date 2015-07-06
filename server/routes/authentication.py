@@ -12,7 +12,8 @@
 #################################################################################
 
 from server.models import *
-from server.routes import sc_ebody, api_routing as api
+from server.routes import public_routes as public
+from server.routes import api_routing as api
 from server.routes import test_routes as test
 from server.infrastructure.errors import *
 from server.controllers	import *
@@ -45,8 +46,8 @@ linkedin = sc_server.oauth.remote_app(  'linkedin',
 
 
 
-@sc_ebody.route('/signup/', methods=['GET', 'POST'])
-@sc_ebody.route('/signup', methods=['GET', 'POST'])
+@public.route('/signup/', methods=['GET', 'POST'])
+@public.route('/signup', methods=['GET', 'POST'])
 def render_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
@@ -68,7 +69,7 @@ def render_signup_page(sc_msg=None):
 
 
 
-@sc_ebody.route('/signup/professional', methods=['GET', 'POST'])
+@public.route('/signup/professional', methods=['GET', 'POST'])
 def render_pro_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
@@ -91,7 +92,7 @@ def render_pro_signup_page(sc_msg=None):
 
 
 @sc_server.csrf.exempt
-@sc_ebody.route('/login', methods=['GET', 'POST'])
+@public.route('/login', methods=['GET', 'POST'])
 def render_login():
 	""" If successful, sets session cookies and redirects to dash """
 	sc_msg = session.pop('messages', None)
@@ -121,25 +122,25 @@ def render_login():
 
 
 # sends to facebook, which gets token, and user is redirected to 'facebook_authorized'
-@sc_ebody.route('/signup/facebook', methods=['GET'])
+@public.route('/signup/facebook', methods=['GET'])
 def oauth_signup_facebook():
 	session['oauth_facebook_signup'] = True
-	return facebook.authorize(callback=url_for('sc_ebody.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('public.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
-@sc_ebody.route('/login/facebook', methods=['GET'])
+@public.route('/login/facebook', methods=['GET'])
 def oauth_login_facebook():
 	session['oauth_facebook_signup'] = False
-	return facebook.authorize(callback=url_for('sc_ebody.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('public.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
 
-@sc_ebody.route('/authorized/facebook')
+@public.route('/authorized/facebook')
 @facebook.authorized_handler
 def facebook_authorized(resp):
 	if resp is None:
 		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('sc_ebody.render_login'))
+		return redirect(url_for('public.render_login'))
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
@@ -165,22 +166,22 @@ def facebook_authorized(resp):
 
 
 # redirects to LinkedIn, which gets token and comes back to 'authorized'
-@sc_ebody.route('/signup/linkedin', methods=['GET'])
+@public.route('/signup/linkedin', methods=['GET'])
 def oauth_signup_linkedin():
 	print 'signup_linkedin'
 	session['oauth_linkedin_signup'] = True
-	return linkedin.authorize(callback=url_for('sc_ebody.linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
 
 
-@sc_ebody.route('/login/linkedin', methods=['GET'])
+@public.route('/login/linkedin', methods=['GET'])
 def oauth_login_linkedin():
 	print 'login_linkedin()'
 	session['oauth_linkedin_signup'] = False
-	return linkedin.authorize(callback=url_for('sc_ebody.linkedin_authorized', _external=True))
+	return linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
 
 
 
-@sc_ebody.route('/authorized/linkedin')
+@public.route('/authorized/linkedin')
 @linkedin.authorized_handler
 def linkedin_authorized(resp):
 	print 'login() linkedin_authorized'
@@ -250,7 +251,7 @@ linkedin.pre_request = change_linkedin_query
 
 
 
-@sc_ebody.route('/authorize/stripe', methods=['GET', 'POST'])
+@public.route('/authorize/stripe', methods=['GET', 'POST'])
 @req_authentication
 def settings_verify_stripe():
 	uid = session['uid']
@@ -348,7 +349,7 @@ def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
 
-@sc_ebody.route('/logout', methods=['GET', 'POST'])
+@public.route('/logout', methods=['GET', 'POST'])
 def logout():
 	session.clear()
 	return redirect('/')
