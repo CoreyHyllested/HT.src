@@ -14,9 +14,9 @@
 
 from server import sc_server
 from server.models import *
-from server.routes import api_routing as api, sc_ebody
+from server.routes import api_routing as api
 from server.routes import test_routes as test
-from server.routes import sc_ebody as public
+from server.routes import public_routes as public
 from server.routes.helpers import *
 from server.controllers import *
 

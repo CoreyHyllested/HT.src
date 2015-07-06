@@ -148,7 +148,7 @@
 			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 				var fd = {};
 				fd.csrf_token = "{{ csrf_token() }}";
-				$.ajax({url		: "/professional/" + suggestion.id + '/',
+				$.ajax({url		: "/business/" + suggestion.id + '/',
 						type	: "POST",
 						data	: fd,
 						success : function(data) {

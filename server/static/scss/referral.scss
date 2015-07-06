@@ -1,0 +1,96 @@
+@import 'colors';
+@import 'elem-defaults';
+@import 'forms';
+
+
+#invite_emails		{	display: inline-block;	}
+#refer-professional	{	display: inline-block;	width: 69%;		max-width: 660px;	background-color: white;	padding: 0 5px;	vertical-align: top;	}
+#refer-explanation	{	display: inline-block;	width: 28%;		max-width: 280px; 	background-color: white;	padding: 5px; 		}
+#refer-usrfeedback	{	margin: 0 auto;			}
+#feedback			{	list-style:none;	padding: 0 5px;	}
+#btn-save-referral	{	width:	120px;			}
+
+#profile-reference	{
+	padding: 25px 0 10px;
+}
+
+#profile-card {
+	background-color: lightgray;
+	border: 1px solid darkgray;
+	padding: 20px 10px;
+}
+
+#profile-card-contact {
+	padding: 10px 0;
+}
+
+#refer-why	{	width: 100%; margin: 0 0 15px;	resize: vertical; }
+#refer-proj	{	}
+
+.twitter-typeahead		{	display: inline !important;	} 	//fixes bug. #invite-emails is too small
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
+.tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
+.tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
+.no-profile				{ 	display: none !important;	}
+.feedback-bubble		{
+		border: 1px solid $ht-blue;
+		border-radius: 7px;
+		background-color: green;
+		color: white;
+		font-weight: 600;
+		text-align: center;
+		margin: 5px;
+ }
+.bootstrap-tagsinput .tt-menu	{	width: 350px; }
+
+.pro-suggestion	{
+	width: 100%; height: 20px;
+	font-weight: 600;
+}
+.pro-suggestion-addr {
+	font-size: .8em;
+	color: gray;
+	max-width: 50%;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 
+}
+
+/* Responsive Styles */
+@media only screen and (min-device-width: 240px) and (max-width: 500px) { }
+
+
+@media (min-width: 489px) { }
+@media (min-width: 768px) { }
+@media (min-width: 980px) { }
+@media (min-width: 1200px) { }
+@media (min-width: 1450px) { }
+
+
+.form-group {
+	position: relative;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.btn-referral {
+	display: inline-block;
+	max-width: 120px;
+}
+
+.access-section .form-group.text:before {
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  color: #999999;
+}
+
+.ff			{	display: inline-block;	margin: 5px 0;			}
+.ff.textarea{	width: 100%;	}
+.ff.header	{	width: 100%;	font-size: .7em;	font-weight: 600;	vertical-align: top;	}
+.ff.name	{	width: 12%;		font-size: .8em;	font-weight: 600;	vertical-align: top; 	}
+.ff.value	{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
+.ff.contact {	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
+
+//unused
+#send_invite	{	display: inline-block; width: 75px; height: 40px; }
