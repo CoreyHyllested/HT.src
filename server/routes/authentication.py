@@ -356,8 +356,8 @@ def logout():
 
 
 @sc_server.csrf.exempt
-@api.route('/login/modal/email', methods=['POST'])
-def api_login_modal_email():
+@api.route('/login/modal', methods=['POST'])
+def api_login_modal():
 	# check for session; uid; if so... save
 	fragment	= None
 	resp_code	= 200
@@ -372,22 +372,6 @@ def api_login_modal_email():
 		resp_mesg = 'An error occurred'
 	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
 
-
-@sc_server.csrf.exempt
-@api.route('/login/modal/social', methods=['POST'])
-def api_login_modal_social():
-	# check for session; uid; if so... save
-	fragment	= None
-	resp_code	= 200
-	resp_mesg	= 'Done'
-
-	try:
-		# check for data in session; save
-		fragment = render_template('fragment_account-social.html')
-	except Exception as e:
-		resp_code = 400
-		resp_mesg = 'An error occurred'
-	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
 
 
 

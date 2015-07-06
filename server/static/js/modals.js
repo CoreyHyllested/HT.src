@@ -33,7 +33,7 @@ function openModalLogin() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 
-	$.ajax({ url	: '/login/modal/email',
+	$.ajax({ url	: '/login/modal',
 			type	: 'POST',
 			data	: fd,
 			processData: false,
@@ -62,7 +62,7 @@ function openModalSocial() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 
-	$.ajax({ url	: '/login/modal/email',
+	$.ajax({ url	: '/login/modal',
 			type	: 'POST',
 			data	: fd,
 			processData: false,
