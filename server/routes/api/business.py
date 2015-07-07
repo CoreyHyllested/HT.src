@@ -22,8 +22,8 @@ from server.controllers import *
 
 
 
-@api.route('/business/<string:bus_id>/', methods=['GET'])
-@api.route('/business/<string:bus_id>',  methods=['GET'])
+@api.route('/business/id/<string:bus_id>/', methods=['POST'])
+@api.route('/business/id/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
 	print 'api_business(%s)' % (bus_id)
 

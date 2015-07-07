@@ -5,10 +5,6 @@
 
 .DS_Store
 
-#for heroku
-#requirements.txt
-#Procfile
-
 # SCSS files.
 server/static/css/authorize.css
 server/static/css/about-sc.css
@@ -23,6 +19,7 @@ server/static/css/recovery.css
 server/static/css/settings.css
 server/static/css/pro_dashboard.css
 server/static/css/errors.css
+
 
 users.db
 run.py

@@ -50,6 +50,7 @@
 
 			<div id='refer-usrfeedback'>
 				<ul id='feedback'></ul>
+				<input id='example' type="text" class="ff" autocomplete='off'> </input>
 			</div>
 		</div>
 
@@ -72,9 +73,7 @@
 		  prefetch: {
 			url: '/citynames.json',
 			filter: function(list) {
-			  return $.map(list, function(cityname) {
-				return { name: cityname }; });
-			}
+			  return $.map(list, function(cityname) { return { name: cityname }; }); }
 		  }
 		});
 		citynames.initialize();
@@ -88,28 +87,24 @@
 		  }
 		});
 	
-		var blood = new Bloodhound({
+		projects = new Bloodhound({
 			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
 			queryTokenizer: Bloodhound.tokenizers.whitespace,
-			limit: 3,
 			prefetch: {
 				url: "/projects.json",
 				filter: function(list) {
-					console.log(this);
-					return $.map(list, function(tag) {
-						return { 'name' : tag };
-					});
+					return $.map(list, function(project_name) { return { 'name' : project_name }; });
 				}
 			}
 		});
 
-		blood.initialize();
+		projects.initialize();
 		$('#refer-proj').tagsinput({
 			typeaheadjs: {
-				name: 'bucket',
+				name: 'projects',
 				displayKey: 'name',
 				valueKey: 'name',
-				source: blood.ttAdapter()
+				source: projects.ttAdapter()
 			}
 		});
 	});
@@ -148,7 +143,7 @@
 			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
 				var fd = {};
 				fd.csrf_token = "{{ csrf_token() }}";
-				$.ajax({url		: "/business/" + suggestion.id + '/',
+				$.ajax({url		: "/business/id/" + suggestion.id,
 						type	: "POST",
 						data	: fd,
 						success : function(data) {
