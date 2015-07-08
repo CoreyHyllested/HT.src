@@ -14,16 +14,16 @@
 <section>
 	<div>
 		<div><h3 style="text-align: left;">Help Corey find a professional</h3></div>
-		<div id='refer-professional' class=''>
+		<div id='refer-professional'>
 
-			{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-			<div id='profile-card' class='no-profile' data-id=''>
-				<div id='pro-category'	class='ff header'></div>
-				<div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div>
-				<div id='pro-addr'	class='ff value'></div> <div id='pro-phone' class='ff contact'></div>
+			{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
+			<div id='profile-card' class='no-display' data-id=''>
+				<!--div id='pro-category'	class='ff header'></div-->
+				<!--div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div-->
+				<!--div id='pro-addr' class='ff value'></div--> <!--div id='pro-phone' class='ff contact'></div-->
 
 				<div id='profile-reference'>
-					<div class='ff header'>Why do you recommend <span>them<span>? (<span id="refer-why-nr">200</span> chars left.)</div>
+					<div class='ff header'>Why do you recommend <span id='pro-name'>them</span>? (<span id="refer-why-nr">200</span> chars left.)</div>
 					<textarea id='refer-why' type="textarea" class="ff"
 							placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time."
 							maxlength=200
@@ -34,26 +34,22 @@
 						<div id='' class='ff header'> What project was this for?</div>
 						<input id='refer-proj' type="text" class="ff" autocomplete='off'> </input>
 					</div>
-
 				</div>
-				<div class=''>
+
+				<div>
 					<input id='btn-cancel' 			type="button" class='btn-referral whiteButton' value="Cancel"></input>
 					<input id='btn-save-referral'	type="button" class='btn-referral blueButton'  value="Save Reference"></input>
 				</div>
 			</div>
 		</div>
 
-		<div id='refer-explanation' class=''>
-			<h3>Help Corey learn about the pros you know</h3>
-			<p>Most people need to know a bit about the project you did -- and why you would recommend them.</p>
+		<div id='refer-explanation' class='no-display'>
+			<h3>Sharing your trusted network</h3>
+			<p>Most people need to know a bit about the project you did&ndash;and why you would recommend them.</p>
 			<p>Your recommendation will be public.</p>
 
-			<div id='refer-usrfeedback'>
-				<ul id='feedback'></ul>
-				<input id='example' type="text" class="ff" autocomplete='off'> </input>
-			</div>
+			<div id='refer-usrfeedback'><ul id='feedback'></ul></div>
 		</div>
-
 	</div>
 </section>
 {% endblock %}
@@ -66,39 +62,165 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/tagsinput.js"></script>
 	<script>
-	$(document).ready(function () {
-		citynames = new Bloodhound({
-		  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-		  queryTokenizer: Bloodhound.tokenizers.whitespace,
-		  prefetch: {
-			url: '/citynames.json',
+$(document).ready(function () {
+	projects = new Bloodhound({
+		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+		queryTokenizer: Bloodhound.tokenizers.whitespace,
+		prefetch: {
+		url: "/projects.json",
 			filter: function(list) {
-			  return $.map(list, function(cityname) { return { name: cityname }; }); }
-		  }
-		});
-		citynames.initialize();
-
-		$('#example').tagsinput({
-		  typeaheadjs: {
-			name: 'citynames',
-			displayKey: 'name',
-			valueKey: 'name',
-			source: citynames.ttAdapter()
-		  }
-		});
-	
-		projects = new Bloodhound({
-			datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-			queryTokenizer: Bloodhound.tokenizers.whitespace,
-			prefetch: {
-				url: "/projects.json",
-				filter: function(list) {
-					return $.map(list, function(project_name) { return { 'name' : project_name }; });
-				}
+				return $.map(list, function(project_name) { return { 'name' : project_name }; });
 			}
+	}
+	});
+
+	projects.initialize();
+
+	function get_profile(fd) {
+		console.log('get profile is called', fd.profile_id);
+		$.ajax({	url		: "/business/id/" + fd.profile_id,
+					type	: "POST",
+					data	: fd,
+					success : function(data) {
+						$('#refer-explanation').removeClass('no-display');
+						$('#profile-card').removeClass('no-display');
+						$('#profile-card').attr('data-id', data.id_factual);
+
+						busname = data.business_name
+						if (data.business_website) {
+							busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
+						}
+						$('#pro-name').html(busname);
+
+
+						contact_email = ''
+						data.business_emails.forEach(function (elem, idx) {
+							contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
+						});
+						$('#pro-email').html(contact_email);
+
+//						contact_phone = ''
+//						data.business_phones.forEach(function (elem, idx) { contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>' });
+//						$('#pro-phone').html(contact_phone);
+						$('#pro-addr').html(data.address.street + ' ' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
+
+
+						sz = data.categories[0].factual.length;
+						category = ''
+						data.categories[0].factual.forEach(function (elem, idx) {
+							if (idx == 0) { return; }
+							category = category + elem;
+							if (idx < data.categories[0].factual.length - 1) {
+								category = category + " » ";
+							}
+						});
+						$('#pro-category').html(category);
+						$('#refer-why').focus();
+					},
+					error	: function(data) {
+						console.log("Oops, AJAX Error.");
+					}
+		});
+	}
+
+
+	function clr_profile() {
+		$('#profile-card').addClass('no-display');	
+		$('#refer-explanation').addClass('no-display');
+	}
+
+
+	function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
+	function feedback_remove(id)	{	$('#'+id).remove();			}
+
+	function save_reference(evt) {
+		html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
+		uid	 = $(html).attr('id');
+		setTimeout(feedback_fade,	2500, uid);
+		setTimeout(feedback_remove, 5000, uid);
+	}
+
+	function reset_input( event ) {
+		name = $('#invite_emails').val();
+		idx = name.lastIndexOf(" | ") 
+		if (idx == -1) { return; }
+		strng = name.substring(0, name.lastIndexOf(" | "));
+		$('#invite_emails').val(strng);
+	}
+
+	$('#invite_emails').keydown(function(event) {
+		// prevent TAB or ENTER from clearing active profile
+//		if ((event.keyCode == 9) || (event.keyCode == 13)) {
+//			return false;
+//		}
+		reset_input();
+		clr_profile();
+		//console.log(event);
+	});
+
+	$('#btn-save-referral').click(save_reference);
+	$('#invite_emails').focus(reset_input);
+
+	$('#invite_emails.typeahead').bind('typeahead:select', function(ev, suggestion) {
+		var fd = {};
+		fd.csrf_token = "{{ csrf_token() }}";
+		fd.profile_id = suggestion.id;
+		get_profile(fd);
+	});
+
+		$('#invite_emails.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
+			var fd = {};
+			fd.csrf_token = "{{ csrf_token() }}";
+			fd.profile_id = suggestion.id;
+			console.log('autocompleted');
+			get_profile(fd);
 		});
 
-		projects.initialize();
+		//https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
+		$('#invite_emails.typeahead').bind('typeahead:asyncreceive', function(evt, query, name) {
+			console.log(['asyncrecieve', evt, query, name]);
+		});
+
+		$('#invite_emails.typeahead').bind('typeahead:empty', function(evt, suggestions, name) {
+			console.log(['empty.  value = ', evt, suggestions, name]);
+		});
+
+		$('#invite_emails.typeahead').bind('typeahead:render', function(evt, suggestions, name) {
+			console.log(['rendering.  value = ', evt, suggestions, name]);
+		});
+
+		$('#invite_emails.typeahead').bind('typeahead:changed', function(evt) {
+			console.log(['changed.  value = ', evt.target.value]);
+		});
+		$('#invite_emails.typeahead').bind('typeahead:idle', function(evt) {
+			evt.preventDefault();
+			console.log(['idling.  value = ', evt.target.value]);
+			return false;
+		});
+		$('#invite_emails.typeahead').bind('typeahead:open', function(evt) {
+			v = $(evt.target).val();
+			idx = v.lastIndexOf(" | ") 
+			console.log(['opening.  value = ', v, evt.target.value]);
+			if (idx != -1) { 
+				console.log(['opening.  value has |', idx]);
+				strng = v.substring(0, v.lastIndexOf(" | "));
+				evt.target.value = strng;
+				console.log(['opening.  from obj = ', evt.target.value]);
+				evt.stopPropagation();
+				return false;
+			}
+			console.log(['opening', evt]);
+		});
+
+
+		$('#refer-why').keyup(function(evt) {
+			txt = $(this).val();
+			max	= $(this).attr('maxlength');
+			nr	= max - txt.length;
+			$('#refer-why-nr').text(nr);
+		});
+
+
 		$('#refer-proj').tagsinput({
 			typeaheadjs: {
 				name: 'projects',
@@ -107,87 +229,6 @@
 				source: projects.ttAdapter()
 			}
 		});
-	});
-
-		$(document).ready(function () {
-			$('#refer-why').keyup(function(evt) {
-				txt = $(this).val();
-				max	= $(this).attr('maxlength');
-				nr	= max - txt.length;
-				$('#refer-why-nr').text(nr);
-			});
-
-			$('#invite_emails').keydown(function(event) {
-				if (event.keyCode == 13) {
-					return false;
-				} else {
-					clr_profile();
-				}
-			});
-
-			function get_profile()			{	return;										}
-			function clr_profile()			{	$('#profile-card').addClass('no-profile');	}
-			function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
-			function feedback_remove(id)	{	$('#'+id).remove();			}
-
-			function save_reference(evt) {
-				html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
-				uid	 = $(html).attr('id');
-				setTimeout(feedback_fade,	2500, uid);
-				setTimeout(feedback_remove, 5000, uid);
-			}
-
-
-			$('#btn-save-referral').click(save_reference);
-
-			$('.typeahead').bind('typeahead:select', function(ev, suggestion) {
-				var fd = {};
-				fd.csrf_token = "{{ csrf_token() }}";
-				$.ajax({url		: "/business/id/" + suggestion.id,
-						type	: "POST",
-						data	: fd,
-						success : function(data) {
-							//console.log(data);
-							$('#profile-card').removeClass('no-profile');
-							$('#profile-card').attr('data-id', data.id_factual);
-
-							busname = data.business_name
-							if (data.business_website) {
-								busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
-							}
-							$('#pro-name').html(busname);
-
-
-							contact_email = ''
-							data.business_emails.forEach(function (elem, idx) {
-								contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
-							});
-							$('#pro-email').html(contact_email);
-
-							contact_phone = ''
-							data.business_phones.forEach(function (elem, idx) {
-								contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>'
-							});
-							$('#pro-phone').html(contact_phone);
-							$('#pro-addr').html(data.address.street + '<br>' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
-
-							sz = data.categories[0].factual.length;
-							category = ''
-							data.categories[0].factual.forEach(function (elem, idx) {
-								if (idx == 0) { return; }
-								category = category + elem;
-								if (idx < data.categories[0].factual.length - 1) {
-									category = category + " » ";
-								}
-							});
-							$('#pro-category').html(category);
-						},
-						error	: function(data) {
-							console.log("Oops, AJAX Error.");
-						}
-				})
-			});
-			{# $('.typeahead').bind('typeahead:render', function(ev, suggestion, flag, dataset, other) {   //code  }); #}
-		});
+});
 	</script>
 {% endblock %}

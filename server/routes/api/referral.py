@@ -23,22 +23,21 @@ from server.controllers import *
 
 @public.route('/referral/', methods=['GET'])
 @public.route('/referral',  methods=['GET'])
-#@sc_authenticated
 def render_create_referral_page():
-	#bp = Profile.get_by_uid(session['uid'])
-	bp = None
+	bp = Profile.get_by_uid(session.get('uid'))
 	invite = InviteForm(request.form)
 	return make_response(render_template('referral.html', bp=bp, form=invite))
 
 
 
-@api.route('/referral/<string:ref_id>/', methods=['GET'])
-@api.route('/referral/<string:ref_id>',  methods=['GET'])
+@api.route('/referral/<string:ref_id>/', methods=['POST'])
+@api.route('/referral/<string:ref_id>',  methods=['POST'])
 def api_referral_view(ref_id):
 	referral = Referral.get_by_refid(ref_id)
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
 
 	return make_response(jsonify(referral=referral.serialize), 200)
+
 
 
 @sc_server.csrf.exempt

@@ -4,7 +4,7 @@
 
 #invite_emails		{	display: inline-block;	}
 #refer-professional	{	display: inline-block;	width: 69%;		max-width: 660px;	background-color: white;	padding: 0 5px;	vertical-align: top;	}
-#refer-explanation	{	display: inline-block;	width: 28%;		max-width: 280px; 	background-color: white;	padding: 5px; 		}
+#refer-explanation	{	display: inline-block;	width: 28%;		max-width: 280px; 	background-color: white;	padding: 20px 5px; 		}
 #refer-usrfeedback	{	margin: 0 auto;			}
 #feedback			{	list-style:none;	padding: 0 5px;	}
 #btn-save-referral	{	width:	120px;			}
@@ -14,23 +14,23 @@
 }
 
 #profile-card {
-	background-color: lightgray;
-	border: 1px solid darkgray;
-	padding: 20px 10px;
+	border: 1px #e1e8ed solid;
+	border-top-width: 0px;
+	padding: 0px 10px 10px;
 }
 
 #profile-card-contact {
 	padding: 10px 0;
 }
 
-#refer-why	{	width: 100%; margin: 0 0 15px;	resize: vertical; }
+#refer-why	{	width: 100%; margin: 0 0 10px;	resize: none; }
 #refer-proj	{	}
 
-.twitter-typeahead		{	display: inline !important;	} 	//fixes bug. #invite-emails is too small
-.tt-menu				{	top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
+.twitter-typeahead		{	display: inline !important;	width: 100%;	} 	//fixes bug. #invite-emails is too small
+.tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
 .tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
 .tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
-.no-profile				{ 	display: none !important;	}
+.no-display				{ 	display: none !important;	}
 .feedback-bubble		{
 		border: 1px solid $ht-blue;
 		border-radius: 7px;

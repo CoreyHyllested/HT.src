@@ -56,7 +56,7 @@ def api_business_update(pro_id):
 def api_business_search(identifier):
 	business_idx = get_business_index()
 
-	identifier = identifier.rstrip('.json').strip().lower()
+	identifier = identifier.strip().lower()
 	identphone = re.sub('[() \-,.]', '', identifier)
 
 	response = {}
@@ -81,9 +81,8 @@ def api_business_search(identifier):
 					address = address + city + ', ' + state
 				elif (city):
 					address = address + city
-
-
-			response[pro['_id_factual']] = { "id": pro["_id_factual"], "name" : pro['business_name'], "addr" : address }
+			combined = pro['business_name'] + ' | ' + address
+			response[pro['_id_factual']] = { "id": pro["_id_factual"], "name" : pro['business_name'], "addr" : address, "combined" : combined }
 
 	#	email = pro.get('email', '')
 	#	if email and (identifier in pro['email'].lower()):
@@ -118,7 +117,7 @@ def get_business_index():
 	finally:
 		if (fp): fp.close()
 
-	print len(sc_server.pro_list), type(sc_server.pro_list)
+	print 'Professional Index: %d entries' % len(sc_server.pro_list)
 	return sc_server.pro_index_id
 
 
