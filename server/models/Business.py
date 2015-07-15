@@ -12,12 +12,12 @@
 #################################################################################
 
 
-from server import database
+from server import sc_server, database
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, Integer, String, DateTime
 from sqlalchemy.orm  import relationship, backref
 
-import uuid
+import os, re, uuid, json
 from pytz import timezone
 from datetime import datetime as dt, timedelta
 
@@ -74,6 +74,28 @@ class Business(database.Model):
 	def import_from_json(import_id, json_object):
 		print 'Profile: import \'' + str(import_id) + '\''
 		pass
+
+
+	@staticmethod
+	def get_json_index():
+		if (sc_server.__dict__.get('pro_index_id')):
+			# return the professional business index.
+			return sc_server.__dict__['pro_index_id']
+
+		try:
+			print 'Priming Search.'
+			fp = open(os.getcwd() + '/server/static/root/companies.json')
+			sc_server.pro_list = json.loads(fp.read())
+			sc_server.pro_index_id = {}
+			for account in sc_server.pro_list:
+				sc_server.pro_index_id[account['_id_factual']] = account
+		except Exception as e:
+			print type(e), e
+		finally:
+			if (fp): fp.close()
+
+		print 'Professional Index: %d entries' % len(sc_server.pro_list)
+		return sc_server.pro_index_id
 
 
 

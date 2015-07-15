@@ -12,7 +12,7 @@
 #################################################################################
 
 
-import os, re
+import re
 from server import sc_server
 from server.models import *
 from server.routes import api_routing as api
@@ -27,7 +27,7 @@ from server.controllers import *
 def api_business_read(bus_id):
 	print 'api_business(%s)' % (bus_id)
 
-	business_idx = get_business_index()
+	business_idx = Business.get_json_index()
 	business = business_idx.get(bus_id, { "id" : "Not Found"})
 	return make_response(jsonify(business), 200)
 
@@ -54,7 +54,7 @@ def api_business_update(pro_id):
 @api.route('/business/search/<string:identifier>/', methods=['GET','POST'])
 @api.route('/business/search/<string:identifier>',  methods=['GET','POST'])
 def api_business_search(identifier):
-	business_idx = get_business_index()
+	business_idx = Business.get_json_index()
 
 	identifier = identifier.strip().lower()
 	identphone = re.sub('[() \-,.]', '', identifier)
@@ -100,30 +100,10 @@ def api_business_search(identifier):
 
 
 
-def get_business_index():
-	if (sc_server.__dict__.get('pro_index_id')):
-		# return the professional business index.
-		return sc_server.__dict__['pro_index_id']
-
-	try:
-		print 'Priming Search.'
-		fp = open(os.getcwd() + '/server/static/root/companies.json')
-		sc_server.pro_list = json.loads(fp.read())
-		sc_server.pro_index_id = {}
-		for account in sc_server.pro_list:
-			sc_server.pro_index_id[account['_id_factual']] = account
-	except Exception as e:
-		print type(e), e
-	finally:
-		if (fp): fp.close()
-
-	print 'Professional Index: %d entries' % len(sc_server.pro_list)
-	return sc_server.pro_index_id
-
 
 
 
 def api_business_info_by_phone(identifier):
-	business_idx = get_business_index()
+	business_idx = Business.get_json_index()
 	print 'api_business(%s)' % (identifier)
 
