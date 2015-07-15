@@ -15,8 +15,7 @@
 from server import database
 from server.models.shared import ReferralFlags
 from server.infrastructure.errors	import *
-from sqlalchemy import ForeignKey
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import ForeignKey, Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import DetachedInstanceError
 
@@ -41,9 +40,9 @@ class Referral(database.Model):
 		self.ref_profile = profile
 		self.ref_content = content
 		self.ref_project = project
-
 		self.ref_flags	 = 0
 		self.ref_created = dt.utcnow()
+
 
 	def __repr__ (self):
 		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_profile, self.ref_content[:20])

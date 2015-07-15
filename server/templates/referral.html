@@ -47,8 +47,7 @@
 			<h3>Sharing your trusted network</h3>
 			<p>Most people need to know a bit about the project you did&ndash;and why you would recommend them.</p>
 			<p>Your recommendation will be public.</p>
-
-			<div id='refer-usrfeedback'><ul id='feedback'></ul></div>
+			<ul id='feedback'></ul>
 		</div>
 	</div>
 </section>
@@ -71,7 +70,7 @@ $(document).ready(function () {
 			filter: function(list) {
 				return $.map(list, function(project_name) { return { 'name' : project_name }; });
 			}
-	}
+		}
 	});
 
 	projects.initialize();
@@ -91,7 +90,6 @@ $(document).ready(function () {
 							busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
 						}
 						$('#pro-name').html(busname);
-
 
 						contact_email = ''
 						data.business_emails.forEach(function (elem, idx) {
@@ -123,8 +121,7 @@ $(document).ready(function () {
 		});
 	}
 
-
-	function clr_profile() {
+	function clear_profile() {
 		$('#profile-card').addClass('no-display');	
 		$('#refer-explanation').addClass('no-display');
 	}
@@ -134,13 +131,18 @@ $(document).ready(function () {
 	function feedback_remove(id)	{	$('#'+id).remove();			}
 
 	function save_reference(evt) {
+		content = $('#refer-why').val();
+		project = $('#refer-proj').val().split(',');
+		console.log(content);
+		console.log(project);
+
 		html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
 		uid	 = $(html).attr('id');
 		setTimeout(feedback_fade,	2500, uid);
 		setTimeout(feedback_remove, 5000, uid);
 	}
 
-	function reset_input( event ) {
+	function clear_business_addr( event ) {
 		name = $('#invite_emails').val();
 		idx = name.lastIndexOf(" | ") 
 		if (idx == -1) { return; }
@@ -149,17 +151,11 @@ $(document).ready(function () {
 	}
 
 	$('#invite_emails').keydown(function(event) {
-		// prevent TAB or ENTER from clearing active profile
-//		if ((event.keyCode == 9) || (event.keyCode == 13)) {
-//			return false;
-//		}
-		reset_input();
-		clr_profile();
-		//console.log(event);
+		clear_profile();
 	});
 
 	$('#btn-save-referral').click(save_reference);
-	$('#invite_emails').focus(reset_input);
+	$('#invite_emails').focus(clear_business_addr);
 
 	$('#invite_emails.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
@@ -168,50 +164,20 @@ $(document).ready(function () {
 		get_profile(fd);
 	});
 
+		// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
 		$('#invite_emails.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
 			var fd = {};
 			fd.csrf_token = "{{ csrf_token() }}";
 			fd.profile_id = suggestion.id;
 			console.log('autocompleted');
 			get_profile(fd);
-		});
-
-		//https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
-		$('#invite_emails.typeahead').bind('typeahead:asyncreceive', function(evt, query, name) {
-			console.log(['asyncrecieve', evt, query, name]);
-		});
-
-		$('#invite_emails.typeahead').bind('typeahead:empty', function(evt, suggestions, name) {
-			console.log(['empty.  value = ', evt, suggestions, name]);
-		});
-
-		$('#invite_emails.typeahead').bind('typeahead:render', function(evt, suggestions, name) {
-			console.log(['rendering.  value = ', evt, suggestions, name]);
-		});
-
-		$('#invite_emails.typeahead').bind('typeahead:changed', function(evt) {
-			console.log(['changed.  value = ', evt.target.value]);
-		});
-		$('#invite_emails.typeahead').bind('typeahead:idle', function(evt) {
-			evt.preventDefault();
-			console.log(['idling.  value = ', evt.target.value]);
-			return false;
-		});
-		$('#invite_emails.typeahead').bind('typeahead:open', function(evt) {
-			v = $(evt.target).val();
-			idx = v.lastIndexOf(" | ") 
-			console.log(['opening.  value = ', v, evt.target.value]);
-			if (idx != -1) { 
-				console.log(['opening.  value has |', idx]);
-				strng = v.substring(0, v.lastIndexOf(" | "));
-				evt.target.value = strng;
-				console.log(['opening.  from obj = ', evt.target.value]);
-				evt.stopPropagation();
-				return false;
+		}).bind('typeahead:render', function(evt, suggestions, name) {
+			if ($('#profile-card').hasClass('no-display')) {
+				$('#not-found').removeClass('no-display');
+			} else {
+				$('#not-found').addClass('no-display');
 			}
-			console.log(['opening', evt]);
 		});
-
 
 		$('#refer-why').keyup(function(evt) {
 			txt = $(this).val();
@@ -219,7 +185,6 @@ $(document).ready(function () {
 			nr	= max - txt.length;
 			$('#refer-why-nr').text(nr);
 		});
-
 
 		$('#refer-proj').tagsinput({
 			typeaheadjs: {

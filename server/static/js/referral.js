@@ -24,7 +24,7 @@ $(document).ready(function () {
 		source: pro_finder,
 		templates: {
 			notFound: function(q) {
-				return '<div>We did not match \"' + q.query + '\".<br><a href="javascript:alert(\'implement me\');">Add this business?</a></div>'; 
+				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:alert(\'implement me\');">Add this business?</a></div>';
 			},
 			pending: '<div>Searching...</div>',
 			suggestion: Handlebars.compile('<div class="pro-suggestion" data-id={{id}}>{{name}} <span class="pro-suggestion-addr">{{addr}}</span></div>')
