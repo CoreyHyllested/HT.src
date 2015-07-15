@@ -13,7 +13,7 @@
 
 
 from server import database
-from server.models.shared import ReferralFlags
+from server.models.shared			import ReferralFlags
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
@@ -27,17 +27,17 @@ from datetime import datetime as dt, timedelta
 
 class Referral(database.Model):
 	__tablename__ = "referral"
-	ref_uuid	= Column(String(40), primary_key=True, index=True, unique=True)
-	ref_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
-	ref_content	= Column(String(200), nullable=False)	# referral content
-	ref_project	= Column(String(128))					# project description
+	ref_uuid		= Column(String(40), primary_key=True, index=True)
+	ref_business	= Column(String(40), ForeignKey('business.bus_id'), nullable=False)
+	ref_content		= Column(String(200), nullable=False)	# referral content
+	ref_project		= Column(String(128))					# project description
 
 	ref_flags	= Column(Integer)
 	ref_created = Column(DateTime(), nullable=False)
 
-	def __init__ (self, profile, content, project=None):
+	def __init__ (self, bus_id, content, project=None):
 		self.ref_uuid = str(uuid.uuid4())
-		self.ref_profile = profile
+		self.ref_business = bus_id
 		self.ref_content = content
 		self.ref_project = project
 		self.ref_flags	 = 0
@@ -91,7 +91,7 @@ class Referral(database.Model):
 
 class RefList(database.Model):
 	__tablename__ = "referral_list"
-	list_uuid		= Column(String(40), primary_key=True, index=True, unique=True)
+	list_uuid		= Column(String(40), primary_key=True, index=True)
 	list_profile	= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
 	list_project	= Column(String(40), ForeignKey('project.proj_id'))	# may be associated with a project
 	list_name		= Column(String(40))								# may be given a name

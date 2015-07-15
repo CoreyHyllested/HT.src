@@ -17,8 +17,10 @@ from server.models.Profile	import *
 from server.models.Project	import *
 from server.models.Email	import *
 from server.models.Oauth	import *
-from server.models.Referral	import *
+from server.models.Location	import *
+from server.models.Business	import *
 from server.models.BusinessReference	import *
+from server.models.Referral	import *
 
 #from .Meeting			import *
 #from .Image				import *

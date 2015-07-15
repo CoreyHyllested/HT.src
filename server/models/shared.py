@@ -125,3 +125,16 @@ class ReferralFlags(Flags):
 	@staticmethod
 	def clear_invalid(flags):
 		return ReferralFlags.clear(flags,	ReferralFlags.INVALID)
+
+
+
+class BusinessState(Flags):
+	BIT_IMPORTED = 1
+
+	BIT_VERIFIED = 4
+	BIT_CLAIMED	 = 5
+
+
+	IMPORTED = (0x1 << BIT_IMPORTED)
+	VERIFIED = (0x1 << BIT_VERIFIED)
+	CLAIMED	 = (0x1 << BIT_CLAIMED)

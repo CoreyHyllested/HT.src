@@ -1,0 +1,77 @@
+#################################################################################
+# Copyright (C) 2015 Soulcrafting
+# All Rights Reserved.
+#
+# All information contained is the property of Soulcrafting. Any intellectual
+# property about the design, implementation, processes, and interactions with
+# services may be protected by U.S. and Foreign Patents. All intellectual
+# property contained within is covered by trade secret and copyright law.
+#
+# Dissemination or reproduction is strictly forbidden unless prior written
+# consent has been obtained from Soulcrafting.
+#################################################################################
+
+
+from server import database
+from server.infrastructure.errors	import *
+from sqlalchemy import ForeignKey, Column, String, Float, DateTime
+from sqlalchemy.orm  import relationship, backref
+from datetime import datetime as dt, timedelta
+from pytz import timezone
+import uuid
+
+
+
+class Location(database.Model):
+	__tablename__ = "location"
+	location_id	= Column(String(40), primary_key=True, index=True)
+
+	location_street  = Column(String(128), default="") 
+	location_suite	 = Column(String(128), default="")
+	location_city	 = Column(String(64), default='Boulder')
+	location_state	 = Column(String(32), default='Colorado')
+	location_zip	 = Column(String(10))
+#	location_country = Column(String(10), default='United States')
+
+	location_lat	= Column(Float)
+	location_lng	= Column(Float)
+
+	updated = Column(DateTime(), nullable=False, default = "")
+	created = Column(DateTime(), nullable=False, default = "")
+
+
+
+	def __init__(self, street=None, suite=None, city=None, state=None, zipcode=None, profile=None, lat=None, lng=None):
+		print 'Location: init '
+		self.location_street = street
+		self.location_suite	= suite
+		self.location_city	= city
+		self.location_state	= state
+		self.location_zip	= zipcode
+
+		self.location_lat	= lat
+		self.location_lng	= lng
+
+		self.created	= dt.utcnow()
+		self.updated	= dt.utcnow()
+
+
+	def __repr__ (self):
+		return '<location %r>' % (self.location_id)
+
+
+	@staticmethod
+	def get_by_id(id):
+		location = None
+		try:
+			# cannot throw MultipleResultsFound, DB uniqueness
+			location = Location.query.filter_by(location_id=id).one()
+		except NoResultFound as nrf: pass
+		return location
+
+
+
+#################################################################################
+### FOR TESTING PURPOSES ########################################################
+#################################################################################
+
