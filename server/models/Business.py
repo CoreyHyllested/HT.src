@@ -27,7 +27,7 @@ from datetime import datetime as dt, timedelta
 class Business(database.Model):
 	__tablename__ = "business"
 	bus_id		= Column(String(40), primary_key=True, index=True)
-	bus_address	= Column(String(40), ForeignKey('location.location_id'))
+	#bus_address	= Column(String(40), ForeignKey('location.location_id'), nullable=True)
 	bus_name	= Column(String(99), nullable=False)
 	bus_state	= Column(Integer,	 nullable=False, default = 0)
 
@@ -47,7 +47,7 @@ class Business(database.Model):
 		print 'Business: init \'' + '\''
 		self.bus_id		 = id
 		self.bus_name	 = name
-		self.bus_address = location_id
+		#self.bus_address = location_id
 		self.bus_website = website
 
 		self.bus_phone 	 = phone
@@ -66,7 +66,7 @@ class Business(database.Model):
 		return {
 			'business_id'	: self.bus_id,
 			'business_name'	: self.bus_name,
-			'business_addr'	: self.bus_address
+#			'business_addr'	: self.bus_address
 		}
 
 

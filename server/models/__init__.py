@@ -19,7 +19,6 @@ from server.models.Email	import *
 from server.models.Oauth	import *
 from server.models.Location	import *
 from server.models.Business	import *
-from server.models.BusinessReference	import *
 from server.models.Referral	import *
 
 #from .Meeting			import *
@@ -27,6 +26,7 @@ from server.models.Referral	import *
 #from .Review			import *
 #from .GiftCertificate	import *
 #from .UserMessage		import *
+#from server.models.BusinessReference	import *
 
 
 ################################################################################

@@ -45,7 +45,7 @@ class Referral(database.Model):
 
 
 	def __repr__ (self):
-		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_profile, self.ref_content[:20])
+		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_business, self.ref_content[:20])
 
 	def invalid(self):
 		return ReferralFlags.test_invalid(self.ref_flags)
@@ -62,7 +62,7 @@ class Referral(database.Model):
 	def serialize(self):
 		return {
 			'ref_uuid'		: self.ref_uuid,
-			'ref_profile'	: self.ref_profile,
+			'ref_business'	: self.ref_business,
 			'ref_project'	: self.ref_project,
 			'ref_content'	: self.ref_content,
 			'ref_flags'		: "0x%08X" % self.ref_flags

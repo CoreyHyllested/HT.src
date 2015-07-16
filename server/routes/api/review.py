@@ -12,7 +12,6 @@
 #################################################################################
 
 
-from flask import render_template
 from server import database
 from server.models import *
 from server.routes import api_routing as api 
@@ -33,7 +32,8 @@ def api_review_request():
 
 	try:
 		# DOESN'T THROW ERRORS.
-		brr = BusinessReference.get_by_email(session['pid'], email)
+#		brr = BusinessReference.get_by_email(session['pid'], email)
+		brr = None
 		if (brr is not None):
 			resp_mesg	= 'Request exists.'
 
@@ -45,11 +45,12 @@ def api_review_request():
 			return make_response(jsonify(sc_msg=resp_mesg, brid=brr.br_uuid), resp_code)
 
 		if (brr is None):
-			brr = BusinessReference(session['uid'], session['pid'], email)
-			database.session.add(brr)
-			database.session.commit()
-			fragment = render_template('fragment_request.html', brr=brr)
-			sc_send_BR_email(session['pid'], email, brr)
+			pass
+			#brr = BusinessReference(session['uid'], session['pid'], email)
+			#database.session.add(brr)
+			#database.session.commit()
+			#fragment = render_template('fragment_request.html', brr=brr)
+			#sc_send_BR_email(session['pid'], email, brr)
 	except Exception as e:
 		database.session.rollback()
 		print 'Uh oh fellas.', type(e), e

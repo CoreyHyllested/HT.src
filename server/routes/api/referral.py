@@ -44,13 +44,21 @@ def api_referral_view(ref_id):
 @api.route('/referral/create', methods=['POST'])
 def api_referral_create():
 	print 'api_referral_create(): enter'
-	profile	= request.values.get('profile')
-	content = request.values.get('content')
-	project = request.values.get('project')
+	bus_id	= request.values.get('business')
+	content = request.values.get('referral')
+	project = request.values.get('projects')
 
-	if (profile and content):
+#	if form.validate_on_submit():
+	if (bus_id and content):
 		try:
-			referral = Referral(profile, content, project)
+			# business may not exist.
+			business = Business.get_by_id(bus_id)
+			if (not business):
+				print 'business doesnt exist - import business to db.'
+				business = Business.import_from_json(bus_id, bus_json)
+
+			print 'creating referral'
+			referral = Referral(business.bus_id, content, project)
 			database.session.add(referral)
 
 			session_referrals = session.get('referrals', {})

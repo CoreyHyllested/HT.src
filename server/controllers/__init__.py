@@ -286,13 +286,11 @@ def htdb_get_composite_meetings(profile):
 
 
 def scdb_get_references(profile, dump=False):
-	""" get all refreqs for 'profile' """
-	references = sc_server.database.session.query(BusinessReference).filter(BusinessReference.br_bus_prof == profile.prof_id).all();
-
-	if (dump):
-		for r in references:
-			print '\tREF_REQ', r.br_uuid, ':', r.br_bus_prof, 'wants', r.br_req_mail
-	return references
+	""" get all refreqs for 'profile'; disabled to remove BusinessReference """
+	#references = sc_server.database.session.query(BusinessReference).filter(BusinessReference.br_bus_prof == profile.prof_id).all();
+	#if (dump):
+	#	for r in references: print '\tREF_REQ', r.br_uuid, ':', r.br_bus_prof, 'wants', r.br_req_mail
+	return None #references
 
 
 
