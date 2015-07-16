@@ -22,6 +22,7 @@ from server.controllers import *
 
 
 
+@sc_server.csrf.exempt
 @api.route('/business/id/<string:bus_id>/', methods=['POST'])
 @api.route('/business/id/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
@@ -60,7 +61,6 @@ def api_business_search(identifier):
 	response = {}
 	for pro in business_idx.values():
 		if (len(response) > 5): break
-		if (not pro.get('_id')): continue
 
 		if identifier in pro.get('business_name','').lower():
 			print 'adding', pro['business_name'], 'because we matched', pro['business_name'].lower(), 'to', identifier

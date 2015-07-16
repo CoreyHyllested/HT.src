@@ -140,7 +140,10 @@ class Business(database.Model):
 			sc_server.pro_list = json.loads(fp.read())
 			sc_server.pro_index_id = {}
 			for account in sc_server.pro_list:
-				sc_server.pro_index_id[account['_id_factual']] = account
+				if not account.get('_id'):
+					print 'Missing-id', account['business_name']
+					continue
+				sc_server.pro_index_id[account['_id']] = account
 		except Exception as e:
 			print type(e), e
 		finally:

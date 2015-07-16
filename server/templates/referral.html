@@ -91,6 +91,7 @@ $(document).ready(function () {
 						$('#pro-name').html(busname);
 
 						contact_email = ''
+						console.log(data);
 						data.business_emails.forEach(function (elem, idx) {
 							contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
 						});
