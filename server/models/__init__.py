@@ -43,6 +43,7 @@ from server.models.Referral	import *
 # delete from timeslot where location = 'San Francisco';
 # delete from timeslot where id >= 25;
 # delete from review where heroid = '559a73f1-483c-40fe-8ee5-83118ce1f7e3';
+# delete from review;  // deletes all records.
 ################################################################################
 
 

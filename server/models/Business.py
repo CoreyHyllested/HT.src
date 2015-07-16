@@ -14,6 +14,7 @@
 
 from server import sc_server, database
 from server.infrastructure.errors	import *
+from server.models.Location			import *
 from sqlalchemy import ForeignKey, Column, Integer, String, DateTime
 from sqlalchemy.orm  import relationship, backref
 
@@ -26,9 +27,9 @@ from datetime import datetime as dt, timedelta
 class Business(database.Model):
 	__tablename__ = "business"
 	bus_id		= Column(String(40), primary_key=True, index=True)
-	bus_address	= Column(String(40), ForeignKey('location.location_id'), nullable=False)
-	bus_name	= Column(String(99), 									 nullable=False)
-	bus_state	= Column(Integer, nullable=False, default = 0)
+	bus_address	= Column(String(40), ForeignKey('location.location_id'))
+	bus_name	= Column(String(99), nullable=False)
+	bus_state	= Column(Integer,	 nullable=False, default = 0)
 
 	# contact information.
 	bus_website	= Column(String(128))
@@ -48,6 +49,7 @@ class Business(database.Model):
 		self.bus_name	 = name
 		self.bus_address = location_id
 		self.bus_website = website
+
 		self.bus_phone 	 = phone
 		self.bus_email	 = email
 
@@ -59,21 +61,71 @@ class Business(database.Model):
 		return '<business %r>' % (self.bus_id)
 
 
+	@property
+	def serialize(self):
+		return {
+			'business_id'	: self.bus_id,
+			'business_name'	: self.bus_name,
+			'business_addr'	: self.bus_address
+		}
+
+
 	@staticmethod
-	def get_by_id(id):
+	def get_by_id(id, check_json=False):
 		business = None
 		try:
+			print 'get_by_id(%s) ' % id
 			# cannot throw MultipleResultsFound, DB uniqueness
 			business = Business.query.filter_by(bus_id=id).one()
-		except NoResultFound as nrf: pass
+			print business
+		except NoResultFound as nrf:
+			if check_json:
+				business = Business.get_json_index().get(bus_id)
+				# convert to Business Object
+				business['from_json'] = True
 		return business
 
 
 
 	@staticmethod
-	def import_from_json(import_id, json_object):
-		print 'Profile: import \'' + str(import_id) + '\''
-		pass
+	def import_from_json(bus_id):
+		json_object = Business.get_json_index().get(bus_id)
+		address	= json_object['address']
+		website	= json_object.get('business_website')
+		phones	= json_object.get('business_phones')
+		emails	= json_object.get('business_emails')
+
+		location = Location(address['street'],
+							address['suite'],
+							address['city'],
+							address['state'],
+							address['post'],
+							address['meta']['lat'],
+							address['meta']['lng'])
+
+		contact_phone = phones[0] if phones else None
+		contact_email = emails[0] if emails else None
+
+		business = Business(json_object['business_name'],
+							location.location_id,
+							phone=contact_phone,
+							email=contact_email,
+							website=website,
+							id=json_object['_id'])
+		try:
+			print location.location_id, business.bus_id
+			database.session.add(location)
+			database.session.commit()
+			database.session.add(business)
+			database.session.commit()
+			print 'committed business, location'
+			pp(business)
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
+			return None
+
+		return business
 
 
 	@staticmethod
