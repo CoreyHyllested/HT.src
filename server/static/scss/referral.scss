@@ -3,10 +3,9 @@
 
 
 #invite_emails		{	display: inline-block;	}
-#refer-professional	{	display: inline-block;	width: 69%;		max-width: 660px;	background-color: white;	padding: 0 5px;	vertical-align: top;	}
-#refer-explanation	{	display: inline-block;	width: 28%;		max-width: 280px; 	background-color: white;	padding: 20px 5px; 		}
-#refer-usrfeedback	{	margin: 0 auto;			}
-#feedback			{	list-style:none;	padding: 0 5px;	}
+#refer-professional	{	display: inline-block;	width: 69%;			padding: 0 5px;		max-width: 660px;	background-color: white;	vertical-align: top;	}
+#refer-explanation	{	display: inline-block;	width: 28%;			padding: 20px 5px;	max-width: 280px; 	background-color: white;	}
+#feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
 #btn-save-referral	{	width:	120px;			}
 
 #profile-reference	{
@@ -32,13 +31,14 @@
 .tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
 .no-display				{ 	display: none !important;	}
 .feedback-bubble		{
-		border: 1px solid $ht-blue;
-		border-radius: 7px;
 		background-color: green;
+		border: 1px solid green;
+		border-radius: 7px;
 		color: white;
 		font-weight: 600;
 		text-align: center;
-		margin: 5px;
+		margin: 5px auto;
+		width:	66%;
  }
 .bootstrap-tagsinput .tt-menu	{	width: 350px; }
 

@@ -76,14 +76,13 @@ $(document).ready(function () {
 	projects.initialize();
 
 	function get_profile(fd) {
-		console.log('get profile is called', fd.profile_id);
 		$.ajax({	url		: "/business/id/" + fd.profile_id,
 					type	: "POST",
 					data	: fd,
 					success : function(data) {
 						$('#refer-explanation').removeClass('no-display');
 						$('#profile-card').removeClass('no-display');
-						$('#profile-card').attr('data-id', data.id_factual);
+						$('#profile-card').attr('data-id', fd.profile_id);
 
 						busname = data.business_name
 						if (data.business_website) {
@@ -130,16 +129,31 @@ $(document).ready(function () {
 	function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
 	function feedback_remove(id)	{	$('#'+id).remove();			}
 
-	function save_reference(evt) {
-		content = $('#refer-why').val();
-		project = $('#refer-proj').val().split(',');
-		console.log(content);
-		console.log(project);
+	function save_referral(evt) {
+		fd = {};
+		fd.business	= $('#profile-card').data('id');
+		fd.referral	= $('#refer-why').val();
+		fd.projects	= $('#refer-proj').val().split(',');
+		fd.projects	= fd.projects.concat($('.bootstrap-tagsinput .twitter-typeahead .tt-input').first().val());
 
-		html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
-		uid	 = $(html).attr('id');
-		setTimeout(feedback_fade,	2500, uid);
-		setTimeout(feedback_remove, 5000, uid);
+		console.log(fd.business);
+		console.log(fd.referral);
+		console.log(fd.projects);
+
+		$.ajax({	url		: "/referral/create",
+					type	: "POST",
+					data	: fd,
+					success : function(data) {
+						html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
+						uid	 = $(html).attr('id');
+						setTimeout(feedback_fade,	2500, uid);
+						setTimeout(feedback_remove, 5000, uid);
+					},
+					error	: function(data) {
+						console.log("Oops, AJAX Error.");
+					}
+		});
+
 	}
 
 	function clear_business_addr( event ) {
@@ -154,7 +168,7 @@ $(document).ready(function () {
 		clear_profile();
 	});
 
-	$('#btn-save-referral').click(save_reference);
+	$('#btn-save-referral').click(save_referral);
 	$('#invite_emails').focus(clear_business_addr);
 
 	$('#invite_emails.typeahead').bind('typeahead:select', function(ev, suggestion) {
@@ -164,36 +178,36 @@ $(document).ready(function () {
 		get_profile(fd);
 	});
 
-		// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
-		$('#invite_emails.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
-			var fd = {};
-			fd.csrf_token = "{{ csrf_token() }}";
-			fd.profile_id = suggestion.id;
-			console.log('autocompleted');
-			get_profile(fd);
-		}).bind('typeahead:render', function(evt, suggestions, name) {
-			if ($('#profile-card').hasClass('no-display')) {
-				$('#not-found').removeClass('no-display');
-			} else {
-				$('#not-found').addClass('no-display');
-			}
-		});
+	// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
+	$('#invite_emails.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
+		var fd = {};
+		fd.csrf_token = "{{ csrf_token() }}";
+		fd.profile_id = suggestion.id;
+		console.log('autocompleted');
+		get_profile(fd);
+	}).bind('typeahead:render', function(evt, suggestions, name) {
+		if ($('#profile-card').hasClass('no-display')) {
+			$('#not-found').removeClass('no-display');
+		} else {
+			$('#not-found').addClass('no-display');
+		}
+	});
 
-		$('#refer-why').keyup(function(evt) {
-			txt = $(this).val();
-			max	= $(this).attr('maxlength');
-			nr	= max - txt.length;
-			$('#refer-why-nr').text(nr);
-		});
+	$('#refer-why').keyup(function(evt) {
+		txt = $(this).val();
+		max	= $(this).attr('maxlength');
+		nr	= max - txt.length;
+		$('#refer-why-nr').text(nr);
+	});
 
-		$('#refer-proj').tagsinput({
-			typeaheadjs: {
-				name: 'projects',
-				displayKey: 'name',
-				valueKey: 'name',
-				source: projects.ttAdapter()
-			}
-		});
+	$('#refer-proj').tagsinput({
+		typeaheadjs: {
+			name: 'projects',
+			displayKey: 'name',
+			valueKey: 'name',
+			source: projects.ttAdapter()
+		}
+	});
 });
 	</script>
 {% endblock %}
