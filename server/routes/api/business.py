@@ -60,6 +60,7 @@ def api_business_search(identifier):
 	response = {}
 	for pro in business_idx.values():
 		if (len(response) > 5): break
+		if (not pro.get('_id')): continue
 
 		if identifier in pro.get('business_name','').lower():
 			print 'adding', pro['business_name'], 'because we matched', pro['business_name'].lower(), 'to', identifier
@@ -80,22 +81,15 @@ def api_business_search(identifier):
 				elif (city):
 					address = address + city
 			combined = pro['business_name'] + ' | ' + address
-			response[pro['_id_factual']] = { "id": pro["_id_factual"], "name" : pro['business_name'], "addr" : address, "combined" : combined }
+			response[pro['_id']] = { "id": pro["_id"], "name" : pro['business_name'], "addr" : address, "combined" : combined }
 
-	#	email = pro.get('email', '')
-	#	if email and (identifier in pro['email'].lower()):
-	#		print 'adding', pro['name'], 'because we matched', pro['email'].lower(), 'to', identifier 
-			#response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
-	#		continue
 		phone = pro.get('phone', '')
 		if phone: phone = re.sub('[() \-,.]', '', phone)
 		if phone and (identphone in phone):
 			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
-			response[pro['id_factual']] = { "id": pro["id_factual"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+			#response[pro['_id']] = { "id": pro["_id"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
 	pp (response)
 	return make_response(jsonify(response), 200)
-
-
 
 
 
