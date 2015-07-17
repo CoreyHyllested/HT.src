@@ -73,7 +73,7 @@ def api_referral_create():
 		return make_response(jsonify(referral.serialize), 200)
 
 	missing = ''
-	if not (profile): missing = missing + ' (profile) '
+	if not (bus_id): missing = missing + ' (business) '
 	if not (content): missing = missing + ' (content) '
 	return make_response(jsonify(missing=missing), 400)
 
