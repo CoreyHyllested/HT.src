@@ -62,7 +62,7 @@
 	text-align:	center;
 	font-size:	1.0em;
 	line-height: 1.35em;
-	margin-bottom: 15px;
+	margin: 0 15px 15px;
 }
 
 
@@ -131,7 +131,7 @@
 }
 
 
-.window-alert	{ display:	inline-block !important;	width: 290px; }
+.window-alert	{ display:	inline-block !important;	max-width: 290px; }
 .window-border	{ border:	1px solid black;	}
 .request input	{ width: 85%;	}
 .btn-modal		{ margin: 0 10px;	display: inline-block;	width: 33%; }
@@ -140,6 +140,6 @@
 .login-active	{ display: block;	}
 
 
-@media (min-width: 489px)	{ .window-alert { width: 400px; } }
-@media (min-width: 767px)	{ .window-alert { width: 600px; } }
-@media (min-width: 979px)	{ .window-alert { width: 750px; } }
+@media (min-width: 489px)	{ .window-alert { max-width: 400px; } }
+@media (min-width: 767px)	{ .window-alert { max-width: 600px; } }
+@media (min-width: 979px)	{ .window-alert { max-width: 750px; } }
