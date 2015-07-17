@@ -147,6 +147,7 @@
       if (self.options.maxTags === self.itemsArray.length || self.items().toString().length === self.options.maxInputLength)
         self.$container.addClass('bootstrap-tagsinput-max');
 
+	  self.$input.typeahead('val', '');
       self.$element.trigger($.Event('itemAdded', { item: item, options: options }));
     },
 
