@@ -153,9 +153,12 @@ def server_init_routes(server):
 
 	from routes.api import list, project, referral
 	from routes import authentication, everyone, users, meta, errors
-	from routes import public_routes, meta_routes
-	from routes import api_routing,   auth_routes
+	from routes import public_routes
+	from routes import auth_routes
+	from routes import meta_routes
+	from routes import api_routing
 	server.register_blueprint(public_routes)
 	server.register_blueprint(auth_routes)
 	server.register_blueprint(meta_routes)
 	server.register_blueprint(api_routing)
+

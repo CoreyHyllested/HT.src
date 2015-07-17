@@ -122,16 +122,16 @@ def render_login():
 
 
 # sends to facebook, which gets token, and user is redirected to 'facebook_authorized'
-@public.route('/signup/facebook', methods=['GET'])
+@public.route('/signup/facebook', methods=['GET', 'POST'])
 def oauth_signup_facebook():
 	session['oauth_facebook_signup'] = True
-	return facebook.authorize(callback=url_for('public.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
-@public.route('/login/facebook', methods=['GET'])
+@public.route('/login/facebook', methods=['GET', 'POST'])
 def oauth_login_facebook():
 	session['oauth_facebook_signup'] = False
-	return facebook.authorize(callback=url_for('public.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+	return facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
 
