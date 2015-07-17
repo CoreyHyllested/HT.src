@@ -49,5 +49,11 @@
 
 {% block scripts %}
 	{{ super() }}
-	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
+{% if sc_alert %}
+	<script>
+	$(document).ready(function () {
+		openAlertWindow('{{sc_alert}}')
+	});
+	</script>
+{% endif %}
 {% endblock %}
