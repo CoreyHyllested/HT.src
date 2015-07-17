@@ -1,59 +1,23 @@
 /* (c) 2015 Soulcrafting */
-@import 'colors';
+@import 'elem-defaults';
+@import 'modals';
 
-$navbar-height: 50px;
-$footer-height: 92px;
-
-
-body	{ padding-top: $navbar-height; }
-footer	{
-	bottom: 0;
-	width: 100%;
-	height: $footer-height;
-	
-	padding: 10px 0;
-	background-color: white; 
-	border-top: 2px solid $ht-blue;
-}
-
-
-#page-content { 
-	min-height: 100%; 
-	height: auto !important;
-	margin: 0 auto -$footer-height;		/* the bottom margin is the negative value of the footer's height */
-	padding: 0px 0px $footer-height;
-}
-
-
-
-#navbar-menu { padding-right: 30px; }
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
 .navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}
 .hhl:hover 		{ border-top-color: $ht-blue;											}
-
-
-#footer-menu	{	margin: 0 auto;	text-align: center;						}
-#footer-sns		{	margin: 0 auto;	text-align: center; font-size: 1.5em;	}
-#copyright 		{	margin: 0 auto;	text-align: center;						}
-
-
-#footer-sns  ul,
-#footer-menu ul,
-#footer-menu li						{ display: inline;	padding-left: 0;}
-#footer-menu li:after				{ content: ' | ';	}
-#footer-menu li:last-of-type:after	{ content: '';		}
-
+.big-icon		{	font-size: 64px;	}
 .sns {
 	padding-left: 0;
 	display: inline;
 	margin: 5px 20px;
 }
 
-
-@media (max-width: 426px) { }
+// todo rename appropriately... text-padding
+.text-content	{	padding: 0px $text-padding;			}
 
 @media (max-width: 768px) {
-	/* remove border-color that impacts nav-menu *NAME*; apparently has non-zero border*/
+	/* impacts nav-menu *NAME*; has non-zero border */
 	.hhl:hover	{ border-top-color: rgba(0,0,0,0);	}
 	.hhl:focus	{ border-top-color: rgba(0,0,0,0) !important;	}
+	.text-content { padding-left: $text-padding-wide; padding-right: $text-padding-wide; }
 }

@@ -1,5 +1,4 @@
 /* (c) 2015 Soulcrafting */
-@import 'elem-navigation';
 @import 'colors';
 @import 'fonts';
 
@@ -9,22 +8,32 @@ $form-padding		= 20px;
 $text-padding		= 20px;
 $text-padding-wide	= 50px;
 
+$navbar-height: 50px;
+$footer-height: 92px;
 
-h3			{	text-align: center;	}
-h4			{	text-align: center;	}
 
+h3, h4		{	text-align: center;	}
+body		{	padding-top: $navbar-height;											}
 section		{	background:	white;	padding:	$section-padding 0;						}
-section div	{	width:	100%;		max-width:	$column-max-width;		margin: 0 auto;	}
+section div	{	width: 100%;		max-width:	$column-max-width;		margin: 0 auto;	}
+footer		{ 	width: 100%;		padding:	10px 0;			background-color: white; height: $footer-height; bottom: 0; border-top: 2px solid $ht-blue;		}
 
-.text-content	{	padding: 0px $text-padding;			}
 
-.page-cntrcol {
-	width: 100%;		max-width:	$column-max-width;
-	margin: 0 auto;
+#page-content {
+	min-height: 100%;
+	height: auto !important;
+	margin: 0 auto  -$footer-height;	/* bottom margin is negative value of the footer's height */
+	padding: 0px 0px $footer-height;
 }
 
-.big-icon	{	font-size: 64px;	}
+#navbar-menu	{	padding-right: 30px;									}
+#footer-menu	{	margin: 0 auto;	text-align: center;						}
+#footer-sns		{	margin: 0 auto;	text-align: center; font-size: 1.5em;	}
+#copyright 		{	margin: 0 auto;	text-align: center;						}
 
-@media (max-width: 767px) {
-	.text-content { padding-left: $text-padding-wide; padding-right: $text-padding-wide; }
-}
+#footer-sns  ul,
+#footer-menu ul,
+#footer-menu li		{	display: inline;	padding-left: 0;	}
+#footer-menu li:after				{	content: ' | ';			}
+#footer-menu li:last-of-type:after	{	content: '';			}
+
