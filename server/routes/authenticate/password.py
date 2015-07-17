@@ -87,7 +87,6 @@ def render_login():
 	elif request.method == 'POST':
 		trace("POST /login form isn't valid" + str(form.errors))
 		sc_msg = "Incorrect username or password."
-
 	return make_response(render_template('login.html', form=form, sc_alert=sc_msg))
 
 
@@ -132,7 +131,7 @@ def render_password_reset_request(sc_msg=None):
 		try:
 			sc_password_recovery(form.email.data)
 			session['messages'] = "Reset instructions were sent."
-			return make_response(redirect(url_for('public.render_login')))
+			return make_response(redirect(url_for('public_routes.render_login')))
 		except NoEmailFound as nef:
 			sc_msg = nef.sanitized_msg()
 		except AccountError as ae:
