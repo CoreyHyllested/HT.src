@@ -64,8 +64,8 @@ class Referral(database.Model):
 			'ref_uuid'		: self.ref_uuid,
 			'ref_business'	: self.ref_business,
 			'ref_project'	: self.ref_project,
-			'ref_content'	: self.ref_content,
-			'ref_flags'		: "0x%08X" % self.ref_flags
+			'ref_content'	: self.ref_content
+			#'ref_flags'		: "0x%08X" % self.ref_flags
 		}
 
 
