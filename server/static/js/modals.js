@@ -47,7 +47,7 @@ function openModalLogin() {
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
 					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
-					$('#account-email').addClass('active');
+					$('#account-email').addClass('login-active');
 				}
 			},
 			error: function(xhr, status, error) {
@@ -76,7 +76,7 @@ function openModalSocial() {
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
 					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
-					$('#account-social').addClass('active');
+					$('#account-social').addClass('login-active');
 				}
 			},
 			error: function(xhr, status, error) {
@@ -89,8 +89,8 @@ function openModalSocial() {
 
 
 function modal_to_email() {
-	$('#account-social').removeClass('active');
-	$('#account-email').addClass('active');
+	$('#account-social').removeClass('login-active');
+	$('#account-email').addClass('login-active');
 }
 
 function openModalShare() {
