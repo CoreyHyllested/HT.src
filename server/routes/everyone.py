@@ -190,64 +190,6 @@ def render_search(page = 1):
 
 
 
-@public.route("/password/recover", methods=['GET', 'POST'])
-def render_password_reset_request(sc_msg=None):
-	bp = None
-	if 'uid' in session:
-		bp = Profile.get_by_uid(session['uid'])
-
-	form = RecoverPasswordForm(request.form)
-	if form.validate_on_submit():
-		print 'password_reset_request() -', form.email.data
-		try:
-			sc_password_recovery(form.email.data)
-			session['messages'] = "Reset instructions were sent."
-			return make_response(redirect(url_for('public.render_login')))
-		except NoEmailFound as nef:
-			sc_msg = nef.sanitized_msg()
-		except AccountError as ae:
-			sc_msg = ae.sanitized_msg()
-			print ae
-	return render_template('password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
-
-
-
-
-@public.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
-def render_password_reset_page(challengeHash):
-	form = NewPasswordForm(request.form)
-
-	url = urlparse.urlparse(request.url)
-	#Extract query which has email and uid
-	query = urlparse.parse_qs(url.query)
-	if (query):
-		email  = query['email'][0]
-
-	accounts = Account.query.filter_by(sec_question=(str(challengeHash))).all()
-	if (len(accounts) != 1 or accounts[0].email != email):
-			trace('Hash and/or email didn\'t match.')
-			return redirect('/login')
-
-	if form.validate_on_submit():
-		account = accounts[0]
-		account.set_sec_question("")
-		account.pwhash = generate_password_hash(form.rec_input_newpass.data)
-		trace("hash " + account.pwhash)
-
-		try:
-			database.session.add(account)
-			database.session.commit()
-			sc_send_password_changed_confirmation(email)
-		except Exception as e:
-			trace(type(e) + ' ' + str(e))
-			database.session.rollback()
-		return redirect('/login')
-	elif request.method == 'POST':
-		trace("POST New password isn't valid " + str(form.errors))
-	return render_template('password-reset.html', form=form)
-
-
-
 @public.route("/email/<operation>/<data>", methods=['GET','POST'])
 def sc_email_operations(operation, data):
 	print "sc_email_operations: begin", operation

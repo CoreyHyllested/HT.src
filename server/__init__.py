@@ -152,7 +152,9 @@ def server_init_routes(server):
 	Compress(sc_server)
 
 	from routes.api import list, project, referral
-	from routes import authentication, everyone, users, meta, errors
+	from routes.authenticate import password
+	from routes.authenticate import facebook, stripe
+	from routes import everyone, users, meta, errors
 	from routes import public_routes
 	from routes import auth_routes
 	from routes import meta_routes
