@@ -1,6 +1,8 @@
+/* (c) 2015 Soulcrafting */
+
 $black: #000;
-$white: rgba(255,255,255, 1);
-$white-80: rgba(255,255,255,.8);
+$white:		rgba(255,255,255, 1);
+$white-80:	rgba(255,255,255,.8);
 
 $font-color-lead: #999999;
 $icon-gray: #999999;
@@ -8,8 +10,9 @@ $icon-gray: #999999;
 $ht-blue: #29abe2;
 
 $darkgreen: rgba(0, 100, 0, .8);
-$gray: darkgray;
+$gray: darkgray;		//eh
 
+// todo drop bg.  Not necessarily backgrounded
 $bg-img-medpatio:	url('/static/img/cover-medpatio.jpg');
 $bg-img-bkitchen:	url('/static/img/ex-beach-kitchen.jpg');
 $bg-img-wkitchen:	url('/static/img/ex-white-kitchen.jpg');
@@ -32,26 +35,4 @@ $twittr-btn-color-hover: #2795e9;
 $google-btn-color-hover: #c23321;
 $facebk-btn-color-hover: #2d4373;
 
-/*
-$dark-gray: #282828;
-$medium-gray: #424242;
-$charcoal-gray: #6f6f6f;
-$light-gray: #e8e8e8;
-$cloudy-gray: #f0f0f0;
-$almost-white: #fcfcfc;
-$dusky-blue: #C5CED1;
-$dark-blue: #212933;
-$aqua: #2ba6cb;
-$alert-ok: #43ac6a;
-$alert-ok-border: #3a945b;
-
-$red: hsla(358, 74%, 64%, 1); // #e75f63;
-$red-darker: hsla(358, 74%, 44%, 1);
-$orange: hsla(26, 85%, 65%, 1);
-$orange-darker: hsla(26, 85%, 55%, 1);
-$orange-brighter: hsla(26, 85%, 75%, 1);
-$teal: hsla(180, 30%, 40%, 1);
-$teal-darker: hsla(180, 30%, 27%, 1);
-$teal-darkest: hsla(180, 30%, 12%, 1);
-$maroon: #773339;
-*/
+/* $red: hsla(358, 74%, 64%, 1); // #e75f63; */
