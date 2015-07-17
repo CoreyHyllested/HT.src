@@ -31,6 +31,4 @@ meta_routes = Blueprint('meta_routes', __name__)
 api_routing = Blueprint('routing_api', __name__)
 
 sc_users = auth_routes
-sc_ebody = public_routes
-
 print 'loading', __name__

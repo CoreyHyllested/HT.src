@@ -12,16 +12,17 @@
 #################################################################################
 
 
-from flask.ext.sqlalchemy import Pagination
 from server import database
-from server.routes import sc_ebody, api_routing as api
+from server.routes import public_routes	as public
+from server.routes import api_routing   as api
 from server.models import * 
-from server.controllers import *
+from server.controllers   import *
+from flask.ext.sqlalchemy import Pagination
 
 
-@sc_ebody.route('/index.html')
-@sc_ebody.route('/index')
-@sc_ebody.route('/', methods=['GET', 'POST'])
+@public.route('/index.html')
+@public.route('/index')
+@public.route('/', methods=['GET', 'POST'])
 def render_landingpage():
 	bp = None
 	if 'uid' in session:
@@ -33,8 +34,8 @@ def render_landingpage():
 
 
 
-@sc_ebody.route('/products/furniture/', methods=['GET', 'POST'])
-@sc_ebody.route('/products/furniture',  methods=['GET', 'POST'])
+@public.route('/products/furniture/', methods=['GET', 'POST'])
+@public.route('/products/furniture',  methods=['GET', 'POST'])
 def render_product_furniture():
 	bp = None
 	if 'uid' in session:
@@ -91,8 +92,8 @@ def render_dmca():
 
 
 
-@sc_ebody.route('/about/', methods=['GET', 'POST'])
-@sc_ebody.route('/about',  methods=['GET', 'POST'])
+@public.route('/about/', methods=['GET', 'POST'])
+@public.route('/about',  methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
@@ -101,9 +102,9 @@ def render_about_page():
 
 
 
-@sc_ebody.route('/terms/', 		  methods=['GET'])
-@sc_ebody.route('/terms', 		  methods=['GET'])
-@sc_ebody.route('/terms/service', methods=['GET'])
+@public.route('/terms/', 		  methods=['GET'])
+@public.route('/terms', 		  methods=['GET'])
+@public.route('/terms/service', methods=['GET'])
 def render_terms_service_page():
 	bp = None
 	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
@@ -111,7 +112,7 @@ def render_terms_service_page():
 
 
 
-@sc_ebody.route('/terms/privacy', methods=['GET'])
+@public.route('/terms/privacy', methods=['GET'])
 def render_terms_privacy_page():
 	bp = None
 	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
@@ -189,7 +190,7 @@ def render_search(page = 1):
 
 
 
-@sc_ebody.route("/password/recover", methods=['GET', 'POST'])
+@public.route("/password/recover", methods=['GET', 'POST'])
 def render_password_reset_request(sc_msg=None):
 	bp = None
 	if 'uid' in session:
@@ -201,7 +202,7 @@ def render_password_reset_request(sc_msg=None):
 		try:
 			sc_password_recovery(form.email.data)
 			session['messages'] = "Reset instructions were sent."
-			return make_response(redirect(url_for('sc_ebody.render_login')))
+			return make_response(redirect(url_for('public.render_login')))
 		except NoEmailFound as nef:
 			sc_msg = nef.sanitized_msg()
 		except AccountError as ae:
@@ -212,7 +213,7 @@ def render_password_reset_request(sc_msg=None):
 
 
 
-@sc_ebody.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
+@public.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
 def render_password_reset_page(challengeHash):
 	form = NewPasswordForm(request.form)
 
@@ -247,7 +248,7 @@ def render_password_reset_page(challengeHash):
 
 
 
-@sc_ebody.route("/email/<operation>/<data>", methods=['GET','POST'])
+@public.route("/email/<operation>/<data>", methods=['GET','POST'])
 def sc_email_operations(operation, data):
 	print "sc_email_operations: begin", operation
 	print "sc_email_operations: data: ", data
@@ -280,8 +281,8 @@ def sc_email_operations(operation, data):
 
 
 
-#@sc_ebody.route("/share/", methods=['GET', 'POST'])
-#@sc_ebody.route("/share",	methods=['GET', 'POST'])
+#@public.route("/share/", methods=['GET', 'POST'])
+#@public.route("/share",	methods=['GET', 'POST'])
 def render_share_page():
 	print 'render_share_page()'
 	back = request.values.get('back')
