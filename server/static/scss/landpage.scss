@@ -9,19 +9,6 @@
 #referred-close:before	{ content:"\00D7"; }															/* X to close. */
 
 
-#masthead {
-	position: relative;
-	background-image: url('/static/img/cover.jpg');
-	background-position-y: 60%;
-	font-size: 20px;	/* make this a default */
-	height:	70vh;
-	min-height: 400px;
-}
-#masthead-text  	{	top: 25%;	}
-#masthead-title 	{	font-size: 1.4em;	font-weight: 600;	}
-#masthead-btns		{	letter-spacing: 2px;	}	/* impact just the buttons */
-
-
 #btn-fbook			{ background: $facebk-btn-color;		}
 #btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
 #btn-email			{ background: $signup-btn-color;		}
@@ -48,7 +35,6 @@
 .value	 		{	display: inline-block;	padding: 10px 20px;		vertical-align: middle;	}
 .value-title	{	position: static;		text-align: center; }
 .value-panel	{ }
-
 
 
 .btn-masthead {
