@@ -13,6 +13,7 @@ if (ENV_CONFIG == 'devel_money'):
 
 # used by shell
 def make_shell_ctx():
+	# access state with app.attr
 	return dict(app=application)
 
 
@@ -43,4 +44,8 @@ def test():
 
 
 if __name__ == "__main__":
-	manager.run()
+	exec_app = manager.run
+
+	# AWS-EB starts the server w/ no parameters.
+	if (len(sys.argv) < 2): exec_app = runserver
+	exec_app()
