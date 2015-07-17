@@ -27,6 +27,7 @@ from server.controllers import *
 @api.route('/business/id/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
 	print 'api_business(%s)' % (bus_id)
+	# use Business.get_by_id()
 	business = Business.get_json_index().get(bus_id, { "id" : "Not Found"})
 	return make_response(jsonify(business), 200)
 

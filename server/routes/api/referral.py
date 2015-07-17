@@ -45,7 +45,8 @@ def api_referral_view(ref_id):
 def api_referral_create():
 	print 'api_referral_create(): enter'
 	bus_id	= request.values.get('business')
-	content = request.values.get('referral')
+	ref_id	= request.values.get('referral')
+	content = request.values.get('content')
 	project = request.values.get('projects')
 
 #	if form.validate_on_submit():
@@ -54,12 +55,13 @@ def api_referral_create():
 			# business may not exist.
 			business = Business.get_by_id(bus_id)
 			if (not business):
-				print 'business doesnt exist - import business to db.'
-				business = Business.import_from_json(bus_id, bus_json)
+				print 'business doesn\'t exist - import it.'
+				business = Business.import_from_json(bus_id)
 
-			print 'creating referral'
-			referral = Referral(business.bus_id, content, project)
+			projects = ','.join([ x.strip().lower() for x in request.values.get('projects').split(',') ])
+			referral = Referral(business.bus_id, content, projects)
 			database.session.add(referral)
+			database.session.commit()
 
 			session_referrals = session.get('referrals', {})
 			session_referrals[referral.ref_uuid] = referral
@@ -68,7 +70,7 @@ def api_referral_create():
 			database.session.rollback()
 			print type(e), e
 			return e.api_response(request.method)
-		return make_response(jsonify(created=referral.serialize), 200)
+		return make_response(jsonify(referral.serialize), 200)
 
 	missing = ''
 	if not (profile): missing = missing + ' (profile) '
@@ -76,16 +78,30 @@ def api_referral_create():
 	return make_response(jsonify(missing=missing), 400)
 
 
+
 @sc_server.csrf.exempt
 @api.route('/referral/<string:ref_id>/update/', methods=['POST'])
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
 def api_referral_update(ref_id):
 	referral	= Referral.get_by_refid(ref_id)
-	operation	= request.values.get('operation')
-	if (not referral):	return make_response(jsonify(request='missing valid resource'),  400)
-	if (not operation): return make_response(jsonify(request='missing valid operation'), 400)
+	bus_id	= request.values.get('business')
+	content = request.values.get('content')
+	project = request.values.get('projects')
 
-	return make_response(jsonify(project='found'), 200)
+	if (not referral): return make_response(jsonify(request='missing valid resource'), 400)
+	referral.ref_business	= bus_id
+	referral.ref_content	= content
+	referral.ref_project	= ','.join([ x.strip().lower() for x in project.split(',') ])
+
+	try:
+		database.session.add(referral)
+		database.session.commit()
+	except Exception as e:
+		database.session.rollback()
+		print type(e), e
+		return e.api_response(request.method)
+
+	return make_response(jsonify(referral.serialize), 200)
 
 
 
@@ -102,7 +118,7 @@ def test_reflist_valid(ref_id):
 
 	referral.set_valid()
 	return make_response(jsonify(flags=referral.ref_flags), 200)
-	return make_response(jsonify(referral=referral.serialize), 200)
+	return make_response(jsonify(referral.serialize), 200)
 
 
 @test.route('/referral/<string:ref_id>/invalid/',	methods=['GET','POST'])
