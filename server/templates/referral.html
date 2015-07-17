@@ -22,7 +22,7 @@
 				<!--div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div-->
 				<!--div id='pro-addr' class='ff value'></div--> <!--div id='pro-phone' class='ff contact'></div-->
 
-				<div id='profile-reference'>
+				<div id='profile-referral' data-id=''>
 					<div class='ff header'>Why do you recommend <span id='pro-name'>them</span>? (<span id="refer-why-nr">200</span> chars left.)</div>
 					<textarea id='refer-why' type="textarea" class="ff"
 							placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time."
@@ -38,7 +38,7 @@
 
 				<div>
 					<input id='btn-cancel' 			type="button" class='btn-referral whiteButton' value="Cancel"></input>
-					<input id='btn-save-referral'	type="button" class='btn-referral blueButton'  value="Save Reference"></input>
+					<input id='btn-save-referral'	type="button" class='btn-referral blueButton'  value="Save Referral"></input>
 				</div>
 			</div>
 		</div>
@@ -132,20 +132,32 @@ $(document).ready(function () {
 
 	function save_referral(evt) {
 		fd = {};
+		fd.csrf_token	= "{{ csrf_token() }}";
 		fd.business	= $('#profile-card').data('id');
-		fd.referral	= $('#refer-why').val();
-		fd.projects	= $('#refer-proj').val().split(',');
-		fd.projects	= fd.projects.concat($('.bootstrap-tagsinput .twitter-typeahead .tt-input').first().val());
+		fd.referral	= $('#profile-referral').attr('data-id');
+		fd.content	= $('#refer-why').val();
+		fd.projects	= $('#refer-proj').val();
+		//fd.projects	= fd.projects.concat($('.bootstrap-tagsinput .twitter-typeahead .tt-input').first().val());
 
+		console.log('save_referral');
 		console.log(fd.business);
 		console.log(fd.referral);
+		console.log(fd.content);
 		console.log(fd.projects);
 
-		$.ajax({	url		: "/referral/create",
+		referral_uri = "/referral/create";
+		if (fd.referral != "") {
+			console.log('whoa ' +  fd.referral);
+			referral_uri = "/referral/" + fd.referral + "/update";
+		}
+
+		$.ajax({	url		: referral_uri, 
 					type	: "POST",
 					data	: fd,
 					success : function(data) {
+						console.log(data);
 						html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
+						$('#profile-referral').attr('data-id', data.ref_uuid);
 						uid	 = $(html).attr('id');
 						setTimeout(feedback_fade,	2500, uid);
 						setTimeout(feedback_remove, 5000, uid);
