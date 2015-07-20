@@ -86,8 +86,8 @@
 
 .ff			{	display: inline-block;	margin: 5px 0;			}
 .ff.textarea{	width: 100%;	}
-.ff.header	{	width: 100%;	font-size: .7em;	font-weight: 600;	vertical-align: top;	}
-.ff.name	{	width: 12%;		font-size: .8em;	font-weight: 600;	vertical-align: top; 	}
+.ff.header	{	width: 100%;	font-size: .7em;	font-weight: 600;	vertical-align: top;	padding-left: 3px;	}
+.ff.name	{	width: 12%;		font-size: .8em;	font-weight: 600;	vertical-align: top; 		}
 .ff.value	{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
 .ff.contact {	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
 
