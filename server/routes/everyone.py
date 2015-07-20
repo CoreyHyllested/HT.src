@@ -237,7 +237,7 @@ def render_share_page():
 @sc_server.csrf.exempt
 @api.route("/share/email", methods=['POST'])
 def api_share_via_email():
-	fragment	= render_template('fragment_share-email.html')
+	fragment	= render_template('fragments/share-email.html')
 	resp_code	= 200
 	resp_mesg	= 'Done'
 	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
