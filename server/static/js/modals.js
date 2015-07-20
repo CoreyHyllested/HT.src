@@ -1,5 +1,7 @@
+version = 1.01;
+
 $(document).ready(function () {
-	console.log('modals.js: ready');
+	console.log('modals.js: v'+version);
 	$('#modal-close').click(function (e)	{ closeAlertWindow(); } );
 	$('#modal-dismiss').click(function (e)	{ closeAlertWindow(); } );
 	$('.dismiss-modal').click(function (e)	{ closeAlertWindow(); } );
@@ -41,7 +43,7 @@ function openModalLogin() {
 			success : function(response) {
 				console.log(response);
 				if (response.embed) {
-					console.log(response.embed);
+					//console.log(response.embed);
 					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
