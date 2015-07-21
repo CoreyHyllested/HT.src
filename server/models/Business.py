@@ -28,7 +28,6 @@ from pprint import pprint as pp
 class Business(database.Model):
 	__tablename__ = "business"
 	bus_id		= Column(String(40), primary_key=True, index=True)
-	#bus_address	= Column(String(40), ForeignKey('location.location_id'), nullable=True)
 	bus_name	= Column(String(99), nullable=False)
 	bus_state	= Column(Integer,	 nullable=False, default = 0)
 
@@ -44,11 +43,10 @@ class Business(database.Model):
 	created = Column(DateTime(), nullable=False, default = "")
 
 
-	def __init__(self, name, location_id, phone=None, email=None, website=None, id=str(uuid.uuid4())):
-		print 'Business: init \'' + '\''
+	def __init__(self, name, phone=None, email=None, website=None, id=str(uuid.uuid4())):
+		print 'Business: creating (%s)' % (str(name))
 		self.bus_id		 = id
 		self.bus_name	 = name
-		#self.bus_address = location_id
 		self.bus_website = website
 
 		self.bus_phone 	 = phone
@@ -67,7 +65,6 @@ class Business(database.Model):
 		return {
 			'business_id'	: self.bus_id,
 			'business_name'	: self.bus_name,
-#			'business_addr'	: self.bus_address
 		}
 
 
@@ -108,7 +105,6 @@ class Business(database.Model):
 		contact_email = emails[0] if emails else None
 
 		business = Business(json_object['business_name'],
-							location.location_id,
 							phone=contact_phone,
 							email=contact_email,
 							website=website,
@@ -125,7 +121,6 @@ class Business(database.Model):
 			database.session.rollback()
 			print type(e), e
 			return None
-
 		return business
 
 
