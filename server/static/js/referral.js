@@ -1,4 +1,4 @@
-var referral_version = 0.60;
+var referral_version = 0.61;
 
 function clear_profile() {
 	$('#profile-card').addClass('no-display');
@@ -40,13 +40,12 @@ function modalCreateBusiness(fd) {
 			success : function(response) {
 				console.log(response);
 				if (response.embed) {
-					console.log(response.embed);
 					$('#modal-message').html(response.embed);
 
 					$('#overlay').addClass('overlay-dark');
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Create'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton save-business' value='Create'></input>");
 				}
 			},
 			error: function(xhr, status, error) {
@@ -222,7 +221,7 @@ $(document).ready(function () {
 	$('#invite_emails').keydown(function(event) {
 		clear_profile();
 	});
-	$('#modal-buttons').on('click', '.blueButton', save_business_clicked);
+	$('#modal-buttons').on('click', '.save-business', save_business_clicked);
 	$('#btn-save-referral').click(save_referral);
 	$('#invite_emails').focus(clear_business_addr);
 
