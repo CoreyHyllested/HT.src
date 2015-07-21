@@ -1,6 +1,6 @@
 <div class='create-business'>
 	<h3>Who do you Trust?</h3>
-	<p>We need their name (got it, <span id=trusted-name>{{name}}</span>) and at least one way to contact them.</p>
+	<p>We need their name (got it, <span id=trusted-name>{{form.name.data}}</span>) and at least one way to contact them.</p>
 	<form id='create-business-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
 		{{form.name(type='name', placeholder="Trusted Entity's Name")}}
