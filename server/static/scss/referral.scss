@@ -2,12 +2,12 @@
 @import 'forms';
 
 
-#invite_emails		{	display: inline-block;	}
+#invite_emails		{	display: inline-block;	border-radius: 0px; 	}
+#refer-title		{	padding-left: 5px;	text-align: left;	}
 #refer-professional	{	display: inline-block;	width: 69%;			padding: 0 5px;		max-width: 660px;	background-color: white;	vertical-align: top;	}
 #refer-explanation	{	display: inline-block;	width: 28%;			padding: 20px 5px;	max-width: 280px; 	background-color: white;	}
 #feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
 #btn-save-referral	{	width:	120px;			}
-#refer-title		{	padding-left: 4px;	text-align: left;	}
 
 #referral-profile {
 	padding: 25px 0 10px;
@@ -41,6 +41,7 @@
 		margin: 5px auto;
 		width:	66%;
  }
+.bootstrap-tagsinput 			{	box-shadow: none !important;	border: 1px #e1e8ed solid !important;	border-radius: 0px !important;	}
 .bootstrap-tagsinput .tt-menu	{	width: 350px;	}
 
 .pro-suggestion	{
