@@ -49,6 +49,13 @@ class LoginForm(Form):
 	passw	= PasswordField('Password', [validators.Required()])
 
 
+class NewTrustedEntityForm(Form):
+	name	= TextField('Name',		[validators.Required(), validators.length(min=4)])
+	addr	= TextField('Address',	[validators.Optional()])
+	site	= TextField('Website',	[validators.Optional()])
+	phone	= TextField('Phone',	[validators.Optional()])
+	email	= TextField('Email',	[validators.Optional(), validators.Email()])
+
 
 class ProjectForm(Form):
 	proj_id		= HiddenField('id')
@@ -61,6 +68,9 @@ class ProjectForm(Form):
 	proj_contact	= TextField('Contact', [validators.Required()])
 
 
+class ReferralForm(Form):
+	refer_why	= TextField('Name', 	[validators.Required(), validators.length(min=1, max=200)])
+	refer_proj	= TextField('Proj', [validators.Optional(), validators.length(min=1, max=120)])
 
 
 class InviteForm(Form):

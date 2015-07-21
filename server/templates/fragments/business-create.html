@@ -1,0 +1,8 @@
+<div class='request'>
+	<h3>Who do you Trust?</h3>
+	<p>We need their name (got it, <span id=trusted-name>{{name}}</span>) and at least one way to contact them.</p>
+	{{form.hidden_tag()}}
+	{{form.site(type='text', autocomplete='off', placeholder="http://website")}}
+	{{form.site(type='phone', autocomplete='off', placeholder="(303) 720-1111")}}
+	{{form.site(type='email', autocomplete='off', placeholder="EmailAddress")}}
+</div>

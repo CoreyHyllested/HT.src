@@ -1,4 +1,120 @@
-var referral_version = 0.55;
+var referral_version = 0.60;
+
+function clear_profile() {
+	$('#profile-card').addClass('no-display');
+	$('#refer-explanation').addClass('no-display');
+}
+
+function save_business_clicked() {
+	fd = new FormData();
+	fd.append("csrf_token", $('#csrf_token').val());
+	fd.append("name", 'Corey h');
+	fd.append("email", 'corey.hyllested@gmail.com');
+	fd.append("phone", '734653');
+	submit_new_business(fd);
+}
+
+function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
+function feedback_remove(id)	{	$('#'+id).remove();			}
+
+function modal_create_business() {
+	fd = {};
+	name = $('#refer-professional .form-control.tt-input').val();
+	console.log('name = ' + name);
+	fd.name = name;
+	fd.csrf_token = $('#csrf_token').val();
+	modalCreateBusiness(fd);
+
+	return false;
+}
+
+
+function modalCreateBusiness(fd) {
+	console.log('create business ' + fd.name);
+	console.log(fd);
+	$.ajax({ url	: '/business/create?name=' + fd.name,
+			type	: 'GET',
+			processData: false,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				if (response.embed) {
+					console.log(response.embed);
+					$('#modal-message').html(response.embed);
+
+					$('#overlay').addClass('overlay-dark');
+					$('#modal-wrap').addClass('modal-active');
+					$('#modal-window').addClass('window-alert');
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Create'></input>");
+				}
+			},
+			error: function(xhr, status, error) {
+				console.log(['ajax failure', xhr]);
+				rc = JSON.parse(xhr.responseText);
+			}
+	});
+	return false;
+}
+
+function submit_new_business(fd) {
+	console.log('submitting new business ' + fd.name);
+	console.log(fd);
+	$.ajax({ url	: '/business/create',
+			type	: "POST",
+			data	: fd,
+			processData: false,
+			contentType: false,
+			success : function(response) {
+				$('#modal-message').html(response.embed);
+
+				$('#overlay').addClass('overlay-dark');
+				$('#modal-wrap').addClass('modal-active');
+			},
+			error	: function(data) {
+				console.log("Oops, AJAX Error.");
+				console.log(data);
+			}
+	});
+}
+
+function save_referral(evt) {
+	fd = {};
+	fd.csrf_token	= "{{ csrf_token() }}";
+	fd.business	= $('#profile-card').data('id');
+	fd.referral	= $('#referral-profile').attr('data-id');
+	fd.content	= $('#refer-why').val();
+	fd.projects	= $('#refer-proj').val();
+
+	console.log('save_referral');
+	console.log(fd.business);
+	console.log(fd.referral);
+	console.log(fd.content);
+	console.log(fd.projects);
+
+	referral_uri = "/referral/create";
+	if (fd.referral != "") {
+		referral_uri = "/referral/" + fd.referral + "/update";
+	}
+
+	$.ajax({	url		: referral_uri,
+				type	: "POST",
+				data	: fd,
+				success : function(data) {
+					console.log(data);
+					html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
+					$('#referral-profile').attr('data-id', data.ref_uuid);
+					uid	 = $(html).attr('id');
+					setTimeout(feedback_fade,	2500, uid);
+					setTimeout(feedback_remove, 5000, uid);
+				},
+				error	: function(data) {
+					console.log("Oops, AJAX Error.");
+					console.log(data);
+				}
+	});
+
+}
+
 
 $(document).ready(function () {
 	console.log('referral.js: v' + referral_version);
@@ -33,13 +149,12 @@ $(document).ready(function () {
 		source: pro_finder,
 		templates: {
 			notFound: function(q) {
-				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:alert(\'implement me\');">Add this business?</a></div>';
+				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:modal_create_business();">Add this business?</a></div>';
 			},
 			pending: '<div>Searching...</div>',
 			suggestion: Handlebars.compile('<div class="pro-suggestion" data-id={{id}}>{{name}} <span class="pro-suggestion-addr">{{addr}}</span></div>')
 		}
 	});
-
 
 	function get_profile(fd) {
 		$.ajax({	url		: "/business/id/" + fd.profile_id,
@@ -87,51 +202,7 @@ $(document).ready(function () {
 		});
 	}
 
-	function clear_profile() {
-		$('#profile-card').addClass('no-display');
-		$('#refer-explanation').addClass('no-display');
-	}
 
-	function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
-	function feedback_remove(id)	{	$('#'+id).remove();			}
-
-	function save_referral(evt) {
-		fd = {};
-		fd.csrf_token	= "{{ csrf_token() }}";
-		fd.business	= $('#profile-card').data('id');
-		fd.referral	= $('#referral-profile').attr('data-id');
-		fd.content	= $('#refer-why').val();
-		fd.projects	= $('#refer-proj').val();
-
-		console.log('save_referral');
-		console.log(fd.business);
-		console.log(fd.referral);
-		console.log(fd.content);
-		console.log(fd.projects);
-
-		referral_uri = "/referral/create";
-		if (fd.referral != "") {
-			referral_uri = "/referral/" + fd.referral + "/update";
-		}
-
-		$.ajax({	url		: referral_uri,
-					type	: "POST",
-					data	: fd,
-					success : function(data) {
-						console.log(data);
-						html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
-						$('#referral-profile').attr('data-id', data.ref_uuid);
-						uid	 = $(html).attr('id');
-						setTimeout(feedback_fade,	2500, uid);
-						setTimeout(feedback_remove, 5000, uid);
-					},
-					error	: function(data) {
-						console.log("Oops, AJAX Error.");
-						console.log(data);
-					}
-		});
-
-	}
 
 	function clear_business_addr( event ) {
 		name = $('#invite_emails').val();
@@ -146,7 +217,7 @@ $(document).ready(function () {
 	$('#invite_emails').keydown(function(event) {
 		clear_profile();
 	});
-
+	$('#modal-buttons').on('click', '.blueButton', save_business_clicked);
 	$('#btn-save-referral').click(save_referral);
 	$('#invite_emails').focus(clear_business_addr);
 

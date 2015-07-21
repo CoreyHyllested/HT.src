@@ -33,9 +33,18 @@ def api_business_read(bus_id):
 
 
 
+@api.route('/business/create', methods=['GET'])
+def render_business_create():
+	resp_code	= 200
+	resp_mesg	= 'Done'
+	trustent	= NewTrustedEntityForm(request.form)
+	fragment	= render_template('/fragments/business-create.html', form=trustent)
+	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
+
+
 @sc_server.csrf.exempt
 @api.route('/business/create', methods=['POST'])
-def api_business_create():
+def api_business_create_post():
 	print 'api_business_create(): enter'
 	return make_response(jsonify(functionality='Undefined'), 400)
 

@@ -72,7 +72,7 @@ function openModalSocial() {
 			success : function(response) {
 				console.log(response);
 				if (response.embed) {
-					console.log(response.embed);
+//					console.log(response.embed);
 					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
@@ -108,7 +108,7 @@ function openModalShare() {
 			success : function(response) {
 				console.log(response);
 				if (response.embed) {
-					console.log(response.embed);
+//					console.log(response.embed);
 					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
