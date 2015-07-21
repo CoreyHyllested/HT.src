@@ -8,19 +8,20 @@ function clear_profile() {
 function save_business_clicked() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
-	fd.append("name", 'Corey h');
-	fd.append("email", 'corey.hyllested@gmail.com');
-	fd.append("phone", '734653');
+	fd.append("name", $('#name').val());
+	fd.append("email", $('#email').val());
+	fd.append("phone", $('#phone').val());
+
 	submit_new_business(fd);
 }
 
 function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
 function feedback_remove(id)	{	$('#'+id).remove();			}
 
+
 function modal_create_business() {
 	fd = {};
 	name = $('#refer-professional .form-control.tt-input').val();
-	console.log('name = ' + name);
 	fd.name = name;
 	fd.csrf_token = $('#csrf_token').val();
 	modalCreateBusiness(fd);
@@ -45,7 +46,7 @@ function modalCreateBusiness(fd) {
 					$('#overlay').addClass('overlay-dark');
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Create'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Create'></input>");
 				}
 			},
 			error: function(xhr, status, error) {
@@ -115,29 +116,85 @@ function save_referral(evt) {
 
 }
 
+pro_finder = new Bloodhound({
+	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	remote: {
+		url: '/business/search/%QUERY',
+		wildcard: '%QUERY'
+	}
+});
+
+projects = new Bloodhound({
+	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+	queryTokenizer: Bloodhound.tokenizers.whitespace,
+	prefetch: {
+	url: "/projects.json",
+		filter: function(list) {
+			return $.map(list, function(project_name) { return { 'name' : project_name }; });
+		}
+	}
+});
+
+
+function get_profile(fd) {
+	$.ajax({	url		: "/business/id/" + fd.profile_id,
+				type	: "POST",
+				data	: fd,
+				success : function(data) {
+					$('#refer-explanation').removeClass('no-display');
+					$('#profile-card').removeClass('no-display');
+					$('#profile-card').attr('data-id', fd.profile_id);
+
+					busname = data.business_name
+					if (data.business_website) {
+						busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
+					}
+					$('#pro-name').html(busname);
+
+					contact_email = ''
+					console.log(data);
+					data.business_emails.forEach(function (elem, idx) {
+						contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
+					});
+					$('#pro-email').html(contact_email);
+
+//						contact_phone = ''
+//						data.business_phones.forEach(function (elem, idx) { contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>' });
+//						$('#pro-phone').html(contact_phone);
+					$('#pro-addr').html(data.address.street + ' ' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
+
+
+					sz = data.categories[0].factual.length;
+					category = ''
+					data.categories[0].factual.forEach(function (elem, idx) {
+						if (idx == 0) { return; }
+						category = category + elem;
+						if (idx < data.categories[0].factual.length - 1) {
+							category = category + " » ";
+						}
+					});
+					$('#pro-category').html(category);
+					$('#refer-why').focus();
+				},
+				error	: function(data) {
+					console.log("Oops, AJAX Error.");
+				}
+	});
+}
+
+
+function clear_business_addr( event ) {
+	name = $('#invite_emails').val();
+	idx = name.lastIndexOf(" | ")
+	if (idx == -1) { return; }
+	strng = name.substring(0, name.lastIndexOf(" | "));
+	$('#invite_emails').val(strng);
+}
+
 
 $(document).ready(function () {
 	console.log('referral.js: v' + referral_version);
-
-	pro_finder = new Bloodhound({
-		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-		queryTokenizer: Bloodhound.tokenizers.whitespace,
-		remote: {
-			url: '/business/search/%QUERY',
-			wildcard: '%QUERY'
-		}
-	});
-
-	projects = new Bloodhound({
-		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
-		queryTokenizer: Bloodhound.tokenizers.whitespace,
-		prefetch: {
-		url: "/projects.json",
-			filter: function(list) {
-				return $.map(list, function(project_name) { return { 'name' : project_name }; });
-			}
-		}
-	});
 
 	$('#refer-professional .typeahead').typeahead({
 		hint: true,
@@ -156,61 +213,9 @@ $(document).ready(function () {
 		}
 	});
 
-	function get_profile(fd) {
-		$.ajax({	url		: "/business/id/" + fd.profile_id,
-					type	: "POST",
-					data	: fd,
-					success : function(data) {
-						$('#refer-explanation').removeClass('no-display');
-						$('#profile-card').removeClass('no-display');
-						$('#profile-card').attr('data-id', fd.profile_id);
-
-						busname = data.business_name
-						if (data.business_website) {
-							busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
-						}
-						$('#pro-name').html(busname);
-
-						contact_email = ''
-						console.log(data);
-						data.business_emails.forEach(function (elem, idx) {
-							contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
-						});
-						$('#pro-email').html(contact_email);
-
-//						contact_phone = ''
-//						data.business_phones.forEach(function (elem, idx) { contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>' });
-//						$('#pro-phone').html(contact_phone);
-						$('#pro-addr').html(data.address.street + ' ' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
-
-
-						sz = data.categories[0].factual.length;
-						category = ''
-						data.categories[0].factual.forEach(function (elem, idx) {
-							if (idx == 0) { return; }
-							category = category + elem;
-							if (idx < data.categories[0].factual.length - 1) {
-								category = category + " » ";
-							}
-						});
-						$('#pro-category').html(category);
-						$('#refer-why').focus();
-					},
-					error	: function(data) {
-						console.log("Oops, AJAX Error.");
-					}
-		});
-	}
 
 
 
-	function clear_business_addr( event ) {
-		name = $('#invite_emails').val();
-		idx = name.lastIndexOf(" | ")
-		if (idx == -1) { return; }
-		strng = name.substring(0, name.lastIndexOf(" | "));
-		$('#invite_emails').val(strng);
-	}
 
 	projects.initialize();
 
