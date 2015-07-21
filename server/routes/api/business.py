@@ -26,26 +26,44 @@ from server.controllers import *
 @api.route('/business/id/<string:bus_id>/', methods=['POST'])
 @api.route('/business/id/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
-	print 'api_business(%s)' % (bus_id)
-	# use Business.get_by_id()
-	business = Business.get_json_index().get(bus_id, { "id" : "Not Found"})
-	return make_response(jsonify(business), 200)
+	business = Business.get_by_id(bus_id, check_json=True)
+	if (business): return make_response(jsonify(business.serialize_id), 200)
 
+	return make_response(jsonify(id='Business,' + bus_id + ', not found'), 400)
 
 
 @api.route('/business/create', methods=['GET'])
 def render_business_create():
 	resp_code	= 200
 	resp_mesg	= 'Done'
-	trustent	= NewTrustedEntityForm(request.form)
+	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
 	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
 
 
 @sc_server.csrf.exempt
-@api.route('/business/create', methods=['POST'])
+@api.route('/business/create/', methods=['POST'])
+@api.route('/business/create',  methods=['POST'])
 def api_business_create_post():
-	print 'api_business_create(): enter'
+	form = NewTrustedEntityForm(request.form)
+	if form.validate_on_submit():
+		print 'name', form.name.data
+		print 'site', form.site.data
+		print 'email', form.email.data
+		print 'phone', form.phone.data
+		business = Business(form.name.data, phone=form.phone.data, email=form.email.data, website=form.site.data)
+		try:
+			database.session.add(business)
+			database.session.commit()
+			print 'committed', business
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
+			return make_response(jsonify(error=str(e)), 500)
+
+		return make_response(jsonify(success=True, business=business.serialize), 200)
+	elif request.method == 'POST':
+		print 'render_b_create: invalid ' + str(form.errors)
 	return make_response(jsonify(functionality='Undefined'), 400)
 
 
@@ -68,7 +86,13 @@ def api_business_search(identifier):
 	identifier = identifier.strip().lower()
 	identphone = re.sub('[() \-,.]', '', identifier)
 
+	fromdb = Business.search(identifier)
 	response = {}
+
+	for hit in fromdb:
+		response[hit.bus_id] = { "id": hit.bus_id, "name": hit.bus_name, "addr" : '', "combined" : hit.bus_name }
+		print response[hit.bus_id]
+
 	for pro in business_idx.values():
 		if (len(response) > 5): break
 
