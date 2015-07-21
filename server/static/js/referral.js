@@ -9,6 +9,7 @@ function save_business_clicked() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 	fd.append("name", $('#name').val());
+	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
 	fd.append("phone", $('#phone').val());
 
