@@ -43,7 +43,7 @@ class Business(database.Model):
 	created = Column(DateTime(), nullable=False, default = "")
 
 
-	def __init__(self, name, phone=None, email=None, website=None, id=str(uuid.uuid4())):
+	def __init__(self, name, phone=None, email=None, website=None, id=None):
 		print 'Business: creating (%s)' % (str(name))
 		self.bus_id		 = id
 		self.bus_name	 = name
@@ -51,6 +51,7 @@ class Business(database.Model):
 
 		self.bus_phone 	 = phone
 		self.bus_email	 = email
+		if not self.bus_id: self.bus_id = str(uuid.uuid4())
 
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
@@ -59,12 +60,22 @@ class Business(database.Model):
 	def __repr__ (self):
 		return '<business %r>' % (self.bus_id)
 
-
 	@property
 	def serialize(self):
 		return {
 			'business_id'	: self.bus_id,
 			'business_name'	: self.bus_name,
+		}
+
+	@property
+	def serialize_id(self):
+		return {
+			'business_id'	: self.bus_id,
+			'business_name'	: self.bus_name,
+			'business_website'	: self.bus_website,
+			'business_emails'	: [ self.bus_email ],
+			'business_phones'	: [ self.bus_phone ],
+			'address'	: {}
 		}
 
 
@@ -78,28 +89,36 @@ class Business(database.Model):
 			print business
 		except NoResultFound as nrf:
 			if check_json:
-				business = Business.get_json_index().get(bus_id)
-				# convert to Business Object
-				business['from_json'] = True
+				bus_json = Business.get_json_index().get(bus_id)
+
+				if bus_json:
+					# converting json to a Business object.
+					business = Business.from_json(bus_json)
+					business.from_json = True
 		return business
 
 
 
 	@staticmethod
-	def import_from_json(bus_id):
-		json_object = Business.get_json_index().get(bus_id)
-		address	= json_object['address']
+	def search(identifier, check_json=False):
+		businesses = []
+
+		try:
+			query = '%' + identifier.lower().strip() + '%'
+			businesses = Business.query.filter(Business.bus_name.ilike(query)).limit(5).all()
+			for x in businesses:
+				print x.bus_id, x.bus_name
+		except NoResultFound as nrf:
+			pass
+		return businesses
+
+
+
+	@staticmethod
+	def from_json(json_object):
 		website	= json_object.get('business_website')
 		phones	= json_object.get('business_phones')
 		emails	= json_object.get('business_emails')
-
-		location = Location(address['street'],
-							address['suite'],
-							address['city'],
-							address['state'],
-							address['post'],
-							address['meta']['lat'],
-							address['meta']['lng'])
 
 		contact_phone = phones[0] if phones else None
 		contact_email = emails[0] if emails else None
@@ -109,6 +128,15 @@ class Business(database.Model):
 							email=contact_email,
 							website=website,
 							id=json_object['_id'])
+		return business
+
+
+	@staticmethod
+	def import_from_json(bus_id):
+		json_object = Business.get_json_index().get(bus_id)
+		business = Business.from_json(json_object)
+		location = Business.from_json(json_object)
+
 		try:
 			print location.location_id, business.bus_id
 			database.session.add(location)

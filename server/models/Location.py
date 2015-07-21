@@ -72,6 +72,18 @@ class Location(database.Model):
 		return location
 
 
+	@staticmethod
+	def from_json(json_object):
+		address  = json_object['address']
+		location = Location(address['street'],
+							address['suite'],
+							address['city'],
+							address['state'],
+							address['post'],
+							address['meta']['lat'],
+							address['meta']['lng'])
+		return location
+
 
 #################################################################################
 ### FOR TESTING PURPOSES ########################################################
