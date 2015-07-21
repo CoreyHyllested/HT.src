@@ -1,10 +1,10 @@
-version = 1.01;
+version = 1.04;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);
 	$('#modal-close').click(function (e)	{ closeAlertWindow(); } );
+	$('#modal-wrap').on('click', '.dismiss-modal', closeAlertWindow);
 	$('#modal-dismiss').click(function (e)	{ closeAlertWindow(); } );
-	$('.dismiss-modal').click(function (e)	{ closeAlertWindow(); } );
 
 	$(document).keyup(function(e) {
 		/* close overlay if ESC is hit */
@@ -17,7 +17,7 @@ $(document).ready(function () {
 });
 
 function openAlertWindow(text) {
-	$('#overlay').addClass('overlay-dark').addClass('dismiss-modal');
+	$('#overlay').addClass('overlay-dark');
 	$('#modal-message').html(text);
 	$('#modal-wrap').addClass('modal-active')
 	$('#modal-window').addClass('window-alert');
@@ -41,14 +41,13 @@ function openModalLogin() {
 			processData: false,
 			contentType: false,
 			success : function(response) {
-				console.log(response);
+				//console.log(response);
 				if (response.embed) {
-					//console.log(response.embed);
-					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#overlay').addClass('overlay-light');
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
 					$('#account-email').addClass('login-active');
 				}
 			},
@@ -72,12 +71,11 @@ function openModalSocial() {
 			success : function(response) {
 				console.log(response);
 				if (response.embed) {
-//					console.log(response.embed);
-					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#overlay').addClass('overlay-light');
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-dismiss').html("<input type='button' class='btn btn-modal whiteButton' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
 					$('#account-social').addClass('login-active');
 				}
 			},
@@ -106,14 +104,13 @@ function openModalShare() {
 			processData: false,
 			contentType: false,
 			success : function(response) {
-				console.log(response);
+				//console.log(response);
 				if (response.embed) {
-//					console.log(response.embed);
-					$('#overlay').addClass('overlay-light').addClass('dismiss-modal');
+					$('#overlay').addClass('overlay-light')
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-dismiss').html("<input type='button' class='btn btn-block whiteButton' value='Cancel'></input><input type='button' class='btn btn-block blueButton' value='Share'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Share'></input>");
 				}
 			},
 			error: function(xhr, status, error) {
