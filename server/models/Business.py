@@ -141,7 +141,12 @@ class Business(database.Model):
 			sc_server.pro_list = json.loads(fp.read())
 			sc_server.pro_index_id = {}
 			for account in sc_server.pro_list:
-				if not account.get('_id'):
+				if account.get('_status'):
+					print account['_status']
+					continue
+				if account.get('_ignore'):
+					continue
+				if account.get('_ignore') or not account.get('_id'):
 					print 'Missing-id', account['business_name']
 					continue
 				sc_server.pro_index_id[account['_id']] = account
