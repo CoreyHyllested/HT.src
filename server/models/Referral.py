@@ -39,7 +39,7 @@ class Referral(database.Model):
 	def __init__ (self, bus_id, profile, content, project=None):
 		self.ref_uuid = str(uuid.uuid4())
 		self.ref_business = bus_id
-		self.ref_profile = profile
+		self.ref_profile = profile.prof_id
 		self.ref_content = content
 		self.ref_project = project
 		self.ref_flags	 = 0
