@@ -18,6 +18,13 @@ function save_business_clicked() {
 
 function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
 function feedback_remove(id)	{	$('#'+id).remove();			}
+function add_feedback(content)	{
+	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
+	uid	 = $(html).attr('id');
+	setTimeout(feedback_fade,	2500, uid);
+	setTimeout(feedback_remove, 5000, uid);
+}
+
 
 
 function modal_create_business() {
@@ -57,19 +64,23 @@ function modalCreateBusiness(fd) {
 	return false;
 }
 
+
 function submit_new_business(fd) {
 	console.log('submitting new business ' + fd.name);
-	console.log(fd);
 	$.ajax({ url	: '/business/create',
 			type	: "POST",
 			data	: fd,
 			processData: false,
 			contentType: false,
 			success : function(response) {
-				$('#modal-message').html(response.embed);
+				console.log(response);
+				closeAlertWindow();
 
-				$('#overlay').addClass('overlay-dark');
-				$('#modal-wrap').addClass('modal-active');
+				var profile_fd = {};
+				profile_fd.csrf_token = "{{ csrf_token() }}";
+				profile_fd.profile_id = response.business.business_id;
+				get_profile(profile_fd);
+				add_feedback('Added ' + response.business.business_name);
 			},
 			error	: function(data) {
 				console.log("Oops, AJAX Error.");
@@ -102,11 +113,8 @@ function save_referral(evt) {
 				data	: fd,
 				success : function(data) {
 					console.log(data);
-					html = $('<li class="feedback-bubble">Saved</li>').uniqueId().appendTo('#feedback');
 					$('#referral-profile').attr('data-id', data.ref_uuid);
-					uid	 = $(html).attr('id');
-					setTimeout(feedback_fade,	2500, uid);
-					setTimeout(feedback_remove, 5000, uid);
+					add_feedback('Saved');
 				},
 				error	: function(data) {
 					console.log("Oops, AJAX Error.");
@@ -151,30 +159,7 @@ function get_profile(fd) {
 						busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
 					}
 					$('#pro-name').html(busname);
-
-					contact_email = ''
-					console.log(data);
-					data.business_emails.forEach(function (elem, idx) {
-						contact_email = contact_email + '<a href="mailto:' + elem + '">' + elem + '</a>'
-					});
-					$('#pro-email').html(contact_email);
-
-//						contact_phone = ''
-//						data.business_phones.forEach(function (elem, idx) { contact_phone = contact_phone + '<a href="mailto:' + elem + '">' + elem + '</a>' });
-//						$('#pro-phone').html(contact_phone);
-					$('#pro-addr').html(data.address.street + ' ' + data.address.city + ', ' + data.address.state + ' ' + data.address.post);
-
-
-					sz = data.categories[0].factual.length;
-					category = ''
-					data.categories[0].factual.forEach(function (elem, idx) {
-						if (idx == 0) { return; }
-						category = category + elem;
-						if (idx < data.categories[0].factual.length - 1) {
-							category = category + " » ";
-						}
-					});
-					$('#pro-category').html(category);
+					/* examples of setting phone, email in git-log (july-21-15) */
 					$('#refer-why').focus();
 				},
 				error	: function(data) {
