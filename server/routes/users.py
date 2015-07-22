@@ -50,16 +50,6 @@ def render_dashboard():
 
 
 
-@authenticated.route('/profile/', methods=['GET', 'POST'])
-@authenticated.route('/profile',  methods=['GET', 'POST'])
-@sc_authenticated
-def render_profile():
-	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('profile.html', bp=bp))
-
-
-
-
 @authenticated.route('/settings/', methods=['GET', 'POST'])
 @authenticated.route('/settings',  methods=['GET', 'POST'])
 @sc_authenticated

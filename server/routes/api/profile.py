@@ -13,8 +13,59 @@
 
 
 from server.models import *
-from server.controller.images import *
+from server.routes import api_routing as api
+from server.routes import auth_routes as authenticated
+from server.controllers import *
 from datetime import datetime as dt
+
+
+@authenticated.route('/profile/', methods=['GET'])
+@authenticated.route('/profile',  methods=['GET'])
+@sc_authenticated
+def render_my_profile():
+	bp = Profile.get_by_uid(session['uid'])
+	return make_response(render_template('profile.html', bp=bp, profile=bp))
+
+
+#@api.route('/profile/<string:prof_id>', methods=['GET'])
+def render_other_profile(usrmsg=None):
+	bp = None
+	if (session.get('uid') is not None):
+		bp = Profile.get_by_uid(session.get('uid'))
+		print "BP = ", bp.prof_name, bp.prof_id, bp.account
+
+	try:
+		hp = request.values.get('hero')
+		if (hp is not None):
+			print "hero profile requested,", hp
+			hp = Profile.get_by_prof_id(hp)
+		else:
+			if (bp == None):
+				# no hero requested or logged in. go to login
+				return redirect('/login')
+			hp = bp
+
+		# replace 'hp' with the actual Hero's Profile.
+		print "HP = ", hp.prof_name, hp.prof_id, hp.account
+	except Exception as e:
+		print e
+		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
+
+	try:
+		# complicated search queries can fail and lock up DB.
+		profile_imgs = database.session.query(Image).filter(Image.img_profile == hp.prof_id).all()
+		hp_c_reviews = htdb_get_composite_reviews(hp)
+		hp_lessons = ht_get_active_lessons(hp)
+	except Exception as e:
+		print type(e), e
+		database.session.rollback()
+
+
+	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
+	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
+	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
+	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=None))	# removed availability model
+
 
 
 def ht_validate_profile(bp, form, form_page):
