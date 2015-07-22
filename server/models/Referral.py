@@ -29,15 +29,17 @@ class Referral(database.Model):
 	__tablename__ = "referral"
 	ref_uuid		= Column(String(40), primary_key=True, index=True)
 	ref_business	= Column(String(40), ForeignKey('business.bus_id'), nullable=False)
+	ref_profile		= Column(String(40), ForeignKey('profile.prof_id'), nullable=False)
 	ref_content		= Column(String(200), nullable=False)	# referral content
 	ref_project		= Column(String(128))					# project description
 
 	ref_flags	= Column(Integer)
 	ref_created = Column(DateTime(), nullable=False)
 
-	def __init__ (self, bus_id, content, project=None):
+	def __init__ (self, bus_id, profile, content, project=None):
 		self.ref_uuid = str(uuid.uuid4())
 		self.ref_business = bus_id
+		self.ref_profile = profile
 		self.ref_content = content
 		self.ref_project = project
 		self.ref_flags	 = 0
