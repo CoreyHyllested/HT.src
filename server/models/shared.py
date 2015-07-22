@@ -26,7 +26,7 @@ class Flags(object):
 		return (input & (~0 ^ set_flag))
 
 	@staticmethod
-	def print(input)
+	def value(input):
 		print '%08x' % input
 
 
@@ -146,8 +146,7 @@ class BusinessState(Flags):
 
 
 class BusinessSource(Flags):
-	BIT_NEEDVER	= 0
-	BIT_VERIFID	= 1
+	BIT_VERIFID	= 0
 	BIT_USER_UP	= 2
 	BIT_USERADD	= 3
 
@@ -159,7 +158,6 @@ class BusinessSource(Flags):
 	BIT_BBB		= 9
 
 
-	REQ_VERIFY	= (0x1 << BIT_NEEDVER)
 	VERIFIED	= (0x1 << BIT_VERIFID)
 	USER_ADDED	= (0x1 << BIT_USERADD)
 	USER_UPDATE	= (0x1 << BIT_USER_UP)
@@ -172,6 +170,7 @@ class BusinessSource(Flags):
 	BBB			= (0x1 << BIT_BBB)
 
 	LOOKUP_TABLE = {
+		'user_add'		: USER_ADDED,
 		'factual'		: FACTUAL,
 		'homeadvisor'	: HOMEADVISOR,
 		'porch'	: PORCH,
