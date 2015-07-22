@@ -52,6 +52,8 @@ def api_business_create_post():
 		print 'email', form.email.data
 		print 'phone', form.phone.data
 		business = Business(form.name.data, phone=form.phone.data, email=form.email.data, website=form.site.data)
+		business.bus_state = BusinessSource.set(business.bus_state, BusinessSource.USER_ADDED)
+
 		try:
 			database.session.add(business)
 			database.session.commit()
@@ -90,7 +92,8 @@ def api_business_search(identifier):
 	response = {}
 
 	for hit in fromdb:
-		response[hit.bus_id] = { "id": hit.bus_id, "name": hit.bus_name, "addr" : '', "combined" : hit.bus_name }
+		# check to see if any locations match; update address
+		response[hit.bus_id] = { "id": hit.bus_id, "name": hit.bus_name, "addr" : 'No address listed', "combined" : hit.bus_name }
 		print response[hit.bus_id]
 
 	for pro in business_idx.values():
@@ -122,7 +125,6 @@ def api_business_search(identifier):
 		if phone and (identphone in phone):
 			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
 			#response[pro['_id']] = { "id": pro["_id"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
-	pp (response)
 	return make_response(jsonify(response), 200)
 
 
