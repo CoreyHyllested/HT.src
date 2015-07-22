@@ -19,9 +19,11 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship, backref
 from factory.fuzzy	 import *
 from factory.alchemy import SQLAlchemyModelFactory
+
+import uuid, urllib, hashlib, factory
 from datetime import datetime as dt, timedelta
 from pytz import timezone
-import uuid, factory
+
 
 
 
@@ -140,6 +142,12 @@ class Profile(database.Model):
 			database.session.rollback()
 		return self
 
+
+	def gravatar_url(self):
+		default_icon = "http://soulcrafting.co/static/img/favicon.png"
+		gravatar_url = "http://www.gravatar.com/avatar/" + hashlib.md5(self.prof_email.lower()).hexdigest() + "?"
+		gravatar_url += urllib.urlencode({'d':default_icon, 's':str(85)})
+		return gravatar_url
 
 
 

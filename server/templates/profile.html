@@ -14,9 +14,10 @@
 {% block content %}
 <section id='profile-header'>
 	<div id='profile-info'>
-		<h3 class='left-align'>Corey Andrew Trapper Hyllested</h3>
-		<div id='profile-image'><img src="https://fakeimg.pl/85/fca852/?text=World"></div>
-		<div id='profile-location'>Boulder, CO</div>
+		<h3 class='left-align'>{{profile.prof_name}}</h3>
+		<div id='profile-image'><img src="{{profile.gravatar_url()}}"></div>
+		{#
+		<div id='profile-location'></div>
 		<div id='profile-networks'>
 			<ul>
 				<li class='sns'><i class='fa fa-facebook-f'></i></li>
@@ -26,6 +27,7 @@
 				<li class='sns'><i class='fa fa-pinterest-p'></i></li>
 			</ul>
 		</div>
+		#}
 	</div>
 </section>
 
