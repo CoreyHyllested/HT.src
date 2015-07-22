@@ -25,6 +25,10 @@ class Flags(object):
 	def clear(input, set_flag):
 		return (input & (~0 ^ set_flag))
 
+	@staticmethod
+	def print(input)
+		print '%08x' % input
+
 
 ################################################################################
 ### EMAIL POLICY FIELD #########################################################
@@ -138,3 +142,44 @@ class BusinessState(Flags):
 	IMPORTED = (0x1 << BIT_IMPORTED)
 	VERIFIED = (0x1 << BIT_VERIFIED)
 	CLAIMED	 = (0x1 << BIT_CLAIMED)
+
+
+
+class BusinessSource(Flags):
+	BIT_NEEDVER	= 0
+	BIT_VERIFID	= 1
+	BIT_USER_UP	= 2
+	BIT_USERADD	= 3
+
+	BIT_FACTUAL	= 4
+	BIT_HOMEADV	= 5
+	BIT_PORCH	= 6
+	BIT_HOUZZ	= 7
+	BIT_YELP	= 8
+	BIT_BBB		= 9
+
+
+	REQ_VERIFY	= (0x1 << BIT_NEEDVER)
+	VERIFIED	= (0x1 << BIT_VERIFID)
+	USER_ADDED	= (0x1 << BIT_USERADD)
+	USER_UPDATE	= (0x1 << BIT_USER_UP)
+
+	FACTUAL		= (0x1 << BIT_FACTUAL)
+	HOMEADVISOR	= (0x1 << BIT_HOMEADV)
+	PORCH		= (0x1 << BIT_PORCH)
+	HOUZZ		= (0x1 << BIT_HOUZZ)
+	YELP		= (0x1 << BIT_YELP)
+	BBB			= (0x1 << BIT_BBB)
+
+	LOOKUP_TABLE = {
+		'factual'		: FACTUAL,
+		'homeadvisor'	: HOMEADVISOR,
+		'porch'	: PORCH,
+		'houzz'	: HOUZZ,
+		'yelp'	: YELP,
+		'bbb'	: BBB
+	}
+
+	@staticmethod
+	def get_mask(source_str):
+		return BusinessSource.LOOKUP_TABLE.get(source_str, 0)
