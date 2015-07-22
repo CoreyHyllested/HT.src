@@ -15,6 +15,7 @@
 from server import sc_server, database
 from server.infrastructure.errors	import *
 from server.models.Location			import *
+from server.models.shared			import *
 from sqlalchemy import ForeignKey, Column, Integer, String, DateTime
 from sqlalchemy.orm  import relationship, backref
 
@@ -43,15 +44,17 @@ class Business(database.Model):
 	created = Column(DateTime(), nullable=False, default = "")
 
 
-	def __init__(self, name, phone=None, email=None, website=None, id=None):
-		print 'Business: creating (%s)' % (str(name))
+	def __init__(self, name, phone=None, email=None, website=None, sources=0, id=None):
+		if not id: id = str(uuid.uuid4())
+		print 'Business: creating (%s|%s)' % (str(name), id)
+
 		self.bus_id		 = id
 		self.bus_name	 = name
+		self.bus_state	 = sources
 		self.bus_website = website
 
 		self.bus_phone 	 = phone
 		self.bus_email	 = email
-		if not self.bus_id: self.bus_id = str(uuid.uuid4())
 
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
@@ -94,7 +97,6 @@ class Business(database.Model):
 				if bus_json:
 					# converting json to a Business object.
 					business = Business.from_json(bus_json)
-					business.from_json = True
 		return business
 
 
@@ -104,6 +106,7 @@ class Business(database.Model):
 		businesses = []
 
 		try:
+			# TODO: do search and join on matching location.
 			query = '%' + identifier.lower().strip() + '%'
 			businesses = Business.query.filter(Business.bus_name.ilike(query)).limit(5).all()
 			for x in businesses:
@@ -115,19 +118,35 @@ class Business(database.Model):
 
 
 	@staticmethod
-	def from_json(json_object):
+	def from_json(json_object, fromuser=False):
+		sources = json_object.get('sources')
 		website	= json_object.get('business_website')
 		phones	= json_object.get('business_phones')
 		emails	= json_object.get('business_emails')
+		if (fromuser): sources.append({name : 'user_add'})
 
 		contact_phone = phones[0] if phones else None
 		contact_email = emails[0] if emails else None
+		sources_flags = 0
+		for source in sources:
+			print '%s %08x' % (source['name'], BusinessSource.get_mask(source['name']))
+			sources_flags = BusinessSource.set(sources_flags, BusinessSource.get_mask(source['name']))
 
 		business = Business(json_object['business_name'],
 							phone=contact_phone,
 							email=contact_email,
 							website=website,
+							sources=sources_flags,
 							id=json_object['_id'])
+		try:
+			print 'committing (%s|%s)' % (business.bus_name, business.bus_id)
+			database.session.add(business)
+			database.session.commit()
+			print 'committed.'
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
+			return None
 		return business
 
 
@@ -141,10 +160,7 @@ class Business(database.Model):
 			print location.location_id, business.bus_id
 			database.session.add(location)
 			database.session.commit()
-			database.session.add(business)
-			database.session.commit()
 			print 'committed business, location'
-			pp(business)
 		except Exception as e:
 			database.session.rollback()
 			print type(e), e
@@ -178,7 +194,7 @@ class Business(database.Model):
 		finally:
 			if (fp): fp.close()
 
-		print 'Professional Index: %d entries' % len(sc_server.pro_list)
+		print 'Professional index: %d entries' % len(sc_server.pro_list)
 		return sc_server.pro_index_id
 
 
