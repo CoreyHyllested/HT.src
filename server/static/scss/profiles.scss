@@ -1,7 +1,7 @@
 @import 'elem-defaults';
 
 #profile-header {
-	background-color: lightgray;
+	background-color: $easy-gray;
 	height: 100px;
 }
 
@@ -13,7 +13,7 @@
 	padding-left: 20px;
 }
 
-#referrals { background: aliceblue; }
+#referrals { }
 #ref-content	{	background: white;	}
 .ref-content	{	padding: 5px 0;		}
 
@@ -29,7 +29,7 @@ ul 	{ padding-left: 0px; }
 .inline 		{	display: inline;	}
 
 .ref-name		{	font-weight: bold;	display: inline; }
-.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }
+//.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }	//KEEP
 
 .ref-skills		{	color: gray;	display: inline; }
 .ref-skills li	{					display: inline; 	padding-left: 0; } 
