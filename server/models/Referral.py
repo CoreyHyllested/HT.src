@@ -12,17 +12,15 @@
 #################################################################################
 
 
+import uuid
+from datetime import datetime as dt, timedelta
+
 from server import database
 from server.models.shared			import ReferralFlags
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, DateTime
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import DetachedInstanceError
-
-import uuid
-from pprint import pprint as pp
-from datetime import datetime as dt, timedelta
-
 
 
 class Referral(database.Model):
@@ -35,6 +33,8 @@ class Referral(database.Model):
 
 	ref_flags	= Column(Integer)
 	ref_created = Column(DateTime(), nullable=False)
+
+
 
 	def __init__ (self, bus_id, profile, content, project=None):
 		self.ref_uuid = str(uuid.uuid4())
@@ -59,6 +59,7 @@ class Referral(database.Model):
 	def set_valid(self):
 		self.ref_flags = ReferralFlags.clear_invalid(self.ref_flags)
 		return self.ref_flags
+
 
 	@property
 	def serialize(self):

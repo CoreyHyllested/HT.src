@@ -42,8 +42,10 @@ def api_referral_view(ref_id):
 
 @sc_server.csrf.exempt
 @api.route('/referral/create', methods=['POST'])
+@sc_authenticated
 def api_referral_create():
 	print 'api_referral_create(): enter'
+	profile	= Profile.get_by_uid(session.get('uid'))
 	bus_id	= request.values.get('business')
 	ref_id	= request.values.get('referral')
 	content = request.values.get('content')
@@ -59,7 +61,7 @@ def api_referral_create():
 				business = Business.import_from_json(bus_id)
 
 			projects = ','.join([ x.strip().lower() for x in request.values.get('projects').split(',') ])
-			referral = Referral(business.bus_id, content, projects)
+			referral = Referral(business.bus_id, profile, content, projects)
 			database.session.add(referral)
 			database.session.commit()
 
@@ -67,8 +69,8 @@ def api_referral_create():
 			session_referrals[referral.ref_uuid] = referral
 			session['referrals'] = session_referrals
 		except Exception as e:
-			database.session.rollback()
 			print type(e), e
+			database.session.rollback()
 			return e.api_response(request.method)
 		return make_response(jsonify(referral.serialize), 200)
 

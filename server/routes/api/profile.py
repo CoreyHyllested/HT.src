@@ -24,7 +24,9 @@ from datetime import datetime as dt
 @sc_authenticated
 def render_my_profile():
 	bp = Profile.get_by_uid(session['uid'])
-	return make_response(render_template('profile.html', bp=bp, profile=bp))
+	referrals = sc_get_referrals(bp)
+	pp(referrals)
+	return make_response(render_template('profile.html', bp=bp, profile=bp, referrals=referrals))
 
 
 #@api.route('/profile/<string:prof_id>', methods=['GET'])
