@@ -30,13 +30,23 @@ def render_create_referral_page():
 
 
 
-@api.route('/referral/<string:ref_id>/', methods=['POST'])
-@api.route('/referral/<string:ref_id>',  methods=['POST'])
-def api_referral_view(ref_id):
+@api.route('/referral/<string:ref_id>/', methods=['GET'])
+@api.route('/referral/<string:ref_id>',  methods=['GET'])
+def api_referral_read(ref_id):
+	referral = Referral.get_by_refid(ref_id)
+	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+	return make_response(jsonify(referral=referral.serialize), 200)
+
+
+
+@sc_server.csrf.exempt
+@api.route('/referral/<string:ref_id>/destroy/', methods=['DELETE'])
+@api.route('/referral/<string:ref_id>/destroy',  methods=['DELETE'])
+def api_referral_destroy(ref_id):
 	referral = Referral.get_by_refid(ref_id)
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
 
-	return make_response(jsonify(referral=referral.serialize), 200)
+	return make_response(jsonify(referral='destroyed'), 200)
 
 
 
