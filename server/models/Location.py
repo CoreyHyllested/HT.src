@@ -18,7 +18,7 @@ from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, Float, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
-import uuid
+import uuid, string
 
 
 class Location(database.Model):
@@ -61,8 +61,17 @@ class Location(database.Model):
 	def __repr__ (self):
 		return '<location %r>' % (self.location_id)
 
+
 	def display_city_state(self):
-		return 'Boulder'
+		rc = ''
+		if self.location_city:
+			rc += string.capwords(self.location_city)
+			if self.location_state:
+				rc += ', ' + self.location_state
+		elif self.location_state:
+			rc += self.location_state
+		return rc
+
 
 	@staticmethod
 	def get_by_id(id):
