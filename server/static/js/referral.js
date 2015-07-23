@@ -97,12 +97,6 @@ function save_referral(evt) {
 	fd.content	= $('#refer-why').val();
 	fd.projects	= $('#refer-proj').val();
 
-	console.log('save_referral');
-	console.log(fd.business);
-	console.log(fd.referral);
-	console.log(fd.content);
-	console.log(fd.projects);
-
 	referral_uri = "/referral/create";
 	if (fd.referral != "") {
 		referral_uri = "/referral/" + fd.referral + "/update";
@@ -112,12 +106,13 @@ function save_referral(evt) {
 				type	: "POST",
 				data	: fd,
 				success : function(data) {
-					console.log(data);
 					$('#referral-profile').attr('data-id', data.ref_uuid);
 					add_feedback('Saved');
 				},
 				error	: function(data) {
-					console.log("Oops, AJAX Error.");
+					console.log("AJAX Error");
+					//  data.status is 401, redirectiing user to authenticate.
+					if (data.status == 401) { window.location.href = '/login'; }
 					console.log(data);
 				}
 	});
