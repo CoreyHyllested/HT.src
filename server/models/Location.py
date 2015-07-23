@@ -12,14 +12,13 @@
 #################################################################################
 
 
+
 from server import database
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, Float, DateTime
-from sqlalchemy.orm  import relationship, backref
+from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
-from pytz import timezone
 import uuid
-
 
 
 class Location(database.Model):
@@ -42,7 +41,7 @@ class Location(database.Model):
 	created = Column(DateTime(), nullable=False, default = "")
 
 
-	def __init__(self, street=None, suite=None, city=None, state=None, zipcode=None, lat=None, lng=None):
+	def __init__(self, street=None, suite=None, city=None, state=None, zipcode=None, lat=None, lng=None, business_id=None):
 		print 'Location: init'
 		self.location_id	= str(uuid.uuid4())
 		self.location_street = street
@@ -54,7 +53,7 @@ class Location(database.Model):
 		self.location_lat	= lat
 		self.location_lng	= lng
 
-		self.business	= None
+		self.business	= business_id
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
 
@@ -62,6 +61,8 @@ class Location(database.Model):
 	def __repr__ (self):
 		return '<location %r>' % (self.location_id)
 
+	def display_city_state(self):
+		return 'Boulder'
 
 	@staticmethod
 	def get_by_id(id):
@@ -70,7 +71,6 @@ class Location(database.Model):
 			location = Location.query.filter_by(location_id=id).one()
 		except NoResultFound as nrf: pass
 		return location
-
 
 	@staticmethod
 	def from_json(json_object):
@@ -81,7 +81,9 @@ class Location(database.Model):
 							address['state'],
 							address['post'],
 							address['meta']['lat'],
-							address['meta']['lng'])
+							address['meta']['lng'],
+							json_object['_id']
+							)
 		return location
 
 
