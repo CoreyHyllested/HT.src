@@ -1,4 +1,4 @@
-var referral_version = 0.61;
+var referral_version = 0.62;
 
 function clear_profile() {
 	$('#profile-card').addClass('no-display');
@@ -57,7 +57,8 @@ function modalCreateBusiness(fd) {
 				}
 			},
 			error: function(xhr, status, error) {
-				console.log(['ajax failure', xhr]);
+				console.log(['ajax error', xhr]);
+				if (status == 401) { window.location.href = '/login'; }
 				rc = JSON.parse(xhr.responseText);
 			}
 	});
@@ -83,11 +84,13 @@ function submit_new_business(fd) {
 				add_feedback('Added ' + response.business.business_name);
 			},
 			error	: function(data) {
-				console.log("Oops, AJAX Error.");
+				console.log("AJAX Error");
+				if (status == 401) { window.location.href = '/login'; }
 				console.log(data);
 			}
 	});
 }
+
 
 function save_referral(evt) {
 	fd = {};
@@ -158,7 +161,7 @@ function get_profile(fd) {
 					$('#refer-why').focus();
 				},
 				error	: function(data) {
-					console.log("Oops, AJAX Error.");
+					console.log("AJAX Error");
 				}
 	});
 }
