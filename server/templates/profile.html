@@ -35,7 +35,7 @@
 <section id='referrals'>
 	<div>
 	{% for ref in referrals | sort(attribute='business.updated') %}
-	<article class='referral'>
+	<article class='referral' data-ref-id='{{ref.Referral.ref_uuid}}'>
 		<div class='ref-content'>
 			<div class='ref-name'>{{ref.business.bus_name}}</div>
 			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
@@ -46,35 +46,28 @@
 		<div class='ref-content'><input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled></div>
 		<div class='ref-content align-right'>
 			<ul class='ref-operations'>
-				{%- if bp != profile %}<li><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></li>{%- endif %}
-				<li><a class='share-popover'  rel='popover'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
-				<li><a class='action-popover' rel='popover'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
+				{%- if bp != profile %}
+				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'>
+					<span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span>
+				</a></li>
+				{%- endif %}
+				<li><a class='share-popover'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+				<li><a class='action-popover' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
 			</ul>
 		</div>
+		{%- if not loop.last %}<hr class='what'>{%- endif %}
 	</article>
-	{%- if not loop.last %}<hr class='what'>{%- endif %}
 	{% endfor %}
 	</div>
 </section>
 
 
 <div id='popover-share' class='hide'>
-	<div class='ref-content'>
-		<ul class='ref-share'>
-			<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li></a><br>
-			<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></a></li><br>
-			<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></a></li><br>
-		</ul>
-	</div>
-</div>
-
-<div id='popover-actions' class='hide'>
-	<div class='ref-content'>
-		<ul class='ref-share'>
-			<li><a href='/referral/delete'><i class='fa fa-trash-o icon'></i><span class='share'>Delete</span></a></li><br>
-			<li><a href='/referral/update'><i class='fa fa-strikethrough icon'></i><span class='share'>Disable</span></a></li><br>
-		</ul>
-	</div>
+	<ul>
+		<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li></a><br>
+		<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></a></li><br>
+		<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></a></li><br>
+	</ul>
 </div>
 
 
@@ -85,8 +78,31 @@
 	<script src='/static/js/tagsinput.js'></script>
 	<script src='/static/js/bs-popover.js'></script>
 	<script>
+	function delete_referral(e) {
+		refid = $(e).data('ref-id');
+		$.ajax({	url		: '/referral/' + refid + '/destroy',
+					type	: 'DELETE',
+					success : function(data) {
+						referrals = $('article.referral');
+						$(referrals).each(function(idx, referral)  {
+							if ($(referral).data('ref-id') === refid) {
+								$(referral).remove();
+							}
+						});
+					},
+					error	: function(data) {
+						console.log("Oops, AJAX Error.");
+						console.log(data);
+					}
+		});
+		return false;
+	}
 
 	$(document).ready(function () {
+		$('ul.ref-operations').on('click', '.btn-referral-delete', function () {
+			delete_referral(this);
+		});
+
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
 		$(".share-popover").popover({
 			html: true,
@@ -115,7 +131,18 @@
 			animation: false,
 			title: 'Referral actions',
 			content: function() {
-				return $('#popover-actions').html();
+				refid = $(this).data('ref-id');
+				tree	= document.createElement('div');
+				tree_ul	= document.createElement('ul');
+				tree_li_delete = document.createElement('li');
+				tree_li_update = document.createElement('li');
+				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='share'>Delete</span></a>");
+				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='share'>Disable</span></a>");
+				$(tree_ul).append(tree_li_delete).append('<br>');
+				$(tree_ul).append(tree_li_update).append('<br>');
+				$(tree).append(tree_ul);
+				console.log(tree);
+				return tree;
 			},
 			placement: 'left',
 			trigger: "manual"
