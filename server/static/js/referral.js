@@ -144,8 +144,8 @@ projects = new Bloodhound({
 
 
 function get_profile(fd) {
-	$.ajax({	url		: "/business/id/" + fd.profile_id,
-				type	: "POST",
+	$.ajax({	url		: "/business/" + fd.profile_id,
+				type	: "GET",
 				data	: fd,
 				success : function(data) {
 					$('#refer-explanation').removeClass('no-display');
@@ -159,7 +159,7 @@ function get_profile(fd) {
 					$('#pro-name').html(busname);
 					/* examples of setting phone, email in git-log (july-21-15) */
 					$('#refer-why').focus();
-					$('#refer_id').value(fd.profile_id);
+					$('#refer_id').val(fd.profile_id);
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
