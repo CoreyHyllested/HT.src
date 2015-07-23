@@ -15,8 +15,8 @@
 	<div>
 		<div><h3 id='refer-title'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h3></div>
 		<div id='refer-professional'>
-
-			{{form.invite_emails(type='text', class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
+			{{form.hidden_tag()}}
+			{{form.refer_name(class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
 			<div id='profile-card' class='no-display' data-id=''>
 			{#
 				<div id='pro-category'	class='ff header'></div>

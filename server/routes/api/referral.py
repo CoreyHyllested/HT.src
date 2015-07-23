@@ -25,8 +25,9 @@ from server.controllers import *
 @public.route('/referral',  methods=['GET'])
 def render_create_referral_page():
 	bp = Profile.get_by_uid(session.get('uid'))
-	invite = InviteForm(request.form)
-	return make_response(render_template('referral.html', bp=bp, form=invite))
+	rf = ReferralForm(request.form)
+
+	return make_response(render_template('referral.html', bp=bp, form=rf))
 
 
 

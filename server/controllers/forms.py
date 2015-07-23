@@ -69,6 +69,9 @@ class ProjectForm(Form):
 
 
 class ReferralForm(Form):
+	refer_id	= HiddenField('id',		[validators.Required(), validators.length(min=30, max=40)])
+	refer_name	= TextField('Trusted',	[validators.Optional(), validators.length(min=1, max=100)])
+
 	refer_why	= TextField('Name', 	[validators.Required(), validators.length(min=1, max=200)])
 	refer_proj	= TextField('Proj', [validators.Optional(), validators.length(min=1, max=120)])
 

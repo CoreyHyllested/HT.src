@@ -159,6 +159,7 @@ function get_profile(fd) {
 					$('#pro-name').html(busname);
 					/* examples of setting phone, email in git-log (july-21-15) */
 					$('#refer-why').focus();
+					$('#refer_id').value(fd.profile_id);
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
@@ -168,11 +169,11 @@ function get_profile(fd) {
 
 
 function clear_business_addr( event ) {
-	name = $('#invite_emails').val();
+	name = $('#refer_name').val();
 	idx = name.lastIndexOf(" | ")
 	if (idx == -1) { return; }
 	strng = name.substring(0, name.lastIndexOf(" | "));
-	$('#invite_emails').val(strng);
+	$('#refer_name').val(strng);
 }
 
 
@@ -202,14 +203,14 @@ $(document).ready(function () {
 
 	projects.initialize();
 
-	$('#invite_emails').keydown(function(event) {
+	$('#refer_name').keydown(function(event) {
 		clear_profile();
 	});
 	$('#modal-buttons').on('click', '.save-business', save_business_clicked);
 	$('#btn-save-referral').click(save_referral);
-	$('#invite_emails').focus(clear_business_addr);
+	$('#refer_name').focus(clear_business_addr);
 
-	$('#invite_emails.typeahead').bind('typeahead:select', function(ev, suggestion) {
+	$('#refer_name.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
 		fd.csrf_token = "{{ csrf_token() }}";
 		fd.profile_id = suggestion.id;
@@ -217,7 +218,7 @@ $(document).ready(function () {
 	});
 
 	// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
-	$('#invite_emails.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
+	$('#refer_name.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
 		var fd = {};
 		fd.csrf_token = "{{ csrf_token() }}";
 		fd.profile_id = suggestion.id;
