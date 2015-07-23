@@ -84,19 +84,14 @@ class Business(database.Model):
 
 	@staticmethod
 	def get_by_id(id, check_json=False):
-		print 'Business.get_by_id(%s)' % (id)
 		business = None
 		try:
 			# cannot throw MultipleResultsFound, DB uniqueness
 			business = Business.query.filter_by(bus_id=id).one()
-			print business
 		except NoResultFound as nrf:
-			if check_json:
-				bus_json = Business.get_json_index().get(id)
-
-				if bus_json:
-					# converting json to a Business object.
-					business = Business.from_json(bus_json)
+			if check_json and Business.get_json_index().get(id):
+				# return Business object, save Location.
+				business = Business.import_from_json(id)
 		return business
 
 
