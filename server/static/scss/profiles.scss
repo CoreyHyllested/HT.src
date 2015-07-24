@@ -14,19 +14,10 @@
 }
 
 #referrals { }
-#ref-content	{	background: white;	}
-.ref-content	{	padding: 5px 0;		}
-
 .referral {	padding: 0 10px 0 125px; }
-.what { margin: 5px ; }
-.left-align { text-align: left; }
-.align-left	 { text-align: left; }
-.align-right { text-align: right; }
-//.sns {	margin: 3px 2px;	}	//KEEP
 
 ul 	{ padding-left: 0px; } 
 
-.inline 		{	display: inline;	}
 
 .ref-name		{	font-weight: bold;	display: inline; }
 //.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }	//KEEP
@@ -45,28 +36,15 @@ ul 	{ padding-left: 0px; }
 	text-align: right;
 }
 
-#addr {
-	background-color: white;
-	padding: 0 5px;
-}
 
 
 .ref-operations		{	display: inline;	font-size: 0.8em;	color: gray;	padding: 0 5px;	}
 .ref-operations li	{	display: inline; 	padding-left: 0; } 
-
 
 // if this css file is pulled in BEFORE tagsinput.css; we need to add !important;
 .bootstrap-tagsinput {	border: inherit ; box-shadow: inherit ; padding: 0 0 ;}
 .bootstrap-tagsinput .tag [data-role="remove"] { margin-left: 0; }
 .bootstrap-tagsinput .tag [data-role="remove"]:after { content: "" !important; padding: 0 0 !important; }
 .bootstrap-tagsinput input { display: none !important; }
-
-.share {
-	text-align: left;
-}
-.icon {
-	text-align: center;
-	width: 15px;
-	margin-right: 15px;
-}
-
+//.sns	{	margin: 3px 2px;	}	//KEEP
+#addr	{	background-color: white;	padding: 0 5px;	}

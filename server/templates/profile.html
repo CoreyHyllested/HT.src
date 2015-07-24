@@ -14,7 +14,7 @@
 {% block content %}
 <section id='profile-header'>
 	<div id='profile-info'>
-		<h3 class='left-align'>{{profile.prof_name}}</h3>
+		<h3 class='align-left'>{{profile.prof_name}}</h3>
 		<div id='profile-image'><img src="{{profile.gravatar_url()}}"></div>
 		{#
 		<div id='profile-location'></div>
@@ -36,26 +36,24 @@
 	<div>
 	{% for ref in referrals | sort(attribute='business.updated') %}
 	<article class='referral' data-ref-id='{{ref.Referral.ref_uuid}}'>
-		<div class='ref-content'>
+		<div class='content'>
 			<div class='ref-name'>{{ref.business.bus_name}}</div>
 			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
 			<div class='ref-location'>{%- if ref.city_state %}{{ref.city_state}}{%- endif %}</div>
 		</div>
 
-		<div class='ref-content'><p>{{ref.Referral.ref_content}}</p></div>
-		<div class='ref-content'><input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled></div>
-		<div class='ref-content align-right'>
+		<div class='content'>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
+		<div class='content'><input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled></div>
+		<div class='content align-right'>
 			<ul class='ref-operations'>
 				{%- if bp != profile %}
-				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'>
-					<span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span>
-				</a></li>
+				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>
 				{%- endif %}
-				<li><a class='share-popover'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+				{#<li><a class='share-popover'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>#}
 				<li><a class='action-popover' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
 			</ul>
 		</div>
-		{%- if not loop.last %}<hr class='what'>{%- endif %}
+		{%- if not loop.last %}<hr class='thin'>{%- endif %}
 	</article>
 	{% endfor %}
 	</div>
@@ -64,14 +62,13 @@
 
 <div id='popover-share' class='hide'>
 	<ul>
-		<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='share'>Share on Facebook</span></li></a><br>
-		<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='share'>Share on Twitter</span></a></li><br>
-		<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='share'>Share by Email</span></a></li><br>
+		<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></li></a><br>
+		<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='align-left'>Share on Twitter</span></a></li><br>
+		<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='align-left'>Share by Email</span></a></li><br>
 	</ul>
 </div>
-
-
 {% endblock %}
+
 
 {% block scripts %}
 	{{ super() }}
@@ -136,12 +133,11 @@
 				tree_ul	= document.createElement('ul');
 				tree_li_delete = document.createElement('li');
 				tree_li_update = document.createElement('li');
-				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='share'>Delete</span></a>");
-				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='share'>Disable</span></a>");
+				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
+				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='align-left'>Disable</span></a>");
 				$(tree_ul).append(tree_li_delete).append('<br>');
 				$(tree_ul).append(tree_li_update).append('<br>');
 				$(tree).append(tree_ul);
-				console.log(tree);
 				return tree;
 			},
 			placement: 'left',
