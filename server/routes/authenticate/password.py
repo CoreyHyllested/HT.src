@@ -24,6 +24,7 @@ def render_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
 		return redirect('/dashboard') 
+
 	form = SignupForm(request.form)
 	if form.validate_on_submit(): # and form.terms.data == True:
 		try:
@@ -61,6 +62,12 @@ def render_pro_signup_page(sc_msg=None):
 
 
 
+def redirect_back(next_url):
+	redirect_url = session.get('redir_link', '/profile')
+	session.pop('redir_link')
+	return redirect(redirect_url)
+
+
 
 @sc_server.csrf.exempt
 @public.route('/login/', methods=['GET', 'POST'])
@@ -80,7 +87,7 @@ def render_login():
 			# successful login, bind session.
 			bp = Profile.get_by_uid(ba.userid)
 			bind_session(ba, bp)
-			return redirect('/dashboard')
+			return redirect_back('/profile')
 
 		trace ("POST /login failed, flash name/pass combo failed")
 		sc_msg = "Incorrect username or password."

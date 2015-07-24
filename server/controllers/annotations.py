@@ -12,7 +12,7 @@
 #################################################################################
 
 
-import logging, functools
+import logging, functools, urllib
 from server import sc_server
 from flask import *
 
@@ -39,8 +39,13 @@ def sc_authenticated(function):
 	@functools.wraps(function)
 	def verify_authenticated_user(*args, **kwargs):
 		if 'uid' not in session:
-			trace("no uid; " + function.__name__ + ': redirect to login')
+			target = request.referrer
+			if target and request.method == 'POST':
+				session['redir_link'] = "%s?%s" % (target, urllib.urlencode(request.form))
+				#print 'send user to ', session['redir_link']
+				return make_response(jsonify(next=session['redir_link']), 401)
 			return make_response(redirect('/login'))
+
 		return function(*args, **kwargs)
 	return verify_authenticated_user
 
