@@ -110,11 +110,9 @@ def	server_init_assets(server):
 	assets = Environment(server)
 	assets.debug =True
 	assets.load_path.append(assets.directory + '/scss')
-	assets.load_path.append(assets.directory + '/scss/define')
+	assets.load_path.append(assets.directory + '/scss/defines')
 	assets.load_path.append(assets.directory + '/scss/elements')
 	print 'directory', assets.directory
-	print 'loadpath', assets.load_path
-	print dir(assets)
 
 	jsfilter = server.config['JSFILTER']
 

@@ -1,5 +1,5 @@
-@import 'colors';
-@import 'fonts';
+@import 'navigate';
+@import 'images';
 @import 'forms';
 
 .page-content {
@@ -84,7 +84,7 @@ input.disabled,
 /* PHONE DESIGN */
 @media (min-width: 768px) {
 	.page-content {
-		background: $bg-img-grass center no-repeat;
+		background: $img-grass center no-repeat;
 		background-size: cover;
 	}
 
