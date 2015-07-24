@@ -69,11 +69,12 @@ class ProjectForm(Form):
 
 
 class ReferralForm(Form):
-	refer_id	= HiddenField('id',		[validators.Required(), validators.length(min=30, max=40)])
-	refer_name	= TextField('Trusted',	[validators.Optional(), validators.length(min=1, max=100)])
+	bid = HiddenField('bid',	[validators.Required(), validators.length(min=30, max=40)])
+	rid	= HiddenField('rid',	[validators.Optional(), validators.length(min=30, max=40)])
 
-	refer_why	= TextField('Name', 	[validators.Required(), validators.length(min=1, max=200)])
-	refer_proj	= TextField('Proj', [validators.Optional(), validators.length(min=1, max=120)])
+	content	= TextAreaField('ref',	[validators.Required(), validators.length(min=20, max=200)])
+	context	= TextField('context',	[validators.Optional(), validators.length(min=0, max=120)])
+	trusted	= TextField('Trusted',	[validators.Optional(), validators.length(min=4, max=100)])
 
 
 class InviteForm(Form):

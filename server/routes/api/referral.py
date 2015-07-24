@@ -25,55 +25,54 @@ from server.controllers import *
 @public.route('/referral',  methods=['GET'])
 def render_create_referral_page():
 	bp = Profile.get_by_uid(session.get('uid'))
-	rf = ReferralForm(request.form)
-
+	rf = ReferralForm(request.values)
 	return make_response(render_template('referral.html', bp=bp, form=rf))
 
 
 
-@api.route('/referral/create', methods=['POST'])
+@api.route('/referral/create/', methods=['POST'])
+@api.route('/referral/create',  methods=['POST'])
 @sc_authenticated
 def api_referral_create():
 	print 'api_referral_create(): enter'
 	profile	= Profile.get_by_uid(session.get('uid'))
-	bus_id	= request.values.get('business')
-	ref_id	= request.values.get('referral')
-	content = request.values.get('content')
-	project = request.values.get('projects')
+	rf = ReferralForm(request.form)
+	bus_id	= rf.bid.data
+	ref_id	= rf.rid.data
+	context	= rf.context.data
+	content = rf.content.data
 
-#	if form.validate_on_submit():
-	if (bus_id and content):
-		try:
-			# business may not exist.
-			business = Business.get_by_id(bus_id)
-			if (not business):
-				print 'business doesn\'t exist - import it.'
-				business = Business.import_from_json(bus_id)
+	if not rf.validate_on_submit():
+		print rf.errors
+		return make_response(jsonify(rf.errors), 400)
 
-			projects = ','.join([ x.strip().lower() for x in request.values.get('projects').split(',') ])
-			referral = Referral(business.bus_id, profile, content, projects)
-			database.session.add(referral)
-			database.session.commit()
+	try:
+		# business may not exist.
+		business = Business.get_by_id(bus_id)
+		if (not business):
+			print 'business doesn\'t exist - import it.'
+			business = Business.import_from_json(bus_id)
 
-			session_referrals = session.get('referrals', {})
-			session_referrals[referral.ref_uuid] = referral
-			session['referrals'] = session_referrals
-		except Exception as e:
-			print type(e), e
-			database.session.rollback()
-			return e.api_response(request.method)
+		context = ','.join([ x.strip().lower() for x in context.split(',') ])
+		referral = Referral(business.bus_id, profile, content, context)
+		database.session.add(referral)
+		database.session.commit()
+
+		session_referrals = session.get('referrals', {})
+		session_referrals[referral.ref_uuid] = referral
+		session['referrals'] = session_referrals
 		return make_response(jsonify(referral.serialize), 200)
-
-	missing = ''
-	if not (bus_id): missing = missing + ' (business) '
-	if not (content): missing = missing + ' (content) '
-	return make_response(jsonify(missing=missing), 400)
+	except Exception as e:
+		print type(e), e
+		database.session.rollback()
+	return e.api_response(request.method)
 
 
 
 @api.route('/referral/<string:ref_id>/', methods=['GET'])
 @api.route('/referral/<string:ref_id>',  methods=['GET'])
 def api_referral_read(ref_id):
+	print 'api_referral_read: enter'
 	referral = Referral.get_by_refid(ref_id)
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
 	return make_response(jsonify(referral=referral.serialize), 200)
@@ -85,14 +84,16 @@ def api_referral_read(ref_id):
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
 def api_referral_update(ref_id):
 	referral	= Referral.get_by_refid(ref_id)
-	bus_id	= request.values.get('business')
-	content = request.values.get('content')
-	project = request.values.get('projects')
+
+	rf = ReferralForm(request.form)
+	bus_id	= rf.bid.data
+	context	= rf.context.data
+	content = rf.content.data
 
 	if (not referral): return make_response(jsonify(request='missing valid resource'), 400)
 	referral.ref_business	= bus_id
 	referral.ref_content	= content
-	referral.ref_project	= ','.join([ x.strip().lower() for x in project.split(',') ])
+	referral.ref_project	= ','.join([ x.strip().lower() for x in context.split(',') ])
 
 	try:
 		database.session.add(referral)
