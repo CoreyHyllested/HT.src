@@ -107,26 +107,34 @@ def server_init_service_oauth(server):
 
 
 def	server_init_assets(server):
+	assets = Environment(server)
+	assets.debug =True
+	assets.load_path.append(assets.directory + '/scss')
+	assets.load_path.append(assets.directory + '/scss/define')
+	assets.load_path.append(assets.directory + '/scss/elements')
+	print 'directory', assets.directory
+	print 'loadpath', assets.load_path
+	print dir(assets)
+
 	jsfilter = server.config['JSFILTER']
 
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
-	css_loginsys =	Bundle('scss/authorize.scss', filters='pyscss', output='css/authorize.css')
-	css_errors	=	Bundle('scss/errors.scss', filters='pyscss', output='css/errors.css')
-	css_about_sc =	Bundle('scss/about-sc.scss', filters='pyscss', output='css/about-sc.css')
-	css_landpage =	Bundle('scss/landpage.scss', filters='pyscss', output='css/landpage.css')
-	css_legaltos =	Bundle('scss/legaltos.scss', filters='pyscss', output='css/legaltos.css')
-	css_products =	Bundle('scss/products.scss', filters='pyscss', output='css/products.css')
-	css_profiles =	Bundle('scss/profiles.scss', filters='pyscss', output='css/profiles.css')
-	css_projects =	Bundle('scss/projects.scss', filters='pyscss', output='css/projects.css')
-	css_recovery =	Bundle('scss/recovery.scss', filters='pyscss', output='css/recovery.css')
-	css_referral =	Bundle('scss/referral.scss', filters='pyscss', output='css/referral.css')
-	#css_schedule =	Bundle('scss/schedule.scss', filters='pyscss', output='css/schedule.css')
-	css_settings =	Bundle('scss/settings.scss', filters='pyscss', output='css/settings.css')
-	css_dashboard = Bundle('scss/dashboard.scss', filters='pyscss', output='css/pro_dashboard.css')
-	elem_header	=	Bundle('scss/elem-navigate.scss', 'scss/modals.scss', filters='pyscss', output='css/navigate.css')
+	css_loginsys =	Bundle('authorize.scss', filters='pyscss', output='css/authorize.css')
+	css_errors	=	Bundle('errors.scss', filters='pyscss', output='css/errors.css')
+	css_about_sc =	Bundle('about-sc.scss', filters='pyscss', output='css/about-sc.css')
+	css_landpage =	Bundle('landpage.scss', filters='pyscss', output='css/landpage.css')
+	css_legaltos =	Bundle('legaltos.scss', filters='pyscss', output='css/legaltos.css')
+	css_products =	Bundle('products.scss', filters='pyscss', output='css/products.css')
+	css_profiles =	Bundle('profiles.scss', filters='pyscss', output='css/profiles.css')
+	css_projects =	Bundle('projects.scss', filters='pyscss', output='css/projects.css')
+	css_recovery =	Bundle('recovery.scss', filters='pyscss', output='css/recovery.css')
+	css_referral =	Bundle('referral.scss', filters='pyscss', output='css/referral.css')
+	#css_schedule =	Bundle('schedule.scss', filters='pyscss', output='css/schedule.css')
+	css_settings =	Bundle('settings.scss', filters='pyscss', output='css/settings.css')
+	css_dashboard = Bundle('dashboard.scss', filters='pyscss', output='css/pro_dashboard.css')
+	elem_header	=	Bundle('navigate.scss', 'modals.scss', filters='pyscss', output='css/navigate.css')
 
-	assets = Environment(server)
 	assets.url = server.static_url_path
 	assets.register('js_mapformat', js_dashboard_maps_format)
 	assets.register('scss_about_sc', css_about_sc)

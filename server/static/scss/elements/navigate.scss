@@ -1,6 +1,9 @@
 /* (c) 2015 Soulcrafting */
-@import 'elem-defaults';
+@import 'styles';
+@import 'fonts';
+@import 'colors';
 @import 'modals';
+@import 'defaults';
 
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
 .navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}

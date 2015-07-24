@@ -5,6 +5,7 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel="stylesheet" href="/static/css/dashboard.css">
+	{% assets 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 {% block header_js %}

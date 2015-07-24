@@ -1,7 +1,4 @@
-@import 'sizes';
-@import 'colors';
-@import 'elem-defaults';
-
+@import 'navigate';
 
 section div	{	padding: 0 $section-padding;	}
 
@@ -22,9 +19,3 @@ section div	{	padding: 0 $section-padding;	}
 a:hover			{ text-decoration: none;				}
 a.active		{ border-bottom: 3px solid $ht-blue;	}
 a.active:hover	{ border-bottom-color: #23527c;			}
-
-
-#tos { }
-
-@media only screen and (min-device-width: 240px) and (max-width: 549px) { }
-@media only screen and (min-width: 550px) 		 and (max-width: 767px) { } 
