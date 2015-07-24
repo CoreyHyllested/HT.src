@@ -2,29 +2,26 @@
 @import 'forms';
 
 
-#refer_name			{	display: inline-block;	border-radius: 0px; 	}
+#trusted			{	display: inline-block;	border-radius: 0px; 	}
 #refer-title		{	padding-left: 5px;	text-align: left;	}
 #refer-professional	{	display: inline-block;	width: 69%;			padding: 0 5px;		max-width: 660px;	background-color: white;	vertical-align: top;	}
-#refer-explanation	{	display: inline-block;	width: 28%;			padding: 20px 5px;	max-width: 280px; 	background-color: white;	}
+#instructions		{	display: inline-block;	width: 28%;			padding: 20px 5px;	max-width: 280px; 	background-color: white;	}
 #feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
-#btn-save-referral	{	width:	120px;			}
 
-#referral-profile {
+#btn-submit-referral	{	width:	120px;			}
+
+#referral-questions {
 	padding: 25px 0 10px;
 }
 
-#profile-card {
+#trust-card {
 	border: 1px #e1e8ed solid;
 	border-top-width: 0px;
 	padding: 0px 10px 10px;
 }
 
-#profile-card-contact {
-	padding: 10px 0;
-}
 
-#refer-why	{	width: 100%; margin: 0 0 10px;	resize: none; }
-#refer-proj	{	}
+#content	{	width: 100%; margin: 0 0 10px;	resize: none; }
 
 .twitter-typeahead		{	display: inline !important;	width: 100%;	} 	//fixes bug. #invite-emails is too small
 .tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
@@ -94,4 +91,5 @@
 .ff.contact {	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
 
 //unused
-#send_invite	{	display: inline-block; width: 75px; height: 40px; }
+#profile-card-contact { padding: 10px 0; }
+#context {	}

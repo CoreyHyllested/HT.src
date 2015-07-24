@@ -1,9 +1,11 @@
-var referral_version = 0.62;
+var referral_version = 0.63;
 
+function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
-	$('#profile-card').addClass('no-display');
-	$('#refer-explanation').addClass('no-display');
+	$('#trust-card').addClass('no-display');
+	$('#instructions').addClass('no-display');
 }
+
 
 function save_business_clicked() {
 	fd = new FormData();
@@ -12,9 +14,9 @@ function save_business_clicked() {
 	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
 	fd.append("phone", $('#phone').val());
-
-	submit_new_business(fd);
+	create_business(fd);
 }
+
 
 function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
 function feedback_remove(id)	{	$('#'+id).remove();			}
@@ -66,7 +68,7 @@ function modalCreateBusiness(fd) {
 }
 
 
-function submit_new_business(fd) {
+function create_business(fd) {
 	console.log('submitting new business ' + fd.name);
 	$.ajax({ url	: '/business/create',
 			type	: "POST",
@@ -78,7 +80,7 @@ function submit_new_business(fd) {
 				closeAlertWindow();
 
 				var profile_fd = {};
-				profile_fd.csrf_token = "{{ csrf_token() }}";
+				profile_fd.csrf_token = $('#csrf_token').val(),
 				profile_fd.profile_id = response.business.business_id;
 				get_profile(profile_fd);
 				add_feedback('Added ' + response.business.business_name);
@@ -93,28 +95,27 @@ function submit_new_business(fd) {
 
 
 function save_referral(evt) {
-	fd = {};
-	fd.csrf_token	= "{{ csrf_token() }}";
-	fd.business	= $('#profile-card').data('id');
-	fd.referral	= $('#referral-profile').attr('data-id');
-	fd.content	= $('#refer-why').val();
-	fd.projects	= $('#refer-proj').val();
+	rid	= $('#rid').val();
+ 	fd	= new FormData($('#refer-form')[0])
+	fd.append("csrf_token", $('#csrf_token').val());
 
+	// create or update referral.
 	referral_uri = "/referral/create";
-	if (fd.referral != "") {
-		referral_uri = "/referral/" + fd.referral + "/update";
-	}
+	if (rid != '') { referral_uri = "/referral/" + rid + "/update"; }
 
 	$.ajax({	url		: referral_uri,
 				type	: "POST",
 				data	: fd,
+				processData: false,
+				contentType: false,
 				success : function(data) {
-					$('#referral-profile').attr('data-id', data.ref_uuid);
+					$('#rid').val(data.ref_uuid);
 					add_feedback('Saved');
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
 					//  data.status is 401, redirectiing user to authenticate.
+					//  todo: we should pop-up a login/signup modal instead.
 					if (data.status == 401) { window.location.href = '/login'; }
 					console.log(data);
 				}
@@ -144,13 +145,14 @@ projects = new Bloodhound({
 
 
 function get_profile(fd) {
+	clear_referral();
 	$.ajax({	url		: "/business/" + fd.profile_id,
 				type	: "GET",
 				data	: fd,
 				success : function(data) {
-					$('#refer-explanation').removeClass('no-display');
-					$('#profile-card').removeClass('no-display');
-					$('#profile-card').attr('data-id', fd.profile_id);
+					$('#trust-card').removeClass('no-display');
+					$('#trust-card').attr('data-id', fd.profile_id);
+					$('#instructions').removeClass('no-display');
 
 					busname = data.business_name
 					if (data.business_website) {
@@ -158,8 +160,8 @@ function get_profile(fd) {
 					}
 					$('#pro-name').html(busname);
 					/* examples of setting phone, email in git-log (july-21-15) */
-					$('#refer-why').focus();
-					$('#refer_id').val(fd.profile_id);
+					$('#content').focus();
+					$('#bid').val(fd.profile_id);
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
@@ -169,11 +171,11 @@ function get_profile(fd) {
 
 
 function clear_business_addr( event ) {
-	name = $('#refer_name').val();
+	name = $('#trusted').val();
 	idx = name.lastIndexOf(" | ")
 	if (idx == -1) { return; }
 	strng = name.substring(0, name.lastIndexOf(" | "));
-	$('#refer_name').val(strng);
+	$('#trusted').val(strng);
 }
 
 
@@ -203,14 +205,14 @@ $(document).ready(function () {
 
 	projects.initialize();
 
-	$('#refer_name').keydown(function(event) {
-		clear_profile();
-	});
-	$('#modal-buttons').on('click', '.save-business', save_business_clicked);
-	$('#btn-save-referral').click(save_referral);
-	$('#refer_name').focus(clear_business_addr);
+	$('#trusted').focus(clear_business_addr);
+	$('#trusted').keydown(clear_profile);
 
-	$('#refer_name.typeahead').bind('typeahead:select', function(ev, suggestion) {
+	$('#btn-cancel-referral').click( function (e) { clear_profile(); });
+	$('#btn-submit-referral').click( function (e) { save_referral(); });
+	$('#modal-buttons').on('click', '.save-business', save_business_clicked);
+
+	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
 		fd.csrf_token = "{{ csrf_token() }}";
 		fd.profile_id = suggestion.id;
@@ -218,28 +220,28 @@ $(document).ready(function () {
 	});
 
 	// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
-	$('#refer_name.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
+	$('#trusted.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
 		var fd = {};
 		fd.csrf_token = "{{ csrf_token() }}";
 		fd.profile_id = suggestion.id;
 		console.log('autocompleted');
 		get_profile(fd);
 	}).bind('typeahead:render', function(evt, suggestions, name) {
-		if ($('#profile-card').hasClass('no-display')) {
+		if ($('#trust-card').hasClass('no-display')) {
 			$('#not-found').removeClass('no-display');
 		} else {
 			$('#not-found').addClass('no-display');
 		}
 	});
 
-	$('#refer-why').keyup(function(evt) {
+	$('#content').keyup(function(evt) {
 		txt = $(this).val();
 		max	= $(this).attr('maxlength');
 		nr	= max - txt.length;
-		$('#refer-why-nr').text(nr);
+		$('#content-nr').text(nr);
 	});
 
-	$('#refer-proj').tagsinput({
+	$('#context').tagsinput({
 		typeaheadjs: {
 			name: 'projects',
 			displayKey: 'name',
