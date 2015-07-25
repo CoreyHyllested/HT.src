@@ -63,8 +63,9 @@ def render_pro_signup_page(sc_msg=None):
 
 
 def redirect_back(next_url):
-	redirect_url = session.get('redir_link', '/profile')
-	session.pop('redir_link')
+	redirect_url = session.get('redir_link')
+	if redirect_url: session.pop('redir_link')
+	else: redirect_url = next_url
 	return redirect(redirect_url)
 
 
