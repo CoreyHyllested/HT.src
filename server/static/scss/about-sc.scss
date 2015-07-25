@@ -1,9 +1,10 @@
-@import 'navigate';
-@import 'masthead';
+@import 'defines/images';
+@import 'elements/navigate';
+@import 'elements/masthead';
 
 
 section				{	background:	white;	}
-#masthead			{	background-image: $bg-img-medpatio;	z-index: -5;	}
+#masthead			{	background-image: $img-medpatio;	z-index: -5;	}
 #masthead-text		{	top: 40%;	opacity: 0;				}
 #soulcrafting-what	{	background:	whitesmoke;				}
 #soulcrafting-faq	{	background:	whitesmoke;				}
