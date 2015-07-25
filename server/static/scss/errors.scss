@@ -1,10 +1,10 @@
-@import 'colors';
-@import 'defaults';
-@import 'masthead';
+@import 'defines/images';
+@import 'elements/navigate';
+@import 'elements/masthead';
 
 #masthead	{
 	position: static;
-	background-image: $bg-img-404;	
+	background-image: $img-404;
 	font-size: 20px;
 }
 
