@@ -1,11 +1,12 @@
-@import 'forms';
 @import 'defines/images';
-@import 'elements/navigate';
-@import 'elements/checkbox';
+@import 'defines/elem_input';
+@import 'defines/elem_navigate';
+@import 'defines/elem_checkbox';
 
 
 
 #page-content	{	padding-top:	$section-padding;	}
+
 #authorize {
 	background-color: $white;
 	border-radius: $container-border-radius;
@@ -17,32 +18,18 @@
 #terms-text		{ font-size: 1.4em; }
 #authorize-form { padding: $form-padding; }
 
-.social-btns {
-	text-align: center;
-	margin: 25px auto;
+.extraspace {
+	margin: 20px 0 20px;
+	width: 100%;
 }
 
-.social-login {
-	display: inline-block;
-	margin: 0 auto;
+#authorize input[type="password"] {
+	width: 100%;
 }
 
-.social-btns li { margin-bottom: 10px; }
-.social-btns li .btn {
-  color: $white;
-  min-width: 220px;
-  text-align: left;
-}
-
-.social-btns li .btn:hover { color: $white; }
-.social-btns li .btn .fa {
-  font-size: 18px;
-  position: relative;
-  top: 2px;
-  margin-right: 10px;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  padding-right: 10px;
-  width: 30px;
+#authorize input[type="submit"] {
+	margin-bottom: 15px;
+	width: 100%;
 }
 
 
@@ -52,10 +39,9 @@
 }
 .blueButton:hover { color: $white-80; }
 
-
 .form-group { position: relative; }
-label[for='terms'] { height: $field-height; }
 
+label[for='terms'] { height: $field-height; }
 input[type='name'], input[type='password'],
 input[type='email'], input[type='phone'], input[type='address'] {
 	padding-left: 30px;
@@ -124,18 +110,6 @@ input[type='email'], input[type='phone'], input[type='address'] {
   color: $icon-gray;
 }
 
-.btn-signup {
-	background: white;
-	border: 2px solid black;
-}
-
-.twitter-btn		{ background: $twittr-btn-color;		}
-.twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
-.facebook-btn		{ background: $facebk-btn-color;		}
-.facebook-btn:hover	{ background: $facebk-btn-color-hover;	}
-.google-btn			{ background: $google-btn-color;		}
-.google-btn:hover	{ background: $google-btn-color-hover;	}
-
 
 
 
@@ -156,10 +130,7 @@ input[type='email'], input[type='phone'], input[type='address'] {
 		margin-left: 20%;
 		width: 385px;
 	}
-
 }
-
-@media (min-width: 768px) { }
 
 
 /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
@@ -174,3 +145,39 @@ input[type='email'], input[type='phone'], input[type='address'] {
 	opacity:  1;
 }
 .attention { color: red; }
+
+
+
+h2 {
+	margin: 20px auto 10px;
+}
+
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
+}
+.recoveryLink:hover { text-decoration: underline; }
+
+/* PHONE DESIGN */
+@media (max-width: 349px) {
+	#recovery { width: 90%; }
+}
+
+/* DESIGN FOR EVERYTHING ELSE */
+@media (min-width: 350px) {
+	#recovery { width: 300px; }
+}
+
+@media (min-width: 489px) {
+	.page-content {
+		background: $img-grass no-repeat center;
+		background-size: cover;
+	}
+	#recovery {
+		margin-left: 20%;
+		width: 300px;
+	}
+}

@@ -1,11 +1,6 @@
-@import 'elements/navigate';
 @import 'defines/images';
-@import 'forms';
-
-.page-content {
-	padding: 30px 10px 53px;
-}
-
+@import 'defines/elem_input';
+@import 'defines/elem_navigate';
 
 #project-wrapper {
 	background-color: white;
@@ -44,7 +39,6 @@
 }
 
 
-
 /* THIS WORKS... but needs to be changed; also everything needs the hint 
 .input-wrapper:before {
   font-style: normal;
@@ -69,25 +63,9 @@
 }
 
 
-.underlined	{ border-bottom: 1px solid darkgrey; }
-.blueButton:hover { color: white; }
-.save-btn-text { }
-
-input.disabled,
-.disabled p, 
-.disabled h3 {
-	 color: rgba(0,0,0,.4);
-} 
-
-
 
 /* PHONE DESIGN */
 @media (min-width: 768px) {
-	.page-content {
-		background: $img-grass center no-repeat;
-		background-size: cover;
-	}
-
 	#project-wrapper {
 		margin: 0px auto 20px;
 		max-width: 650px;

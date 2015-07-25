@@ -1,5 +1,7 @@
-@import 'navigate';
+@import 'defines/defaults';
+@import 'defines/elem_navigate';
 
+//override?
 section div	{	padding: 0 $section-padding;	}
 
 #legal-nav	{
@@ -16,6 +18,7 @@ section div	{	padding: 0 $section-padding;	}
 	font-size: 20px;
 }
 
+// overrides
 a:hover			{ text-decoration: none;				}
 a.active		{ border-bottom: 3px solid $ht-blue;	}
 a.active:hover	{ border-bottom-color: #23527c;			}

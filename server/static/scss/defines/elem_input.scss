@@ -1,0 +1,174 @@
+@import 'defines/colors';
+@import 'defines/fonts';
+@import 'defines/elem_checkbox';
+
+
+$field-bottom-margin: 10px;
+$field-height: 40px;
+
+$btn-width = 75px;
+
+#btn-submit-referral	{	width:	120px;			}
+#btn-get-verified	{ height: 40px; }
+#btn-validate-code	{ height: 40px; }
+.btn-referral {
+	display: inline-block;
+	max-width: 120px;
+}
+
+.btn-signup {
+	background: white;
+	border: 2px solid black;
+}
+
+.btn-settings {
+	min-width: 110px;
+	height: $field-height;
+	//padding: 10px 20px;
+	margin: 20px 0px 0px;
+	//margin-right: 20px;
+	//mv to settings.scss (only used there)
+}
+
+//TODO -- make #id, OR similarize// used on landing page;
+.lp-btn {
+	width: 240px;
+	color: white !important;
+	margin: 0 auto;
+	border: 2px solid white;
+	text-transform: uppercase;
+	transition: background 80ms ease-out;
+}
+
+.lp-btn:hover {
+	background-color: white;
+	color: black !important;
+}
+
+.resend .blueButton {
+	font-size: 0.9em;
+	line-height: 24px;
+	height: 39px;
+}
+
+.blueButton:hover { color: white; }
+
+input.disabled { color: rgba(0,0,0,.4);	}
+
+.field-container {
+	position: relative;
+	display: block;
+	width: 100%;
+	margin: 0px 0 8px;
+	max-width: 600px;
+}
+
+
+.field {
+	color: $field-info-color;
+	width: 100%;
+	font-family: "Open Sans", Helvetica, sans-serif;
+	font-size: .9em;
+}
+
+.field.info			{ padding: 15px 0 5px; 	margin-left: 0px;	}
+.field.info.first	{ padding-top: 0px;		}
+.field.info.notice	{ font-weight: 600;		}
+
+
+.field.input { }
+.field.input.iconified { padding-left: 13px; }
+
+.field.error {
+	display: none;
+	font-size: .7em;
+	color: #e75f63;
+}
+.field.error.inline {
+	display: inline-block;
+	padding-left: 0px;
+}
+
+.field.error.alt {
+	float: left;
+	height: $field-height;
+	line-height: 50px;
+	margin-left: 16px;
+	margin-top: 10px;
+}
+
+
+.field.action {
+	float: left;
+	padding-left: 10px;
+	height: $field-height;
+}
+
+/* UNUSED */
+.field.description {
+	color: rgba(0,0,0, 0.7);
+	margin-bottom: $field-bottom-margin;
+}
+
+
+
+.twitter-btn		{ background: $twittr-btn-color;		}
+.twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
+.facebook-btn		{ background: $facebk-btn-color;		}
+.facebook-btn:hover	{ background: $facebk-btn-color-hover;	}
+.google-btn			{ background: $google-btn-color;		}
+.google-btn:hover	{ background: $google-btn-color-hover;	}
+
+
+
+.social-btns {
+	text-align: center;
+	margin: 25px auto;
+}
+
+.social-login {
+	display: inline-block;
+	margin: 0 auto;
+}
+
+.social-btns li { margin-bottom: 10px; }
+.social-btns li .btn {
+  color: $white;
+  min-width: 220px;
+  text-align: left;
+}
+
+.social-btns li .btn:hover { color: $white; }
+.social-btns li .btn .fa {
+  font-size: 18px;
+  position: relative;
+  top: 2px;
+  margin-right: 10px;
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  padding-right: 10px;
+  width: 30px;
+}
+
+.ff			{	display: inline-block;	margin: 5px 0;			}
+.ff.textarea{	width: 100%;	}
+.ff.header	{	width: 100%;	font-size: .7em;	font-weight: 600;	vertical-align: top;	padding-left: 3px;	}
+.ff.name	{	width: 12%;		font-size: .8em;	font-weight: 600;	vertical-align: top; 		}
+.ff.value	{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
+.ff.contact {	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
+
+.twitter-typeahead		{	display: inline !important;	width: 100%;	} 	//fixes bug. #invite-emails is too small
+.tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
+.tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
+.tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
+.feedback-bubble		{
+		background-color: green;
+		border: 1px solid green;
+		border-radius: 7px;
+		color: white;
+		font-weight: 600;
+		text-align: center;
+		margin: 5px auto;
+		width:	66%;
+ }
+.bootstrap-tagsinput 			{	box-shadow: none !important;	border: 1px #e1e8ed solid !important;	border-radius: 0px !important;	}
+.bootstrap-tagsinput .tt-menu	{	width: 350px;	}

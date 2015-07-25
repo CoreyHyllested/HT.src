@@ -1,13 +1,13 @@
 @import 'defines/images';
-@import 'elements/navigate';
-@import 'elements/masthead';
+@import 'defines/elem_navigate';
+@import 'defines/elem_masthead';
 
+//override image
 #masthead	{
 	position: static;
 	background-image: $img-404;
 	font-size: 20px;
 }
-
 #masthead-text	{	padding: 50px;	text-align: left;	top: 30%;	line-height: 1.5em;	}
 
 #error-list {

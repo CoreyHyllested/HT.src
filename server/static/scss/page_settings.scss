@@ -1,0 +1,32 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/elem_input';
+@import 'defines/elem_navigate';
+
+//override 
+section div			{	max-width:	550px !important;	}
+#settings-content	{	padding: 40px 25px;				}
+
+#settings-status {
+	color: rgba(0,0,0,.4);
+	text-align: left;
+	font-size: .9em;
+	height: 30px;
+	margin: 10px;
+	line-height: 36px;
+	font-weight: $font-weight-ltbold;
+}
+
+
+
+#verify-email { height: 60px; }
+#verify-notice { font-size: .9em; line-height: 40px; }
+#email-verified {
+	height: 40px;
+	line-height: 40px;
+	color: $darkgreen; //rgba(0, 255, 0, 0.3);
+}
+
+#challenge { margin-top: -1px; }
+#verify_password { margin-top: -1px; }

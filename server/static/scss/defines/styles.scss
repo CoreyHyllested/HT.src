@@ -1,11 +1,50 @@
 /* (c) 2015 Soulcrafting */
 
-.inline			{	display: inline;	}
+@import 'defines/defaults';
+
+.inline			{	display: inline;		}
+.inline			{	display: inline-block;	}
+.no-display		{ 	display: none !important;	}
+.empty 			{	display: none !important; 	}
 .align-left		{	text-align: left;	}
 .align-right	{	text-align: right;	}
 
+.underlined	{ border-bottom: 1px solid darkgrey; }
+
+
+.name { color: darkgrey; }
 .icon {
 	width: 15px;
 	text-align: center;
 	margin-right: 15px;
+}
+.big-icon		{	font-size: 64px;	}
+
+
+.spin-left {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	-webkit-transform: rotate(45deg);
+	-moz-transform: rotate(45deg); /* Firefox */
+	-ms-transform: rotate(45deg); /* IE */
+	-o-transform: rotate(45deg); /* Opera */
+	transform: rotate(45deg);
+}
+
+.inline-50	{	max-width: 485px;	width:	49%;	display: inline-block;	vertical-align: middle; }
+.inline-33	{	max-width: 350px;	width:	33%;	display: inline-block;	vertical-align: middle;	}
+
+
+.value	 		{	display: inline-block;	padding: 10px 20px;		vertical-align: middle;	}
+.value-title	{	position: static;		text-align: center; }
+.value-panel	{ }
+
+// todo rename appropriately... text-padding
+.text-content	{	padding: 0px $text-padding;			}
+
+/* MAP: 				[FF35+]					[Chrome, Safari6+ & Opera 15+]	[IE6-9]							*/
+.greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
+//.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
+
+@media (max-width: 768px) {
+	.text-content { padding-left: $text-padding-wide; padding-right: $text-padding-wide; }
 }

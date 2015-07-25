@@ -4,7 +4,6 @@ $masthead-height		: 450px;
 $masthead-height-mobile	: 330px;
 
 
-
 #masthead {
 	position: fixed;
 
@@ -25,25 +24,20 @@ $masthead-height-mobile	: 330px;
 	background-position: center;
 }
 
-#masthead.lp {
-	position: relative;
-	background-image: $img-lpcover;
-	background-position-y: 60%;
-	font-size: 20px;	/* make this a default */
-	height:	70vh;
-	min-height: 400px;
-}
-
 
 #masthead-text	{	width: 100%;	position: relative;	display: block; top: 50%;		margin: 0 auto;		transition: opacity 1.5s ease 1.5s;	}
 #masthead-title {	width: 100%;	position: static;	display: block; 				margin: 0 auto;		text-transform: uppercase; 		}
 #masthead-btns	{	width: 100%;	position: static;	display: block; 				margin: 0 auto;		text-transform: uppercase; 		}
-#masthead-text.lp 	{	top: 25%;	}		//lp
-#masthead-btns.lp	{	letter-spacing: 2px;	}	/* lp- impact just the buttons */
-#masthead-title.lp	{	font-size: 1.4em;	font-weight: 600;	}	//lp
-
 
 #masthead-gap 	{ height: $masthead-height; }
+
+//todo see if anything is close in elem-input
+.btn-masthead {
+	width: 240px;
+	color: white !important;
+	border: 2px solid white;
+	transition: background 80ms ease-out;
+}
 
 @media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }
 
@@ -56,8 +50,3 @@ $masthead-height-mobile	: 330px;
 	#masthead-title {	font-size: 1.5em;	}
 	#masthead-text  {	font-size: 1.5em;	}
 }
-
-@media (min-width: 980px)	{ }
-@media (min-width: 1200px)	{ }
-@media (min-width: 1450px)	{ }
-

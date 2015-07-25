@@ -1,19 +1,10 @@
-@import 'navigate';
-@import 'defaults';
+@import 'defines/defaults';
+@import 'defines/elem_input';
+@import 'defines/elem_navigate';
 
-$width-90 = 90%;
-$btn-width = 75px;
-$info-sm-width = 75%;
-$info-lg-width = 80%;
-$info-max-width = 500px;
 
 
 /* ELEMENTS */
-.page-content {
-	padding: 5px 0px 53px;
-}
-
-#prodashboard { }
 #request-references {
 	max-width: $info-max-width;
 }
@@ -28,11 +19,6 @@ $info-max-width = 500px;
 	margin: 20px 0px;
 }
 
-.resend .blueButton {
-	font-size: 0.9em;
-	line-height: 24px;
-	height: 39px;
-}
 
 .request {
 	display: block;
@@ -115,3 +101,4 @@ $info-max-width = 500px;
 	}
 }
 
+#prodashboard { }

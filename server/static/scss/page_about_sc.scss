@@ -1,0 +1,28 @@
+@import 'defines/images';
+@import 'defines/defaults';
+@import 'defines/elem_navigate';
+@import 'defines/elem_masthead';
+
+
+//overrides
+#masthead			{	background-image: $img-medpatio;	z-index: -5;	}
+#masthead-text		{	top: 40%;	opacity: 0;				}
+
+
+#soulcrafting-what	{	background:	whitesmoke;				}
+#soulcrafting-faq	{	background:	whitesmoke;				}
+#faq {
+	margin-top: 40px;
+	display: block; 
+	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
+}		
+
+.faq-question {
+  font-weight: bolder;
+  text-align: left !important;
+}
+
+
+@media (max-width: 767px) {
+	.inline-50	{	width: 100%;	max-width: 100%;	}
+}

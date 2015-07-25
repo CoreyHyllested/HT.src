@@ -1,11 +1,9 @@
-@import 'navigate';
-@import 'masthead';
-
-$closing-text-sz	= 16px;
-
+@import 'defines/images';
+@import 'defines/elem_navigate';
+@import 'defines/elem_masthead';
 
 //overrides
-#masthead		{ background-image: $bg-img-kitchen;	z-index: -5; }
+#masthead		{ background-image: $img-kitchen;	z-index: -5; }
 #masthead-text	{ top: 33%; opacity: 0; }
 
 
@@ -23,7 +21,7 @@ $closing-text-sz	= 16px;
 #craftsman-quote	{	text-align: left; 	}
 #craftsman-name		{	text-indent: 20px;	}
 #craftsman-work		{
-	background: $bg-img-patio center no-repeat;
+	background: $img-patio center no-repeat;
 	background-size: cover;
 	height: 500px;
 }
@@ -40,26 +38,7 @@ $closing-text-sz	= 16px;
 }
 
 
-/* Images.  img-container (no margins).  */
-.img-responsive	{	background:	$gray;	margin: 0 auto; }
-.img-width-100	{	max-width: 999px;					}
-.img-width-50	{	max-width: 485px;	width:	49%;	display: inline-block;	}
-.img-width-33	{	max-width: 350px;	width:	33%;	display: inline-block;	}
-.img-spacer		{	max-width:  22px;	width:	2px;	display: inline-block;	}
-.img-craftsman	{	height: 150px;		width:  150px;	border-radius: 50%;		}
-
-
-.name { color: darkgrey; }
-
-/* Responsive Styles */
-@media (max-width: 488px) {
-	.img-width-50	{	width: 100%;	max-width: 100%;	}
-}
-
-@media (min-width: 489px)	{ }
 @media (min-width: 768px)	{
 	#craftsman-id		{	width: 25%; 	}
 	#craftsman-about	{	width: 74%; 	}
-	.img-spacer			{	width:	1%;		}
 }
-@media (min-width: 1020px)	{ .img-spacer	{	width:	21px;	} }
