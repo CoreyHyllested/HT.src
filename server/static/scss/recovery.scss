@@ -1,4 +1,6 @@
 @import 'forms';
+@import 'defines/images';
+@import 'elements/navigate';
 
 
 // a) 240px - 349px (phones)
@@ -53,7 +55,7 @@ h2 {
 
 @media (min-width: 489px) {
 	.page-content {
-		background: $bg-img-grass no-repeat center;
+		background: $img-grass no-repeat center;
 		background-size: cover;
 	}
 

@@ -1,6 +1,7 @@
 @import 'forms';
-@import 'defaults';
-@import 'checkbox';
+@import 'defines/images';
+@import 'elements/navigate';
+@import 'elements/checkbox';
 
 
 
@@ -147,7 +148,7 @@ input[type='email'], input[type='phone'], input[type='address'] {
 @media (min-width: 489px) {
 	#page-wrapper	{	margin-bottom:	$section-padding;	}
 	#page-content	{
-		background: $bg-img-grass no-repeat center;
+		background: $img-grass no-repeat center;
 		background-size: cover;
 	}
 
