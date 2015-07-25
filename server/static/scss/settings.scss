@@ -1,7 +1,6 @@
 /* (c) 2015 Soulcrafting */
-@import 'fonts';
-@import 'navigate';
-@import 'sizes';
+@import 'defines/fonts';
+@import 'elements/navigate';
 @import 'forms';
 
 section div			{	max-width:	550px !important;	}

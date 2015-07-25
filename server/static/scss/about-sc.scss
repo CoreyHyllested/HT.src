@@ -3,7 +3,6 @@
 @import 'elements/masthead';
 
 
-section				{	background:	white;	}
 #masthead			{	background-image: $img-medpatio;	z-index: -5;	}
 #masthead-text		{	top: 40%;	opacity: 0;				}
 #soulcrafting-what	{	background:	whitesmoke;				}
@@ -37,8 +36,3 @@ section				{	background:	white;	}
 	.inline-50	{	width: 100%;	max-width: 100%;	}
 	.img-thumb	{	width: 100%;	max-width: 100%;	margin: 10px 0; }
 }
-
-@media (min-width: 489px)	{ }
-@media (min-width: 768px)	{ }
-@media (min-width: 1020px)	{ }
-
