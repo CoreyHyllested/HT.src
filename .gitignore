@@ -8,6 +8,7 @@
 # SCSS files.
 server/static/css/authorize.css
 server/static/css/about-sc.css
+server/static/css/homepage.css
 server/static/css/landpage.css
 server/static/css/legaltos.css
 server/static/css/navigate.css
@@ -17,6 +18,7 @@ server/static/css/projects.css
 server/static/css/referral.css
 server/static/css/recovery.css
 server/static/css/settings.css
+server/static/css/dashboards.css
 server/static/css/pro_dashboard.css
 server/static/css/errors.css
 
