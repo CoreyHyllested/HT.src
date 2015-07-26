@@ -5,12 +5,12 @@
 
 $field-bottom-margin: 10px;
 $field-height: 40px;
-
 $btn-width = 75px;
 
 #btn-submit-referral	{	width:	120px;			}
 #btn-get-verified	{ height: 40px; }
 #btn-validate-code	{ height: 40px; }
+
 .btn-referral {
 	display: inline-block;
 	max-width: 120px;
@@ -40,6 +40,7 @@ $btn-width = 75px;
 	transition: background 80ms ease-out;
 }
 
+.blueButton:hover { color: white; }
 .lp-btn:hover {
 	background-color: white;
 	color: black !important;
@@ -51,9 +52,7 @@ $btn-width = 75px;
 	height: 39px;
 }
 
-.blueButton:hover { color: white; }
 
-input.disabled { color: rgba(0,0,0,.4);	}
 
 .field-container {
 	position: relative;
@@ -112,13 +111,6 @@ input.disabled { color: rgba(0,0,0,.4);	}
 
 
 
-.twitter-btn		{ background: $twittr-btn-color;		}
-.twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
-.facebook-btn		{ background: $facebk-btn-color;		}
-.facebook-btn:hover	{ background: $facebk-btn-color-hover;	}
-.google-btn			{ background: $google-btn-color;		}
-.google-btn:hover	{ background: $google-btn-color-hover;	}
-
 
 
 .social-btns {
@@ -172,3 +164,12 @@ input.disabled { color: rgba(0,0,0,.4);	}
  }
 .bootstrap-tagsinput 			{	box-shadow: none !important;	border: 1px #e1e8ed solid !important;	border-radius: 0px !important;	}
 .bootstrap-tagsinput .tt-menu	{	width: 350px;	}
+
+
+.twitter-btn		{ background: $twittr-btn-color;		}
+.twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
+.facebook-btn		{ background: $facebk-btn-color;		}
+.facebook-btn:hover	{ background: $facebk-btn-color-hover;	}
+.google-btn			{ background: $google-btn-color;		}
+.google-btn:hover	{ background: $google-btn-color-hover;	}
+

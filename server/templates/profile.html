@@ -43,9 +43,11 @@
 		</div>
 
 		<div class='content'>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
-		<div class='content'><input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled></div>
-		<div class='content align-right'>
-			<ul class='ref-operations'>
+		<div class='content'>
+			<div class='ref-context'>
+				<input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
+			</div>
+			<ul class='ref-operations align-right'>
 				{%- if bp != profile %}
 				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>
 				{%- endif %}

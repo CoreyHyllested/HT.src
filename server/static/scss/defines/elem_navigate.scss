@@ -1,20 +1,6 @@
 /* (c) 2015 Soulcrafting */
 
+@import 'defines/sizes';
 @import 'defines/tags_master';
 @import 'defines/elem_modals';
 
-/* override bootstrap '.navbar li a' padding and set to total of 15px' */
-.navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}
-.hhl:hover 		{ border-top-color: $ht-blue;											}
-.sns {
-	padding-left: 0;
-	display: inline;
-	margin: 5px 20px;
-}
-
-
-@media (max-width: 768px) {
-	/* impacts nav-menu *NAME*; has non-zero border */
-	.hhl:hover	{ border-top-color: rgba(0,0,0,0);	}
-	.hhl:focus	{ border-top-color: rgba(0,0,0,0) !important;	}
-}

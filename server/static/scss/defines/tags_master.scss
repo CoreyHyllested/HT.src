@@ -12,10 +12,7 @@ section		{	background:	white;	padding:	$section-padding 0;						}
 section div	{	width: 100%;		max-width:	$column-max-width;		margin: 0 auto;	}
 footer		{ 	width: 100%;		padding:	10px 0;			background-color: white; height: $footer-height; bottom: 0; border-top: 2px solid $ht-blue;		}
 
-hr.thin		{	margin: 10px 5px;	}
+div.text	{						}
 div.content	{	padding: 5px 0 0;	}
+hr.thin		{	margin: 10px 5px;	}
 ul.clean	{	/*define without bullets, used in 404/500 (others) */}
-
-p.disabled, h3.disabled {
-	 color: rgba(0,0,0,.4);
-} 

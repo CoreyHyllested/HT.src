@@ -6,7 +6,6 @@
 }
 
 #profile-name { text-align: left; width: 30%; }
-
 #profile-info {
 	position: relative;
 	top: -30px;
@@ -36,9 +35,13 @@ ul 	{ padding-left: 0px; }
 	text-align: right;
 }
 
+.ref-context {
+	display: inline-block;
+	margin-right:  -60px;
+	padding-right: -75px;
+}
 
-
-.ref-operations		{	display: inline;	font-size: 0.8em;	color: gray;	padding: 0 5px;	}
+.ref-operations		{	display: inline;	font-size: 0.8em;	padding: 0 5px;	}
 .ref-operations li	{	display: inline; 	padding-left: 0; } 
 
 // if this css file is pulled in BEFORE tagsinput.css; we need to add !important;
@@ -46,5 +49,6 @@ ul 	{ padding-left: 0px; }
 .bootstrap-tagsinput .tag [data-role="remove"] { margin-left: 0; }
 .bootstrap-tagsinput .tag [data-role="remove"]:after { content: "" !important; padding: 0 0 !important; }
 .bootstrap-tagsinput input { display: none !important; }
+
 //.sns	{	margin: 3px 2px;	}	//KEEP
 #addr	{	background-color: white;	padding: 0 5px;	}

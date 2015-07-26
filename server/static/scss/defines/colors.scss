@@ -1,7 +1,7 @@
 /* (c) 2015 Soulcrafting */
 
-$ht-blue: #29abe2;
-$black:		#000;
+$black:		rgba(0, 0, 0, 1);
+$black-40:	rgba(0, 0, 0, 0.4);
 $white:		rgba(255,255,255, 1);
 $white-80:	rgba(255,255,255,.8);
 $field-info-color: $black;
@@ -12,6 +12,8 @@ $icon-gray: #999999;
 $easy-gray: #ecf0f1;
 
 $darkgreen: rgba(0, 100, 0, .8);
+$disabled:	$black-40;
+$ht-blue: #29abe2;
 $gray: darkgray;		//eh
 
 $signup-btn-color: #5b8a08;
@@ -22,5 +24,12 @@ $signup-btn-color-hover: #407528;
 $twittr-btn-color-hover: #2795e9;
 $google-btn-color-hover: #c23321;
 $facebk-btn-color-hover: #2d4373;
+
+.disabled	{ color: $disabled;	}
+.name		{ color: darkgrey;	}
+
+/* MAP: 				[FF35+]					[Chrome, Safari6+, Opera 15+]	 [IE6-9]						*/
+.greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
+//.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
 
 /* $red: hsla(358, 74%, 64%, 1); // #e75f63; */
