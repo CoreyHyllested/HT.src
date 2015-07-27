@@ -4,7 +4,6 @@ from server import  initialize_server
 from config import	server_configuration
 from flask.ext.script	import Manager, Shell
 from flask.ext.migrate	import Migrate, MigrateCommand
-from OpenSSL import SSL
 
 
 ENV_CONFIG	= os.getenv('INSPRITE_CONFIG')
@@ -27,10 +26,8 @@ manager.add_command('shell', Shell(make_context=make_shell_ctx))
 @manager.command
 def runserver():
 	# print 'Run with SSH'
-	context = SSL.Context(SSL.SSLv23_METHOD)
-	context.use_privatekey_file('security/soulcrafting.co.pem.key')
-	context.use_certificate_file('security/soulcrafting.co.crt')
-	application.run(debug = True, ssl_context=context)
+	ctx = ( 'security/soulcrafting.co.crt', 'security/soulcrafting.co.pem.key')
+	application.run(debug = True, ssl_context=ctx)
 
 
 @manager.command
