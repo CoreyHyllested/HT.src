@@ -27,7 +27,7 @@ class Config:
 	SEND_FILE_MAX_AGE_DEFAULT= 60 * 60 * 24 * 60
 	USE_SENDFILE=False
 
-	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@soulcrafting.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432/scdb'
+	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@scdb-test.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432'
 	SQLALCHEMY_MIGRATE_REPO = SC_BASEDIR + '/database/'
 	DATABASE_QUERY_TIMEOUT = 1.0
 
