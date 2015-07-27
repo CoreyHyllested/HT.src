@@ -31,8 +31,10 @@ botocore==0.55.0
 celery==3.1.11
 colorama==0.2.5
 decorator==3.4.0
-gunicorn==19.3.0
 factory-boy==2.4.1
+
+
+gunicorn==19.3.0
 httplib2==0.9
 infinity==1.3
 intervals==0.3.1
