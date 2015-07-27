@@ -97,10 +97,13 @@
 		return false;
 	}
 
+	function update_referral(e) {
+		window.location.href= '/referral/' + refid + '?edit=true';
+	}
+
 	$(document).ready(function () {
-		$('ul.ref-operations').on('click', '.btn-referral-delete', function () {
-			delete_referral(this);
-		});
+		$('ul.ref-operations').on('click', '.btn-referral-delete', function () { delete_referral(this); });
+		$('ul.ref-operations').on('click', '.btn-referral-update', function () { update_referral(this); });
 
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
 		$(".share-popover").popover({
@@ -136,7 +139,8 @@
 				tree_li_delete = document.createElement('li');
 				tree_li_update = document.createElement('li');
 				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
-				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='align-left'>Disable</span></a>");
+				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
+				//$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='align-left'>Disable</span></a>");
 				$(tree_ul).append(tree_li_delete).append('<br>');
 				$(tree_ul).append(tree_li_update).append('<br>');
 				$(tree).append(tree_ul);

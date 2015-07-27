@@ -74,7 +74,22 @@ def api_referral_create():
 def api_referral_read(ref_id):
 	print 'api_referral_read: enter'
 	referral = Referral.get_by_refid(ref_id)
+	editmode = request.args.get('edit')
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+
+	bp = Profile.get_by_uid(session.get('uid'))
+
+	# request to update referral, must be owner
+	if (editmode and referral.authored_by(bp)):
+		print 'bp authored referral'
+		rf = ReferralForm(request.values)
+		rf.bid.data = referral.ref_business
+		rf.bid.data = referral.ref_uuid
+		rf.content.data	= referral.ref_content
+		rf.context.data	= referral.ref_project
+		return make_response(render_template('referral.html', bp=bp, form=rf))
+
+	# the BP did not author referral and should not edit referral.
 	return make_response(jsonify(referral=referral.serialize), 200)
 
 

@@ -35,7 +35,6 @@ class Referral(database.Model):
 	ref_created = Column(DateTime(), nullable=False)
 
 
-
 	def __init__ (self, bus_id, profile, content, project=None):
 		self.ref_uuid = str(uuid.uuid4())
 		self.ref_business = bus_id
@@ -48,6 +47,9 @@ class Referral(database.Model):
 
 	def __repr__ (self):
 		return '<Referral %r, %r, %r>'% (self.ref_uuid, self.ref_business, self.ref_content[:20])
+
+	def authored_by(self, profile):
+		return (profile and profile.prof_id == self.ref_profile)
 
 	def invalid(self):
 		return ReferralFlags.test_invalid(self.ref_flags)
