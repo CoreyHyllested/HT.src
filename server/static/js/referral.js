@@ -132,11 +132,11 @@ pro_finder = new Bloodhound({
 	}
 });
 
-projects = new Bloodhound({
+project_ctx = new Bloodhound({
 	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
 	prefetch: {
-	url: "/projects.json",
+	url: "/context.json",
 		filter: function(list) {
 			return $.map(list, function(project_name) { return { 'name' : project_name }; });
 		}
@@ -199,11 +199,7 @@ $(document).ready(function () {
 		}
 	});
 
-
-
-
-
-	projects.initialize();
+	project_ctx.initialize();
 
 	$('#trusted').focus(clear_business_addr);
 	$('#trusted').keydown(clear_profile);
@@ -214,7 +210,7 @@ $(document).ready(function () {
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
-		fd.csrf_token = "{{ csrf_token() }}";
+		fd.csrf_token = $('#csrf_token').val();
 		fd.profile_id = suggestion.id;
 		get_profile(fd);
 	});
@@ -222,7 +218,7 @@ $(document).ready(function () {
 	// https://github.com/twitter/typeahead.js/blob/master/doc/jquery_typeahead.md#custom-events
 	$('#trusted.typeahead').bind('typeahead:autocompleted', function(ev, suggestion) {
 		var fd = {};
-		fd.csrf_token = "{{ csrf_token() }}";
+		fd.csrf_token = $('#csrf_token').val();
 		fd.profile_id = suggestion.id;
 		console.log('autocompleted');
 		get_profile(fd);
@@ -243,10 +239,10 @@ $(document).ready(function () {
 
 	$('#context').tagsinput({
 		typeaheadjs: {
-			name: 'projects',
+			name: 'context',
 			displayKey: 'name',
 			valueKey: 'name',
-			source: projects.ttAdapter()
+			source: project_ctx.ttAdapter()
 		}
 	});
 });
