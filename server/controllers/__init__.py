@@ -49,15 +49,9 @@ def bind_session(account, profile):
 
 
 def sc_authenticate_user(user_email, password):
-	""" Returns authenticated account """
-
-	trace("user_email = " + str(user_email) + ", password = " + str(password) + ' ' + str(type(password)))
-	accounts = Account.query.filter_by(email=(user_email)).all()
-	if ((len(accounts) == 1) and check_password_hash(accounts[0].pwhash, str(password))):
-		return accounts[0]
-
-	if (len(accounts) > 1):
-		trace("WTF.  Account len = " + len(accounts) + ". Cannot happen " + str(user_email))
+	account = Account.get_by_email(user_email)
+	if (account and check_password_hash(account.pwhash, str(password))):
+		return account
 	return None
 
 
@@ -267,26 +261,6 @@ def normalize_oa_account_data(provider, oa_data):
 
 
 
-@deprecated
-def htdb_get_composite_meetings(profile):
-	hero = aliased(Profile, name='hero')
-	user = aliased(Profile, name='user')
-	lesson = aliased(Lesson, name='lesson')
-
-	meetings	= sc_server.database.session.query(Meeting, user, hero, lesson)															\
-							.filter(or_(Meeting.meet_buyer == profile.prof_id, Meeting.meet_sellr == profile.prof_id))	\
-							.join(user, user.prof_id == Meeting.meet_buyer)												\
-							.join(hero, hero.prof_id == Meeting.meet_sellr)												\
-							.join(lesson, lesson.lesson_id == Meeting.meet_lesson).all();
-
-	map(lambda composite_meeting: meeting_timedout(composite_meeting, profile), meetings)
-	map(lambda composite_meeting: display_meeting_partner(composite_meeting, profile), meetings)
-	map(lambda composite_meeting: display_meeting_lesson(composite_meeting, lesson), meetings)
-	return meetings
-
-
-
-
 def meeting_timedout(composite_meeting, profile):
 	meeting = composite_meeting.Meeting
 
@@ -339,47 +313,6 @@ def ht_get_active_author_reviews(profile):
 
 
 
-def htdb_search_mentors_and_lessons(keywords, cost_min=0, cost_max=99999):
-	# COMPOSITE Profile-Lesson OBJECT
-	# OBJ.mentor	# Profile of Mentor
-	# OBJ.lesson	# Lesson by the mentor.
-
-	lesson = aliased(Lesson, name='lesson')
-	q_results	= sc_server.database.session.query(Profile, lesson)										\
-							.filter(Profile.availability > PROF_MENTOR_NONE) 			\
-							.filter(Profile.prof_rate.between(cost_min, cost_max))		\
-							.join(lesson, Profile.prof_id == lesson.lesson_profile)		\
-							.filter(lesson.lesson_flags == LESSON_STATE_AVAILABLE)		\
-							.filter(lesson.lesson_rate.between(cost_min, cost_max))		\
-							.all();
-	print 'htdb_search_mentors_and_lessons: total results ', len(q_results)
-	hashmap = {}
-	results	= []
-
-	keywords = [k.lower() for k in keywords]
-	print 'htdb_search_mentors_and_lessons: score results ('+str(len(q_results))+') for keywords (', keywords, '),'
-
-	#################################################################################
-	### Search Process:
-	### Map 1:
-	### 	Score all mentor-lesson results
-	###		Map search-hits into hashtable indexed by Mentor's profile_id.
-	### Map 2: Order all lessons by their score. (mentor.lesson_hits)
-	###    score each composite mentor-lesson result for (case-insensitive) hits.
-	###    map any profile or lesson hits into dictionary/hashmap identified by prof_id
-	#################################################################################
-	map(lambda mentor_lesson: ht_score_search_results(mentor_lesson, keywords, hashmap), q_results)
-	map(lambda mentor_prof_id: ht_create_search_object(hashmap, mentor_prof_id, results), hashmap.keys())
-	print 'htdb_search_mentors_and_lessons: results[' + str(len(results)) + ']'
-
-#	results = ht_filter_composite_lessons(q_results, filter_by='COMP_SCORE', dump=True)	 # filter out no-profile and no-lessons.
-	for key in results:
-		print 'htdb_search_mentors_and_lessons: results[' + key.Profile.prof_name + '|' + str(key.total_score) + '|' + str(len(key.lesson_hits)) + ']'
-	results.sort(key=lambda x: x.total_score, reverse=True)
-	return results
-
-
-
 def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
 	mentor = hashmap[mentor_prof_id]
 	filtered_results.append(mentor[0])
@@ -403,37 +336,12 @@ def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
 
 
 
-def ht_filter_composite_lessons(search_set, filter_by='None', dump=False):
-	results = []
-
-	print 'ht_filter_composite_lessons: ', filter_by
-	if (filter_by == 'COMP_SCORE'):
-		#print 'Searching search_set for reviews of', profile.prof_name, profile.prof_id
-		results = filter(lambda s: (s.comp_score > 0), search_set)
-	elif (filter_by == 'LESS_SCORE'):
-		results = filter(lambda s: (s.less_score > 0), search_set)
-	else:
-		print '\t\t YOU SWUNG AND MISSED THE FILTER NAME'
-
-	if (dump):
-		print 'ht_filter_composite_lessons: filter_by %s' % (filter_by), '\tSEARCH SET: ', len(search_set), "=>", len(results)
-		for s in results:
-			print '\t\t', s.Profile.prof_name, '\t', s.lesson.lesson_title, '\t', '$' + str(s.lesson.lesson_rate) #, '\t', s.score
-	return results
-
-
-
-
 def display_meeting_partner(composite_meeting, profile):
 	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
 	setattr(composite_meeting, 'display', display_partner)
 	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
 	setattr(composite_meeting, 'buyer', (profile == composite_meeting.user))
 
-
-def display_meeting_lesson(composite_meeting, lesson):
-	lesson = composite_meeting.lesson
-	setattr(composite_meeting, 'lesson', lesson)
 
 
 def ht_score_search_results(composite_lesson, keywords, hashmap):
@@ -591,13 +499,6 @@ def htdb_get_lesson_images(lesson_id):
 
 
 
-def ht_get_active_lessons(profile):
-	lessons = sc_server.database.session.query(Lesson).filter(Lesson.lesson_profile == profile.prof_id).all();
-	print "ht_get_active_lessons() \ttotal:", len(lessons)
-	return lessons
-
-
-
 
 def sc_email_verify(email, challengeHash, nexturl=None):
 	# find account, if any, that matches the requested challengeHash
@@ -658,21 +559,6 @@ def ht_get_thread_messages(profile):
 @deprecated
 def htdb_get_composite_messages(profile):
 	return sc_get_composite_messages(profile)
-
-@deprecated
-def ht_get_active_meetings(profile):
-	props = []
-	appts = []
-	rview = []
-
-	meetings = htdb_get_composite_meetings(profile)
-	props = filter(lambda p: (p.Meeting.proposed()), meetings)
-	appts = filter(lambda a: (a.Meeting.accepted()), meetings)
-	rview = filter(lambda r: (r.Meeting.occurred()), meetings)
-	print 'ht_get_active_meetings()\ttotal:', len(meetings), '\tproposals:', len(props), '\tappointments:', len(appts), '\treview:', len(rview)
-
-	# flag 'uncaught' meetings (do this as an idempotent task). Flag them as timedout.  Change state to rejected.
-	return (props, appts, rview)
 
 
 
