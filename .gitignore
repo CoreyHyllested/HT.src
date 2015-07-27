@@ -25,6 +25,7 @@ server/static/css/errors.css
 
 users.db
 run.py
+security/sc-tmp/
 
 # Packages
 *.egg
