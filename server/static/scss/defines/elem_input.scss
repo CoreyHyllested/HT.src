@@ -55,60 +55,38 @@ $btn-width = 75px;
 
 
 .field-container {
+	width: 100%;
 	position: relative;
 	display: block;
-	width: 100%;
 	margin: 0px 0 8px;
 	max-width: 600px;
 }
 
-
 .field {
-	color: $field-info-color;
 	width: 100%;
-	font-family: "Open Sans", Helvetica, sans-serif;
+	color: $field-info-color;
 	font-size: .9em;
+	font-family: "Open Sans", Helvetica, sans-serif;
 }
 
 .field.info			{ padding: 15px 0 5px; 	margin-left: 0px;	}
 .field.info.first	{ padding-top: 0px;		}
 .field.info.notice	{ font-weight: 600;		}
 
-
 .field.input { }
 .field.input.iconified { padding-left: 13px; }
 
-.field.error {
-	display: none;
-	font-size: .7em;
-	color: #e75f63;
-}
-.field.error.inline {
-	display: inline-block;
-	padding-left: 0px;
-}
+.ff					{	margin: 5px 0;			}
+.ff.header			{	display: inline;	width: 100%;	font-size: .7em;	font-weight: 600;	padding-left: 3px;	}
+.ff.value			{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
+.ff.contact 		{	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
+.ff.error			{	display: none;		font-size: .7em;	color: #e75f63;		padding-left: 0px; 			}
+.ff.error.inline	{	display: inline;	font-size: .7em;	color: #e75f63;		padding-left: 0px;			}
 
-.field.error.alt {
-	float: left;
-	height: $field-height;
-	line-height: 50px;
-	margin-left: 16px;
-	margin-top: 10px;
-}
-
-
-.field.action {
-	float: left;
-	padding-left: 10px;
-	height: $field-height;
-}
-
-/* UNUSED */
-.field.description {
-	color: rgba(0,0,0, 0.7);
-	margin-bottom: $field-bottom-margin;
-}
-
+.field.error		{ display: none;			font-size: .7em;	color: #e75f63; }
+.field.error.inline	{ display: inline-block;	padding-left: 0px; 						}
+.field.error.alt	{ float: left; height: $field-height;	line-height: 50px; margin-left: 16px; margin-top: 10px; }
+.field.action 		{ float: left; height: $field-height;	padding-left: 10px; }
 
 
 
@@ -141,27 +119,29 @@ $btn-width = 75px;
   width: 30px;
 }
 
-.ff			{	display: inline-block;	margin: 5px 0;			}
-.ff.textarea{	width: 100%;	}
-.ff.header	{	width: 100%;	font-size: .7em;	font-weight: 600;	vertical-align: top;	padding-left: 3px;	}
-.ff.name	{	width: 12%;		font-size: .8em;	font-weight: 600;	vertical-align: top; 		}
-.ff.value	{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
-.ff.contact {	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
-
 .twitter-typeahead		{	display: inline !important;	width: 100%;	} 	//fixes bug. #invite-emails is too small
 .tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
 .tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
 .tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
+
 .feedback-bubble		{
-		background-color: green;
-		border: 1px solid green;
-		border-radius: 7px;
-		color: white;
-		font-weight: 600;
-		text-align: center;
-		margin: 5px auto;
-		width:	66%;
- }
+	background-color: green;
+	border: 1px solid green;
+	border-radius: 7px;
+	color: white;
+	font-weight: 600;
+	text-align: center;
+	margin: 5px auto;
+	width:	66%;
+}
+
+.feedback-negative {
+	background-color: $warning;
+	border: 1px solid yellow;
+	color: black;
+}
+
+
 .bootstrap-tagsinput 			{	box-shadow: none !important;	border: 1px #e1e8ed solid !important;	border-radius: 0px !important;	}
 .bootstrap-tagsinput .tt-menu	{	width: 350px;	}
 

@@ -1,4 +1,20 @@
-var referral_version = 0.63;
+var referral_version = 0.65;
+
+function show_errors(status_element, errors) {
+	//status_element.empty();
+
+	$.each(errors, function(e, error){
+		// e is the element with the error, e.g. "prof_name"
+		var element = "#"+e;
+		console.log("show-error: ["+element + " : " + error + "]");
+		$(element).prev(".ff.error").html(error).slideDown();
+		$(element).css("border-color", "#e75f63");
+	});
+	negative_feedback('There was an issue');
+}
+
+function clear_error_msg(element) { $(element).prev(".ff.error").slideUp().html('');	}
+function clear_error_box(element) { $(element).css("border-color", "#e1e8ed");			}
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -17,12 +33,20 @@ function save_business_clicked() {
 	create_business(fd);
 }
 
+function positive_feedback(content)	{
+	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(html);
+}
+
+function negative_feedback(content)	{
+	html = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(html);
+}
 
 function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
 function feedback_remove(id)	{	$('#'+id).remove();			}
-function add_feedback(content)	{
-	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
-	uid	 = $(html).attr('id');
+function feedback_timeout(msg)	{
+	uid	 = msg.attr('id');
 	setTimeout(feedback_fade,	2500, uid);
 	setTimeout(feedback_remove, 5000, uid);
 }
@@ -83,7 +107,7 @@ function create_business(fd) {
 				profile_fd.csrf_token = $('#csrf_token').val(),
 				profile_fd.profile_id = response.business.business_id;
 				get_profile(profile_fd);
-				add_feedback('Added ' + response.business.business_name);
+				positive_feedback('Added ' + response.business.business_name);
 			},
 			error	: function(data) {
 				console.log("AJAX Error");
@@ -110,14 +134,14 @@ function save_referral(evt) {
 				contentType: false,
 				success : function(data) {
 					$('#rid').val(data.ref_uuid);
-					add_feedback('Saved');
+					positive_feedback('Saved');
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
 					//  data.status is 401, redirectiing user to authenticate.
 					//  todo: we should pop-up a login/signup modal instead.
 					if (data.status == 401) { window.location.href = '/login'; }
-					console.log(data);
+					show_errors('#feedback', JSON.parse(data.responseText));
 				}
 	});
 
@@ -230,11 +254,12 @@ $(document).ready(function () {
 		}
 	});
 
+	$('#content').on('focus', function() { clear_error_box(this); });
+	$('#content').on('blur',  function() { clear_error_msg(this); });
 	$('#content').keyup(function(evt) {
 		txt = $(this).val();
 		max	= $(this).attr('maxlength');
-		nr	= max - txt.length;
-		$('#content-nr').text(nr);
+		$('#content-nr').text(max - txt.length);
 	});
 
 	$('#context').tagsinput({
