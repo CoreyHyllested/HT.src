@@ -41,9 +41,9 @@ def sc_authenticated(function):
 		if 'uid' not in session:
 			target = request.referrer
 			if target and request.method == 'POST':
-				session['redir_link'] = "%s?%s" % (target, urllib.urlencode(request.form))
-				#print 'send user to ', session['redir_link']
-				return make_response(jsonify(next=session['redir_link']), 401)
+				session['redirect'] = "%s?%s" % (target, urllib.urlencode(request.form))
+				session['messages'] = "That operation requires you to login first."
+				return make_response(jsonify(next=session['redirect']), 401)
 			return make_response(redirect('/login'))
 
 		return function(*args, **kwargs)

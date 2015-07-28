@@ -29,7 +29,7 @@ def render_signup_page(sc_msg=None):
 	if form.validate_on_submit(): # and form.terms.data == True:
 		try:
 			profile  = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, ref_id=form.refid.data)
-			return redirect('/dashboard')
+			return redirect_back('/profile')
 		except AccountError as ae:
 			print 'render_signup: error', ae
 			sc_msg = ae.sanitized_msg()
@@ -37,6 +37,7 @@ def render_signup_page(sc_msg=None):
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
 	return make_response(render_template('signup.html', form=form, sc_alert=sc_msg))
+
 
 
 
@@ -52,6 +53,7 @@ def render_pro_signup_page(sc_msg=None):
 		try:
 			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
 			return redirect('/dashboard')
+			return redirect_back('/profile')
 		except AccountError as ae:
 			print 'render_pro_signup: error', ae
 			sc_msg = ae.sanitized_msg()
@@ -60,13 +62,6 @@ def render_pro_signup_page(sc_msg=None):
 		sc_msg = 'Oops. Fill out all fields.'
 	return make_response(render_template('signup-professional.html', form=form, sc_alert=sc_msg))
 
-
-
-def redirect_back(next_url):
-	redirect_url = session.get('redir_link')
-	if redirect_url: session.pop('redir_link')
-	else: redirect_url = next_url
-	return redirect(redirect_url)
 
 
 
@@ -184,3 +179,6 @@ def render_password_reset_page(challengeHash):
 	return render_template('password-reset.html', form=form)
 
 
+
+def redirect_back(next_url):
+	return redirect(session.pop('redirect', next_url))
