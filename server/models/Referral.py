@@ -16,10 +16,12 @@ import uuid
 from datetime import datetime as dt, timedelta
 
 from server import database
-from server.models.shared			import ReferralFlags
+from server.models.Business	import *
+from server.models.Location	import *
+from server.models.shared	import ReferralFlags
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, DateTime
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import aliased, relationship, backref
 from sqlalchemy.orm.exc import DetachedInstanceError
 
 
@@ -91,6 +93,42 @@ class Referral(database.Model):
 		except NoResultFound as nrf: pass
 		return referral
 
+
+
+	@staticmethod
+	def get_composite_referral_by_id(ref_id):
+		print 'get_compsite_referral:', ref_id
+		composite = None
+		try:
+			business = aliased(Business, name='business')
+			location = aliased(Location, name='location')
+			comp_ref = database.session.query(Referral, business, location)	\
+					.filter(Referral.ref_uuid == ref_id)	\
+					.join(business,	     Referral.ref_business == business.bus_id)	\
+					.outerjoin(location, Referral.ref_business == location.business)\
+					.one()
+			display_composite_referral(comp_ref)
+		except NoResultFound as nrf:
+			print type(e), e
+			pass
+		except Exception as e:
+			print type(e), e
+		return comp_ref
+
+
+
+	@staticmethod
+	def get_composite_referrals_by_profile(profile):
+		""" get all referrals made by profile """
+		business = aliased(Business, name='business')
+		location = aliased(Location, name='location')
+		comp_ref = database.session.query(Referral, business, location)	\
+					.filter(Referral.ref_profile == profile.prof_id)	\
+					.join(business, Referral.ref_business  == business.bus_id)	\
+					.outerjoin(location, location.business == business.bus_id)	\
+					.all()
+		map(lambda composite: display_composite_referral(composite), comp_ref)
+		return comp_ref
 
 
 
@@ -239,3 +277,17 @@ class RefListReferralMap(database.Model):
 	def get_referral_ids(reflist):
 		return [ r.map_referal for r in RefListReferralMap.query.filter_by(map_reflist=reflist.list_uuid).all() ]
 
+
+
+
+#################################################################################
+### HELPER FUNCTIONS ############################################################
+#################################################################################
+
+def display_composite_referral(composite):
+	# COMPOSITE REFERRAL OBJECT
+	# OBJ.Referral	# Referral
+	# OBJ.business	# Business of Referral
+	# OBJ.location	# Location of Business (maybe None)
+	if composite.location:
+		composite.city_state = composite.location.display_city_state()

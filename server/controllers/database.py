@@ -18,19 +18,6 @@ from sqlalchemy.orm import aliased
 
 
 
-def sc_get_referrals(profile):
-	""" get all referrals made by profile """
-	business = aliased(Business, name='business')
-	location = aliased(Location, name='location')
-	referrals = database.session.query(Referral, business, location)	\
-				.filter(Referral.ref_profile == profile.prof_id)	\
-				.join(business, Referral.ref_business  == business.bus_id)	\
-				.outerjoin(location, location.business == business.bus_id)	\
-				.all()
-	map(lambda referral: display_composite_referral(referral), referrals)
-	
-	return referrals
-	
 
 #TODO change name.  sc_get_references.
 def scdb_get_references(profile, dump=False):
@@ -121,11 +108,3 @@ def display_review_partner(r, prof_id):
 	setattr(r, 'display', display_attr)
 
 
-def display_composite_referral(composite):
-	# COMPOSITE REFERRAL OBJECT
-	# OBJ.Referral	# Referral
-	# OBJ.business	# Business of Referral
-	# OBJ.location	# Location of Business (maybe None)
-	if composite.location:
-		print 'setting location', composite.location.display_city_state()
-		composite.city_state = composite.location.display_city_state()
