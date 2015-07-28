@@ -26,12 +26,10 @@ ul 	{ padding-left: 0px; }
 .ref-skills li:last-of-type:after	{ content: '';		}
 //.ref-skills li:before { content: ' | ';	}
 
-.ref-name		{	width: 100%;	margin-right: -75px;	padding-right: 80px;	font-weight: bold;	display: inline; }
+.ref-name		{	display: inline; font-weight: bold;						} //trying to shoehorn location onto same line. margin-right: -75px;	padding-right: 80px;	
+.ref-location	{	display: inline; font-size: .8em;	color: $black-80;	}
 
-.ref-location {
-	display: inline-block;
-	text-align: right;
-}
+
 
 .ref-context {
 	display: inline-block;

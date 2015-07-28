@@ -17,6 +17,7 @@
 		<h3 class='align-left'>{{profile.prof_name}}</h3>
 		<div id='profile-image'><img src="{{profile.gravatar_url()}}"></div>
 		{#
+		<form id='profile-form'>{{form.hidden_tag()}}</form>	//add csrf for form
 		<div id='profile-location'></div>
 		<div id='profile-networks'>
 			<ul>
@@ -39,7 +40,7 @@
 		<div class='content'>
 			<div class='ref-name'>{{ref.business.bus_name}}</div>
 			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
-			<div class='ref-location'>{%- if ref.city_state %}{{ref.city_state}}{%- endif %}</div>
+			{%- if ref.display_addr %}| <div class='ref-location'>{{ref.display_addr}}</div>{%- endif %}
 		</div>
 
 		<div class='content'>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
@@ -78,27 +79,28 @@
 	<script src='/static/js/bs-popover.js'></script>
 	<script>
 	function delete_referral(e) {
-		refid = $(e).data('ref-id');
-		$.ajax({	url		: '/referral/' + refid + '/destroy',
+		rid = $(e).data('ref-id');
+//		fd = {}; 
+//		fd.csrf_token =  $('#csrf_token').val();
+		$.ajax({	url		: '/referral/' + rid + '/destroy',
 					type	: 'DELETE',
 					success : function(data) {
 						referrals = $('article.referral');
 						$(referrals).each(function(idx, referral)  {
-							if ($(referral).data('ref-id') === refid) {
+							if ($(referral).data('ref-id') === rid) {
 								$(referral).remove();
 							}
 						});
 					},
 					error	: function(data) {
-						console.log("Oops, AJAX Error.");
-						console.log(data);
+						console.log("AJAX Error", data);
 					}
 		});
 		return false;
 	}
 
 	function update_referral(e) {
-		window.location.href= '/referral/' + refid + '?edit=true';
+		window.location.href= '/referral/' + $(e).data('ref-id') + '?edit=true';
 	}
 
 	$(document).ready(function () {
@@ -140,7 +142,6 @@
 				tree_li_update = document.createElement('li');
 				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
 				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
-				//$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-strikethrough icon'></i><span class='align-left'>Disable</span></a>");
 				$(tree_ul).append(tree_li_delete).append('<br>');
 				$(tree_ul).append(tree_li_update).append('<br>');
 				$(tree).append(tree_ul);
@@ -160,10 +161,6 @@
 		        }
 		    }, 500);
 		});
-
-
-		$("#SaveAccount").click(function () { openModalLogin(); });
-		$("#Social").click(function () { openModalSocial(); });
 	});
 	</script>
 {% endblock %}

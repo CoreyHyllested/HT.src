@@ -19,6 +19,7 @@ from server.controllers import *
 from datetime import datetime as dt
 
 
+
 @authenticated.route('/profile/', methods=['GET'])
 @authenticated.route('/profile',  methods=['GET'])
 @sc_authenticated
@@ -66,7 +67,7 @@ def render_other_profile(usrmsg=None):
 	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
 	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
 	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=None))	# removed availability model
+	return make_response(render_template('profile.html', hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=None))
 
 
 

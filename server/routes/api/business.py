@@ -33,7 +33,6 @@ def render_business_create():
 
 
 
-@sc_server.csrf.exempt
 @api.route('/business/create/', methods=['POST'])
 @api.route('/business/create',  methods=['POST'])
 def api_business_create_post():
@@ -71,7 +70,7 @@ def api_business_read(bus_id):
 
 @sc_server.csrf.exempt
 @api.route('/business/<string:pro_id>/update/', methods=['POST'])
-@api.route('/business/<string:pro_id>/update',	methods=['POST'])
+@api.route('/business/<string:pro_id>/update',  methods=['POST'])
 def api_business_update(pro_id):
 	print 'api_business_update(): enter'
 	return make_response(jsonify(functionality='Undefined'), 400)

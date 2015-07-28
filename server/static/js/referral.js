@@ -1,4 +1,4 @@
-var referral_version = 0.65;
+var referral_version = 0.66;
 
 function show_errors(status_element, errors) {
 	//status_element.empty();
@@ -18,8 +18,10 @@ function clear_error_box(element) { $(element).css("border-color", "#e1e8ed");		
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
-	$('#trust-card').addClass('no-display');
-	$('#instructions').addClass('no-display');
+	if (!$('#trusted').attr('readonly')) {
+		$('#trust-card').addClass('no-display');
+		$('#instructions').addClass('no-display');
+	}
 }
 
 
@@ -121,7 +123,6 @@ function create_business(fd) {
 function save_referral(evt) {
 	rid	= $('#rid').val();
  	fd	= new FormData($('#refer-form')[0])
-	fd.append("csrf_token", $('#csrf_token').val());
 
 	// create or update referral.
 	referral_uri = "/referral/create";
@@ -195,12 +196,15 @@ function get_profile(fd) {
 
 
 function clear_business_addr( event ) {
-	name = $('#trusted').val();
-	idx = name.lastIndexOf(" | ")
-	if (idx == -1) { return; }
-	strng = name.substring(0, name.lastIndexOf(" | "));
-	$('#trusted').val(strng);
+	if ($('#trusted').attr('readonly')) return;
+
+	trusted = $('#trusted').val();
+	bar_idx = trusted.lastIndexOf(" | ");
+	if (bar_idx == -1) return;
+	$('#trusted').val(trusted.substring(0, bar_idx));
 }
+
+
 
 
 $(document).ready(function () {
@@ -259,7 +263,7 @@ $(document).ready(function () {
 	$('#content').keyup(function(evt) {
 		txt = $(this).val();
 		max	= $(this).attr('maxlength');
-		$('#content-nr').text(max - txt.length);
+		$('#content-nr').text('(' + (max - txt.length) + ' chars left)');
 	});
 
 	$('#context').tagsinput({

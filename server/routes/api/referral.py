@@ -21,6 +21,7 @@ from server.routes.helpers import *
 from server.controllers import *
 
 
+
 @public.route('/referral/', methods=['GET'])
 @public.route('/referral',  methods=['GET'])
 def render_create_referral_page():
@@ -69,6 +70,7 @@ def api_referral_create():
 
 
 
+
 @api.route('/referral/<string:ref_id>/', methods=['GET'])
 @api.route('/referral/<string:ref_id>',  methods=['GET'])
 def api_referral_read(ref_id):
@@ -76,27 +78,26 @@ def api_referral_read(ref_id):
 	composite = Referral.get_composite_referral_by_id(ref_id)
 	if (not composite): return make_response(jsonify(referral='missing resource'), 400)
 
-	pp(composite)
 	bp = Profile.get_by_uid(session.get('uid'))
 	editmode = request.args.get('edit')
-	print 'editmode', editmode,
 
 	# [SECURITY] request to update referral, ensure bp authored the referral
 	if (editmode and (bp and bp.prof_id == composite.Referral.ref_profile)):
-		print 'bp authored referral'
 		rf = ReferralForm(request.values)
 		rf.bid.data = composite.Referral.ref_business
-		rf.bid.data = composite.Referral.ref_uuid
+		rf.rid.data = composite.Referral.ref_uuid
 		rf.content.data	= composite.Referral.ref_content
 		rf.context.data	= composite.Referral.ref_project
-		return make_response(render_template('referral.html', bp=bp, form=rf))
+		rf.trusted.data = composite.business.bus_name
+		if (composite.display_addr): rf.trusted.data = rf.trusted.data + ' | ' + composite.display_addr
+		return make_response(render_template('referral.html', bp=bp, form=rf, edit=editmode))
 
 	# the BP did not author referral and should not be able to edit referral.
 	return make_response(jsonify(referral=composite.Referral.serialize), 200)
 
 
 
-@sc_server.csrf.exempt
+
 @api.route('/referral/<string:ref_id>/update/', methods=['POST'])
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
 def api_referral_update(ref_id):
@@ -123,20 +124,33 @@ def api_referral_update(ref_id):
 
 
 
+
 @sc_server.csrf.exempt
 @api.route('/referral/<string:ref_id>/destroy/', methods=['DELETE'])
 @api.route('/referral/<string:ref_id>/destroy',  methods=['DELETE'])
 def api_referral_destroy(ref_id):
+	bp = Profile.get_by_uid(session.get('uid'))
 	referral = Referral.get_by_refid(ref_id)
 	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+	if (not referral.authored_by(bp)): return make_response(jsonify(referral='missing authority'), 401)
 
+	try:
+		database.session.delete(referral)
+		database.session.commit()
+	except Exception as e:
+		database.session.rollback()
+		print type(e), e
+		return e.api_response(request.method)
 	return make_response(jsonify(referral='destroyed'), 200)
+
+
 
 
 
 #################################################################################
 ### TEST ROUTES #################################################################
 #################################################################################
+
 
 @test.route('/referral/<string:ref_id>/valid/',	methods=['GET','POST'])
 @test.route('/referral/<string:ref_id>/valid',	methods=['GET','POST'])

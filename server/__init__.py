@@ -15,7 +15,7 @@
 import os, logging
 from logging.handlers import RotatingFileHandler
 from logging import StreamHandler
-from flask import Flask
+from flask import Flask, make_response, jsonify
 from flask_oauthlib.client	import OAuth
 from flask.ext.compress		import Compress
 from flask.ext.sqlalchemy	import SQLAlchemy
@@ -148,9 +148,13 @@ def	server_init_assets(server):
 
 
 def server_init_routes(server):
+	Compress(sc_server)
 	server.csrf	= CsrfProtect()
 	server.csrf.init_app(server)
-	Compress(sc_server)
+
+	@server.csrf.error_handler
+	def _csrf_error(reason):
+		return make_response(jsonify(csrf=reason), 400)
 
 	from routes.api import list, project, referral
 	from routes.authenticate import password

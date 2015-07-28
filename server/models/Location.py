@@ -42,7 +42,6 @@ class Location(database.Model):
 
 
 	def __init__(self, street=None, suite=None, city=None, state=None, zipcode=None, lat=None, lng=None, business_id=None):
-		print 'Location: init'
 		self.location_id	= str(uuid.uuid4())
 		self.location_street = street
 		self.location_suite	= suite
@@ -62,6 +61,27 @@ class Location(database.Model):
 		return '<location %r>' % (self.location_id)
 
 
+	def display_address(self):
+		street = self.display_street_suite()
+		cityst = self.display_city_state()
+		if (street):
+			rc = street
+			if (cityst):
+				rc += ', ' + cityst
+		elif (cityst):
+			rc = cityst
+		return rc
+
+
+	def display_street_suite(self):
+		rc  = ''
+		if self.location_street:
+			rc += string.capwords(self.location_street)
+			if self.location_suite:
+				rc += ' ' + self.location_suite + ' '
+		return rc
+
+
 	def display_city_state(self):
 		rc = ''
 		if self.location_city:
@@ -73,6 +93,7 @@ class Location(database.Model):
 		return rc
 
 
+
 	@staticmethod
 	def get_by_id(id):
 		location = None
@@ -80,6 +101,7 @@ class Location(database.Model):
 			location = Location.query.filter_by(location_id=id).one()
 		except NoResultFound as nrf: pass
 		return location
+
 
 	@staticmethod
 	def from_json(json_object):

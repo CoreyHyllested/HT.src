@@ -17,7 +17,9 @@
 		<div id='refer-professional'>
 			<form id='refer-form'>
 			{{form.hidden_tag()}}
-			{{form.trusted(class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
+			{%- if edit %}{{form.trusted(class='form-control', readonly=true)}}
+			{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
+			{%- endif %}
 			<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
 			{#
 				<div id='pro-category'	class='ff header'></div>
@@ -25,7 +27,7 @@
 				<div id='pro-addr' class='ff value'></div--> <!--div id='pro-phone' class='ff contact'></div>
 			#}
 				<div id='referral-questions'>
-					<div class='ff header'>Why do you recommend <span id='pro-name'>them</span>? (<span id="content-nr">200</span> chars left.)</div>
+					<div class='ff header'>Why do you recommend <span id='pro-name'>them</span>? <span id="content-nr"></span></div>
 					<div class='ff error'></div>
 					{{form.content(class='ff', spellcheck=true, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time.")}}
 
@@ -35,8 +37,10 @@
 				</div>
 
 				<div>
-					<input id='btn-cancel-referral' type="button" class='btn-referral whiteButton' value="Clear"></input>
-					<input id='btn-submit-referral'	type="button" class='btn-referral blueButton'  value="Save Referral"></input>
+					{%- if edit %}<input id='btn-goback-referral' type="button" class='btn-referral whiteButton' value="Go Back" onclick="history.go(-1);" />
+					{%- else %}<input    id='btn-cancel-referral' type="button" class='btn-referral whiteButton' value="Clear" />
+					{%- endif %}
+					<input id='btn-submit-referral'	type="button" class='btn-referral blueButton'  value="Save Referral" />
 				</div>
 			</div>
 			</form>

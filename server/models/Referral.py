@@ -289,5 +289,11 @@ def display_composite_referral(composite):
 	# OBJ.Referral	# Referral
 	# OBJ.business	# Business of Referral
 	# OBJ.location	# Location of Business (maybe None)
+
+	composite.display_city = None # 'No address listed'
+	composite.display_addr = None # 'No address listed'
+
 	if composite.location:
-		composite.city_state = composite.location.display_city_state()
+		composite.display_city = composite.location.display_city_state()
+		composite.display_addr = composite.location.display_address()
+
