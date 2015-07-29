@@ -3,9 +3,11 @@
 	<p>We need their name (got it, <span id=trusted-name>{{form.name.data}}</span>) and at least one way to contact them.</p>
 	<form id='create-business-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		{{form.name(type='name', placeholder="Trusted Entity's Name")}}
-		{{form.site(type='text', placeholder="http://website")}}
-		{{form.phone(type='phone', autocomplete='off', placeholder="(303) 720-1111")}}
-		{{form.email(type='email', autocomplete='off', placeholder="EmailAddress")}}
+		<ul>
+			<li>{{form.name(type='name', class='ff', placeholder="Trusted Entity's Name")}}</li>
+			<li>{{form.site(type='text', class='ff', placeholder="http://website")}} </li>
+			<li>{{form.phone(type='phone', autocomplete='off', placeholder="(303) 720-1111")}} </li>
+			<li>{{form.email(type='email', autocomplete='off', placeholder="EmailAddress")}} </li>
+		</ul>
 	</form>
 </div>

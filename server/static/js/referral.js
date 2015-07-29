@@ -1,4 +1,4 @@
-var referral_version = 0.66;
+var referral_version = 0.67;
 
 function show_errors(status_element, errors) {
 	//status_element.empty();
@@ -24,50 +24,13 @@ function clear_profile() {
 	}
 }
 
-
-function save_business_clicked() {
-	fd = new FormData();
-	fd.append("csrf_token", $('#csrf_token').val());
-	fd.append("name", $('#trusted').val());
-	fd.append("site", $('#site').val());
-	fd.append("email", $('#email').val());
-	fd.append("phone", $('#phone').val());
-	console.log($('#trusted').val());
-	submit_business(fd);
-}
-
-function positive_feedback(content)	{
-	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
-}
-
-function negative_feedback(content)	{
-	html = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
-}
-
-function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
-function feedback_remove(id)	{	$('#'+id).remove();			}
-function feedback_timeout(msg)	{
-	uid	 = msg.attr('id');
-	setTimeout(feedback_fade,	2500, uid);
-	setTimeout(feedback_remove, 5000, uid);
-}
-
-
-
-function create_business() {
+function add_new_business() {
 	fd = {};
 	fd.name = $('#trusted').val();
 	fd.csrf_token = $('#csrf_token').val();
-	get_modal_create_business(fd);
-	return false;
-}
 
-
-function get_modal_create_business(fd) {
-	console.log('create business ' + fd.name);
-	$.ajax({ url	: '/business/create',
+	console.log('add new business ' + fd.name);
+	$.ajax({ url	: '/business/new',
 			type	: 'GET',
 			data	: fd,
 			contentType: false,
@@ -92,7 +55,15 @@ function get_modal_create_business(fd) {
 }
 
 
-function submit_business(fd) {
+function submit_business() {
+	fd = new FormData();
+	fd.append("csrf_token", $('#csrf_token').val());
+	fd.append("name", $('#trusted').val());
+	fd.append("site", $('#site').val());
+	fd.append("email", $('#email').val());
+	fd.append("phone", $('#phone').val());
+
+	console.log($('#trusted').val());
 	console.log(fd);
 	$.ajax({ url	: '/business/create',
 			type	: "POST",
@@ -116,6 +87,29 @@ function submit_business(fd) {
 			}
 	});
 }
+
+
+function positive_feedback(content)	{
+	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(html);
+}
+
+function negative_feedback(content)	{
+	html = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(html);
+}
+
+function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
+function feedback_remove(id)	{	$('#'+id).remove();			}
+function feedback_timeout(msg)	{
+	uid	 = msg.attr('id');
+	setTimeout(feedback_fade,	2500, uid);
+	setTimeout(feedback_remove, 5000, uid);
+}
+
+
+
+
 
 
 function save_referral(evt) {
@@ -218,7 +212,7 @@ $(document).ready(function () {
 		source: pro_finder,
 		templates: {
 			notFound: function(q) {
-				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:create_business();">Add this business?</a></div>';
+				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:add_new_business();">Add this business?</a></div>';
 			},
 			pending: '<div>Searching...</div>',
 			suggestion: Handlebars.compile('<div class="pro-suggestion" data-id={{id}}>{{name}} <span class="pro-suggestion-addr">{{addr}}</span></div>')
@@ -232,7 +226,7 @@ $(document).ready(function () {
 
 	$('#btn-cancel-referral').click( function (e) { clear_profile(); });
 	$('#btn-submit-referral').click( function (e) { save_referral(); });
-	$('#modal-buttons').on('click', '.save-business', save_business_clicked);
+	$('#modal-buttons').on('click', '.save-business', submit_business);
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};

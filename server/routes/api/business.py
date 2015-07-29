@@ -22,7 +22,8 @@ from server.controllers import *
 
 
 
-@api.route('/business/create', methods=['GET'])
+@api.route('/business/new/', methods=['GET'])
+@api.route('/business/new',  methods=['GET'])
 def render_business_create_fragment():
 	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
