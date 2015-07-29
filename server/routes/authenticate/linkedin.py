@@ -72,7 +72,7 @@ def linkedin_authorized(resp):
 	print('li_auth - collect data ')
 	user_name = me.data.get('formattedName')
 
-	#(bh, bp) = sc_authenticate_user_with_oa(me.data['name'], me.data['email'], OAUTH_FACEBK, me.data)
+	#(bh, bp) = sc_authenticate_user_with_oa(me.data['name'], me.data['email'], OauthProvider.FACEBK, me.data)
 
 
 	# also look for linkedin-account/id number (doesn't exist today).
@@ -88,7 +88,7 @@ def linkedin_authorized(resp):
 	print ("attempting create_account(" , user_name , ")")
 	try:
 		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
-		import_profile(profile, OAUTH_LINKED, oauth_data=me.data)
+		import_profile(profile, OauthProvider.LINKED, oauth_data=me.data)
 
 		#send_welcome_email(email.data)
 		resp = redirect('/dashboard')

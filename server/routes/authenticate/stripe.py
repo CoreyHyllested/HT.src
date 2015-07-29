@@ -94,7 +94,7 @@ def settings_verify_stripe():
 			oauth_stripe.oa_optdata1  = rfrsh
 			print 'updating stripe refresh key'
 	else:
-		oauth_stripe = Oauth(uid, OAUTH_STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
+		oauth_stripe = Oauth(uid, OauthProvider.STRIPE, rc['stripe_user_id'], secret=rc['access_token'], token=rc['stripe_publishable_key'], data1=rfrsh)
 
 	try:
 		database.session.add(oauth_stripe)
