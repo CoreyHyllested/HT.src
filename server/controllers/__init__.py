@@ -11,6 +11,7 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
+
 import os, re, json, pickle, requests, uuid
 import smtplib, urlparse, urllib, urllib2
 import time, pytz
@@ -225,7 +226,7 @@ def import_profile(bp, oauth_provider, oauth_data):
 
 def normalize_oa_profile_data(provider, oa_data):
 	data = {}
-	if provider == OAUTH_LINKED:
+	if provider == OauthProvider.LINKED:
 		data['summary']	= oa_data.get('summary', None)
 		data['headline'] = oa_data.get('headline', None)
 		data['industry'] = oa_data.get('industry', None)
@@ -237,13 +238,13 @@ def normalize_oa_profile_data(provider, oa_data):
 def normalize_oa_account_data(provider, oa_data):
 	data = {}
 	print 'normalizing oauth data'
-	if provider == OAUTH_LINKED:
+	if provider == OauthProvider.LINKED:
 		data['oa_service']	= provider
 		data['oa_account']	= oa_data.get('id')
 		data['oa_email']	= oa_data.get('CAH_email', None)
 		data['oa_token']	= oa_data.get('CAH_token', None)
 		data['oa_secret']	= oa_data.get('CAH_sec', None)
-	elif provider == OAUTH_FACEBK:
+	elif provider == OauthProvider.FACEBK:
 		facebook = oa_data
 
 		print 'normalize facebook data'
@@ -258,45 +259,6 @@ def normalize_oa_account_data(provider, oa_data):
 
 	return data
 
-
-
-
-def meeting_timedout(composite_meeting, profile):
-	meeting = composite_meeting.Meeting
-
-	if ((not meeting.proposed()) and (not meeting.accepted())):
-		return
-
-	utc_now = dt.now(timezone('UTC'))
-	utcsoon = utc_now - timedelta(hours=20)
-
-	try:
-		meet_ts = meeting.meet_ts.astimezone(timezone('UTC'))
-		meet_tf = meeting.meet_tf.astimezone(timezone('UTC'))
-		meet_to	= meet_ts - timedelta(hours=20)
-		print 'meeting_timeout()\t', meeting.meet_id, meeting.meet_details[:20]
-		print '\t\t\t' + meet_ts.strftime('%A, %b %d, %Y %H:%M %p %Z%z') + ' - ' + meet_tf.strftime('%A, %b %d, %Y %H:%M %p %Z%z') #in UTC -- not that get_prop_ts (that's local tz'd)
-
-		if (meeting.meet_state == MeetingState.PROPOSED):
-			print '\t\t\tPROPOSED Meeting...'
-			if (meet_ts <= utcsoon):	# this is a bug.  Items that have passed are still showing up.
-				print '\t\t\t\tTIMED-OUT\tOfficially timed out, change state immediately.'
-				meeting.set_state(MeetingState.TIMEDOUT, profile)
-				sc_server.database.session.add(meeting)
-				sc_server.database.session.commit()
-			else:
-				timeout = meet_to - utc_now
-				print '\t\t\t\tSafe! proposal will timeout in ' + str(timeout.days) + ' days and ' + str(timeout.seconds/3600) + ' hours....' + sc_print_timedelta(timeout)
-				setattr(composite_meeting, 'timeout', sc_print_timedelta(timeout))
-		elif (meeting.accepted()):
-			print '\t\t\tACCEPTED meeting...'
-			if ((meeting.get_meet_tf() + timedelta(hours=4)) <= utc_now):
-				print '\t\t\tSHOULD be FINISHED... now() > tf + 4 hrs.'
-				print '\t\t\tFILTER Event out manually.  The events are working!!!'
-				meeting.set_state(MeetingState.OCCURRED)	# Hack, see above
-	except Exception as e:
-		print type(e), e
-		sc_server.database.session.rollback()
 
 
 
@@ -336,33 +298,20 @@ def ht_create_search_object(hashmap, mentor_prof_id, filtered_results):
 
 
 
-def display_meeting_partner(composite_meeting, profile):
-	display_partner = (profile == composite_meeting.hero) and composite_meeting.user or composite_meeting.hero
-	setattr(composite_meeting, 'display', display_partner)
-	setattr(composite_meeting, 'seller', (profile == composite_meeting.hero))
-	setattr(composite_meeting, 'buyer', (profile == composite_meeting.user))
-
-
-
 def ht_score_search_results(composite_lesson, keywords, hashmap):
 	less_score = 0
 	prof_score = 0
 
 	for keyword in keywords:
 		if (keyword in composite_lesson.Profile.prof_name.lower()):
-#			print '\t\t', keyword, composite_lesson.Profile.prof_name.lower()
 			prof_score = prof_score + 1
 		if (keyword in composite_lesson.Profile.headline.lower()):
-#			print '\t\t', keyword, composite_lesson.Profile.headline.lower()
 			prof_score = prof_score + 1
 		if (keyword in composite_lesson.Profile.prof_bio.lower()):
-#			print '\t\t', keyword, composite_lesson.Profile.prof_bio.lower()
 			prof_score = prof_score + 1
 		if (keyword in composite_lesson.lesson.lesson_title.lower()):
-#			print '\t\t', keyword, composite_lesson.lesson.lesson_title.lower()
 			less_score = less_score + 1
 		if (keyword in composite_lesson.lesson.lesson_description.lower()):
-#			print '\t\t', keyword, composite_lesson.lesson.lesson_description.lower()
 			less_score = less_score + 1
 
 	setattr(composite_lesson, 'comp_score', (prof_score + less_score))
