@@ -22,14 +22,11 @@ from server.controllers import *
 
 
 
-
 @api.route('/business/create', methods=['GET'])
-def render_business_create():
-	resp_code	= 200
-	resp_mesg	= 'Done'
+def render_business_create_fragment():
 	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
-	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
+	return make_response(jsonify(embed=fragment), 200)
 
 
 
