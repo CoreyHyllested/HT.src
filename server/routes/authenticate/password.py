@@ -94,22 +94,12 @@ def render_login():
 
 
 
-@sc_server.csrf.exempt
-@public.route('/login/modal', methods=['POST'])
+
+@public.route('/modal/login', methods=['GET'])
 def render_login_modal():
 	# check for session; uid; if so... save
-	fragment	= None
-	resp_code	= 200
-	resp_mesg	= 'Done'
-
-	try:
-		# check for data in session; save
-		fragment = render_template('fragment_account-create.html')
-	except Exception as e:
-		#database.session.rollback()
-		resp_code = 400
-		resp_mesg = 'An error occurred'
-	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)
+	fragment	= render_template('fragments/account-create.html')
+	return make_response(jsonify(embed=fragment), 200)
 
 
 

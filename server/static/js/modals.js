@@ -32,16 +32,9 @@ function notifyUser(txt) {
 function closeNotification() { }
 
 function openModalLogin() {
-	fd = new FormData();
-	fd.append("csrf_token", $('#csrf_token').val());
-
-	$.ajax({ url	: '/login/modal',
-			type	: 'POST',
-			data	: fd,
-			processData: false,
-			contentType: false,
+	$.ajax({ url	: '/modal/login',
+			type	: 'GET',
 			success : function(response) {
-				//console.log(response);
 				if (response.embed) {
 					$('#overlay').addClass('overlay-light');
 					$('#modal-message').html(response.embed);
@@ -60,16 +53,9 @@ function openModalLogin() {
 }
 
 function openModalSocial() {
-	fd = new FormData();
-	fd.append("csrf_token", $('#csrf_token').val());
-
-	$.ajax({ url	: '/login/modal',
-			type	: 'POST',
-			data	: fd,
-			processData: false,
-			contentType: false,
+	$.ajax({ url	: '/modal/login',
+			type	: 'GET',
 			success : function(response) {
-				console.log(response);
 				if (response.embed) {
 					$('#overlay').addClass('overlay-light');
 					$('#modal-message').html(response.embed);
@@ -94,7 +80,6 @@ function modal_to_email() {
 }
 
 function openModalShare() {
-	console.log('here');
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 
