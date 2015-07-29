@@ -60,16 +60,16 @@ def facebook_authorized(resp):
 	me = facebook.get('/me')
 	me.data['token']=session['oauth_token']
 
-	ba = sc_authenticate_user_with_oa(OAUTH_FACEBK, me.data)
+	ba = sc_authenticate_user_with_oa(OauthProvider.FACEBK, me.data)
 	if (ba):
 		print ("created_account, uid = " , str(ba.userid), ', get profile')
 		bp = Profile.get_by_uid(ba.userid)
 		bind_session(ba, bp)
-		#import_profile(bp, OAUTH_FACEBK, oauth_data=me.data)
+		#import_profile(bp, OauthProvide.FACEBK, oauth_data=me.data)
 		resp = redirect('/dashboard')
 	else:
-		print ('create account failed')
-		resp = redirect('/dbFailure')
+		session['messages'] = 'Account creation failed.'
+		resp = redirect('/login')
 	return resp
 
 

@@ -15,9 +15,8 @@
 from server import database
 from server.infrastructure.errors	import *
 from server.models.shared	import *
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy import ForeignKey, LargeBinary
-from sqlalchemy.orm	import relationship, backref
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm	 import relationship, backref
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy	 import *
 from datetime import datetime as dt, timedelta
