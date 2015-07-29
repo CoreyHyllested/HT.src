@@ -1,4 +1,4 @@
-version = 1.04;
+version = 1.05;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);
@@ -31,28 +31,11 @@ function notifyUser(txt) {
 
 function closeNotification() { }
 
-function openModalLogin() {
-	$.ajax({ url	: '/modal/login',
-			type	: 'GET',
-			success : function(response) {
-				if (response.embed) {
-					$('#overlay').addClass('overlay-light');
-					$('#modal-message').html(response.embed);
-					$('#modal-wrap').addClass('modal-active');
-					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
-					$('#account-email').addClass('login-active');
-				}
-			},
-			error: function(xhr, status, error) {
-				console.log(['ajax failure', xhr]);
-				rc = JSON.parse(xhr.responseText);
-			}
-	});
-	return false;
-}
+function openModalLogin()	{ return __get_login('#account-email');		}
+function openModalSocial()	{ return __get_login('#account-social');	}
 
-function openModalSocial() {
+
+function __get_login(set_active) {
 	$.ajax({ url	: '/modal/login',
 			type	: 'GET',
 			success : function(response) {
@@ -62,7 +45,7 @@ function openModalSocial() {
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
 					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
-					$('#account-social').addClass('login-active');
+					$(set_active).addClass('login-active');
 				}
 			},
 			error: function(xhr, status, error) {
