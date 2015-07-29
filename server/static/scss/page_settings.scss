@@ -1,8 +1,7 @@
 /* (c) 2015 Soulcrafting */
-
-@import 'defines/fonts';
 @import 'defines/elem_input';
 @import 'defines/elem_navigate';
+
 
 //override 
 section div			{	max-width:	550px !important;	}
@@ -28,5 +27,5 @@ section div			{	max-width:	550px !important;	}
 	color: $darkgreen; //rgba(0, 255, 0, 0.3);
 }
 
-#challenge { margin-top: -1px; }
-#verify_password { margin-top: -1px; }
+#challenge			{ margin-top: -1px; }
+#verify_password	{ margin-top: -1px; }

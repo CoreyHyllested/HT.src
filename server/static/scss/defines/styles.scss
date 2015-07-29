@@ -1,5 +1,6 @@
 /* (c) 2015 Soulcrafting */
 
+@import 'defines/colors';
 @import 'defines/defaults';
 
 .inline			{	display: inline;		}
@@ -11,6 +12,7 @@
 .align-left		{	text-align: left;	}
 .align-right	{	text-align: right;	}
 .underlined		{	border-bottom: 1px solid darkgrey;	}
+.center			{	margin: 0 auto;		}
 
 .title			{ /* need a few examples */}
 .value	 		{	display: inline-block;	padding: 10px 20px;		vertical-align: middle;	}

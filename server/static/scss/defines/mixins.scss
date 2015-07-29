@@ -1,0 +1,34 @@
+/* (C) 2015 Soulcrafting */
+
+@mixin unselectable ($v) {
+/* makes label unselectable */
+ -moz-user-select: -moz-none;
+   -webkit-user-select: none;
+       -ms-user-select: none; 
+}
+
+@mixin appearance($v) {
+      -o-appearance: $v;
+     -ms-appearance: $v;
+    -moz-appearance: $v;
+ -webkit-appearance: $v;
+}
+
+@mixin border-box() { 
+    -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+         box-sizing: border-box;
+}
+
+@mixin border-rad($sz) {
+ -webkit-border-radius: $sz;
+         border-radius: $sz;
+}
+
+@mixin transition() {
+   -moz-transition: 0.5s ease;
+     -o-transition: 0.5s ease;
+ -webkit-transition: 0.5 ease;
+        transition: 0.5s ease;		
+}
+
