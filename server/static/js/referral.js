@@ -28,11 +28,12 @@ function clear_profile() {
 function save_business_clicked() {
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
-	fd.append("name", $('#name').val());
+	fd.append("name", $('#trusted').val());
 	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
 	fd.append("phone", $('#phone').val());
-	create_business(fd);
+	console.log($('#trusted').val());
+	submit_business(fd);
 }
 
 function positive_feedback(content)	{
@@ -55,23 +56,20 @@ function feedback_timeout(msg)	{
 
 
 
-function modal_create_business() {
+function create_business() {
 	fd = {};
-	name = $('#refer-professional .form-control.tt-input').val();
-	fd.name = name;
+	fd.name = $('#trusted').val();
 	fd.csrf_token = $('#csrf_token').val();
-	modalCreateBusiness(fd);
-
+	get_modal_create_business(fd);
 	return false;
 }
 
 
-function modalCreateBusiness(fd) {
+function get_modal_create_business(fd) {
 	console.log('create business ' + fd.name);
-	console.log(fd);
-	$.ajax({ url	: '/business/create?name=' + fd.name,
+	$.ajax({ url	: '/business/create',
 			type	: 'GET',
-			processData: false,
+			data	: fd,
 			contentType: false,
 			success : function(response) {
 				console.log(response);
@@ -94,8 +92,8 @@ function modalCreateBusiness(fd) {
 }
 
 
-function create_business(fd) {
-	console.log('submitting new business ' + fd.name);
+function submit_business(fd) {
+	console.log(fd);
 	$.ajax({ url	: '/business/create',
 			type	: "POST",
 			data	: fd,
@@ -220,7 +218,7 @@ $(document).ready(function () {
 		source: pro_finder,
 		templates: {
 			notFound: function(q) {
-				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:modal_create_business();">Add this business?</a></div>';
+				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:create_business();">Add this business?</a></div>';
 			},
 			pending: '<div>Searching...</div>',
 			suggestion: Handlebars.compile('<div class="pro-suggestion" data-id={{id}}>{{name}} <span class="pro-suggestion-addr">{{addr}}</span></div>')

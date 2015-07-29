@@ -146,8 +146,7 @@ class Profile(database.Model):
 	def gravatar_url(self):
 		default_icon = "https://soulcrafting.co/static/img/favicon.png"
 		gravatar_url = "https://www.gravatar.com/avatar/" + hashlib.md5(self.prof_email.lower()).hexdigest() + "?"
-		gravatar_url += urllib.urlencode({'d':default_icon, 's':str(85)})
-		return gravatar_url
+		return gravatar_url + urllib.urlencode({'d':default_icon, 's':str(85)})
 
 
 
