@@ -6,14 +6,15 @@
 
 
 //overrides
-h2 { margin: 20px auto 10px; }
-#page-content	{	padding-top:	$section-padding;	}
+h2 { margin: 10px auto; }
+#page-content	{	padding-top:	20px;	}
 
 #authorize {
 	background-color: $white;
 	border-radius: $container-border-radius;
-	padding: 20px 10px 10px;
+	padding: 10px 0 0;
 	margin:	0 auto 50px;
+	max-width: 320px;
 }
 
 
@@ -26,9 +27,8 @@ h2 { margin: 20px auto 10px; }
 	width: 100%;
 }
 
-#authorize input[type="password"]	{ width: 100%; }
-#authorize input[type="submit"]		{ width: 100%; margin-bottom: 15px;
-}
+input	{	width: 100%; max-width: 280px;	}
+#authorize input[type="submit"]		{ width: 100%; margin-bottom: 15px; }
 
 
 .blueButton {
@@ -46,71 +46,27 @@ input[type='email'], input[type='phone'], input[type='address'] {
 }
 
 
-.form-group.username:before {
-  content: "\f007";
-  font-family: FontAwesome;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: $icon-gray;
+.form-group-before {
+	font-family: FontAwesome;
+	line-height: 1;
+	position: absolute;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	left: 10px;
+	top: 12px;
+	color: $icon-gray;
 }
 
-.form-group.address:before {
-  content: "\f041";
-  font-family: FontAwesome;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: $icon-gray;
-}
-
-
-.form-group.phone:before {
-  content: "\f095";
-  font-family: FontAwesome;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: $icon-gray;
-}
-
-
-.form-group.email:before {
-  content: "\f003";
-  font-family: FontAwesome;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: $icon-gray;
-}
-
-.form-group.password:before {
-  content: "\f023";
-  font-family: FontAwesome;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: absolute;
-  left: 10px;
-  top: 12px;
-  color: $icon-gray;
-}
+.form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
+.form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
+.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
+.form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
+.form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
 
 
 /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
 .attention::-webkit-input-placeholder { /* WebKit browsers */	color: red; }
-.attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red ; }
+.attention:-ms-input-placeholder { /* Internet Explorer 10+ */	color: red; }
 .attention:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
 	color: red;
 	opacity:  1;
@@ -134,11 +90,6 @@ input[type='email'], input[type='phone'], input[type='address'] {
 .recoveryLink:hover { text-decoration: underline; }
 
 
-/* PHONE DESIGN */
-@media (max-width: 488px) {
-	#authorize { width: 90%; }
-}
-
 /* DESIGN FOR EVERYTHING ELSE */
 @media (min-width: 489px) {
 	#page-content	{
@@ -148,6 +99,5 @@ input[type='email'], input[type='phone'], input[type='address'] {
 
 	#authorize {
 		margin-left: 20%;
-		width: 320px;
 	}
 }
