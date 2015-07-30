@@ -120,6 +120,7 @@ def	server_init_assets(server):
 	page_about_sc =	Bundle('page_about_sc.scss', filters='pyscss', output='css/about-sc.css')
 	page_products =	Bundle('page_products.scss', filters='pyscss', output='css/products.css')
 	page_settings =	Bundle('page_settings.scss', filters='pyscss', output='css/settings.css')
+	theme_master =	Bundle('master.scss',		filters='pyscss', output='css/the-master.css')
 	theme_legal =	Bundle('theme_legal.scss',	filters='pyscss', output='css/legaltos.css')
 	theme_error	=	Bundle('theme_error.scss',	filters='pyscss', output='css/errors.css')
 	theme_login = Bundle('theme_authorize.scss', filters='pyscss', output='css/authorize.css')
@@ -133,6 +134,7 @@ def	server_init_assets(server):
 	assets.register('scss_products', page_products)
 	assets.register('scss_settings', page_settings)
 
+	assets.register('master', 		 theme_master)
 	assets.register('scss_loginsys', theme_login)
 	assets.register('scss_legaltos', theme_legal)
 	assets.register('scss_errors',	 theme_error)

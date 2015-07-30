@@ -1,23 +1,24 @@
 @import 'defines/elem_input';
 @import 'defines/elem_navigate';
 
+$max-card-sz: 640px;
 
-#trusted			{	display: inline-block;	border-radius: 0px; 	}
+.trust-card {
+	width: 100%;	max-width: $max-card-sz;
+	margin: 0px;	border-radius: 0;
+}
+	
+#trusted			{	@extend .trust-card;	display: inline-block;										}
+#trust-card			{	@extend .trust-card;	border: 1px #e1e8ed solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
 #content			{	width: 100%; margin: 0 0 10px;	resize: none; }
 #refer-title		{	padding-left: 5px;	text-align: left;	}
-#refer-professional	{	display: inline-block;	width: 69%;			padding: 0 5px;		max-width: 660px;	background-color: white;	vertical-align: top;	}
-#instructions		{	display: inline-block;	width: 28%;			padding: 20px 5px;	max-width: 280px; 	background-color: white;	}
+#refer-professional	{	display: inline-block;						padding: 0 5px;		max-width: 650px;	vertical-align: top;	}
+#instructions		{	display: none;								max-width: 250px; 		}
 #feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
 
 
 #referral-questions {
 	padding: 25px 0 10px;
-}
-
-#trust-card {
-	border: 1px #e1e8ed solid;
-	border-top-width: 0px;
-	padding: 0px 10px 10px;
 }
 
 
@@ -30,4 +31,9 @@
 	font-size: .8em;
 	color: gray;
 	max-width: 50%;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 
+}
+
+@media (min-width: 640px) {
+	#refer-professional	{				}
+	#instructions 		{ display: inline-block;	}
 }

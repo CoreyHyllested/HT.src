@@ -4,8 +4,8 @@
 
 
 {% block header_css %}
-	{{ super() }}
-	{% assets "scss_referral" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{% assets 'master', 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
 	<link rel='stylesheet' href='/static/css/tagsinput.css'>
 {% endblock %}
 
@@ -18,7 +18,7 @@
 			<form id='refer-form'>
 			{{form.hidden_tag()}}
 			{%- if edit %}{{form.trusted(class='form-control', readonly=true)}}
-			{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', autofocus=true, placeholder="Professional's name or phone number.")}}
+			{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
 			{%- endif %}
 			<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
 			{#
@@ -63,4 +63,5 @@
 	<script src="/static/js/referral.js"></script>
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/tagsinput.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
 {% endblock %}

@@ -28,6 +28,7 @@ def render_business_create_fragment():
 	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
 	return make_response(jsonify(embed=fragment), 200)
+	return make_response(fragment, 200)
 
 
 

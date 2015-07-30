@@ -43,6 +43,7 @@ function add_new_business() {
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert');
 					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton save-business' value='Create'></input>");
+					$('#phone').mask("(999) 999-9999");
 				}
 			},
 			error: function(xhr, status, error) {

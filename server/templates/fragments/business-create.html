@@ -1,13 +1,38 @@
+{# extends 'sc-header.html' %}
+{% set meta_title	= 'Login to Soulcrafting.' %}
+{% set meta_desc	= 'Login to Soulcrafting.' %}
+
+{% block header_css %}
+	{{ super() }}
+	{% assets 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+
+{% block content #}
 <div class='create-business'>
 	<h3>Who do you Trust?</h3>
 	<p>We need their name (got it, <span id=trusted-name>{{form.name.data}}</span>) and at least one way to contact them.</p>
 	<form id='create-business-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<ul>
-			<li>{{form.name(type='name', class='ff', placeholder="Trusted Entity's Name")}}</li>
-			<li>{{form.site(type='text', class='ff', placeholder="http://website")}} </li>
-			<li>{{form.phone(type='phone', autocomplete='off', placeholder="(303) 720-1111")}} </li>
-			<li>{{form.email(type='email', autocomplete='off', placeholder="EmailAddress")}} </li>
+		<ul class='input'>
+			<li>{{form.name(type='name',	class='ff', placeholder="Trusted Entity's Name")}}</li>
+			<li>{{form.site(type='url',		class='ff', minlength=5, placeholder="http://website")}} </li>
+			<li>{{form.phone(type='tel',	class='ff', required=true, placeholder="(303) 720-1111")}} </li>
+			<li>{{form.email(type='email',	class='ff', placeholder="Email Address")}} </li>
 		</ul>
 	</form>
 </div>
+{# endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+{% if sc_alert %}
+	<script>
+	$(document).ready(function () {
+		openAlertWindow('{{sc_alert}}')
+	});
+	</script>
+{% endif %}
+% endblock %}
+#}

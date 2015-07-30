@@ -1,0 +1,68 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/inputs';
+
+@charset "UTF-8";
+body		{	height:	100%;		padding-top: $navbar-height;						}
+section		{	background:	white;	padding:	$section-padding 0;						}
+section div	{	width: 100%;		max-width:	$column-max-width;		margin: 0 auto;	}
+footer		{ 	width: 100%;		padding:	10px 0;		background-color: white; height: $footer-height; bottom: 0; border-top: 2px solid $ht-blue;		}
+html		{	height: 100%;	}
+
+/* TEXT:  Fonts, headers, links, etcetera */
+*		{	font-family: $font-primary;																						}
+html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;		}
+body	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em;	-webkit-font-smoothing: subpixel-antialiased;		}
+h1		{	color: white;				font-size: 3em;		font-weight: 400;	line-height: 1em;							}
+h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.5em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
+h3		{								font-size: 1.2em;	font-weight: 500;	line-height: 1.2em;		text-align: center;	}
+h4		{								font-size: 1.1em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
+strong	{													font-weight: bold;												}
+
+a:link		{ color: $ht-blue; text-decoration: none;	}
+a:active	{ color: $ht-blue;							}
+a:visited	{ color: $ht-blue; 							}
+
+
+.input-sc-box 	{	@include appearence(none);	font-size: 0.9em;	width: 95%;	height: $field-height;	border: 1px $input-gray solid;	outline: none;	margin: 5px;	padding-left: 5px;	}
+.input-sc-btn	{	@include appearence(none);	font-size: 0.9em;	text-transform: uppercase;																	}
+
+textarea				{	@extend .input-sc-box; @include border_box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
+input[type='text']		{	@extend .input-sc-box;			}
+input[type='name']		{	@extend .input-sc-box;			}
+input[type='email']		{	@extend .input-sc-box;			}
+input[type='phone']		{	@extend .input-sc-box;			}
+input[type='tel']		{	@extend .input-sc-box;			}
+input[type='url']		{	@extend .input-sc-box;			}
+input[type='address']	{	@extend .input-sc-box;			}
+input[type='password']	{	@extend .input-sc-box;			}
+select					{	@extend .input-sc-box; background: url('../img/dropdown.svg') no-repeat right white; border-radius: 0; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
+
+label { color: gray; font-size: 0.7em; line-height: 1.7em; }
+input[type='submit']	{	@extend .input-sc-btn;	}
+input[type='button']	{	@extend .input-sc-btn;	}
+button					{	@extend .input-sc-btn;	}
+
+/* Checkboxs */
+input[type="checkbox"]			{	display: none;					}
+input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
+input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: 0.9em; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
+
+input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: #e1e8ed !important;	}
+input:focus:invalid				{	background-color: orange;		}
+input:invalid					{	background-color: yellow;		}
+
+ul			{	list-style-type: none;	padding-left: 0;	}
+
+/* Placeholder */
+:-moz-placeholder			{	color: $gray-placeholder;	} /* Firefox 18- */ 
+::-moz-placeholder			{	color: $gray-placeholder;	} /* Firefox 19+ */ 
+:-ms-input-placeholder		{	color: $gray-placeholder; 	}
+::-webkit-input-placeholder	{	color: $gray-placeholder; 	} 
+
