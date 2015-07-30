@@ -25,7 +25,7 @@ def render_signup_page(sc_msg=None):
 		# if logged in, take 'em home
 		return redirect('/dashboard') 
 
-	form = SignupForm(request.form)
+	form = SignupForm(request.values)
 	if form.validate_on_submit(): # and form.terms.data == True:
 		try:
 			profile  = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, ref_id=form.refid.data)
@@ -35,8 +35,7 @@ def render_signup_page(sc_msg=None):
 			sc_msg = ae.sanitized_msg()
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
-		sc_msg = 'Oops. Fill out all fields.'
-	return make_response(render_template('signup.html', form=form, sc_alert=sc_msg))
+	return make_response(render_template('authorize/signup.html', form=form, sc_alert=sc_msg))
 
 
 
@@ -60,7 +59,7 @@ def render_pro_signup_page(sc_msg=None):
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
-	return make_response(render_template('signup-professional.html', form=form, sc_alert=sc_msg))
+	return make_response(render_template('authorize-signup-professional.html', form=form, sc_alert=sc_msg))
 
 
 
@@ -90,7 +89,7 @@ def render_login():
 	elif request.method == 'POST':
 		trace("POST /login form isn't valid" + str(form.errors))
 		sc_msg = "Incorrect username or password."
-	return make_response(render_template('login.html', form=form, sc_alert=sc_msg))
+	return make_response(render_template('authorize/login.html', form=form, sc_alert=sc_msg))
 
 
 
@@ -130,7 +129,7 @@ def render_password_reset_request(sc_msg=None):
 		except AccountError as ae:
 			sc_msg = ae.sanitized_msg()
 			print ae
-	return render_template('password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
+	return render_template('authorize/password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
 
 
 
@@ -166,7 +165,7 @@ def render_password_reset_page(challengeHash):
 		return redirect('/login')
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
-	return render_template('password-reset.html', form=form)
+	return render_template('authorize/password-reset.html', form=form)
 
 
 

@@ -12,7 +12,7 @@ h2 { margin: 10px auto; }
 #authorize {
 	background-color: $white;
 	border-radius: $container-border-radius;
-	padding: 10px 0 0;
+	padding: 10px 0;
 	margin:	0 auto 50px;
 	max-width: 320px;
 }
@@ -22,12 +22,8 @@ h2 { margin: 10px auto; }
 #terms-text		{ font-size: 1.4em; }
 #authorize-form { padding: $form-padding; }
 
-.extraspace {
-	margin: 20px 0 20px;
-	width: 100%;
-}
-
 input	{	width: 100%; max-width: 280px;	}
+
 #authorize input[type="submit"]		{ width: 100%; margin-bottom: 15px; }
 
 
@@ -79,7 +75,7 @@ input[type='email'], input[type='phone'], input[type='address'] {
 
 
 
-
+// only used in reset (TODO -- remove)
 .recoveryLink {
 	clear: both;
 	display: block;
@@ -96,8 +92,5 @@ input[type='email'], input[type='phone'], input[type='address'] {
 		background: $img-blurred no-repeat center;
 		background-size: cover;
 	}
-
-	#authorize {
-		margin-left: 20%;
-	}
+	#authorize	{	margin-left: 20%;	}
 }
