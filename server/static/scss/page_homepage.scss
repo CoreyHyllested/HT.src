@@ -37,6 +37,9 @@
 #press-row a:last-child {	display: none; 	}
 
 
+/* MAP: 				[FF35+]					[Chrome, Safari6+, Opera 15+]	 [IE6-9]						*/
+.greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
+//.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
 
 @media (min-width: 489px) {
 	#press	{ display: block; }

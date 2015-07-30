@@ -7,6 +7,7 @@
 @import 'defines/common';
 @import 'defines/styled/inputs';
 
+
 @charset "UTF-8";
 body		{	height:	100%;		padding-top: $navbar-height;						}
 section		{	background:	white;	padding:	$section-padding 0;						}
@@ -15,8 +16,7 @@ footer		{ 	width: 100%;		padding:	10px 0;		background-color: white; height: $foo
 html		{	height: 100%;	}
 
 /* TEXT:  Fonts, headers, links, etcetera */
-*		{	font-family: $font-primary;																						}
-html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;		}
+html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;		}
 body	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em;	-webkit-font-smoothing: subpixel-antialiased;		}
 h1		{	color: white;				font-size: 3em;		font-weight: 400;	line-height: 1em;							}
 h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.5em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
@@ -30,7 +30,22 @@ a:visited	{ color: $ht-blue; 							}
 
 
 .input-sc-box 	{	@include appearence(none);	font-size: 0.9em;	width: 95%;	height: $field-height;	border: 1px $input-gray solid;	outline: none;	margin: 5px;	padding-left: 5px;	}
-.input-sc-btn	{	@include appearence(none);	font-size: 0.9em;	text-transform: uppercase;																	}
+.input-sc-btn	{
+	@include appearence(none);
+	@include border-rad(3px);
+	/* cursor: pointer; dflt */
+	display: inline-block;
+	padding: 5px 10px;
+	margin-bottom: 0;
+
+	line-height: 1.4em;
+	font-size: 0.9em;
+	font-weight: 400;
+	text-align: center;
+	text-transform: uppercase;
+	vertical-align: middle;
+	white-space: nowrap;
+}
 
 textarea				{	@extend .input-sc-box; @include border_box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
 input[type='text']		{	@extend .input-sc-box;			}
@@ -55,8 +70,8 @@ input[type="checkbox"].checkbox:checked + label.checkbox-label { background-posi
 input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: 0.9em; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
 input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: #e1e8ed !important;	}
-input:focus:invalid				{	background-color: orange;		}
-input:invalid					{	background-color: yellow;		}
+input:focus:invalid				{	color: black;	}
+input:invalid					{	color: red;		}
 
 ul			{	list-style-type: none;	padding-left: 0;	}
 

@@ -1,3 +1,5 @@
+/* (C) 2015 Soulcrafting */
+
 @import 'defines/fonts';
 @import 'defines/colors';
 @import 'defines/images';
@@ -5,18 +7,36 @@
 @import 'defines/common';
 
 
-$field-bottom-margin: 10px;
-$field-height: 40px;
-$btn-width = 75px;
-
-#btn-submit-referral	{	width:	120px;			}
-#btn-get-verified	{ height: 40px; }
-#btn-validate-code	{ height: 40px; }
-
-.btn-referral {
-	display: inline-block;
-	max-width: 120px;
+.btn-sc-default {
+	@include transition();
+	@include appearance(none);
+	@include border-rad(3px);
+	cursor: pointer;
+	display: table-cell;
+	height: 35px;
+	font-size: 0.9em;
+	font-weight: 400;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
 }
+
+
+.blueButton			{	@extend .btn-sc-default;	background-color: #29abe2;	border: 1px solid #29abe2;	color: white;		}
+.redButton			{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: red;			}
+.whiteButton		{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
+.messageButton		{	@extend .blueButton;		margin-top: -12px;															}
+
+.blueButton:hover	{	color: white;				background-color: #007cb3;	border: 1px solid #007cb3;		text-decoration: none;	}
+.messageButton:hover{	color: white;				background-color: #007cb3;	border: 1px solid #007cb3;		text-decoration: none;	}
+.redButton:hover	{	color: red;												border: 1px solid red;			text-decoration: none;	}
+.whiteButton:hover	{	color: $ht-blue;										border: 1px solid $ht-blue;		text-decoration: none;	}
+
+
+.checkbox-label					{	background-image:url('../img/checkbox.svg');		}
+
+
+.btn-referral { max-width: 155px; }
 
 .btn-signup {
 	background: white;
@@ -25,36 +45,8 @@ $btn-width = 75px;
 
 .btn-settings {
 	min-width: 110px;
-	height: $field-height;
-	//padding: 10px 20px;
 	margin: 20px 0px 0px;
-	//margin-right: 20px;
-	//mv to settings.scss (only used there)
 }
-
-//TODO -- make #id, OR similarize// used on landing page;
-.lp-btn {
-	width: 240px;
-	color: white !important;
-	margin: 0 auto;
-	border: 2px solid white;
-	text-transform: uppercase;
-	transition: background 80ms ease-out;
-}
-
-.blueButton:hover { color: white; }
-.lp-btn:hover {
-	background-color: white;
-	color: black !important;
-}
-
-.resend .blueButton {
-	font-size: 0.9em;
-	line-height: 24px;
-	height: 39px;
-}
-
-
 
 .field-container {
 	width: 100%;
@@ -143,6 +135,8 @@ $btn-width = 75px;
 	color: black;
 }
 
+.disabled	{ color: $disabled;	}
+.name		{ color: darkgrey;	}
 
 .bootstrap-tagsinput 			{	box-shadow: none !important;	border: 1px #e1e8ed solid !important;	border-radius: 0px !important;	}
 .bootstrap-tagsinput .tt-menu	{	width: 350px;	}

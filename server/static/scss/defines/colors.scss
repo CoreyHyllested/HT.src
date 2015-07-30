@@ -28,11 +28,4 @@ $twittr-btn-color-hover: #2795e9;
 $google-btn-color-hover: #c23321;
 $facebk-btn-color-hover: #2d4373;
 
-.disabled	{ color: $disabled;	}
-.name		{ color: darkgrey;	}
-
-/* MAP: 				[FF35+]					[Chrome, Safari6+, Opera 15+]	 [IE6-9]						*/
-.greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
-//.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
-
 /* $red: hsla(358, 74%, 64%, 1); // #e75f63; */
