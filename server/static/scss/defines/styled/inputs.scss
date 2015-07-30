@@ -7,6 +7,23 @@
 @import 'defines/common';
 
 
+.form-group-before {
+	font-family: FontAwesome;
+	line-height: 1;
+	position: absolute;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	left: 10px;
+	top: 12px;
+	color: $icon-gray;
+}
+.form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
+.form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
+.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
+.form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
+.form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
+
+
 .btn-sc-default {
 	@include transition();
 	@include appearance(none);

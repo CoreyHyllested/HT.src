@@ -1,5 +1,5 @@
 @import 'defines/images';
-@import 'defines/elem_input';
+@import 'defines/styled/inputs';
 @import 'defines/elem_navigate';
 @import 'defines/elem_checkbox';
 
@@ -27,11 +27,9 @@ input	{	width: 100%; max-width: 280px;	}
 #authorize input[type="submit"]		{ width: 100%; margin-bottom: 15px; }
 
 
-.blueButton {
-	text-transform: uppercase;
-	color: $white;
-}
-.blueButton:hover { color: $white-80; }
+.whiteButton		{ border: 1px solid white; }
+.blueButton			{ text-transform: uppercase; color: $white; }
+.blueButton:hover	{ color: $white-80; }
 
 .form-group { position: relative; }
 
@@ -42,22 +40,7 @@ input[type='email'], input[type='phone'], input[type='address'] {
 }
 
 
-.form-group-before {
-	font-family: FontAwesome;
-	line-height: 1;
-	position: absolute;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	left: 10px;
-	top: 12px;
-	color: $icon-gray;
-}
 
-.form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
-.form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
-.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
-.form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
-.form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
 
 
 /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
