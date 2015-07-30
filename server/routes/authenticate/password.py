@@ -59,7 +59,7 @@ def render_pro_signup_page(sc_msg=None):
 	elif request.method == 'POST':
 		print 'render_signup: form invalid ' + str(form.errors)
 		sc_msg = 'Oops. Fill out all fields.'
-	return make_response(render_template('authorize-signup-professional.html', form=form, sc_alert=sc_msg))
+	return make_response(render_template('authorize/signup-professional.html', form=form, sc_alert=sc_msg))
 
 
 
