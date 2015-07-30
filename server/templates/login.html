@@ -10,16 +10,14 @@
 
 {% block content %}
 <section id='authorize'>
-	<h2 class='text-center'>Log in to Soulcrafting</h2>
+	<h2>Log in to Soulcrafting</h2>
 
 	<div class="social-btns">
 		<ul class="list-unstyled social-login">
 			<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
 		</ul>
 	</div>
-
-	<hr>
-
+	<hr class='thin'>
 	<div id='authorize-form'>
 		<form method='POST' action='/login'>
 			{{form.hidden_tag()}}
