@@ -35,8 +35,8 @@
 			<button type="submit" class="btn btn-block blueButton">Log in</button>
 		</form>
 		<br>
-		<a href='/password/recover'><button class='btn btn-block whiteButton'>Forgot password?</button></a>
-		<a href='/signup'><button class='btn btn-block whiteButton'>Don't have an account? Sign Up.</button></a>
+		<form method='GET' action='/password/recover'><button class='btn-block whiteButton'>Forgot password?</button></form>
+		<form method='GET' action='/signup'><button class='btn-block whiteButton'>Don't have an account? Sign up!</button></form>
 	</div>
 </section>
 {% endblock %}
@@ -45,11 +45,7 @@
 
 {% block scripts %}
 	{{ super() }}
-{% if sc_alert %}
-	<script>
-	$(document).ready(function () {
-		openAlertWindow('{{sc_alert}}')
-	});
-	</script>
-{% endif %}
+{%- if sc_alert %}
+	<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>
+{%- endif %}
 {% endblock %}
