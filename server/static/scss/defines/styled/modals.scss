@@ -5,9 +5,10 @@
 @import 'defines/mixins';
 @import 'defines/common';
 
+
 /* MODAL WINDOWS */
 #overlay {}							/* Overlay Screen (overlay-dark) */
-#modal-wrap { top: -20% }			/* modal-wrap. unsure if needed - 	ACTIVATED: .modal-active */
+#modal-wrap { top: -20%; }			/* modal-wrap. unsure if needed - 	ACTIVATED: .modal-active */
 	#modal-window {}				/* window, display:none;		- 	ACTIVATED: .window-alert */
 		#modal-content {}			/* container for window-content	*/
 			#modal-header {}		/* container for window-header	*/
@@ -26,16 +27,18 @@
 	background-color: white;
 	padding: 20px 10px;
 	width: 100%;
-	max-width: 599px;
+	max-width: $modal-max-width;
 }
 
 #modal-content {
 	/* required to position modal-header */
 	position: relative;
-	height: 100%;
+	height: 20%;
 	width: 100%;
 }
 
+#modal-actions-wrap { width: 95%; margin: 0 auto; }
+#modal-actions		{ text-align: right; }
 
 #modal-header {
 	/* container for title, close */
@@ -49,9 +52,8 @@
 	position: absolute;
 	top: -15px;
 	right: 0px;
-
 	cursor: pointer;
-	font-size: 1.2em;
+	font-size: 24px;
 }
 #modal-close:before	{ content:"\00D7"; }	/* X to close. */
 #modal-close:hover	{ color: black; font-weight: bolder;  }
@@ -69,11 +71,10 @@
 #modal-dismiss {
 	border-top: 1px solid rgba(0,0,0, 0.4);
 	padding-top: 10px;
-
 	cursor: pointer;
 	margin: auto;
 	width: 100%;
-	color: #29abe2;
+	color: $ht-blue;
 }
 
 
@@ -86,19 +87,14 @@
 .modal-dismiss { z-index: 99998; }
 
 
-/* CLASSES for ALL MODAL-WINDOWS */
 .modal-active {
 	position: fixed;
 	display: inline;
 	z-index: 99999;
+	width: 100%;
 
 	/* center window */
 	text-align: center;
-	width: 100%;
-
-	/* drop-in from top */
-	top: 30% !important;
-	@include transition_type(top);
 }
 
 
@@ -106,11 +102,22 @@
 .window-border	{ border:	1px solid black;	}
 .request input	{ width: 85%;	}
 
-.modal-account	{ display: none;	}
-.login-active	{ display: block;	}
-.modal-block	{ display: block;	}
-.modal-inline	{ display: inline-block;	}
+.modal-account	{ display: none;	}	//remove
+.login-active	{ display: block;	}	//remove
 
 
 
-@media (min-width: 600px)	{ .window-alert { @include border-rad(8px); } }
+@media (min-width: 600px)	{
+	.window-alert { @include border-rad(8px); }
+	.modal-active { /* drop-in from top */
+		top: 30% !important;
+		@include transition_type(top);
+	}
+	#modal-content { height: 100%;	}
+}
+
+@media (max-width: $modal-max-width)	{
+	#modal-wrap.modal-active	{	height: 100%;	top: 0;		}
+	#modal-window 				{	height: 100%;	}
+	#modal-close:before	{ font-size: 30px;  }	/* X to close. */
+}
