@@ -24,11 +24,9 @@
 
 	/* describe window */
 	background-color: white;
-	@include border-rad(8px);
-
-	padding: 20px 10px 10px;
-	text-align: center;
-	min-width: 175px;
+	padding: 20px 10px;
+	width: 100%;
+	max-width: 599px;
 }
 
 #modal-content {
@@ -104,7 +102,7 @@
 }
 
 
-.window-alert	{ display:	inline-block !important;	max-width: 290px; }
+.window-alert	{ display:	inline-block !important; }
 .window-border	{ border:	1px solid black;	}
 .request input	{ width: 85%;	}
 
@@ -115,6 +113,4 @@
 
 
 
-@media (min-width: 489px)	{ .window-alert { max-width: 400px; } }
-@media (min-width: 767px)	{ .window-alert { max-width: 600px; } }
-@media (min-width: 979px)	{ .window-alert { max-width: 750px; } }
+@media (min-width: 600px)	{ .window-alert { @include border-rad(8px); } }

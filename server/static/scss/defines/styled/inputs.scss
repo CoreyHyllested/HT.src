@@ -7,7 +7,6 @@
 @import 'defines/common';
 
 
-
 .form-group			{	position: relative;	margin-bottom: 0 !important;	}
 .form-group-before	{
 	font-family: FontAwesome;
@@ -16,9 +15,9 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	position: absolute;
-	left: 17px;
+	left: 20px;
 	top:  15px;
-	color: $icon-gray;
+	color: $input-icon-gray;
 }
 
 .form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
@@ -30,7 +29,7 @@
 .form-group input[type='name'],  .form-group input[type='address'],
 .form-group input[type='phone'], .form-group input[type='tel'],
 .form-group input[type='email'], .form-group input[type='url'],
-{	padding-left: 32px;	}
+.form-group input[type='search'] {	padding-left: 30px;	}
 
 
 .btn-sc-default {
@@ -63,7 +62,7 @@
 
 
 .btn-referral	{ max-width: 155px; }
-.btn-modal		{ display: inline-block; 	max-width: 155px; width: 33%; }
+.btn-modal		{ display: inline-block; 	max-width: 155px; width: 33%;  text-transform: uppercase; }
 
 .btn-signup {
 	background: white;
