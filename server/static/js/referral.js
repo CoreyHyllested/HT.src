@@ -1,4 +1,4 @@
-var referral_version = 0.67;
+var referral_version = '0.69';
 
 function show_errors(status_element, errors) {
 	//status_element.empty();
@@ -38,11 +38,9 @@ function add_new_business() {
 				console.log(response);
 				if (response.embed) {
 					$('#modal-message').html(response.embed);
-
 					$('#overlay').addClass('overlay-dark');
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton save-business' value='Create'></input>");
 					$('#phone').mask("(999) 999-9999");
 				}
 			},
@@ -56,10 +54,29 @@ function add_new_business() {
 }
 
 
-function submit_business() {
+function update_business(event) {
+	console.log('updating business!');
+	//hold window static
+
+	console.log(event.target);
+	$('#modal-business-info').removeClass('block');
+	$('#modal-business-addr').addClass('block');
+	$(event.target).addClass('business-submit').removeClass('business-update').html('Submit');
+	initialize_map('map-canvas', 'addr');
+	return false;
+}
+
+
+function submit_business(event) {
+	console.log('submitting business!');
+
+	$('#modal-business-info').addClass('block');
+	$('#modal-business-addr').removeClass('block');
+
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 	fd.append("name", $('#trusted').val());
+	fd.append("addr", $('#addr').val());
 	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
 	fd.append("phone", $('#phone').val());
@@ -227,7 +244,8 @@ $(document).ready(function () {
 
 	$('#btn-cancel-referral').click( function (e) { clear_profile(); });
 	$('#btn-submit-referral').click( function (e) { save_referral(); });
-	$('#modal-buttons').on('click', '.save-business', submit_business);
+	$('#modal-message').on('click', '.business-update', update_business);
+	$('#modal-message').on('click', '.business-submit', submit_business);
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
