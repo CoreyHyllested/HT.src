@@ -7,21 +7,30 @@
 @import 'defines/common';
 
 
-.form-group-before {
+
+.form-group			{	position: relative;	margin-bottom: 0 !important;	}
+.form-group-before	{
 	font-family: FontAwesome;
-	line-height: 1;
-	position: absolute;
+	font-size:	 $input-icon-size;
+	line-height: $input-line-height;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	left: 10px;
-	top: 12px;
+	position: absolute;
+	left: 17px;
+	top:  15px;
 	color: $icon-gray;
 }
+
 .form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
 .form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
+.form-group.url:before		{ @extend .form-group-before; content: "\f0c1"; }
 .form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
 .form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
 .form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
+.form-group input[type='name'],  .form-group input[type='address'],
+.form-group input[type='phone'], .form-group input[type='tel'],
+.form-group input[type='email'], .form-group input[type='url'],
+{	padding-left: 32px;	}
 
 
 .btn-sc-default {
@@ -53,7 +62,8 @@
 .checkbox-label					{	background-image:url('../img/checkbox.svg');		}
 
 
-.btn-referral { max-width: 155px; }
+.btn-referral	{ max-width: 155px; }
+.btn-modal		{ display: inline-block; 	max-width: 155px; width: 33%; }
 
 .btn-signup {
 	background: white;
@@ -135,22 +145,17 @@
 .tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
 .tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
 
+
 .feedback-bubble		{
-	background-color: green;
-	border: 1px solid green;
 	border-radius: 7px;
-	color: white;
 	font-weight: 600;
 	text-align: center;
 	margin: 5px auto;
 	width:	66%;
 }
+.feedback-positive	{ @extend .feedback-bubble; background-color: green;	border: 1px solid white;	color: white;	}
+.feedback-negative	{ @extend .feedback-bubble; background-color: $warning;	border: 1px solid yellow;	color: black;	}
 
-.feedback-negative {
-	background-color: $warning;
-	border: 1px solid yellow;
-	color: black;
-}
 
 .disabled	{ color: $disabled;	}
 .name		{ color: darkgrey;	}
