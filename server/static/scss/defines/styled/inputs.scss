@@ -6,7 +6,7 @@
 @import 'defines/mixins';
 @import 'defines/common';
 
-
+.actions			{	text-align: right;		}
 .form-group			{	position: relative;	margin-bottom: 0 !important;	}
 .form-group-before	{
 	font-family: FontAwesome;
@@ -97,6 +97,9 @@
 .field.input.iconified { padding-left: 13px; }
 
 .ff					{	margin: 5px 0;			}
+.ff.prompt			{	display: inline;	width: 100%;	font-size: .85em;	font-weight: 600;	padding-left: 3px;	}
+.ff.detail			{	display: inline;	color: gray;	font-size: .85em;						padding-left: 3px;	}
+
 .ff.header			{	display: inline;	width: 100%;	font-size: .7em;	font-weight: 600;	padding-left: 3px;	}
 .ff.value			{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
 .ff.contact 		{	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
@@ -140,9 +143,9 @@
 }
 
 .twitter-typeahead		{	display: inline !important;	width: 100%;	} 	//fixes bug. #invite-emails is too small
-.tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 5px 4px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
-.tt-suggestion			{	background-color: lightgray;	border: 1px solid lightgray;	padding-left: 5px;	}
-.tt-suggestion:hover	{	background-color: darkgray;		border-color: black;			}
+.tt-menu				{	background-color: white;		top: inherit !important;	box-shadow: 0px 0px 3px rgba(0,0,0,.4);	}	//(top) fixes bug. .tt-menu is setup too high 
+.tt-suggestion:hover	{	background-color: whitesmoke;	}
+.tt-suggestion			{	padding-left: 5px;				}
 
 
 .feedback-bubble		{
