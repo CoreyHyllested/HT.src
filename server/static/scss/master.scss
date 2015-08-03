@@ -31,7 +31,17 @@ a:active	{ color: $ht-blue;							}
 a:visited	{ color: $ht-blue; 							}
 
 
-.input-sc-box 	{	@include appearence(none);	font-size: $input-text-size;	width: 95%;	height: $field-height;	border: 1px $input-default solid;	margin: 5px;	padding-left: 5px;	}
+.input-sc-box 	{
+	@include appearence(none);
+	border: 1px $input-default solid;
+	margin: $input-margin;
+	height: $input-height;
+	width:  $input-width;
+
+	padding-left: 5px;
+	font-size: $input-text-size;
+}
+
 .input-sc-btn	{
 	@include appearence(none);
 	@include border-rad(3px);
