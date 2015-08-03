@@ -4,9 +4,9 @@
 
 
 {% block header_css %}
+	<link rel='stylesheet' href='/static/css/tagsinput.css'>
 	{% assets 'master', 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	<link rel='stylesheet' href='/static/css/tagsinput.css'>
 {% endblock %}
 
 
@@ -64,4 +64,6 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/tagsinput.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+	<script src="//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places"></script>
+	<script src="/static/js/maps.js"></script>
 {% endblock %}
