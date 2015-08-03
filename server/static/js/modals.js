@@ -78,7 +78,7 @@ function openModalShare() {
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('modal-active');
 					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Share'></input>");
+					$('#modal-buttons').html("<input type='button' class='btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn-modal blueButton' value='Share'></input>");
 				}
 			},
 			error: function(xhr, status, error) {
