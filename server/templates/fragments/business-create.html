@@ -1,38 +1,23 @@
-{# extends 'sc-header.html' %}
-{% set meta_title	= 'Login to Soulcrafting.' %}
-{% set meta_desc	= 'Login to Soulcrafting.' %}
 
-{% block header_css %}
-	{{ super() }}
-	{% assets 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
-{% endblock %}
-
-
-{% block content #}
 <div class='create-business'>
-	<h3>Who do you Trust?</h3>
-	<p>We need their name (got it, <span id=trusted-name>{{form.name.data}}</span>) and at least one way to contact them.</p>
 	<form id='create-business-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<ul class='input'>
-			<li>{{form.name(type='name',	class='ff', placeholder="Trusted Entity's Name")}}</li>
-			<li>{{form.site(type='url',		class='ff', minlength=5, placeholder="http://website")}} </li>
-			<li>{{form.phone(type='tel',	class='ff', required=true, placeholder="(303) 720-1111")}} </li>
-			<li>{{form.email(type='email',	class='ff', placeholder="Email Address")}} </li>
-		</ul>
+
+		<h3>Who do you Trust?</h3>
+		<div id='modal-business-info' class='block'>
+			<div class="form-group username">{{form.name(type='name',	class='ff', placeholder="A & K Contracting",	required=true)}}</div>
+			<div class="form-group phone">	 {{form.phone(type='tel',	class='ff',	placeholder="(720) 376-3919",		required=true)}}</div>
+			<div class="form-group email">	 {{form.email(type='email', class='ff',	placeholder="akcontracting@yahoo.com (optional)")}}</div>
+			<div class="form-group url">	 {{form.site(type='url',	class='ff', placeholder="www.akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
+		</div>
+
+		<div id='modal-business-addr'>
+			<div class="form-group address">
+				{{form.addr(type='search',	class='ff', placeholder="Add their address (optional)")}}
+				<div id="map-canvas"></div>
+			</div>
+		</div>
+		<button class='btn-modal dismiss-modal whiteButton' >Cancel</button>
+		<button class='btn-modal business-update blueButton'>Create...</button>
 	</form>
 </div>
-{# endblock %}
-
-
-{% block scripts %}
-	{{ super() }}
-{% if sc_alert %}
-	<script>
-	$(document).ready(function () {
-		openAlertWindow('{{sc_alert}}')
-	});
-	</script>
-{% endif %}
-% endblock %}
-#}
