@@ -1,5 +1,5 @@
 // GoogleMap API Wrapper.
-var maps_version = 0.8;
+var maps_version = 0.9;
 
 var DEBUG = 1;
 var infowindow;
@@ -20,19 +20,10 @@ $(document).ready(function () {
 function init_canvas(map_canvas, map_options, map_searchbox) {
 	map_location = $(map_canvas).data('location');
 
-	if ($(map_canvas) != null) {
-		var map = new google.maps.Map(map_canvas, map_options);
-		var searchBox = null;
-		if (map_searchbox != null) {
-			searchBox = new google.maps.places.SearchBox(map_searchbox);
-			google.maps.event.addListener(searchBox, 'places_changed', function() { places_changed(map, searchBox); });
-		}
-
-		google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
-		geocoder.geocode({'address': map_location}, function (results, status) {
-				geocode_result_handler(results, status, map);
-		});
-	}
+	google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
+	geocoder.geocode({'address': map_location}, function (results, status) {
+			geocode_result_handler(results, status, map);
+	});
 }
 
 
