@@ -8,6 +8,7 @@
 @import 'defines/styled/inputs';
 
 
+
 @charset "UTF-8";
 body		{	height:	100%;		padding-top: $navbar-height;						}
 section		{	background:	white;	padding:	$section-padding 0;						}
@@ -29,7 +30,7 @@ a:active	{ color: $ht-blue;							}
 a:visited	{ color: $ht-blue; 							}
 
 
-.input-sc-box 	{	@include appearence(none);	font-size: 0.9em;	width: 95%;	height: $field-height;	border: 1px $input-gray solid;	outline: none;	margin: 5px;	padding-left: 5px;	}
+.input-sc-box 	{	@include appearence(none);	font-size: $input-text-size;	width: 95%;	height: $field-height;	border: 1px $input-gray solid;	outline: none;	margin: 5px;	padding-left: 5px;	}
 .input-sc-btn	{
 	@include appearence(none);
 	@include border-rad(3px);
@@ -38,8 +39,8 @@ a:visited	{ color: $ht-blue; 							}
 	padding: 5px 10px;
 	margin-bottom: 0;
 
-	line-height: 1.4em;
-	font-size: 0.9em;
+	line-height: $input-line-height;
+	font-size:	 $input-text-size;
 	font-weight: 400;
 	text-align: center;
 	text-transform: uppercase;
@@ -54,9 +55,12 @@ input[type='email']		{	@extend .input-sc-box;			}
 input[type='phone']		{	@extend .input-sc-box;			}
 input[type='tel']		{	@extend .input-sc-box;			}
 input[type='url']		{	@extend .input-sc-box;			}
+input[type='search']	{	@extend .input-sc-box;			}
 input[type='address']	{	@extend .input-sc-box;			}
 input[type='password']	{	@extend .input-sc-box;			}
 select					{	@extend .input-sc-box; background: url('../img/dropdown.svg') no-repeat right white; border-radius: 0; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
+
+
 
 label { color: gray; font-size: 0.7em; line-height: 1.7em; }
 input[type='submit']	{	@extend .input-sc-btn;	}
@@ -67,17 +71,22 @@ button					{	@extend .input-sc-btn;	}
 input[type="checkbox"]			{	display: none;					}
 input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
 input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
-input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: 0.9em; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
+input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
-input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: #e1e8ed !important;	}
+input:required:focus			{	background-color: rgba(0, 0, 0, .02);	border-color: $input-warning	!important;	}
+input:required:focus:invalid	{	background-color: rgba(0, 0, 0, .02);	border-color: $input-invalid	!important;	}
+input:required:focus:valid		{	background-color: rgba(0, 0, 0, .02);	border-color: $input-success	!important;	}
+input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: $input-default	!important;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
 
 ul			{	list-style-type: none;	padding-left: 0;	}
 
 /* Placeholder */
-:-moz-placeholder			{	color: $gray-placeholder;	} /* Firefox 18- */ 
-::-moz-placeholder			{	color: $gray-placeholder;	} /* Firefox 19+ */ 
-:-ms-input-placeholder		{	color: $gray-placeholder; 	}
-::-webkit-input-placeholder	{	color: $gray-placeholder; 	} 
+:-moz-placeholder			{	color: $input-placeholder;	} /* Firefox 18- */
+::-moz-placeholder			{	color: $input-placeholder;	} /* Firefox 19+ */
+:-ms-input-placeholder		{	color: $input-placeholder; 	}
+::-webkit-input-placeholder	{	color: $input-placeholder; 	}
+
+
 

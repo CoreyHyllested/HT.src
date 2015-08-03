@@ -21,14 +21,26 @@
 }
 
 @mixin border-rad($sz) {
+	  -o-border-radius: $sz;
+	 -ie-border-radius: $sz;
+	-moz-border-radius: $sz;
  -webkit-border-radius: $sz;
          border-radius: $sz;
 }
 
 @mixin transition() {
-   -moz-transition: 0.5s ease;
-     -o-transition: 0.5s ease;
- -webkit-transition: 0.5 ease;
-        transition: 0.5s ease;		
+      -o-transition: 0.5s ease;
+     -ms-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+ -webkit-transition: 0.5  ease;
+         transition: 0.5s ease;
+}
+
+@mixin transition_type($type) {
+      -o-transition: $type 0.5s ease;
+     -ms-transition: $type 0.5s ease;
+    -moz-transition: $type 0.5s ease;
+ -webkit-transition: $type 0.5  ease;
+         transition: $type 0.5s ease;
 }
 

@@ -11,13 +11,18 @@ $field-input-color: $black;
 $font-color-lead: #999999;
 $icon-gray:		#999999;
 $easy-gray:		#ecf0f1;
-$input-gray:	#e1e8ed;
-$gray-placeholder: #939292;
 $darkgreen: rgba(0, 100, 0, .8);
 $disabled:	$black-40;
 $ht-blue: #29abe2;
 $gray: darkgray;		//eh
 $warning: rgba(255, 200, 0, 1);
+
+
+$input-default:	#e1e8ed;
+$input-success:	green;
+$input-invalid:	red;
+$input-warning:	$warning;
+$input-placeholder: #939292;
 
 $signup-btn-color: #5b8a08;
 $twittr-btn-color: #55acee;
