@@ -16,7 +16,7 @@
 	line-height: $input-icon-line-height;
 	position: absolute;
 	left: 10px;
-	top:  14px;
+	top:  13px;		//field-height (40) - icon-height (14) == 26; split
 	color: $input-icon-gray;
 }
 
