@@ -3,8 +3,9 @@
 {% set meta_desc	= 'Update your Soulcrafting settings.' %}
 
 {% block header_css %}
-	{{ super() }}
-	{% assets "scss_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{# super() #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets "master", "scss_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 

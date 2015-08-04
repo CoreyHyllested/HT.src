@@ -1,6 +1,12 @@
 /* (c) 2015 Soulcrafting */
-@import 'defines/elem_input';
-@import 'defines/elem_navigate';
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
 
 
 //override 
