@@ -1,17 +1,18 @@
 /* (c) 2015 Soulcrafting */
-
 @import 'defines/fonts';
 @import 'defines/colors';
 @import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
-@import 'defines/tags/navigate';		//move to master eventually
 @import 'defines/styled/common';		//move to master eventually
-
-
+@import 'defines/tags/navigate';		//move to master eventually
 
 
 $max-card-sz: 640px;
+
+// overrides 
+input.tt-hint {	display: none !important; }
+.bootstrap-tagsinput input.tt-input	{	border: none; }
 
 .trust-card {
 	width: 100%;	max-width: $max-card-sz;
@@ -20,19 +21,10 @@ $max-card-sz: 640px;
 	
 #trusted			{	@extend .trust-card;	display: inline-block;										}
 #trust-card			{	@extend .trust-card;	border: 1px #e1e8ed solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
-#content			{	width: 100%; margin: 0 0 10px;	resize: none; }
-#refer-title		{	text-align: left;	}
-#refer-professional	{	display: inline-block;	margin: 0 auto;		padding: 0 5px;		max-width: 650px;	vertical-align: top;	}
-#feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
-#instructions		{	display: none;								max-width: 250px; 		}
+#content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
+#refer-professional	{	display: inline-block;	margin: 0 auto;		max-width: 650px;	vertical-align: top;	}
+#feedback			{	list-style:none;		margin: 0 auto;			}
 
-
-#map-canvas {
-	display: block;
-	height: 150px;
-	margin: 0 auto;
-	width:	$input-width;
-}
 
 #referral-questions {
 	padding: 25px 0 10px;
@@ -58,9 +50,8 @@ $max-card-sz: 640px;
 	max-width: 50%;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 
 }
 
-input.tt-hint {	display: none !important; }
-.bootstrap-tagsinput input.tt-input	{	border: none; }
 
 /*	UNUSED
+#instructions		{	display: none;								max-width: 250px; 		}
 @media (min-width: 640px) { #instructions 		{ display: inline-block;	} }
 */

@@ -13,13 +13,13 @@
 
 		<div id='modal-business-addr'>
 			<div class="form-group address">
-				{{form.addr(type='search',	class='ff', placeholder="Add their address (optional)")}}
-				<div id="map-canvas"></div>
+				{{form.addr(type='search',	class='ff', placeholder="Address (optional)")}}
+				<div id='modal-map' class="map-canvas"></div>
 			</div>
 		</div>
 
-		<div id='modal-actions-wrap'>
-			<div id='modal-actions'>
+		<div>
+			<div class='align-right'>
 				<button class='btn-modal dismiss-modal whiteButton' >Cancel</button>
 				<button class='btn-modal business-update blueButton'>Create...</button>
 			</div>

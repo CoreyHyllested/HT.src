@@ -1,4 +1,4 @@
-var referral_version = '0.69';
+var referral_version = 0.70;
 
 function show_errors(status_element, errors) {
 	//status_element.empty();
@@ -56,13 +56,10 @@ function add_new_business() {
 
 function update_business(event) {
 	console.log('updating business!');
-	//hold window static
-
-	console.log(event.target);
 	$('#modal-business-info').removeClass('block');
 	$('#modal-business-addr').addClass('block');
 	$(event.target).addClass('business-submit').removeClass('business-update').html('Submit');
-	initialize_map('map-canvas', 'addr');
+	initialize_map('modal-map', 'addr');
 	return false;
 }
 
