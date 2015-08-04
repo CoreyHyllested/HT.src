@@ -12,9 +12,9 @@
 @charset "UTF-8";
 
 body		{	height:	100%;		padding-top: $navbar-height;						}
-section		{	background:	white;	padding:	$section-padding 0;						}
-section div	{	width: 100%;		max-width:	$column-max-width;		margin: 0 auto;	}
-footer		{ 	width: 100%;		padding:	10px 0;		background-color: white; height: $footer-height; bottom: 0; border-top: 2px solid $ht-blue;		}
+section		{	background:	white;	padding: $section-padding 0;						}
+section div	{	width: 100%;		padding: 0 $div-padding;	max-width:	$column-max-width;		margin: 0 auto;	}
+footer		{ 	height: $footer-height;	padding: 10px 0;		background-color: white;  bottom: 0; border-top: 2px solid $ht-blue;	text-align: center;		}
 html		{	height: 100%;	}
 
 /* TEXT:  Fonts, headers, links, etcetera */
@@ -25,6 +25,7 @@ h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.6em;	font-weight: 400;	line-height
 h3		{								font-size: 1.2em;	font-weight: 500;	line-height: 1.2em;		text-align: center;	}
 h4		{								font-size: 1.1em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
 strong	{													font-weight: bold;												}
+
 
 a:link		{ color: $ht-blue; text-decoration: none;	}
 a:active	{ color: $ht-blue;							}
