@@ -1,6 +1,15 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
 @import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
 @import 'defines/common';
-@import 'defines/elem_navigate';
+@import 'defines/tags/navigate';		//move to master eventually
+@import 'defines/styled/common';		//move to master eventually
+
+
+
 
 $max-card-sz: 640px;
 
@@ -12,11 +21,10 @@ $max-card-sz: 640px;
 #trusted			{	@extend .trust-card;	display: inline-block;										}
 #trust-card			{	@extend .trust-card;	border: 1px #e1e8ed solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
 #content			{	width: 100%; margin: 0 0 10px;	resize: none; }
-#refer-title		{	padding-left: 5px;	text-align: left;	}
-#refer-professional	{	display: inline-block;						padding: 0 5px;		max-width: 650px;	vertical-align: top;	}
-#instructions		{	display: none;								max-width: 250px; 		}
+#refer-title		{	text-align: left;	}
+#refer-professional	{	display: inline-block;	margin: 0 auto;		padding: 0 5px;		max-width: 650px;	vertical-align: top;	}
 #feedback			{	list-style:none;		margin: 0 auto;		padding: 0 5px;			}
-
+#instructions		{	display: none;								max-width: 250px; 		}
 
 
 #map-canvas {
@@ -35,6 +43,9 @@ $max-card-sz: 640px;
 #modal-business-info.block	{	display: block;	margin-bottom: 20px;	}
 #modal-business-addr.block	{	display: block;	margin-bottom: 20px;	}
 
+
+
+
 .pro-suggestion	{
 	width: 100%;
 	height: 20px;
@@ -50,6 +61,6 @@ $max-card-sz: 640px;
 input.tt-hint {	display: none !important; }
 .bootstrap-tagsinput input.tt-input	{	border: none; }
 
-@media (min-width: 640px) {
-	#instructions 		{ display: inline-block;	}
-}
+/*	UNUSED
+@media (min-width: 640px) { #instructions 		{ display: inline-block;	} }
+*/

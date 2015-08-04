@@ -11,14 +11,10 @@
 	padding: 0px 0px $footer-height;
 }
 
-#navbar-menu	{	padding-right: 30px;									}
-#footer-menu	{	margin: 0 auto;	text-align: center;						}
-#footer-sns		{	margin: 0 auto;	text-align: center; font-size: 1.5em;	}
-#copyright 		{	margin: 0 auto;	text-align: center;						}
+#navbar-menu	{	padding-right: 30px;	}
 
-#footer-sns  ul,
-#footer-menu ul,
-#footer-menu li		{	display: inline;	padding-left: 0;	}
+
+footer ul, footer li {	display: inline; }
 #footer-menu li:after				{	content: ' | ';			}
 #footer-menu li:last-of-type:after	{	content: '';			}
 
