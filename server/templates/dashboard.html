@@ -3,15 +3,13 @@
 {% set meta_desc	= 'Soulcrafting - Dashboard' %}
 
 {% block header_css %}
-	{{ super() }}
-	<link rel="stylesheet" href="/static/css/dashboard.css">
-	{% assets 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{# super() #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets "master", "scss_dashboard" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 {% block header_js %}
 	{{ super() }}
-	<script src="/static/js/format.js"></script>
-	<script src="/static/js/moment.min.js"></script>
 {% endblock %}
 
 
@@ -39,6 +37,7 @@
 			<a href="/project/edit/new"><button id="btn-95" class="whiteButton">Create new project...</button></a>
 		</div>
 
+		{#
 		<section id='profile-wrapper' class="col-lg-push-1 col-lg-3 col-md-push-1 col-md-4 col-sm-4 col-xs-12">
 			<div id='profile'>
 				{% if craftsperson %} <h2 id='header'>Professional Account</h2> {% endif %}
@@ -52,6 +51,7 @@
 				 <br>
 			</div>
 		</section>
+#}
 
 	</div>
 </div>
