@@ -1,12 +1,19 @@
-@import 'defines/images';
-@import 'defines/defaults';
-@import 'defines/elem_navigate';
-@import 'defines/elem_masthead';
+/* (c) 2015 Soulcrafting */
 
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
+@import 'defines/elem_masthead';
 
 //overrides
 #masthead			{	background-image: $img-medpatio;	z-index: -5;	}
 #masthead-text		{	top: 40%;	opacity: 0;				}
+ul					{	list-style-type: disc;	padding-left: 25px;	}
+h2					{	font-size: 30px;	}
 
 
 #soulcrafting-what	{	background:	whitesmoke;				}

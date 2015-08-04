@@ -3,8 +3,9 @@
 {% set meta_desc	= 'About Soulcrafting' %}
 
 {% block header_css %}
-	{{ super() }}
-	{% assets 'scss_about_sc' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{# super() #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets 'master', 'scss_about_sc' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
@@ -18,7 +19,7 @@
 
 <section id='soulcrafting-who'>
 	<div class='text-content'>
-		<h3> Soulcrafting is the smartest, most trusted way to improve your home.</h3>
+		<h2>The smartest, most trusted way to improve your home.</h2>
 		<p>
 			We're on a mission to redesign the way homeowners interact with contractors and home improvement professionals.
 			We build trust and tools to help people manage the complexity of residential remodeling projects while creating spaces they'll love.
@@ -53,7 +54,7 @@
 
 <section id='soulcrafting-why'>
 	<div class='text-content'>
-		<h2 class='text-center'>Our Story</h2>
+		<h2>Our Story</h2>
 		<p>
 			Soulcrafting got its start as a community connecting consumers with master craftspeople for innovative, hands-on learning experiences.
 			The community <a href='https://vimeo.com/119711481' target='_blank'>took shape</a>, and people started building some 
@@ -72,7 +73,7 @@
 </section>
 
 <section id='soulcrafting-faq'>
-		<h2 class='text-center'>Common Questions</h2>
+		<h2>Common Questions</h2>
 		<div id='faq' class='text-content'>
 			<div class='col-md-4 col-sm-6 col-xs-12'>
 				<h4 class='faq-question'>Where are you located?</h4>
