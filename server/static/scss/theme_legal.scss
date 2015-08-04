@@ -1,5 +1,12 @@
-@import 'defines/defaults';
-@import 'defines/elem_navigate';
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
 
 //override?
 section div	{	padding: 0 $section-padding;	}

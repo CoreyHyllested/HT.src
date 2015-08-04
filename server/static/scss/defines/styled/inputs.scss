@@ -23,9 +23,10 @@
 .form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
 .form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
 .form-group.url:before		{ @extend .form-group-before; content: "\f0c1"; }
-.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
+.form-group.tel:before		{ @extend .form-group-before; content: "\f095"; }
 .form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
 .form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
+.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
 .form-group input[type='name'],  .form-group input[type='address'],
 .form-group input[type='phone'], .form-group input[type='tel'],
 .form-group input[type='email'], .form-group input[type='url'],

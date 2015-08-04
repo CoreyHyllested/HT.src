@@ -3,8 +3,9 @@
 {% set meta_desc	= 'Soulcrafting\'s Terms of Service' %}
 
 {% block header_css %}
-	{{ super() }}
-	{% assets 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{# super() #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{% assets 'master', 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
@@ -16,8 +17,8 @@
 </div>
 
 <section id='tos'>
-	<h2 class='text-center'>Terms of Service</h2>
-	<h4 class='text-center'>Last updated: April 30, 2015</h4>
+	<h2>Terms of Service</h2>
+	<h4>Last updated: April 30, 2015</h4>
 
 	<div>
 		<p>
