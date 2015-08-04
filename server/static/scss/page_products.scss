@@ -1,10 +1,19 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
 @import 'defines/images';
-@import 'defines/elem_navigate';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
 @import 'defines/elem_masthead';
 
 //overrides
 #masthead		{ background-image: $img-kitchen;	z-index: -5; }
 #masthead-text	{ top: 33%; opacity: 0; }
+section div		{ padding: 0;	}
+h3				{ font-size: 24px;	}
 
 
 #about-furniture { background: whitesmoke; font-size:	$closing-text-sz; }
@@ -30,12 +39,14 @@
 
 
 .btn-get-started {
+	display: block;
 	width: 100%;
 	max-width: 150px;
 	text-transform: uppercase;
 	margin: 0 auto;
 	color: white !important;
 }
+
 
 
 @media (min-width: 768px)	{

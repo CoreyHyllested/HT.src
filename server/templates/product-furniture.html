@@ -3,8 +3,9 @@
 {% set meta_desc	= 'Buy Soulcrafted Furniture.' %}
 
 {% block header_css %}
-	{{ super() }}
-	{% assets 'scss_products' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{# super() #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets 'master', 'scss_products' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
@@ -25,7 +26,7 @@
 			Whatever your style, designing a piece of custom furniture ensures the perfect fit because it's made just for you.
 		</p>
 		<br>
-		<a href='/project/edit/new' class='btn btn-block blueButton btn-get-started'>Get Started</a>
+		<a href='/project/edit/new' class='btn btn-block blueButton'>Get Started</a>
 	</div>
 </section>
 

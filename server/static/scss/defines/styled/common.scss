@@ -15,6 +15,9 @@
 
 .align-left		{	text-align: left;	}
 .align-right	{	text-align: right;	}
+.align-center	{	text-align: center; }
+.center			{	margin: 0 auto;		}
+.underlined		{	border-bottom: 1px solid darkgrey;	}
 .no-display		{ 	display: none !important;	}
 .inline-50		{	display: inline-block;	width: 49%;	max-width: 485px;	vertical-align: middle; }	// used by /about
 
