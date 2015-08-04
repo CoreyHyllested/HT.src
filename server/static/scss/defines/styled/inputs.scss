@@ -9,14 +9,14 @@
 .actions			{	text-align: right;		}
 .form-group			{	position: relative;	margin-bottom: 0 !important;	}
 .form-group-before	{
-	font-family: FontAwesome;
-	font-size:	 $input-icon-size;
-	line-height: $input-line-height;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	font-family: FontAwesome;
+	font-size:	 $input-icon-size;
+	line-height: $input-icon-line-height;
 	position: absolute;
-	left: 20px;
-	top:  15px;
+	left: 10px;
+	top:  14px;
 	color: $input-icon-gray;
 }
 
@@ -29,7 +29,8 @@
 .form-group input[type='name'],  .form-group input[type='address'],
 .form-group input[type='phone'], .form-group input[type='tel'],
 .form-group input[type='email'], .form-group input[type='url'],
-.form-group input[type='search'] {	padding-left: 30px;	}
+.form-group input[type='search'],.form-group input[type='password'],
+{	padding-left: 30px;	}
 
 
 .btn-sc-default {

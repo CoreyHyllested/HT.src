@@ -9,8 +9,8 @@
 @import 'defines/styled/modals';
 
 
-
 @charset "UTF-8";
+
 body		{	height:	100%;		padding-top: $navbar-height;						}
 section		{	background:	white;	padding:	$section-padding 0;						}
 section div	{	width: 100%;		max-width:	$column-max-width;		margin: 0 auto;	}
@@ -18,10 +18,10 @@ footer		{ 	width: 100%;		padding:	10px 0;		background-color: white; height: $foo
 html		{	height: 100%;	}
 
 /* TEXT:  Fonts, headers, links, etcetera */
-html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;		}
-body	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em;	-webkit-font-smoothing: subpixel-antialiased;		}
+html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;	}
+body	{	color: rgba(0, 0, 0, 0.75);						font-weight: 400;	line-height: 20px;	-webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;	}
 h1		{	color: white;				font-size: 3em;		font-weight: 400;	line-height: 1em;							}
-h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.5em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
+h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.6em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
 h3		{								font-size: 1.2em;	font-weight: 500;	line-height: 1.2em;		text-align: center;	}
 h4		{								font-size: 1.1em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
 strong	{													font-weight: bold;												}
@@ -34,9 +34,8 @@ a:visited	{ color: $ht-blue; 							}
 .input-sc-box 	{
 	@include appearence(none);
 	border: 1px $input-default solid;
-	margin: $input-margin;
 	height: $input-height;
-	width:  $input-width;
+	margin: 0 auto 15px;
 
 	padding-left: 5px;
 	font-size: $input-text-size;
@@ -48,7 +47,7 @@ a:visited	{ color: $ht-blue; 							}
 	/* cursor: pointer; dflt */
 	display: inline-block;
 	padding: 5px 10px;
-	margin-bottom: 0;
+	margin-bottom: 10px;
 
 	line-height: $input-line-height;
 	font-size:	 $input-text-size;

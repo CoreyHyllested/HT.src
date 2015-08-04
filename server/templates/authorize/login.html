@@ -3,8 +3,8 @@
 {% set meta_desc	= 'Login to Soulcrafting.' %}
 
 {% block header_css %}
-	{{ super() }}
-	{% assets 'scss_loginsys' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets 'master', 'scss_loginsys' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
@@ -32,11 +32,11 @@
 				{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
 			</div>
 
-			<button type="submit" class="btn btn-block blueButton">Log in</button>
+			<button class="blueButton">Log in</button>
 		</form>
 		<br>
-		<form method='GET' action='/password/recover'><button class='btn-block whiteButton'>Forgot password?</button></form>
-		<form method='GET' action='/signup'><button class='btn-block whiteButton'>Don't have an account? Sign up!</button></form>
+		<form method='GET' action='/password/recover'><button class='whiteButton'>Forgot password?</button></form>
+		<form method='GET' action='/signup'><button class='whiteButton'>Don't have an account? Sign up!</button></form>
 	</div>
 </section>
 {% endblock %}

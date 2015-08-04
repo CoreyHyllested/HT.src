@@ -1,0 +1,24 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+
+
+#page-content {
+	min-height: 100%;
+	height: auto !important;
+	margin: 0 auto  -$footer-height;	/* bottom margin is negative value of the footer's height */
+	padding: 0px 0px $footer-height;
+}
+
+#navbar-menu	{	padding-right: 30px;									}
+#footer-menu	{	margin: 0 auto;	text-align: center;						}
+#footer-sns		{	margin: 0 auto;	text-align: center; font-size: 1.5em;	}
+#copyright 		{	margin: 0 auto;	text-align: center;						}
+
+#footer-sns  ul,
+#footer-menu ul,
+#footer-menu li		{	display: inline;	padding-left: 0;	}
+#footer-menu li:after				{	content: ' | ';			}
+#footer-menu li:last-of-type:after	{	content: '';			}
+

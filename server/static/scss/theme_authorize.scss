@@ -1,8 +1,12 @@
-@import 'defines/images';
-@import 'defines/styled/inputs';
-@import 'defines/styled/modals';
-@import 'defines/elem_navigate';
+/* (c) 2015 Soulcrafting */
 
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/tags/navigate';		//move to master eventually
+@import 'defines/styles';				//try to only include once.
 
 
 //overrides
@@ -28,19 +32,9 @@ input	{	width: 100%; max-width: 280px;	}
 
 
 .whiteButton		{ border: 1px solid white; }
-.blueButton			{ text-transform: uppercase; color: $white; }
-.blueButton:hover	{ color: $white-80; }
-
-.form-group { position: relative; }
+.blueButton			{ text-transform: uppercase; margin: 0 auto; }
 
 label[for='terms'] { height: $field-height; }
-input[type='name'], input[type='password'],
-input[type='email'], input[type='phone'], input[type='address'] {
-	padding-left: 30px;
-}
-
-
-
 
 
 /* http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css */
