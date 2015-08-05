@@ -76,7 +76,7 @@ function save_referral(evt) {
 				contentType: false,
 				success : function(data) {
 					$('#rid').val(data.ref_uuid);
-					set_status('.action-feedback', 'Saved!!!!');
+					set_status('.action-feedback', 'Saved');
 				},
 				error	: function(data) {
 					console.log("AJAX Error");

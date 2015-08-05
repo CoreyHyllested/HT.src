@@ -18,7 +18,8 @@
 #modal-wrap {
 	@include transition_type(top);	top: -99%;
 	position: fixed;
-	width: 100%;	text-align: center;		//cascasde down
+	width: 100%;
+	text-align: center;		//cascasde down
 }
 #modal-wrap.active {	top: 20%;	z-index: $modal-depth;	}
 

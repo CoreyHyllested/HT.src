@@ -9,7 +9,6 @@
 @import 'defines/styled/modals';
 
 
-
 @charset "UTF-8";
 html		{	height: 100%;	}
 body		{	height:	100%;			padding-top: $navbar-height;						}
@@ -73,11 +72,9 @@ input[type='password']	{	@extend .input-sc-box;			}
 select					{	@extend .input-sc-box; background: url('../img/dropdown.svg') no-repeat right white; border-radius: 0; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
 
 
-
-label { color: gray; font-size: 0.7em; line-height: 1.7em; }
+button					{	@extend .input-sc-btn;	}
 input[type='submit']	{	@extend .input-sc-btn;	}
 input[type='button']	{	@extend .input-sc-btn;	}
-button					{	@extend .input-sc-btn;	}
 
 /* Checkboxs */
 input[type="checkbox"]			{	display: none;					}
@@ -91,6 +88,9 @@ input:required:focus:valid		{	background-color: rgba(0, 0, 0, .02);	border-color
 input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: $input-default	!important;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
+
+label { color: gray; font-size: 0.7em; line-height: 1.7em; }
+label[for='terms']		{	height: $field-height;	}
 
 ul			{	list-style-type: none;	padding-left: 0;	}
 

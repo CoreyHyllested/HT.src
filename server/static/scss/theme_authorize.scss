@@ -11,8 +11,8 @@
 
 h2				{	margin: 10px;		}
 input			{	width: 100%; max-width: 280px;	}
+input[type="submit"]	{  margin-bottom: 15px; }
 #page-content	{	padding-top: 20px;	}
-
 
 #authorize {
 	background-color: $white;
@@ -22,19 +22,13 @@ input			{	width: 100%; max-width: 280px;	}
 	max-width: 320px;
 }
 
-#authorize input[type="submit"]		{ width: 100%; margin-bottom: 15px; }
 
 //rename text-tos
 #terms-text		{ font-size: 1.4em; }
 #authorize-form { padding: $form-padding; }
 
-
-
 .whiteButton		{ border: 1px solid white;	}
 .blueButton			{ text-transform: uppercase;	}
-
-label[for='terms'] { height: $field-height; }
-
 
 
 // only used in reset (TODO -- remove)
