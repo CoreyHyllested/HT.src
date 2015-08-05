@@ -9,5 +9,7 @@
 .pac-item, .pac-container	{ z-index: $modal-depth; }
 
 // overrides 
+.tt-menu.tt-open	{ padding: 0;	}
 input.tt-hint {	display: none !important; }		//used by referral
 .bootstrap-tagsinput input.tt-input	{	border: none; }	//used by referral
+
