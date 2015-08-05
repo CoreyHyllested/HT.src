@@ -96,7 +96,7 @@
 }
 
 @media (max-width: $modal-max-width)	{
-	#modal-wrap.active	{	height: 100%;	}
-	#modal-window.work	{	height: 100%;	}
-	#modal-close:before	{ font-size: 30px;  }	/* X to close. */
+	#modal-wrap.active	{	height: 100%;			}
+	#modal-window.task	{	height: 100%;	top: 0;	}
+	#modal-close:before	{	font-size: 30px;		}
 }

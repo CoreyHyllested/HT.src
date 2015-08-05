@@ -11,13 +11,13 @@ $(document).ready(function () {
 	});
 });
 
-function modal_create_window() {
+function open_modal_window() {
 	$('#overlay').addClass('overlay-dark');
 	$('#modal-wrap').addClass('active')
 	$('#modal-window').show();
 }
 
-function modal_close_window() {
+function shut_modal_window() {
 	$('#modal-window').hide().removeClass('window-border');
 	$('#modal-wrap').removeClass('active');
 	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
@@ -27,27 +27,22 @@ function modal_close_window() {
 function openAlertWindow(text) {
 	$('#modal-message').html(text);
 	$('#modal-buttons').show();
-	$('#modal-window').addClass('');
-	$('#modal-wrap').addClass('');
-	modal_create_window();
+	open_modal_window();
 	return false;
 }
 
 function closeAlertWindow() {
-	modal_close_window();	
-	$('#modal-window').removeClass('');
+	shut_modal_window();
 	$('#modal-message').html('');
 	$('#modal-buttons').hide();
 	return false;
 }
 
-
-
-function notifyUser(txt) {
-	return openAlertWindow(text);
+function open_task_window(embed) {
+	$('#modal-message').html(embed);
+	open_modal_window();
 }
 
-function closeNotification() { }
 
 function openModalLogin()	{ return __get_login('#account-email');		}
 function openModalSocial()	{ return __get_login('#account-social');	}
@@ -57,13 +52,8 @@ function __get_login(set_active) {
 	$.ajax({ url	: '/modal/login',
 			type	: 'GET',
 			success : function(response) {
-				if (response.embed) {
-
-					modal_create_window();
-					$('#modal-message').html(response.embed);
-					$('#modal-buttons').html(buttons);
-					$(set_active).addClass('login-active');
-				}
+				open_task_window(response.embed);
+				$(set_active).addClass('login-active');
 			},
 			error: function(xhr, status, error) {
 				console.log(['ajax failure', xhr]);
@@ -72,6 +62,32 @@ function __get_login(set_active) {
 	});
 	return false;
 }
+
+
+function add_new_business() {
+	fd = {};
+	fd.name = $('#trusted').val();
+	fd.csrf_token = $('#csrf_token').val();
+
+	console.log('add new business ' + fd.name);
+	$.ajax({ url	: '/business/new',
+			type	: 'GET',
+			data	: fd,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				open_task_window(response.embed);
+				$('#phone').mask("(999) 999-9999");
+			},
+			error: function(xhr, status, error) {
+				console.log(['ajax error', xhr]);
+				if (status == 401) { window.location.href = '/login'; }
+				rc = JSON.parse(xhr.responseText);
+			}
+	});
+	return false;
+}
+
 
 
 function modal_to_email() {

@@ -65,18 +65,21 @@
 
 .map-canvas			{	display: block;	height: 150px;	}
 
-.btn-referral	{ max-width: 155px; }
-.btn-modal		{ display: inline-block; 	max-width: 155px; width: 33%;  text-transform: uppercase; }
+.btn-simple		{	display: inline-block;	max-width: 120px;	text-transform: uppercase;	}
+.btn-modal		{	@extend(.btn-simple);	}
+.btn-signup		{	@extend(.btn-simple);	background: white;	border: 2px solid black;	}
 
-.btn-signup {
-	background: white;
-	border: 2px solid black;
+.social-btns {
+	text-align: center;
+	margin: 25px auto;
 }
 
-.btn-settings {
-	min-width: 110px;
-	margin: 20px 0px 0px;
+.social-login {
+	display: inline-block;
+	margin: 0 auto;
 }
+
+
 
 .field-container {
 	width: 100%;
@@ -116,17 +119,6 @@
 .field.action 		{ float: left; height: $field-height;	padding-left: 10px; }
 
 
-
-
-.social-btns {
-	text-align: center;
-	margin: 25px auto;
-}
-
-.social-login {
-	display: inline-block;
-	margin: 0 auto;
-}
 
 .social-btns li { margin-bottom: 10px; }
 .social-btns li .btn {

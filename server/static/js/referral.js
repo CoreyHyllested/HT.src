@@ -24,34 +24,6 @@ function clear_profile() {
 	}
 }
 
-function add_new_business() {
-	fd = {};
-	fd.name = $('#trusted').val();
-	fd.csrf_token = $('#csrf_token').val();
-
-	console.log('add new business ' + fd.name);
-	$.ajax({ url	: '/business/new',
-			type	: 'GET',
-			data	: fd,
-			contentType: false,
-			success : function(response) {
-				console.log(response);
-				if (response.embed) {
-					$('#modal-message').html(response.embed);
-					$('#overlay').addClass('overlay-dark');
-					$('#modal-wrap').addClass('modal-active');
-					$('#modal-window').addClass('window-alert');
-					$('#phone').mask("(999) 999-9999");
-				}
-			},
-			error: function(xhr, status, error) {
-				console.log(['ajax error', xhr]);
-				if (status == 401) { window.location.href = '/login'; }
-				rc = JSON.parse(xhr.responseText);
-			}
-	});
-	return false;
-}
 
 
 function update_business(event) {
