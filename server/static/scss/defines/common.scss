@@ -31,6 +31,7 @@ $input-text-size:	0.9em;
 $input-icon-size:	14px;
 $input-icon-line-height: 1em;
 
+$overlay-depth:		99998;
+$modal-depth:		$overlay-depth + 1;
 $modal-max-width:	599px;
-
 

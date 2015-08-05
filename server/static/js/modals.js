@@ -1,28 +1,46 @@
-version = 1.05;
+version = 1.07;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);
-	$('#modal-close').click(function (e)	{ closeAlertWindow(); } );
+	$('#modal-close').on('click',	closeAlertWindow);
 	$('#modal-wrap').on('click', '.dismiss-modal', closeAlertWindow);
-	$('#modal-dismiss').click(function (e)	{ closeAlertWindow(); } );
 
 	$(document).keyup(function(e) {
-		/* close overlay if ESC is hit */
-		if (e.keyCode == 27) /* ESC */ {
-			if ($('#modal-wrap').hasClass('modal-active') && $('#modal-window').hasClass('window-alert')) {
-				closeAlertWindow();
-			}
-		}
+		/* close overlay when ESC is hit */
+		if (e.keyCode == 27) { modal_close_window(); }
 	});
 });
 
-function openAlertWindow(text) {
+function modal_create_window() {
 	$('#overlay').addClass('overlay-dark');
+	$('#modal-wrap').addClass('active')
+	$('#modal-window').show();
+}
+
+function modal_close_window() {
+	$('#modal-window').hide().removeClass('window-border');
+	$('#modal-wrap').removeClass('active');
+	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
+	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
+}
+
+function openAlertWindow(text) {
 	$('#modal-message').html(text);
-	$('#modal-wrap').addClass('modal-active')
-	$('#modal-window').addClass('window-alert');
+	$('#modal-buttons').show();
+	$('#modal-window').addClass('');
+	$('#modal-wrap').addClass('');
+	modal_create_window();
 	return false;
 }
+
+function closeAlertWindow() {
+	modal_close_window();	
+	$('#modal-window').removeClass('');
+	$('#modal-message').html('');
+	$('#modal-buttons').hide();
+	return false;
+}
+
 
 
 function notifyUser(txt) {
@@ -40,11 +58,10 @@ function __get_login(set_active) {
 			type	: 'GET',
 			success : function(response) {
 				if (response.embed) {
-					$('#overlay').addClass('overlay-light');
+
+					modal_create_window();
 					$('#modal-message').html(response.embed);
-					$('#modal-wrap').addClass('modal-active');
-					$('#modal-window').addClass('window-alert').addClass('window-border');
-					$('#modal-buttons').html("<input type='button' class='btn btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn btn-modal blueButton' value='Sign in'></input>");
+					$('#modal-buttons').html(buttons);
 					$(set_active).addClass('login-active');
 				}
 			},
@@ -76,8 +93,8 @@ function openModalShare() {
 				if (response.embed) {
 					$('#overlay').addClass('overlay-light')
 					$('#modal-message').html(response.embed);
-					$('#modal-wrap').addClass('modal-active');
-					$('#modal-window').addClass('window-alert').addClass('window-border');
+					$('#modal-wrap').addClass('active');
+					$('#modal-window').show().addClass('window-border');
 					$('#modal-buttons').html("<input type='button' class='btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn-modal blueButton' value='Share'></input>");
 				}
 			},
@@ -88,11 +105,4 @@ function openModalShare() {
 	});
 }
 
-function closeAlertWindow() {
-	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
-	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
-	$('#modal-wrap').removeClass('modal-active');
-	$('#modal-window').removeClass('window-alert').removeClass('window-border');
-	$('#modal-message').html('');
-	return false;
-}
+
