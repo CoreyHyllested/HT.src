@@ -1,4 +1,4 @@
-version = 1.07;
+version = 1.08;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);

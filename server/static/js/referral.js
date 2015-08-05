@@ -1,21 +1,5 @@
 var referral_version = 0.70;
 
-function show_errors(status_element, errors) {
-	//status_element.empty();
-
-	$.each(errors, function(e, error){
-		// e is the element with the error, e.g. "prof_name"
-		var element = "#"+e;
-		console.log("show-error: ["+element + " : " + error + "]");
-		$(element).prev(".ff.error").html(error).slideDown();
-		$(element).css("border-color", "#e75f63");
-	});
-	negative_feedback('There was an issue');
-}
-
-function clear_error_msg(element) { $(element).prev(".ff.error").slideUp().html('');	}
-function clear_error_box(element) { $(element).css("border-color", "#e1e8ed");			}
-
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
 	if (!$('#trusted').attr('readonly')) {
@@ -23,7 +7,6 @@ function clear_profile() {
 		$('#instructions').addClass('no-display');
 	}
 }
-
 
 
 function update_business(event) {
@@ -76,30 +59,9 @@ function submit_business(event) {
 }
 
 
-function positive_feedback(content)	{
-	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
-}
-
-function negative_feedback(content)	{
-	html = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
-}
-
-function feedback_fade(id)		{	$('#'+id).fadeOut("slow");	}
-function feedback_remove(id)	{	$('#'+id).remove();			}
-function feedback_timeout(msg)	{
-	uid	 = msg.attr('id');
-	setTimeout(feedback_fade,	2500, uid);
-	setTimeout(feedback_remove, 5000, uid);
-}
-
-
-
-
-
-
 function save_referral(evt) {
+	$(".action-feedback").html("Saving...").fadeIn();
+
 	rid	= $('#rid').val();
  	fd	= new FormData($('#refer-form')[0])
 
@@ -114,17 +76,16 @@ function save_referral(evt) {
 				contentType: false,
 				success : function(data) {
 					$('#rid').val(data.ref_uuid);
-					positive_feedback('Saved');
+					set_status('.action-feedback', 'Saved!!!!');
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
 					//  data.status is 401, redirectiing user to authenticate.
 					//  todo: we should pop-up a login/signup modal instead.
 					if (data.status == 401) { window.location.href = '/login'; }
-					show_errors('#feedback', JSON.parse(data.responseText));
+					show_errors('.action-feedback', JSON.parse(data.responseText));
 				}
 	});
-
 }
 
 pro_finder = new Bloodhound({

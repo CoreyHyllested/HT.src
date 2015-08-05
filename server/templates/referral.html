@@ -38,22 +38,23 @@
 
 				<div class='actions'>
 					{%- if edit %}<input id='btn-goback-referral' type="button" class='btn-referral whiteButton' value="Go Back" onclick="history.go(-1);" />
-					{%- else %}<input    id='btn-cancel-referral' type="button" class='btn-referral whiteButton' value="Clear" />
+					{%- else %}   <input id='btn-cancel-referral' type="button" class='btn-referral whiteButton' value="Clear" />
 					{%- endif %}
-					<input id='btn-submit-referral'	type="button" class='btn-referral blueButton'  value="Save Referral" />
+					<input id='btn-submit-referral'	type="submit" class='btn-referral blueButton'  value="Save Referral" />
+					<div class='action-feedback' />
 				</div>
 			</div>
 			</form>
 		</div>
 
-		<div id='instructions' class='{%-if not form.bid.data %}no-display{%-endif%}'>
 		{#
+		<div id='instructions' class='{%-if not form.bid.data %}no-display{%-endif%}'>
 			<h3>Sharing your network</h3>
 			<p>Your recommendation will be public.</p>
 			<p>Help others understand the context of your project&ndash;and why you recommend them.</p>
-		#}
 			<ul id='feedback'></ul>
 		</div>
+		#}
 
 	</div>
 </section>
@@ -64,6 +65,7 @@
 	{{ super() }}
 	<script src="/static/js/typeahead.bundle.js"></script>
 	<script src="/static/js/referral.js"></script>
+	<script src="/static/js/feedback.js"></script>
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/tagsinput.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
