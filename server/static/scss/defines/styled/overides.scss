@@ -1,0 +1,13 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+
+.pac-item, .pac-container	{ z-index: $modal-depth; }
+
+// overrides 
+input.tt-hint {	display: none !important; }		//used by referral
+.bootstrap-tagsinput input.tt-input	{	border: none; }	//used by referral

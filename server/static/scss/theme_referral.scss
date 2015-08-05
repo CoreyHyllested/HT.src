@@ -4,15 +4,13 @@
 @import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
-@import 'defines/styled/common';		//move to master eventually
 @import 'defines/tags/navigate';		//move to master eventually
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/styled/overides';
 
 
 $max-card-sz: 640px;
 
-// overrides 
-input.tt-hint {	display: none !important; }
-.bootstrap-tagsinput input.tt-input	{	border: none; }
 
 .trust-card {
 	width: 100%;	max-width: $max-card-sz;
