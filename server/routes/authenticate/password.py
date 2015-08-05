@@ -97,7 +97,7 @@ def render_login():
 @public.route('/modal/login', methods=['GET'])
 def render_login_modal():
 	# check for session; uid; if so... save
-	fragment	= render_template('fragments/account-create.html')
+	fragment = render_template('fragments/account-create.html')
 	return make_response(jsonify(embed=fragment), 200)
 
 
