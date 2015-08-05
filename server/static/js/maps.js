@@ -111,6 +111,16 @@ var default_options = mapOptions;
 
 function initialize_map(canvas, searchinput) {
 	initialize_map_dflt(canvas, searchinput, default_options);
+
+	/*
+	map_location = $('#' + canvas).data('location');
+	if (map_location) {
+		google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
+		geocoder.geocode({'address': map_location}, function (results, status) {
+				geocode_result_handler(results, status, map);
+		});
+	}
+	*/
 }
 
 

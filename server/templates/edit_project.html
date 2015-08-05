@@ -3,11 +3,12 @@
 {% set meta_desc	='Create your Soulcrafting project' %}
 
 {% block header_css %}
-	{{ super() }}
-	<link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>
-	<link rel='stylesheet' href='//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css'>
-	{% assets "scss_projects" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{#{ super() }#}
+	{#<link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>#}
 	{# <style> .fc-content .fc-time { display : none !important; } </style> #}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	<link rel='stylesheet' href='//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css'>
+	{%- assets "master", "scss_projects" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
@@ -139,7 +140,7 @@
 			events: [ ]
 		});
 
-		google.maps.event.addDomListener(window, 'load', initialize);
+		initialize_map('map-canvas', 'proj_addr');
 	});
 	</script>
 {% endblock %}
