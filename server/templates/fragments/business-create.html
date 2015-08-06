@@ -6,22 +6,23 @@
 		<h3>Who do you Trust?</h3>
 		<div id='modal-business-info' class='block'>
 			<div class="form-group username">{{form.name(type='name',	class='ff', placeholder="A & K Contracting",	required=true)}}</div>
-			<div class="form-group phone">	 {{form.phone(type='tel',	class='ff',	placeholder="(720) 376-3919",		required=true)}}</div>
-			<div class="form-group email">	 {{form.email(type='email', class='ff',	placeholder="akcontracting@yahoo.com (optional)")}}</div>
+			<div class="form-group phone">	 {{form.phone(type='tel',	class='ff',	placeholder="(720) 376-3919"		)}}</div>
+			<div class="form-group email">	 {{form.email(type='email', class='ff',	placeholder="akcontracting@yahoo.com (optional)", required=true)}}</div>
 			<div class="form-group url">	 {{form.site(type='url',	class='ff', placeholder="https://akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
 		</div>
 
 		<div id='modal-business-addr'>
 			<div class="form-group address">
-				{{form.addr(type='search',	class='ff', placeholder="Address (optional)")}}
+				<input id='address-search' type='search' class='ff' placeholder="Address (optional)"></input>
 				<div id='modal-map' class="map-canvas"></div>
 			</div>
 		</div>
 
 		<div>
 			<div class='align-right'>
-				<input type='button'  class='btn-simple dismiss-modal whiteButton' value="Cancel"></input>
-				<button type='submit' class='btn-simple business-update blueButton'>Create...</button>
+				<input  type='button' class='btn-simple dismiss-modal whiteButton' value="Cancel"></input>
+				<button type='submit' class='btn-simple blueButton'>Create...</button>
+				<div class='action-feedback'></div>
 			</div>
 		</div>
 	</form>
