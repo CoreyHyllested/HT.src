@@ -1,34 +1,44 @@
-var referral_version = 0.70;
+var referral_version = 0.83;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
 	if (!$('#trusted').attr('readonly')) {
 		$('#trust-card').addClass('no-display');
 		$('#instructions').addClass('no-display');
+		$('#not-found').removeClass('no-display');
 	}
 }
 
 
-function update_business(event) {
-	console.log('updating business!');
-	$('#modal-business-info').removeClass('block');
-	$('#modal-business-addr').addClass('block');
-	$(event.target).addClass('business-submit').removeClass('business-update').html('Submit');
-	initialize_map('modal-map', 'addr');
+function business_submit(event) {
+	// runs when form is valid (on Chrome).
+	event.preventDefault();	//prevent submit.
+
+	if (!$(event.target).hasClass('update')) {
+		return business_update(event);
+	}
+
+	business_create(event);
+	return false;
+}
+
+function business_update(event) {
+	$(event.target).toggleClass('update');
+	$('#modal-business-info').toggleClass('block');
+	$('#modal-business-addr').toggleClass('block');
+	$('#modal-message button[type="submit"]').html('Submit');
+	initialize_map('modal-map', 'address-search');
 	return false;
 }
 
 
-function submit_business(event) {
-	console.log('submitting business!');
-
-	$('#modal-business-info').addClass('block');
-	$('#modal-business-addr').removeClass('block');
+function business_create(event) {
+	console.log('POST business info', event);
 
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
 	fd.append("name", $('#trusted').val());
-	fd.append("addr", $('#addr').val());
+	fd.append("addr", geocode_address($('#address-search').val()));
 	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
 	fd.append("phone", $('#phone').val());
@@ -41,8 +51,7 @@ function submit_business(event) {
 			processData: false,
 			contentType: false,
 			success : function(response) {
-				console.log(response);
-				closeAlertWindow();
+				shut_modal_window();
 
 				var profile_fd = {};
 				profile_fd.csrf_token = $('#csrf_token').val(),
@@ -50,10 +59,17 @@ function submit_business(event) {
 				get_profile(profile_fd);
 				positive_feedback('Added ' + response.business.business_name);
 			},
-			error	: function(data) {
-				console.log("AJAX Error");
-				if (status == 401) { window.location.href = '/login'; }
-				console.log(data);
+			error	: function(xhr, status, error) {
+				console.log("AJAX Error", xhr);
+				if (xhr.status == 400) {
+					// form error(s) occurred.
+					$('#modal-business-info').addClass('block');
+					$('#modal-business-addr').removeClass('block');
+					show_errors('#modal-message .action-feedback', xhr.responseText);
+				} else if (xhr.status == 401) {
+					console.log('GET login-modal');
+					window.location.href = '/login';
+				} else { }
 			}
 	});
 }
@@ -83,7 +99,7 @@ function save_referral(evt) {
 					//  data.status is 401, redirectiing user to authenticate.
 					//  todo: we should pop-up a login/signup modal instead.
 					if (data.status == 401) { window.location.href = '/login'; }
-					show_errors('.action-feedback', JSON.parse(data.responseText));
+					show_errors('.action-feedback', data.responseText);
 				}
 	});
 }
@@ -117,6 +133,7 @@ function get_profile(fd) {
 				success : function(data) {
 					$('#trust-card').removeClass('no-display');
 					$('#trust-card').attr('data-id', fd.profile_id);
+					$('#not-found').addClass('no-display');
 					$('#instructions').removeClass('no-display');
 
 					busname = data.business_name
@@ -125,8 +142,8 @@ function get_profile(fd) {
 					}
 					$('#pro-name').html(busname);
 					/* examples of setting phone, email in git-log (july-21-15) */
-					$('#content').focus();
 					$('#bid').val(fd.profile_id);
+					$('#content').focus();
 				},
 				error	: function(data) {
 					console.log("AJAX Error");
@@ -174,8 +191,7 @@ $(document).ready(function () {
 
 	$('#btn-cancel-referral').click( function (e) { clear_profile(); });
 	$('#btn-submit-referral').click( function (e) { save_referral(); });
-	$('#modal-message').on('click', '.business-update', update_business);
-	$('#modal-message').on('click', '.business-submit', submit_business);
+	$('#modal-message').on('submit', '#create-business-form', business_submit);
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
 		var fd = {};
