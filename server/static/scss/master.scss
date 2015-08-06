@@ -82,12 +82,12 @@ input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; m
 input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
 input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
-input:required:focus			{	background-color: rgba(0, 0, 0, .02);	border-color: $input-warning	!important;	}
-input:required:focus:invalid	{	background-color: rgba(0, 0, 0, .02);	border-color: $input-invalid	!important;	}
-input:required:focus:valid		{	background-color: rgba(0, 0, 0, .02);	border-color: $input-success	!important;	}
 input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: $input-default	!important;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
+input.v:required:focus			{											border-color: $input-warning	!important;	}
+input.v:required:focus:invalid	{											border-color: $input-invalid	!important;	}
+input.v:required:focus:valid	{											border-color: $input-success	!important;	}
 
 label					{	color: gray;	font-size: 0.7em;	line-height: 1.7em; }
 label[for='terms']		{	height: $field-height;	}
