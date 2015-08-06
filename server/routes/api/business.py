@@ -28,7 +28,6 @@ def render_business_create_fragment():
 	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
 	return make_response(jsonify(embed=fragment), 200)
-	return make_response(fragment, 200)
 
 
 
@@ -48,12 +47,10 @@ def api_business_create_post():
 		except Exception as e:
 			database.session.rollback()
 			print type(e), e
-			return make_response(jsonify(error=str(e)), 500)
+			return make_response(jsonify(errors=str(e)), 500)
 
 		return make_response(jsonify(success=True, business=business.serialize), 200)
-	elif request.method == 'POST':
-		print 'render_b_create: invalid ' + str(form.errors)
-	return make_response(jsonify(functionality='Undefined'), 400)
+	return make_response(jsonify(errors=form.errors), 400)
 
 
 
@@ -73,6 +70,7 @@ def api_business_read(bus_id):
 def api_business_update(pro_id):
 	print 'api_business_update(): enter'
 	return make_response(jsonify(functionality='Undefined'), 400)
+
 
 
 @api.route('/business/<string:pro_id>/destroy/', methods=['DELETE'])
