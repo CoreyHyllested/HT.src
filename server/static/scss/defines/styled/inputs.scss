@@ -60,14 +60,12 @@
 .whiteButton:hover	{	color: $ht-blue;										border: 1px solid $ht-blue;		text-decoration: none;	}
 
 
-.checkbox-label					{	background-image:url('../img/checkbox.svg');		}
-
-
-.map-canvas			{	display: block;	height: 150px;	}
+.checkbox-label		{	background-image:url('../img/checkbox.svg');		}
+.map-canvas			{	display: block;	height: 165px;	}
 
 .btn-simple		{	display: inline-block;	max-width: 120px;	text-transform: uppercase;	}
-.btn-modal		{	@extend(.btn-simple);	}
-.btn-signup		{	@extend(.btn-simple);	background: white;	border: 2px solid black;	}
+.btn-modal		{	@extend .btn-simple;	}
+.btn-signup		{	@extend .btn-simple;	background: white;	border: 2px solid black;	}
 
 .social-btns {
 	text-align: center;

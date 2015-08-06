@@ -2,12 +2,12 @@ version = 1.08;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);
-	$('#modal-close').on('click',	closeAlertWindow);
-	$('#modal-wrap').on('click', '.dismiss-modal', closeAlertWindow);
+	$('#modal-close').on('click', shut_modal_window);
+	$('#modal-wrap').on('click', '.dismiss-modal', shut_modal_window);
 
 	$(document).keyup(function(e) {
 		/* close overlay when ESC is hit */
-		if (e.keyCode == 27) { modal_close_window(); }
+		if (e.keyCode == 27) { shut_modal_window(); }
 	});
 });
 
@@ -21,7 +21,9 @@ function shut_modal_window() {
 	$('#modal-window').hide().removeClass('window-border');
 	$('#modal-wrap').removeClass('active');
 	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
-	/* .removeClass('dismiss-modal'); CAH: adds right, but prevents dismissal */
+	$('#modal-message').html('');
+	$('#modal-buttons').hide();
+	return false;
 }
 
 function openAlertWindow(text) {
@@ -32,10 +34,7 @@ function openAlertWindow(text) {
 }
 
 function closeAlertWindow() {
-	shut_modal_window();
-	$('#modal-message').html('');
-	$('#modal-buttons').hide();
-	return false;
+	return shut_modal_window();
 }
 
 function open_task_window(embed) {
