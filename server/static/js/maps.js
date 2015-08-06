@@ -1,5 +1,5 @@
 // GoogleMap API Wrapper.
-var maps_version = 0.9;
+var maps_version = 0.12;
 
 var DEBUG = 1;
 var infowindow;
@@ -22,7 +22,7 @@ function init_canvas(map_canvas, map_options, map_searchbox) {
 
 	google.maps.event.addListener(map, 'bounds_changed', function() { map_bounds_changed(map, searchBox); });
 	geocoder.geocode({'address': map_location}, function (results, status) {
-			geocode_result_handler(results, status, map);
+		geocode_result_handler(results, status, map);
 	});
 }
 
@@ -96,6 +96,20 @@ function geocode_result_handler(result, status, map) {
 	}
 }
 
+
+function geocode_address(address) {
+	geocoder.geocode({'address': address }, function (results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+			console.log('Geocoding success. ' + status);
+			console.log(results[0].formatted_address);
+			return results[0].formatted_address;
+		}
+		return null;
+	});
+	/*	potential error: google.maps.GeocoderStatus.ZERO_RESULTS
+		also OVER_QUERY_LIMIT|REQUEST_DENIED|INVALID_REQUEST|UNKNOWN_ERROR
+	*/
+}
 
 
 var mapOptions = {
