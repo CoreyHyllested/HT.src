@@ -51,7 +51,7 @@ class LoginForm(Form):
 
 class NewTrustedEntityForm(Form):
 	name	= TextField('Name',		[validators.Required(), validators.length(min=4)])
-	addr	= TextField('Address',	[validators.Optional()])
+	addr	= HiddenField('Address',[validators.Optional()])
 	site	= TextField('Website',	[validators.Optional()])
 	phone	= TextField('Phone',	[validators.Optional()])
 	email	= TextField('Email',	[validators.Optional(), validators.Email()])
