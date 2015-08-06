@@ -89,7 +89,7 @@ input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: $input-de
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
 
-label { color: gray; font-size: 0.7em; line-height: 1.7em; }
+label					{	color: gray;	font-size: 0.7em;	line-height: 1.7em; }
 label[for='terms']		{	height: $field-height;	}
 
 ul			{	list-style-type: none;	padding-left: 0;	}
@@ -103,6 +103,8 @@ ul			{	list-style-type: none;	padding-left: 0;	}
 ::-moz-placeholder			{	color: $input-placeholder;	}	/* Firefox 19+ */
 :-ms-input-placeholder		{	color: $input-placeholder; 	}	/* IE 10+ 	*/
 ::-webkit-input-placeholder	{	color: $input-placeholder; 	}	/* Webkit	*/
+
+
 
 
 

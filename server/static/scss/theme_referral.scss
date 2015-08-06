@@ -11,7 +11,6 @@
 
 $max-card-sz: 640px;
 
-
 .trust-card {
 	width: 100%;	max-width: $max-card-sz;
 	margin: 0px;	border-radius: 0;
@@ -21,19 +20,7 @@ $max-card-sz: 640px;
 #trust-card			{	@extend .trust-card;	border: 1px #e1e8ed solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
 #content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
 #refer-professional	{	display: inline-block;	margin: 0 auto;		max-width: 650px;	vertical-align: top;	}
-#feedback			{	list-style:none;		margin: 0 auto;			}
-
-
-#referral-questions {
-	padding: 25px 0 10px;
-}
-
-#modal-business-info		{	display: none;	}
-#modal-business-addr		{	display: none;	}
-#modal-business-info.block	{	display: block;	margin-bottom: 20px;	}
-#modal-business-addr.block	{	display: block;	margin-bottom: 20px;	}
-
-
+#referral-questions {	padding: 25px 0 10px;					}
 
 
 .pro-suggestion	{
@@ -48,8 +35,15 @@ $max-card-sz: 640px;
 	max-width: 50%;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 
 }
 
+#modal-business-info		{	display: none;	}
+#modal-business-addr		{	display: none;	}
+#modal-business-info.block	{	display: block;	margin-bottom: 20px;	}
+#modal-business-addr.block	{	display: block;	margin-bottom: 20px;	}
+
+
 
 /*	UNUSED
+#feedback			{	list-style:none;		margin: 0 auto;			}
 #instructions		{	display: none;								max-width: 250px; 		}
 @media (min-width: 640px) { #instructions 		{ display: inline-block;	} }
 */
