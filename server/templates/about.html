@@ -30,24 +30,22 @@
 </section>
 
 <section id='soulcrafting-what'>
-	<div>
-		<div class='inline-50 text-content'>
-			<h2>Transform your home</h2>
-			<ul>
-				<li>Find the best contractor for your project from our trusted network of independent craftspeople.</li>
-				<li>Get unbiased information and support from your Soulcrafting project specialist at every step of the process.</li>
-				<li>Manage your project quickly and easily with smart features to sign agreements, track progress, and make secure payments online.</li>
-			</ul>
+	<div class='inline-50 text-content'>
+		<h2>Transform your home</h2>
+		<ul>
+			<li>Find the best contractor for your project from our trusted network of independent craftspeople.</li>
+			<li>Get unbiased information and support from your Soulcrafting project specialist at every step of the process.</li>
+			<li>Manage your project quickly and easily with smart features to sign agreements, track progress, and make secure payments online.</li>
+		</ul>
+	</div>
+	<div class='inline-50'>
+		<div>
+			<img src='/static/img/ex-beachbed.jpg' alt='Bedroom'	class='img-responsive img-thumb'>
+			<img src='/static/img/ex-bathroom.jpg' alt='Bathroom'	class='img-responsive img-thumb'>
 		</div>
-		<div class='inline-50'>
-			<div>
-				<img src='/static/img/ex-beachbed.jpg' alt='Bedroom'	class='img-responsive img-thumb'>
-				<img src='/static/img/ex-bathroom.jpg' alt='Bathroom'	class='img-responsive img-thumb'>
-			</div>
-			<div>
-				<img src='/static/img/ex-garden.jpg' alt='Garden Path'	class='img-responsive img-thumb'>
-				<img src='/static/img/ex-family.jpg' alt='Family Room'	class='img-responsive img-thumb'>
-			</div>
+		<div>
+			<img src='/static/img/ex-garden.jpg' alt='Garden Path'	class='img-responsive img-thumb'>
+			<img src='/static/img/ex-family.jpg' alt='Family Room'	class='img-responsive img-thumb'>
 		</div>
 	</div>
 </section>
@@ -130,5 +128,5 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src='/static/js/about.js'></script>
+	<script>$(document).ready(function () { $('#masthead-text').css('opacity', '1'); });</script>
 {% endblock %}
