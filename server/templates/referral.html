@@ -13,48 +13,45 @@
 {% block content %}
 <section>
 	<div>
-		<div id='refer-professional'>
-			<h2 class='align-left'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h2>
-			<form id='refer-form'>
-			{{form.hidden_tag()}}
-			{%- if edit %}{{form.trusted(readonly=true)}}
-			{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
-			{%- endif %}
-			<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
-			{#
-				<div id='pro-category'	class='ff header'></div>
-				<div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div>
-				<div id='pro-addr' class='ff value'></div--> <!--div id='pro-phone' class='ff contact'></div>
-			#}
-				<div id='referral-questions'>
-					<div class='ff prompt'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr' class='ff detail'></span></div>
-					{{form.content(class='ff', spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time. (Require at least 20 characters).")}}
-
-					<div class='ff prompt'>What project was this for?</div>
-					{{form.context(class='ff', autocomplete="off", maxlength=120, placeholder="Remodel deck, cheap (optional)")}}
-				</div>
-
-				<div class='actions'>
-					{%- if edit %}<input id='btn-goback-referral' type="button" class='btn-simple whiteButton' value="Go Back" onclick="history.go(-1);" />
-					{%- else %}   <input id='btn-cancel-referral' type="button" class='btn-simple whiteButton' value="Clear" />
-					{%- endif %}
-					<input id='btn-submit-referral'	type="submit" class='btn-simple blueButton' value="Save Referral" />
-					<div class='action-feedback' />
-				</div>
-			</div>
-			</form>
-		</div>
-
+		<h2 class='align-left'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h2>
+		<form id='refer-form'>
+		{{form.hidden_tag()}}
+		{%- if edit %}{{form.trusted(readonly=true)}}
+		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
+		{%- endif %}
+		<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
 		{#
-		<div id='instructions' class='{%-if not form.bid.data %}no-display{%-endif%}'>
-			<h3>Sharing your network</h3>
-			<p>Your recommendation will be public.</p>
-			<p>Help others understand the context of your project&ndash;and why you recommend them.</p>
-			<ul id='feedback'></ul>
-		</div>
+			<div id='pro-category'	class='ff header'></div>
+			<div id='pro-name'	class='ff value'></div> <div id='pro-email' class='ff contact'></div>
+			<div id='pro-addr' class='ff value'></div--> <!--div id='pro-phone' class='ff contact'></div>
 		#}
+			<div id='referral-questions'>
+				<div class='ff prompt'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr' class='ff detail'></span></div>
+				{{form.content(class='ff', spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time. (Require at least 20 characters).")}}
 
+				<div class='ff prompt'>What project was this for?</div>
+				{{form.context(class='ff', autocomplete="off", maxlength=120, placeholder="Remodel deck, cheap (optional)")}}
+			</div>
+
+			<div class='actions'>
+				{%- if edit %}<input id='btn-goback-referral' type="button" class='btn-simple whiteButton' value="Go Back" onclick="history.go(-1);" />
+				{%- else %}   <input id='btn-cancel-referral' type="button" class='btn-simple whiteButton' value="Clear" />
+				{%- endif %}
+				<input id='btn-submit-referral'	type="submit" class='btn-simple blueButton' value="Save Referral" />
+				<div class='action-feedback' />
+			</div>
+		</div>
+		</form>
 	</div>
+
+	{#
+	<div id='instructions' class='{%-if not form.bid.data %}no-display{%-endif%}'>
+		<h3>Sharing your network</h3>
+		<p>Your recommendation will be public.</p>
+		<p>Help others understand the context of your project&ndash;and why you recommend them.</p>
+		<ul id='feedback'></ul>
+	</div>
+	#}
 </section>
 {% endblock %}
 

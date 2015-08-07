@@ -167,7 +167,7 @@ function clear_business_addr( event ) {
 $(document).ready(function () {
 	console.log('referral.js: v' + referral_version);
 
-	$('#refer-professional .typeahead').typeahead({
+	$('#refer-form .typeahead').typeahead({
 		hint: true,
 		highlight: true,
 		minLength: 4,
