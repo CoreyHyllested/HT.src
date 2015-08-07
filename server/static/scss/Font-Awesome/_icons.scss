@@ -1,0 +1,49 @@
+/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
+   readers do not read off random characters that represent icons */
+
+.#{$fa-css-prefix}-search:before { content: $fa-var-search; }
+.#{$fa-css-prefix}-envelope-o:before { content: $fa-var-envelope-o; }
+.#{$fa-css-prefix}-heart:before { content: $fa-var-heart; }
+.#{$fa-css-prefix}-star:before { content: $fa-var-star; }
+.#{$fa-css-prefix}-star-o:before { content: $fa-var-star-o; }
+.#{$fa-css-prefix}-user:before { content: $fa-var-user; }
+.#{$fa-css-prefix}-check:before { content: $fa-var-check; } .#{$fa-css-prefix}-remove:before,
+.#{$fa-css-prefix}-close:before,
+.#{$fa-css-prefix}-cog:before { content: $fa-var-cog; }
+.#{$fa-css-prefix}-trash-o:before { content: $fa-var-trash-o; }
+.#{$fa-css-prefix}-home:before { content: $fa-var-home; }
+.#{$fa-css-prefix}-file-o:before { content: $fa-var-file-o; }
+.#{$fa-css-prefix}-arrow-circle-o-down:before { content: $fa-var-arrow-circle-o-down; }
+.#{$fa-css-prefix}-arrow-circle-o-up:before { content: $fa-var-arrow-circle-o-up; }
+.#{$fa-css-prefix}-inbox:before { content: $fa-var-inbox; }
+.#{$fa-css-prefix}-play-circle-o:before { content: $fa-var-play-circle-o; }
+.#{$fa-css-prefix}-rotate-right:before,
+.#{$fa-css-prefix}-repeat:before { content: $fa-var-repeat; }
+.#{$fa-css-prefix}-refresh:before { content: $fa-var-refresh; }
+.#{$fa-css-prefix}-list-alt:before { content: $fa-var-list-alt; }
+.#{$fa-css-prefix}-lock:before { content: $fa-var-lock; }
+.#{$fa-css-prefix}-map-marker:before { content: $fa-var-map-marker; }
+.#{$fa-css-prefix}-chevron-left:before { content: $fa-var-chevron-left; }
+.#{$fa-css-prefix}-chevron-right:before { content: $fa-var-chevron-right; }
+.#{$fa-css-prefix}-share:before { content: $fa-var-share; }
+.#{$fa-css-prefix}-chevron-up:before { content: $fa-var-chevron-up; }
+.#{$fa-css-prefix}-chevron-down:before { content: $fa-var-chevron-down; }
+.#{$fa-css-prefix}-star-half:before { content: $fa-var-star-half; }
+.#{$fa-css-prefix}-facebook-f:before,
+.#{$fa-css-prefix}-facebook:before { content: $fa-var-facebook; }
+.#{$fa-css-prefix}-twitter:before { content: $fa-var-twitter; }
+.#{$fa-css-prefix}-linkedin:before { content: $fa-var-linkedin; }
+.#{$fa-css-prefix}-instagram:before { content: $fa-var-instagram; }
+.#{$fa-css-prefix}-certificate:before { content: $fa-var-certificate; }
+.#{$fa-css-prefix}-arrow-circle-left:before { content: $fa-var-arrow-circle-left; }
+.#{$fa-css-prefix}-arrow-circle-right:before { content: $fa-var-arrow-circle-right; }
+.#{$fa-css-prefix}-arrow-circle-up:before { content: $fa-var-arrow-circle-up; }
+.#{$fa-css-prefix}-arrow-circle-down:before { content: $fa-var-arrow-circle-down; }
+.#{$fa-css-prefix}-pinterest:before { content: $fa-var-pinterest; }
+.#{$fa-css-prefix}-pinterest-p:before { content: $fa-var-pinterest-p; }
+.#{$fa-css-prefix}-circle-o:before { content: $fa-var-circle-o; }
+.#{$fa-css-prefix}-circle:before { content: $fa-var-circle; }
+.#{$fa-css-prefix}-chevron-circle-up:before { content: $fa-var-chevron-circle-up; }
+.#{$fa-css-prefix}-chevron-circle-down:before { content: $fa-var-chevron-circle-down; }
+.#{$fa-css-prefix}-google:before { content: $fa-var-google; }
+.#{$fa-css-prefix}-copyright:before { content: $fa-var-copyright; }
