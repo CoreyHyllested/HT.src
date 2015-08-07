@@ -1,4 +1,15 @@
-@import 'defines/elem_navigate';
+/* (c) 2015 Soulcrafting */
+
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/overides';
+
+$version : 0.01;
+
 
 #profile-header {
 	background-color: $easy-gray;
@@ -12,10 +23,7 @@
 	padding-left: 20px;
 }
 
-#referrals { }
 .referral {	padding: 0 10px 0 125px; }
-
-ul 	{ padding-left: 0px; } 
 
 
 //.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }	//KEEP
@@ -40,11 +48,10 @@ ul 	{ padding-left: 0px; }
 .ref-operations		{	display: inline;	font-size: 0.8em;	padding: 0 5px;	}
 .ref-operations li	{	display: inline; 	padding-left: 0; } 
 
-// if this css file is pulled in BEFORE tagsinput.css; we need to add !important;
-.bootstrap-tagsinput {	border: inherit ; box-shadow: inherit ; padding: 0 0 ;}
-.bootstrap-tagsinput .tag [data-role="remove"] { margin-left: 0; }
-.bootstrap-tagsinput .tag [data-role="remove"]:after { content: "" !important; padding: 0 0 !important; }
-.bootstrap-tagsinput input { display: none !important; }
+.no-display					{ display: none;	}
+.bootstrap-tagsinput		{ padding-left:	0;	}
+.bootstrap-tagsinput input	{ @extend .no-display; }	// used for display only, cannot add tags
+span[data-role="remove"]	{ @extend .no-display; }	// used for display only, cannot remove tags
 
 //.sns	{	margin: 3px 2px;	}	//KEEP
 #addr	{	background-color: white;	padding: 0 5px;	}

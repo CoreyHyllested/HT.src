@@ -5,12 +5,10 @@
 @import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
-@import 'defines/tags/navigate';		//move to master eventually
-@import 'defines/styled/common';		//move to master eventually
 @import 'defines/styled/overides';
 
-
-$max-card-sz: 640px;
+$referral-version	: 0.01;
+$max-card-sz		: 640px;
 
 .trust-card {
 	width: 100%;	max-width: $max-card-sz;
