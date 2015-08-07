@@ -1,7 +1,8 @@
 /* (c) 2015 Soulcrafting */
 
-$masthead-height		: 450px;
-$masthead-height-mobile	: 330px;
+// See /static/scss/defines/common.scss
+//	masthead-height			450px
+//	masthead-height-mobile	330px
 
 
 #masthead {
@@ -31,13 +32,6 @@ $masthead-height-mobile	: 330px;
 
 #masthead-gap 	{ height: $masthead-height; }
 
-//todo see if anything is close in elem-input
-.btn-masthead {
-	width: 240px;
-	color: white !important;
-	border: 2px solid white;
-	transition: background 80ms ease-out;
-}
 
 @media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }
 

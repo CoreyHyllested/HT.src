@@ -59,21 +59,15 @@
 .whiteButton:hover	{	color: $ht-blue;										border: 1px solid $ht-blue;		text-decoration: none;	}
 
 
-.btn-simple			{	display: inline-block;	max-width: 120px;	text-transform: uppercase;	}
+.btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
+.btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: 240px;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
+.btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
+.btn-get-started	{	@extend .btn-simple;	display: block;				margin: 0 auto;							color: white !important;	}
 .btn-modal			{	@extend .btn-simple;	}
-.btn-signup			{	@extend .btn-simple;	background: white;	border: 2px solid black;	}
-.btn-get-started	{	@extend .btn-simple;	display: block;		margin: 0 auto;		color: white !important;	}
 
-
-.social-btns {
-	text-align: center;
-	margin: 25px auto;
-}
-
-.social-login {
-	display: inline-block;
-	margin: 0 auto;
-}
+.social-btns		{ margin: 25px auto;	text-align: center;		}
+.social-btns li		{ margin-bottom: 10px;							}
+.social-login		{ margin: 0 auto;		display: inline-block;	}
 
 
 .checkbox-label		{	background-image:url('../img/checkbox.svg');		}
@@ -119,7 +113,6 @@
 
 
 
-.social-btns li { margin-bottom: 10px; }
 .social-btns li .btn {
   color: $white;
   min-width: 220px;
