@@ -12,20 +12,18 @@
 //overrides
 #masthead			{	background-image: $img-medpatio;	z-index: -5;	}
 #masthead-text		{	top: 40%;	opacity: 0;				}
-ul					{	list-style-type: disc;	padding-left: 25px;	}
 h2					{	font-size: 30px;	}
 
-
-section				{	padding: $section-padding 0;	}
-.full-width 		{	background: whitesmoke;			}
-#soulcrafting-what	{	@extend .full-width; }
-#soulcrafting-faq	{	@extend .full-width; }
 
 #faq {
 	margin-top: $text-padding;
 	display: block; 
 	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
-}		
+}
+
+.whitesmoke			{	background: whitesmoke;	}
+#soulcrafting-what	{	@extend .whitesmoke;	}
+#soulcrafting-faq	{	@extend .whitesmoke;	}
 
 .faq-question {
 	@extend .align-left;
