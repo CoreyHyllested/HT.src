@@ -21,12 +21,11 @@
 .no-display		{ 	display: none !important;	}
 .inline-50		{	display: inline-block;	width: 49%;	max-width: 485px;	vertical-align: middle; }	// used by /about
 
-// todo rename appropriately... text-padding (20px), text-padding-wide (50px)
-.text-content	{	padding: 0px $text-padding;			}
+// todo rename appropriately... text-padding (25px)
+.text-content	{	padding-left: $text-padding;	padding-right: $text-padding;	}
 
 @media (max-width: 768px) {
 	/* impacts nav-menu *NAME*; has non-zero border */
-	.text-content { padding-left: $text-padding-wide; padding-right: $text-padding-wide; }
 	.hhl:hover	{ border-top-color: rgba(0,0,0,0);	}
 	.hhl:focus	{ border-top-color: rgba(0,0,0,0) !important;	}
 }

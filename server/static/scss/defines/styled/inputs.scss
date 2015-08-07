@@ -48,7 +48,6 @@
 	width: 100%;
 }
 
-
 .blueButton			{	@extend .btn-sc-default;	background-color: #29abe2;	border: 1px solid #29abe2;	color: white;		}
 .redButton			{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: red;			}
 .whiteButton		{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
@@ -60,12 +59,11 @@
 .whiteButton:hover	{	color: $ht-blue;										border: 1px solid $ht-blue;		text-decoration: none;	}
 
 
-.checkbox-label		{	background-image:url('../img/checkbox.svg');		}
-.map-canvas			{	display: block;	height: 165px;	}
+.btn-simple			{	display: inline-block;	max-width: 120px;	text-transform: uppercase;	}
+.btn-modal			{	@extend .btn-simple;	}
+.btn-signup			{	@extend .btn-simple;	background: white;	border: 2px solid black;	}
+.btn-get-started	{	@extend .btn-simple;	display: block;		margin: 0 auto;		color: white !important;	}
 
-.btn-simple		{	display: inline-block;	max-width: 120px;	text-transform: uppercase;	}
-.btn-modal		{	@extend .btn-simple;	}
-.btn-signup		{	@extend .btn-simple;	background: white;	border: 2px solid black;	}
 
 .social-btns {
 	text-align: center;
@@ -77,6 +75,9 @@
 	margin: 0 auto;
 }
 
+
+.checkbox-label		{	background-image:url('../img/checkbox.svg');		}
+.map-canvas			{	display: block;	height: 165px;	}
 
 
 .field-container {

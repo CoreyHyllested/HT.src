@@ -16,20 +16,24 @@ ul					{	list-style-type: disc;	padding-left: 25px;	}
 h2					{	font-size: 30px;	}
 
 
-#soulcrafting-what	{	background:	whitesmoke;				}
-#soulcrafting-faq	{	background:	whitesmoke;				}
+section				{	padding: $section-padding 0;	}
+.full-width 		{	background: whitesmoke;			}
+#soulcrafting-what	{	@extend .full-width; }
+#soulcrafting-faq	{	@extend .full-width; }
+
 #faq {
-	margin-top: 40px;
+	margin-top: $text-padding;
 	display: block; 
 	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
 }		
 
 .faq-question {
-  font-weight: bolder;
-  text-align: left !important;
+	@extend .align-left;
+	font-weight: bolder;
 }
 
 
 @media (max-width: 767px) {
 	.inline-50	{	width: 100%;	max-width: 100%;	}
 }
+

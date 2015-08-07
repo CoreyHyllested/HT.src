@@ -12,41 +12,21 @@
 //overrides
 #masthead		{ background-image: $img-kitchen;	z-index: -5; }
 #masthead-text	{ top: 33%; opacity: 0; }
-section div		{ padding: 0;	}
 h3				{ font-size: 24px;	}
 
 
-#about-furniture { background: whitesmoke; font-size:	$closing-text-sz; }
-#ideas			 { text-align: center;}
+#about-furniture { @extend .text-content;	background: whitesmoke; }
 
 
-#craftsman {
-	background: whitesmoke;
-	padding: $section-padding 0px;
-}
-
+#craftsman			{ background: whitesmoke; }
 #craftsman-id		{ width: 100%; display: inline-block; height: 250px; text-align: center;	padding: 20px;	}
 #craftsman-about	{ width: 100%; display: inline-block; height: 250px; text-align: center;					}
-#craftsman-quote	{	text-align: left; 	}
-#craftsman-name		{	text-indent: 20px;	}
+#craftsman-name		{ text-indent: 20px;	}
 #craftsman-work		{
 	background: $img-patio center no-repeat;
 	background-size: cover;
 	height: 500px;
 }
-
-#get-started { font-size:	$closing-text-sz; }
-
-
-.btn-get-started {
-	display: block;
-	width: 100%;
-	max-width: 150px;
-	text-transform: uppercase;
-	margin: 0 auto;
-	color: white !important;
-}
-
 
 
 @media (min-width: 768px)	{
