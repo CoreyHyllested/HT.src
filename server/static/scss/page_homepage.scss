@@ -1,10 +1,13 @@
 /* (c) 2015 Soulcrafting */
 
+@import 'defines/fonts';
+@import 'defines/colors';
 @import 'defines/images';
-@import 'defines/elem_input';
-@import 'defines/elem_navigate';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
 @import 'defines/elem_masthead';
-
 
 /* ELEMENTS */
 #masthead.lp {
@@ -28,7 +31,7 @@
 #btn-fbook:hover	{ background: $facebk-btn-color-hover;	}
 #btn-email			{ background: $signup-btn-color;		}
 #btn-email:hover	{ background: $signup-btn-color-hover;	}
-#btn-get-started	{ position: relative; top: 50%; font-weight: 600;		}
+.btn-get-started	{ position: relative; top: 50%; font-weight: 600;	font-size: 14px; border: 2px solid white; line-height: 20px;	}
 
 #values-section			{ background: whitesmoke; }
 #get-started			{ background: $img-wkitchen 50% 70%;	background-size: cover;  height: 350px;	text-align: center;	}
@@ -36,6 +39,9 @@
 #press-row		{ margin: 25px auto;			text-align: center;	}
 #press-row a:last-child {	display: none; 	}
 
+.value	 		{	display: inline-block;	padding: 10px 20px;		vertical-align: middle;	text-align: center; }
+.value-panel	{	text-align: left; 		}
+.big-icon		{	font-size: 64px;						}
 
 /* MAP: 				[FF35+]					[Chrome, Safari6+, Opera 15+]	 [IE6-9]						*/
 .greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
