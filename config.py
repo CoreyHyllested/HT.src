@@ -28,7 +28,6 @@ class Config:
 	USE_SENDFILE=False
 
 	SQLALCHEMY_DATABASE_URI = 'postgresql://scdb:passw0rd@scdb-test.ce8pkcc3utuc.us-east-1.rds.amazonaws.com:5432'
-	SQLALCHEMY_MIGRATE_REPO = SC_BASEDIR + '/database/'
 	DATABASE_QUERY_TIMEOUT = 1.0
 
 	SC_UPLOAD_DIR='/tmp/soulcrafting/upload/'

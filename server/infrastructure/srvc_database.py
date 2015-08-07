@@ -17,7 +17,6 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
 DATABASE_URI = None
-MIGRATE_REPO = None
 db_engine	= None
 db_session	= None
 Base		= None
@@ -26,7 +25,6 @@ Base		= None
 def initialize_database(config):
 	""" Create connection to database """
 	global DATABASE_URI
-	global MIGRATE_REPO
 	global db_engine
 	global db_session
 	global Base
@@ -36,7 +34,6 @@ def initialize_database(config):
 		#raise Exception('database is already started')
 
 	DATABASE_URI = config['SQLALCHEMY_DATABASE_URI']
-	MIGRATE_REPO = config['SQLALCHEMY_MIGRATE_REPO']
 
 	#print 'initialize database... ' + DATABASE_URI
 	db_engine	= create_engine(DATABASE_URI) #, echo=True)
