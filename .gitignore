@@ -21,6 +21,7 @@ server/static/css/settings.css
 server/static/css/dashboards.css
 server/static/css/pro_dashboard.css
 server/static/css/errors.css
+server/static/css/the-master.css
 
 
 users.db
