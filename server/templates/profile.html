@@ -6,7 +6,7 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel='stylesheet' href='/static/css/tagsinput.css'>
-	{% assets 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{% assets 'master', 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
 {% endblock %}
 
 
@@ -46,7 +46,7 @@
 		<div class='content'>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
 		<div class='content'>
 			<div class='ref-context'>
-				<input type='text' value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
+				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
 			</div>
 			<ul class='ref-operations align-right'>
 				{%- if bp != profile %}
