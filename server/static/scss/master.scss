@@ -1,18 +1,22 @@
 /* (c) 2015 Soulcrafting */
 
+@charset "UTF-8";
+
 @import 'defines/fonts';
 @import 'defines/colors';
 @import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
+@import 'defines/styled/common';
 @import 'defines/styled/inputs';
 @import 'defines/styled/modals';
+@import 'defines/tags/navigate';
 
 // third-party includes
 @import 'Font-Awesome/font-awesome';
+$version	:	0.02;
 
 
-@charset "UTF-8";
 html		{	height: 100%;	}
 body		{	height:	100%;			padding-top: $navbar-height;						}
 footer		{ 	height: $footer-height;	padding: 10px 0;		background-color: white;	bottom: 0; border-top: 2px solid $ht-blue;	text-align: center;		}
@@ -110,4 +114,6 @@ input.v:required:focus:valid	{											border-color: $input-success	!important
 ::-moz-placeholder			{	color: $input-placeholder;	}	/* Firefox 19+ */
 :-ms-input-placeholder		{	color: $input-placeholder; 	}	/* IE 10+ 	*/
 ::-webkit-input-placeholder	{	color: $input-placeholder; 	}	/* Webkit	*/
+
+
 
