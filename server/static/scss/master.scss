@@ -66,7 +66,6 @@ label[for='terms']		{	height: $field-height;	}
 	font-size:	 $input-text-size;
 	font-weight: 400;
 	text-align: center;
-	text-transform: uppercase;
 	vertical-align: middle;
 	white-space: nowrap;
 }
@@ -85,8 +84,8 @@ select					{	@extend .input-sc-box; background: url('../img/dropdown.svg') no-re
 
 
 button					{	@extend .input-sc-btn;	}
-input[type='submit']	{	@extend .input-sc-btn;	}
 input[type='button']	{	@extend .input-sc-btn;	}
+input[type='submit']	{	@extend .input-sc-btn;	text-transform: uppercase;	}
 
 /* Checkboxs */
 input[type="checkbox"]			{	display: none;					}
