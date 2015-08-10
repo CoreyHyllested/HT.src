@@ -74,7 +74,9 @@ label[for='terms']		{	height: $field-height;	}
 	white-space: nowrap;
 }
 
+select					{	@extend .input-sc-box; @include border-rad(0px); background: url('../img/dropdown.svg') no-repeat right white; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
 textarea				{	@extend .input-sc-box; @include border_box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
+input[type='textarea']	{	@extend .input-sc-box; @include border_box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
 input[type='text']		{	@extend .input-sc-box;			}
 input[type='name']		{	@extend .input-sc-box;			}
 input[type='email']		{	@extend .input-sc-box;			}
@@ -84,8 +86,6 @@ input[type='url']		{	@extend .input-sc-box;			}
 input[type='search']	{	@extend .input-sc-box;			}
 input[type='address']	{	@extend .input-sc-box;			}
 input[type='password']	{	@extend .input-sc-box;			}
-select					{	@extend .input-sc-box; background: url('../img/dropdown.svg') no-repeat right white; border-radius: 0; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
-
 
 button					{	@extend .input-sc-btn;	}
 input[type='button']	{	@extend .input-sc-btn;	}
@@ -97,7 +97,7 @@ input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; m
 input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
 input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
-input:focus						{	background-color: rgba(0, 0, 0, .02);	border-color: $input-default	!important;	}
+input:focus, textarea:focus		{	background-color: rgba(0, 0, 0, .02);	border-color: $input-default	!important;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
 input.v:required:focus			{											border-color: $input-warning	!important;	}
