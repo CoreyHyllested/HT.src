@@ -47,6 +47,13 @@ $version : 0.02;
 .ref-operations		{	display: inline;	font-size: 0.8em;	padding: 0 5px;	}
 .ref-operations li	{	display: inline; 	padding-left: 0; } 
 
+.pop-over-li			{	margin-bottom: 3px;	}
+li.btn-referral-delete	{	@extend .pop-over-li;	}
+li.btn-referral-update	{	@extend .pop-over-li;	}
+li.btn-referral-delete	span	{	@extend .pop-over-li;	margin-left: 15px; margin-right: 15px;}
+li.btn-referral-update	span	{	@extend .pop-over-li;	margin-left: 15px; margin-right: 15px;}
+
+
 .no-display					{ display: none;	}
 .bootstrap-tagsinput		{ padding-left:	0;	border: none; }
 .bootstrap-tagsinput input	{ @extend .no-display; }	// used for display only, cannot add tags

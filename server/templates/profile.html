@@ -136,7 +136,6 @@
 			title: 'Referral actions',
 			content: function() {
 				refid = $(this).data('ref-id');
-				tree	= document.createElement('div');
 				tree_ul	= document.createElement('ul');
 				tree_li_delete = document.createElement('li');
 				tree_li_update = document.createElement('li');
@@ -144,8 +143,7 @@
 				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
 				$(tree_ul).append(tree_li_delete).append('<br>');
 				$(tree_ul).append(tree_li_update).append('<br>');
-				$(tree).append(tree_ul);
-				return tree;
+				return tree_ul;
 			},
 			placement: 'left',
 			trigger: "manual"
