@@ -137,27 +137,30 @@ project_ctx = new Bloodhound({
 
 function get_profile(fd) {
 	clear_referral();
-	$.ajax({	url		: "/business/" + fd.profile_id,
-				type	: "GET",
-				data	: fd,
-				success : function(data) {
-					$('#trust-card').removeClass('no-display');
-					$('#trust-card').attr('data-id', fd.profile_id);
-					$('#not-found').addClass('no-display');
-					$('#instructions').removeClass('no-display');
+	$.ajax({type	: "GET",
+			url		: "/business/" + fd.profile_id,
+			data	: fd,
+			success : function(xhr) {
+				console.log(xhr);
+				$('#trust-card').removeClass('no-display');
+				$('#trust-card').attr('data-id', fd.profile_id);
+				$('#not-found').addClass('no-display');
+				$('#instructions').removeClass('no-display');
 
-					busname = data.business_name
-					if (data.business_website) {
-						busname = '<a href="' + data.business_website + '" target="_blank">' + busname + '</a>'
-					}
-					$('#pro-name').html(busname);
-					/* examples of setting phone, email in git-log (july-21-15) */
-					$('#bid').val(fd.profile_id);
-					$('#content').focus();
-				},
-				error	: function(xhr, status, error) {
-					console.log("AJAX Error");
+				busname = xhr.business_name
+				if (xhr.business_website) {
+					busname = '<a href="' + xhr.business_website + '" target="_blank">' + busname + '</a>'
 				}
+				$('#pro-name').html(busname);
+				/* examples of setting phone, email in git-log (july-21-15) */
+
+				$('#trusted').val(xhr.business_name);	// user may have updated name.
+				$('#content').focus();
+				$('#bid').val(fd.profile_id);
+			},
+			error	: function(xhr, status, error) {
+				console.log("AJAX Error", xhr);
+			}
 	});
 }
 
