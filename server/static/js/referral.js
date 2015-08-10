@@ -68,7 +68,8 @@ function business_create(event) {
 					show_errors('#modal-message .action-feedback', xhr.responseText);
 				} else if (xhr.status == 401) {
 					console.log('GET login-modal');
-					window.location.href = '/login';
+					//window.location.href = '/login';
+					openAlertWindow('You must login first');
 				} else { }
 			}
 	});
@@ -94,13 +95,19 @@ function save_referral(evt) {
 					$('#rid').val(data.ref_uuid);
 					set_status('.action-feedback', 'Saved');
 				},
-				error	: function(data) {
+				error	: function(xhr) {
 					console.log("AJAX Error");
-					//  data.status is 401, redirectiing user to authenticate.
-					//  todo: we should pop-up a login/signup modal instead.
-					if (data.status == 401) { window.location.href = '/login'; }
-					show_errors('.action-feedback', data.responseText);
-				}
+					if (xhr.status == 400) {
+						// form error(s) occurred.
+						$('#modal-business-info').addClass('block');
+						$('#modal-business-addr').removeClass('block');
+						show_errors('.action-feedback', xhr.responseText);
+					} else if (xhr.status == 401) {
+						//  xhr.status is 401, redirectiing user to authenticate.
+						//  todo: we should pop-up a login/signup modal instead.
+						openAlertWindow('You must login first');
+						//window.location.href = '/login';
+					}
 	});
 }
 
