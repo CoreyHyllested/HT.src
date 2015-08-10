@@ -48,15 +48,15 @@ function openModalSocial()	{ return __get_login('#account-social');	}
 
 
 function __get_login(set_active) {
-	$.ajax({ url	: '/modal/login',
-			type	: 'GET',
+	$.ajax({type	: 'GET',
+			url		: '/modal/login',
 			success : function(response) {
 				open_task_window(response.embed);
 				$(set_active).addClass('login-active');
 			},
 			error: function(xhr, status, error) {
 				console.log(['ajax failure', xhr]);
-				rc = JSON.parse(xhr.responseText);
+				//rc = JSON.parse(xhr.responseText);
 			}
 	});
 	return false;
@@ -69,8 +69,8 @@ function add_new_business() {
 	fd.csrf_token = $('#csrf_token').val();
 
 	console.log('add new business ' + fd.name);
-	$.ajax({ url	: '/business/new',
-			type	: 'GET',
+	$.ajax({type	: 'GET',
+			url		: '/business/new',
 			data	: fd,
 			contentType: false,
 			success : function(response) {
@@ -81,7 +81,7 @@ function add_new_business() {
 			error: function(xhr, status, error) {
 				console.log(['ajax error', xhr]);
 				if (status == 401) { window.location.href = '/login'; }
-				rc = JSON.parse(xhr.responseText);
+				//rc = JSON.parse(xhr.responseText);
 			}
 	});
 	return false;
