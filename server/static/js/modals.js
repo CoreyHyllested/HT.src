@@ -54,9 +54,8 @@ function __get_login(set_active) {
 				open_task_window(response.embed);
 				$(set_active).addClass('login-active');
 			},
-			error: function(xhr, status, error) {
+			error	: function(xhr, status, error) {
 				console.log(['ajax failure', xhr]);
-				//rc = JSON.parse(xhr.responseText);
 			}
 	});
 	return false;
@@ -78,10 +77,9 @@ function add_new_business() {
 				open_task_window(response.embed);
 				$('#phone').mask("(999) 999-9999");
 			},
-			error: function(xhr, status, error) {
+			error	: function(xhr, status, error) {
 				console.log(['ajax error', xhr]);
 				if (status == 401) { window.location.href = '/login'; }
-				//rc = JSON.parse(xhr.responseText);
 			}
 	});
 	return false;
