@@ -1,4 +1,4 @@
-var referral_version = 0.83;
+var referral_version = 0.85;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -76,7 +76,8 @@ function business_create(event) {
 }
 
 
-function save_referral(evt) {
+function save_referral(event) {
+	event.preventDefault();
 	$(".action-feedback").html("Saving...").fadeIn();
 
 	rid	= $('#rid').val();
@@ -91,11 +92,11 @@ function save_referral(evt) {
 				data	: fd,
 				processData: false,
 				contentType: false,
-				success : function(data) {
-					$('#rid').val(data.ref_uuid);
+				success : function(xhr) {
+					$('#rid').val(xhr.ref_uuid);
 					set_status('.action-feedback', 'Saved');
 				},
-				error	: function(xhr) {
+				error	: function(xhr, status, error) {
 					console.log("AJAX Error");
 					if (xhr.status == 400) {
 						// form error(s) occurred.
@@ -110,6 +111,7 @@ function save_referral(evt) {
 					}
 				}
 	});
+	return false;
 }
 
 pro_finder = new Bloodhound({
@@ -153,7 +155,7 @@ function get_profile(fd) {
 					$('#bid').val(fd.profile_id);
 					$('#content').focus();
 				},
-				error	: function(data) {
+				error	: function(xhr, status, error) {
 					console.log("AJAX Error");
 				}
 	});
@@ -197,8 +199,8 @@ $(document).ready(function () {
 	$('#trusted').focus(clear_business_addr);
 	$('#trusted').keydown(clear_profile);
 
-	$('#btn-cancel-referral').click( function (e) { clear_profile(); });
-	$('#btn-submit-referral').click( function (e) { save_referral(); });
+	$('#btn-cancel-referral').click( function (e) { clear_profile();	});
+	$('#btn-submit-referral').click( function (e) { save_referral(e);	});
 	$('#modal-message').on('submit', '#create-business-form', business_submit);
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {
