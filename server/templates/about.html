@@ -3,20 +3,18 @@
 {% set meta_desc	= 'About Soulcrafting' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{{ super() }}
 	{%- assets "master", "scss_about_sc" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 {% block parallax %}
 	<div id='masthead'><div id='masthead-text'>About Soulcrafting</div></div>
+	<div id='masthead-gap'></div>
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead-gap'></div>
-
 <section id='soulcrafting-who'>
 	<div class='text-content'>
 		<h2>The smartest, most trusted way to improve your home.</h2>

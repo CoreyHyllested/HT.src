@@ -3,20 +3,18 @@
 {% set meta_desc	= 'Buy Soulcrafted Furniture.' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{{ super() }}
 	{%- assets 'master', 'scss_products' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 {% block parallax %}
-	<div id='masthead'> <div id='masthead-text'>Custom Furniture</div> </div>
+	<div id='masthead'><div id='masthead-text'>Custom Furniture</div></div>
+	<div id='masthead-gap'></div>
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead-gap'></div>
-
 <section id='about-furniture'>
 	<div>
 		<h3>Soulcrafted Furniture</h3>
