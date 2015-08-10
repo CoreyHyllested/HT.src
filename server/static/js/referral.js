@@ -37,7 +37,7 @@ function business_create(event) {
 
 	fd = new FormData();
 	fd.append("csrf_token", $('#csrf_token').val());
-	fd.append("name", $('#trusted').val());
+	fd.append("name", $('#name').val());
 	fd.append("addr", geocode_address($('#address-search').val()));
 	fd.append("site", $('#site').val());
 	fd.append("email", $('#email').val());
