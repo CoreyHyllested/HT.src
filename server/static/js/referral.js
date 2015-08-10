@@ -108,6 +108,7 @@ function save_referral(evt) {
 						openAlertWindow('You must login first');
 						//window.location.href = '/login';
 					}
+				}
 	});
 }
 
