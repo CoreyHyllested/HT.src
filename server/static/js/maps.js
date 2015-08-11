@@ -1,5 +1,5 @@
 // GoogleMap API Wrapper.
-var maps_version = 0.13;
+var maps_version = 0.15;
 
 var DEBUG = 1;
 var infowindow;
@@ -11,6 +11,25 @@ $(document).ready(function () {
 	infowindow = new google.maps.InfoWindow();
 	geocoder = new google.maps.Geocoder();
 	markers = [];
+	google_translate = {
+		'room'			: '#addr_part_room',
+		'floor'			: '#addr_part_floor',
+		'street_number' : '#addr_part_number',
+		'route'			: '#addr_part_route',
+
+		'street_address'		: '#addr_street',
+		'locality'				: '#addr_locale',
+		'sublocality_level_1'	: '#addr_locale',
+		'administrative_area_level_2'	: '#addr_aal2',
+		'administrative_area_level_1'	: '#addr_aal1',
+		'country'						: '#addr_aal0',
+
+		'postal_code'		: '#addr_asst_postcode',
+		'premise'			: '#addr_asst_premise',
+		'colloquial_area'	: '#addr_asst_colloquial',
+		'neighborhood'		: '#addr_asst_neighborhood',
+		'intersection'		: '#addr_asst_intersection'
+	}
 });
 
 
@@ -87,8 +106,25 @@ function geocode_result_handler(result, status, map) {
 	}
 }
 
+function populate_address(results) {
+	console.log ("entering populate_address");
+	$('#addr_formatted').val(results.formatted_address);
 
-function geocode_address(address, callback) {
+	$.each(results.address_components, function (idx, address) {
+		console.log(address.types[0], address.long_name);
+		update = google_translate[address.types[0]];
+		if (update) {
+			$(update).val(address.long_name);
+			console.log(update, address.long_name);
+		} else {
+			console.log('Missing element' + address.types);
+		}
+	});
+}
+
+
+
+function geocode_address(address) {
 	var deferred = $.Deferred();
 	address = $.trim(address)
 	if (address === '') {
@@ -99,7 +135,7 @@ function geocode_address(address, callback) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			console.log('Geocoding success. ', results[0]);
 			console.log(results[0].formatted_address);
-			callback(results[0]);
+			populate_address(results[0]);
 			deferred.resolve();
 		} else {
 			deferred.reject();

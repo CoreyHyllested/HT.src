@@ -14,6 +14,7 @@
 
 
 from server import database
+from server.controllers import *
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey, Column, String, Integer, Float, DateTime
 from sqlalchemy.orm import relationship, backref
@@ -130,8 +131,56 @@ class Location(database.Model):
 							address['meta']['lat'],
 							address['meta']['lng'],
 							json_object['_id']
+					)
+		return location
+
+
+
+	@staticmethod
+	def from_google(form):
+		# //developers.google.com/maps/documentation/geocoding/intro#Types
+		address = {	'meta' : {} }
+		print 'Location.from_google'
+		if (form.addr_street.data):
+			address['street'] = form.addr_street.data
+		elif (form.addr_part_number.data):
+			address['street'] = form.addr_part_number.data + ' ' + form.addr_part_route.data
+		elif (form.addr_part_route.data):
+			address['street'] = form.addr_part_route.data
+		else:
+			address['street'] = None
+
+
+		if (form.addr_part_room.data and form.addr_part_floor.data):
+			address['suite'] = form.addr_part_floor.data + ' ' + form.addr_part_room.data
+		elif (form.addr_part_floor.data):
+			address['suite'] = form.addr_part_floor.data
+		elif (form.addr_part_room.data):
+			address['suite'] = form.addr_part_room.data
+		else:
+			address['suite'] = None
+
+		if (form.addr_locale.data):	address['city']		= form.addr_locale.data
+		if (form.addr_aal1.data):	address['state']	= form.addr_aal1.data
+		if (form.addr_aal0.data):	address['country']	= form.addr_aal0.data
+		if (form.addr_asst_postcode.data):	address['post'] = form.addr_asst_postcode.data
+
+		location = Location(address.get('street'),
+							address.get('suite'),
+							address.get('city'),
+							address.get('state'),
+							address.get('post'),
+							address['meta'].get('lat'),
+							address['meta'].get('lng'),
 							)
 		return location
+
+#			print 'addr (area)', form.addr_aal1.data, form.addr_aal0.data
+#			print 'addr (county)', form.addr_aal2.data
+#			print 'FYI (premise)', form.addr_asst_premise.data
+#			print 'FYI (colloquial)', form.addr_asst_colloquial.data
+#			print 'FYI (neighborhood)', form.addr_asst_neighborhood.data
+#			print 'FYI (intersection)', form.addr_asst_intersection.data
 
 
 #################################################################################

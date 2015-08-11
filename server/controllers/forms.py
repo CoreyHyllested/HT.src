@@ -55,15 +55,23 @@ class NewTrustedEntityForm(Form):
 	phone	= TextField('Phone',	[validators.Optional()])
 	email	= TextField('Email',	[validators.Optional(), validators.Email()])
 
-	addr_street_nbr	= HiddenField('Street #',	[validators.Optional()])		#street number
-	addr_route		= HiddenField('Street',		[validators.Optional()])		#route
-	addr_neighborhd = HiddenField('Neighborhd',	[validators.Optional()])		#neighborhood, political
-	addr_locality	= HiddenField('City',		[validators.Optional()])		#locality, political
-	addr_area_l2	= HiddenField('County',		[validators.Optional()])		#administrative area level 2, political
-	addr_area_l1	= HiddenField('State',		[validators.Optional()])		#administrative area level 1, political
-	addr_country	= HiddenField('Country',	[validators.Optional()])		#country, political
-	addr_postcode	= HiddenField('Post Code',	[validators.Optional()])		#postal code
-	addr_formatted	= HiddenField('Formatted',	[validators.Optional()])
+	# //developers.google.com/maps/documentation/geocoding/intro#Types
+	addr_part_room		= HiddenField('Room',	[validators.Optional()])
+	addr_part_floor		= HiddenField('Floor',	[validators.Optional()])
+	addr_part_number	= HiddenField('Number',	[validators.Optional()])
+	addr_part_route		= HiddenField('ROute',	[validators.Optional()])
+
+	addr_street		= HiddenField('',	[validators.Optional()])
+	addr_locale		= HiddenField('',	[validators.Optional()])
+	addr_aal2		= HiddenField('',	[validators.Optional()])
+	addr_aal1		= HiddenField('',	[validators.Optional()])
+	addr_aal0		= HiddenField('',	[validators.Optional()])
+	addr_asst_postcode		= HiddenField('',	[validators.Optional()])
+	addr_asst_premise		= HiddenField('',	[validators.Optional()])
+	addr_asst_colloquial	= HiddenField('',	[validators.Optional()])
+	addr_asst_neighborhood	= HiddenField('',	[validators.Optional()])
+	addr_asst_intersection	= HiddenField('',	[validators.Optional()])
+	addr_formatted		= HiddenField('Formatted',	[validators.Optional()])
 
 
 class ProjectForm(Form):

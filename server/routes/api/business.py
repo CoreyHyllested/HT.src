@@ -19,6 +19,7 @@ from server.routes import api_routing as api
 from server.routes import test_routes as test
 from server.routes.helpers import *
 from server.controllers import *
+from pprint import pprint as pp
 
 
 
@@ -36,14 +37,18 @@ def render_business_create_fragment():
 def api_business_create_post():
 	form = NewTrustedEntityForm(request.form)
 	if form.validate_on_submit():
-		print 'name', form.name.data, form.site.data, form.email.data, form.phone.data
+		#print 'name', form.name.data, form.site.data, form.email.data, form.phone.data
+		#pp(request.form)
 		business = Business(form.name.data, phone=form.phone.data, email=form.email.data, website=form.site.data)
 		business.bus_state = BusinessSource.set(business.bus_state, BusinessSource.USER_ADDED)
+		location = Location.from_google(form)
+		location.business = business.bus_id
 
 		try:
 			database.session.add(business)
 			database.session.commit()
-			print 'committed', business
+			database.session.add(location)
+			database.session.commit()
 		except Exception as e:
 			database.session.rollback()
 			print type(e), e

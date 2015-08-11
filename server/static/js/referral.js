@@ -18,9 +18,8 @@ function business_submit(event) {
 		return business_update(event);
 	}
 
-	theaddress = $('#address-search').val();
-	p = geocode_address(theaddress, business_address_populate);
-	p.always(business_create);		//done worked?
+	p = geocode_address( $('#address-search').val() );
+	p.always(business_create);
 	return false;
 }
 
@@ -33,38 +32,6 @@ function business_update(event) {
 	return false;
 }
 
-
-
-function business_address_populate(results) {
-	$('#addr_formatted').val(results.formatted_address);
-
-	$.each(results.address_components, function (idx, address) {
-		if (address.types[0] === "street_number") {
-			$('#addr_street_nbr').val(address.long_name);
-		//	console.log('set value to ' + address.long_name);
-		} else if (address.types[0] === "route") {
-			$('#addr_route').val(address.long_name);
-		//	console.log('set value to ' + address.long_name);
-		} else if (address.types[0] === "neighborhood") {
-			$('#addr_neighborhd').val(address.long_name);
-		//	console.log('set n-hood to ' + address.long_name);
-		} else if ((address.types[0] === "locality") || (address.types[0] === "sublocality level 1")) {
-			$('#addr_locality').val(address.long_name);
-		//	console.log('set addr_locality (city) to ' + address.long_name);
-		} else if (address.types[0] === "administrative_area_level_1") {
-			$('#addr_area_l1').val(address.long_name);
-		//	console.log('set AAL1 (state) to ' + address.long_name);
-		} else if (address.types[0] === "administrative_area_level_2") {
-			$('#addr_area_l2').val(address.long_name);
-		//	console.log('set AAL2 (county) to ' + address.long_name);
-		} else if (address.types[0] === "postal_code") {
-			$('#addr_postcode').val(address.long_name);
-		} else if (address.types[0] === "postal_code_suffix") {
-		} else if (address.types[0] === "country") {
-			$('#addr_country').val(address.long_name);
-		} else { console.log('add ' + address.types[0]); }
-	});
-}
 
 
 function business_create() {
