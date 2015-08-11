@@ -1,5 +1,5 @@
 // GoogleMap API Wrapper.
-var maps_version = 0.12;
+var maps_version = 0.13;
 
 var DEBUG = 1;
 var infowindow;
@@ -70,42 +70,43 @@ function places_changed(map, search_input) {
 
 
 function geocode_result_handler(result, status, map) {
-	if (DEBUG) { console.log('right here' + result); }
-	if (DEBUG) { console.log('right here' + status); }
 	if (status == google.maps.GeocoderStatus.ZERO_RESULTS) {
-		if (DEBUG) { console.log('Geocoding failed. zero results' + status); }
 	} else if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-		if (DEBUG) { console.log('Geocoding failed. query limits' + status); }
 	} else if (status == google.maps.GeocoderStatus.REQUEST_DENIED) {
-		if (DEBUG) { console.log('Geocoding failed. req denied' + status); }
 	} else if (status == google.maps.GeocoderStatus.INVALID_REQUEST) {
-		if (DEBUG) { console.log('Geocoding failed. invalid' + status); }
 	} else if (status == google.maps.GeocoderStatus.UNKNOWN_ERROR) {
-		if (DEBUG) { console.log('Geocoding failed. unknown' + status); }
 	} else {
 		if (DEBUG) { console.log('Geocoding success. ' + status); }
 		map.fitBounds(result[0].geometry.viewport);
-		if (DEBUG) { console.log('1st result for geocoding is: ') }
 		if (DEBUG) { console.log(result[0].geometry.location_type.toLowerCase()); }
 		if (DEBUG) { console.log(result[0].formatted_address); }
 		if (DEBUG) { console.log(result[0].geometry.location); }
 		var marker_title = result[0].formatted_address; // + ' at ' + latlng;
 		marker = new google.maps.Marker({ position: result[0].geometry.location, title: marker_title, map: map });
-
 		if (DEBUG) { console.log('marker_title = ' + marker_title); }
 	}
 }
 
 
-function geocode_address(address) {
+function geocode_address(address, callback) {
+	var deferred = $.Deferred();
+	address = $.trim(address)
+	if (address === '') {
+		deferred.resolve();
+	}
+
 	geocoder.geocode({'address': address }, function (results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
-			console.log('Geocoding success. ' + status);
+			console.log('Geocoding success. ', results[0]);
 			console.log(results[0].formatted_address);
-			return results[0].formatted_address;
+			callback(results[0]);
+			deferred.resolve();
+		} else {
+			deferred.reject();
 		}
-		return null;
 	});
+
+	return deferred.promise();
 	/*	potential error: google.maps.GeocoderStatus.ZERO_RESULTS
 		also OVER_QUERY_LIMIT|REQUEST_DENIED|INVALID_REQUEST|UNKNOWN_ERROR
 	*/
