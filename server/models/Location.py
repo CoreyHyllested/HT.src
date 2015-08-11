@@ -28,13 +28,29 @@ class Location(database.Model):
 	location_street  = Column(String(128))
 	location_suite	 = Column(String(128))
 	location_city	 = Column(String(64))
-	location_state	 = Column(String(32))
+	location_state   = Column(String(32))
 	location_zip	 = Column(String(10))
-#	location_country = Column(String(10), default='United States')
+
+#	//developers.google.com/maps/documentation/geocoding/intro#Types
+#	location_addr_room	= Column(String(64))	# PRECISE street address.
+#	location_addr_floor	= Column(String(64))	# PRECISE street address.
+#	location_addr_st	= Column(String(64))	# PRECISE street address.
+#	location_locale		= Column(String(64))	# City, Town, Etc.  Maybe "sublocale" (Brooklyn)
+#	location_aal2		= Column(String(32))	# Administrative Area  (USA => County)
+#	location_aal1		= Column(String(32))	# Administrative Area  (USA => State)
+#	location_aal0		= Column(String(32))	# Administrative Area  (e.g => The USA)
+
+#	location_premise	= Named location, often a building or collection of buildings with a common name
+#	location_colloquial		= Alternate name for location.
+#	location_neighborhood	= Neighborhood.
+#	location_intersection	= Intersecting street.
+#	location_formatted	= Formatted Name(128).
+#	location_postcode	= Named location, often a building or collection of buildings with a common name
 
 	business		= Column(String(40), ForeignKey('business.bus_id'), nullable=True)
 	location_lat	= Column(Float)
 	location_lng	= Column(Float)
+#	location_gid	= Column(String(32))	# Google Place ID.
 	location_state	= Column(Integer, default = 0)
 
 	updated = Column(DateTime(), nullable=False, default = "")
