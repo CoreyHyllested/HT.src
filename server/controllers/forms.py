@@ -12,13 +12,13 @@
 #################################################################################
 
 
+from flask.ext.wtf import Form
 from wtforms import TextField, TextAreaField, PasswordField, DecimalField
 from wtforms import SelectField, BooleanField, RadioField, SelectMultipleField
 from wtforms import IntegerField, HiddenField, FileField, DateField, validators
 from wtforms.widgets import html_params, HTMLString, ListWidget, CheckboxInput
 from wtforms.validators import Required
 from cgi import escape
-from flask.ext.wtf import Form
 from server.models import *
 from wtforms_components import DateTimeField, DateRange, Email
 from werkzeug.datastructures import MultiDict
@@ -51,10 +51,19 @@ class LoginForm(Form):
 
 class NewTrustedEntityForm(Form):
 	name	= TextField('Name',		[validators.Required(), validators.length(min=4)])
-	addr	= HiddenField('Address',[validators.Optional()])
 	site	= TextField('Website',	[validators.Optional()])
 	phone	= TextField('Phone',	[validators.Optional()])
 	email	= TextField('Email',	[validators.Optional(), validators.Email()])
+
+	addr_street_nbr	= HiddenField('Street #',	[validators.Optional()])		#street number
+	addr_route		= HiddenField('Street',		[validators.Optional()])		#route
+	addr_neighborhd = HiddenField('Neighborhd',	[validators.Optional()])		#neighborhood, political
+	addr_locality	= HiddenField('City',		[validators.Optional()])		#locality, political
+	addr_area_l2	= HiddenField('County',		[validators.Optional()])		#administrative area level 2, political
+	addr_area_l1	= HiddenField('State',		[validators.Optional()])		#administrative area level 1, political
+	addr_country	= HiddenField('Country',	[validators.Optional()])		#country, political
+	addr_postcode	= HiddenField('Post Code',	[validators.Optional()])		#postal code
+	addr_formatted	= HiddenField('Formatted',	[validators.Optional()])
 
 
 class ProjectForm(Form):
