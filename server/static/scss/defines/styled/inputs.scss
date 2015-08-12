@@ -134,7 +134,7 @@ $version	:	0.00;
 
 
 .twitter-typeahead		{	display: inline !important;	width: 100%;	} 							//bug. #invite-emails is too small
-.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px rgba(0,0,0,.4);	}	//bug. .tt-menu is too high
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px rgba(0,0,0,.4);	background-color: white; 	}	//bug. .tt-menu is too high
 .tt-suggestion			{	background-color: white;	padding-left: 5px;						}	//bug. background is clear
 .tt-suggestion:hover	{	background-color: whitesmoke;	}
 .bootstrap-tagsinput 	{	box-shadow: none !important;	}	// (ugly) referral, profile
