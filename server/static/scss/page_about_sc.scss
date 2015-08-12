@@ -24,7 +24,7 @@ h2					{	font-size: 30px;	}
 #soulcrafting-faq	{	@extend .whitesmoke;	}
 
 .faq-question {
-	@extend .align-left;
+	text-align: left;
 	font-weight: bolder;
 }
 
