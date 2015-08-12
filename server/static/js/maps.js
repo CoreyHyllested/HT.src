@@ -107,15 +107,14 @@ function geocode_result_handler(result, status, map) {
 }
 
 function populate_address(results) {
-	console.log ("entering populate_address");
 	$('#addr_formatted').val(results.formatted_address);
+	//results.place_id
+	//results.geometry.location//lat,lng
 
 	$.each(results.address_components, function (idx, address) {
-		console.log(address.types[0], address.long_name);
 		update = google_translate[address.types[0]];
 		if (update) {
-			$(update).val(address.long_name);
-			console.log(update, address.long_name);
+			$(update).val(address.short_name);
 		} else {
 			console.log('Missing element' + address.types);
 		}
