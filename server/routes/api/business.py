@@ -89,24 +89,29 @@ def api_business_destroy(pro_id):
 @api.route('/business/search/<string:identifier>/', methods=['GET','POST'])
 @api.route('/business/search/<string:identifier>',  methods=['GET','POST'])
 def api_business_search(identifier):
-	business_idx = Business.get_json_index()
-
+	businesses = Business.get_json_index()
 	identifier = identifier.strip().lower()
 	identphone = re.sub('[() \-,.]', '', identifier)
+	suggestion = {}
 
-	fromdb = Business.search(identifier)
-	response = {}
 
-	for hit in fromdb:
-		# check to see if any locations match; update address
-		response[hit.bus_id] = { "id": hit.bus_id, "name": hit.bus_name, "addr" : 'No address listed', "combined" : hit.bus_name }
-		print response[hit.bus_id]
+	# search database for trusted suggestions
+	for hit in Business.search(identifier):
+		suggestion[hit.Business.bus_id] = {
+			"id"		: str(hit.Business.bus_id),
+			"name"		: str(hit.Business.bus_name),
+			"addr"		: str(hit.display_addr),
+			"combined"	: str(hit.Business.bus_name  + ' | ' + hit.display_addr)
+		}
 
-	for pro in business_idx.values():
-		if (len(response) > 5): break
+	#print 'Database suggestions (%d): ' % len(suggestion)
+	#pp(suggestion)
+
+	for pro in businesses.values():
+		if (len(suggestion) > 4): break
 
 		if identifier in pro.get('business_name','').lower():
-			print 'adding', pro['business_name'], 'because we matched', pro['business_name'].lower(), 'to', identifier
+			#print 'Suggestion: add', pro['business_name'], 'because we matched', pro['business_name'].lower(), 'to', identifier
 			address = 'No address listed'
 			if (pro['address']):
 				street	= pro['address'].get('street')
@@ -124,14 +129,14 @@ def api_business_search(identifier):
 				elif (city):
 					address = address + city
 			combined = pro['business_name'] + ' | ' + address
-			response[pro['_id']] = { "id": pro["_id"], "name" : pro['business_name'], "addr" : address, "combined" : combined }
+			suggestion[pro['_id']] = { "id": pro["_id"], "name" : pro['business_name'], "addr" : address, "combined" : combined }
 
-		phone = pro.get('phone', '')
-		if phone: phone = re.sub('[() \-,.]', '', phone)
-		if phone and (identphone in phone):
-			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
-			#response[pro['_id']] = { "id": pro["_id"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
-	return make_response(jsonify(response), 200)
+#		phone = pro.get('phone', '')
+#		if phone: phone = re.sub('[() \-,.]', '', phone)
+#		if phone and (identphone in phone):
+#			print 'added', pro['name'], 'because we matched', pro['phone'], 'to', identphone
+			#suggestion[pro['_id']] = { "id": pro["_id"], "name" : pro['name'], "addr" : pro['addr'].get('street', 'No address listed') }
+	return make_response(jsonify(suggestion), 200)
 
 
 
