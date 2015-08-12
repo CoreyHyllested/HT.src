@@ -97,18 +97,21 @@ class Business(database.Model):
 
 
 	@staticmethod
-	def search(identifier, check_json=False):
-		businesses = []
+	def search(identifier):
+		comp_bus = []
+		query = '%' + identifier.strip().lower() + '%'
 
 		try:
-			# TODO: do search and join on matching location.
-			query = '%' + identifier.lower().strip() + '%'
-			businesses = Business.query.filter(Business.bus_name.ilike(query)).limit(5).all()
-			for x in businesses:
-				print x.bus_id, x.bus_name
+			location = aliased(Location, name='location')
+			comp_bus = database.session.query(Business, location)	\
+						.filter(Business.bus_name.ilike(query))		\
+						.outerjoin(location, Business.bus_id == location.business)	\
+						.limit(5).all()
+			for cb in comp_bus:
+				display_composite_business(cb)
 		except NoResultFound as nrf:
 			pass
-		return businesses
+		return comp_bus
 
 
 
@@ -145,6 +148,7 @@ class Business(database.Model):
 		return business
 
 
+
 	@staticmethod
 	def import_from_json(bus_id):
 		json_object = Business.get_json_index().get(bus_id)
@@ -163,18 +167,19 @@ class Business(database.Model):
 		return business
 
 
+
 	@staticmethod
 	def get_json_index():
-		if (sc_server.__dict__.get('pro_index_id')):
-			# return the professional business index.
-			return sc_server.__dict__['pro_index_id']
+		if sc_server.trusted_index:
+			return sc_server.trusted_index
+
+		print 'Priming Search.'
+		trusted_idx = {}
 
 		try:
-			print 'Priming Search.'
 			fp = open(os.getcwd() + '/server/static/root/companies.json')
-			sc_server.pro_list = json.loads(fp.read())
-			sc_server.pro_index_id = {}
-			for account in sc_server.pro_list:
+			trusted_list = json.loads(fp.read())
+			for account in trusted_list:
 				if account.get('_status'):
 					print account['_status']
 					continue
@@ -183,17 +188,40 @@ class Business(database.Model):
 				if account.get('_ignore') or not account.get('_id'):
 					print 'Missing-id', account['business_name']
 					continue
-				sc_server.pro_index_id[account['_id']] = account
+				trusted_idx[account['_id']] = account
 		except Exception as e:
 			print type(e), e
 		finally:
 			if (fp): fp.close()
+			sc_server.trusted_index = trusted_idx
+			print 'Professional index: %d entries' % len(trusted_idx)
 
-		print 'Professional index: %d entries' % len(sc_server.pro_list)
-		return sc_server.pro_index_id
+		#print 'returning', trusted_idx
+		return trusted_idx
+
+
+
+
+
+#################################################################################
+### HELPER FUNCTIONS ############################################################
+#################################################################################
+
+def display_composite_business(composite):
+	# COMPOSITE OBJECT
+	# OBJ.Business	# Business
+	# OBJ.location	# location of Business (maybe None)
+
+	composite.display_city = 'No address listed'
+	composite.display_addr = 'No address listed'
+
+	if composite.location:
+		composite.display_city = composite.location.display_city_state()
+		composite.display_addr = composite.location.display_address()
 
 
 
 #################################################################################
 ### FOR TESTING PURPOSES ########################################################
 #################################################################################
+

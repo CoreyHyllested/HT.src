@@ -107,6 +107,7 @@ def server_init_service_oauth(server):
 
 
 def	server_init_assets(server):
+	server.trusted_index = None
 	assets = Environment(server)
 	assets.url = server.static_url_path
 	assets.load_path.append(assets.directory + '/scss')
