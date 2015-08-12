@@ -7,7 +7,7 @@
 @import 'defines/common';
 @import 'defines/styled/overides';
 
-$referral-version	: 0.01;
+$referral-version	: 0.02;
 $max-card-sz		: 640px;
 
 .trust-card {
@@ -19,7 +19,6 @@ $max-card-sz		: 640px;
 #trust-card			{	@extend .trust-card;	border: 1px $input-border-default solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
 #content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
 #referral-questions {	padding: 25px 0 10px;	}
-#not-found			{	padding-left: 5px;		}
 
 
 .pro-suggestion	{
@@ -30,7 +29,6 @@ $max-card-sz		: 640px;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	padding: 0px 3px;
 }
 
 .pro-suggestion-addr {

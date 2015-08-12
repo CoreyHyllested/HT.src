@@ -10,7 +10,8 @@ $version	:	0.00;
 .pac-item, .pac-container	{ z-index: $modal-depth; }
 
 // overrides 
-input.tt-hint {	display: none !important; }				//used by referral
+.tt-menu		{	text-indent: 5px;	}				//used by referral
+input.tt-hint	{	display: none !important; }			//used by referral
 .bootstrap-tagsinput input.tt-input	{	border: none; }	//used by referral
 .bootstrap-tagsinput 			{	border-radius: 0px !important;	}	//referral
 .bootstrap-tagsinput .tt-menu	{	width: 350px;	}	//referral
