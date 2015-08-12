@@ -62,9 +62,8 @@ $version	:	0.00;
 
 
 .btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
-.btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: 240px;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
+.btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: none;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
 .btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
-.btn-get-started	{	@extend .btn-simple;	display: block;	margin: 0 auto;	border: 1px solid white;	color: white !important;	}
 .btn-modal			{	@extend .btn-simple;	}
 
 .social-btns		{ margin: 25px auto;	text-align: center;		}

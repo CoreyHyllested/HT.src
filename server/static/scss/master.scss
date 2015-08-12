@@ -15,8 +15,7 @@
 // third-party includes
 @import 'Font-Awesome/font-awesome';
 
-$version	:	'0.03';
-// add circle
+$version	:	'0.04';	// update
 
 
 html		{	height: 100%;	}
@@ -49,7 +48,7 @@ label[for='terms']		{	height: $field-height;	}
 
 .input-focus {
 	background-color: rgba(0, 0, 0, .01);
-	&:focus {	border-color: $input-default	!important;		background-color: white;	}
+	&:focus {	border-color: $input-box-default !important;		background-color: white;	}
 }
 
 
@@ -57,7 +56,7 @@ label[for='terms']		{	height: $field-height;	}
 .input-sc-box 	{
 	@extend .input-focus;
 	@include appearence(none);
-	border: 1px $input-default solid;
+	border: 1px solid $input-border-default;
 	height: $input-height;
 	margin: 0 auto 15px;
 	width:	100%;
@@ -105,14 +104,14 @@ input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; m
 input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
 input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
-input:read-only					{	border-color: $input-default	!important;		background-color: white;	}
+input:read-only					{	border-color: $input-border-default	!important;		background-color: white;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
 
 /* VALIDATE, currently unused */
-input.v:required:focus			{	border-color: $input-warning	!important;	}
-input.v:required:focus:invalid	{	border-color: $input-invalid	!important;	}
-input.v:required:focus:valid	{	border-color: $input-success	!important;	}
+input.v:required:focus			{	border-color: $input-border-warning	!important;	}
+input.v:required:focus:invalid	{	border-color: $input-border-invalid	!important;	}
+input.v:required:focus:valid	{	border-color: $input-border-success	!important;	}
 
 
 /*	Placeholder Text
@@ -120,10 +119,10 @@ input.v:required:focus:valid	{	border-color: $input-success	!important;	}
 	.attention { color: red; }
 	.attention:-moz-placeholder {	color: red; opacity: 1	}
 */
-:-moz-placeholder			{	color: $input-placeholder;	}	/* Firefox 4-18 */
-::-moz-placeholder			{	color: $input-placeholder;	}	/* Firefox 19+ */
-:-ms-input-placeholder		{	color: $input-placeholder; 	}	/* IE 10+ 	*/
-::-webkit-input-placeholder	{	color: $input-placeholder; 	}	/* Webkit	*/
+:-moz-placeholder			{	color: $font-color-placeholder;	}	/* Firefox 4-18 */
+::-moz-placeholder			{	color: $font-color-placeholder;	}	/* Firefox 19+ */
+:-ms-input-placeholder		{	color: $font-color-placeholder;	}	/* IE 10+ 	*/
+::-webkit-input-placeholder	{	color: $font-color-placeholder;	}	/* Webkit	*/
 
 
 
