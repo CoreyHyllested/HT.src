@@ -183,10 +183,8 @@ class Business(database.Model):
 				if account.get('_status'):
 					print account['_status']
 					continue
-				if account.get('_ignore'):
-					continue
 				if account.get('_ignore') or not account.get('_id'):
-					print 'Missing-id', account['business_name']
+					#print 'Missing-id', account['business_name']
 					continue
 				trusted_idx[account['_id']] = account
 		except Exception as e:
@@ -196,7 +194,6 @@ class Business(database.Model):
 			sc_server.trusted_index = trusted_idx
 			print 'Professional index: %d entries' % len(trusted_idx)
 
-		#print 'returning', trusted_idx
 		return trusted_idx
 
 
