@@ -18,6 +18,7 @@ from server.routes import api_routing as api
 from server.routes import test_routes as test
 from server.routes.helpers import *
 from server.controllers import *
+from datetime import datetime as dt
 
 
 
@@ -62,7 +63,7 @@ def api_update_project(usrmsg=None):
 				project.proj_max	= form.proj_max.data	#rename_budget (budget_actual?)
 				project.timeline 	= form.proj_timeline.data
 				project.contact		= form.proj_contact.data
-				project.updated		= datetime.utcnow()
+				project.updated		= dt.utcnow()
 
 				print "api_proj_update: add"
 				database.session.add(project)
