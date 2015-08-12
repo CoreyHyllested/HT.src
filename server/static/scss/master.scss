@@ -14,7 +14,9 @@
 
 // third-party includes
 @import 'Font-Awesome/font-awesome';
-$version	:	0.02;
+
+$version	:	'0.03';
+// add circle
 
 
 html		{	height: 100%;	}
@@ -45,12 +47,17 @@ label					{	color: gray;	font-size: 0.7em;	line-height: 1.7em; }
 label[for='terms']		{	height: $field-height;	}
 
 
+.input-focus {
+	background-color: rgba(0, 0, 0, .01);
+	&:focus {	border-color: $input-default	!important;		background-color: white;	}
+}
+
 
 /* INPUTS:  text(area) boxes, buttons, checkboxes */
 .input-sc-box 	{
+	@extend .input-focus;
 	@include appearence(none);
 	border: 1px $input-default solid;
-	background-color: rgba(0, 0, 0, .01);
 	height: $input-height;
 	margin: 0 auto 15px;
 	width:	100%;
@@ -99,7 +106,6 @@ input[type="checkbox"].checkbox:checked + label.checkbox-label { background-posi
 input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
 
 input:read-only					{	border-color: $input-default	!important;		background-color: white;	}
-input:focus, textarea:focus		{	border-color: $input-default	!important;		background-color: white;	}
 input:focus:invalid				{	color: black;	}
 input:invalid					{	color: red;		}
 
