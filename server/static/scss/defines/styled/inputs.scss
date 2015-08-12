@@ -39,7 +39,7 @@ $version	:	0.00;
 .btn-sc-default {
 	@include transition();
 	@include appearance(none);
-	@include border-rad(3px);
+	@include border-rad(4px);
 	cursor: pointer;
 	display: table-cell;
 	height: 35px;
@@ -50,21 +50,21 @@ $version	:	0.00;
 	width: 100%;
 }
 
-.blueButton			{	@extend .btn-sc-default;	background-color: #29abe2;	border: 1px solid #29abe2;	color: white;		}
-.redButton			{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: red;			}
-.whiteButton		{	@extend .btn-sc-default;	background-color: #ffffff;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
+.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;	color: white;		}
+.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: red;			}
+.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
 .messageButton		{	@extend .blueButton;		margin-top: -12px;															}
 
-.blueButton:hover	{	color: white;				background-color: #007cb3;	border: 1px solid #007cb3;		text-decoration: none;	}
-.messageButton:hover{	color: white;				background-color: #007cb3;	border: 1px solid #007cb3;		text-decoration: none;	}
-.redButton:hover	{	color: red;												border: 1px solid red;			text-decoration: none;	}
-.whiteButton:hover	{	color: $ht-blue;										border: 1px solid $ht-blue;		text-decoration: none;	}
+.blueButton:hover	{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
+.messageButton:hover{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
+.redButton:hover	{	color: red;														border: 1px solid red;					text-decoration: none;	}
+.whiteButton:hover	{	color: $ht-blue;												border: 1px solid $ht-blue;				text-decoration: none;	}
 
 
 .btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
 .btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: 240px;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
 .btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
-.btn-get-started	{	@extend .btn-simple;	display: block;				margin: 0 auto;							color: white !important;	}
+.btn-get-started	{	@extend .btn-simple;	display: block;	margin: 0 auto;	border: 1px solid white;	color: white !important;	}
 .btn-modal			{	@extend .btn-simple;	}
 
 .social-btns		{ margin: 25px auto;	text-align: center;		}
