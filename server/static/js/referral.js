@@ -1,4 +1,4 @@
-var referral_version = 0.87;
+var referral_version = 0.88;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -174,11 +174,12 @@ $(document).ready(function () {
 	$('#refer-form .typeahead').typeahead({
 		hint: true,
 		highlight: true,
-		minLength: 4,
+		minLength: 3,
 	},
 	{
 		display: 'combined',
 		source: pro_finder,
+		limit: 100,		//https://github.com/twitter/typeahead.js/issues/1232
 		templates: {
 			notFound: function(q) {
 				return '<div id=\'not-found\'>We did not match \"' + q.query + '\".<br><a href="javascript:add_new_business();">Add this business?</a></div>';
