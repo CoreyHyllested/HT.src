@@ -1,4 +1,4 @@
-var referral_version = 0.89;
+var referral_version = 0.91;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -81,14 +81,18 @@ function referral_submit(event) {
 	event.preventDefault();
 
 	set_status('.action-feedback', 'Saving...');
-	data = $('#form-referral')[0];
-	rid  = $('#rid').val();
-	uri	 = "/referral/create";
+	unsaved = $('.bootstrap-tagsinput input.tt-input');
+	$('#context').tagsinput('add', unsaved.val());
+
+	fd	= new FormData( $('#form-referral')[0] );
+
+	rid	= $('#rid').val();
+	uri	= "/referral/create";
 	if (rid) { uri = "/referral/" + rid + "/update"; }
 
 	$.ajax({	url		: uri,
 				type	: "POST",
-				data	: new FormData(data),
+				data	: fd,
 				processData: false,
 				contentType: false,
 				success : function(xhr) {
