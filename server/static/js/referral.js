@@ -1,4 +1,4 @@
-var referral_version = 0.88;
+var referral_version = 0.89;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -69,7 +69,7 @@ function business_create() {
 
 function save_referral(event) {
 	event.preventDefault();
-	$(".action-feedback").html("Saving...").fadeIn();
+	set_status('.action-feedback', 'Saving...');
 
 	rid	= $('#rid').val();
  	fd	= new FormData($('#refer-form')[0])
