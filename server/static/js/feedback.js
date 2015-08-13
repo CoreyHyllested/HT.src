@@ -26,32 +26,33 @@ function show_errors(status_element, responseText) {
 		$(element).css("border-color", "#e75f63");
 	});
 }
-function clear_error_msg(element) { $(element).prev(".ff.error").slideUp().html('');	}
-function clear_error_box(element) { $(element).css("border-color", "#e1e8ed");			}
+
+function clear_error_msg(element)	{ $(element).prev(".ff.error").slideUp().html('');	}
+function clear_error_box(element)	{ $(element).css("border-color", "#e1e8ed");			}
 
 
-function set_status(query, content) {
-	$(query).empty();
-	$(query).html(content).fadeIn();
-	setTimeout(feedback_fade,	2500, query);
+function set_status(elem, content) {
+	$(elem).empty();
+	$(elem).html(content).fadeIn();
+	setTimeout(feedback_fadeout, 2500, elem);
 }
 
 function positive_feedback(content)	{
-	html = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
+	element = $('<li class="feedback-bubble">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(element);
 }
 
 function negative_feedback(content)	{
-	html = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
-	feedback_timeout(html);
+	element = $('<li class="feedback-bubble feedback-negative">' + content + '</li>').uniqueId().appendTo('#feedback');
+	feedback_timeout(element);
 }
 
-function feedback_fade(query)	{	$(query).fadeOut("slow");	}
-function feedback_remove(query)	{	$(query).remove();			}
-function feedback_timeout(msg)	{
-	uid	= msg.attr('id');
-	setTimeout(feedback_fade,	2500, '#' + uid);
-	setTimeout(feedback_remove, 5000, '#' + uid);
+function feedback_fadeout(e_id)	{	$(e_id).fadeOut('slow');	}
+function feedback_slideup(e_id)	{	$(e_id).slideUp('slow');	}
+function feedback_timeout(elem)	{
+	uid	= elem.attr('id');
+	setTimeout(feedback_fadeout, 2500, '#' + uid);
+	setTimeout(feedback_slideup, 5000, '#' + uid);
 }
 
 
