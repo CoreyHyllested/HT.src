@@ -67,20 +67,28 @@ function business_create() {
 }
 
 
-function save_referral(event) {
+function referral_cancel()	{
+	$('#trusted').val('');
+	$('#content').val('');
+	$('span.tag.label').remove();
+	$('.bootstrap-tagsinput input.tt-input').val('');
+	$('#form-referral .typeahead').typeahead('val', '');
+	clear_profile();
+}
+
+
+function referral_submit(event) {
 	event.preventDefault();
+
 	set_status('.action-feedback', 'Saving...');
+	data = $('#form-referral')[0];
+	rid  = $('#rid').val();
+	uri	 = "/referral/create";
+	if (rid) { uri = "/referral/" + rid + "/update"; }
 
-	rid	= $('#rid').val();
- 	fd	= new FormData($('#refer-form')[0])
-
-	// create or update referral.
-	referral_uri = "/referral/create";
-	if (rid != '') { referral_uri = "/referral/" + rid + "/update"; }
-
-	$.ajax({	url		: referral_uri,
+	$.ajax({	url		: uri,
 				type	: "POST",
-				data	: fd,
+				data	: new FormData(data),
 				processData: false,
 				contentType: false,
 				success : function(xhr) {
@@ -171,7 +179,7 @@ function clear_business_addr( event ) {
 $(document).ready(function () {
 	console.log('referral.js: v' + referral_version);
 
-	$('#refer-form .typeahead').typeahead({
+	$('#form-referral .typeahead').typeahead({
 		hint: true,
 		highlight: true,
 		minLength: 3,
@@ -194,8 +202,8 @@ $(document).ready(function () {
 	$('#trusted').focus(clear_business_addr);
 	$('#trusted').keydown(clear_profile);
 
-	$('#btn-cancel-referral').click( function (e) { clear_profile();	});
-	$('#btn-submit-referral').click( function (e) { save_referral(e);	});
+	$('#btn-cancel-referral').on('click', referral_cancel);
+	$('#form-referral').on('submit', referral_submit);
 	$('#modal-message').on('submit', '#create-business-form', business_submit);
 
 	$('#trusted.typeahead').bind('typeahead:select', function(ev, suggestion) {

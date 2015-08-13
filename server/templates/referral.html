@@ -14,7 +14,7 @@
 <section>
 	<div>
 		<h2 class='align-left'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h2>
-		<form id='refer-form'>
+		<form id='form-referral'>
 		{{form.hidden_tag()}}
 		{%- if edit %}{{form.trusted(readonly=true)}}
 		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
