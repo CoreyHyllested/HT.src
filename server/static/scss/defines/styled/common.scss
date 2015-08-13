@@ -2,9 +2,10 @@
 
 @import 'defines/fonts';
 @import 'defines/colors';
-@import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
+
+$version: 0.1;
 
 
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
@@ -23,6 +24,7 @@
 
 // todo rename appropriately... text-padding (25px)
 .text-content	{	padding-left: $text-padding;	padding-right: $text-padding;	}
+.action-feedback{	font-weight: 600;	}
 
 @media (max-width: 768px) {
 	/* impacts nav-menu *NAME*; has non-zero border */
