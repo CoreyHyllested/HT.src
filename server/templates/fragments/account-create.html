@@ -1,7 +1,7 @@
 <div class='request'>
 	<h3>Sign in to Soulcrafting</h3>
 	<p id='401' class='no-display'>That task requires you to be logged in.</p>
-
+{#
 	<div id='account-email' class='no-display'>
 		<p><input type='email'></input></p>
 		<p><input type='text'></input></p>
@@ -9,13 +9,13 @@
 		<input type='button' class='btn-modal whiteButton' value='Social' onclick='javascript:__login_with_social();'></input>
 		<input type='button' class='btn-modal blueButton' value='Sign in'></input>
 	</div>
-
+#}
 
 	<div id='account-social' class='no-display'>
 		<ul>
 			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
 			{#<li><a href="/login/twitter"><button  class="btn btn-twitter"><i class="fa fa-twitter"></i>Log in with Twitter</button></a></li>#}
-			<li><a href="/login"><button class="btn btn-soulcraft"><i class="fa fa-envelope-o"></i>Email</button></a></li>
+			<li><a href="/login"><button class="btn btn-soulcraft"><i class="fa fa-envelope-o"></i>Log in with Email</button></a></li>
 		</ul>
 		{#<p>or sign up <a href='javascript:__login_with_email();'>with email</a></p>#}
 	</div>
