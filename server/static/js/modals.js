@@ -11,14 +11,17 @@ $(document).ready(function () {
 	});
 });
 
-function open_modal_window() {
+function open_modal_window(embed, win_sz) {
+	$('#modal-message').html(embed);
+
 	$('#overlay').addClass('overlay-dark');
-	$('#modal-wrap').addClass('active')
+	$('#modal-wrap').addClass('active');
+	$('#modal-window').addClass(win_sz);
 	$('#modal-window').show();
 }
 
 function shut_modal_window() {
-	$('#modal-window').hide().removeClass('black-border');
+	$('#modal-window').hide().removeClass('black-border');	//remove all win_sz classes
 	$('#modal-wrap').removeClass('active');
 	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
 	$('#modal-message').html('');
@@ -27,9 +30,8 @@ function shut_modal_window() {
 }
 
 function openAlertWindow(text) {
-	$('#modal-message').html(text);
 	$('#modal-buttons').show();
-	open_modal_window();
+	open_modal_window(text);
 	return false;
 }
 
@@ -37,9 +39,8 @@ function closeAlertWindow() {
 	return shut_modal_window();
 }
 
-function open_task_window(embed) {
-	$('#modal-message').html(embed);
-	open_modal_window();
+function open_task_window(embed, win_sz) {
+	open_modal_window(embed, win_sz);
 }
 
 
@@ -48,11 +49,11 @@ function open_login(status)	{ return __get_login(status, '#account-social');	}
 
 
 function __get_login(status, set_active) {
-	if (status === 401) { }
 	$.ajax({type	: 'GET',
 			url		: '/modal/login',
 			success : function(response) {
-				open_task_window(response.embed);
+				open_task_window(response.embed, 'sz-320');
+				$('#'+status).toggleClass('no-display');
 				$(set_active).toggleClass('no-display');
 			},
 			error	: function(xhr, status, error) {

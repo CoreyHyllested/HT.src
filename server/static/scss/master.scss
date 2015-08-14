@@ -15,7 +15,7 @@
 // third-party includes
 @import 'Font-Awesome/font-awesome';
 
-$version:	'0.04';	// added .action-feedback
+$version:	'0.05';	// update social-btns (facebook, twtter), and colors
 
 
 html		{	height: 100%;	}
@@ -126,3 +126,4 @@ input.v:required:focus:valid	{	border-color: $input-border-success	!important;	}
 
 
 
+#modal-window.sz-320	{ max-width: 320px;	} 
