@@ -12,7 +12,7 @@ function __get_json(string) {
 
 
 function show_errors(status_element, responseText) {
-	console.log("show_errors()");
+	console.log('show_errors(' + responseText + ')');
 	set_status(status_element, 'There was an issue');
 
 	response = __get_json(responseText);
