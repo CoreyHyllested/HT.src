@@ -20,11 +20,12 @@ from server.controllers	import *
 
 facebook = sc_server.oauth.remote_app( 'facebook',
 		base_url='https://graph.facebook.com',
-		request_token_url=None,
 		access_token_url='/oauth/access_token',
+		access_token_method='POST',
 		authorize_url='https://www.facebook.com/dialog/oauth',
 		consumer_key=sc_server.config['FACEBOOK_APP_ID'],
 		consumer_secret=sc_server.config['FACEBOOK_APP_SEC'],
+		request_token_url=None,
 		request_token_params={ 'scope': 'email' }
 )
 
