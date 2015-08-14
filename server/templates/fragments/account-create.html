@@ -4,18 +4,18 @@
 
 	<div id='account-email' class='no-display'>
 		<p><input type='email'></input></p>
-		Last question.  What is your name.
 		<p><input type='text'></input></p>
 
-		<input type='button' class='btn-modal whiteButton dismiss-modal' value='Cancel'></input>
+		<input type='button' class='btn-modal whiteButton' value='Social' onclick='javascript:__login_with_social();'></input>
 		<input type='button' class='btn-modal blueButton' value='Sign in'></input>
 	</div>
 
 
 	<div id='account-social' class='no-display'>
-		<ul class="list-unstyled social-login">
-			<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
-			<li><a href="/login/twitter"><button class="facebook-btn btn" type="button"><i class="fa fa-twitter"></i>Log in with Twitter</button></a></li>
+		<ul>
+			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Facebook</button></a></li>
+			<li><a href="/login/twitter"><button  class="btn btn-twitter"><i  class="fa fa-twitter"></i>Twitter</button></a></li>
+			<li><a href="/login/facebook"><button class="btn btn-soulcraft"><i class="fa fa-envelope-o"></i>Email</button></a></li>
 		</ul>
 		<p>or sign up <a href='javascript:__login_with_email();'>with email</a></p>
 	</div>
