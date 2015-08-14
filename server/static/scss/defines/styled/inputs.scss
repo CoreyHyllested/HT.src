@@ -39,7 +39,7 @@ $version	:	0.00;
 .btn-sc-default {
 	@include transition();
 	@include appearance(none);
-	@include border-rad(4px);
+	@include border-rad(3px);
 	cursor: pointer;
 	display: table-cell;
 	height: 35px;
@@ -50,6 +50,7 @@ $version	:	0.00;
 	width: 100%;
 }
 
+.btn-social			{	@extend .btn-sc-default;	margin: 15px auto; 			max-width: 220px;			color: white; 	text-align: left;	font-weight: 500;	}
 .blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;	color: white;		}
 .redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: red;			}
 .whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
@@ -59,6 +60,8 @@ $version	:	0.00;
 .messageButton:hover{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
 .redButton:hover	{	color: red;														border: 1px solid red;					text-decoration: none;	}
 .whiteButton:hover	{	color: $ht-blue;												border: 1px solid $ht-blue;				text-decoration: none;	}
+.btn-social:hover	{	color: white;	}
+.btn-social .fa		{	font-size: 18px; position: relative; top: 2px; margin-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.05); padding-right: 10px; width: 30px; }
 
 
 .btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
@@ -66,9 +69,6 @@ $version	:	0.00;
 .btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
 .btn-modal			{	@extend .btn-simple;	}
 
-.social-btns		{ margin: 25px auto;	text-align: center;		}
-.social-btns li		{ margin-bottom: 10px;							}
-.social-login		{ margin: 0 auto;		display: inline-block;	}
 
 
 .checkbox-label		{	background-image:url('../img/checkbox.svg');		}
@@ -114,22 +114,7 @@ $version	:	0.00;
 
 
 
-.social-btns li .btn {
-  color: $white;
-  min-width: 220px;
-  text-align: left;
-}
 
-.social-btns li .btn:hover { color: $white; }
-.social-btns li .btn .fa {
-  font-size: 18px;
-  position: relative;
-  top: 2px;
-  margin-right: 10px;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-  padding-right: 10px;
-  width: 30px;
-}
 
 
 .twitter-typeahead		{	display: inline !important;	width: 100%;	} 							//bug. #invite-emails is too small
@@ -159,10 +144,11 @@ $version	:	0.00;
 .name		{ color: darkgrey;	}
 
 
+.btn-facebook		{ @extend .btn-social;	background: $facebk-btn-color;			}
+.btn-facebook:hover	{ 						background: $facebk-btn-color-hover;	}
+
 .twitter-btn		{ background: $twittr-btn-color;		}
 .twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
-.facebook-btn		{ background: $facebk-btn-color;		}
-.facebook-btn:hover	{ background: $facebk-btn-color-hover;	}
 .google-btn			{ background: $google-btn-color;		}
 .google-btn:hover	{ background: $google-btn-color-hover;	}
 

@@ -3,20 +3,20 @@
 {% set meta_desc	= 'Login to Soulcrafting.' %}
 
 {% block header_css %}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{{ super() }}
 	{%- assets 'master', 'scss_loginsys' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
 {% block content %}
 <section id='authorize'>
-	<h2>Log in to Soulcrafting</h2>
-
-	<div class="social-btns">
-		<ul class="list-unstyled social-login">
-			<li><a href="/login/facebook"><button class="facebook-btn btn" type="button"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
+	<div>
+		<p><h2>Log in to Soulcrafting</h2></p>
+		<ul>
+			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
 		</ul>
 	</div>
+
 	<hr class='thin'>
 	<div id='authorize-form'>
 		<form method='POST' action='/login'>
