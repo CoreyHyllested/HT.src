@@ -81,10 +81,10 @@
 .full-screen	{	display: block;	position: fixed; height: 100%; width: 100%; top: 0; left: 0; }
 .overlay-dark	{	@extend .full-screen; z-index: $overlay-depth;	background-color: darkgray;	background-color: rgba(0,0,0,.8);	}
 .overlay-light	{	@extend .full-screen; z-index: $overlay-depth;	background-color: white;	background-color: rgba(255,255,255,.8);	}
+.black-border	{	border:	1px solid black;	}
 
 
 
-.window-border	{ border:	1px solid black;	}
 .request input	{ width: 85%;	}
 
 .modal-account	{ display: none;	}	//see if we can re-write (fragment account-create)

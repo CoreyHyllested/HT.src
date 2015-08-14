@@ -18,7 +18,7 @@ function open_modal_window() {
 }
 
 function shut_modal_window() {
-	$('#modal-window').hide().removeClass('window-border');
+	$('#modal-window').hide().removeClass('black-border');
 	$('#modal-wrap').removeClass('active');
 	$('#overlay').removeClass('overlay-dark').removeClass('overlay-light');
 	$('#modal-message').html('');
@@ -113,7 +113,7 @@ function openModalShare() {
 					$('#overlay').addClass('overlay-light')
 					$('#modal-message').html(response.embed);
 					$('#modal-wrap').addClass('active');
-					$('#modal-window').show().addClass('window-border');
+					$('#modal-window').show().addClass('black-border');
 					$('#modal-buttons').html("<input type='button' class='btn-modal whiteButton dismiss-modal' value='Cancel'></input><input type='button' class='btn-modal blueButton' value='Share'></input>");
 				}
 			},
