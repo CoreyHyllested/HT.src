@@ -5,7 +5,8 @@
 @import 'defines/images';
 @import 'defines/mixins';
 @import 'defines/common';
-$version	:	0.00;
+
+$version	:	0.01;
 
 .pac-item, .pac-container	{ z-index: $modal-depth; }
 

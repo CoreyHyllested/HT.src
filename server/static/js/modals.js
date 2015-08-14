@@ -43,11 +43,12 @@ function open_task_window(embed) {
 }
 
 
-function open_email()	{ return __get_login('#account-email');		}
-function open_login()	{ return __get_login('#account-social');	}
+function open_email(status)	{ return __get_login(status, '#account-email');		}
+function open_login(status)	{ return __get_login(status, '#account-social');	}
 
 
-function __get_login(set_active) {
+function __get_login(status, set_active) {
+	if (status === 401) { }
 	$.ajax({type	: 'GET',
 			url		: '/modal/login',
 			success : function(response) {
