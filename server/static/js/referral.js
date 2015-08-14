@@ -52,12 +52,12 @@ function business_create() {
 			},
 			error	: function(xhr, status, error) {
 				console.log("AJAX Error", xhr);
-				if (xhr.status == 400) {
+				if (xhr.status === 400) {
 					// form error(s) occurred.
 					$('#modal-business-info').addClass('block');
 					$('#modal-business-addr').removeClass('block');
 					show_errors('#modal-message .action-feedback', xhr.responseText);
-				} else if (xhr.status == 401) {
+				} else if (xhr.status === 401) {
 					open_login(xhr.status);
 				} else { }
 			}
@@ -99,12 +99,10 @@ function referral_submit(event) {
 				},
 				error	: function(xhr, status, error) {
 					console.log("AJAX Error");
-					if (xhr.status == 400) {
+					if (xhr.status === 400) {
 						// form error(s) occurred.
-						$('#modal-business-info').addClass('block');
-						$('#modal-business-addr').removeClass('block');
 						show_errors('.action-feedback', xhr.responseText);
-					} else if (xhr.status == 401) {
+					} else if (xhr.status === 401) {
 						open_login(xhr.status);
 					} else { }
 				}
