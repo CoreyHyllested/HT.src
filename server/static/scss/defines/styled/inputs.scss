@@ -6,7 +6,7 @@
 @import 'defines/mixins';
 @import 'defines/common';
 
-$version	:	0.00;
+$version	:	0.01;
 
 .actions			{	text-align: right;		}
 .form-group			{	position: relative;	margin-bottom: 0 !important;	}
@@ -50,7 +50,6 @@ $version	:	0.00;
 	width: 100%;
 }
 
-.btn-social			{	@extend .btn-sc-default;	margin: 15px auto; 			max-width: 220px;			color: white; 	text-align: left;	font-weight: 500;	}
 .blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;	color: white;		}
 .redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: red;			}
 .whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
@@ -60,8 +59,6 @@ $version	:	0.00;
 .messageButton:hover{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
 .redButton:hover	{	color: red;														border: 1px solid red;					text-decoration: none;	}
 .whiteButton:hover	{	color: $ht-blue;												border: 1px solid $ht-blue;				text-decoration: none;	}
-.btn-social:hover	{	color: white;	}
-.btn-social .fa		{	font-size: 18px; position: relative; top: 2px; margin-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.05); padding-right: 10px; width: 30px; }
 
 
 .btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
@@ -69,6 +66,20 @@ $version	:	0.00;
 .btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
 .btn-modal			{	@extend .btn-simple;	}
 
+
+
+.btn-social			{	@extend .btn-sc-default;	margin: 15px auto; 		max-width: 220px;	color: white; 	text-align: left;	font-weight: 500;	}
+.btn-social:hover	{	color: white;	}
+.btn-social .fa		{	font-size: 18px; position: relative; top: 2px; margin-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.05); padding-right: 10px; width: 30px; }
+
+.btn-soulcraft		{ @extend .btn-social;	background: $ht-blue;					}
+.btn-facebook		{ @extend .btn-social;	background: $btn-color-facebk;			}
+.btn-twitter		{ @extend .btn-social;	background: $btn-color-twittr;			}
+.btn-google			{ @extend .btn-social;	background: $btn-color-google;			}
+.btn-soulcraft:hover{ @extend .btn-social;	background: $ht-blue-hover;				}
+.btn-facebook:hover	{ color: white;			background: $btn-color-facebk-hover;	}
+.btn-twitter:hover	{ color: white;			background: $btn-color-twittr-hover;	}
+.btn-google:hover	{ color: white;			background: $btn-color-google-hover;	}
 
 
 .checkbox-label		{	background-image:url('../img/checkbox.svg');		}
@@ -144,11 +155,4 @@ $version	:	0.00;
 .name		{ color: darkgrey;	}
 
 
-.btn-facebook		{ @extend .btn-social;	background: $facebk-btn-color;			}
-.btn-facebook:hover	{ 						background: $facebk-btn-color-hover;	}
-
-.twitter-btn		{ background: $twittr-btn-color;		}
-.twitter-btn:hover	{ background: $twittr-btn-color-hover;	}
-.google-btn			{ background: $google-btn-color;		}
-.google-btn:hover	{ background: $google-btn-color-hover;	}
 
