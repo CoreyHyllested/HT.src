@@ -10,10 +10,10 @@
 
 {% block content %}
 <section id='authorize'>
-	<div>
-		<p><h2>Sign up for Soulcrafting</h2></p>
+	<div class='align-center'>
+		<h2>Sign up for Soulcrafting</h2>
 		<ul>
-			{% if ref_name %} <li class='text-center'>Referred by {{ref_name}}</li> {% endif %}
+			{%- if ref_name %}<li>Referred by {{ref_name}}</li>{%- endif %}
 			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Sign up with Facebook</button></a></li>
 		</ul>
 	</div>
