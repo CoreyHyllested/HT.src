@@ -98,7 +98,7 @@ class Referral(database.Model):
 	@staticmethod
 	def get_composite_referral_by_id(ref_id):
 		print 'get_compsite_referral:', ref_id
-		composite = None
+		comp_ref = None
 		try:
 			business = aliased(Business, name='business')
 			location = aliased(Location, name='location')
@@ -109,8 +109,7 @@ class Referral(database.Model):
 					.one()
 			display_composite_referral(comp_ref)
 		except NoResultFound as nrf:
-			print type(e), e
-			pass
+			print type(nrf), nrf
 		except Exception as e:
 			print type(e), e
 		return comp_ref
