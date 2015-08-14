@@ -1,4 +1,4 @@
-var referral_version = 0.91;
+var referral_version = 0.92;
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -58,9 +58,7 @@ function business_create() {
 					$('#modal-business-addr').removeClass('block');
 					show_errors('#modal-message .action-feedback', xhr.responseText);
 				} else if (xhr.status == 401) {
-					console.log('GET login-modal');
-					//window.location.href = '/login';
-					openAlertWindow('You must login first');
+					open_login();
 				} else { }
 			}
 	});
@@ -107,11 +105,8 @@ function referral_submit(event) {
 						$('#modal-business-addr').removeClass('block');
 						show_errors('.action-feedback', xhr.responseText);
 					} else if (xhr.status == 401) {
-						//  xhr.status is 401, redirectiing user to authenticate.
-						//  todo: we should pop-up a login/signup modal instead.
-						openAlertWindow('You must login first');
-						//window.location.href = '/login';
-					}
+						open_login();
+					} else { }
 				}
 	});
 	return false;

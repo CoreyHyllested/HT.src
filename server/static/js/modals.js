@@ -1,4 +1,4 @@
-version = 1.08;
+version = 1.09;
 
 $(document).ready(function () {
 	console.log('modals.js: v'+version);
@@ -43,8 +43,8 @@ function open_task_window(embed) {
 }
 
 
-function openModalLogin()	{ return __get_login('#account-email');		}
-function openModalSocial()	{ return __get_login('#account-social');	}
+function open_email()	{ return __get_login('#account-email');		}
+function open_login()	{ return __get_login('#account-social');	}
 
 
 function __get_login(set_active) {
@@ -52,13 +52,24 @@ function __get_login(set_active) {
 			url		: '/modal/login',
 			success : function(response) {
 				open_task_window(response.embed);
-				$(set_active).addClass('login-active');
+				$(set_active).toggleClass('no-display');
 			},
 			error	: function(xhr, status, error) {
 				console.log(['ajax failure', xhr]);
 			}
 	});
 	return false;
+}
+
+
+function __login_with_email() {
+	$('#account-social').addClass('no-display');
+	$('#account-email').removeClass('no-display');
+}
+
+function __login_with_social() {
+	$('#account-social').removeClass('no-display');
+	$('#account-email').addClass('no-display');
 }
 
 
@@ -86,11 +97,6 @@ function add_new_business() {
 }
 
 
-
-function modal_to_email() {
-	$('#account-social').removeClass('login-active');
-	$('#account-email').addClass('login-active');
-}
 
 function openModalShare() {
 	fd = new FormData();
