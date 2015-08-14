@@ -23,7 +23,7 @@ from server.controllers	import *
 def render_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
-		return redirect('/dashboard') 
+		return redirect('/profile')
 
 	form = SignupForm(request.values)
 	if form.validate_on_submit(): # and form.terms.data == True:
@@ -45,13 +45,12 @@ def render_signup_page(sc_msg=None):
 def render_pro_signup_page(sc_msg=None):
 	if ('uid' in session):
 		# if logged in, take 'em home
-		return redirect('/dashboard')
+		return redirect('/profile')
 
 	form = ProSignupForm(request.form)
 	if form.validate_on_submit(): # and form.terms.data == True:
 		try:
 			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
-			return redirect('/dashboard')
 			return redirect_back('/profile')
 		except AccountError as ae:
 			print 'render_pro_signup: error', ae
@@ -73,7 +72,7 @@ def render_login():
 
 	if ('uid' in session):
 		# user has already logged in.
-		return redirect('/dashboard')
+		return redirect('/profile')
 
 	form = LoginForm(request.form)
 	if form.validate_on_submit():

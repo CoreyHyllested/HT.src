@@ -66,7 +66,7 @@ def facebook_authorized(resp):
 		bp = Profile.get_by_uid(ba.userid)
 		bind_session(ba, bp)
 		#import_profile(bp, OauthProvide.FACEBK, oauth_data=me.data)
-		resp = redirect('/dashboard')
+		resp = redirect('/profile')
 	else:
 		session['messages'] = 'Account creation failed.'
 		resp = redirect('/login')
