@@ -132,8 +132,8 @@
 				tree_ul	= document.createElement('ul');
 				item_s1 = document.createElement('li');
 				item_s2 = document.createElement('li');
-				$(item_s1).data("ref-id", refid).html("<a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></a>");
-				$(item_s2).data("ref-id", refid).html("<a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter  icon'></i><span class='align-left'>Share on Twitter</span></a>");
+				$(item_s1).addClass('btn-share-facebook').data("ref-id", refid).html("<a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></a>");
+				$(item_s2).addClass('btn-share-twitter').data("ref-id", refid).html("<a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter  icon'></i><span class='align-left'>Share on Twitter</span></a>");
 				$(tree_ul).append(item_s1).append('<br>');
 				$(tree_ul).append(item_s2).append('<br>');
 				return tree_ul;
