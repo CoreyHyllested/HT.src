@@ -25,15 +25,15 @@
 			{{form.refid}}
 			<div class="form-group username">
 				<label class="sr-only" for="uname">Your name</label>
-				{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
+				{{form.uname(type="name", class="form-control login-uname", required=true, Placeholder="Your name")}}
 			</div>
 			<div class="form-group email">
 				<label class="sr-only" for="email">Your email</label>
-				{{form.email(type="email", class="form-control login-email", Placeholder="Your email")}}
+				{{form.email(type="email", class="form-control login-email", required=true, Placeholder="Your email")}}
 			</div>
 			<div class="form-group password">
 				<label class="sr-only" for="passw">Your password</label>
-				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
+				{{form.passw(type="password", class="form-control login-password", required=true, Placeholder="Your password")}}
 			</div>
 
 			<p>By signing up, I agree to Soulcrafting's <a href='/terms/service'>Terms of Service</a> and <a href='/terms/privacy'>Privacy Policy</a>.</p>
@@ -51,31 +51,15 @@
 <script src="/static/js/bootstrap.min.js"></script>
 {% block scripts %}
 	{{ super() }}
-	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
 
+{#	
+	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
 <script>
 	$(document).ready(function() {
 		/* remove attention class once user has made a change */
 		$('.form-control').blur(function (e) { $(this).removeClass('attention');	});
-		$('#terms').click(function (e){ $('#terms-text').removeClass('attention');	});
-
-		$('#btn-signup').click(function(e) {
-			var errors = 0;
-			var uname = document.forms["signup-form"]["uname"];
-			var email = document.forms["signup-form"]["email"];
-			var passw = document.forms["signup-form"]["passw"];
-			var terms = document.forms["signup-form"]["terms"];
-
-			if (uname.value == '')	{	$(uname).addClass('attention');	errors++;	}
-			if (email.value == '')	{	$(email).addClass('attention');	errors++;	}
-			if (passw.value == '')	{	$(passw).addClass('attention');	errors++;	}
-			if (!terms.checked)		{	$('#terms-text').addClass('attention'); errors++; 	}
-			if (errors) {
-				console.log('Submit had ' + errors + ' errors');
-				return false;
-			}
-			return true;
-		});
+		$('#terms').click(function (e){ $('#terms-text').removeClass('attention');	});	
 	});
 </script>
+#}
 {% endblock %}
