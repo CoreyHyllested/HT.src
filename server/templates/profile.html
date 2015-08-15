@@ -52,8 +52,8 @@
 				{%- if bp != profile %}
 				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>
 				{%- endif %}
-				{#<li><a class='share-popover'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>#}
-				<li><a class='action-popover' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
+				<li><a class='pop-share'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+				<li><a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
 			</ul>
 		</div>
 		{%- if not loop.last %}<hr class='thin'>{%- endif %}
@@ -63,13 +63,6 @@
 </section>
 
 
-<div id='popover-share' class='hide'>
-	<ul>
-		<li><a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></li></a><br>
-		<li><a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter icon'></i><span class='align-left'>Share on Twitter</span></a></li><br>
-		<li><a href='javascript:openModalShare();' id='share_email'><i class='fa fa fa-envelope-o icon'></i><span class='align-left'>Share by Email</span></a></li><br>
-	</ul>
-</div>
 {% endblock %}
 
 
@@ -130,7 +123,37 @@
 		    }, 500);
 		});
 
-		$(".action-popover").popover({
+		$(".pop-share").popover({
+			html: true,
+			animation: false,
+			title: 'Share Referral',
+			content: function() {
+				refid = $(this).data('ref-id');
+				tree_ul	= document.createElement('ul');
+				item_s1 = document.createElement('li');
+				item_s2 = document.createElement('li');
+				$(item_s1).data("ref-id", refid).html("<a href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http://soulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></a>");
+				$(item_s2).data("ref-id", refid).html("<a href='https://twitter.com/intent/tweet'><i class='fa fa-twitter  icon'></i><span class='align-left'>Share on Twitter</span></a>");
+				$(tree_ul).append(item_s1).append('<br>');
+				$(tree_ul).append(item_s2).append('<br>');
+				return tree_ul;
+			},
+			placement: 'left',
+			trigger: "manual"
+		}).on("mouseenter", function () {
+		    var _this = this;
+		    $(this).popover("show");
+		    $(".popover").on("mouseleave", function () { $(_this).popover('hide'); });
+		}).on("mouseleave", function () {
+		    var _this = this;
+		    setTimeout(function () {
+		        if (!$(".popover:hover").length) {
+		            $(_this).popover("hide");
+		        }
+		    }, 500);
+		});
+
+		$(".pop-action").popover({
 			html: true,
 			animation: false,
 			title: 'Referral actions',
