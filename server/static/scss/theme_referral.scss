@@ -10,6 +10,7 @@
 $referral-version	: 0.03;		//try to use overrides
 $max-card-sz		: 640px;
 
+section div	{	max-width: $max-card-sz + 10;	}
 .trust-card {
 	width: 100%;	max-width: $max-card-sz;
 	margin: 0px;	border-radius: 0;
