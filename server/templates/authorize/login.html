@@ -24,15 +24,15 @@
 
 			<div class="form-group email">
 				<label class="sr-only" for="login-email">Your email</label>
-				{{form.email(type="email", class="form-control login-email", placeholder="Your email")}}
+				{{form.email(type="email", class="form-control login-email", required=true, placeholder="Your email (required)")}}
 			</div>
 
 			<div class="form-group password">
 				<label class="sr-only" for="login-password">Your password</label>
-				{{form.passw(type="password", class="form-control login-password", placeholder="Your password")}}
+				{{form.passw(type="password", class="form-control login-password", required=true, placeholder="Your password (required)")}}
 			</div>
 
-			<button class="blueButton">Log in</button>
+			<button type='submit' class="blueButton">Log in</button>
 		</form>
 		<br>
 		<form method='GET' action='/password/recover'><button class='whiteButton'>Forgot password?</button></form>
@@ -43,9 +43,9 @@
 
 
 
+{#
 {% block scripts %}
 	{{ super() }}
-{%- if sc_alert %}
-	<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>
-{%- endif %}
+{%- if sc_alert %}<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>{%- endif %}
 {% endblock %}
+#}
