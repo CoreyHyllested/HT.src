@@ -1,4 +1,5 @@
-var referral_version = 0.92;
+var referral_version = 0.93;
+
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
@@ -225,6 +226,8 @@ $(document).ready(function () {
 		}
 	});
 
+	$('#referral-questions').on('focusin',  'div.bootstrap-tagsinput', function() { $(this).addClass(    'active' ); });
+	$('#referral-questions').on('focusout', 'div.bootstrap-tagsinput', function() {	$(this).removeClass( 'active' ); });
 	$('#content').on('focus', function() { clear_error_box(this); });
 	$('#content').on('blur',  function() { clear_error_msg(this); });
 	$('#content').keyup(function(evt) {
