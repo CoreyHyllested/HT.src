@@ -99,7 +99,7 @@ def api_update_project(usrmsg=None):
 
 
 
-@api.route('/project/edit', methods=['GET', 'POST'])
+@api.route('/project/edit', 			 methods=['GET', 'POST'])
 @api.route('/project/edit/<string:pid>', methods=['GET', 'POST'])
 @sc_authenticated
 def render_edit_project(pid=None):
@@ -127,7 +127,7 @@ def render_edit_project(pid=None):
 		# set proj_id to 'new'
 		form.proj_id.data	= 'new'
 
-	return make_response(render_template('edit_project.html', form=form, bp=bp))
+	return make_response(render_template('project-edit.html', form=form, bp=bp))
 
 
 
