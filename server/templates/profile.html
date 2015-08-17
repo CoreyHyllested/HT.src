@@ -73,7 +73,7 @@
 	<script>
 	function referral_delete(e) {
 		rid = $(e).data('ref-id');
-		$.ajax({	url		: '/referral/' + rid + '/destroy',
+		$.ajax({	url		: '/api/referral/' + rid + '/destroy',
 					type	: 'DELETE',
 					success : function(data) {
 						referrals = $('article.referral');

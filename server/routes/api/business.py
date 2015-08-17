@@ -17,20 +17,31 @@ from server import sc_server
 from server.models import *
 from server.routes import api_routing as api
 from server.routes import test_routes as test
+from server.routes import public_routes as public
 from server.routes.helpers import *
 from server.controllers import *
 from pprint import pprint as pp
 
 
 
-@api.route('/business/new/', methods=['GET'])
-@api.route('/business/new',  methods=['GET'])
+
+#################################################################################
+### PUBLIC ROUTES ###############################################################
+#################################################################################
+
+@public.route('/business/new/', methods=['GET'])
+@public.route('/business/new',  methods=['GET'])
 def render_business_create_fragment():
 	trustent	= NewTrustedEntityForm(request.values)
 	fragment	= render_template('/fragments/business-create.html', form=trustent)
 	return make_response(jsonify(embed=fragment), 200)
 
 
+
+
+#################################################################################
+### API / DATA ROUTES ###########################################################
+#################################################################################
 
 @api.route('/business/create/', methods=['POST'])
 @api.route('/business/create',  methods=['POST'])

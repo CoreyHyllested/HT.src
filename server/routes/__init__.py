@@ -28,7 +28,7 @@ public_routes	= Blueprint('public_routes', __name__)
 auth_routes	= Blueprint('auth_routes', __name__)
 test_routes = Blueprint('test_routes', __name__)
 meta_routes = Blueprint('meta_routes', __name__)
-api_routing = Blueprint('routing_api', __name__)
+api_routing = Blueprint('routing_api', __name__, url_prefix='/api')
 
 sc_users = auth_routes
 print 'loading', __name__

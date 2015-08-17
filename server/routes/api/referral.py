@@ -22,6 +22,10 @@ from server.controllers import *
 
 
 
+#################################################################################
+### PUBLIC ROUTES ###############################################################
+#################################################################################
+
 @public.route('/referral/', methods=['GET'])
 @public.route('/referral',  methods=['GET'])
 def render_create_referral_page():
@@ -30,6 +34,37 @@ def render_create_referral_page():
 	return make_response(render_template('referral.html', bp=bp, form=rf))
 
 
+
+@public.route('/referral/<string:ref_id>/', methods=['GET'])
+@public.route('/referral/<string:ref_id>',  methods=['GET'])
+def render_referral(ref_id):
+	print 'render_referral(%s)', ref_id
+	composite = Referral.get_composite_referral_by_id(ref_id)
+	if (not composite): return make_response(jsonify(referral='missing resource'), 400)
+
+	bp = Profile.get_by_uid(session.get('uid'))
+	editmode = request.args.get('edit')
+
+	# [SECURITY] request to update referral, ensure bp authored the referral
+	#if (not composite.referral.authored_by(bp))
+	if (not (request.args.get('edit') and (bp and bp.prof_id == composite.Referral.ref_profile))):
+		editmode=False
+
+	rf = ReferralForm(request.values)
+	rf.bid.data = composite.Referral.ref_business
+	rf.rid.data = composite.Referral.ref_uuid
+	rf.content.data	= composite.Referral.ref_content
+	rf.context.data	= composite.Referral.ref_project
+	rf.trusted.data = composite.business.bus_name
+	if (composite.display_addr): rf.trusted.data = rf.trusted.data + ' | ' + composite.display_addr
+	return make_response(render_template('referral.html', bp=bp, form=rf, edit=editmode))
+
+
+
+
+#################################################################################
+### API / DATA ROUTES ###########################################################
+#################################################################################
 
 @api.route('/referral/create/', methods=['POST'])
 @api.route('/referral/create',  methods=['POST'])
@@ -77,22 +112,6 @@ def api_referral_read(ref_id):
 	print 'api_referral_read: enter'
 	composite = Referral.get_composite_referral_by_id(ref_id)
 	if (not composite): return make_response(jsonify(referral='missing resource'), 400)
-
-	bp = Profile.get_by_uid(session.get('uid'))
-	editmode = request.args.get('edit')
-
-	# [SECURITY] request to update referral, ensure bp authored the referral
-	if (editmode and (bp and bp.prof_id == composite.Referral.ref_profile)):
-		rf = ReferralForm(request.values)
-		rf.bid.data = composite.Referral.ref_business
-		rf.rid.data = composite.Referral.ref_uuid
-		rf.content.data	= composite.Referral.ref_content
-		rf.context.data	= composite.Referral.ref_project
-		rf.trusted.data = composite.business.bus_name
-		if (composite.display_addr): rf.trusted.data = rf.trusted.data + ' | ' + composite.display_addr
-		return make_response(render_template('referral.html', bp=bp, form=rf, edit=editmode))
-
-	# the BP did not author referral and should not be able to edit referral.
 	return make_response(jsonify(referral=composite.Referral.serialize), 200)
 
 
@@ -100,7 +119,9 @@ def api_referral_read(ref_id):
 
 @api.route('/referral/<string:ref_id>/update/', methods=['POST'])
 @api.route('/referral/<string:ref_id>/update',	methods=['POST'])
+@sc_authenticated
 def api_referral_update(ref_id):
+	bp = Profile.get_by_uid(session.get('uid'))
 	referral	= Referral.get_by_refid(ref_id)
 
 	rf = ReferralForm(request.form)
@@ -109,6 +130,7 @@ def api_referral_update(ref_id):
 	content = rf.content.data
 
 	if (not referral): return make_response(jsonify(request='missing valid resource'), 400)
+	if (not referral.authored_by(bp)): return make_response(jsonify(referral='missing authority'), 401)
 	referral.ref_business	= bus_id
 	referral.ref_content	= content
 	referral.ref_project	= ','.join([ x.strip().lower() for x in context.split(',') ])

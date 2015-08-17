@@ -1,4 +1,4 @@
-var referral_version = 0.93;
+var referral_version = 0.94;
 
 
 function clear_referral() { $('#rid').val(''); }
@@ -37,7 +37,7 @@ function business_update(event) {
 
 function business_create() {
 	fd	= new FormData($('#create-business-form')[0])
-	$.ajax({ url	: '/business/create',
+	$.ajax({ url	: '/api/business/create',
 			type	: "POST",
 			data	: fd,
 			processData: false,
@@ -86,8 +86,8 @@ function referral_submit(event) {
 	fd	= new FormData( $('#form-referral')[0] );
 
 	rid	= $('#rid').val();
-	uri	= "/referral/create";
-	if (rid) { uri = "/referral/" + rid + "/update"; }
+	uri	= "/api/referral/create";
+	if (rid) { uri = "/api/referral/" + rid + "/update"; }
 
 	$.ajax({	url		: uri,
 				type	: "POST",
@@ -115,7 +115,7 @@ pro_finder = new Bloodhound({
 	datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
 	queryTokenizer: Bloodhound.tokenizers.whitespace,
 	remote: {
-		url: '/business/search/%QUERY',
+		url: '/api/business/search/%QUERY',
 		wildcard: '%QUERY'
 	}
 });
@@ -135,7 +135,7 @@ project_ctx = new Bloodhound({
 function get_profile(fd) {
 	clear_referral();
 	$.ajax({type	: "GET",
-			url		: "/business/" + fd.profile_id,
+			url		: "/api/business/" + fd.profile_id,
 			data	: fd,
 			success : function(xhr) {
 				console.log(xhr);
