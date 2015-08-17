@@ -16,11 +16,35 @@ from server import sc_server
 from server.models import *
 from server.routes import api_routing as api
 from server.routes import test_routes as test
+from server.routes import public_routes as public
 from server.routes.helpers import *
 from server.controllers import *
 from datetime import datetime as dt
 
 
+
+
+#################################################################################
+### PUBLIC ROUTES ###############################################################
+#################################################################################
+
+@public.route('/project/schedule/<mode>/<string:pid>', methods=['GET', 'POST'])
+@sc_authenticated
+def api_project_schedule_consultation(mode, pid=None):
+	bp = Profile.get_by_uid(session['uid'])
+	try:
+		project = Project.get_by_proj_id(pid, bp)
+		if (project): session['message'] = 'A project specialist will contact you by ' + str(mode) + ' within 24 hours.'
+	except Exception as e:
+		print e
+	return redirect('/profile')
+
+
+
+
+#################################################################################
+### API / DATA ROUTES ###########################################################
+#################################################################################
 
 @api.route('/project/update', methods=['POST'])
 @sc_authenticated
@@ -129,18 +153,5 @@ def render_edit_project(pid=None):
 
 	return make_response(render_template('project-edit.html', form=form, bp=bp))
 
-
-
-@api.route('/project/schedule/<mode>/<string:pid>', methods=['GET', 'POST'])
-@sc_authenticated
-def api_project_schedule_consultation(mode, pid=None):
-	bp = Profile.get_by_uid(session['uid'])
-	try:
-		project = Project.get_by_proj_id(pid, bp)
-		if (project):
-			session['message'] = 'A project specialist will contact you by ' + str(mode) + ' within 24 hours.'
-	except Exception as e:
-		print e
-	return redirect('/dashboard')
 
 

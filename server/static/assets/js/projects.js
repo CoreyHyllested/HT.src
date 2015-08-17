@@ -44,7 +44,7 @@ function saveProject() {
 	$(".field.error").html("");
 	$(".field.input").css("border-color", "#e1e8ed");
 
-	$.ajax({ url	: "/project/update",
+	$.ajax({ url	: "/api/project/update",
 			type	: "POST",
 			data	: fd,
 			processData: false,
