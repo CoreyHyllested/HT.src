@@ -151,12 +151,19 @@ def server_init_assets_css(assets):
 def server_init_assets_js(server, assets):
 	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
 	jsfilter = server.config['JSFILTER']
-	js_dashboard_maps_format = Bundle('maps.js', 'format.js', filters=jsfilter, output='js/maps.format.js')
-	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings-test.js')
+	js_dashboard_maps_format = Bundle('maps.js', 'format.js',	filters=jsfilter, output='js/maps.format.js')
+	js_common	= Bundle('modals.js', 'feedback.js', 'maps.js', filters=jsfilter, output='js/common.js')
+	js_projects = Bundle('projects.js', filters=jsfilter, output='js/projects-test.js')
 	js_referral	= Bundle('referral.js', filters=jsfilter, output='js/referral-test.js')
+	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings-test.js')
 
-	assets.register('js_referral', js_referral)
-	assets.register('js_settings', js_settings)
+	js_dashboard = Bundle('dashboard.js', filters=jsfilter, output='js/dashboard-test.js')
+	assets.register('js_dashboard', js_dashboard)
+
+	assets.register('js_common',	js_common)
+	assets.register('js_projects',	js_projects)
+	assets.register('js_referral',	js_referral)
+	assets.register('js_settings',	js_settings)
 	assets.register('js_mapformat', js_dashboard_maps_format)
 
 

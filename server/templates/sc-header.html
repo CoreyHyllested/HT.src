@@ -32,7 +32,7 @@
 
 	{% block header_js %}
 	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
-	<script src='/static/js/modals.js' async></script>
+	{%- assets 'js_common' %}<script src='{{ASSET_URL}}' async></script>{%- endassets %}
 	{% endblock %}
 
 	<!--[if lt IE 9]>
