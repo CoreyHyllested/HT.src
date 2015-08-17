@@ -17,7 +17,7 @@
 		<form id='form-referral'>
 		{{form.hidden_tag()}}
 		{%- if edit %}{{form.trusted(readonly=true)}}
-		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name or phone number.")}}
+		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name.")}}
 		{%- endif %}
 		<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
 		{#
