@@ -3,10 +3,9 @@
 {% set meta_desc	='Create your Soulcrafting project' %}
 
 {% block header_css %}
-	{#{ super() }#}
+	{{ super() }}
 	{#<link rel='stylesheet' href='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.0/fullcalendar.min.css'>#}
 	{# <style> .fc-content .fc-time { display : none !important; } </style> #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
 	<link rel='stylesheet' href='//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css'>
 	{%- assets "master", "scss_projects" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
@@ -15,8 +14,7 @@
 {% block header_js %}
 	{{ super() }}
 	<script src='//maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places'></script>
-	<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>
-	<script src='/static/js/maps.js'></script>
+{#	<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js'></script>#}
 {% endblock %}
 
 
@@ -91,11 +89,11 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src="/static/js/projects.js"></script>
-	<script src='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.js' ></script>
+	{%- assets 'js_projects' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+{#	<script src='//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.js' ></script>#}
 	<script>
 	$(document).ready(function() {
-		
+		{#	
 		$('#calendar').fullCalendar({
 			header: {
 				left: 'prev, today',
@@ -139,7 +137,7 @@
 			eventLimit: true, // allow "more" link when too many events
 			events: [ ]
 		});
-
+		#}
 		initialize_map('map-canvas', 'proj_addr');
 	});
 	</script>
