@@ -4,9 +4,14 @@
 
 
 {% block header_css %}
+	{{ super() }}
 	<link rel='stylesheet' href='/static/css/tagsinput.css'>
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
 	{% assets 'master', 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+{% block header_js %}
+	{{ super() }}
+	<script src="//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places"></script>
 {% endblock %}
 
 
@@ -59,11 +64,8 @@
 {% block scripts %}
 	{{ super() }}
 	<script src="/static/js/typeahead.bundle.js"></script>
-	<script src="/static/js/referral.js"></script>
-	<script src="/static/js/feedback.js"></script>
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/tagsinput.js"></script>
+	{%- assets 'js_referral' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
-	<script src="//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places"></script>
-	<script src="/static/js/maps.js"></script>
 {% endblock %}
