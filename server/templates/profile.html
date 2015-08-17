@@ -73,8 +73,6 @@
 	<script>
 	function referral_delete(e) {
 		rid = $(e).data('ref-id');
-//		fd = {}; 
-//		fd.csrf_token =  $('#csrf_token').val();
 		$.ajax({	url		: '/referral/' + rid + '/destroy',
 					type	: 'DELETE',
 					success : function(data) {
