@@ -5,7 +5,7 @@
 
 .DS_Store
 
-# SCSS files.
+# Built from SCSS assets.
 server/static/css/authorize.css
 server/static/css/about-sc.css
 server/static/css/homepage.css
@@ -23,6 +23,12 @@ server/static/css/pro_dashboard.css
 server/static/css/errors.css
 server/static/css/the-master.css
 
+# Built from javascript assets.
+server/static/js/common.js
+server/static/js/dashboard.js
+server/static/js/projects.js
+server/static/js/referral.js
+server/static/js/settings.js
 
 users.db
 run.py

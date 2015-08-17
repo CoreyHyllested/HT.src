@@ -153,12 +153,11 @@ def server_init_assets_js(server, assets):
 	jsfilter = server.config['JSFILTER']
 
 	# Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to /static/
-	js_common	= Bundle('modals.js', 'feedback.js', 'maps.js', filters=jsfilter, output='js/common.js')
-	js_projects = Bundle('projects.js', filters=jsfilter, output='js/projects-test.js')
-	js_referral	= Bundle('referral.js', filters=jsfilter, output='js/referral-test.js')
-	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings-test.js')
-
-	js_dashboard = Bundle('dashboard.js', filters=jsfilter, output='js/dashboard-test.js')
+	js_common	= Bundle('modals.js', 'feedback.js', filters=jsfilter, output='js/common.js')
+	js_projects = Bundle('projects.js', 'maps.js', filters=jsfilter, output='js/projects.js')
+	js_referral	= Bundle('referral.js', 'maps.js', filters=jsfilter, output='js/referral.js')
+	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings.js')
+	js_dashboard = Bundle('dashboard.js', filters=jsfilter, output='js/dashboard.js')
 
 	assets.register('js_dashboard', js_dashboard)
 	assets.register('js_common',	js_common)
