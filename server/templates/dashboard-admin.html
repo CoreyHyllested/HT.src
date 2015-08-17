@@ -3,7 +3,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{% assets 'master', 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
@@ -22,5 +22,5 @@
 	<script src="/static/js/handlebars.js"></script>
 	<script src="/static/js/typeahead.bundle.js"></script>
 	<script src="/static/js/bootstrap-tagsinput.js"></script>
-	<script src='/static/js/dashboard.js'></script>
+	{%- assets 'js_dashboard' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 {% endblock %}

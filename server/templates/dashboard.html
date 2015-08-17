@@ -3,30 +3,25 @@
 {% set meta_desc	= 'Soulcrafting - Dashboard' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	{%- assets "master", "scss_dashboard" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
-{% endblock %}
-
-{% block header_js %}
 	{{ super() }}
+	{%- assets "master", "scss_dashboard" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 {% block content %}
 <div id='dashboard-wrapper'>
 	<div id='dashboard' class='container-fluid'>
-		<div id='projects' class="col-md-push-1 col-md-7 col-sm-8 col-xs-12">
+		<div id='projects' class="col-xs-12">
 			<h2 id='header'>My Projects</h2>
 
 			{% for project in projects | sort(attribute='updated') %}
 				<div class="project" id="{{project.proj_id}}">
-					<div class='col-lg-4				col-md-5						col-xs-6'>
+					<div class='col-xs-6'>
 						<div class='details'>{{project.proj_name}}</div>
 						<div class='details minor'><em>{{project.updated.strftime('%A, %b %d %Y')}}</em></div>
 					</div>
 
-					<div class='col-md-push-0 col-md-4			col-sm-push-1 col-sm-4		col-xs-push-1 col-xs-5'>
+					<div class='col-xs-push-1 col-xs-5'>
 						<a href="/project/edit/{{project.proj_id}}"><button class="whiteButton">GO TO PROJECT</button></a>
 					</div>
 
@@ -60,7 +55,6 @@
 
 {% block scripts %}
 	{{ super() }}
-	{% if usrmsg != none %}
-	<script>openAlertWindow('{{usrmsg}}');</script>
-	{% endif %}
+	{%- assets 'js_dashboard' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+	{% if usrmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
 {% endblock %}

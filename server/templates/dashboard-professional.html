@@ -4,13 +4,13 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{% assets 'master', 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 {% block content %}
 <section id='prodashboard' class='container-fluid'>
 	<div id='request-references' class='ltc'>
-		<h3 class='h4'>Request References</h1>
+		<h3 class='h4'>Request References</h3>
 
 		<form id='review-request' method='POST' action='/review/request'>
 			{{form.hidden_tag()}}
@@ -36,12 +36,11 @@
 
 		</div>
 	</div>
-
 </section>
 {% endblock %}
 
 
 {% block scripts %}
 	{{ super() }}
-	<script src='/static/js/dashboard.js'></script>
+	{%- assets 'js_dashboard' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 {% endblock %}
