@@ -72,8 +72,7 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src="/static/js/settings.js"></script>
-	<script src="/static/js/forms.js"></script>
+	{% assets "js_settings" %}<script src='{{ASSET_URL}}'></script>{% endassets %}
 	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
 	{#
 	<script>

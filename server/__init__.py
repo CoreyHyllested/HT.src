@@ -110,12 +110,15 @@ def	server_init_assets(server):
 	server.trusted_index = None
 	assets = Environment(server)
 	assets.url = server.static_url_path
-	assets.load_path.append(assets.directory + '/scss')
+	assets.load_path.append(assets.directory + '/assets/scss')
+	assets.load_path.append(assets.directory + '/assets/js')
 
-	jsfilter = server.config['JSFILTER']
+	server_init_assets_css(assets)
+	server_init_assets_js(server, assets)
 
-	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
-	js_dashboard_maps_format = Bundle('js/maps.js', 'js/format.js', filters=jsfilter, output='js/maps.format.js')
+
+
+def server_init_assets_css(assets):
 	page_homepage =	Bundle('page_homepage.scss', filters='pyscss', output='css/homepage.css')
 	page_about_sc =	Bundle('page_about_sc.scss', filters='pyscss', output='css/about-sc.css')
 	page_products =	Bundle('page_products.scss', filters='pyscss', output='css/products.css')
@@ -129,11 +132,11 @@ def	server_init_assets(server):
 	theme_profiles = Bundle('theme_profiles.scss', filters='pyscss', output='css/profiles.css')
 	theme_projects = Bundle('theme_projects.scss', filters='pyscss', output='css/projects.css')
 
+
 	assets.register('scss_landpage', page_homepage)
 	assets.register('scss_about_sc', page_about_sc)
 	assets.register('scss_products', page_products)
 	assets.register('scss_settings', page_settings)
-
 	assets.register('master', 		 theme_master)
 	assets.register('scss_loginsys', theme_login)
 	assets.register('scss_legaltos', theme_legal)
@@ -142,10 +145,19 @@ def	server_init_assets(server):
 	assets.register('scss_profiles', theme_profiles)
 	assets.register('scss_projects', theme_projects)
 	assets.register('scss_dashboard', theme_dashboard)
+
+
+
+def server_init_assets_js(server, assets):
+	# Note, Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to '/static/'
+	jsfilter = server.config['JSFILTER']
+	js_dashboard_maps_format = Bundle('maps.js', 'format.js', filters=jsfilter, output='js/maps.format.js')
+	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings-test.js')
+	js_referral	= Bundle('referral.js', filters=jsfilter, output='js/referral-test.js')
+
+	assets.register('js_referral', js_referral)
+	assets.register('js_settings', js_settings)
 	assets.register('js_mapformat', js_dashboard_maps_format)
-#	          elem_header	=	Bundle('navigate.scss', 'modals.scss', filters='pyscss', output='css/navigate.css')
-	#css_schedule =	Bundle('schedule.scss', filters='pyscss', output='css/schedule.css')
-#	#assets.register('scss_schedule', css_schedule)
 
 
 
