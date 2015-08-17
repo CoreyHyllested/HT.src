@@ -1,4 +1,9 @@
+var settings_version = 0.1;
+
+console.log('settings.js: v' + settings_version);
+
 $(document).ready(function() {
+
 	$('#btn-get-verified').click(function(e) {
 		e.preventDefault();
 		email = $("#email").val();
@@ -26,6 +31,9 @@ $(document).ready(function() {
 		save_settings();
 	});
 
+	$('.field.input').blur(function(e) {
+		$(this).css('border-color', '#e1e8ed');
+	});
 });
 
 
