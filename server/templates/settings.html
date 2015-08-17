@@ -3,8 +3,7 @@
 {% set meta_desc	= 'Update your Soulcrafting settings.' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{{ super() }}
 	{%- assets "master", "scss_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
@@ -16,7 +15,6 @@
 
 	<form id='settings-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<input type='hidden' id='csrf'	  value='{{csrf_token()}}'>
 		<input type='hidden' id='nexturl' value='{{nexturl}}'>
 
 		<div id='update-name'>
@@ -63,7 +61,7 @@
 
 	<div class='align-right'>
 		<button class='btn-simple whiteButton' id='btn-back'>Go Back</button>
-		<button class='btn-simple blueButton'	 id='btn-save'>Save Settings</button>
+		<button class='btn-simple blueButton'  id='btn-save'>Save Settings</button>
 		<div id='settings-status'></div>
 	</div>
 </section>
