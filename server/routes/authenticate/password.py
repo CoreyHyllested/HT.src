@@ -64,6 +64,8 @@ def render_pro_signup_page(sc_msg=None):
 
 
 @sc_server.csrf.exempt
+@public.route('/siginin/', methods=['GET', 'POST'])
+@public.route('/signin',   methods=['GET', 'POST'])
 @public.route('/login/', methods=['GET', 'POST'])
 @public.route('/login',  methods=['GET', 'POST'])
 def render_login():
@@ -93,12 +95,13 @@ def render_login():
 
 
 
+@public.route('/modal/signin/', methods=['GET'])
+@public.route('/modal/signin',  methods=['GET'])
 @public.route('/modal/login', methods=['GET'])
-def render_login_modal():
-	# check for session; uid; if so... save
-	form_login = LoginForm(request.form)
-	fragment = render_template('fragments/account-create.html', form=form_login)
-	return make_response(jsonify(embed=fragment), 200)
+def render_signin_modal():
+	form_signin	= LoginForm(request.form)
+	html_signin	= render_template('authorize/modal-signin.html', form=form_signin)
+	return make_response(jsonify(embed=html_signin), 200)
 
 
 
