@@ -1,4 +1,4 @@
-var settings_version = 0.2;
+var settings_version = 0.03;
 
 console.log('settings.js: v' + settings_version);
 
@@ -84,7 +84,7 @@ function validate_challenge_hash() {
 function save_settings() {
 	console.log('save_settings');
 	var fd = new FormData($('#settings-form')[0]);
-	$("#settings-status").html("Saving...").fadeIn();
+	set_status('.action-feedback', 'Saving...');
 
 	// Remove error indicators
 	//$("#passMeter").slideUp().html("");
@@ -100,12 +100,8 @@ function save_settings() {
 			 	console.log("AJAX - successfully saved");		 	
 
 				$("#update_password, #verify_password, #current_password").val('');
-				$("#settings-status").html("<span class='success'>"+response.usrmsg+"</span>").fadeIn(400);
+				set_status('.action-feedback', response.usrmsg);	// change /settings/update to use whatever was used in /auth/signin
 			 	//$("#passMeter").slideUp().html("");
-
-				setTimeout(function() {
-					$('#settings-status').fadeOut(400);
-				}, 1600);
 			},
 			error: function(xhr, status, error) {
 				console.log(["AJAX - error.", error]);
@@ -139,8 +135,6 @@ function initializeStrengthMeter() {
 */
 
 function showErrors(errors) {
-	$('#settings-status').empty();
-
 	$.each(errors, function(e, error){
 		// "e" here would be the form element name that has the error, e.g. "prof_name"
 		var element = "#"+e;
@@ -156,5 +150,5 @@ function showErrors(errors) {
 		}
 	});
 
-	$('#settings-status').html("<span class='error'>There was a problem.</span>").fadeIn();
+	set_status('.action-feedback', 'There was an issue');
 }
