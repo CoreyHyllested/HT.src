@@ -11,7 +11,7 @@ $version: 0.1;
 /* override bootstrap '.navbar li a' padding and set to total of 15px' */
 .navbar-hhl		{ border-top: 3px solid rgba(0,0,0,0);	padding-top: 12px !important;	}
 .hhl:hover 		{ border-top-color: $ht-blue;											}
-.sns {	display: inline-block;	margin: 5px 20px;	padding-left: 0; font-size: 1.5em;	}
+.sns			{ margin: 5px 20px;	font-size: $icon-size-default;	}
 
 
 .align-left		{	text-align: left;	}
