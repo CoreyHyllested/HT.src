@@ -27,7 +27,7 @@ function show_errors(status_element, responseJSON) {
 
 
 function clear_error_msg(element)	{ $(element).prev(".ff.error").slideUp().html('');	}
-function clear_error_box(element)	{ $(element).css("border-color", "#e1e8ed");			}
+function clear_error_box(element)	{ $(element).css("border-color", "#e1e8ed");		}
 
 
 function set_status(elem, content) {
@@ -57,7 +57,7 @@ function feedback_timeout(elem)	{
 
 $(document).ready(function () {
 	console.log('feedback.js: v' + feedback_version);
-	$('.field.input').blur(clear_error_box); });
-
+	$('body').on('blur', '.field.input',		clear_error_box);
+	$('body').on('blur', 'input.form-control',	clear_error_box);
 });
 
