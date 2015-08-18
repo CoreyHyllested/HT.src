@@ -32,7 +32,7 @@
 
 	{% block header_js %}
 	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
-	{%- assets 'js_common' %}<script src='{{ASSET_URL}}' async></script>{%- endassets %}
+	{%- assets 'js_common' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 	{% endblock %}
 
 	<!--[if lt IE 9]>
@@ -82,7 +82,7 @@
 				</li>
 				{% else %}
 				<li><a href='/about'  class='navbar-hhl hhl'>About</a></li>
-				<li><a href='/login'  class='navbar-hhl hhl'>Log In</a></li>
+				<li><a href='/signin' class='navbar-hhl hhl'>Log In</a></li>
 				<li><a href='/signup' class='navbar-hhl hhl'>Sign Up</a></li>
 				{% endif %}
 			</ul>

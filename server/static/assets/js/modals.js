@@ -78,7 +78,7 @@ function signin_submit(event) {
 			processData	: false,
 			contentType	: false,
 			success 	: function(xhr) {
-							set_status('.action-feedback', 'Attempting thinks its successful');
+							set_status('.action-feedback', 'Success');
 							window.location.href = xhr.next;
 						},
 			error		: function(xhr, status, error) {

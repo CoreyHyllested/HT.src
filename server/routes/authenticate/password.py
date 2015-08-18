@@ -63,45 +63,43 @@ def render_pro_signup_page(sc_msg=None):
 
 
 
+@public.route('/signin/', methods=['GET'])
+@public.route('/signin',  methods=['GET'])
+def render_signin():
+	# user has already logged in; take them home.
+	if ('uid' in session): return redirect('/profile')
+
+	return make_response(render_template('authorize/signin.html', form=SignupForm(request.form)))
+
+
+
+@public.route('/modal/signin/',	methods=['GET'])
+@public.route('/modal/signin',	methods=['GET'])
+@public.route('/modal/login',	methods=['GET'])
+def render_signin_modal():
+	form_signin	= SignupForm(request.form)
+	html_signin	= render_template('authorize/modal-signin.html', form=form_signin)
+	return make_response(jsonify(embed=html_signin), 200)
+
+
+
+@public.route('/authorize/signin/',	methods=['POST'])
+@public.route('/authorize/signin',	methods=['POST'])
 @sc_server.csrf.exempt
-@public.route('/siginin/', methods=['GET', 'POST'])
-@public.route('/signin',   methods=['GET', 'POST'])
-@public.route('/login/', methods=['GET', 'POST'])
-@public.route('/login',  methods=['GET', 'POST'])
-def render_login():
-	""" If successful, sets session cookies and redirects to dash """
-	sc_msg = session.pop('messages', None)
+def authorize_password_signin():
+	# user has already logged in, take 'em home.
+	if ('uid' in session): return redirect('/profile')
 
-	if ('uid' in session):
-		# user has already logged in.
-		return redirect('/profile')
-
-	form = LoginForm(request.form)
-	if form.validate_on_submit():
-		ba = sc_authenticate_user(form.email.data.lower(), form.passw.data)
+	form_signin = SignupForm(request.form)
+	if form_signin.validate_on_submit():
+		ba = sc_authenticate_user(form_signin.email.data.lower(), form_signin.passw.data)
 		if (ba is not None):
 			# successful login, bind session.
 			bp = Profile.get_by_uid(ba.userid)
 			bind_session(ba, bp)
-			return redirect_back('/profile')
-
-		trace ("POST /login failed, flash name/pass combo failed")
-		sc_msg = "Incorrect username or password."
-	elif request.method == 'POST':
-		trace("POST /login form isn't valid" + str(form.errors))
-		sc_msg = "Incorrect username or password."
-	return make_response(render_template('authorize/login.html', form=form, sc_alert=sc_msg))
-
-
-
-
-@public.route('/modal/signin/', methods=['GET'])
-@public.route('/modal/signin',  methods=['GET'])
-@public.route('/modal/login', methods=['GET'])
-def render_signin_modal():
-	form_signin	= LoginForm(request.form)
-	html_signin	= render_template('authorize/modal-signin.html', form=form_signin)
-	return make_response(jsonify(embed=html_signin), 200)
+			return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
+		return make_response(ApiError("Email/password combo do not match.").serialize, 400)
+	return make_response(ApiError(errors=form_signin.errors).serialize, 400)
 
 
 

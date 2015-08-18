@@ -1,6 +1,6 @@
 {% extends 'sc-header.html' %}
-{% set meta_title	= 'Login to Soulcrafting.' %}
-{% set meta_desc	= 'Login to Soulcrafting.' %}
+{% set meta_title	= 'Sign in to Soulcrafting.' %}
+{% set meta_desc	= 'Sign in to Soulcrafting.' %}
 
 {% block header_css %}
 	{{ super() }}
@@ -13,13 +13,13 @@
 	<div class='align-center'>
 		<h2>Log in to Soulcrafting</h2>
 		<ul>
-			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Log in with Facebook</button></a></li>
+			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Sign in with Facebook</button></a></li>
 		</ul>
 	</div>
 
 	<hr class='thin'>
 	<div id='authorize-form'>
-		<form method='POST' action='/login'>
+		<form id='account-signin' method='POST' action='/authorize/signin'>
 			{{form.hidden_tag()}}
 
 			<div class="form-group email">
@@ -32,7 +32,8 @@
 				{{form.passw(type="password", class="form-control login-password", required=true, placeholder="Your password (required)")}}
 			</div>
 
-			<button type='submit' class="blueButton">Log in</button>
+			<button type='submit' class="blueButton">Sign in</button>
+			<div class='action-feedback'></div>
 		</form>
 		<br>
 		<form method='GET' action='/password/recover'><button class='whiteButton'>Forgot password?</button></form>
@@ -43,9 +44,10 @@
 
 
 
-{#
 {% block scripts %}
 	{{ super() }}
-{%- if sc_alert %}<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>{%- endif %}
+	<script>$('#account-signin').on('submit', signin_submit);</script>
 {% endblock %}
+{#
+{%- if sc_alert %}<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>{%- endif %}
 #}
