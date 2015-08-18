@@ -1,6 +1,8 @@
-var feedback_version = 0.13;
+var feedback_version = 0.14;
 
 function __get_json(string) {
+//	response = __get_json(responseText);
+//	if (!response || !response.errors) return;
 	try {
 		return JSON.parse(string);
 	} catch (e) {
@@ -11,14 +13,10 @@ function __get_json(string) {
 }
 
 
-function show_errors(status_element, responseText) {
-	console.log('show_errors(' + responseText + ')');
-	set_status(status_element, 'There was an issue');
+function show_errors(status_element, responseJSON) {
+	set_status(status_element, responseJSON.status || 'There was an issue');
 
-	response = __get_json(responseText);
-	if (!response || !response.errors) return;
-
-	$.each(response.errors, function(e, error) {
+	$.each(responseJSON.errors, function(e, error) {
 		// e is the element with the error, e.g. "prof_name"
 		var element = "#"+e;
 		console.log("show-error: ["+element + " : " + error + "]");
@@ -26,6 +24,7 @@ function show_errors(status_element, responseText) {
 		$(element).css("border-color", "#e75f63");
 	});
 }
+
 
 function clear_error_msg(element)	{ $(element).prev(".ff.error").slideUp().html('');	}
 function clear_error_box(element)	{ $(element).css("border-color", "#e1e8ed");			}
@@ -58,5 +57,7 @@ function feedback_timeout(elem)	{
 
 $(document).ready(function () {
 	console.log('feedback.js: v' + feedback_version);
+	$('.field.input').blur(clear_error_box); });
+
 });
 

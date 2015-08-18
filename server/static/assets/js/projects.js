@@ -1,11 +1,6 @@
 $(document).ready(function() {
 	$('.field.input').focus(function(e) {
-		console.log(this);
 		$(this).nextAll(".field.error:first").html('');
-	});
-
-	$('.field.input').blur(function(e) {
-		$(this).css("border-color", "#e1e8ed");
 	});
 
 	$(".save-project").click(function(e) {

@@ -1,4 +1,4 @@
-var referral_version = 0.94;
+var referral_version = 0.95;
 
 
 function clear_referral() { $('#rid').val(''); }
@@ -81,7 +81,7 @@ function business_create() {
 					// form error(s) occurred.
 					$('#modal-business-info').addClass('block');
 					$('#modal-business-addr').removeClass('block');
-					show_errors('#modal-message .action-feedback', xhr.responseText);
+					show_errors('#modal-message .action-feedback', xhr.responseJSON);
 				} else if (xhr.status === 401) {
 					open_login(xhr.status);
 				} else { }
@@ -126,7 +126,7 @@ function referral_submit(event) {
 					console.log("AJAX Error");
 					if (xhr.status === 400) {
 						// form error(s) occurred.
-						show_errors('.action-feedback', xhr.responseText);
+						show_errors('.action-feedback', xhr.responseJSON);
 					} else if (xhr.status === 401) {
 						open_login(xhr.status);
 					} else { }
