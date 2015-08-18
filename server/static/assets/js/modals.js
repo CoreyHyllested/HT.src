@@ -1,15 +1,5 @@
-version = 1.10;
+version = 1.11;
 
-$(document).ready(function () {
-	console.log('modals.js: v'+version);
-	$('#modal-close').on('click', shut_modal_window);
-	$('#modal-wrap').on('click', '.dismiss-modal', shut_modal_window);
-
-	$(document).keyup(function(e) {
-		/* close overlay when ESC is hit */
-		if (e.keyCode == 27) { shut_modal_window(); }
-	});
-});
 
 function open_modal_window(embed, win_sz) {
 	$('#modal-message').html(embed);
@@ -44,11 +34,11 @@ function open_task_window(embed, win_sz) {
 }
 
 
-function open_email(status)	{ return __get_login(status, '#account-email');		}
-function open_login(status)	{ return __get_login(status, '#account-social');	}
+function open_email(status)	{ return __get_signin(status, '#account-signin');	}
+function open_login(status)	{ return __get_signin(status, '#account-social');	}
 
 
-function __get_login(status, set_active) {
+function __get_signin(status, set_active) {
 	$.ajax({type	: 'GET',
 			url		: '/modal/login',
 			success : function(response) {
@@ -57,7 +47,7 @@ function __get_login(status, set_active) {
 				$(set_active).toggleClass('no-display');
 			},
 			error	: function(xhr, status, error) {
-				console.log(['ajax failure', xhr]);
+				console.log('ajax failure', xhr);
 			}
 	});
 	return false;
@@ -66,12 +56,40 @@ function __get_login(status, set_active) {
 
 function __login_with_email() {
 	$('#account-social').addClass('no-display');
-	$('#account-email').removeClass('no-display');
+	$('#account-signin').removeClass('no-display');
 }
 
 function __login_with_social() {
 	$('#account-social').removeClass('no-display');
-	$('#account-email').addClass('no-display');
+	$('#account-signin').addClass('no-display');
+}
+
+
+
+function signin_submit(event) {
+	event.preventDefault();	//prevent submit.
+	fd	= new FormData(this)
+
+	set_status('.action-feedback', 'Attempting sign in');
+
+	$.ajax({type		: 'POST',
+			url			: '/authorize/signin',
+			data		: fd,
+			processData	: false,
+			contentType	: false,
+			success 	: function(xhr) {
+							set_status('.action-feedback', 'Attempting thinks its successful');
+							window.location.href = xhr.next;
+						},
+			error		: function(xhr, status, error) {
+							console.log("AJAX Error", xhr);
+							if (xhr.status === 400) {
+								show_errors('.action-feedback', xhr.responseJSON);
+							} else { }
+							// 401 not possible here
+						}
+	});
+	return false;
 }
 
 
@@ -104,4 +122,17 @@ function openModalShare() {
 	});
 }
 
+
+
+$(document).ready(function () {
+	console.log('modals.js: v'+version);
+	$('#modal-close').on('click',					shut_modal_window);
+	$('#modal-wrap').on('click',  '.dismiss-modal',	shut_modal_window);
+	$('#modal-message').on('submit', '#account-signin', signin_submit);
+
+	$(document).keyup(function(e) {
+		/* close overlay when ESC is hit */
+		if (e.keyCode == 27) { shut_modal_window(); }
+	});
+});
 
