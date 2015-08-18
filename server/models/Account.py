@@ -65,7 +65,7 @@ class Account(database.Model):
 		self.sec_question = str(uuid.uuid4())
 
 
-	def __repr___ (self):
+	def __repr__ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
 
