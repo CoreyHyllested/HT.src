@@ -10,12 +10,11 @@
 
 
 {% block content %}
-<section id='settings-content'>
+<section>
 	<div><h3>Account Settings</h3></div>
 
 	<form id='settings-form' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<input type='hidden' id='nexturl' value='{{nexturl}}'>
 
 		<div id='update-name'>
 			<div class='field info'>Your legal name</div>

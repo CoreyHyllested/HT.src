@@ -56,7 +56,6 @@ function validate_challenge_hash() {
 	var fd = {};
 	fd.email = $('#email').val();
 	fd.csrf_token = $('#csrf').val();
-	fd.next_url   = $('#nexturl').val();
 	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
 
 
