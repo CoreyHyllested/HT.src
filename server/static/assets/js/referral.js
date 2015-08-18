@@ -11,6 +11,30 @@ function clear_profile() {
 }
 
 
+function add_new_business() {
+	fd = {};
+	fd.name = $('#trusted').val();
+	fd.csrf_token = $('#csrf_token').val();
+
+	console.log('add new business ' + fd.name);
+	$.ajax({type	: 'GET',
+			url		: '/business/new',
+			data	: fd,
+			contentType: false,
+			success : function(response) {
+				console.log(response);
+				open_task_window(response.embed);
+				$('#phone').mask("(999) 999-9999");
+			},
+			error	: function(xhr, status, error) {
+				console.log(['ajax error', xhr]);
+				if (status == 401) { window.location.href = '/login'; }
+			}
+	});
+	return false;
+}
+
+
 function business_submit(event) {
 	// runs when form is valid (on Chrome).
 	event.preventDefault();	//prevent submit.
