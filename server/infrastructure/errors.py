@@ -21,6 +21,18 @@ from datetime import datetime as dt
 
 
 
+class ApiError(object):
+	# see example in routes/auth/password
+	def __init__(self, status='An issue occurred', errors=[]):
+		self.status = status
+		self.errors = errors
+
+	@property
+	def serialize(self):
+		return jsonify ({ 'status': self.status, 'errors': self.errors })
+
+
+
 class SanitizedException(Exception):
 	def __init__(self, error, resp_code=400, user_msg=None):
 		self._exception = error
