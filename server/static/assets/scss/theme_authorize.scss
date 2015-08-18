@@ -22,10 +22,7 @@ input[type="submit"]	{  margin-bottom: 15px; }
 }
 
 
-//rename text-tos
-#terms-text		{ font-size: 1.4em; }
-#authorize-form { padding: $form-padding; }
-
+#authorize-form		{ padding: 0 $form-padding; }
 .whiteButton		{ border: 1px solid white;	}
 .blueButton			{ text-transform: uppercase;	}
 
