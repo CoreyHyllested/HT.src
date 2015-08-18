@@ -22,7 +22,7 @@ $(document).ready(function() {
 
 
 	$('#btn-back').click(function(e){
-		window.location.href = "/dashboard";
+		window.location.href = "/profile";
 	});
 
 	$('#btn-save').click(function(e){
