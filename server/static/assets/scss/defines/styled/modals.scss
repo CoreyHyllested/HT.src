@@ -84,12 +84,6 @@
 .black-border	{	border:	1px solid black;	}
 
 
-
-.request input	{ width: 85%;	}
-
-.modal-account	{ display: none;	}	//see if we can re-write (fragment account-create)
-
-
 @media (min-width: 600px)	{
 	#modal-wrap.active	{ /* drop-in from top */ top: 30% !important; }
 	#modal-window		{ @include border-rad(8px); }
