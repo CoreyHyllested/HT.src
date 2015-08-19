@@ -9,11 +9,6 @@
 			<div class="form-group phone">	 {{form.phone(type='tel',	placeholder="(720) 376-3919")}}</div>
 			<div class="form-group email">	 {{form.email(type='email', placeholder="akcontracting@yahoo.com (optional)")}}</div>
 			<div class="form-group url">	 {{form.site(type='url',	placeholder="https://akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
-
-			<div class='align-right'>
-				<button type='submit' class='btn-simple blueButton'>Create...</button>
-				<div class='action-feedback'></div>
-			</div>
 		</div>
 
 		<div id='modal-business-addr'>
@@ -21,10 +16,12 @@
 				<input id='address-search' type='search' placeholder="Address (optional)"></input>
 				<div id='modal-map' class="map-canvas"></div>
 			</div>
+		</div>
 
+		<div>
 			<div class='align-right'>
-				{#<input  type='button' class='btn-simple dismiss-modal whiteButton' value="Cancel"></input>#}
-				<button type='button' class='btn-simple whiteButton'> &gt;- Back </button>
+				{#<button type='button' class='btn-simple whiteButton'> &lt;- Back </button>#}
+				<button type='button' class='btn-simple dismiss-modal whiteButton'>Cancel</button>
 				<button type='submit' class='btn-simple blueButton'>Create...</button>
 				<div class='action-feedback'></div>
 			</div>
