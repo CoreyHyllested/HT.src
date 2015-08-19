@@ -18,18 +18,20 @@ $warning: rgba(255, 200, 0, 1);
 
 $ht-blue:		#29abe2;
 $ht-blue-hover:	#007cb3;
+$color-alert:	#e75f63;
 
 
 
 $font-color-placeholder:	#939292;
 $font-color-icon:			#999999;
+$font-color-alert:			$color-alert;
 $input-icon-gray:	$font-color-icon;
 
 
 $input-btn-default:	#e2e4e6;
 $input-box-default:	#e1e8ed;
 $input-box-success:	green;
-$input-box-invalid:	red;
+$input-box-invalid:	$color-alert;
 $input-box-warning:	$warning;
 
 $btn-border-default:	$input-btn-default;
