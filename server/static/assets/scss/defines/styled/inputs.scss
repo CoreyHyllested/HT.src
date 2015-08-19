@@ -94,37 +94,20 @@ $version	:	0.01;
 	max-width: 600px;
 }
 
-.field {
-	width: 100%;
-	color: $field-info-color;
-	font-size: .9em;
-	font-family: "Open Sans", Helvetica, sans-serif;
-}
 
 .field.info			{ padding: 15px 0 5px; 	margin-left: 0px;	}
 .field.info.first	{ padding-top: 0px;		}
-.field.info.notice	{ font-weight: 600;		}
-
-.field.input { }
 .field.input.iconified { padding-left: 13px; }
 
-.ff					{	margin: 5px 0;			}
-.ff.prompt			{	display: inline;	width: 100%;	font-size: .85em;	font-weight: 600;	padding-left: 3px;	}
-.ff.detail			{	display: inline;	color: gray;	font-size: .85em;						padding-left: 3px;	}
-
-.ff.header			{	display: inline;	width: 100%;	font-size: .7em;	font-weight: 600;	padding-left: 3px;	}
+.field				{	margin: 5px 0;		display: inline;	font-size: .85em;	padding-left: 3px;		}
+.field-lead			{	@extend .field;		font-weight: 600;					}
+.ff					{	@extend .field; 	}
+.ff.header			{	@extend .field;		font-weight: 600;	font-size: .7em;	}
 .ff.value			{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
 .ff.contact 		{	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
-.ff.error			{	display: none;		font-size: .7em;	color: #e75f63;		padding-left: 0px; 			}
-.ff.error.inline	{	display: inline;	font-size: .7em;	color: #e75f63;		padding-left: 0px;			}
 
-.field.error		{ display: none;			font-size: .7em;	color: #e75f63; }
-.field.error.inline	{ display: inline-block;	padding-left: 0px; 						}
-.field.error.alt	{ float: left; height: $field-height;	line-height: 50px; margin-left: 16px; margin-top: 10px; }
-.field.action 		{ float: left; height: $field-height;	padding-left: 10px; }
-
-
-
+.field-error		{	color: #e75f63; 		display: none;		font-size: .7em;	padding-left: 3px;	}
+.field-error.error	{							display: inline-block;		}
 
 
 

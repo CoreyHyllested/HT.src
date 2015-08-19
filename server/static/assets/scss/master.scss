@@ -15,7 +15,7 @@
 // third-party includes
 @import 'Font-Awesome/font-awesome';
 
-$version:	0.07;	//something something darkside
+$version:	0.08;	//change.   update. something something darkside
 
 
 html		{	height: 100%;	}
@@ -113,9 +113,9 @@ input:invalid					{	color: red;		}
 
 /* VALIDATE, currently unused */
 input.v:required:focus			{	border-color: $input-border-warning	!important;	}
-input.v:required:focus:invalid	{	border-color: $input-border-invalid	!important;	}
 input.v:required:focus:valid	{	border-color: $input-border-success	!important;	}
-input.alert						{	border-color: $input-border-invalid !important;	}
+input.v:required:focus:invalid	{	border-color: $input-border-invalid	!important;	}
+input.error						{	border-color: $input-border-invalid !important;	}
 
 
 /*	Placeholder Text

@@ -17,17 +17,16 @@
 		{{form.hidden_tag()}}
 
 		<div id='update-name'>
-			<div class='field info'>Your legal name</div>
-			<div class='field error'></div>
-			{{form.name(placeholder="Your Name", class="field input")}}
+			<div class='field-lead'>Your legal name</div>
+			<div class='field-error'></div>
+			{{form.name(placeholder="Your Name", required=true)}}
 		</div>
 
 		<div id='update-email'>
-			<div class='field info'>Your email address</div>
-			<div class='field error'></div>
-
-			{{form.email(placeholder="Your Email", class='field input')}}
-{#			<div class='field action'>
+			<div class='field-lead'>Your email address</div>
+			<div class='field-error'></div>
+			{{form.email(placeholder="Your Email", required=true)}}
+{#			<div>
 				{% if verified_email == True %}
 					<div id='email-verified'><i class="fa fa-fw fa-check"></i>&nbsp;Verified</div>
 				{% else %}
@@ -37,24 +36,22 @@
 			</div>
 			<div class='empty' id='verify-email'>
 				<input type="text" id="challenge" placeholder="Enter verification code." class="field input left">
-				<div class='field action'>
-					<button id='btn-validate-code' class="whiteButton">Submit Code</button>
-				</div>
+				<button id='btn-validate-code' class="whiteButton">Submit Code</button>
 			</div>
 #}
 		</div>
 
 		<div id='update-password'>
-			<div class='field info'>Update your password</div>
-			<div class='field error'></div>
-			{{form.update_password(placeholder="New password",    class="field input", autocomplete="off")}}
-			{{form.verify_password(placeholder="Verify password", class="field input", autocomplete="off")}}
+			<div class='field-lead'>Update your password</div>
+			<div class='field-error'></div>
+			{{form.update_password(placeholder="New password",    autocomplete="off")}}
+			{{form.verify_password(placeholder="Verify password", autocomplete="off")}}
 		</div>
 
 		<div id='current-password'>
-			<div class='field info notice'>Enter current password to save changes</div>
-			<div class='field error'></div>
-			{{form.current_password(placeholder="Current password", class="field input", autocomplete="off")}}
+			<div class='field-lead'>Enter current password to save changes</div>
+			<div class='field-error'></div>
+			{{form.current_password(placeholder="Current password (required)", autocomplete="off")}}
 		</div>
 
 		<div class='align-right'>
@@ -70,8 +67,8 @@
 {% block scripts %}
 	{{ super() }}
 	{% assets "js_settings" %}<script src='{{ASSET_URL}}'></script>{% endassets %}
-	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
 	{#
+	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
 	<script>
 	var verifiedEmail = '{{verified_email}}';
 
