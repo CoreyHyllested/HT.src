@@ -115,6 +115,7 @@ input:invalid					{	color: red;		}
 input.v:required:focus			{	border-color: $input-border-warning	!important;	}
 input.v:required:focus:invalid	{	border-color: $input-border-invalid	!important;	}
 input.v:required:focus:valid	{	border-color: $input-border-success	!important;	}
+input.alert						{	border-color: $input-border-invalid !important;	}
 
 
 /*	Placeholder Text
