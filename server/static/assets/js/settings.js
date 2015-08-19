@@ -2,88 +2,10 @@ var settings_version = 0.03;
 
 console.log('settings.js: v' + settings_version);
 
-$(document).ready(function() {
-	$('#btn-get-verified').click(function(e) {
-		e.preventDefault();
-		email = $("#email").val();
-		console.log ('validate code' + email);
-		$("#verify-notice").html("Verification sent.");
-		$("#verify-email").removeClass('empty');
-		$("#verify-email").slideDown();
-		send_verification_email();
-		$("#btn-get-verified").hide();
-	});
+function settings_submit(event) {
+	event.preventDefault();
 
-	$('#btn-validate-code').click(function(e) {
-		e.preventDefault();
-		console.log('validate code');
-		validate_challenge_hash();
-	});
-
-
-	$('#btn-back').click(function(e){
-		window.location.href = "/profile";
-	});
-
-	$('#btn-save').click(function(e){
-		e.preventDefault();
-		save_settings();
-	});
-});
-
-
-
-function send_verification_email() {
-	console.log('send_verification_email()');
-	var fd = {};
-	fd.email_addr = $('#email').val();
-	fd.csrf_token = $('#csrf').val();
-
-	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
-	$.ajax({ url : '/email/request-verification/me',
-			 type : 'POST',
-			 data : fd,
-			 success : function(data) {
-				 console.log('sent verification emails');
-			}
-	});
-}
-
-function validate_challenge_hash() {
-	console.log("verify_email_js: begin");
-	var challenge = $('#challenge').val();
-
-	var fd = {};
-	fd.email = $('#email').val();
-	fd.csrf_token = $('#csrf').val();
-	$.each(fd, function(k, v) { console.log(k+ ": " + v); });
-
-
-	$.ajax({ url : '/email/verify/'+challenge,
-			 type : 'POST',
-			 data : fd,
-			 dataType: 'json',
-			 success : function(data) {
-				console.log ('/email/verify - success');
-				$(".emailVerifyText").html("<span class='success'>Email successfully verified!</span>");
-				$(".emailVerifyStatus").html("<div class='verifySuccess'><i class='fa fa-fw fa-check'></i>Email verified.</div>");
-				setTimeout(function() {
-					$('.emailVerifyInput').slideUp(1000);
-				}, 2000);
-				return false;
-			 },
-			 error: function(data) {
-				console.log ('/email/verify - error');
-			 	$(".emailVerifyText").html("<span class='error'>Sorry, that code didn't work.</span>");
-			 }
-	});
-	return false;
-}
-
-
-function save_settings() {
-	console.log('save_settings');
-	var fd = new FormData($('#settings-form')[0]);
+	var fd = new FormData(this);
 	set_status('.action-feedback', 'Saving...');
 
 	// Remove error indicators
@@ -96,11 +18,9 @@ function save_settings() {
 			data : fd,
 			processData: false,
   			contentType: false,
-			success : function(response) {
-			 	console.log("AJAX - successfully saved");		 	
-
+			success : function(xhr) {
 				$("#update_password, #verify_password, #current_password").val('');
-				set_status('.action-feedback', response.usrmsg);	// change /settings/update to use whatever was used in /auth/signin
+				set_status('.action-feedback', xhr.usrmsg);	// change /settings/update to use whatever was used in /auth/signin
 			 	//$("#passMeter").slideUp().html("");
 			},
 			error: function(xhr, status, error) {
@@ -110,11 +30,12 @@ function save_settings() {
 				
 				console.log("FORM ERRORS:");
 				console.log(JSON.stringify(errors));
-				showErrors(errors);
+				show_errors(errors);
 			}
 	});
 	return false;
 }
+
 
 
 /*
@@ -134,21 +55,9 @@ function initializeStrengthMeter() {
 }
 */
 
-function showErrors(errors) {
-	$.each(errors, function(e, error){
-		// "e" here would be the form element name that has the error, e.g. "prof_name"
-		var element = "#"+e;
-		console.log("show-error: ["+element + " : " + error + "]");
+$(document).ready(function() {
+	$('#btn-get-verified').click(function(e) { /* see git for code (8/18/15) */ });
+	$('#btn-back').click(function(e){ window.location.href = "/profile"; });
+	$('#form-settings').on('submit', settings_submit);
+});
 
-		if (element == '#verify_password') {
-			$("#update_password").prev(".field.error").html(error).slideDown();
-			$('#update_password').css("border-color", "#e75f63");
-			$('#verify_password').css("border-color", "#e75f63");
-		} else {
-			$(element).prev(".field.error").html(error).slideDown();
-			$(element).css("border-color", "#e75f63");
-		}
-	});
-
-	set_status('.action-feedback', 'There was an issue');
-}
