@@ -66,11 +66,7 @@ def render_settings():
 	form.email.data	= ba.email
 	form.name.data	= ba.name
 
-	#nexturl = "/settings"
-	#if (request.values.get('nexturl') is not None):
-	nexturl = request.values.get('nexturl', '/settings')
-	message = session.pop('message', None)	# was messages
-	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, verified_email=email_verified, errmsg=message))
+	return make_response(render_template('settings.html', form=form, bp=bp, verified_email=email_verified)) # errmsg=session.pop('message', None))
 
 
 
