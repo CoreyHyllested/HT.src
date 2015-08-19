@@ -1,4 +1,4 @@
-var feedback_version = 0.14;
+var feedback_version = 0.18;
 
 function __get_json(string) {
 //	response = __get_json(responseText);
@@ -20,15 +20,14 @@ function show_errors(status_element, responseJSON) {
 		// e is the element with the error, e.g. "prof_name"
 		var element = "#"+e;
 		console.log("show-error: ["+element + " : " + error + "]");
-//		$(element).prev(".ff.error").html(error).slideDown();
-//		$(element).prev('.field.error').html(error).slideDown();	//settings only, I belive
-		$(element).css("border-color", "#e75f63");
+		$(element).prev('.field-error').addClass('error').html(error).slideDown();
+		$(element).addClass('error');
 	});
 }
 
 
-function clear_error_msg(element)	{ $(element).prev(".ff.error").slideUp().html('');	}
-function clear_error_box(element)	{ $(element).css("border-color", "#e1e8ed");		}
+function clear_error_msg(element)	{ $(this).prev('.field-error').slideUp().html('').removeClass('error');	}
+function clear_error_box(element)	{ $(this).removeClass('error');	}
 
 
 function set_status(elem, content) {
@@ -58,7 +57,7 @@ function feedback_timeout(elem)	{
 
 $(document).ready(function () {
 	console.log('feedback.js: v' + feedback_version);
-	$('body').on('blur', '.field.input',		clear_error_box);
-	$('body').on('blur', 'input.form-control',	clear_error_box);
+	$('body').on('focus', 'input.error', clear_error_box);
+	$('body').on('blur',  'input',		 clear_error_msg);
 });
 

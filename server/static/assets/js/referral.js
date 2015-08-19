@@ -252,8 +252,6 @@ $(document).ready(function () {
 
 	$('#referral-questions').on('focusin',  'div.bootstrap-tagsinput', function() { $(this).addClass(    'active' ); });
 	$('#referral-questions').on('focusout', 'div.bootstrap-tagsinput', function() {	$(this).removeClass( 'active' ); });
-	$('#content').on('focus', function() { clear_error_box(this); });
-	$('#content').on('blur',  function() { clear_error_msg(this); });
 	$('#content').keyup(function(evt) {
 		txt = $(this).val();
 		max	= $(this).attr('maxlength');
