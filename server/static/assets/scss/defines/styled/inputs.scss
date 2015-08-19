@@ -72,14 +72,14 @@ $version	:	0.01;
 .btn-social:hover	{	color: white;	}
 .btn-social .fa		{	font-size: 18px; position: relative; top: 2px; margin-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.05); padding-right: 10px; width: 30px; }
 
-.btn-soulcraft		{ @extend .btn-social;	background: $ht-blue;					}
-.btn-facebook		{ @extend .btn-social;	background: $btn-color-facebk;			}
-.btn-twitter		{ @extend .btn-social;	background: $btn-color-twittr;			}
-.btn-google			{ @extend .btn-social;	background: $btn-color-google;			}
-.btn-soulcraft:hover{ @extend .btn-social;	background: $ht-blue-hover;				}
-.btn-facebook:hover	{ color: white;			background: $btn-color-facebk-hover;	}
-.btn-twitter:hover	{ color: white;			background: $btn-color-twittr-hover;	}
-.btn-google:hover	{ color: white;			background: $btn-color-google-hover;	}
+.btn-soulcraft		{ @extend .btn-social;	background: $ht-blue;				}
+.btn-facebook		{ @extend .btn-social;	background: $color-facebk;			}
+.btn-twitter		{ @extend .btn-social;	background: $color-twittr;			}
+.btn-google			{ @extend .btn-social;	background: $color-google;			}
+.btn-soulcraft:hover{ @extend .btn-social;	background: $ht-blue-hover;			}
+.btn-facebook:hover	{ color: white;			background: $color-facebk-hover;	}
+.btn-twitter:hover	{ color: white;			background: $color-twittr-hover;	}
+.btn-google:hover	{ color: white;			background: $color-google-hover;	}
 
 
 .checkbox-label		{	background-image:url('../img/checkbox.svg');		}
@@ -99,15 +99,12 @@ $version	:	0.01;
 .field.info.first	{ padding-top: 0px;		}
 .field.input.iconified { padding-left: 13px; }
 
-.field				{	margin: 5px 0;		display: inline;	font-size: .85em;	padding-left: 3px;		}
-.field-lead			{	@extend .field;		font-weight: 600;					}
-.ff					{	@extend .field; 	}
-.ff.header			{	@extend .field;		font-weight: 600;	font-size: .7em;	}
-.ff.value			{	width: 60%;		max-width: 250px;	text-overflow: ellipsis;						}
-.ff.contact 		{	width: 33%;		max-width: 200px;	vertical-align: top;	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; font-size: .9em;	}
+.field				{	margin: 5px 0;		display: inline;	padding-left: 3px;			}
+.field-lead			{	@extend .field;		font-weight: 600;								}
+.field-lead.overflow{	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 	}
 
-.field-error		{	color: #e75f63; 		display: none;		font-size: .7em;	padding-left: 3px;	}
-.field-error.error	{							display: inline-block;		}
+.field-error		{	display: none;			color: $color-error;	font-size: .7em;	padding-left: 3px;	}
+.field-error.error	{	display: inline-block;																	}
 
 
 
@@ -130,12 +127,8 @@ $version	:	0.01;
 	margin: 5px auto;
 	width:	66%;
 }
-.feedback-positive	{ @extend .feedback-bubble; background-color: green;	border: 1px solid white;	color: white;	}
-.feedback-negative	{ @extend .feedback-bubble; background-color: $warning;	border: 1px solid yellow;	color: black;	}
+.feedback-positive	{ @extend .feedback-bubble; background-color: green;			border: 1px solid white;	color: white;	}
+.feedback-negative	{ @extend .feedback-bubble; background-color: $color-warning;	border: 1px solid yellow;	color: black;	}
 
-
-.disabled	{ color: $disabled;	}
-.name		{ color: darkgrey;	}
-
-
+.disabled	{ color: $color-disabled;	}
 
