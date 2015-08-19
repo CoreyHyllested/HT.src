@@ -21,6 +21,7 @@ function show_errors(status_element, responseJSON) {
 		var element = "#"+e;
 		console.log("show-error: ["+element + " : " + error + "]");
 //		$(element).prev(".ff.error").html(error).slideDown();
+//		$(element).prev('.field.error').html(error).slideDown();	//settings only, I belive
 		$(element).css("border-color", "#e75f63");
 	});
 }
