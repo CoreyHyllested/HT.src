@@ -44,11 +44,6 @@ class ProSignupForm(Form):
 
 
 
-class LoginForm(Form):
-	email	= TextField('Email', [validators.Required(), validators.Email()])
-	passw	= PasswordField('Password', [validators.Required()])
-
-
 class NewTrustedEntityForm(Form):
 	name	= TextField('Name',		[validators.Required(), validators.length(min=4)])
 	site	= TextField('Website',	[validators.Optional()])
@@ -123,8 +118,8 @@ class SearchForm(Form):
 
 
 class SettingsForm(Form):
-	name	= TextField('Name', [validators.Required()])
-	email	= TextField('Email', [validators.Required()])
+	name	= TextField('Name',  [validators.Optional(), validators.length(min=4, max=60)])		#what is max size in DB?
+	email	= TextField('Email', [validators.Required(), validators.Email()])
 	update_password =	PasswordField('Password')
 	verify_password	=	PasswordField('Password', [validators.EqualTo('update_password', 'Passwords must match')])
 	current_password =	PasswordField('Password', [validators.Required()])
