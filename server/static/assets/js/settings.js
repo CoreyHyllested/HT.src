@@ -1,4 +1,4 @@
-var settings_version = 0.03;
+var settings_version = 0.04;
 
 console.log('settings.js: v' + settings_version);
 
@@ -20,11 +20,11 @@ function settings_submit(event) {
   			contentType: false,
 			success : function(xhr) {
 				$("#update_password, #verify_password, #current_password").val('');
-				set_status('.action-feedback', xhr.usrmsg);	// change /settings/update to use whatever was used in /auth/signin
+				set_status('.action-feedback', xhr.status);	// change /settings/update to use whatever was used in /auth/signin
 			 	//$("#passMeter").slideUp().html("");
 			},
 			error: function(xhr, status, error) {
-				console.log("AJAX error", error);
+				console.log("Ajax error", status);
 				show_errors('.action-feedback', xhr.responseJSON);
 			}
 	});
