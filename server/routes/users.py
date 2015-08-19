@@ -50,8 +50,8 @@ def render_dashboard():
 
 
 
-@authenticated.route('/settings/', methods=['GET', 'POST'])
-@authenticated.route('/settings',  methods=['GET', 'POST'])
+@authenticated.route('/settings/', methods=['GET'])
+@authenticated.route('/settings',  methods=['GET'])
 @sc_authenticated
 def render_settings():
 	""" Allows user to change his or her email settings."""
@@ -73,12 +73,10 @@ def render_settings():
 @authenticated.route('/settings/update/', methods=['POST'])
 @authenticated.route('/settings/update',  methods=['POST'])
 @sc_authenticated
-def sc_api_update_settings():
-	print "sc_api_update_settings: begin"
-
+def api_settings_update():
 	uid = session['uid']
 	ba	= Account.get_by_uid(uid)
-	form = SettingsForm(request.form)
+	form = SettingsForm(request.form)	#rename sf
 
 	# determine what needs to be updated.
 	update_acct = False		# requires password.
@@ -98,35 +96,36 @@ def sc_api_update_settings():
 		update_acct = True
 		update_pass = form.update_password.data
 
+	if (not update_acct):
+		return make_response(jsonify(status='No changes were requested.'), 200)
+
+	if not form.validate_on_submit():
+		return make_response(ApiError(errors=form.errors).serialize, 400)
+
 	try:
-		if form.validate_on_submit():
-			print 'sc_api_update_settings()\tvalid submit'
+		print 'sc_api_update_settings()\tvalid submit'
+		(rc, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
 
-			if (update_acct == False):
-				# user did not update anything.
-				return jsonify(usrmsg="Cool... Nothing changed."), 200
+		# TODO.  sc_update_account could throw errors/ return False from what?
+		print("sc_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
 
-			print 'sc_api_update_settings()\tupdate account'
-			(rc, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
-			# TODO.  sc_update_account could throw errors/ return False from what?
-			print("sc_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
-
-			if (rc == False):
-				errmsg = str(errno)
-				errmsg = error_sanitize(errmsg)
-				form.current_password.data = ''
-				form.update_password.data = ''
-				form.verify_password.data = ''
-				return jsonify(usrmsg="Hmm... something went wrong.", errors=None), 500
+		if (rc == False):
+			errmsg = str(errno)
+			errmsg = error_sanitize(errmsg)
+			form.current_password.data = ''
+			form.update_password.data = ''
+			form.verify_password.data = ''
+			return jsonify(usrmsg="Hmm... something went wrong.", errors=None), 500
 
 
-			# successfully updated account
-			# user changed email, password. For security, send confimration email.
-			if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
+		# successfully updated account
+		# user changed email, password. For security, send confimration email.
+		if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
 # TODO -- create send_passwd_change_email.  Need to look up Mandrill template.
-			#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
-			print "sc_api_update_settings() Update should be complete"
-			return jsonify(usrmsg="Settings updated"), 200
+		#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
+		print "sc_api_update_settings() Update should be complete"
+		return jsonify(usrmsg="Settings updated"), 200
+
 	except PasswordError as pe:
 		print 'sc_api_update_settings: Password (CodeBug):', pe
 		database.session.rollback()
