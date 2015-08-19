@@ -104,42 +104,36 @@ def api_settings_update():
 
 	try:
 		print 'sc_api_update_settings()\tvalid submit'
-		(rc, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
+		(successful, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
 
 		# TODO.  sc_update_account could throw errors/ return False from what?
-		print("sc_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
+		print("sc_api_update_settings()\tmodify acct()  = " + str(successful) + ", errno = " + str(errno))
 
-		if (rc == False):
+		if not successful:
 			errmsg = str(errno)
 			errmsg = error_sanitize(errmsg)
 			form.current_password.data = ''
 			form.update_password.data = ''
 			form.verify_password.data = ''
-			return jsonify(usrmsg="Hmm... something went wrong.", errors=None), 500
+			return make_response(ApiError(errmsg, []).serialize, 400)
 
-
-		# successfully updated account
-		# user changed email, password. For security, send confimration email.
 		if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
-# TODO -- create send_passwd_change_email.  Need to look up Mandrill template.
 		#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
-		print "sc_api_update_settings() Update should be complete"
-		return jsonify(usrmsg="Settings updated"), 200
+		return make_response(jsonify(status='Saved.'), 200)
 
 	except PasswordError as pe:
-		print 'sc_api_update_settings: Password (CodeBug):', pe
 		database.session.rollback()
-		badpassword = {}
-		badpassword['current_password'] = pe.sanitized_msg()
-		return jsonify(usrmsg='We messed something up, sorry', errors=badpassword), pe.http_resp_code()
+		errors = { 'current_password' : pe.sanitized_msg() }
+		return make_response(ApiError(pe.sanitized_msg(), errors).serialize, pe.http_resp_code())
 	except AttributeError as ae:
 		print 'sc_api_update_settings: AttributeError (CodeBug):', ae
 		database.session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
+		return make_response(ApiError('We made a mistake. Please try again later.').serialize, 500)
 	except Exception as e:
 		print 'sc_api_update_settings: Exception: ', e
 		database.session.rollback()
-		return jsonify(usrmsg=e, errors=form.errors), 500
+		return make_response(ApiError('We made a mistake. Please try again later.').serialize, 500)
+
 
 	print "sc_api_update_settings: Something went wrong - Fell Through."
 	print str(form)
