@@ -10,8 +10,8 @@ function settings_submit(event) {
 
 	// Remove error indicators
 	//$("#passMeter").slideUp().html("");
-	$('.field.error').slideUp().html("");
-	$('.field.input').css("border-color", "#e1e8ed");
+	$('.field-error').html('').removeClass('error');
+	$('input.error').removeClass('error');
 
 	$.ajax({ url	: "/settings/update",
 			type	: "POST",
