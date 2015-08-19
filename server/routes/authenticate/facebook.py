@@ -53,10 +53,12 @@ def facebook_authorized(resp):
 		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 		return redirect(url_for('public.render_login'))
 
+	print 'session access_token', resp.get('access_token', 'CAH')
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
 
 	print 'facebook user is creating an account.'
+	print 'session access_token', resp.get('access_token', 'CAH')
 	# grab signup/login info
 	me = facebook.get('/me')
 	me.data['token']=session['oauth_token']
