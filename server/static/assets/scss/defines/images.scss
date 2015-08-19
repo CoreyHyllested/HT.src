@@ -18,7 +18,7 @@ $img-404:		url('/static/img/cover-404.jpg');
 
 /* Images.  img-container (no margins).  */
 .img-responsive	{	margin: 0 auto; }
-.img-responsive	{	background:	$gray;															margin: 0 auto;	}
+.img-responsive	{	background:	$color-easygray;												margin: 0 auto;	}
 .img-craftsman	{	width: 150px;						height: 150px;	border-radius: 50%;						}
 .img-thumb		{	width: 100%;	max-width: 170px;	height: auto;	display: inline-block;	margin: 10px;	}
 .img-small		{	width: 100%;	max-width: 170px;															}

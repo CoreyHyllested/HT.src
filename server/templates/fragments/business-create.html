@@ -5,22 +5,26 @@
 
 		<h3>Who do you Trust?</h3>
 		<div id='modal-business-info' class='block'>
-			<div class="form-group username">{{form.name(type='name',	class='ff', placeholder="A & K Contracting",	required=true)}}</div>
-			<div class="form-group phone">	 {{form.phone(type='tel',	class='ff',	placeholder="(720) 376-3919")}}</div>
-			<div class="form-group email">	 {{form.email(type='email', class='ff',	placeholder="akcontracting@yahoo.com (optional)")}}</div>
-			<div class="form-group url">	 {{form.site(type='url',	class='ff', placeholder="https://akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
+			<div class="form-group username">{{form.name(type='name',	placeholder="A & K Contracting", required=true)}}</div>
+			<div class="form-group phone">	 {{form.phone(type='tel',	placeholder="(720) 376-3919")}}</div>
+			<div class="form-group email">	 {{form.email(type='email', placeholder="akcontracting@yahoo.com (optional)")}}</div>
+			<div class="form-group url">	 {{form.site(type='url',	placeholder="https://akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
+
+			<div class='align-right'>
+				<button type='submit' class='btn-simple blueButton'>Create...</button>
+				<div class='action-feedback'></div>
+			</div>
 		</div>
 
 		<div id='modal-business-addr'>
 			<div class="form-group address">
-				<input id='address-search' type='search' class='ff' placeholder="Address (optional)"></input>
+				<input id='address-search' type='search' placeholder="Address (optional)"></input>
 				<div id='modal-map' class="map-canvas"></div>
 			</div>
-		</div>
 
-		<div>
 			<div class='align-right'>
-				<input  type='button' class='btn-simple dismiss-modal whiteButton' value="Cancel"></input>
+				{#<input  type='button' class='btn-simple dismiss-modal whiteButton' value="Cancel"></input>#}
+				<button type='button' class='btn-simple whiteButton'> &gt;- Back </button>
 				<button type='submit' class='btn-simple blueButton'>Create...</button>
 				<div class='action-feedback'></div>
 			</div>

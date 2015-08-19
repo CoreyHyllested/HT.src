@@ -20,6 +20,7 @@ section div	{	max-width: $max-card-sz + 10;	}
 #trust-card			{	@extend .trust-card;	border: 1px $input-border-default solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
 #content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
 #referral-questions {	padding: 25px 0 10px;	}
+#content-nr			{	color: $color-disabled;	}
 
 
 .pro-suggestion	{
@@ -46,9 +47,3 @@ div.bootstrap-tagsinput 			{	background-color: rgba(0,0,0,.01);		border: 1px sol
 div.bootstrap-tagsinput.active 		{	background-color: white !important;		border-color: $input-box-default !important;	}
 .bootstrap-tagsinput input.tt-input	{	margin-bottom: 0px;	padding-left: 0px;	}
 
-
-/*	UNUSED
-#feedback			{	list-style:none;		margin: 0 auto;			}
-#instructions		{	display: none;								max-width: 250px; 		}
-@media (min-width: 640px) { #instructions 		{ display: inline-block;	} }
-*/
