@@ -99,28 +99,6 @@
 		$('ul.ref-operations').on('click', '.btn-share-twitter',	function () { referral_share_tweet(this); });
 
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
-		$(".share-popover").popover({
-			html: true,
-			animation: false,
-			title: 'Share this referral',
-			content: function() {
-				return $('#popover-share').html();
-			},
-			placement: 'left',
-			trigger: "manual"
-		}).on("mouseenter", function () {
-		    var _this = this;
-		    $(this).popover("show");
-		    $(".popover").on("mouseleave", function () { $(_this).popover('hide'); });
-		}).on("mouseleave", function () {
-		    var _this = this;
-		    setTimeout(function () {
-		        if (!$(".popover:hover").length) {
-		            $(_this).popover("hide");
-		        }
-		    }, 500);
-		});
-
 		$(".pop-share").popover({
 			html: true,
 			animation: false,
