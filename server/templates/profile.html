@@ -35,16 +35,17 @@
 
 <section id='referrals'>
 	<div>
-	{% for ref in referrals | sort(attribute='business.updated') %}
+	{% for ref in referrals | sort(attribute='Referral.ref_created') | reverse %}
+	{# {{ ref.Referral.ref_created.strftime('%b %d at %H:%M %p')}} #}
 	<article class='referral' data-ref-id='{{ref.Referral.ref_uuid}}'>
-		<div class='content'>
+		<div>
 			<div class='ref-name'>{{ref.business.bus_name}}</div>
 			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
 			{%- if ref.display_addr %}| <div class='ref-location'>{{ref.display_addr}}</div>{%- endif %}
 		</div>
 
-		<div class='content'>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
-		<div class='content'>
+		<div>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
+		<div>
 			<div class='ref-context'>
 				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
 			</div>
