@@ -23,11 +23,11 @@ from datetime import datetime as dt
 @authenticated.route('/profile/', methods=['GET'])
 @authenticated.route('/profile',  methods=['GET'])
 @sc_authenticated
-def render_my_profile():
+def render_private_profile():
+	id = request.values.get("hlr", None)
 	bp = Profile.get_by_uid(session['uid'])
 	cr = Referral.get_composite_referrals_by_profile(bp)
-	return make_response(render_template('profile.html', bp=bp, profile=bp, referrals=cr))
-
+	return make_response(render_template('profile.html', bp=bp, profile=bp, referrals=cr, highlight=id))
 
 
 
@@ -37,9 +37,10 @@ def render_public_profile(prof_id):
 	profile = Profile.get_by_prof_id(prof_id)
 	if (not profile): raise Exception('no profile found')
 
+	id = request.values.get("hlr", None)	#highlight referral
 	bp = Profile.get_by_uid(session.get('uid'))
 	cr = Referral.get_composite_referrals_by_profile(profile)
-	return make_response(render_template('profile.html', bp=bp, profile=profile, referrals=cr))
+	return make_response(render_template('profile.html', bp=bp, profile=profile, referrals=cr, highlight=id))
 
 
 
