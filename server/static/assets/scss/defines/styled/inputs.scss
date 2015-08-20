@@ -108,7 +108,7 @@ $version	:	0.01;
 
 
 
-.twitter-typeahead		{	display: inline !important;	width: 100%;	} 							//bug. #invite-emails is too small
+.twitter-typeahead		{	width: 98%;	} 						//bug. #invite-emails is too small. 100% is too big for tt-menu, 98% makes them the same sz
 .tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px rgba(0,0,0,.4);	background-color: white; 	}	//bug. .tt-menu is too high
 .tt-suggestion			{	padding-left: 3px;				}
 .tt-suggestion:hover	{	background-color: whitesmoke;	}
