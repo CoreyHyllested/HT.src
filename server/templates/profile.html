@@ -161,8 +161,8 @@
 				tree_li_update = document.createElement('li');
 				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
 				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
-				$(tree_ul).append(tree_li_delete).append('<br>');
 				$(tree_ul).append(tree_li_update).append('<br>');
+				$(tree_ul).append(tree_li_delete).append('<br>');
 				return tree_ul;
 			},
 			placement: 'left',
