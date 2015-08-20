@@ -50,9 +50,9 @@ $version	:	0.01;
 	width: 100%;
 }
 
-.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;	color: white;		}
-.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: red;			}
-.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid #e2e4e6;	color: $ht-blue;	}
+.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;					color: white;		}
+.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $border-color-default;	color: red;			}
+.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $border-color-default;	color: $ht-blue;	}
 .messageButton		{	@extend .blueButton;		margin-top: -12px;															}
 
 .blueButton:hover	{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
@@ -109,7 +109,7 @@ $version	:	0.01;
 
 
 .twitter-typeahead		{	width: 98%;	} 						//bug. #invite-emails is too small. 100% is too big for tt-menu, 98% makes them the same sz
-.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px rgba(0,0,0,.4);	background-color: white; 	}	//bug. .tt-menu is too high
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px $color-shadows;	background-color: white; 	}	//bug. .tt-menu is too high
 .tt-suggestion			{	padding-left: 3px;				}
 .tt-suggestion:hover	{	background-color: whitesmoke;	}
 .bootstrap-tagsinput 	{	box-shadow: none !important;	}	// (ugly) referral, profile
