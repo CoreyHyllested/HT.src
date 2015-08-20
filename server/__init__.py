@@ -156,11 +156,13 @@ def server_init_assets_js(server, assets):
 	js_common	= Bundle('modals.js', 'feedback.js', filters=jsfilter, output='js/common.js')
 	js_projects = Bundle('projects.js', 'maps.js', filters=jsfilter, output='js/projects.js')
 	js_referral	= Bundle('referral.js', 'maps.js', filters=jsfilter, output='js/referral.js')
+	js_profiles	= Bundle('profiles.js', filters=jsfilter, output='js/profiles.js')
 	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings.js')
 	js_dashboard = Bundle('dashboard.js', filters=jsfilter, output='js/dashboard.js')
 
 	assets.register('js_dashboard', js_dashboard)
 	assets.register('js_common',	js_common)
+	assets.register('js_profiles',	js_profiles)
 	assets.register('js_projects',	js_projects)
 	assets.register('js_referral',	js_referral)
 	assets.register('js_settings',	js_settings)

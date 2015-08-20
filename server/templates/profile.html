@@ -6,7 +6,7 @@
 {% block header_css %}
 	{{ super() }}
 	<link rel='stylesheet' href='/static/css/tagsinput.css'>
-	{% assets 'master', 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{%- assets 'master', 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
 {% endblock %}
 
 
@@ -43,60 +43,34 @@
 			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
 			{%- if ref.display_addr %}| <div class='ref-location'>{{ref.display_addr}}</div>{%- endif %}
 		</div>
-
 		<div>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
 		<div>
 			<div class='ref-context'>
 				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
 			</div>
 			<ul class='ref-operations align-right'>
-				{%- if bp != profile %}
-				<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>
-				{%- endif %}
+				{#<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>#}
 				<li><a class='pop-share'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+				{%- if bp == profile %}
 				<li><a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
+				{%- endif %}
 			</ul>
 		</div>
-		{%- if not loop.last %}<hr class='thin'>{%- endif %}
 	</article>
 	{% endfor %}
 	</div>
 </section>
-
-
 {% endblock %}
 
 
 {% block scripts %}
 	{{ super() }}
+	{%- assets 'js_profile' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
 	<script src='/static/js/tagsinput.js'></script>
 	<script src='/static/js/bs-popover.js'></script>
 	<script>
-	function referral_delete(e) {
-		rid = $(e).data('ref-id');
-		$.ajax({	url		: '/api/referral/' + rid + '/destroy',
-					type	: 'DELETE',
-					success : function(data) {
-						referrals = $('article.referral');
-						$(referrals).each(function(idx, referral)  {
-							if ($(referral).data('ref-id') === rid) {
-								$(referral).remove();
-							}
-						});
-					},
-					error	: function(data) {
-						console.log("AJAX Error", data);
-					}
-		});
-		return false;
-	}
-
-	function referral_update(e)			{ window.location.href='/referral/' + $(e).data('ref-id') + '?edit=true'; }
-
 	$(document).ready(function () {
-		$('ul.ref-operations').on('click', '.btn-referral-delete',	function () { referral_delete(this);	});
-		$('ul.ref-operations').on('click', '.btn-referral-update',	function () { referral_update(this);	});
-		$('ul.ref-operations').on('click', '.btn-share-twitter',	function () { referral_share_tweet(this); });
+		{%- if highlight %}flash_elem_border('article[data-ref-id={{highlight}}]');{%- endif %}
 
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
 		$(".pop-share").popover({
@@ -108,8 +82,18 @@
 				tree_ul	= document.createElement('ul');
 				item_s1 = document.createElement('li');
 				item_s2 = document.createElement('li');
-				$(item_s1).addClass('btn-share-facebook').data("ref-id", refid).html("<a target='_blank' href='https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href=http%3A%2F%2Fsoulcrafting.co&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer&picture=https://soulcrafting.co/static/img/cover.jpg&name=My referral on Soulcrafting&description=Do not have a cow man'><i class='fa fa-facebook icon'></i><span class='align-left'>Share on Facebook</span></a>");
-				$(item_s2).addClass('btn-share-twitter').html('<a target="_blank" href="https://twitter.com/intent/tweet?related=@soulcrafting&text=check out my referral on @Soulcrafting&url=http%3A%2F%2Fsoulcrafting.co%2Freferral%2F' + refid + '"><i class="fa fa-twitter icon"></i><span class="align-left">Share on Twitter</span></a>');
+				twurl	= 'https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				fburl	= 'https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				twurl	= 'https%3A%2F%2Flocalhost%3A5000%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				{%- if bp == profile %}
+				twtext = 'check+out+my+referral+on+@Soulcrafting';
+				fbtext = 'check+out+my+referral+on+@SoulcraftingHQ';
+				{%- else %}
+				twtext = 'check+out+this+referral+on+@Soulcrafting';
+				fbtext = 'check+out+this+referral+on+@SoulcraftingHQ';
+				{%- endif %}
+				$(item_s1).addClass('btn-share-facebook').data("ref-id", refid).html('<a target="_blank" href="https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href='+fburl+'&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer&picture=https%3A%2F%2Fsoulcrafting.co%2Fstatic%2Fimg%2Fcover.jpg&name='+fbtext+'&description='+fbtext+'"><i class="fa fa-facebook icon"></i><span class="align-left">Share on Facebook</span></a>');
+				$(item_s2).addClass('btn-share-twitter').html('<a target="_blank" href="https://twitter.com/intent/tweet?related=@soulcrafting&text='+twtext+'&url='+twurl+'"><i class="fa fa-twitter icon"></i><span class="align-left">Share on Twitter</span></a>');
 				$(tree_ul).append(item_s1).append('<br>');
 				$(tree_ul).append(item_s2).append('<br>');
 				return tree_ul;
