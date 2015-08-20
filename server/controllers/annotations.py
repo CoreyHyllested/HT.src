@@ -44,7 +44,7 @@ def sc_authenticated(function):
 				session['redirect'] = "%s?%s" % (target, urllib.urlencode(request.form))
 				session['messages'] = "That operation requires you to login first."
 				return make_response(jsonify(next=session['redirect']), 401)
-			return make_response(redirect('/login'))
+			return make_response(redirect('/signin'))
 
 		return function(*args, **kwargs)
 	return verify_authenticated_user
@@ -55,8 +55,8 @@ def sc_administrator(function):
 	@functools.wraps(function)
 	def verify_authenticated_admin(*args, **kwargs):
 		if 'uid' not in session:
-			trace("no uid; " + function.__name__ + ': redirect to login')
-			return make_response(redirect('/login'))
+			trace("no uid; " + function.__name__ + ': redirect to signin')
+			return make_response(redirect('/signin'))
 		if 'admin' not in session:
 			trace("no uid; " + function.__name__ + ': return 400')
 			raise Exception('Missing authenication')

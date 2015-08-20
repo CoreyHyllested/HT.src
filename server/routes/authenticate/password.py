@@ -148,7 +148,7 @@ def render_password_reset_page(challengeHash):
 	accounts = Account.query.filter_by(sec_question=(str(challengeHash))).all()
 	if (len(accounts) != 1 or accounts[0].email != email):
 			trace('Hash and/or email didn\'t match.')
-			return redirect('/login')
+			return redirect('/signin')
 
 	if form.validate_on_submit():
 		account = accounts[0]
@@ -163,7 +163,7 @@ def render_password_reset_page(challengeHash):
 		except Exception as e:
 			trace(type(e) + ' ' + str(e))
 			database.session.rollback()
-		return redirect('/login')
+		return redirect('/signin')
 	elif request.method == 'POST':
 		trace("POST New password isn't valid " + str(form.errors))
 	return render_template('authorize/password-reset.html', form=form)

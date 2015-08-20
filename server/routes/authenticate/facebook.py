@@ -76,7 +76,7 @@ def facebook_authorized(resp):
 		resp = redirect('/profile')
 	else:
 		session['messages'] = 'Account creation failed.'
-		resp = redirect('/login')
+		resp = redirect('/signin')
 	return resp
 
 

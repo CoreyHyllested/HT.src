@@ -457,7 +457,7 @@ def sc_email_verify(email, challengeHash, nexturl=None):
 	if (len(accounts) != 1 or accounts[0].email != email):
 		print "sc_email_verify: error - challenge hash not found in accounts."
 		session['messages'] = 'Verification code or email address, ' + str(email) + ', didn\'t match one on file.'
-		return redirect(url_for('sc_ebody.render_login'))
+		return redirect(url_for('public_routes.render_signin'))
 
 	try:
 		account = accounts[0]
