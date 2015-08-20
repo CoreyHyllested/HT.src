@@ -28,19 +28,28 @@
          border-radius: $sz;
 }
 
-@mixin transition() {
-      -o-transition: 0.5s ease;
-     -ms-transition: 0.5s ease;
-    -moz-transition: 0.5s ease;
- -webkit-transition: 0.5s ease;
-         transition: 0.5s ease;
+@mixin transition() {	//all
+      -o-transition: 0.5s ease-in-out;
+     -ms-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+ -webkit-transition: 0.5s ease-in-out;
+         transition: 0.5s ease-in-out;
 }
 
 @mixin transition_type($type) {
-      -o-transition: $type 0.5s ease;
-     -ms-transition: $type 0.5s ease;
-    -moz-transition: $type 0.5s ease;
- -webkit-transition: $type 0.5  ease;
-         transition: $type 0.5s ease;
+      -o-transition: $type 0.5s ease-in-out;
+     -ms-transition: $type 0.5s ease-in-out;
+    -moz-transition: $type 0.5s ease-in-out;
+ -webkit-transition: $type 0.5s ease-in-out;
+         transition: $type 0.5s ease-in-out;
+}
+
+
+@mixin transition_td($type, $duration, $timing) {
+      -o-transition: $type $duration $timing;
+     -ms-transition: $type $duration $timing;
+    -moz-transition: $type $duration $timing;
+ -webkit-transition: $type $duration $timing;
+         transition: $type $duration $timing;
 }
 
