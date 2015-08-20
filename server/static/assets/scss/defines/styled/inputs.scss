@@ -50,10 +50,10 @@ $version	:	0.01;
 	width: 100%;
 }
 
-.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;					color: white;		}
-.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $border-color-default;	color: red;			}
-.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $border-color-default;	color: $ht-blue;	}
-.messageButton		{	@extend .blueButton;		margin-top: -12px;															}
+.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;				color: white;		}
+.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $btn-border-default;	color: red;			}
+.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $btn-border-default;	color: $ht-blue;	}
+.messageButton		{	@extend .blueButton;		margin-top: -12px;																		}
 
 .blueButton:hover	{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
 .messageButton:hover{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
@@ -127,8 +127,8 @@ $version	:	0.01;
 	margin: 5px auto;
 	width:	66%;
 }
-.feedback-positive	{ @extend .feedback-bubble; background-color: green;			border: 1px solid white;	color: white;	}
-.feedback-negative	{ @extend .feedback-bubble; background-color: $color-warning;	border: 1px solid yellow;	color: black;	}
+.feedback-positive	{ @extend .feedback-bubble; background-color: green;			border: 1px solid $input-border-success;	color: white;	}
+.feedback-negative	{ @extend .feedback-bubble; background-color: $color-warning;	border: 1px solid $input-border-warning;	color: black;	}
 
 .disabled	{ color: $color-disabled;	}
 
