@@ -16,6 +16,7 @@ from server.routes import public_routes as public
 from server.routes import test_routes as testing
 from server.infrastructure.errors import *
 from server.controllers	import *
+from flask_oauthlib.client	import OAuth, OAuthException
 
 
 facebook = sc_server.oauth.remote_app( 'facebook',
@@ -49,11 +50,14 @@ def oauth_login_facebook():
 @public.route('/authorized/facebook')
 @facebook.authorized_handler
 def facebook_authorized(resp):
-	if resp is None:
-		session['messages'] = 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('public.render_login'))
+	if not resp:
+		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(url_for('public_routes.render_signin'))
 
-	print 'session access_token', resp.get('access_token', 'CAH')
+	if isinstance(resp, OAuthException):
+		print 'Access denied: %s' % resp.message
+		return redirect(url_for('public_routes.render_signin'))
+
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
 
