@@ -7,44 +7,20 @@
 @import 'defines/common';
 @import	'defines/styled/overides';
 
-$version : 0.02;
+$version : 0.03;
 
 
-#profile-header {
-	background-color: $color-easygray;
-	height: 100px;
-}
+#profile-header {	background-color: $color-easygray;	height: 100px;		}
+#profile-info	{	position: relative;		top: -30px;	padding-left: 20px;	}
 
-#profile-name { text-align: left; width: 30%; }
-#profile-info {
-	position: relative;
-	top: -30px;
-	padding-left: 20px;
-}
+.referral				{	margin: 0 0 25px 125px;	 @include transition_td(border-color, 1s, ease-in-out);		border: 1px solid transparent;	border-bottom-color: #eee;			}
+.referral:last-of-type	{	border-bottom-color: transparent;	}
+.highlight				{	border-color: $ht-blue;	}
 
-.referral {	padding: 0 10px 0 125px; }
-
-
-//.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }	//KEEP
-
-.ref-skills		{	color: gray;	display: inline; }
-.ref-skills li	{					display: inline; 	padding-left: 0; } 
-.ref-skills li:after				{ content: ' | ';	}
-.ref-skills li:last-of-type:after	{ content: '';		}
-//.ref-skills li:before { content: ' | ';	}
-
-.ref-name		{	display: inline; font-weight: bold;						} //trying to shoehorn location onto same line. margin-right: -75px;	padding-right: 80px;	
-.ref-location	{	display: inline; font-size: .8em;	color: $black-80;	}
-
-
-
-.ref-context {
-	display: inline-block;
-	margin-right: -70px;
-	padding-right: 75px;
-}
-
-.ref-operations		{	display: inline;	font-size: 0.8em;	padding: 0 5px;	}
+.ref-name			{	display: inline;		font-weight: bold;		} //trying to shoehorn location onto same line. margin-right: -75px;	padding-right: 80px;	
+.ref-location		{	display: inline;		font-size: .8em;		}
+.ref-context		{	display: inline-block;	margin-right: -70px;	padding-right: 75px;	}
+.ref-operations		{	display: inline-block;	font-size: 0.8em;		width: 65px;	}
 .ref-operations li	{	display: inline; 	padding-left: 0; } 
 
 .pop-over-li			{	margin-bottom: 3px;	text-align: left; }
@@ -66,3 +42,10 @@ span[data-role="remove"]	{ @extend .no-display; }	// used for display only, cann
 
 //.sns	{	margin: 3px 2px;	}	//KEEP
 #addr	{	background-color: white;	padding: 0 5px;	}
+/*.ref-name:after	{	color: gray; font-weight: 200; content : ' | '; }	//KEEP
+.ref-skills		{	color: gray;	display: inline; }
+.ref-skills li	{					display: inline; 	padding-left: 0; } 
+.ref-skills li:after				{ content: ' | ';	}
+.ref-skills li:last-of-type:after	{ content: '';		}
+//.ref-skills li:before { content: ' | ';	}
+*/
