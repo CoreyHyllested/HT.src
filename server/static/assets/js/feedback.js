@@ -29,6 +29,12 @@ function show_errors(status_element, responseJSON) {
 function clear_error_msg(element)	{ $(this).prev('.field-error').slideUp().html('').removeClass('error');	}
 function clear_error_box(element)	{ $(this).removeClass('error');	}
 
+function flash_elem_border(elem)	{ highlight_element(elem);		setTimeout(highlight_disable, 1000, elem);	}
+function highlight_element(elem)	{ $(elem).addClass('highlight');	}
+function highlight_disable(elem)	{ $(elem).removeClass('highlight');	}
+
+
+
 
 function set_status(elem, content) {
 	$(elem).empty();
