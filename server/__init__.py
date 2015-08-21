@@ -156,7 +156,7 @@ def server_init_assets_js(server, assets):
 	js_common	= Bundle('modals.js', 'feedback.js', filters=jsfilter, output='js/common.js')
 	js_projects = Bundle('projects.js', 'maps.js', filters=jsfilter, output='js/projects.js')
 	js_referral	= Bundle('referral.js', 'maps.js', filters=jsfilter, output='js/referral.js')
-	js_profiles	= Bundle('profiles.js', filters=jsfilter, output='js/profiles.js')
+	js_profiles	= Bundle('profiles.js', 'plugins/scrollto.jq', filters=jsfilter, output='js/profiles.js')
 	js_settings	= Bundle('settings.js', filters=jsfilter, output='js/settings.js')
 	js_dashboard = Bundle('dashboard.js', filters=jsfilter, output='js/dashboard.js')
 

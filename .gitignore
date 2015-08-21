@@ -29,6 +29,7 @@ server/static/js/dashboard.js
 server/static/js/projects.js
 server/static/js/referral.js
 server/static/js/settings.js
+server/static/js/profiles.js
 
 users.db
 run.py

@@ -65,12 +65,15 @@
 
 {% block scripts %}
 	{{ super() }}
-	{%- assets 'js_profile' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
+	{%- assets 'js_profiles' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 	<script src='/static/js/tagsinput.js'></script>
 	<script src='/static/js/bs-popover.js'></script>
 	<script>
 	$(document).ready(function () {
-		{%- if highlight %}flash_elem_border('article[data-ref-id={{highlight}}]');{%- endif %}
+		{%- if highlight %}
+		$('body').scrollTo('article[data-ref-id={{highlight}}]');
+		flash_elem_border('article[data-ref-id={{highlight}}]');
+		{%- endif %}
 
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
 		$(".pop-share").popover({
