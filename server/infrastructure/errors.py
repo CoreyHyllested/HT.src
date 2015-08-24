@@ -17,11 +17,15 @@ from flask import render_template, make_response, redirect
 from flask import session, request, jsonify
 from sqlalchemy.exc		import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
+from server.models.Profile import *
 from datetime import datetime as dt
 
 
 
-MESSAGE = { '(IntegrityError) duplicate key value violates unique constraint "ix_account_email' : 'Email is already in use', }
+MESSAGE = {
+	'(IntegrityError) duplicate key value violates unique constraint "ix_account_email' : 'Email is already in use',
+	'(IntegrityError) null value in column "ref_profile" violates not-null constraint'	: 'Missing value',	# human injected issue for referral.
+}
 
 
 class ApiError(object):
@@ -40,6 +44,10 @@ class ApiError(object):
 
 class SanitizedException(Exception):
 	def __init__(self, exception, status='An issue occurred', errors=[], code=400):
+		print 'SE: exception = ', exception
+		print 'SE: status = ', status
+		print 'SE: errors = ', str(errors)
+		print 'SE: code = ', str(code)
 		self.__exception = exception
 		self.__next = None
 		self.__code = code
@@ -78,13 +86,16 @@ class SanitizedException(Exception):
 
 
 	def response(self):
-		# allow route/errors to catch and render HTML page
-		#if (method == 'GET'): raise self	-- ?
+		if (request.method == 'GET'):
+			# when request is 'GET'; return error page.
+			bp = Profile.get_by_uid(session.get('uid'))
+			error_page = '500.html' if (self.code() >= 500) else '404.html'
+			return make_response(render_template(error_page, bp=bp), self.code())
 
-		# POSTed from Web-Client, respond with JSON Error Mesg.
-		print 'response = POST : code(' + str(self.__code) + ') : ' + str(self.__status) + ' : ' + str(self.__errors)
-		api_resp = jsonify ({ 'status': self.__status, 'errors': self.__errors })
-		return make_response(api_resp, self.__code)
+		# POST from Web-Client, respond with JSON Error Mesg.
+		print 'response = POST : code(' + str(self.code()) + ') : ' + self.status() + ' : ' + str(self.errors())
+		api_json_resp = jsonify ({ 'status': self.__status, 'errors': self.__errors })
+		return make_response(api_json_resp, self.code())
 
 
 	@staticmethod
@@ -106,6 +117,7 @@ class InvalidInput(SanitizedException):
 		print self.exception()
 
 	def __str__(self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+
 
 
 
@@ -144,28 +156,27 @@ class StateTransitionError(SanitizedException):
 
 
 
+
 class NoResourceFound(SanitizedException):
 	def __init__(self, resrc, resrc_id):
-		status = resrc + ' \'' + resrc_id + '\' not found'
-		SanitizedException.__init__(self, 'Resource Error', status=status)
-		self.resrc		= str(resrc)
-		self.resrc_id	= str(resrc_id)
+		super(NoResourceFound, self).__init__('Resource Not Found', resrc + ' \'' + resrc_id + '\' was not found', [], 400)
+		self.resrc		= resrc
+		self.resrc_id	= resrc_id
 
 	def __str__(self): return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
 
 
-
 class NoReferralFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Referral', str(rid))
+	def __init__(self, rid): super(NoReferralFound, self).__init__('Referral', str(rid))
 
 class NoAccountFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Account', str(rid))
+	def __init__(self, rid): super(NoAccountFound, self).__init__('Account', str(rid))
 
 class NoProfileFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Profile', str(rid))
+	def __init__(self, rid): super(NoProfileFound, self).__init__('Profile', str(rid))
 
 class NoReviewFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Review', str(rid))
+	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
 
 class NoEmailFound(NoResourceFound):
 	def __init__(self, rid): NoResourceFound('Email', str(rid))
