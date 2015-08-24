@@ -108,8 +108,8 @@ $version	:	0.01;
 
 
 
-.twitter-typeahead		{	width: 98%;	} 						//bug. #invite-emails is too small. 100% is too big for tt-menu, 98% makes them the same sz
-.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px $color-shadows;	background-color: white; 	}	//bug. .tt-menu is too high
+.twitter-typeahead		{	width: 100%;	} 						//bug. #invite-emails is too small.
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px $color-shadows;	background-color: white; }	//bug. .tt-menu is too high
 .tt-suggestion			{	padding-left: 3px;				}
 .tt-suggestion:hover	{	background-color: whitesmoke;	}
 .bootstrap-tagsinput 	{	box-shadow: none !important;	}	// (ugly) referral, profile
