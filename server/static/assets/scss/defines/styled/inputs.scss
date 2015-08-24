@@ -1,0 +1,134 @@
+/* (C) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+
+$version	:	0.01;
+
+.actions			{	text-align: right;		}
+.form-group			{	position: relative;	margin-bottom: 0 !important;	}
+.form-group-before	{
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-family: FontAwesome;
+	font-size:	 $input-icon-size;
+	line-height: $input-icon-line-height;
+	position: absolute;
+	left: 10px;
+	top:  13px;		//field-height (40) - icon-height (14) == 26; split
+	color: $input-icon-gray;
+}
+
+.form-group.username:before	{ @extend .form-group-before; content: "\f007"; }
+.form-group.password:before	{ @extend .form-group-before; content: "\f023"; }
+.form-group.url:before		{ @extend .form-group-before; content: "\f0c1"; }
+.form-group.tel:before		{ @extend .form-group-before; content: "\f095"; }
+.form-group.phone:before	{ @extend .form-group-before; content: "\f095"; }
+.form-group.email:before	{ @extend .form-group-before; content: "\f003"; }
+.form-group.address:before	{ @extend .form-group-before; content: "\f041"; }
+.form-group input[type='name'],  .form-group input[type='address'],
+.form-group input[type='phone'], .form-group input[type='tel'],
+.form-group input[type='email'], .form-group input[type='url'],
+.form-group input[type='search'],.form-group input[type='password'],
+{	padding-left: 30px;	}
+
+
+.btn-sc-default {
+	@include transition();
+	@include appearance(none);
+	@include border-rad(3px);
+	cursor: pointer;
+	display: table-cell;
+	height: 35px;
+	font-size: 0.9em;
+	font-weight: 400;
+	text-align: center;
+	vertical-align: middle;
+	width: 100%;
+}
+
+.blueButton			{	@extend .btn-sc-default;	background-color: $ht-blue;	border: 1px solid $ht-blue;				color: white;		}
+.redButton			{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $btn-border-default;	color: red;			}
+.whiteButton		{	@extend .btn-sc-default;	background-color: white;	border: 1px solid $btn-border-default;	color: $ht-blue;	}
+.messageButton		{	@extend .blueButton;		margin-top: -12px;																		}
+
+.blueButton:hover	{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
+.messageButton:hover{	color: white;				background-color: $ht-blue-hover;	border: 1px solid $ht-blue-hover;		text-decoration: none;	}
+.redButton:hover	{	color: red;														border: 1px solid red;					text-decoration: none;	}
+.whiteButton:hover	{	color: $ht-blue;												border: 1px solid $ht-blue;				text-decoration: none;	}
+
+
+.btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
+.btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: none;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
+.btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
+.btn-modal			{	@extend .btn-simple;	}
+
+
+
+.btn-social			{	@extend .btn-sc-default;	margin: 15px auto; 		max-width: 220px;	color: white; 	text-align: left;	font-weight: 500;	}
+.btn-social:hover	{	color: white;	}
+.btn-social .fa		{	font-size: 18px; position: relative; top: 2px; margin-right: 10px; border-right: 1px solid rgba(0, 0, 0, 0.05); padding-right: 10px; width: 30px; }
+
+.btn-soulcraft		{ @extend .btn-social;	background: $ht-blue;				}
+.btn-facebook		{ @extend .btn-social;	background: $color-facebk;			}
+.btn-twitter		{ @extend .btn-social;	background: $color-twittr;			}
+.btn-google			{ @extend .btn-social;	background: $color-google;			}
+.btn-soulcraft:hover{ @extend .btn-social;	background: $ht-blue-hover;			}
+.btn-facebook:hover	{ color: white;			background: $color-facebk-hover;	}
+.btn-twitter:hover	{ color: white;			background: $color-twittr-hover;	}
+.btn-google:hover	{ color: white;			background: $color-google-hover;	}
+
+
+.checkbox-label		{	background-image:url('../img/checkbox.svg');		}
+.map-canvas			{	display: block;	height: 165px;	}
+
+
+.field-container {
+	width: 100%;
+	position: relative;
+	display: block;
+	margin: 0px 0 8px;
+	max-width: 600px;
+}
+
+
+.field.info			{ padding: 15px 0 5px; 	margin-left: 0px;	}
+.field.info.first	{ padding-top: 0px;		}
+.field.input.iconified { padding-left: 13px; }
+
+.field				{	margin: 5px 0;		display: inline;	padding-left: 3px;			}
+.field-lead			{	@extend .field;		font-weight: 600;								}
+.field-lead.overflow{	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 	}
+
+.field-error		{	display: none;			color: $color-error;	font-size: .7em;	padding-left: 3px;	}
+.field-error.error	{	display: inline-block;																	}
+
+
+
+.twitter-typeahead		{	width: 100%;	} 						//bug. #invite-emails is too small.
+.tt-menu				{	top: inherit !important;	box-shadow: 0px 0px 3px $color-shadows;	background-color: white; }	//bug. .tt-menu is too high
+.tt-suggestion			{	padding-left: 3px;				}
+.tt-suggestion:hover	{	background-color: whitesmoke;	}
+.bootstrap-tagsinput 	{	box-shadow: none !important;	}	// (ugly) referral, profile
+
+
+.action-feedback		{
+	font-size: .9em;
+	text-align: right;
+}
+
+.feedback-bubble		{
+	border-radius: 7px;
+	font-weight: 600;
+	text-align: center;
+	margin: 5px auto;
+	width:	66%;
+}
+.feedback-positive	{ @extend .feedback-bubble; background-color: green;			border: 1px solid $input-border-success;	color: white;	}
+.feedback-negative	{ @extend .feedback-bubble; background-color: $color-warning;	border: 1px solid $input-border-warning;	color: black;	}
+
+.disabled	{ color: $color-disabled;	}
+

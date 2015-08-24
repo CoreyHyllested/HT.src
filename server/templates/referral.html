@@ -1,0 +1,73 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Refer a professional.' %}
+{% set meta_desc	= 'Refer a professional on Soulcrafting.' %}
+
+
+{% block header_css %}
+	{{ super() }}
+	<link rel='stylesheet' href='/static/css/tagsinput.css'>
+	{% assets 'master', 'scss_referral' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+{% block header_js %}
+	{{ super() }}
+	<script src="//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places"></script>
+{% endblock %}
+
+
+{% block content %}
+<section>
+	<div>
+		<h2 class='align-left'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h2>
+		<form id='form-referral'>
+		{{form.hidden_tag()}}
+		{%- if edit %}{{form.trusted(readonly=true)}}
+		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name.")}}
+		{%- endif %}
+		<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
+		{#
+			<div id='pro-category'></div>
+			<div id='pro-name'></div><div id='pro-email'></div>
+			<div id='pro-addr'></div><div id='pro-phone'></div>
+		#}
+			<div id='referral-questions'>
+				<div class='field-lead'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr'></span></div>
+				<div class='field-error'></div>
+				{{form.content(spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time. (Require at least 20 characters).")}}
+
+				<div class='field-lead'>What project was this for?</div>
+				<div class='field-error'></div>
+				{{form.context(autocomplete="off", maxlength=120, placeholder="Remodel deck, cheap (optional)")}}
+			</div>
+
+			<div class='actions'>
+				{%- if edit %}<input id='btn-goback-referral' type="button" class='btn-simple whiteButton' value="Go Back" onclick="history.go(-1);" />
+				{%- else %}   <input id='btn-cancel-referral' type="button" class='btn-simple whiteButton' value="Clear" />
+				{%- endif %}
+				<input id='btn-submit-referral'	type="submit" class='btn-simple blueButton' value="Save Referral" />
+				<div class='action-feedback' />
+			</div>
+		</div>
+		</form>
+	</div>
+
+	{#
+	<div id='instructions' class='{%-if not form.bid.data %}no-display{%-endif%}'>
+		<h3>Sharing your network</h3>
+		<p>Your recommendation will be public.</p>
+		<p>Help others understand the context of your project&ndash;and why you recommend them.</p>
+		<ul id='feedback'></ul>
+	</div>
+	#}
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+	<script src="/static/js/typeahead.bundle.js"></script>
+	<script src="/static/js/handlebars.js"></script>
+	<script src="/static/js/tagsinput.js"></script>
+	{%- assets 'js_referral' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
+{% endblock %}

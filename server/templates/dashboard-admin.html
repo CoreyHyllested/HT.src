@@ -1,0 +1,26 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Admin Soulcrafting' %}
+
+{% block header_css %}
+	{{ super() }}
+	{% assets 'master', 'scss_dashboard' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+{% endblock %}
+
+
+{% block content %}
+<section>
+	<div id='refer-professional' class=''>
+		<h3>Welcome Admin {{bp.prof_name}}</h3>
+		<input id='find-professional' style="width: 100%;" type='text' class='typeahead' autocomplete='off' placeholder='Pros name'>
+	</div>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+	<script src="/static/js/handlebars.js"></script>
+	<script src="/static/js/typeahead.bundle.js"></script>
+	<script src="/static/js/bootstrap-tagsinput.js"></script>
+	{%- assets 'js_dashboard' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+{% endblock %}

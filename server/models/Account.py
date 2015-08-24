@@ -12,11 +12,11 @@
 #################################################################################
 
 
-from server.infrastructure.srvc_database import Base, db_session
+from server import database
 from server.infrastructure.errors	import *
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
-from sqlalchemy import ForeignKey, LargeBinary
-from sqlalchemy.orm	import relationship, backref
+from server.models.shared	import *
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm	 import relationship, backref
 from factory.alchemy import SQLAlchemyModelFactory
 from factory.fuzzy	 import *
 from datetime import datetime as dt, timedelta
@@ -24,78 +24,9 @@ from pytz import timezone
 import datetime, uuid, factory
 
 
-OAUTH_NONE   = 0
-OAUTH_LINKED = 1
-OAUTH_STRIPE = 2
-OAUTH_GOOGLE = 3
-OAUTH_FACEBK = 4
-OAUTH_TWITTR = 5
-
-################################################################################
-### EMAIL POLICY FIELD #########################################################
-################################################################################
-################################################################################
-## 	BIT-RANGE		NAME			DETAILS
-################################################################################
-## 	0 - 4			Receipts			Receipts for action taken.
-##	8 				USERMSG_RECVD		Notification that user sent a message.
-##  9				REVIEW_POSTED		Notificaiton that a user reviewed you.
-##  16				Meeting Reminder	Reminder sent 24 hours before.
-################################################################################
-##  4-15,18,19,21-31				reserved
-################################################################################
-
-class EmailPolicy:
-	# Receipts for actions I take
-	EMAIL_BIT_RECPT_ACCEPT = 0
-	EMAIL_BIT_RECPT_REJECT = 1
-	EMAIL_BIT_RECPT_CANCEL = 2
-	EMAIL_BIT_RECPT_REVIEW = 3
-	EMAIL_BIT_RECPT_MESSGE = 4
-
-	# Non-Critical Messages to a user.
-	EMAIL_BIT_USERMSG_RECVD = 8
-	EMAIL_BIT_REVIEW_POSTED = 9
-
-	# Reminder emails.
-	EMAIL_BIT_REMIND_MEETING = 16
-	EMAIL_BIT_REMIND_REVIEWS = 17
-
-	# Receipts for actions I take
-	EMAIL_POLICY_RECPT_ACCEPT = (0x1 << EMAIL_BIT_RECPT_ACCEPT)
-	EMAIL_POLICY_RECPT_REJECT = (0x1 << EMAIL_BIT_RECPT_REJECT)
-	EMAIL_POLICY_RECPT_CANCEL = (0x1 << EMAIL_BIT_RECPT_CANCEL)
-	EMAIL_POLICY_RECPT_REVIEW = (0x1 << EMAIL_BIT_RECPT_REVIEW)
-	EMAIL_POLICY_RECPT_MESSGE = (0x1 << EMAIL_BIT_RECPT_MESSGE)
-	EMAIL_POLICY_RECEIPTS = EMAIL_POLICY_RECPT_ACCEPT | EMAIL_POLICY_RECPT_REJECT | EMAIL_POLICY_RECPT_CANCEL | EMAIL_POLICY_RECPT_REVIEW | EMAIL_POLICY_RECPT_MESSGE
-
-	# Non-Critical Messages to a user.
-	EMAIL_POLICY_USERMSG_RECVD	= (0x1 << EMAIL_BIT_USERMSG_RECVD)
-	EMAIL_POLICY_REVIEW_POSTED	= (0x1 << EMAIL_BIT_REVIEW_POSTED)
-	EMAIL_POLICY_REMIND_MEETING = (0x1 << EMAIL_BIT_REMIND_MEETING)
-	EMAIL_POLICY_REMIND_REVIEWS = (0x1 << EMAIL_BIT_REMIND_REVIEWS)
 
 
-
-class AccountRole:
-	CUSTOMER		= 0
-	CRAFTSPERSON	= 16
-	ADMIN			= 1024
-
-	LOOKUP_TABLE = {
-		CUSTOMER		: 'CUSTOMER',
-		CRAFTSPERSON	: 'CRAFTSPERSON',
-		ADMIN			: 'ADMIN',
-	}
-
-	@staticmethod
-	def name(state):
-		return AccountRole.LOOKUP_TABLE.get(state, 'UNDEFINED')
-
-
-
-
-class Account(Base):
+class Account(database.Model):
 	"""Account maintains identity information each individual."""
 	__tablename__ = "account"
 
@@ -108,8 +39,8 @@ class Account(Base):
 	email   = Column(String(128), nullable=False,  index=True, unique=True)
 	name    = Column(String(128), nullable=False)
 	pwhash	= Column(String(128), nullable=False)
-	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)   
-	source  = Column(Integer,		nullable=False, default=OAUTH_NONE)
+	status  = Column(Integer,		nullable=False, default=USER_UNVERIFIED)
+	source  = Column(Integer,		nullable=False, default=OauthProvider.NONE)
 	phone	= Column(String(20))
 	created = Column(DateTime())
 	updated = Column(DateTime())
@@ -118,7 +49,6 @@ class Account(Base):
 	stripe_cust	 = Column(String(64))
 	role		 = Column(Integer, nullable=False, default=AccountRole.CUSTOMER)
 	email_policy = Column(Integer, default = 0)
-	referred_by	= Column(String(40), ForeignKey('referral.ref_id'))
 
 	# all user profiles
 	profiles = relationship('Profile', cascade='all,delete', uselist=False, lazy=False)
@@ -133,10 +63,9 @@ class Account(Base):
 		self.created = dt.utcnow()
 		self.updated = dt.utcnow()
 		self.sec_question = str(uuid.uuid4())
-		self.referred_by = ref
 
 
-	def __repr___ (self):
+	def __repr__ (self):
 		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
 
@@ -145,8 +74,7 @@ class Account(Base):
 		account = None
 		try:
 			account = Account.query.filter_by(userid=uid).one()
-		except NoResultFound as none:
-			pass
+		except NoResultFound as nrf: pass
 		return account
 
 
@@ -155,8 +83,7 @@ class Account(Base):
 		account = None
 		try:
 			account = Account.query.filter_by(email=email_address.lower()).one()
-		except NoResultFound as none:
-			pass
+		except NoResultFound as nrf: pass
 		return account
 
 
@@ -208,7 +135,7 @@ class Account(Base):
 class AccountFactory(SQLAlchemyModelFactory):
 	class Meta:
 		model = Account
-		sqlalchemy_session = db_session
+		sqlalchemy_session = database.session
 
 	name	= factory.Sequence(lambda n: u'Test User %d' % n)
 	email	= factory.Sequence(lambda n: u'corey+TestUser%d@insprite.co' % n)

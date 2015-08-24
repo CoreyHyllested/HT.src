@@ -1,0 +1,46 @@
+/* (c) 2015 Soulcrafting */
+
+$black:		rgba(0, 0, 0, 1);
+$black-40:	rgba(0, 0, 0, 0.4);
+$black-80:	rgba(0, 0, 0, 0.8);
+$white:		rgba(255,255,255, 1);
+$white-80:	rgba(255,255,255,.8);
+
+$darkgreen: rgba(0, 100, 0, .8);
+
+$ht-blue:			#29abe2;
+$ht-blue-hover:		#007cb3;
+$transparent:		rgba(0, 0, 0, 0);
+$color-shadows:		rgba(0, 0, 0, 0.4);
+$color-warning:		rgba(255, 200, 0, 1);
+$color-disabled:	$color-shadows;
+$color-darkgray:	#999999;
+$color-easygray:	#ecf0f1;
+$color-error:		#e75f63;
+$color-signup:		#5b8a08;
+$color-twittr:		#55acee;
+$color-google:		#dd4b39;
+$color-facebk:		#3b5998;
+$color-signup-hover: #407528;
+$color-twittr-hover: #2795e9;
+$color-google-hover: #c23321;
+$color-facebk-hover: #2d4373;
+
+
+$font-color-placeholder:	#939292;
+$font-color-icon:			$color-darkgray;
+$font-color-error:			$color-error;
+
+$input-icon-gray:			$font-color-icon;
+$input-btn-default:	#e2e4e6;
+$input-box-default:	#e1e8ed;
+$input-box-success:	green;
+$input-box-invalid:	$color-error;
+$input-box-warning:	$color-warning;
+
+$btn-border-default:	$input-btn-default;
+$input-border-default:	$input-box-default;
+$input-border-success:	$input-box-success;
+$input-border-invalid:	$input-box-invalid;
+$input-border-warning:	$input-box-warning;
+/* $red: hsla(358, 74%, 64%, 1); // #e75f63; */

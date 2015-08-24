@@ -1,0 +1,65 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Sign up for Soulcrafting.' %}
+{% set meta_desc	= 'Sign up for Soulcrafting.' %}
+
+{% block header_css %}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{% assets 'master', 'scss_loginsys' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+
+{% block content %}
+<section id='authorize'>
+	<div class='align-center'>
+		<h2>Sign up for Soulcrafting</h2>
+		<ul>
+			{%- if ref_name %}<li>Referred by {{ref_name}}</li>{%- endif %}
+			<li><a href="/login/facebook"><button class="btn btn-facebook"><i class="fa fa-facebook"></i>Sign up with Facebook</button></a></li>
+		</ul>
+	</div>
+	<hr class='thin'>
+
+	<div id='authorize-form'>
+		<form action="/signup" method="POST" id='signup-form' class="signup-form">
+			{{form.hidden_tag()}}
+			{{form.refid}}
+			<div class="form-group username">
+				<label class="sr-only" for="uname">Your name</label>
+				{{form.uname(type="name", class="form-control login-uname", required=true, Placeholder="Your name")}}
+			</div>
+			<div class="form-group email">
+				<label class="sr-only" for="email">Your email</label>
+				{{form.email(type="email", class="form-control login-email", required=true, Placeholder="Your email")}}
+			</div>
+			<div class="form-group password">
+				<label class="sr-only" for="passw">Your password</label>
+				{{form.passw(type="password", class="form-control login-password", required=true, Placeholder="Your password")}}
+			</div>
+
+			<p>By signing up, I agree to Soulcrafting's <a href='/terms/service'>Terms of Service</a> and <a href='/terms/privacy'>Privacy Policy</a>.</p>
+
+			<button id='btn-signup' type='submit' class='btn btn-block blueButton'>Sign Up</button>
+		</form>
+		<br>
+		<form method='GET' action='/signin'><button class='whiteButton'>I have an account</button></form>
+		<form method='GET' action='/signup/professional'><button class='whiteButton'>I'm a professional</button></form>
+	</div>
+</section>
+{% endblock %}
+
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+{% block scripts %}
+	{{ super() }}
+
+{#	
+	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
+<script>
+	$(document).ready(function() {
+		/* remove attention class once user has made a change */
+		$('.form-control').blur(function (e) { $(this).removeClass('attention');	});
+		$('#terms').click(function (e){ $('#terms-text').removeClass('attention');	});	
+	});
+</script>
+#}
+{% endblock %}

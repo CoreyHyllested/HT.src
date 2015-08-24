@@ -1,0 +1,50 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/overides';
+
+$referral-version	: 0.03;		//try to use overrides
+$max-card-sz		: 640px;
+
+section div	{	max-width: $max-card-sz + 10;	}
+.trust-card {
+	width: 100%;	max-width: $max-card-sz;
+	margin: 0px;	border-radius: 0;
+}
+
+#trusted			{	@extend .trust-card;	display: inline-block;														}
+#trust-card			{	@extend .trust-card;	border: 1px $input-border-default solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
+#content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
+#referral-questions {	padding: 25px 0 10px;	}
+#content-nr			{	color: $color-disabled;	}
+
+
+.pro-suggestion	{
+	width: 100%;
+	height: 20px;
+
+	font-weight: 600;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.pro-suggestion-addr {
+	font-size: .8em;
+	color: gray;
+}
+
+#modal-business-info		{	display: none;	}
+#modal-business-addr		{	display: none;	}
+#modal-business-info.block	{	display: block;	margin-bottom: 20px;	}
+#modal-business-addr.block	{	display: block;	margin-bottom: 20px;	}
+
+.tt-menu							{	max-width: 638px;	margin-left: 1px;}	//due to shadow, slide over 1px (address both sides
+div.bootstrap-tagsinput 			{	background-color: rgba(0,0,0,.01);		border: 1px solid $input-border-default;		}
+div.bootstrap-tagsinput.active 		{	background-color: white !important;		border-color: $input-box-default !important;	}
+.bootstrap-tagsinput input.tt-input	{	margin-bottom: 0px;	padding-left: 0px;	}
+

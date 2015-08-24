@@ -1,0 +1,50 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'colors';
+
+$img-medpatio:	url('/static/img/cover-medpatio.jpg');
+$img-bkitchen:	url('/static/img/ex-beach-kitchen.jpg');
+$img-wkitchen:	url('/static/img/ex-white-kitchen.jpg');
+$img-blurred:	url('/static/img/background-blurred.jpg');
+$img-kitchen:	url('/static/img/cover-kitchen.jpg');
+$img-dancing:	url('/static/img/dg-table.jpg');
+$img-bedroom:	url('/static/img/cover-bedroom.jpg');
+$img-office:	url('/static/img/cover-office.jpg');
+$img-grass:		url('/static/img/cover-grass.jpg');
+$img-patio:		url('/static/img/ex-patio.jpg');
+$img-lpcover:	url('/static/img/cover.jpg');
+$img-wwms:		url('/static/img/wwms-table2.jpg');
+$img-404:		url('/static/img/cover-404.jpg');
+
+/* Images.  img-container (no margins).  */
+.img-responsive	{	margin: 0 auto; }
+.img-responsive	{	background:	$color-easygray;												margin: 0 auto;	}
+.img-craftsman	{	width: 150px;						height: 150px;	border-radius: 50%;						}
+.img-thumb		{	width: 100%;	max-width: 170px;	height: auto;	display: inline-block;	margin: 10px;	}
+.img-small		{	width: 100%;	max-width: 170px;															}
+
+/* Images.  img-container (no margins).  */
+.img-width-100	{	max-width: 999px;					}
+.img-width-50	{	max-width: 485px;	width:	49%;	display: inline-block;	}
+.img-width-33	{	max-width: 350px;	width:	33%;	display: inline-block;	}
+.img-spacer		{	max-width:  22px;	width:	2px;	display: inline-block;	}
+.press-img 			{ display: inline-block;	margin: 0 0.75em;	border: 1px solid rgba(0, 0, 0, 0);	}
+
+
+/* Responsive Styles */
+@media (max-width: 488px) {
+	// used by /products
+	.img-width-50	{	width: 100%;	max-width: 100%;	}
+}
+
+@media (max-width: 768px) {
+	/* used by aboutsc.scss; /about */
+	.img-thumb		{	width: 100%;	max-width: 100%;	margin: 10px 0; }
+	.img-spacer		{	width:	1%;		}	 // used by /products
+}
+
+
+@media (min-width: 1020px)	{ 
+	// used by /products
+	.img-spacer	{	width:	21px;	}
+}

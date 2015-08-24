@@ -4,7 +4,7 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets 'scss_errors' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{%- assets 'master', 'scss_errors' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 {% block content %}
@@ -21,6 +21,7 @@
 		<ul id='error-list'>
 			<li><a href='/'>Home</a></li>
 			<li><a href='/about'>About</a></li>
+			<li><a href='/referral'>Create Referral</a></li>
 			<li><a href='/products/furniture'>Custom Furniture</a></li>
 		</ul>
 	</div>

@@ -1,0 +1,90 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
+
+#project-wrapper {
+	background-color: white;
+	position: relative;
+	overflow: auto;
+}
+
+
+#project-header {
+	padding: 20px 0;
+	font-size: 1.1em;
+}
+
+#proj_desc	{ padding-left: 5px;	}	/* override col-XX-sz, which sets 15px padding */
+#proj_addr	{ padding-bottom: 5px;	}
+#actions		{ margin: 10px auto; }
+#save-project	{ visibility: hidden;	}
+#status {
+	display: block;
+	height: 75px;
+	font-weight: bolder;
+	visibility: hidden;
+}
+
+
+#calendar {
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+
+#basic-details {
+	display: block;
+	width: 100%;
+	margin: 20px auto;
+}
+
+
+/* THIS WORKS... but needs to be changed; also everything needs the hint 
+.input-wrapper:before {
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: absolute;
+  top: 10px;
+  color: #999999;
+  z-index: 1;
+}
+*/
+
+.scheduleMap {
+	background-color: rgba(0,0,0, 0.05);
+	border: 1px #e1e8ed solid;
+	border-radius: 0 0 3px 3px;
+	border-top: none;
+	margin-top: 3px;
+	height: 300px;
+}
+
+
+
+/* PHONE DESIGN */
+@media (min-width: 768px) {
+	#project-wrapper {
+		margin: 0px auto 20px;
+		max-width: 650px;
+		border-radius: 6px;
+	}
+
+	#save-project { visibility: visible !important; }
+	#actions { margin: 20px auto; }
+}
+
+
+/*
+@media (min-width: 980px) {
+	#wrap-budget:before { color: #999999; content: '$'; font-size: .9em; line-height: 40px; position: absolute; padding-left: 5px; z-index: 1; }
+}
+*/

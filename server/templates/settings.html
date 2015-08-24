@@ -4,32 +4,29 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets "scss_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{%- assets "master", "scss_settings" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 
 {% block content %}
-<section id='settings-content'>
+<section>
 	<div><h3>Account Settings</h3></div>
 
-	<form id='settings-form' enctype="multipart/form-data">
+	<form id='form-settings' enctype="multipart/form-data">
 		{{form.hidden_tag()}}
-		<input type='hidden' id='csrf'	  value='{{csrf_token()}}'>
-		<input type='hidden' id='nexturl' value='{{nexturl}}'>
 
 		<div id='update-name'>
-			<div class='field info'>Your legal name</div>
-			<div class='field error'></div>
-			{{form.name(placeholder="Your Name", class="field input span9")}}
+			<div class='field-lead'>Your legal name</div>
+			<div class='field-error'></div>
+			{{form.name(placeholder="Your Name", required=true)}}
 		</div>
 
 		<div id='update-email'>
-			<div class='field info'>Your email address</div>
-			<div class='field error'></div>
-
-			{{form.email(placeholder="Your Email", class='field input span9')}}
-{#			<div class='field action'>
+			<div class='field-lead'>Your email address</div>
+			<div class='field-error'></div>
+			{{form.email(placeholder="Your Email", required=true)}}
+{#			<div>
 				{% if verified_email == True %}
 					<div id='email-verified'><i class="fa fa-fw fa-check"></i>&nbsp;Verified</div>
 				{% else %}
@@ -38,43 +35,40 @@
 				{% endif %}
 			</div>
 			<div class='empty' id='verify-email'>
-				<input type="text" id="challenge" placeholder="Enter verification code." class="field input span9 left">
-				<div class='field action'>
-					<button id='btn-validate-code' class="whiteButton">Submit Code</button>
-				</div>
+				<input type="text" id="challenge" placeholder="Enter verification code." class="field input left">
+				<button id='btn-validate-code' class="whiteButton">Submit Code</button>
 			</div>
 #}
 		</div>
 
 		<div id='update-password'>
-			<div class='field info'>Update your password</div>
-			<div class='field error'></div>
-			{{form.update_password(placeholder="New password",    class="field input span9", autocomplete="off")}}
-			{{form.verify_password(placeholder="Verify password", class="field input span9", autocomplete="off")}}
+			<div class='field-lead'>Update your password</div>
+			<div class='field-error'></div>
+			{{form.update_password(placeholder="New password",    autocomplete="off")}}
+			{{form.verify_password(placeholder="Verify password", autocomplete="off")}}
 		</div>
 
-		<div id='current-password'>
-			<div class='field info notice'>Enter current password to save changes</div>
-			<div class='field error'></div>
-			{{form.current_password(placeholder="Current password", class="field input span9", autocomplete="off")}}
+		<div id='provide-current-password'>
+			<div class='field-lead'>Enter current password to save changes</div>
+			<div class='field-error'></div>
+			{{form.current_password(placeholder="Current password (required)", autocomplete="off")}}
 		</div>
+
+		<div class='align-right'>
+			<button id='btn-back' class='btn-simple whiteButton'>Go Back</button>
+			<button id='btn-save' class='btn-simple blueButton' type='submit'>Save Settings</button>
+		</div>
+		<div class='action-feedback'></div>
 	</form>
-
-	<div>
-		<button class='btn-settings blueButton'	 id='btn-save'>Save Settings</button>
-		<button class='btn-settings whiteButton' id='btn-back'>Go Back</button>
-		<div id='settings-status'></div>
-	</div>
 </section>
 {% endblock %}
 
 
 {% block scripts %}
 	{{ super() }}
-	<script src="/static/js/settings.js"></script>
-	<script src="/static/js/forms.js"></script>
-	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
+	{% assets "js_settings" %}<script src='{{ASSET_URL}}'></script>{% endassets %}
 	{#
+	{% if errmsg != none %}<script>openAlertWindow('{{usrmsg}}');</script>{% endif %}
 	<script>
 	var verifiedEmail = '{{verified_email}}';
 

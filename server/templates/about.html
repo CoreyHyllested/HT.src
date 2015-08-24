@@ -4,21 +4,20 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets 'scss_about_sc' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{%- assets "master", "scss_about_sc" %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 {% block parallax %}
 	<div id='masthead'><div id='masthead-text'>About Soulcrafting</div></div>
+	<div id='masthead-gap'></div>
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead-gap'></div>
-
 <section id='soulcrafting-who'>
 	<div class='text-content'>
-		<h3> Soulcrafting is the smartest, most trusted way to improve your home.</h3>
+		<h2>The smartest, most trusted way to improve your home.</h2>
 		<p>
 			We're on a mission to redesign the way homeowners interact with contractors and home improvement professionals.
 			We build trust and tools to help people manage the complexity of residential remodeling projects while creating spaces they'll love.
@@ -32,7 +31,7 @@
 	<div>
 		<div class='inline-50 text-content'>
 			<h2>Transform your home</h2>
-			<ul>
+			<ul class='bullets'>
 				<li>Find the best contractor for your project from our trusted network of independent craftspeople.</li>
 				<li>Get unbiased information and support from your Soulcrafting project specialist at every step of the process.</li>
 				<li>Manage your project quickly and easily with smart features to sign agreements, track progress, and make secure payments online.</li>
@@ -53,7 +52,7 @@
 
 <section id='soulcrafting-why'>
 	<div class='text-content'>
-		<h2 class='text-center'>Our Story</h2>
+		<h2>Our Story</h2>
 		<p>
 			Soulcrafting got its start as a community connecting consumers with master craftspeople for innovative, hands-on learning experiences.
 			The community <a href='https://vimeo.com/119711481' target='_blank'>took shape</a>, and people started building some 
@@ -72,7 +71,7 @@
 </section>
 
 <section id='soulcrafting-faq'>
-		<h2 class='text-center'>Common Questions</h2>
+		<h2>Common Questions</h2>
 		<div id='faq' class='text-content'>
 			<div class='col-md-4 col-sm-6 col-xs-12'>
 				<h4 class='faq-question'>Where are you located?</h4>
@@ -129,5 +128,5 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src='/static/js/about.js'></script>
+	<script>$(document).ready(function () { $('#masthead-text').css('opacity', '1'); });</script>
 {% endblock %}

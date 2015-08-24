@@ -1,0 +1,150 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'My trusted network on Soulcrafting' %}
+{% set meta_desc	= 'My trusted network on Soulcrafting' %}
+
+
+{% block header_css %}
+	{{ super() }}
+	<link rel='stylesheet' href='/static/css/tagsinput.css'>
+	{%- assets 'master', 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
+{% endblock %}
+
+
+
+{% block content %}
+<section id='profile-header'>
+	<div id='profile-info'>
+		<h3 class='align-left'>{{profile.prof_name}}</h3>
+		<div id='profile-image'><img src="{{profile.gravatar_url()}}"></div>
+		{#
+		<form id='profile-form'>{{form.hidden_tag()}}</form>	//add csrf for form
+		<div id='profile-location'></div>
+		<div id='profile-networks'>
+			<ul>
+				<li class='sns'><i class='fa fa-facebook-f'></i></li>
+				<li class='sns'><i class='fa fa-twitter'></i></li>
+				<li class='sns'><i class='fa fa-linkedin'></i></li>
+				<li class='sns'><i class='fa fa-instagram'></i></li>
+				<li class='sns'><i class='fa fa-pinterest-p'></i></li>
+			</ul>
+		</div>
+		#}
+	</div>
+</section>
+
+
+<section id='referrals'>
+	<div>
+	{% for ref in referrals | sort(attribute='Referral.ref_created') | reverse %}
+	{# {{ ref.Referral.ref_created.strftime('%b %d at %H:%M %p')}} #}
+	<article class='referral' data-ref-id='{{ref.Referral.ref_uuid}}'>
+		<div>
+			<div class='ref-name'>{{ref.business.bus_name}}</div>
+			{#<ul class='ref-skills'><li>Handyman</li> <li>Plumber</li> <li>Electrician</li></ul> #}
+			{%- if ref.display_addr %}| <div class='ref-location'>{{ref.display_addr}}</div>{%- endif %}
+		</div>
+		<div>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
+		<div>
+			<div class='ref-context'>
+				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
+			</div>
+			<ul class='ref-operations align-right'>
+				{#<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>#}
+				<li><a class='pop-share'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+				{%- if bp == profile %}
+				<li><a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
+				{%- endif %}
+			</ul>
+		</div>
+	</article>
+	{% endfor %}
+	</div>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+	{%- assets 'js_profiles' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+	<script src='/static/js/tagsinput.js'></script>
+	<script src='/static/js/bs-popover.js'></script>
+	<script>
+	$(document).ready(function () {
+		{%- if highlight %}
+		$('body').scrollTo('article[data-ref-id={{highlight}}]');
+		flash_elem_border('article[data-ref-id={{highlight}}]');
+		{%- endif %}
+
+		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
+		$(".pop-share").popover({
+			html: true,
+			animation: false,
+			title: 'Share Referral',
+			content: function() {
+				refid = $(this).data('ref-id');
+				tree_ul	= document.createElement('ul');
+				item_s1 = document.createElement('li');
+				item_s2 = document.createElement('li');
+				twurl	= 'https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				fburl	= 'https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				twurl	= 'https%3A%2F%2Flocalhost%3A5000%2Fprofile%2F{{profile.prof_id}}?hlr=' + refid;
+				{%- if bp == profile %}
+				twtext = 'check+out+my+referral+on+@Soulcrafting';
+				fbtext = 'check+out+my+referral+on+@SoulcraftingHQ';
+				{%- else %}
+				twtext = 'check+out+this+referral+on+@Soulcrafting';
+				fbtext = 'check+out+this+referral+on+@SoulcraftingHQ';
+				{%- endif %}
+				$(item_s1).addClass('btn-share-facebook').data("ref-id", refid).html('<a target="_blank" href="https://www.facebook.com/dialog/share?app_id=145634995501895&display=popup&href='+fburl+'&redirect_uri=https%3A%2F%2Fdevelopers.facebook.com%2Ftools%2Fexplorer&picture=https%3A%2F%2Fsoulcrafting.co%2Fstatic%2Fimg%2Fcover.jpg&name='+fbtext+'&description='+fbtext+'"><i class="fa fa-facebook icon"></i><span class="align-left">Share on Facebook</span></a>');
+				$(item_s2).addClass('btn-share-twitter').html('<a target="_blank" href="https://twitter.com/intent/tweet?related=@soulcrafting&text='+twtext+'&url='+twurl+'"><i class="fa fa-twitter icon"></i><span class="align-left">Share on Twitter</span></a>');
+				$(tree_ul).append(item_s1).append('<br>');
+				$(tree_ul).append(item_s2).append('<br>');
+				return tree_ul;
+			},
+			placement: 'left',
+			trigger: "manual"
+		}).on("mouseenter", function () {
+		    var _this = this;
+		    $(this).popover("show");
+		    $(".popover").on("mouseleave", function () { $(_this).popover('hide'); });
+		}).on("mouseleave", function () {
+		    var _this = this;
+		    setTimeout(function () {
+		        if (!$(".popover:hover").length) {
+		            $(_this).popover("hide");
+		        }
+		    }, 500);
+		});
+
+		$(".pop-action").popover({
+			html: true,
+			animation: false,
+			title: 'Referral actions',
+			content: function() {
+				refid = $(this).data('ref-id');
+				tree_ul	= document.createElement('ul');
+				tree_li_delete = document.createElement('li');
+				tree_li_update = document.createElement('li');
+				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
+				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
+				$(tree_ul).append(tree_li_update).append('<br>');
+				$(tree_ul).append(tree_li_delete).append('<br>');
+				return tree_ul;
+			},
+			placement: 'left',
+			trigger: "manual"
+		}).on("mouseenter", function () {
+		    var _this = this;
+		    $(this).popover("show");
+		    $(".popover").on("mouseleave", function () { $(_this).popover('hide'); });
+		}).on("mouseleave", function () {
+		    var _this = this;
+		    setTimeout(function () {
+		        if (!$(".popover:hover").length) {
+		            $(_this).popover("hide");
+		        }
+		    }, 500);
+		});
+	});
+	</script>
+{% endblock %}
