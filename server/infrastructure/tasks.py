@@ -14,13 +14,13 @@
 
 from __future__ import absolute_import
 from datetime import datetime as dt, timedelta
-from server import ht_server
+from server import sc_server
 from server.infrastructure.srvc_events	 import mngr
 from server.infrastructure.srvc_database import db_session
 from server.infrastructure.errors		 import *
 from server.infrastructure.basics		 import *
+from server.controllers.email import *
 from server.models	import *
-from server.email	import *
 from pprint import pprint as pp
 from pytz import timezone
 import json, smtplib
@@ -189,7 +189,7 @@ def ht_get_stripe_customer(account, cc_token=None, cc_card=None, cust=None):
 
 	if (account.stripe_cust is not None):
 		print 'ht_get_stripe_customer_id(): found customer', account.stripe_cust
-		stripe.api_key = ht_server.config['STRIPE_SECRET']
+		stripe.api_key = sc_server.config['STRIPE_SECRET']
 		stripe_cust = stripe.Customer.retrieve(account.stripe_cust)
 		print 'ht_get_stripe_customer_id(): update customer,' + str(stripe_cust.get('email')) + ', w/ info(' + str(cc_token) + ', ' + str(cc_card) + ')'
 		stripe_cust.cards.create(card=cc_token)
@@ -197,7 +197,7 @@ def ht_get_stripe_customer(account, cc_token=None, cc_card=None, cust=None):
 
 	print 'ht_get_stripe_customer_id: customer does not exist, create'
 	try:
-		stripe.api_key = ht_server.config['STRIPE_SECRET']
+		stripe.api_key = sc_server.config['STRIPE_SECRET']
 
 		ht_metadata = {}
 		ht_metadata['ht_account'] = account.userid

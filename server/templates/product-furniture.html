@@ -4,45 +4,43 @@
 
 {% block header_css %}
 	{{ super() }}
-	{% assets 'scss_products' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{%- assets 'master', 'scss_products' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{%- endassets %}
 {% endblock %}
 
 
 {% block parallax %}
-	<div id='masthead'> <div id='masthead-text'>Custom Furniture</div> </div>
+	<div id='masthead'><div id='masthead-text'>Custom Furniture</div></div>
+	<div id='masthead-gap'></div>
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead-gap'></div>
-
 <section id='about-furniture'>
-	<h3>Soulcrafted Furniture</h3>
 	<div>
-		<p class='text-content'>
+		<h3>Soulcrafted Furniture</h3>
+		<p>
 			We partner with extraordinary local woodworkers and furniture makers to help you create unique, timeless pieces for your home.
 			Soulcrafters specialize in sustainable building practices, sourcing wood from locally-felled trees and salvaged materials whenever possible.
 			Whatever your style, designing a piece of custom furniture ensures the perfect fit because it's made just for you.
 		</p>
 		<br>
-		<a href='/project/edit/new' class='btn btn-block blueButton btn-get-started'>Get Started</a>
+		{#<a href='/project/edit/new' class='btn blueButton'>Get Started</a>#}
 	</div>
 </section>
 
 
-<section id='ideas'>
-	<h3>The Soulcrafting Advantage</h3><br>
-
+<section>
 	<div>
-		<h4 class='text-content'>Furniture designed to complement your style and meet your specifications.</h4>
+		<h3>The Soulcrafting Advantage</h3><br>
+		<h4>Furniture designed to complement your style and meet your specifications.</h4>
 		<img src='/static/img/ex-dining.jpg' class='img-responsive' alt='Furniture for a dining room'></img><br>
 	</div>
 
 	<div>
-		<h4 class='text-content'>Create stunning accent pieces for any room.</h4>
-		<div class='img-width-50'> <img src='/static/img/ex-livingroom.jpg' alt='Living Room' class='img-responsive'></img> </div>
+		<h4>Create stunning accent pieces for any room.</h4>
+		<div class='img-width-50'><img src='/static/img/ex-livingroom.jpg' alt='Living Room' class='img-responsive'></img></div>
 		<div class='img-spacer'></div>
-		<div class='img-width-50'> <img src='/static/img/ex-bedroom.jpg' alt='Bedroom' class='img-responsive'></img> </div>
+		<div class='img-width-50'><img src='/static/img/ex-bedroom.jpg' alt='Bedroom' class='img-responsive'></img></div>
 	</div>
 </section>
 
@@ -52,10 +50,10 @@
 	<div>
 		<div id='craftsman-id'>
 			<img src='/static/img/professional-austin.jpg' class='img-craftsman' alt='Austin Aaron'>
-			<div id='craftsman-name'> <h4>Austin Aaron</h4> </div>
+			<div id='craftsman-name'><h4>Austin Aaron</h4></div>
 		</div>
 		<div id='craftsman-about'>
-			<blockquote id='craftsman-quote'>
+			<blockquote class='align-left'>
 				<p>
 					&ldquo;Soulcrafting is a way to get people involved with the things that they’re buying.
 					They get to come in, learn how we work, perhaps do some of the work themselves, and take home something that they’ve been a part of crafting.
@@ -70,15 +68,14 @@
 
 <div id='craftsman-work'> </div>
 
-<section id='get-started'>
+<section class='text-content'>
 	<div>
-		<p class='text-content'>
+		<p>
 			The next step is easy.
 			You'll start by sharing your goals and then one of our project specialists will be in touch to get more details in order to match you with the right Soulcrafter for your job.
 		</p>
-		<a href='/project/edit/new' class='btn btn-block blueButton btn-get-started'>Get Started</a>
+		{#<a href='/project/edit/new' class='btn blueButton'>Get Started</a>#}
 	</div>
-
 	{#<a href='#sharesoulcrafting' class='btn btn-block'>Share Soulcrafting</a> #}
 </section>
 {% endblock %}
@@ -86,5 +83,5 @@
 
 {% block scripts %}
 	{{ super() }}
-	<script src='/static/js/products.js'></script>
+	<script>$(document).ready(function () { $('#masthead-text').css('opacity', '1'); });</script>
 {% endblock %}

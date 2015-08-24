@@ -1,0 +1,93 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Sign up for Soulcrafting Professional.' %}
+{% set meta_desc	= 'Sign up for Soulcrafting Professional.' %}
+
+{% block header_css %}
+	{{ super() }}
+	{% assets 'master', 'scss_loginsys' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+{% endblock %}
+
+
+{% block content %}
+<section id='authorize'>
+	<h2>Soulcrafting for Professionals</h2>
+
+	<div id='authorize-form'>
+		<form id='prosignup' action='/signup/professional' method='POST' class='signup-form'>
+			{{form.hidden_tag()}}
+
+			<div class="form-group address">
+				<label class='sr-only' for='pro_addr'>Business Address</label>
+				{{form.pro_addr(type="address", class="form-control login-addr", Placeholder="Business Address")}}
+			</div>
+
+			<div class="form-group phone">
+				<label class='sr-only' for='pro_phone'>Business Phone</label>
+				{{form.pro_phone(type='phone', class="form-control login-phone", Placeholder="Business Phone")}}
+			</div>
+
+			<div class="form-group email">
+				<label class='sr-only' for='pro_email'>Business Email</label>
+				{{form.pro_email(type="email", class="form-control login-email", Placeholder="Business Email")}}
+			</div>
+
+			<hr>
+			<div class="form-group username">
+				<label class='sr-only' for='uname'>Your Name</label>
+				{{form.uname(type="name", class="form-control login-uname", Placeholder="Your name")}}
+			</div>
+
+			<div class="form-group password">
+				<label class='sr-only' for='passw'>Your Password</label>
+				{{form.passw(type="password", class="form-control login-password", Placeholder="Your password")}}
+			</div>
+
+			<div class='form-group'>
+				By signing up, I agree to Soulcrafting's <a href='/terms/service'>Terms of Service</a> and <a href='/terms/privacy'>Privacy Policy</a>.
+			</div>
+			<button type='submit' class='btn-block blueButton'>Sign Up as Professional</button>
+		</form>
+		<br>
+		<form method='GET' action='/signin'><button class='btn-block whiteButton'>I have an account</button></form>
+	</div>
+</section>
+{% endblock %}
+
+
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+{% block scripts %}
+	{{ super() }}
+	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
+	<script src='//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js'></script>
+	<script src='//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js'></script>
+
+	<script>
+		$(document).ready(function() {
+			$(".form-control").blur(function (e) {
+				$(this).removeClass('attention');
+			});
+		});
+
+		$("#prosignup").validate({
+			rules: {
+				pro_addr:	{ required: true, rangelength:[10,64] },
+				pro_phone:	{ required: true, phoneUS: true},
+				pro_email:	{ required: true, rangelength:[6,64], email: true},
+				uname:		{ required: true, rangelength:[4,64] },
+				passw:		{ required: true, rangelength:[8,64] }
+			},
+			messages: {
+				pro_addr:	{	required: 'Your business address is needed for verification.', },
+				pro_phone:	{	required: 'Your business phone number is needed to contact you.', },
+				pro_email:	{	required: 'Your business email is needed to contact you.', },
+				uname:		{	required: 'Your name is needed for clients.', },
+				passw:		{	required: 'You need a good, safe password for logging in.',
+								rangelength: 'For a good password. Use at least 8 characters'
+							}
+			}
+
+		});
+	</script>
+{% endblock %}
+

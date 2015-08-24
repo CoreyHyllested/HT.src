@@ -6,7 +6,8 @@
 {% block header_meta %}
 	{{ super() }}
 	<script type="application/ld+json"> {
-		"@context" : "'http://schema.org", "@type"	: "Organization",
+		"@context" : "http://schema.org",
+		"@type"	: "Organization",
 		"name"	: "Soulcrafting",
 		"url"	: "https://soulcrafting.co",
 		"sameAs":	[
@@ -22,8 +23,9 @@
 
 
 {% block header_css %}
-	{{ super() }}
-	{% assets 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{#{ super() }#}
+	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{%- assets 'master', 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
 {% endblock %}
 
 
@@ -35,22 +37,17 @@
 	<br><br>
 	You can read more about <a href='https://medium.com/@bryanmuir/what-s-old-is-new-on-soulcrafting-3301b0be1044' target='_blank'>Soulcrafting's evolution</a>.
 </div>
-
-<script>
-	$(document).ready(function () {
-		$('#referred-close').click(function () { $('#referred').hide(); });
-	});
-</script>
+<script>$(document).ready(function () { $('#referred-close').click(function () { $('#referred').hide(); }); });</script>
 {% endif %}
 {% endblock %}
 
 
 {% block content %}
-<div id='masthead'>
-	<div id='masthead-text'>
-		<span id='masthead-title' class='h1'>The Concierge Service</span>
+<div id='masthead' class='lp'>
+	<div id='masthead-text' class='lp'>
+		<span id='masthead-title' class='lp h1'>The Concierge Service</span>
 		<p>For smarter home renovation projects</p><br>
-		<div id='masthead-btns'>
+		<div id='masthead-btns' class='lp'>
 			<p><a id='btn-fbook' class='btn btn-masthead' href='/signup/facebook'>Sign up with Facebook</a></p>
 			<p><a id='btn-email' class='btn btn-masthead' href='/signup'>Sign up with email</a></p>
 		</div>
@@ -58,41 +55,32 @@
 </div>
 
 
-<section id='value-section'>
+<section>
 	<div>
-		<h3 class='text-center'>
+		<h2>
 			Creating spaces you'll love shouldn't be a nightmare.<br>
 			Start your next home renovation project here.
-		</h3>
+		</h2>
 
 		<div class='value'>
-			<div class='value-title'>
-				<div class='big-icon'><i class='fa fa-certificate'></i></div>
-				<h4>Trust</h4>
-			</div>
+			<i class='big-icon fa fa-certificate'></i><h3>Trust</h3>
 			<div class='value-panel'>Hire the right contractor for your projects from our vetted community of master craftspeople.</div>
 		</div>
 
 		<div class='value'>
-			<div class='value-title'>
-				<div class='big-icon'><i class='ionicons ion-heart'></i></div>
-				<h4>Simplicity</h4>
-			</div>
+			<i class='big-icon ionicons ion-heart'></i><h3>Simplicity</h3>
 			<div class='value-panel'>Save time, money, and stress with smart project management tools and technology.</div>
 		</div>
 
 		<div class='value'>
-			<div class='value-title'>
-				<div class='big-icon'><i class='ionicons ion-map'></i></div>
-				<h4>Support</h4>
-			</div>
+			<i class='big-icon ionicons ion-map'></i><h3>Support</h3>
 			<div class='value-panel'>Get unbiased information and project support from your Soulcrafting concierge.</div>
 		</div>
 	</div>
 </section>
 
 <div id='get-started'>
-	<a id='btn-get-started' class='btn lp-btn blueButton' href="/signup">Get Started</a>
+	<a class='btn btn-masthead blueButton' href="/signup">Get Started</a>
 </div>
 
 <section id='press' class='text-center'>

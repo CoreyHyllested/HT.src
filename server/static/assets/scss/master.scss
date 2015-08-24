@@ -1,0 +1,133 @@
+/* (c) 2015 Soulcrafting */
+
+@charset "UTF-8";
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';
+@import 'defines/styled/inputs';
+@import 'defines/styled/modals';
+@import 'defines/tags/navigate';
+
+// third-party includes
+@import 'Font-Awesome/font-awesome';
+
+$version:	0.08;	//removing twitter typeahead override in inputs. bump.
+
+
+html		{	height: 100%;	}
+body		{	height:	100%;			padding-top: $navbar-height;						}
+footer		{ 	height: $footer-height;	padding: 10px 0;		background-color: white;	bottom: 0; border-top: 2px solid $ht-blue;	text-align: center;		}
+section		{	background:	white;		padding: $section-padding 5px;						}
+section div	{	margin: 0 auto;			width: 100%;			max-width:	$column-max-width;		}
+
+
+/* TEXT:  Fonts, headers, labels, links, etcetera */
+html	{	color: rgba(0, 0, 0, 0.5);	font-size: 1em;		font-weight: 400;	line-height: 1.5em; -webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;	}
+body	{	color: rgba(0, 0, 0, 0.75);						font-weight: 400;	line-height: 20px;	-webkit-font-smoothing: subpixel-antialiased;	font-family: $font-primary;	}
+h1		{	color: white;				font-size: 3em;		font-weight: 400;	line-height: 1em;							}
+h2		{	color: rgba(0, 0, 0, 0.9);	font-size: 1.6em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}	//2em?
+h3		{								font-size: 1.2em;	font-weight: 500;	line-height: 1.2em;		text-align: center;	}
+h4		{								font-size: 1.1em;	font-weight: 400;	line-height: 1.2em;		text-align: center;	}
+strong	{													font-weight: bold;												}
+
+a:link		{ color: $ht-blue;	text-decoration: none;	}
+a:active	{ color: $ht-blue;	}
+a:visited	{ color: $ht-blue;	}
+a:link:hover	{ color: $ht-blue-hover;	}
+a:visited:hover	{ color: $ht-blue-hover;	}
+
+//p			{	margin: 0 $text-padding 15px;							}
+ul			{	list-style-type: none;	padding-left: 0;				}
+ul.bullets	{	list-style-type: disc;	padding-left: $text-padding;	}
+
+label					{	color: gray;	font-size: 0.7em;	line-height: 1.7em; }
+label[for='terms']		{	height: $field-height;	}
+
+
+.input-focus {
+	outline: none;
+	background-color: rgba(0, 0, 0, .01);
+	&:focus {	border-color: $input-box-default !important;		background-color: white !important;	}
+}
+
+
+/* INPUTS:  text(area) boxes, buttons, checkboxes */
+.input-sc-box 	{
+	@extend .input-focus;
+	@include appearence(none);
+	border: 1px solid $input-border-default;
+	height: $input-height;
+	margin: 0 auto 15px;
+	width:	100%;
+
+	padding-left: 5px;
+	font-size: $input-text-size;
+}
+
+.input-sc-btn	{
+	@include appearence(none);
+	@include border-rad(3px);
+	/* cursor: pointer; dflt */
+	display: inline-block;
+	padding: 5px 10px;
+	margin-bottom: 10px;
+
+	line-height: $input-line-height;
+	font-size:	 $input-text-size;
+	font-weight: 400;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+select					{	@extend .input-sc-box; @include border-rad(0px); background: url('../img/dropdown.svg') no-repeat right white; line-height: 1.5em; padding: 2px 0 0 5px; text-indent: 1px; text-overflow: ''; }
+textarea				{	@extend .input-sc-box; @include border-box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
+input[type='textarea']	{	@extend .input-sc-box; @include border-box();	height: 120px;	line-height: 1.5em;	padding: 0.4em 5px; 	}
+input[type='text']		{	@extend .input-sc-box;			}
+input[type='name']		{	@extend .input-sc-box;			}
+input[type='email']		{	@extend .input-sc-box;			}
+input[type='phone']		{	@extend .input-sc-box;			}
+input[type='tel']		{	@extend .input-sc-box;			}
+input[type='url']		{	@extend .input-sc-box;			}
+input[type='search']	{	@extend .input-sc-box;			}
+input[type='address']	{	@extend .input-sc-box;			}
+input[type='password']	{	@extend .input-sc-box;			}
+
+button					{	@extend .input-sc-btn;	}
+input[type='button']	{	@extend .input-sc-btn;	}
+input[type='submit']	{	@extend .input-sc-btn;	text-transform: uppercase;	}
+
+/* Checkboxs */
+input[type="checkbox"]			{	display: none;					}
+input[type="checkbox"].checkbox {	border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+input[type="checkbox"].checkbox:checked + label.checkbox-label { background-position: 0 -17px; }
+input[type="checkbox"].checkbox + label.checkbox-label { background-position: 0 0; background-repeat:no-repeat; cursor: pointer; display: inline-block; height: 17px; font-size: $input-text-size; line-height: 17px; padding-left: 25px; vertical-align: middle; @include unselectable(); }
+
+input:read-only					{	border-color: $input-border-default	!important;		background-color: white;	}
+input:focus:invalid				{	color: black;	}
+input:invalid					{	color: red;		}
+
+/* VALIDATE, currently unused */
+input.v:required:focus			{	border-color: $input-border-warning	!important;	}
+input.v:required:focus:valid	{	border-color: $input-border-success	!important;	}
+input.v:required:focus:invalid	{	border-color: $input-border-invalid	!important;	}
+input.error						{	border-color: $input-border-invalid !important;	}
+
+
+/*	Placeholder Text
+	http://stackoverflow.com/questions/2610497/change-an-inputs-html5-placeholder-color-with-css 
+	.attention { color: red; }
+	.attention:-moz-placeholder {	color: red; opacity: 1	}
+*/
+:-moz-placeholder			{	color: $font-color-placeholder;	}	/* Firefox 4-18 */
+::-moz-placeholder			{	color: $font-color-placeholder;	}	/* Firefox 19+ */
+:-ms-input-placeholder		{	color: $font-color-placeholder;	}	/* IE 10+ 	*/
+::-webkit-input-placeholder	{	color: $font-color-placeholder;	}	/* Webkit	*/
+
+
+
+#modal-window.sz-320	{ max-width: 320px;	} 

@@ -1,0 +1,33 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/tags/masthead';
+
+//overrides
+#masthead		{ background-image: $img-kitchen;	z-index: -5; }
+#masthead-text	{ top: 33%; opacity: 0; }
+h3				{ font-size: 24px;	}
+
+
+#about-furniture { @extend .text-content;	background: whitesmoke; }
+
+
+#craftsman			{ background: whitesmoke; }
+#craftsman-id		{ width: 100%; display: inline-block; height: 250px; text-align: center;	padding: 20px;	}
+#craftsman-about	{ width: 100%; display: inline-block; height: 250px; text-align: center;					}
+#craftsman-name		{ text-indent: 20px;	}
+#craftsman-work		{
+	background: $img-patio center no-repeat;
+	background-size: cover;
+	height: 500px;
+}
+
+
+@media (min-width: 768px)	{
+	#craftsman-id		{	width: 25%; 	}
+	#craftsman-about	{	width: 74%; 	}
+}

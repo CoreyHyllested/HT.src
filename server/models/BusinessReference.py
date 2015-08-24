@@ -12,11 +12,10 @@
 #################################################################################
 
 
-from __future__ import absolute_import
-from server.infrastructure.srvc_database import Base, db_session
+from server import database 
 from server.infrastructure.errors	import *
 from sqlalchemy import ForeignKey
-from sqlalchemy import Column, Integer, Float, Boolean, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship, backref
 from datetime import datetime as dt, timedelta
 from pytz import timezone
@@ -24,7 +23,7 @@ import uuid
 
 
 
-class BusinessReference(Base):
+class BusinessReference(database.Model):
 	__tablename__ = "businessreference"
 	br_uuid     = Column(String(40), primary_key = True, index=True, unique=True)
 	br_bus_acct = Column(String(40), ForeignKey('account.userid'),  nullable=False)

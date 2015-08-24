@@ -1,0 +1,97 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/mixins';
+@import 'defines/common';
+
+
+/* MODAL WINDOWS */
+#overlay {}							/* Overlay Screen (overlay-dark) */
+#modal-wrap {}						/* modal-wrap. unsure if needed - 	ACTIVATED: .active */
+	#modal-window {}				/* window, display:none;		- 	ACTIVATED: .window-alert  */
+		#modal-content {}			/* container for window-content	*/
+			#modal-close {}			/*		[ close (X) ]			*/
+			#modal-message {}		/* container for content		*/
+			#modal-buttons { display: none;	}		/* container for buttons		*/
+
+#modal-wrap {
+	@include transition_type(top);	top: -99%;
+	position: fixed;
+	width: 100%;
+	text-align: center;		//cascasde down
+}
+#modal-wrap.active {	top: 20%;	z-index: $modal-depth;	}
+
+
+#modal-window {
+	display: none;
+
+	/* describe window */
+	background-color: white;
+	padding: 25px 10px 15px;
+	margin: 0 auto;
+	max-width: $modal-max-width;
+}
+
+#modal-content {
+	/* required to position modal-close */
+	position: relative;
+	height: 20%;
+	width: 100%;
+}
+
+/*
+#modal-header	{
+	// container for title, close 
+	height: 100%;
+	padding-bottom:	5px;
+	margin-bottom:	5px;
+}
+*/
+
+#modal-close {
+	/* top-right corner */
+	position: absolute;
+	top: -18px;
+	right: 0px;
+	cursor: pointer;
+	font-size: 24px;
+}
+#modal-close:before	{ content:"\00D7"; } /* X to close */
+#modal-close:active	{ color: black; font-weight: 600;  }
+
+
+#modal-message {
+	font-size:	1.0em;
+	line-height: 1.35em;
+	margin: 0 15px 15px;
+}
+
+
+#modal-buttons {
+	border-top: 1px solid rgba(0,0,0, 0.4);
+	padding: 10px 0 0;
+	margin: 0 15px 0;
+	cursor: pointer;
+	color: $ht-blue;
+}
+
+
+.full-screen	{	display: block;	position: fixed; height: 100%; width: 100%; top: 0; left: 0; }
+.overlay-dark	{	@extend .full-screen; z-index: $overlay-depth;	background-color: darkgray;	background-color: rgba(0,0,0,.8);	}
+.overlay-light	{	@extend .full-screen; z-index: $overlay-depth;	background-color: white;	background-color: rgba(255,255,255,.8);	}
+.black-border	{	border:	1px solid black;	}
+
+
+@media (min-width: 600px)	{
+	#modal-wrap.active	{ /* drop-in from top */ top: 30% !important; }
+	#modal-window		{ @include border-rad(8px); }
+	#modal-content { height: 100%;	}
+}
+
+@media (max-width: $modal-max-width)	{
+	#modal-wrap.active	{	height: 100%;			}
+	#modal-window.task	{	height: 100%;	top: 0;	}
+	#modal-close:before	{	font-size: 30px;		}
+}

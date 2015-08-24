@@ -12,52 +12,37 @@
 #################################################################################
 
 
-from server.sc_utils import *
-from server.infrastructure.srvc_database import db_session
 from server.models import *
+from server.routes import auth_routes as authenticated
+from server.routes.helpers import *
 from server.infrastructure.errors import *
 from server.controllers import *
-from . import sc_users
-from .api import ht_api_get_message_thread
-from .helpers import *
-from ..forms import ProjectForm, SettingsForm, ReviewForm
-from ..forms import InviteForm, GiftForm
 
-# more this into controllers / tasks.
-import boto
-from boto.s3.connection import S3Connection
-from boto.s3.key import Key
-from werkzeug          import secure_filename
-from StringIO import StringIO
-from pprint import pprint
-import os
-from datetime import datetime
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
+<<<<<<< HEAD
 
 @sc_users.route('/dashboard/', methods=['GET', 'POST'])
 @sc_users.route('/dashboard', methods=['GET', 'POST'])
+=======
+@authenticated.route('/dashboard/', methods=['GET', 'POST'])
+@authenticated.route('/dashboard',  methods=['GET', 'POST'])
+>>>>>>> master
 @sc_authenticated
 def render_dashboard():
 	bp = Profile.get_by_uid(session['uid'])
 	message = session.pop('message', None)
 
 	print 'render_dashboard(' + bp.prof_name + ',' + session['uid'] + ')'
-	usercash = None
 	craftsperson = (session.get('role', None) == AccountRole.CRAFTSPERSON)
 
 	try:
 		projects = sc_get_projects(bp)
-		for p in projects:
-			pprint(p)
-		usercash = GiftCertificate.get_user_credit_amount(bp)
-		print usercash
-		#(props, appts, rview) = ht_get_active_meetings(bp)
+		for p in projects: pp(p)
 	except Exception as e:
 		print 'render_dashboard() tries failed -  Exception: ', type(e), e
-		db_session.rollback()
-	
+		database.session.rollback()
+
 
 	if craftsperson:
 		print 'render_dashboard(), craftsperson ', craftsperson
@@ -67,61 +52,10 @@ def render_dashboard():
 		refreqs = scdb_get_references(bp, True)
 		return make_response(render_template('dashboard-professional.html', bp=bp, form=invite, craftsperson=craftsperson, br_requests=refreqs, usrmsg=message))
 
-	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, credit=usercash, usrmsg=message))
+	return make_response(render_template('dashboard.html', bp=bp, craftsperson=craftsperson, projects=projects, usrmsg=message))
 
 
-
-
-@sc_users.route('/invite', methods=['GET', 'POST'])
-@sc_authenticated
-def render_invite_page():
-	bp = Profile.get_by_uid(session['uid'])
-	ba = Account.get_by_uid(session['uid'])
-
-	invite = InviteForm(request.form)
-	invite.invite_userid.data = bp.account
-	if invite.validate_on_submit():
-		try:
-			print 'invite: valid post from user ', invite.invite_userid.data, invite.invite_emails.data
-
-			print 'invite: create gift'
-			r = {}
-			r['mail'] = invite.invite_emails.data
-			r['name'] = 'Unknown'
-			p = {}
-			p['prof'] = bp.prof_id
-			p['name'] = bp.prof_name
-			p['mail'] = ba.email
-			p['cost'] = 0
-			s = {}
-			s['gift_value'] = 15000		# $150.00
-			gift = GiftCertificate(r, p, s)
-			print gift
-
-			referral = Referral(bp.account, gift_id=gift.gift_id)
-			print referral
-
-			db_session.add(gift)
-			db_session.add(referral)
-			db_session.commit()
-#			print 'invite: check post from user personalized', invite.invite_personalized.data
-			sc_email_invite_friend(invite.invite_emails.data, friend_name=bp.prof_name, referral_id=referral.ref_id, gift_id=bp.account)
-			return redirect('/dashboard')
-
-		except Exception as e:
-			print e
-			db_session.rollback()
-			print 'need to set error message and post to user'
-	elif request.method == 'POST':
-		print 'invite: invalid POST', invite.errors
-	else:
-		pass
-
-	print 'render_invite(): render page'
-	return make_response(render_template('invite.html', bp=bp, form=invite))
-
-
-
+<<<<<<< HEAD
 @sc_users.route('/referral/create', methods=['GET', 'POST'])
 @sc_authenticated
 def render_referral_create():
@@ -730,6 +664,12 @@ def render_review_meeting_page(review_id):
 
 @sc_users.route('/settings', methods=['GET', 'POST'])
 @req_authentication
+=======
+
+@authenticated.route('/settings/', methods=['GET'])
+@authenticated.route('/settings',  methods=['GET'])
+@sc_authenticated
+>>>>>>> master
 def render_settings():
 	""" Allows user to change his or her email settings."""
 	uid = session['uid']
@@ -743,22 +683,17 @@ def render_settings():
 	form.email.data	= ba.email
 	form.name.data	= ba.name
 
-	#nexturl = "/settings"
-	#if (request.values.get('nexturl') is not None):
-	nexturl = request.values.get('nexturl', '/settings')
-	message = session.pop('message', None)	# was messages
-	return make_response(render_template('settings.html', form=form, bp=bp, nexturl=nexturl, verified_email=email_verified, errmsg=message))
+	return make_response(render_template('settings.html', form=form, bp=bp, verified_email=email_verified)) # errmsg=session.pop('message', None))
 
 
 
-@sc_users.route('/settings/update', methods=['POST'])
+@authenticated.route('/settings/update/', methods=['POST'])
+@authenticated.route('/settings/update',  methods=['POST'])
 @sc_authenticated
-def sc_api_update_settings():
-	print "sc_api_update_settings: begin"
-
+def api_settings_update():
 	uid = session['uid']
 	ba	= Account.get_by_uid(uid)
-	form = SettingsForm(request.form)
+	form = SettingsForm(request.form)	#rename sf
 
 	# determine what needs to be updated.
 	update_acct = False		# requires password.
@@ -778,52 +713,47 @@ def sc_api_update_settings():
 		update_acct = True
 		update_pass = form.update_password.data
 
+	if (not update_acct):
+		return make_response(jsonify(status='No changes were requested.'), 200)
+
 	try:
-		if form.validate_on_submit():
-			print 'sc_api_update_settings()\tvalid submit'
+		if not form.validate_on_submit():
+			raise InvalidInput(errors=form.errors)
 
-			if (update_acct == False):
-				# user did not update anything.
-				return jsonify(usrmsg="Cool... Nothing changed."), 200
+		print 'sc_api_update_settings()\tvalid submit'
+		(successful, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
 
-			print 'sc_api_update_settings()\tupdate account'
-			(rc, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
-			# TODO.  sc_update_account could throw errors/ return False from what?
-			print("sc_api_update_settings()\tmodify acct()  = " + str(rc) + ", errno = " + str(errno))
+		# TODO.  sc_update_account could throw errors/ return False from what?
+		print("sc_api_update_settings()\tmodify acct()  = " + str(successful) + ", errno = " + str(errno))
 
-			if (rc == False):
-				errmsg = str(errno)
-				errmsg = error_sanitize(errmsg)
-				form.current_password.data = ''
-				form.update_password.data = ''
-				form.verify_password.data = ''
-				return jsonify(usrmsg="Hmm... something went wrong.", errors=None), 500
+		if not successful:
+			status = SanitizedException.sanitize_message(str(errno))
+			form.current_password.data = ''
+			form.update_password.data = ''
+			form.verify_password.data = ''
+			raise SanitizedException('Update Account Failed', status, errors = {'email' : status})
 
+		if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
+		#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
+		return make_response(jsonify(status='Saved.'), 200)
 
-			# successfully updated account
-			# user changed email, password. For security, send confimration email.
-			if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
-# TODO -- create send_passwd_change_email.  Need to look up Mandrill template.
-			#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
-			print "sc_api_update_settings() Update should be complete"
-			return jsonify(usrmsg="Settings updated"), 200
-	except PasswordError as pe:
-		print 'sc_api_update_settings: Password (CodeBug):', pe
-		db_session.rollback()
-		badpassword = {}
-		badpassword['current_password'] = pe.sanitized_msg()
-		return jsonify(usrmsg='We messed something up, sorry', errors=badpassword), pe.http_resp_code()
+	except PasswordError as e:
+		database.session.rollback()
+		e.errors({ 'current_password' : e.status() })
+		return e.response()
+	except SanitizedException as e:
+		database.session.rollback()
+		return e.response()
 	except AttributeError as ae:
 		print 'sc_api_update_settings: AttributeError (CodeBug):', ae
-		db_session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
+		database.session.rollback()
+		return make_response(ApiError('Oops. We made a mistake. Please try again later.').serialize, 500)
 	except Exception as e:
 		print 'sc_api_update_settings: Exception: ', e
-		db_session.rollback()
-		return jsonify(usrmsg=e, errors=form.errors), 500
+		database.session.rollback()
+		return make_response(ApiError('Oops. We made a mistake. Please try again later.').serialize, 500)
 
 	print "sc_api_update_settings: Something went wrong - Fell Through."
-	print str(form)
 	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
 
 
@@ -831,8 +761,6 @@ def sc_api_update_settings():
 
 # rename /image/create
 #@insprite_views.route('/upload', methods=['POST'])
-#@dbg_enterexit
-#@req_authentication
 def upload():
 	log_uevent(session['uid'], " uploading file")
 
@@ -860,200 +788,3 @@ def upload():
 	return jsonify(tmp="/uploads/" + str(image.img_id))
 
 
-
-@sc_users.route('/project/edit', methods=['GET', 'POST'])
-@sc_users.route('/project/edit/<string:pid>', methods=['GET', 'POST'])
-@req_authentication
-def render_edit_project(pid=None):
-	bp = Profile.get_by_uid(session['uid'])
-	print "render_edit_project: profile[" + str(bp.prof_id) + "] project[" + str(pid) + "]"
-
-	form = ProjectForm(request.form)
-	project = Project.get_by_proj_id(pid, bp) # FEATURE: project should be _owned_ by bp (not checked right now)
-	if (project):
-		form.proj_id.data	= project.proj_id
-		form.proj_name.data	= project.proj_name
-		form.proj_addr.data = project.proj_addr
-		form.proj_desc.data = project.proj_desc
-		form.proj_max.data	= project.proj_max
-		form.proj_timeline.data	= project.timeline
-		form.proj_contact.data	= project.contact
-
-#		print "render_edit_project: checking for scheduled time."
-#		schedule_call = Availability.get_project_scheduled_time(project.proj_id)
-#		if (schedule_call is not None):
-#				print "render_edit_project: setting values to ", str(schedule_call.avail_weekday), str(schedule_call.avail_start), str(schedule_call.avail_start)[:-3]
-#				form.avail_day.data  = schedule_call.avail_weekday
-#				form.avail_time.data = str(schedule_call.avail_start)[:-3]
-	else:
-		# set proj_id to 'new'
-		form.proj_id.data	= 'new'
-
-	return make_response(render_template('edit_project.html', form=form, bp=bp))
-
-
-
-
-@sc_users.route('/project/schedule/<mode>/<string:pid>', methods=['GET', 'POST'])
-@req_authentication
-def api_project_schedule_consultation(mode, pid=None):
-	bp = Profile.get_by_uid(session['uid'])
-	try:
-		project = Project.get_by_proj_id(pid, bp)
-		if (project):
-			session['message'] = 'A project specialist will contact you by ' + str(mode) + ' within 24 hours.'
-	except Exception as e:
-		print e
-	return redirect('/dashboard')
-
-
-
-
-
-@sc_users.route('/project/update', methods=['POST'])
-@req_authentication
-def api_update_project(usrmsg=None):
-	# Process the edit profile form
-	print "api_proj_update: start"
-
-	uid = session['uid']
-	bp = Profile.get_by_uid(uid)
-	
-	# validate all data manually. 
-	form = ProjectForm(request.form)
-
-	try:
-		errors = "CAH, no errors"
-		if form.validate_on_submit():
-			print "api_proj_update: valid submit"
-
-			if (True):
-				project = None
-				newproj = False
-				print "api_proj_update: id = ", form.proj_id.data
-				if form.proj_id is not 'new':
-					# find project.
-					project = Project.get_by_proj_id(form.proj_id.data)
-
-				if (project == None):
-					print "api_proj_update: create new project"
-					project = Project(form.proj_name.data, uid)
-					newproj = True;
-					if (project == None):
-						err_msg = 'Error: user(%s) gave us a bad ID(%s), BAIL!' % (uid, form.proj_name.data)
-						raise err_msg
-
-				print "api_proj_update: set details"
-				project.proj_name	= form.proj_name.data
-				project.proj_addr	= form.proj_addr.data
-				project.proj_desc	= form.proj_desc.data
-				project.proj_min	= 0	#hardcoding to zero
-				project.proj_max	= form.proj_max.data	#rename_budget (budget_actual?)
-				project.timeline 	= form.proj_timeline.data
-				project.contact		= form.proj_contact.data
-				project.updated		= datetime.utcnow()
-
-				print "api_proj_update: add"
-				db_session.add(project)
-				db_session.commit()
-				if (newproj): sc_email_newproject_created(bp, project)
-				return jsonify(usrmsg="project updated", proj_id=project.proj_id), 200
-			else:
-				db_session.rollback()
-				print "api_proj_update: update error"
-				return jsonify(usrmsg="We messed something up, sorry", errors=form.errors), 500
-		else:
-			print 'api_proj_update: invalid POST', form.errors
-
-		print "api_proj_update: invalid", 
-		return jsonify(usrmsg='Sorry, some required info was missing or in an invalid format. Please check the form.', errors=form.errors), 500
-
-	except AttributeError as ae:
-		print "api_proj_update: exception", ae
-		db_session.rollback()
-		return jsonify(usrmsg='We messed something up, sorry'), 500
-	except Exception as e:
-		print type(e), e
-		print "api_proj_update: exception", e
-		db_session.rollback()
-		return jsonify(usrmsg=e), 500
-
-	print "api_update_profile: Something went wrong - Fell Through."
-	print "here is the form object:"
-	print str(form)
-
-	print "api_proj_update: return"
-	return jsonify(usrmsg="Something went wrong."), 500
-
-
-
-
-
-
-#HELPER FUNCTIONS.
-
-#@insprite_views.route('/uploads/<filename>')
-#def uploaded_file(filename):
-	# add sec protection?
-#	return send_from_directory(ht_server.config['SC_UPLOAD_DIR'], filename)
-
-
-
-def ht_create_image(profile, image_data, comment=None):
-	print 'upload()\tht_create_image()\tenter'
-	imgid = secure_filename(hashlib.sha1(image_data).hexdigest()) + '.jpg'
-	image = Image.get_by_id(imgid)
-	if (image is None):
-		print 'upload()\tht_image_create\t image does not exist.  Create it.'
-		# image doesn't exist. Create and upload to S3
-		image = Image(imgid, profile.prof_id, comment)
-		try:
-			ht_upload_image_to_S3(image, image_data)
-			db_session.add(image)
-			db_session.commit()
-		except IntegrityError as ie:
-			# image already exists.
-			print 'upload()\tht_image_create() funny seeing image already exist here.'
-			print 'upload: exception', type(e), e
-			db_session.rollback()
-		except Exception as e:
-			print 'upload: exception', type(e), e
-			db_session.rollback()
-	return image
-
-
-
-def ht_upload_image_to_S3(image, image_data):
-	f = open(os.path.join(ht_server.config['SC_UPLOAD_DIR'], image.img_id), 'w')
-	f.write(image_data)
-	f.close()
-
-	print 'upload()\tupload_image_to_S3\tpush image to S3.'
-	s3_con = boto.connect_s3(ht_server.config["S3_KEY"], ht_server.config["S3_SECRET"])
-	s3_bkt = s3_con.get_bucket(ht_server.config["S3_BUCKET"])
-	s3_key = s3_bkt.new_key(ht_server.config["S3_DIRECTORY"] + image.img_id)
-	print 'upload()\tupload_image_to_S3\tcreated s3_key.'
-	s3_key.set_contents_from_file(StringIO(image_data))
-
-
-
-
-
-def display_lastmsg_timestamps(msg, prof_id, all_messages):
-	#print 'For Thread ', msg.UserMessage.msg_thread, msg.UserMessage.msg_subject[:20]
-	thread_msgs = filter(lambda cmsg: (cmsg.UserMessage.msg_thread == msg.UserMessage.msg_thread), all_messages)
-	thread_msgs.sort(key=lambda cmsg: (cmsg.UserMessage.msg_created))
-	#for msg in thread_msgs:
-	#	ts_open = msg.UserMessage.msg_opened.strftime('%b %d %I:%M:%S') if msg.UserMessage.msg_opened is not None else str('Unopened')
-	#	print '\t Sorted [%s|%s] %r' % (msg.UserMessage.msg_thread, msg.UserMessage.msg_parent, ts_open)
-	setattr(msg, 'lastmsg', thread_msgs[-1].UserMessage)
-	#setattr(msg, 'lastmsg_sent', thread_msgs[-1].UserMessage.msg_created)
-	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
-	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
-
-
-
-def error_sanitize(message):
-	if (message[0:16] == "(IntegrityError)"):
-		message = "Email already in use."
-	return message

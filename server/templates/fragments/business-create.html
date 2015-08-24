@@ -1,0 +1,30 @@
+
+<div class='create-business'>
+	<form id='create-business-form' enctype="multipart/form-data">
+		{{form.hidden_tag()}}
+
+		<h3>Who do you Trust?</h3>
+		<div id='modal-business-info' class='block'>
+			<div class="form-group username">{{form.name(type='name',	placeholder="A & K Contracting", required=true)}}</div>
+			<div class="form-group phone">	 {{form.phone(type='tel',	placeholder="(720) 376-3919")}}</div>
+			<div class="form-group email">	 {{form.email(type='email', placeholder="akcontracting@yahoo.com (optional)")}}</div>
+			<div class="form-group url">	 {{form.site(type='url',	placeholder="https://akcontractingdenver.com (optional)", pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?')}}</div>
+		</div>
+
+		<div id='modal-business-addr'>
+			<div class="form-group address">
+				<input id='address-search' type='search' placeholder="Address (optional)"></input>
+				<div id='modal-map' class="map-canvas"></div>
+			</div>
+		</div>
+
+		<div>
+			<div class='align-right'>
+				{#<button type='button' class='btn-simple whiteButton'> &lt;- Back </button>#}
+				<button type='button' class='btn-simple dismiss-modal whiteButton'>Cancel</button>
+				<button type='submit' class='btn-simple blueButton'>Create...</button>
+				<div class='action-feedback'></div>
+			</div>
+		</div>
+	</form>
+</div>

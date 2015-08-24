@@ -1,0 +1,55 @@
+/* (C) 2015 Soulcrafting */
+
+@mixin unselectable ($v) {
+/* makes label unselectable */
+ -moz-user-select: -moz-none;
+   -webkit-user-select: none;
+       -ms-user-select: none; 
+}
+
+@mixin appearance($v) {
+      -o-appearance: $v;
+     -ms-appearance: $v;
+    -moz-appearance: $v;
+ -webkit-appearance: $v;
+}
+
+@mixin border-box() { 
+    -moz-box-sizing: border-box;
+ -webkit-box-sizing: border-box;
+         box-sizing: border-box;
+}
+
+@mixin border-rad($sz) {
+	  -o-border-radius: $sz;
+	 -ie-border-radius: $sz;
+	-moz-border-radius: $sz;
+ -webkit-border-radius: $sz;
+         border-radius: $sz;
+}
+
+@mixin transition() {	//all
+      -o-transition: 0.5s ease-in-out;
+     -ms-transition: 0.5s ease-in-out;
+    -moz-transition: 0.5s ease-in-out;
+ -webkit-transition: 0.5s ease-in-out;
+         transition: 0.5s ease-in-out;
+}
+
+@mixin transition_type($type) {
+      -o-transition: $type 0.5s ease-in-out;
+     -ms-transition: $type 0.5s ease-in-out;
+    -moz-transition: $type 0.5s ease-in-out;
+ -webkit-transition: $type 0.5s ease-in-out;
+         transition: $type 0.5s ease-in-out;
+}
+
+
+@mixin transition_td($type, $duration, $timing) {
+      -o-transition: $type $duration $timing;
+     -ms-transition: $type $duration $timing;
+    -moz-transition: $type $duration $timing;
+ -webkit-transition: $type $duration $timing;
+         transition: $type $duration $timing;
+}
+

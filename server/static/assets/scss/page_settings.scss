@@ -1,0 +1,25 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
+
+
+//override 
+section div			{	max-width:	550px !important;	}
+
+
+#verify-email { height: 60px; }
+#verify-notice { font-size: .9em; line-height: 40px; }
+#email-verified {
+	height: 40px;
+	line-height: 40px;
+	color: $darkgreen; //rgba(0, 255, 0, 0.3);
+}
+
+#challenge			{ margin-top: -1px; }
+#verify_password	{ margin-top: -1px; }

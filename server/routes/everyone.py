@@ -12,22 +12,17 @@
 #################################################################################
 
 
-from . import sc_ebody
-from flask import render_template, make_response, redirect
-from flask import session, request
-from flask.ext.sqlalchemy import Pagination
-from server.infrastructure.srvc_database import db_session
+from server import database
+from server.routes import public_routes	as public
+from server.routes import api_routing   as api
 from server.models import * 
-from server.controllers import *
-from server.forms import NewPasswordForm, SearchForm
-from server.forms import GiftForm, RecoverPasswordForm
-from server import sc_csrf
-from pprint import pprint
+from server.controllers   import *
+from flask.ext.sqlalchemy import Pagination
 
 
-@sc_ebody.route('/index.html')
-@sc_ebody.route('/index')
-@sc_ebody.route('/', methods=['GET', 'POST'])
+@public.route('/index.html')
+@public.route('/index')
+@public.route('/', methods=['GET', 'POST'])
 def render_landingpage():
 	bp = None
 	if 'uid' in session:
@@ -39,8 +34,8 @@ def render_landingpage():
 
 
 
-@sc_ebody.route('/products/furniture/', methods=['GET', 'POST'])
-@sc_ebody.route('/products/furniture',  methods=['GET', 'POST'])
+@public.route('/products/furniture/', methods=['GET', 'POST'])
+@public.route('/products/furniture',  methods=['GET', 'POST'])
 def render_product_furniture():
 	bp = None
 	if 'uid' in session:
@@ -49,97 +44,6 @@ def render_product_furniture():
 
 
 
-@sc_ebody.route("/purchase", methods=['GET', 'POST'])
-def render_purchase_page_ebody():
-	bp = None
-	if (session.get('uid') is not None):
-		bp = Profile.get_by_uid(session.get('uid'))
-
-	gift = GiftForm(request.form)
-	return make_response(render_template('purchase.html', bp=bp, form=gift, STRIPE_PK=ht_server.config['STRIPE_PUBLIC']))
-
-
-
-@sc_ebody.route('/gift/<gift_id>', methods=['GET', 'POST'])
-def render_giftpage(gift_id):
-	print 'render_gift(): enter [' + str(gift_id) + ']'
-	bp = None
-	if (session.get('uid') is not None):
-		bp = Profile.get_by_uid(session.get('uid'))
-
-
-	if (gift_id):
-		print 'render_gift(): getting gift [' + str(gift_id) + ']'
-		gift = GiftCertificate.get_by_giftid(gift_id)
-
-	if ((gift is None) or (gift_id is None)):
-		#raise 'Gift Not Found' #GiftNotFoundError(from_user)
-		return make_response("Gift Not Found", 500)
-
-
-	# Was this a referral?  If so, set ref=ref_id
-	referral = Referral.get_by_gift_id(gift_id)
-	ref_id = (referral.ref_id) if (referral) else None
-	#print gift
-	#print referral
-	#if (referral):
-	#	prof_referral = Profile.get_by_uid(referral.ref_account)	#
-
-	print 'render_gift(): render page'
-	return make_response(render_template('gift.html', bp=bp, gift=gift, referral=ref_id))
-
-
-
-@sc_ebody.route('/review/<business>/<hash>', methods=['GET', 'POST'])
-def render_review_business_requested(business, hash):
-	print 'review_business_requested: enter []'
-
-
-#@sc_csrf.exempt
-#@insprite_views.route('/profile', methods=['GET', 'POST'])
-def render_profile(usrmsg=None):
-	bp = None
-	if (session.get('uid') is not None):
-		bp = Profile.get_by_uid(session.get('uid'))
-		print "BP = ", bp.prof_name, bp.prof_id, bp.account
-
-	try:
-		hp = request.values.get('hero')
-		if (hp is not None):
-			print "hero profile requested,", hp
-			hp = Profile.get_by_prof_id(hp)
-		else:
-			if (bp == None): 
-				# no hero requested or logged in. go to login
-				return redirect('/login')	
-			hp = bp
-
-		# replace 'hp' with the actual Hero's Profile.
-		print "HP = ", hp.prof_name, hp.prof_id, hp.account
-	except Exception as e:
-		print e
-		return jsonify(usrmsg='Sorry, bucko, couldn\'t find who you were looking for'), 500
-
-	try:
-		# complicated search queries can fail and lock up DB.
-		profile_imgs = db_session.query(Image).filter(Image.img_profile == hp.prof_id).all()
-		hp_c_reviews = htdb_get_composite_reviews(hp)
-		hp_lessons = ht_get_active_lessons(hp)
-		avail = Availability.get_by_prof_id(hp.prof_id)	
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
-
-
-	visible_imgs = ht_filter_images(profile_imgs, 'VISIBLE', dump=False)
-	hero_reviews = ht_filter_composite_reviews(hp_c_reviews, 'REVIEWED', hp, dump=False)
-	show_reviews = ht_filter_composite_reviews(hero_reviews, 'VISIBLE', None, dump=False)	#visible means displayable.
-	return make_response(render_template('profile.html', title='- ' + hp.prof_name, hp=hp, bp=bp, reviews=show_reviews, lessons=hp_lessons, portfolio=visible_imgs, avail=avail))
-
-
-
-
-#@insprite_views.route("/dmca", methods=['GET', 'POST'])
 def render_dmca():
 	bp = None
 	if 'uid' in session:
@@ -148,8 +52,8 @@ def render_dmca():
 
 
 
-@sc_ebody.route('/about/', methods=['GET', 'POST'])
-@sc_ebody.route('/about',  methods=['GET', 'POST'])
+@public.route('/about/', methods=['GET', 'POST'])
+@public.route('/about',  methods=['GET', 'POST'])
 def render_about_page():
 	bp = None
 	if 'uid' in session:
@@ -158,9 +62,9 @@ def render_about_page():
 
 
 
-@sc_ebody.route('/terms/', 		  methods=['GET'])
-@sc_ebody.route('/terms', 		  methods=['GET'])
-@sc_ebody.route('/terms/service', methods=['GET'])
+@public.route('/terms/', 		  methods=['GET'])
+@public.route('/terms', 		  methods=['GET'])
+@public.route('/terms/service', methods=['GET'])
 def render_terms_service_page():
 	bp = None
 	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
@@ -168,7 +72,7 @@ def render_terms_service_page():
 
 
 
-@sc_ebody.route('/terms/privacy', methods=['GET'])
+@public.route('/terms/privacy', methods=['GET'])
 def render_terms_privacy_page():
 	bp = None
 	if 'uid' in session: bp = Profile.get_by_uid(session['uid'])
@@ -176,10 +80,6 @@ def render_terms_privacy_page():
 
 
 
-
-#@sc_csrf.exempt
-#@insprite_views.route('/search',  methods=['GET', 'POST'])
-#@insprite_views.route('/search/<int:page>',  methods=['GET', 'POST'])
 def render_search(page = 1):
 	""" Provides ability to find Mentors. """
 	bp = None
@@ -227,7 +127,7 @@ def render_search(page = 1):
 		total_results = htdb_search_mentors_and_lessons(find_keywords, find_cost_min, find_cost_max)
 	except Exception as e:
 		print e, type(e)
-		db_session.rollback()
+		database.session.rollback()
 
 	PER_PAGE = 10
 	start_pg = (page - 1) * PER_PAGE
@@ -250,79 +150,7 @@ def render_search(page = 1):
 
 
 
-@sc_ebody.route("/password/recover", methods=['GET', 'POST'])
-def render_password_reset_request(sc_msg=None):
-	bp = None
-	if 'uid' in session:
-		bp = Profile.get_by_uid(session['uid'])
-
-	form = RecoverPasswordForm(request.form)
-	if form.validate_on_submit():
-		print 'password_reset_request() -', form.email.data
-		try:
-			sc_password_recovery(form.email.data)
-			session['messages'] = "Reset instructions were sent."
-			return make_response(redirect(url_for('sc_ebody.render_login')))
-		except NoEmailFound as nef:
-			sc_msg = nef.sanitized_msg()
-		except AccountError as ae:
-			sc_msg = ae.sanitized_msg()
-			print ae
-	return render_template('password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
-
-
-
-
-@sc_ebody.route('/password/reset/<challengeHash>', methods=['GET', 'POST'])
-def render_password_reset_page(challengeHash):
-	form = NewPasswordForm(request.form)
-
-	url = urlparse.urlparse(request.url)
-	#Extract query which has email and uid
-	query = urlparse.parse_qs(url.query)
-	if (query):
-		email  = query['email'][0]
-
-	accounts = Account.query.filter_by(sec_question=(str(challengeHash))).all()
-	if (len(accounts) != 1 or accounts[0].email != email):
-			trace('Hash and/or email didn\'t match.')
-			return redirect('/login')
-
-	if form.validate_on_submit():
-		account = accounts[0]
-		account.set_sec_question("")
-		account.pwhash = generate_password_hash(form.rec_input_newpass.data)
-		trace("hash " + account.pwhash)
-
-		try:
-			db_session.add(account)
-			db_session.commit()
-			sc_send_password_changed_confirmation(email)
-		except Exception as e:
-			trace(type(e) + ' ' + str(e))
-			db_session.rollback()
-		return redirect('/login')
-	elif request.method == 'POST':
-		trace("POST New password isn't valid " + str(form.errors))
-	return render_template('password-reset.html', form=form)
-
-
-
-@sc_ebody.route("/share/", methods=['GET', 'POST'])
-@sc_ebody.route("/share",	 methods=['GET', 'POST'])
-def render_share_page():
-	back = request.values.get('back')
-	print 'render_share_page()'
-	pprint(request.args)
-	for idx in request.args:
-		print idx, request.values.get (idx)
-
-	return make_response(render_template('share.html', back=back))
-
-
-
-
-@sc_ebody.route("/email/<operation>/<data>", methods=['GET','POST'])
+@public.route("/email/<operation>/<data>", methods=['GET','POST'])
 def sc_email_operations(operation, data):
 	print "sc_email_operations: begin", operation
 	print "sc_email_operations: data: ", data
@@ -355,16 +183,21 @@ def sc_email_operations(operation, data):
 
 
 
-def ht_send_verification_to_list(account, email_set):
-	print 'ht_send_verification_to_list() enter'
-	try:
-		account.reset_security_question()
-		db_session.add(account)
-		db_session.commit()
-	except Exception as e:
-		print type(e), e
-		db_session.rollback()
+#@public.route("/share/", methods=['GET', 'POST'])
+#@public.route("/share",	methods=['GET', 'POST'])
+def render_share_page():
+	print 'render_share_page()'
+	back = request.values.get('back')
+	pp(request.args)
+	for idx in request.args: print idx, request.values.get (idx)
+	return make_response(render_template('share.html', back=back))
 
-	for email in email_set:
-		print 'sending email to', email
-		ht_send_email_address_verify_link(email, account)
+
+
+@sc_server.csrf.exempt
+@api.route("/share/email", methods=['POST'])
+def api_share_via_email():
+	fragment	= render_template('fragments/share-email.html')
+	resp_code	= 200
+	resp_mesg	= 'Done'
+	return make_response(jsonify(sc_msg=resp_mesg, embed=fragment), resp_code)

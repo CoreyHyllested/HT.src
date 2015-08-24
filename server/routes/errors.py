@@ -11,9 +11,8 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-from . import sc_meta
-from flask import render_template, session, request
 from server.models import Profile
+from server.routes import meta_routes as server_routes
 from server.infrastructure.errors import *
 from jinja2.exceptions import *
 
@@ -35,14 +34,14 @@ def create_error_response(resp_code, resp_text, resp_template):
 
 
 
-@sc_meta.app_errorhandler(StateTransitionError)
+@server_routes.app_errorhandler(StateTransitionError)
 def error_400_bad_request_ste(ste):
 	profile = None
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid, asking for an invalid state transition change.'
-	print 'bad_request_ste sanitized', ste.sanitized_msg()
-	print 'bad_request_ste technical', ste.technical_msg()
+	print 'bad_request_ste sanitized', ste.status()
+	print 'bad_request_ste technical', str(ste.exception())
 
 	# log the resource.
 	# log the transition error.
@@ -52,14 +51,14 @@ def error_400_bad_request_ste(ste):
 
 
 
-@sc_meta.app_errorhandler(NoResourceFound)
+@server_routes.app_errorhandler(NoResourceFound)
 def error_400_no_resource_found(nrf):
 	profile = None
 	if 'uid' in session:
 		profile = Profile.get_by_uid(session.get('uid'))
 	print 'Error, returning 400 response. The request was invalid, asking for an resource that could not be found.'
-	print 'bad_resource_requested', nrf.sanitized_msg()
-	print 'bad_resource_requested', nrf.technical_msg()
+	print 'bad_resource_requested', nrf.status()
+	print 'bad_resource_requested', str(nrf.exception())
 
 	# log the resource.
 	# log the account / user / profile_id -- can only come from user with account.
@@ -68,7 +67,7 @@ def error_400_no_resource_found(nrf):
 
 
 
-@sc_meta.app_errorhandler(400)
+@server_routes.app_errorhandler(400)
 def error_400_bad_request(e):
 	profile = None
 	if 'uid' in session:
@@ -79,7 +78,7 @@ def error_400_bad_request(e):
 
 
 
-@sc_meta.app_errorhandler(401)
+@server_routes.app_errorhandler(401)
 def error_401_unauthorized(e):
 	profile = None
 	if 'uid' in session:
@@ -91,7 +90,7 @@ def error_401_unauthorized(e):
 
 
 
-@sc_meta.app_errorhandler(403)
+@server_routes.app_errorhandler(403)
 def error_403_forbidden(e):
 	profile = None
 	if 'uid' in session:
@@ -103,7 +102,7 @@ def error_403_forbidden(e):
 
 
 
-@sc_meta.app_errorhandler(404)
+@server_routes.app_errorhandler(404)
 def error_404_not_found(e):
 	profile = None
 	if 'uid' in session:
@@ -114,7 +113,7 @@ def error_404_not_found(e):
 
 
 
-@sc_meta.app_errorhandler(405)
+@server_routes.app_errorhandler(405)
 def error_405_method_not_allowed(e):
 	profile = None
 	if 'uid' in session:
@@ -131,20 +130,21 @@ def error_405_method_not_allowed(e):
 
 
 
-@sc_meta.app_errorhandler(SanitizedException)
+@server_routes.app_errorhandler(SanitizedException)
 def generic_error_sanitizedexception_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')
 
-@sc_meta.app_errorhandler(IOError)
-@sc_meta.app_errorhandler(TemplateNotFound)
+
+@server_routes.app_errorhandler(IOError)
+@server_routes.app_errorhandler(TemplateNotFound)
 def no_template_error(e):
 	print 'Returning 500 response. An unexpected server error occurred while processing request.'
 	print 'Error:', str(e)
 	return create_error_response(500, 'Internal server error', '500.html')
 
 
-@sc_meta.app_errorhandler(500)
+@server_routes.app_errorhandler(500)
 def error_500_internal_server_error(e):
 	print 'Error, returning 500 response. An unexpected server error occurred while processing request.'
 	return create_error_response(500, 'Internal server error', '500.html')

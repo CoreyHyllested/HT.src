@@ -12,14 +12,14 @@
 #################################################################################
 
 
-from . import sc_admin
-from flask import render_template
-from .helpers import *
-from server.controllers import *
-from server.sc_utils import *
+from server.models import *
+from server.routes import administrator
+from server.infrastructure.errors import *
+from server.controllers	import *
 
 
-@sc_admin.route('/admin', methods=['GET', 'POST'])
+@administrator.route('/admin', methods=['GET', 'POST'])
 def render_admin_dashboard():
 	bp = Profile.get_by_uid(session['uid'])
 	return make_response(render_template('dashboard-admin.html', bp=bp))
+

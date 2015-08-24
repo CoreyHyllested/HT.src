@@ -1,0 +1,48 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+
+
+h2				{	margin: 10px;		}
+input			{	width: 100%; max-width: 280px;	}
+input[type="submit"]	{  margin-bottom: 15px; }
+#page-content	{	padding-top: 20px;	}
+
+
+#authorize {
+	@include border-rad($container-border-radius);
+	background-color: $white;
+	padding: 15px 0;
+	margin:	0 auto 50px;
+	max-width: 320px;
+}
+
+
+#authorize-form		{ padding: 0 $form-padding; }
+.whiteButton		{ border: 1px solid white;	}
+.blueButton			{ text-transform: uppercase;	}
+
+
+// only used in reset (TODO -- remove)
+.recoveryLink {
+	clear: both;
+	display: block;
+	font-size: 0.9em;
+	margin-top: 5px;
+	text-align: center;
+}
+.recoveryLink:hover { text-decoration: underline; }
+
+
+/* DESIGN FOR EVERYTHING ELSE */
+@media (min-width: 489px) {
+	#page-content	{
+		background: $img-blurred no-repeat center;
+		background-size: cover;
+	}
+	#authorize	{	margin-left: 20%;	}
+}

@@ -1,0 +1,50 @@
+/* (c) 2015 Soulcrafting */
+
+// See /static/scss/defines/common.scss
+//	masthead-height			450px
+//	masthead-height-mobile	330px
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/common';
+
+
+#masthead {
+	position: fixed;
+
+	height:	$masthead-height;
+	width:	100%;
+
+	/* TEXT READABILITY */
+	font-size: 40px;
+	font-weight: 600;
+	line-height: 1.2em;
+	text-shadow: 0 0 30px rgba(0,0,0,.8);
+	text-align:	center;
+	color: white;
+
+	/* background (img upstream) */
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+
+#masthead-text	{	width: 100%;	position: relative;	display: block; top: 50%;		margin: 0 auto;		transition: opacity 1.5s ease 1.5s;	}
+#masthead-title {	width: 100%;	position: static;	display: block; 				margin: 0 auto;		text-transform: uppercase; 		}
+#masthead-gap 	{	height: $masthead-height; }
+
+
+@media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }
+
+/* DROP THESE */
+@media (min-width: 489px) {
+	#masthead-title {	font-size: 1.30em;	}
+	#masthead-text  {	font-size: 1.25em;	}
+}
+
+@media (min-width: 768px) {
+	#masthead-title {	font-size: 1.5em;	}
+	#masthead-text  {	font-size: 1.5em;	}
+}
+

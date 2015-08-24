@@ -1,0 +1,35 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/tags/masthead';
+
+//overrides
+#masthead			{	background-image: $img-medpatio;	z-index: -5;	}
+#masthead-text		{	top: 40%;	opacity: 0;				}
+h2					{	font-size: 30px;	}
+
+
+#faq {
+	margin-top: $text-padding;
+	display: block; 
+	overflow: auto;		//need overflow BECAUSE FAQ columns float (doesn't count towards height): http://stackoverflow.com/questions/5369954/why-is-my-divs-height-zero
+}
+
+.whitesmoke			{	background: whitesmoke;	}
+#soulcrafting-what	{	@extend .whitesmoke;	}
+#soulcrafting-faq	{	@extend .whitesmoke;	}
+
+.faq-question {
+	text-align: left;
+	font-weight: bolder;
+}
+
+
+@media (max-width: 767px) {
+	.inline-50	{	width: 100%;	max-width: 100%;	}
+}
+

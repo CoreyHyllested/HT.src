@@ -1,0 +1,31 @@
+/* (c) 2015 Soulcrafting */
+
+@import 'defines/fonts';
+@import 'defines/colors';
+@import 'defines/images';
+@import 'defines/mixins';
+@import 'defines/common';
+@import 'defines/styled/common';		//move to master eventually
+@import 'defines/tags/navigate';		//move to master eventually
+
+//override?
+section div	{	padding: 0 $section-padding;	}
+
+#legal-nav	{
+	background-color: black;
+	height: 150px;
+	color: white;
+}
+
+.terms-menu {
+	width: 32.3%;
+	margin: 60px 0;
+	display: inline-block;
+	text-align: center;
+	font-size: 20px;
+}
+
+// overrides
+a:hover			{ text-decoration: none;				}
+a.active		{ border-bottom: 3px solid $ht-blue;	}
+a.active:hover	{ border-bottom-color: #23527c;			}
