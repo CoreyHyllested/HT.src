@@ -99,10 +99,10 @@ def api_settings_update():
 	if (not update_acct):
 		return make_response(jsonify(status='No changes were requested.'), 200)
 
-	if not form.validate_on_submit():
-		return make_response(ApiError(errors=form.errors).serialize, 400)
-
 	try:
+		if not form.validate_on_submit():
+			raise InvalidInput(errors=form.errors)
+
 		print 'sc_api_update_settings()\tvalid submit'
 		(successful, errno) = sc_update_account(uid, form.current_password.data, new_pass=update_pass, new_mail=update_mail, new_name=update_name)
 
@@ -110,33 +110,33 @@ def api_settings_update():
 		print("sc_api_update_settings()\tmodify acct()  = " + str(successful) + ", errno = " + str(errno))
 
 		if not successful:
-			errmsg = str(errno)
-			errmsg = error_sanitize(errmsg)
+			status = SanitizedException.sanitize_message(str(errno))
 			form.current_password.data = ''
 			form.update_password.data = ''
 			form.verify_password.data = ''
-			return make_response(ApiError(errmsg, []).serialize, 400)
+			raise SanitizedException('Update Account Failed', status, errors = {'email' : status})
 
 		if (update_mail): ht_send_email_address_changed_confirmation(ba.email, form.email.data)		#better not throw an error
 		#if (update_pass): send_passwd_change_email(ba.email)										#better not throw an error
 		return make_response(jsonify(status='Saved.'), 200)
 
-	except PasswordError as pe:
+	except PasswordError as e:
 		database.session.rollback()
-		errors = { 'current_password' : pe.sanitized_msg() }
-		return make_response(ApiError(pe.sanitized_msg(), errors).serialize, pe.http_resp_code())
+		e.errors({ 'current_password' : e.status() })
+		return e.response()
+	except SanitizedException as e:
+		database.session.rollback()
+		return e.response()
 	except AttributeError as ae:
 		print 'sc_api_update_settings: AttributeError (CodeBug):', ae
 		database.session.rollback()
-		return make_response(ApiError('We made a mistake. Please try again later.').serialize, 500)
+		return make_response(ApiError('Oops. We made a mistake. Please try again later.').serialize, 500)
 	except Exception as e:
 		print 'sc_api_update_settings: Exception: ', e
 		database.session.rollback()
-		return make_response(ApiError('We made a mistake. Please try again later.').serialize, 500)
-
+		return make_response(ApiError('Oops. We made a mistake. Please try again later.').serialize, 500)
 
 	print "sc_api_update_settings: Something went wrong - Fell Through."
-	print str(form)
 	return jsonify(usrmsg="Sorry, there was a problem.", errors=form.errors), 500
 
 
@@ -169,4 +169,5 @@ def upload():
 				bp.update_profile_image(image)
 
 	return jsonify(tmp="/uploads/" + str(image.img_id))
+
 
