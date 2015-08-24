@@ -13,12 +13,15 @@
 
 
 import sys, traceback
-from flask import render_template, session, request, jsonify
+from flask import render_template, make_response, redirect
+from flask import session, request, jsonify
 from sqlalchemy.exc		import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from datetime import datetime as dt
 
 
+
+MESSAGE = { '(IntegrityError) duplicate key value violates unique constraint "ix_account_email' : 'Email is already in use', }
 
 
 class ApiError(object):
@@ -33,72 +36,94 @@ class ApiError(object):
 
 
 
+
+
 class SanitizedException(Exception):
-	def __init__(self, error, resp_code=400, user_msg=None):
-		self._exception = error
-		self._http_resp = resp_code
-		self._http_next = None
-		self._http_mesg = str(user_msg)			# show users a friendly message
-		self._tech_mesg = str(error)		# preserve the truth
-	
-	def exception(self):
-		return str(self._exception)
+	def __init__(self, exception, status='An issue occurred', errors=[], code=400):
+		self.__exception = exception
+		self.__next = None
+		self.__code = code
 
-	def exception_type(self):
-		return type(self._exception)
-
-	def technical_msg(self, msg = None):
-		if (msg is not None): self._tech_mesg = msg
-		return self._tech_mesg
-
-	def sanitized_msg(self, msg = None):
-		if (msg is not None): self._http_mesg = msg
-		return self._http_mesg
-
-	def http_resp_code(self, rc = None):
-		if (rc is not None): self._http_resp = rc
-		return self._http_resp
-
-	def http_next(self, nxt = None):
-		if (nxt is not None): self._http_next = nxt
-		return self._http_next
-	
-	def http_response(self, method):
-		pass
+		self.__reason = None		# extra context, truth
+		self.__status = status		# user friendly message
+		self.__errors = errors
 
 
-	def api_response(self, method):
+	def exception(self):	  return	 (self.__exception)
+	def exception_type(self): return type(self.__exception)
+
+	def code(self, update_code = None):
+		if (update_code): self.__code = update_code
+		return self.__code
+
+	def next(self, update_next = None):
+		if (update_next): self.__next = update_next
+		return self.__next
+
+	def status(self, update_status = None):
+		if (update_status): self.__status = update_status
+		return self.__status
+
+	def errors(self, update_errors = None):
+		if (update_errors): self.__errors = update_errors
+		return self.__errors
+
+#	not working
+#	def append_error(self, key, value):
+#		self.__errors.append({ key : value })
+
+	def reason(self, update_msg = None):
+		if (update_msg): self.__reason = update_msg
+		return self.__reason
+
+
+	def response(self):
 		# allow route/errors to catch and render HTML page
-		if (method == 'GET'): raise self
+		#if (method == 'GET'): raise self	-- ?
 
 		# POSTed from Web-Client, respond with JSON Error Mesg.
-		print 'api_response = POST : resp(' + str(self._http_resp) + ') : ' + str(self._http_mesg)
-		return jsonify(usrmsg=self._http_mesg), self._http_resp
+		print 'api_response = POST : code(' + str(self.__code) + ') : ' + str(self.__status) + ' : ' + str(self.__errors)
+		api_response = jsonify ({ 'status': self.__status, 'errors': self.__errors })
+		return make_response(api_response, self.__code)
 
 
+	@staticmethod
+	def sanitize_message(error_msg):
+		print 'sanitize'
+		print error_msg[0:81]
+		rc = MESSAGE.get(error_msg[0:81], error_msg)
+		print rc
+		return rc
 
 
 ################################################################################
 ### SUBCLASS EXCEPTIONS ########################################################
 ################################################################################
 
-class AccountError(SanitizedException):
-	def __init__(self, email, error='Account creation failed', user_msg=None):
-		super(AccountError, self).__init__(error, resp_code=400, user_msg=user_msg)
-		self.email = email
 
-	def __str__(self):
-		return '<AccountError:%r:%r>' % (self.email, self._tech_mesg)
+class InvalidInput(SanitizedException):
+	def __init__(self, status=None, errors=None):
+		SanitizedException.__init__(self, 'Invalid Input', status, errors)
+		print self.exception()
+
+	def __str__(self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+
+
+
+class AccountError(SanitizedException):
+	def __init__(self, email, status=None):
+		SanitizedException.__init__(self, status='Account Creation Failed')
+		self.email = email
+	def __str__(self): return '<AccountError:%r:%r>' % (self.email, self.reason())
+
 
 
 class PasswordError(SanitizedException):
-	def __init__(self, account, error='Password does not match what is on file'):
-		super(PasswordError, self).__init__(error, resp_code=401)
-		self.account = account
-		self.sanitized_msg(msg = error)
+	def __init__(self, account_id, status='Password does not match what is on file.', errors=[]):
+		SanitizedException.__init__(self, 'Password Error', status=status, errors=errors, code=401)
+		self.account = account_id
 
-	def __str__(self):
-		return '<Passworderror:%r:%r>' % (self.account, self._tech_mesg)
+	def __str__(self): return '<Passworderror:%r:%r>' % (self.account, self.reason())
 
 
 
@@ -111,7 +136,7 @@ class StateTransitionError(SanitizedException):
 		self.state_cur	= state_cur
 		self.state_nxt	= state_nxt
 		self.flags	= flags
-		self.technical_msg(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + str(user_msg))
+		self.reason(str(resrc) + ' ' + resrc_id + ' cannot transition to STATE(' + str(state_nxt) + '): ' + str(user_msg))
 		#print 'StateTransitionError()\tcompleting'
 
 	def __str__(self):
@@ -125,8 +150,8 @@ class NoResourceFound(SanitizedException):
 		super(NoResourceFound, self).__init__(None)
 		self.resrc		= str(resrc)
 		self.resrc_id	= str(resrc_id)
-		self.sanitized_msg(self.resrc + ' \'' + self.resrc_id + '\' not found.')
-		self.technical_msg(self.resrc + ' '   + self.resrc_id + ' not found.')
+		self.status(self.resrc + ' \'' + self.resrc_id + '\' not found.')
+		self.reason(self.resrc + ' \'' + self.resrc_id + '\' not found.')
 
 	def __str__(self):
 		return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
@@ -160,10 +185,10 @@ class NoGiftFound(NoResourceFound):
 #replace with NoGiftFound.
 class GiftNotFoundError(SanitizedException):
 	def __init__(self, gift_id, flags=None, user_msg=None):
-		super(GiftNotFoundError, self).__init__(None, resp_code=400, user_msg=user_msg)
+		super(GiftNotFoundError, self).__init__(None, status=user_msg)
 		self.gift_id = str(gift_id)
 		self.flags	= flags
-		self.technical_msg(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
+		self.reason(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
 
 	def __str__(self):
 		return "<NoGiftFound (%r)>" % (self.gift_id)
@@ -172,7 +197,7 @@ class GiftNotFoundError(SanitizedException):
 
 class ReviewError(SanitizedException):
 	def __init__(self, op, exp, seen, user_msg=None):
-		super(ReviewError, self).__init__(None, user_msg=user_msg)
+		super(ReviewError, self).__init__(None, status=user_msg)
 		self.op = op
 		self.exp = exp
 		self.seen = seen
