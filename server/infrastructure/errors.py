@@ -44,10 +44,6 @@ class ApiError(object):
 
 class SanitizedException(Exception):
 	def __init__(self, exception, status='An issue occurred', errors=[], code=400):
-		print 'SE: exception = ', exception
-		print 'SE: status = ', status
-		print 'SE: errors = ', str(errors)
-		print 'SE: code = ', str(code)
 		self.__exception = exception
 		self.__next = None
 		self.__code = code
@@ -93,7 +89,7 @@ class SanitizedException(Exception):
 			return make_response(render_template(error_page, bp=bp), self.code())
 
 		# POST from Web-Client, respond with JSON Error Mesg.
-		print 'response = POST : code(' + str(self.code()) + ') : ' + self.status() + ' : ' + str(self.errors())
+		print 'response = POST : code(' + str(self.code()) + ') : ' + str(self.status()) + ' : ' + str(self.errors())
 		api_json_resp = jsonify ({ 'status': self.__status, 'errors': self.__errors })
 		return make_response(api_json_resp, self.code())
 
@@ -113,8 +109,7 @@ class SanitizedException(Exception):
 
 class InvalidInput(SanitizedException):
 	def __init__(self, status=None, errors=None):
-		SanitizedException.__init__(self, 'Invalid Input', status, errors)
-		print self.exception()
+		super(InvalidInput, self).__init__('Invalid Input', status, errors, 400)
 
 	def __str__(self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
 
