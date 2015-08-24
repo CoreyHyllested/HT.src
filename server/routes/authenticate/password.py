@@ -90,17 +90,23 @@ def authorize_password_signin():
 	# user has already logged in, take 'em home.
 	if ('uid' in session): return redirect('/profile')
 
-	form_signin = SignupForm(request.form)
-	if form_signin.validate_on_submit():
-		ba = sc_authenticate_user(form_signin.email.data.lower(), form_signin.passw.data)
-		if (ba is not None):
-			# successful login, bind session.
-			bp = Profile.get_by_uid(ba.userid)
-			bind_session(ba, bp)
-			return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
-		return make_response(ApiError("Email/password combo do not match.").serialize, 400)
-	return make_response(ApiError(errors=form_signin.errors).serialize, 400)
+	sf = SignupForm(request.form)
 
+	try:
+		if not sf.validate_on_submit():
+			raise InvalidInput(errors=sf.errors)
+
+		ba = sc_authenticate_user(sf.email.data.lower(), sf.passw.data)
+		if (not ba): raise PasswordError(sf.email.data)
+
+		# successful login, bind session.
+		bp = Profile.get_by_uid(ba.userid)
+		bind_session(ba, bp)
+		return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
+
+	except SanitizedException as e:
+		database.session.rollback()
+		return e.response()
 
 
 @public.route('/logout/', methods=['GET', 'POST'])

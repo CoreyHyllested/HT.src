@@ -78,11 +78,10 @@ def api_referral_create():
 	context	= rf.context.data
 	content = rf.content.data
 
-	if not rf.validate_on_submit():
-		print rf.errors
-		return make_response(jsonify(rf.errors), 400)
-
 	try:
+		if not rf.validate_on_submit():
+			raise InvalidInput(errors=rf.errors)
+
 		# business may not exist.
 		business = Business.get_by_id(bus_id)
 		if (not business):
@@ -98,12 +97,15 @@ def api_referral_create():
 		session_referrals[referral.ref_uuid] = referral
 		session['referrals'] = session_referrals
 		return make_response(jsonify(referral.serialize), 200)
+	except SanitizedException as e:
+		# InvalidInput, database.session.rollback() unneeded
+		return e.response()
 	except Exception as e:
+		# TEST -- get DB failure.  exceed business-name?
+		# wrap e as SanitizedException, then call e.response
 		print type(e), e
 		database.session.rollback()
-	return e.api_response(request.method)
-
-
+		return e.response(request.method)
 
 
 @api.route('/referral/<string:ref_id>/', methods=['GET'])
@@ -111,7 +113,10 @@ def api_referral_create():
 def api_referral_read(ref_id):
 	print 'api_referral_read: enter'
 	composite = Referral.get_composite_referral_by_id(ref_id)
-	if (not composite): return make_response(jsonify(referral='missing resource'), 400)
+	try:
+		if (not composite): raise NoReferralFound(ref_id)
+	except SanitizedException as e:
+		return e.response()
 	return make_response(jsonify(referral=composite.Referral.serialize), 200)
 
 
@@ -129,19 +134,24 @@ def api_referral_update(ref_id):
 	context	= rf.context.data
 	content = rf.content.data
 
-	if (not referral): return make_response(jsonify(request='missing valid resource'), 400)
-	if (not referral.authored_by(bp)): return make_response(jsonify(referral='missing authority'), 401)
-	referral.ref_business	= bus_id
-	referral.ref_content	= content
-	referral.ref_project	= ','.join([ x.strip().lower() for x in context.split(',') ])
-
 	try:
+		if (not referral): raise NoReferralFound(ref_id)
+		if (not referral.authored_by(bp)): raise SanitizedException('Permission Error', 'You do not have permission to modify this resource', code=401)
+		referral.ref_business	= bus_id
+		referral.ref_content	= content
+		referral.ref_project	= ','.join([ x.strip().lower() for x in context.split(',') ])
+
 		database.session.add(referral)
 		database.session.commit()
+	except SanitizedException as e:
+		#TEST - lacking permission
+		#TEST - no id
+		return e.response()
 	except Exception as e:
 		database.session.rollback()
+		# TEST - break DB value.
 		print type(e), e
-		return e.api_response(request.method)
+		return e.response(request.method)
 	return make_response(jsonify(referral.serialize), 200)
 
 
@@ -153,16 +163,19 @@ def api_referral_update(ref_id):
 def api_referral_destroy(ref_id):
 	bp = Profile.get_by_uid(session.get('uid'))
 	referral = Referral.get_by_refid(ref_id)
-	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
-	if (not referral.authored_by(bp)): return make_response(jsonify(referral='missing authority'), 401)
 
 	try:
+		if (not referral): raise NoReferralFound(ref_id)
+		if (not referral.authored_by(bp)): raise SanitizedException('Permission Error', 'You do not have permission to modify this resource', code=401)
+
 		database.session.delete(referral)
 		database.session.commit()
+	except SanitizedException as e:
+		return e.response()
 	except Exception as e:
 		database.session.rollback()
 		print type(e), e
-		return e.api_response(request.method)
+		return e.response(request.method)
 	return make_response(jsonify(referral='destroyed'), 200)
 
 
