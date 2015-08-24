@@ -1,4 +1,4 @@
-var referral_version = 0.95;
+var referral_version = 0.96;
 
 
 function clear_referral() { $('#rid').val(''); }
@@ -47,6 +47,7 @@ function business_submit(event) {
 	p.always(business_create);
 	return false;
 }
+
 
 function business_update(event) {
 	$(event.target).toggleClass('update');
@@ -123,13 +124,16 @@ function referral_submit(event) {
 					set_status('.action-feedback', 'Saved');
 				},
 				error	: function(xhr, status, error) {
-					console.log("AJAX Error", xhr);
-					if (xhr.status === 400) {
+					if (xhr.status === 401) {
+						open_login(xhr.status);
+					} else if (xhr.status === 400) {
 						// form error(s) occurred.
 						show_errors('.action-feedback', xhr.responseJSON);
-					} else if (xhr.status === 401) {
-						open_login(xhr.status);
-					} else { }
+					} else if (xhr.status === 500) {
+						show_errors('.action-feedback', xhr.responseJSON);
+					} else {
+						console.log('Missing response for error', xhr.status);
+					}
 				}
 	});
 	return false;
