@@ -123,7 +123,7 @@ function referral_submit(event) {
 					set_status('.action-feedback', 'Saved');
 				},
 				error	: function(xhr, status, error) {
-					console.log("AJAX Error");
+					console.log("AJAX Error", xhr);
 					if (xhr.status === 400) {
 						// form error(s) occurred.
 						show_errors('.action-feedback', xhr.responseJSON);

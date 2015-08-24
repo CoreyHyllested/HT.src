@@ -24,7 +24,7 @@ function settings_submit(event) {
 			 	//$("#passMeter").slideUp().html("");
 			},
 			error: function(xhr, status, error) {
-				console.log("Ajax error", status);
+				console.log("Ajax error", xhr);
 				show_errors('.action-feedback', xhr.responseJSON);
 			}
 	});
