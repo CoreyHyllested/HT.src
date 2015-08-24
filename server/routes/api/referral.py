@@ -39,25 +39,31 @@ def render_create_referral_page():
 @public.route('/referral/<string:ref_id>',  methods=['GET'])
 def render_referral(ref_id):
 	print 'render_referral(%s)', ref_id
-	composite = Referral.get_composite_referral_by_id(ref_id)
-	if (not composite): return make_response(jsonify(referral='missing resource'), 400)
+	try:
+		composite = Referral.get_composite_referral_by_id(ref_id)
+		if (not composite): raise NoReferralFound(ref_id)
 
-	bp = Profile.get_by_uid(session.get('uid'))
-	editmode = request.args.get('edit')
+		bp = Profile.get_by_uid(session.get('uid'))
+		editmode = request.args.get('edit')
 
-	# [SECURITY] request to update referral, ensure bp authored the referral
-	#if (not composite.referral.authored_by(bp))
-	if (not (request.args.get('edit') and (bp and bp.prof_id == composite.Referral.ref_profile))):
-		editmode=False
+		# [SECURITY] request to update referral, ensure bp authored the referral
+		#if (not composite.referral.authored_by(bp))
+		if (not (request.args.get('edit') and (bp and bp.prof_id == composite.Referral.ref_profile))):
+			editmode=False
 
-	rf = ReferralForm(request.values)
-	rf.bid.data = composite.Referral.ref_business
-	rf.rid.data = composite.Referral.ref_uuid
-	rf.content.data	= composite.Referral.ref_content
-	rf.context.data	= composite.Referral.ref_project
-	rf.trusted.data = composite.business.bus_name
-	if (composite.display_addr): rf.trusted.data = rf.trusted.data + ' | ' + composite.display_addr
-	return make_response(render_template('referral.html', bp=bp, form=rf, edit=editmode))
+		# populate Referral's form data.
+		rf = ReferralForm(request.values)
+		rf.bid.data = composite.Referral.ref_business
+		rf.rid.data = composite.Referral.ref_uuid
+		rf.content.data	= composite.Referral.ref_content
+		rf.context.data	= composite.Referral.ref_project
+		rf.trusted.data = composite.business.bus_name
+
+		if (composite.display_addr): rf.trusted.data = rf.trusted.data + ' | ' + composite.display_addr
+		return make_response(render_template('referral.html', bp=bp, form=rf, edit=editmode))
+	except SanitizedException as e:
+		return e.response()
+
 
 
 
@@ -98,26 +104,27 @@ def api_referral_create():
 		session['referrals'] = session_referrals
 		return make_response(jsonify(referral.serialize), 200)
 	except SanitizedException as e:
-		# InvalidInput, database.session.rollback() unneeded
 		return e.response()
 	except Exception as e:
-		# TEST -- get DB failure.  exceed business-name?
-		# wrap e as SanitizedException, then call e.response
-		print type(e), e
+		# IntegrityError (db error)
 		database.session.rollback()
-		return e.response(request.method)
+		e = SanitizedException(e, status='Oops. An error occurred', code=500)
+		print type(e.exception()), str(e.exception())
+		return e.response()
 
 
-@api.route('/referral/<string:ref_id>/', methods=['GET'])
-@api.route('/referral/<string:ref_id>',  methods=['GET'])
+
+@sc_server.csrf.exempt
+@api.route('/referral/<string:ref_id>/', methods=['POST'])
+@api.route('/referral/<string:ref_id>',  methods=['POST'])
 def api_referral_read(ref_id):
 	print 'api_referral_read: enter'
 	composite = Referral.get_composite_referral_by_id(ref_id)
 	try:
 		if (not composite): raise NoReferralFound(ref_id)
+		return make_response(jsonify(referral=composite.Referral.serialize), 200)
 	except SanitizedException as e:
 		return e.response()
-	return make_response(jsonify(referral=composite.Referral.serialize), 200)
 
 
 
@@ -136,23 +143,28 @@ def api_referral_update(ref_id):
 
 	try:
 		if (not referral): raise NoReferralFound(ref_id)
-		if (not referral.authored_by(bp)): raise SanitizedException('Permission Error', 'You do not have permission to modify this resource', code=401)
+		if (not rf.validate_on_submit()):	raise InvalidInput(errors=rf.errors)
+		if (not referral.authored_by(bp)):	raise SanitizedException('Permission Error', 'You do not have permission to modify this resource', code=401)
 		referral.ref_business	= bus_id
 		referral.ref_content	= content
 		referral.ref_project	= ','.join([ x.strip().lower() for x in context.split(',') ])
 
 		database.session.add(referral)
 		database.session.commit()
+		return make_response(jsonify(referral.serialize), 200)
+	except InvalidInput as e:
+#		Intent here is to provide feedback;
+#		Currently, failing, to set red-border or showing message because TT-updates DOM
+#		if (e.errors().get('context')):
+#			e.status(e.errors()['context'])
+		return e.response()
 	except SanitizedException as e:
-		#TEST - lacking permission
-		#TEST - no id
 		return e.response()
 	except Exception as e:
 		database.session.rollback()
-		# TEST - break DB value.
-		print type(e), e
-		return e.response(request.method)
-	return make_response(jsonify(referral.serialize), 200)
+		e = SanitizedException(e, status='Oops. An error occurred', code=500)
+		print type(e.exception()), str(e.exception())
+		return e.response()
 
 
 
@@ -174,8 +186,9 @@ def api_referral_destroy(ref_id):
 		return e.response()
 	except Exception as e:
 		database.session.rollback()
-		print type(e), e
-		return e.response(request.method)
+		e = SanitizedException(e, status='Oops. An error occurred', code=500)
+		print type(e.exception()), str(e.exception())
+		return e.response()
 	return make_response(jsonify(referral='destroyed'), 200)
 
 
@@ -191,20 +204,19 @@ def api_referral_destroy(ref_id):
 @test.route('/referral/<string:ref_id>/valid',	methods=['GET','POST'])
 def test_reflist_valid(ref_id):
 	referral = Referral.get_by_refid(ref_id)
-	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+	if (not referral): raise NoReferralFound(ref_id)
 
 	referral.set_valid()
-	return make_response(jsonify(flags=referral.ref_flags), 200)
-	return make_response(jsonify(referral.serialize), 200)
+	return make_response(jsonify(flags=referral.ref_flags, referral=referral.serialize), 200)
 
 
 @test.route('/referral/<string:ref_id>/invalid/',	methods=['GET','POST'])
 @test.route('/referral/<string:ref_id>/invalid',	methods=['GET','POST'])
 def test_reflist_setinvalid(ref_id):
 	referral = Referral.get_by_refid(ref_id)
-	if (not referral): return make_response(jsonify(referral='missing resource'), 400)
+	if (not referral): raise NoReferralFound(ref_id)
 
 	referral.set_invalid()
 	flags = referral.serialize['ref_flags']
-	return make_response(jsonify(flags=referral.ref_flags), 200)
-	return make_response(jsonify(referral=referral.ref_flags), 200)
+	return make_response(jsonify(flags=referral.ref_flags, referral=referral.serialize), 200)
+
