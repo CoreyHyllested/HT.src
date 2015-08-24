@@ -1,4 +1,4 @@
-version = 1.11;
+version = 1.12;
 
 
 function open_modal_window(embed, win_sz) {
@@ -82,11 +82,11 @@ function signin_submit(event) {
 							window.location.href = xhr.next;
 						},
 			error		: function(xhr, status, error) {
-							console.log("AJAX Error", xhr);
-							if (xhr.status === 400) {
+							if ((xhr.status === 400) || (xhr.status === 401)) {
 								show_errors('.action-feedback', xhr.responseJSON);
-							} else { }
-							// 401 not possible here
+							} else {
+								console.log("no action for ", status, xhr);
+							}
 						}
 	});
 	return false;
