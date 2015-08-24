@@ -560,7 +560,3 @@ def display_lastmsg_timestamps(msg, prof_id, all_messages):
 	#setattr(msg, 'lastmsg_open', thread_msgs[-1].UserMessage.msg_opened)
 	#setattr(msg, 'lastmsg_to',   thread_msgs[-1].msg_to)
 
-def error_sanitize(message):
-	if (message[0:16] == "(IntegrityError)"):
-		message = "Email already in use."
-	return message
