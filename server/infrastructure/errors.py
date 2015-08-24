@@ -82,15 +82,14 @@ class SanitizedException(Exception):
 		#if (method == 'GET'): raise self	-- ?
 
 		# POSTed from Web-Client, respond with JSON Error Mesg.
-		print 'api_response = POST : code(' + str(self.__code) + ') : ' + str(self.__status) + ' : ' + str(self.__errors)
-		api_response = jsonify ({ 'status': self.__status, 'errors': self.__errors })
-		return make_response(api_response, self.__code)
+		print 'response = POST : code(' + str(self.__code) + ') : ' + str(self.__status) + ' : ' + str(self.__errors)
+		api_resp = jsonify ({ 'status': self.__status, 'errors': self.__errors })
+		return make_response(api_resp, self.__code)
 
 
 	@staticmethod
 	def sanitize_message(error_msg):
-		print 'sanitize'
-		print error_msg[0:81]
+		print 'sanitize "' + error_msg[0:81] + '"'
 		rc = MESSAGE.get(error_msg[0:81], error_msg)
 		print rc
 		return rc
@@ -146,52 +145,36 @@ class StateTransitionError(SanitizedException):
 
 
 class NoResourceFound(SanitizedException):
-	def __init__(self, resrc, resrc_id, error_msg=None):
-		super(NoResourceFound, self).__init__(None)
+	def __init__(self, resrc, resrc_id):
+		status = resrc + ' \'' + resrc_id + '\' not found'
+		SanitizedException.__init__(self, 'Resource Error', status=status)
 		self.resrc		= str(resrc)
 		self.resrc_id	= str(resrc_id)
-		self.status(self.resrc + ' \'' + self.resrc_id + '\' not found.')
-		self.reason(self.resrc + ' \'' + self.resrc_id + '\' not found.')
 
-	def __str__(self):
-		return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
+	def __str__(self): return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
 
 
-class NoProposalFound(NoResourceFound):
-	def __init__(self, pid): super(NoProposalFound, self).__init__('Proposal', str(pid))
+
+class NoReferralFound(NoResourceFound):
+	def __init__(self, rid): NoResourceFound('Referral', str(rid))
 
 class NoAccountFound(NoResourceFound):
-	def __init__(self, aid): super(NoAccountFound, self).__init__('Account', str(aid))
-
-class NoMeetingFound(NoResourceFound):
-	def __init__(self, mid): super(NoMeetingFound, self).__init__('Meeting', str(mid))
+	def __init__(self, rid): NoResourceFound('Account', str(rid))
 
 class NoProfileFound(NoResourceFound):
-	def __init__(self, pid): super(NoProfileFound, self).__init__('Profile', str(pid))
+	def __init__(self, rid): NoResourceFound('Profile', str(rid))
 
 class NoReviewFound(NoResourceFound):
-	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
+	def __init__(self, rid): NoResourceFound('Review', str(rid))
 
 class NoEmailFound(NoResourceFound):
-	def __init__(self, email): super(NoEmailFound, self).__init__('Email', str(email))
+	def __init__(self, rid): NoResourceFound('Email', str(rid))
 
 class NoOauthFound(NoResourceFound):
-	def __init__(self, uid): super(NoOauthFound, self).__init__('Oauth', str(uid))
+	def __init__(self, rid): NoResourceFound('Oauth', str(rid))
 
 class NoGiftFound(NoResourceFound):
-	def __init__(self, gid): super(NoGiftFound, self).__init__('Gift', str(gid))
-
-
-#replace with NoGiftFound.
-class GiftNotFoundError(SanitizedException):
-	def __init__(self, gift_id, flags=None, user_msg=None):
-		super(GiftNotFoundError, self).__init__(None, status=user_msg)
-		self.gift_id = str(gift_id)
-		self.flags	= flags
-		self.reason(str(gift_id) + ' ' + ' does not exist.  Already, consumed?')
-
-	def __str__(self):
-		return "<NoGiftFound (%r)>" % (self.gift_id)
+	def __init__(self, rid): NoResourceFound('Gift', str(rid))
 
 
 
