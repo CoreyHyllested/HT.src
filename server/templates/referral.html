@@ -32,9 +32,11 @@
 		#}
 			<div id='referral-questions'>
 				<div class='field-lead'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr'></span></div>
+				<div class='field-error'></div>
 				{{form.content(spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time. (Require at least 20 characters).")}}
 
 				<div class='field-lead'>What project was this for?</div>
+				<div class='field-error'></div>
 				{{form.context(autocomplete="off", maxlength=120, placeholder="Remodel deck, cheap (optional)")}}
 			</div>
 
