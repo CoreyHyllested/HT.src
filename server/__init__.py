@@ -129,7 +129,7 @@ def server_init_assets_css(assets):
 	theme_login = Bundle('theme_authorize.scss', filters='pyscss', output='css/authorize.css')
 	theme_dashboard = Bundle('theme_dashboard.scss', filters='pyscss', output='css/dashboards.css')
 	theme_referral = Bundle('theme_referral.scss', filters='pyscss', output='css/referral.css')
-	theme_profiles = Bundle('theme_profiles.scss', filters='pyscss', output='css/profiles.css')
+	theme_profiles = Bundle('profiles.scss', filters='pyscss', output='css/profiles.css')
 	theme_projects = Bundle('theme_projects.scss', filters='pyscss', output='css/projects.css')
 
 
