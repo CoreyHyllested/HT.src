@@ -51,10 +51,10 @@
 			<div class='ref-actions'>
 				<a target='_blank' href='https://twitter.com/intent/tweet?related=@soulcrafting&text=check+out+this+referral+on+@Soulcrafting&url=https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr={{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-twitter"></i></span></a>
 				{%- if bp == profile %}
-				<a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a>
+				<a class='pop-action' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a>
 				{%- endif %}
 				{#
-				<a class='pop-share' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'>
+				<a class='pop-share' data-ref-id='{{ref.Referral.ref_uuid}}'>
 					<span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a>
 				<a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a>
 				#}
@@ -71,7 +71,6 @@
 	{{ super() }}
 	{%- assets 'js_profiles' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 	<script src='/static/js/tagsinput.js'></script>
-	<script src='/static/js/bs-popover.js'></script>
 	<script>
 	$(document).ready(function () {
 		{%- if highlight %}
