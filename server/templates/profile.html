@@ -48,13 +48,17 @@
 			<div class='ref-context'>
 				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
 			</div>
-			<ul class='ref-operations align-right'>
-				{#<li><a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a></li>#}
-				<li><a class='pop-share'  rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a></li>
+			<div class='ref-actions'>
+				<a target='_blank' href='https://twitter.com/intent/tweet?related=@soulcrafting&text=check+out+this+referral+on+@Soulcrafting&url=https%3A%2F%2Ftesting.soulcrafting.co%2Fprofile%2F{{profile.prof_id}}?hlr={{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-twitter"></i></span></a>
 				{%- if bp == profile %}
-				<li><a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a></li>
+				<a class='pop-action' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-chevron-down"></i></span></a>
 				{%- endif %}
-			</ul>
+				{#
+				<a class='pop-share' rel='popover' data-ref-id='{{ref.Referral.ref_uuid}}'>
+					<span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a>
+				<a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a>
+				#}
+			</div>
 		</div>
 	</article>
 	{% endfor %}
@@ -76,6 +80,7 @@
 		{%- endif %}
 
 		//http://stackoverflow.com/questions/15989591/how-can-i-keep-bootstrap-popover-alive-while-the-popover-is-being-hovered
+	{#
 		$(".pop-share").popover({
 			html: true,
 			animation: false,
@@ -115,6 +120,7 @@
 		        }
 		    }, 500);
 		});
+		#}
 
 		$(".pop-action").popover({
 			html: true,
@@ -127,8 +133,8 @@
 				tree_li_update = document.createElement('li');
 				$(tree_li_delete).addClass("btn-referral-delete").data("ref-id", refid).html("<a href='#'><i class='fa fa-trash-o icon'></i><span class='align-left'>Delete</span></a>");
 				$(tree_li_update).addClass("btn-referral-update").data("ref-id", refid).html("<a href='#'><i class='fa fa-cog icon'></i><span class='align-left'>Edit</span></a>");
-				$(tree_ul).append(tree_li_update).append('<br>');
-				$(tree_ul).append(tree_li_delete).append('<br>');
+				$(tree_ul).append(tree_li_update);
+				$(tree_ul).append(tree_li_delete);
 				return tree_ul;
 			},
 			placement: 'left',

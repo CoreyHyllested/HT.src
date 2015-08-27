@@ -20,8 +20,8 @@ $version : 0.03;
 .ref-name			{	display: inline;		font-weight: bold;		} //trying to shoehorn location onto same line. margin-right: -75px;	padding-right: 80px;	
 .ref-location		{	display: inline;		font-size: .8em;		}
 .ref-context		{	display: inline-block;	margin-right: -70px;	padding-right: 75px;	}
-.ref-operations		{	display: inline-block;	font-size: 0.8em;		width: 65px;	}
-.ref-operations li	{	display: inline; 	padding-left: 0; } 
+.ref-actions		{	display: inline-block;	font-size: .8em;		width: 65px;	text-align: right;	}
+.ref-actions a		{	color: $ht-blue;	}		//weird this is needed (pop-over link) seems to ignore master.css
 
 .pop-over-li			{	margin-bottom: 3px;	text-align: left; }
 li.btn-share-facebook	{	@extend .pop-over-li;	}
