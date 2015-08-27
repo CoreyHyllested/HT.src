@@ -26,26 +26,20 @@
     allowDuplicates: false
   };
 
-  /**
-   * Constructor function
-   */
+  /** Constructor function */
   function TagsInput(element, options) {
     this.itemsArray = [];
-
     this.$element = $(element);
     this.$element.hide();
-
     this.isSelect = (element.tagName === 'SELECT');
+    this.readonly = (element.hasAttribute('readonly'));
     this.multiple = (this.isSelect && element.hasAttribute('multiple'));
     this.objectItems = options && options.itemValue;
     this.placeholderText = element.hasAttribute('placeholder') ? this.$element.attr('placeholder') : '';
     this.inputSize = Math.max(1, this.placeholderText.length);
-
     this.$container = $('<div class="bootstrap-tagsinput"></div>');
     this.$input = $('<input type="text" placeholder="' + this.placeholderText + '"/>').appendTo(this.$container);
-
     this.$element.before(this.$container);
-
     this.build(options);
   }
 
@@ -126,8 +120,11 @@
       self.itemsArray.push(item);
 
       // add a tag element
-
-      var $tag = $('<span class="tag ' + htmlEncode(tagClass) + (itemTitle !== null ? ('" title="' + itemTitle) : '') + '">' + htmlEncode(itemText) + '<span data-role="remove"></span></span>');
+	  var remove = ''
+	  if (!self.readonly) {
+		  remove = '<span data-role="remove"></span>'
+	  }
+      var $tag = $('<span class="tag ' + htmlEncode(tagClass) + (itemTitle !== null ? ('" title="' + itemTitle) : '') + '">' + htmlEncode(itemText) + remove +'</span>');
       $tag.data('item', item);
       self.findInputWrapper().before($tag);
       $tag.after(' ');
