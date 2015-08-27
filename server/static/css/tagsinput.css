@@ -1,17 +1,25 @@
 .bootstrap-tagsinput {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   display: inline-block;
   padding: 4px 6px;
-  color: #555;
   vertical-align: middle;
-  border-radius: 4px;
-  max-width: 100%;
   line-height: 22px;
-  cursor: text;
+	color: white;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
+
+
+//hack, cannot see typeahead menu without this.
+.bootstrap-tagsinput.active {
+	overflow: visible;
+}
+
+.bootstrap-tagsinput .tt-menu {
+	color: rgba(0, 0, 0, .9);
+}
+
 .bootstrap-tagsinput input {
+	color: #555;	//from above (set color=white)
   border: none;
   box-shadow: none;
   outline: none;
@@ -21,6 +29,7 @@
   width: 100%;
   max-width: inherit;
 }
+
 .bootstrap-tagsinput.form-control input::-moz-placeholder {
   color: #777;
   opacity: 1;
@@ -37,7 +46,7 @@
 }
 .bootstrap-tagsinput .tag {
   margin-right: 2px;
-  color: white;
+  cursor: default;
 }
 .bootstrap-tagsinput .tag [data-role="remove"] {
   margin-left: 8px;
