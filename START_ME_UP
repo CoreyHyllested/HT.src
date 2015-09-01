@@ -5,3 +5,7 @@ INSPRITE_DB=postgresql://htdb:passw0rd@localhost:5432/sctest python application.
 
 git describe --tags > server/templates/version
 curl -b ./.headers -c ./.headers -k https://localhost:5000/referral/361a325f-dd15-499b-b074-ab4d179c90f5
+
+
+Pushing Subtree.
+git subtree push tagsinput --prefix server/static/assets/tagsinput/ no-examples-scss
