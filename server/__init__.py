@@ -110,6 +110,7 @@ def	server_init_assets(server):
 	server.trusted_index = None
 	assets = Environment(server)
 	assets.url = server.static_url_path
+	assets.load_path.append(assets.directory + '/assets')
 	assets.load_path.append(assets.directory + '/assets/scss')
 	assets.load_path.append(assets.directory + '/assets/js')
 
@@ -119,6 +120,8 @@ def	server_init_assets(server):
 
 
 def server_init_assets_css(assets):
+	pkg_tagsinput = Bundle('tagsinput/scss/bootstrap-tagsinput.css', filters='pyscss', output='css/tagsinput.css')
+
 	page_homepage =	Bundle('page_homepage.scss', filters='pyscss', output='css/homepage.css')
 	page_about_sc =	Bundle('page_about_sc.scss', filters='pyscss', output='css/about-sc.css')
 	page_products =	Bundle('page_products.scss', filters='pyscss', output='css/products.css')
@@ -133,6 +136,7 @@ def server_init_assets_css(assets):
 	theme_projects = Bundle('theme_projects.scss', filters='pyscss', output='css/projects.css')
 
 
+	assets.register('tagsinput',	pkg_tagsinput)
 	assets.register('scss_landpage', page_homepage)
 	assets.register('scss_about_sc', page_about_sc)
 	assets.register('scss_products', page_products)

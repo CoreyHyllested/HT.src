@@ -5,8 +5,10 @@
 
 {% block header_css %}
 	{{ super() }}
-	<link rel='stylesheet' href='/static/css/tagsinput.css'>
-	{%- assets 'master', 'scss_profiles' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
+
+	{% assets 'master', 'tagsinput', 'scss_profiles' %}
+		<link rel='stylesheet' href='{{ASSET_URL}}'>
+	{% endassets %}
 {% endblock %}
 
 
