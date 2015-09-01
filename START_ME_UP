@@ -7,5 +7,11 @@ git describe --tags > server/templates/version
 curl -b ./.headers -c ./.headers -k https://localhost:5000/referral/361a325f-dd15-499b-b074-ab4d179c90f5
 
 
-Pushing Subtree.
+Creating subtree.
+//create remote (use forked from github so you can push back), then remote as a subtree
+git remote add -f <NAME> <repo_url>
+git subtree add --prefix server/static/assets/bootstrap bootstrap master --squash
+#sauce http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/
+
+Pushing to Subtree.
 git subtree push tagsinput --prefix server/static/assets/tagsinput/ no-examples-scss
