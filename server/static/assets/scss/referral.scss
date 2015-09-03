@@ -45,6 +45,6 @@ section div	{	max-width: $max-card-sz + 10;	}
 
 .tt-menu							{	max-width: 638px;	margin-left: 1px;}	//due to shadow, slide over 1px (address both sides
 div.bootstrap-tagsinput 			{	background-color: rgba(0,0,0,.01);		border: 1px solid $input-border-default;		}
-div.bootstrap-tagsinput.active 		{	background-color: white !important;		border-color: $input-box-default !important;	}
+div.bootstrap-tagsinput.active 		{	background-color: white !important;		border-color: $input-box-default !important;	overflow: visible;}
 .bootstrap-tagsinput input.tt-input	{	margin-bottom: 0px;	padding-left: 0px;	}
 

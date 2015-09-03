@@ -131,9 +131,10 @@ def server_init_assets_css(assets):
 	theme_error	=	Bundle('theme_error.scss',	filters='pyscss', output='css/errors.css')
 	theme_login = Bundle('theme_authorize.scss', filters='pyscss', output='css/authorize.css')
 	theme_dashboard = Bundle('theme_dashboard.scss', filters='pyscss', output='css/dashboards.css')
-	theme_referral = Bundle('theme_referral.scss', filters='pyscss', output='css/referral.css')
-	theme_profiles = Bundle('profiles.scss', filters='pyscss', output='css/profiles.css')
 	theme_projects = Bundle('theme_projects.scss', filters='pyscss', output='css/projects.css')
+
+	theme_profiles = Bundle('profiles.scss', filters='pyscss', output='css/profiles.css')
+	theme_referral = Bundle('referral.scss', filters='pyscss', output='css/referral.css')
 
 
 	assets.register('tagsinput',	pkg_tagsinput)
