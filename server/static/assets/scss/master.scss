@@ -15,7 +15,7 @@
 // third-party includes
 @import 'Font-Awesome/font-awesome';
 
-$version:	0.09;	//update fa.  removing twitter typeahead override in inputs. bump.
+$version:	'0.0b';	//update fa-link.  removing twitter typeahead override in inputs. bump.
 
 
 html		{	height: 100%;	}
@@ -43,6 +43,7 @@ a:visited:hover	{ color: $ht-blue-hover;	}
 //p			{	margin: 0 $text-padding 15px;							}
 ul			{	list-style-type: none;	padding-left: 0;				}
 ul.bullets	{	list-style-type: disc;	padding-left: $text-padding;	}
+li.inline	{	display: inline;		padding-right: $text-padding;	}
 
 label					{	color: gray;	font-size: 0.7em;	line-height: 1.7em; }
 label[for='terms']		{	height: $field-height;	}
