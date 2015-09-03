@@ -7,14 +7,14 @@
 	{{ super() }}
 
 	{% assets 'master', 'tagsinput', 'scss_referral' %}
-		<link rel='stylesheet' href='{{ASSET_URL}}'>
+		<link rel='stylesheet' type='text/css' href='{{ASSET_URL}}' />
 	{% endassets %}
 {% endblock %}
 
 
 {% block header_js %}
 	{{ super() }}
-	<script src="//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places"></script>
+	<script src='//maps.googleapis.com/maps/api/js?v=3.20&signed_in=false&libraries=places'></script>
 {% endblock %}
 
 
@@ -24,15 +24,12 @@
 		<h2 class='align-left'>Share your trusted network {% if profile %}with {{profile.prof_name}}{% endif %}</h2>
 		<form id='form-referral'>
 		{{form.hidden_tag()}}
-		{%- if edit %}{{form.trusted(readonly=true)}}
-		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', placeholder="Professional's name.")}}
+		{%- if edit %}{{form.trusted(readonly=true, style='text-indent: 5px;')}}
+		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', style='text-indent: 5px;', placeholder="Professional's name.")}}
 		{%- endif %}
 		<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
-		{#
-			<div id='pro-category'></div>
-			<div id='pro-name'></div><div id='pro-email'></div>
-			<div id='pro-addr'></div><div id='pro-phone'></div>
-		#}
+			<div><ul id='trust-contact'></ul></div>
+
 			<div id='referral-questions'>
 				<div class='field-lead'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr'></span></div>
 				<div class='field-error'></div>
