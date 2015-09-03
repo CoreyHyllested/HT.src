@@ -12,6 +12,7 @@ server/static/css/dashboards.css
 server/static/css/homepage.css
 server/static/css/landpage.css
 server/static/css/legaltos.css
+server/static/css/master.css
 server/static/css/navigate.css
 server/static/css/products.css
 server/static/css/profiles.css
@@ -22,7 +23,6 @@ server/static/css/settings.css
 server/static/css/tagsinput.css
 server/static/css/pro_dashboard.css
 server/static/css/errors.css
-server/static/css/the-master.css
 
 # Built from javascript assets.
 server/static/js/common.js
