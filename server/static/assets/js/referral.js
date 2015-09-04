@@ -1,11 +1,13 @@
-var referral_version = 0.96;
+var referral_version = 0.97;
 
 
 function clear_referral() { $('#rid').val(''); }
 function clear_profile() {
 	if (!$('#trusted').attr('readonly')) {
 		$('#trust-card').addClass('no-display');
-		$('#instructions').addClass('no-display');
+		$('#trust-badge').html('');
+		$('.linkto-referral').html('');
+		//$('#instructions').addClass('no-display');
 		$('#not-found').removeClass('no-display');
 	}
 }
@@ -91,12 +93,13 @@ function business_create() {
 }
 
 
-function referral_cancel()	{
+function referral_remove() {
 	$('#trusted').val('');
 	$('#content').val('');
 	$('span.tag.label').remove();
 	$('.bootstrap-tagsinput input.tt-input').val('');
 	$('#form-referral .typeahead').typeahead('val', '');
+	$('#btn-cancel-referral').val('CLEAR');
 	clear_profile();
 }
 
@@ -121,6 +124,8 @@ function referral_submit(event) {
 				contentType: false,
 				success : function(xhr) {
 					$('#rid').val(xhr.ref_uuid);
+					$('.linkto-referral').html('Your <a href="/profile?hlr=' + xhr.ref_uuid + '">Referral</a>');
+					$('#btn-cancel-referral').val('Write Another');
 					set_status('.action-feedback', 'Saved');
 				},
 				error	: function(xhr, status, error) {
@@ -160,6 +165,44 @@ project_ctx = new Bloodhound({
 });
 
 
+function busapi_get_breadcrumbs(categories) {
+	if (categories.length === 0) {
+		return '';
+	}
+
+	breadcrumbs = '';
+	categories.forEach(function (elem, idx) {
+		crumb = elem;
+		console.log(idx, elem, (idx < categories.length - 1));
+		if (idx < categories.length - 1) {
+			crumb = crumb + ' &raquo; ';
+		}
+		breadcrumbs = breadcrumbs + crumb;
+	});
+
+	return breadcrumbs;
+}
+
+
+function busapi_get_emails(email) {
+	if (!email) return '';
+	return '<a href="mailto:' + email + '" target="_blank" title="Email: ' + email + '"><i class="fa fa-envelope-o"></i></a>';
+}
+
+
+function trustcard_append_badge(embed_html, inline) {
+	if (embed_html === '') return;
+	$badges = $('#trust-badge');
+
+	li = document.createElement('li');
+	if (inline) $(li).addClass('inline');
+
+	$(li).html(embed_html);
+	$badges.append(li);
+}
+
+
+
 function get_profile(fd) {
 	clear_referral();
 	$.ajax({type	: "GET",
@@ -170,15 +213,33 @@ function get_profile(fd) {
 				$('#trust-card').removeClass('no-display');
 				$('#trust-card').attr('data-id', fd.profile_id);
 				$('#not-found').addClass('no-display');
-				$('#instructions').removeClass('no-display');
 
-				busname = xhr.business_name
+				categories = busapi_get_breadcrumbs(xhr.business_category[0]);
+				trustcard_append_badge(categories, false);
+
 				if (xhr.business_website) {
-					busname = '<a href="' + xhr.business_website + '" target="_blank">' + busname + '</a>'
+					busname = '<a href="' + xhr.business_website + '" target="_blank">' + xhr.business_name + '</a>'
+					website = '<a href="' + xhr.business_website + '" target="_blank" title="Website"><i class="fa fa-link"></i></a>';
+					trustcard_append_badge(website, true);
 				}
-				$('#pro-name').html(busname);
-				/* examples of setting phone, email in git-log (july-21-15) */
 
+				if (xhr.address) {
+					addrurl = 'https://www.google.com/maps/place/' + xhr.address;
+					address = '<a href="' + addrurl + '" target="_blank" title="Address"><i class="fa fa-map-marker"></i></a>'
+					trustcard_append_badge(address, true);
+				};
+
+				email = busapi_get_emails(xhr.business_emails[0]);
+				trustcard_append_badge(email, true);
+
+				xhr.business_phones.forEach(function (elem, idx) {
+					phone = '<a href="tel:' + elem + '" title="Phone Number"><i class="fa fa-phone"></i></a>'
+					trustcard_append_badge(phone, true);
+				});
+
+				//<li class='inline'><a href='#'><i class="fa fa-folder-open"></i></a>
+
+				$('#pro-name').html(xhr.business_name);
 				$('#trusted').val(xhr.business_name);	// user may have updated name.
 				$('#content').focus();
 				$('#bid').val(fd.profile_id);
@@ -228,7 +289,7 @@ $(document).ready(function () {
 	$('#trusted').focus(clear_business_addr);
 	$('#trusted').keydown(clear_profile);
 
-	$('#btn-cancel-referral').on('click', referral_cancel);
+	$('#btn-cancel-referral').on('click', referral_remove);
 	$('#form-referral').on('submit', referral_submit);
 	$('#modal-message').on('submit', '#create-business-form', business_submit);
 
