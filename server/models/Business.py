@@ -75,7 +75,7 @@ class Business(database.Model):
 
 	@property
 	def serialize_id(self):
-		breadcrumbs = self.bus_categroy.split(',') if self.bus_category else ''
+		breadcrumbs = self.bus_category.split(',') if self.bus_category else ''
 		return {
 			'business_id'	: self.bus_id,
 			'business_name'	: self.bus_name,
@@ -133,7 +133,6 @@ class Business(database.Model):
 		contact_email = emails[0] if emails else None
 
 		bread_crumbs  = ','.join(crumbs) if crumbs else None
-		print 'crumbs', str(crumbs), bread_crumbs
 
 		sources_flags = 0
 		for source in sources:
