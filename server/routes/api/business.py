@@ -75,8 +75,12 @@ def api_business_create_post():
 @api.route('/business/<string:bus_id>',  methods=['GET'])
 def api_business_read(bus_id):
 	business = Business.get_by_id(bus_id, check_json=True)
-	if (business): return make_response(jsonify(business.serialize_id), 200)
-	return make_response(jsonify(id='Business,' + bus_id + ', not found'), 400)
+	if (not business): return make_response(jsonify(id='Business,' + bus_id + ', not found'), 400)
+
+	bus_info = business.serialize_id
+	location = Location.get_by_business_id(bus_id)
+	if (location): bus_info['address'] = location.display_city_state()
+	return make_response(jsonify(bus_info), 200)
 
 
 
