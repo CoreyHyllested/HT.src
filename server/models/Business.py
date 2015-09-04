@@ -39,12 +39,13 @@ class Business(database.Model):
 
 	bus_account		= Column(String(40), ForeignKey('account.userid'))
 	bus_headline	= Column(String(140))
+	bus_category	= Column(String(140), default = '')
 	bus_description	= Column(String(5000))
 	updated = Column(DateTime(), nullable=False, default = "")
 	created = Column(DateTime(), nullable=False, default = "")
 
 
-	def __init__(self, name, phone=None, email=None, website=None, sources=0, id=None):
+	def __init__(self, name, phone=None, email=None, website=None, sources=0, category=None, id=None):
 		if not id: id = str(uuid.uuid4())
 		print 'Business: creating (%s|%s)' % (str(name), id)
 
@@ -55,6 +56,8 @@ class Business(database.Model):
 
 		self.bus_phone 	 = phone
 		self.bus_email	 = email
+
+		self.bus_category = category
 
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
@@ -72,12 +75,14 @@ class Business(database.Model):
 
 	@property
 	def serialize_id(self):
+		breadcrumbs = self.bus_categroy.split(',') if self.bus_category else ''
 		return {
 			'business_id'	: self.bus_id,
 			'business_name'	: self.bus_name,
 			'business_website'	: self.bus_website,
 			'business_emails'	: [ self.bus_email ],
 			'business_phones'	: [ self.bus_phone ],
+			'business_category'	: [ breadcrumbs ],
 			'address'	: {}
 		}
 
@@ -121,10 +126,15 @@ class Business(database.Model):
 		website	= json_object.get('business_website')
 		phones	= json_object.get('business_phones')
 		emails	= json_object.get('business_emails')
+		crumbs	= json_object.get('categories')
 		if (fromuser): sources.append({name : 'user_add'})
 
 		contact_phone = phones[0] if phones else None
 		contact_email = emails[0] if emails else None
+
+		bread_crumbs  = ','.join(crumbs) if crumbs else None
+		print 'crumbs', str(crumbs), bread_crumbs
+
 		sources_flags = 0
 		for source in sources:
 			print '%s %08x' % (source['name'], BusinessSource.get_mask(source['name']))
@@ -135,6 +145,7 @@ class Business(database.Model):
 							email=contact_email,
 							website=website,
 							sources=sources_flags,
+							category=bread_crumbs,
 							id=json_object['_id'])
 		try:
 			print 'committing (%s|%s)' % (business.bus_name, business.bus_id)
@@ -173,7 +184,7 @@ class Business(database.Model):
 		if sc_server.trusted_index:
 			return sc_server.trusted_index
 
-		print 'Priming Search.'
+		print 'indexing companies.json.'
 		trusted_idx = {}
 
 		try:
@@ -181,7 +192,7 @@ class Business(database.Model):
 			trusted_list = json.loads(fp.read())
 			for account in trusted_list:
 				if account.get('_status'):
-					print account['_status']
+					#print account['_status']
 					continue
 				if account.get('_ignore') or not account.get('_id'):
 					#print 'Missing-id', account['business_name']
@@ -193,7 +204,6 @@ class Business(database.Model):
 			if (fp): fp.close()
 			sc_server.trusted_index = trusted_idx
 			print 'Professional index: %d entries' % len(trusted_idx)
-
 		return trusted_idx
 
 

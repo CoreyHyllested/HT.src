@@ -28,9 +28,8 @@
 		{%- else    %}{{form.trusted(class='form-control typeahead', autocomplete='off', style='text-indent: 5px;', placeholder="Professional's name.")}}
 		{%- endif %}
 		<div id='trust-card' class='{%-if not form.bid.data %}no-display{%-endif%}' data-id='{{form.bid.data}}'>
-			<div><ul id='trust-contact'></ul></div>
-
 			<div id='referral-questions'>
+				<div><ul id='trust-contact'></ul></div>
 				<div class='field-lead'>Why do you recommend <span id='pro-name'>them</span>? <span id='content-nr'></span></div>
 				<div class='field-error'></div>
 				{{form.content(spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Tim was super helpful. He answered all my questions, kept my house clean, and finished on time. (Require at least 20 characters).")}}
