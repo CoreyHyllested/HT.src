@@ -83,7 +83,7 @@ class Business(database.Model):
 			'business_emails'	: [ self.bus_email ],
 			'business_phones'	: [ self.bus_phone ],
 			'business_category'	: [ breadcrumbs ],
-			'address'	: {}
+			'address'	: ''
 		}
 
 

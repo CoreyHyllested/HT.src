@@ -121,6 +121,15 @@ class Location(database.Model):
 
 
 	@staticmethod
+	def get_by_business_id(id):
+		location = None
+		try:
+			location = Location.query.filter_by(business=id).one()
+		except NoResultFound as nrf: pass
+		return location
+
+
+	@staticmethod
 	def from_json(json_object):
 		address  = json_object['address']
 		location = Location(address['street'],
