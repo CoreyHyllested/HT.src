@@ -99,11 +99,11 @@ $version	:	0.01;
 .field.info.first	{ padding-top: 0px;		}
 .field.input.iconified { padding-left: 13px; }
 
-.field				{	margin: 5px 0;		display: inline;	padding-left: 3px;			}
+.field				{	margin: 5px 0;		display: inline;	padding-left: 2px;			}
 .field-lead			{	@extend .field;		font-weight: 600;								}
 .field-lead.overflow{	overflow: hidden; white-space: nowrap;	text-overflow: ellipsis; 	}
 
-.field-error		{	display: none;			color: $color-error;	font-size: .7em;	padding-left: 3px;	}
+.field-error		{	display: none;			color: $color-error;	font-size: .7em;	padding-left: 2px;	}
 .field-error.error	{	display: inline-block;																	}
 
 

@@ -18,8 +18,10 @@ section div	{	max-width: $max-card-sz + 10;	}
 
 #trusted			{	@extend .trust-card;	display: inline-block;														}
 #trust-card			{	@extend .trust-card;	border: 1px $input-border-default solid;	border-top-width: 0px; padding: 0px 10px 10px;	}
+#trust-contact		{	text-indent: 2px;	}
+
 #content			{	width: 100%; margin: 0 0 10px;	resize: none;	}
-#referral-questions {	padding: 25px 0 10px;	}
+#referral-questions {	padding: 10px 0;	}
 #content-nr			{	color: $color-disabled;	font-weight: 400; font-size: 0.9em;}
 
 
