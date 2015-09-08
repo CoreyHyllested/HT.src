@@ -205,7 +205,7 @@ function trustcard_append_badge(embed_html, inline) {
 
 function get_profile(fd) {
 	clear_referral();
-	$.ajax({type	: "GET",
+	$.ajax({type	: "POST",
 			url		: "/api/business/" + fd.profile_id,
 			data	: fd,
 			success : function(xhr) {
@@ -237,7 +237,10 @@ function get_profile(fd) {
 					trustcard_append_badge(phone, true);
 				});
 
-				//<li class='inline'><a href='#'><i class="fa fa-folder-open"></i></a>
+				
+				folder = '<a href="/business/' + xhr.business_id + '" target="_blank"><i class="fa fa-folder-open"></i></a>'
+				trustcard_append_badge(folder, true);
+
 
 				$('#pro-name').html(xhr.business_name);
 				$('#trusted').val(xhr.business_name);	// user may have updated name.

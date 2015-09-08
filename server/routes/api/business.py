@@ -71,8 +71,8 @@ def api_business_create_post():
 
 
 @sc_server.csrf.exempt
-@api.route('/business/<string:bus_id>/', methods=['GET'])
-@api.route('/business/<string:bus_id>',  methods=['GET'])
+@api.route('/business/<string:bus_id>/', methods=['POST'])
+@api.route('/business/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
 	business = Business.get_by_id(bus_id, check_json=True)
 	if (not business): return make_response(jsonify(id='Business,' + bus_id + ', not found'), 400)

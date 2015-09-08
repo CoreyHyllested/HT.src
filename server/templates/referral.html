@@ -1,6 +1,6 @@
 {% extends 'sc-header.html' %}
-{% set meta_title	= 'Refer a professional.' %}
-{% set meta_desc	= 'Refer a professional on Soulcrafting.' %}
+{% set meta_title	= 'Share your trusted network.' %}
+{% set meta_desc	= 'Share your trusted network on Soulcrafting.' %}
 
 
 {% block header_css %}
@@ -72,3 +72,9 @@
 	{%- assets 'js_referral' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js"></script>
 {% endblock %}
+
+{#
+<h2 class='align-left'>Do you know someone who is just Amazing?<br>Share your trusted network.</h2>	// Share it with the world? 
+				{{form.content(spellcheck=true, required=true, minlength=20, maxlength=200, placeholder="Ben is the hardest working person I know. Always trying new things, makes me feel like a fucking fraud. (We require at least 20 characters).")}}
+				{{form.context(autocomplete="off", maxlength=120, placeholder="built a deck together, college friends, drinking buddy (optional)")}}
+#}
