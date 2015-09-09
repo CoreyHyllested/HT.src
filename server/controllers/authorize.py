@@ -108,8 +108,6 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 		print type(e), e
 		sc_server.database.session.rollback()
 		raise AccountError(email, str(e), user_msg='An error occurred. Please try again.')
-	#finally:
-	# if (account is None): raise AccountError.
 
 	print 'bind-session'
 	bind_session(account, profile)
@@ -237,25 +235,4 @@ def normalize_oa_account_data(provider, oa_data):
 		pp(data)
 
 	return data
-
-
-
-
-def sc_email_verify(email, challengeHash, nexturl=None):
-	# find account, if any, that matches the requested challengeHash
-	print "sc_email_verify: begin", email, nexturl, challengeHash
-
-	account = Account.verify_account(email, challengeHash)
-	if (not account):
-		print "sc_email_verify: error - challenge hash not found in accounts."
-		session['messages'] = "Verification code or email address, didn't match one on file."
-		return redirect('/signin')
-
-	# bind session cookie to this user's profile
-	profile = Profile.get_by_uid(account.userid)
-	bind_session(account, profile)
-
-	return redirect('/profile')
-
-
 

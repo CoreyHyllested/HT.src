@@ -224,24 +224,6 @@ def htdb_get_lesson_images(lesson_id):
 
 
 
-def sc_email_verify(email, challengeHash, nexturl=None):
-	# find account, if any, that matches the requested challengeHash
-	print "sc_email_verify: begin", email, nexturl, challengeHash
-
-	account = Account.verify_account(email, challengeHash)
-	if (not account):
-		print "sc_email_verify: error - challenge hash not found in accounts."
-		session['messages'] = "Verification code or email address, didn't match one on file."
-		return redirect('/signin')
-
-	# bind session cookie to this user's profile
-	profile = Profile.get_by_uid(account.userid)
-	bind_session(account, profile)
-
-	return redirect('/profile')
-
-
-
 
 #################################################################################
 ### DEPRECATED FUNCTIONS ########################################################

@@ -150,22 +150,26 @@ def render_search(page = 1):
 
 
 
-@public.route("/email/<operation>/<data>", methods=['GET','POST'])
+@public.route('/email/<operation>/<data>/', methods=['GET','POST'])
+@public.route('/email/<operation>/<data>',  methods=['GET','POST'])
 def sc_email_operations(operation, data):
 	print "sc_email_operations: begin", operation
 	print "sc_email_operations: data: ", data
 	if (operation == 'verify'):
 		email = request.values.get('email')
-		nexturl = request.values.get('next_url')
-		print 'sc_email_operations: verify: data  = ', data, 'email =', email, "nexturl =", nexturl
-		return sc_email_verify(email, data, nexturl)
-#	elif (operation == 'share'):
-#		print "sc_email_operations: you've chosen wisely.... share: "
-#		msg_to	 = request.values.get('recipient')
-#		msg_sub	 = request.values.get('subject')
-#		msg_body = request.values.get('composeBody')
-#		ht_send_share_email(msg_to, msg_sub, msg_body)
-#		return jsonify(rc=200, whatwhat='yeah, that\'s the shit I\'m talking about'), 200
+		print 'sc_email_operations: verify: data  = ', data, 'email =', email
+
+		account = Account.verify_account(email, challengeHash)
+		if (not account):
+			session['messages'] = "Verification code and email address did not match what is on file."
+			return redirect('/signin')
+
+		# bind session cookie to this user's profile
+		profile = Profile.get_by_uid(account.userid)
+		bind_session(account, profile)
+		return redirect('/profile')
+
+
 	elif (operation == 'request-response'):
 		nexturl = request.values.get('nexturl')
 		return make_response(render_template('verify_email.html', nexturl=nexturl))
