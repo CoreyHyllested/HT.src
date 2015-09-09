@@ -161,26 +161,27 @@ class NoResourceFound(SanitizedException):
 	def __str__(self): return '<NoResourceFound:%r:%r>' % (self.resrc, self.resrc_id)
 
 
-class NoReferralFound(NoResourceFound):
-	def __init__(self, rid): super(NoReferralFound, self).__init__('Referral', str(rid))
-
 class NoAccountFound(NoResourceFound):
 	def __init__(self, rid): super(NoAccountFound, self).__init__('Account', str(rid))
 
+class NoBusinessFound(NoResourceFound):
+	def __init__(self, rid): super(NoBusinessFound, self).__init__('Business', str(rid))
+
+class NoOauthFound(NoResourceFound):
+	def __init__(self, rid): super(NoOauthFound, self).__init__('Oauth', str(rid))
+
 class NoProfileFound(NoResourceFound):
 	def __init__(self, rid): super(NoProfileFound, self).__init__('Profile', str(rid))
+
+class NoReferralFound(NoResourceFound):
+	def __init__(self, rid): super(NoReferralFound, self).__init__('Referral', str(rid))
 
 class NoReviewFound(NoResourceFound):
 	def __init__(self, rid): super(NoReviewFound, self).__init__('Review', str(rid))
 
 class NoEmailFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Email', str(rid))
+	def __init__(self, rid): super(NoEmailFound, self).__init__('Email', str(rid))
 
-class NoOauthFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Oauth', str(rid))
-
-class NoGiftFound(NoResourceFound):
-	def __init__(self, rid): NoResourceFound('Gift', str(rid))
 
 
 
