@@ -63,8 +63,12 @@ class Business(database.Model):
 		self.updated	= dt.utcnow()
 
 
-	def __repr__ (self):
-		return '<business %r>' % (self.bus_id)
+	def __repr__ (self): return '<business %r>' % (self.bus_id)
+	def __str__  (self): return '<business %r>' % (self.bus_id)
+
+
+	def business_logo(self):
+		return ''
 
 	@property
 	def serialize(self):
