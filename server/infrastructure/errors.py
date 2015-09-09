@@ -53,6 +53,9 @@ class SanitizedException(Exception):
 		self.__errors = errors
 
 
+	def __repr__(self): return '<SanitizedException:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+	def __str__ (self): return '<SanitizedException:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+
 	def exception(self):	  return	 (self.__exception)
 	def exception_type(self): return type(self.__exception)
 
@@ -94,12 +97,18 @@ class SanitizedException(Exception):
 		return make_response(api_json_resp, self.code())
 
 
+	def make_response(self):
+		return self.response()
+
+
 	@staticmethod
 	def sanitize_message(error_msg):
 		print 'sanitize "' + error_msg[0:81] + '"'
 		rc = MESSAGE.get(error_msg[0:81], error_msg)
 		print rc
 		return rc
+
+
 
 
 ################################################################################
@@ -111,22 +120,25 @@ class InvalidInput(SanitizedException):
 	def __init__(self, status=None, errors=None):
 		super(InvalidInput, self).__init__('Invalid Input', status, errors, 400)
 
-	def __str__(self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+	def __repr__(self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
+	def __str__ (self): return '<InvalidInput:%r:%r:%r>' % (self.status(), self.errors(), self.code())
 
 
 
 
 class AccountError(SanitizedException):
-	def __init__(self, email, status=None):
-		SanitizedException.__init__(self, status='Account Creation Failed')
+	def __init__(self, email, status='Account creation failed'):
+		super(AccountError, self).__init__('Account Error', status)
 		self.email = email
-	def __str__(self): return '<AccountError:%r:%r>' % (self.email, self.reason())
+
+	def __repr__(self): return '<AccountError:%r:%r>' % (self.email, self.reason())
+	def __str__ (self): return '<AccountError:%r:%r>' % (self.email, self.reason())
 
 
 
 class PasswordError(SanitizedException):
 	def __init__(self, account_id, status='Password does not match what is on file.', errors=[]):
-		SanitizedException.__init__(self, 'Password Error', status=status, errors=errors, code=401)
+		super(PasswordError, self).__init__('Password Error', status)
 		self.account = account_id
 
 	def __str__(self): return '<Passworderror:%r:%r>' % (self.account, self.reason())
