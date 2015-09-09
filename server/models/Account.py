@@ -141,6 +141,7 @@ class Account(database.Model):
 		return account
 
 
+
 	@staticmethod
 	def authorize_with_password(email, password):
 		account = Account.get_by_email(email)
@@ -152,10 +153,10 @@ class Account(database.Model):
 
 	@staticmethod
 	def authorize_with_hashcode(email, hashcode):
-		account = None
+		account = Account.get_by_email(email)
 		try:
-			account = Account.get_by_email(email)
-			if account.sec_question != hashcode: raise NoResultFound('huh')
+			if account and account.sec_question != hashcode:
+				raise NoResultFound('what is passed in -- who knows!')
 
 			# success, save
 			account.set_sec_question("")
@@ -168,6 +169,8 @@ class Account(database.Model):
 			database.session.rollback()
 			account = None
 		return account
+
+
 
 
 #################################################################################
