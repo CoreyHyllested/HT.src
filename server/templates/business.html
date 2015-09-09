@@ -1,0 +1,92 @@
+{% extends 'sc-header.html' %}
+{% set meta_title	= 'Trusted referrals on Soulcrafting' %}
+{% set meta_desc	= 'Trusted referrals on Soulcrafting' %}
+
+
+{% block header_css %}
+	{{ super() }}
+
+	{% assets 'master', 'tagsinput', 'scss_profiles' %}
+		<link rel='stylesheet' href='{{ASSET_URL}}'>
+	{% endassets %}
+{% endblock %}
+
+
+
+{% block content %}
+<section id='business-header'>
+	<div id='business-info'>
+		<h3 class='align-left'>{{business.bus_name}}</h3>
+		<div id='business-image'><img src="{{business.business_logo()}}"></div>
+		<div id='business-location'>{{business.location}}</div>
+		{#
+		<form id='business-form'>{{form.hidden_tag()}}</form>	//add csrf for form
+		self.bus_id		 = id
+		self.bus_state	 = sources
+		self.bus_website = website
+
+		self.bus_phone 	 = phone
+		self.bus_email	 = email
+
+		<div id='business-networks'>
+			<ul>
+				<li class='sns'><i class='fa fa-facebook-f'></i></li>
+				<li class='sns'><i class='fa fa-twitter'></i></li>
+				<li class='sns'><i class='fa fa-linkedin'></i></li>
+				<li class='sns'><i class='fa fa-instagram'></i></li>
+				<li class='sns'><i class='fa fa-pinterest-p'></i></li>
+			</ul>
+		</div>
+		#}
+	</div>
+</section>
+
+
+<section id='referrals'>
+	<div>
+	{% if not referrals %}
+	<article class='referral'>
+		No referrals!  Be the first to explain how great this is.  	
+	</article>
+	{% endif %}
+		
+	{% for ref in referrals | sort(attribute='Referral.ref_created') | reverse %}
+	<article class='referral' data-ref-id='{{ref.Referral.ref_uuid}}'>
+		<div>
+			<div class='ref-name'>{{ref.profile.prof_name}}</div>
+		</div>
+		<div>{% for line in ref.Referral.ref_content.splitlines() %}{{line}}<br>{% endfor %}</div>
+		<div>
+			<div class='ref-context'>
+				<input value="{{ref.Referral.ref_project}}" data-role='tagsinput' readonly disabled>
+			</div>
+			<div class='ref-actions'>
+				<a target='_blank' href='https://twitter.com/intent/tweet?related=@soulcrafting&text=check+out+this+referral+on+@Soulcrafting&url=https%3A%2F%2Fsoulcrafting.co%2Fbusiness%2F{{business.prof_id}}?hlr={{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-twitter"></i></span></a>
+				{#
+				<a class='pop-share' data-ref-id='{{ref.Referral.ref_uuid}}'>
+					<span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-share"></i></span></a>
+				<a data-ref-id='{{ref.Referral.ref_uuid}}'><span class="fa-stack"><i class="fa fa-circle-thin fa-stack-2x"></i><i class="fa fa-stack-1x fa-bookmark"></i></span></a>
+				#}
+			</div>
+			{# {{ ref.Referral.ref_created.strftime('%b %d at %H:%M %p')}} #}
+		</div>
+	</article>
+	{% endfor %}
+	</div>
+</section>
+{% endblock %}
+
+
+{% block scripts %}
+	{{ super() }}
+	{%- assets 'js_profiles' %}<script src='{{ASSET_URL}}'></script>{%- endassets %}
+	<script src='/static/js/tagsinput.js'></script>
+	<script>
+	$(document).ready(function () {
+		{%- if highlight %}
+		$('body').scrollTo('article[data-ref-id={{highlight}}]');
+		flash_elem_border('article[data-ref-id={{highlight}}]');
+		{%- endif %}
+	});
+	</script>
+{% endblock %}

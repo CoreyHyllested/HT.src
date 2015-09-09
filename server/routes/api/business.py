@@ -44,10 +44,12 @@ def render_business_info(bus_id):
 	business = Business.get_by_id(bus_id, check_json=True)
 	if (not business): raise NoBusinessFound(bus_id)
 
-	bp = Profile.get_by_uid(session.get('uid'))
+	comprefs = Referral.get_referrals_by_business(business)
 	location = Location.get_by_business_id(bus_id)
-	if (location): business.location = location
-	return make_response(render_template('business.html', bp=bp, business=business))
+	if (location): business.location = location.display_city_state()
+
+	bp = Profile.get_by_uid(session.get('uid'))
+	return make_response(render_template('business.html', bp=bp, business=business, referrals=comprefs))
 
 
 

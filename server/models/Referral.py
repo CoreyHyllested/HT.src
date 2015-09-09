@@ -97,7 +97,6 @@ class Referral(database.Model):
 
 	@staticmethod
 	def get_composite_referral_by_id(ref_id):
-		print 'get_compsite_referral:', ref_id
 		comp_ref = None
 		try:
 			business = aliased(Business, name='business')
@@ -128,6 +127,18 @@ class Referral(database.Model):
 					.all()
 		map(lambda composite: display_composite_referral(composite), comp_ref)
 		return comp_ref
+
+
+
+	@staticmethod
+	def get_referrals_by_business(business):
+		""" get all referrals made for business """
+		profile	 = aliased(Profile, name='profile')
+		compref = database.session.query(Referral, profile)	\
+					.filter(Referral.ref_business == business.bus_id)	\
+					.join(profile, Referral.ref_profile == profile.prof_id)	\
+					.all()
+		return compref
 
 
 
