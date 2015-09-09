@@ -186,7 +186,7 @@ function busapi_get_breadcrumbs(categories) {
 
 function busapi_get_emails(email) {
 	if (!email) return '';
-	return '<a href="mailto:' + email + '" target="_blank" title="Email: ' + email + '"><i class="fa fa-envelope-o"></i></a>';
+	return '<a href="mailto:' + email + '" target="_blank" title="' + email + '"><i class="fa fa-envelope-o"></i></a>';
 }
 
 
@@ -225,7 +225,7 @@ function get_profile(fd) {
 
 				if (xhr.address) {
 					addrurl = 'https://www.google.com/maps/place/' + xhr.address;
-					address = '<a href="' + addrurl + '" target="_blank" title="Address"><i class="fa fa-map-marker"></i></a>'
+					address = '<a href="' + addrurl + '" target="_blank" title="' + xhr.address + '"><i class="fa fa-map-marker"></i></a>'
 					trustcard_append_badge(address, true);
 				};
 
@@ -233,14 +233,13 @@ function get_profile(fd) {
 				trustcard_append_badge(email, true);
 
 				xhr.business_phones.forEach(function (elem, idx) {
-					phone = '<a href="tel:' + elem + '" title="Phone Number"><i class="fa fa-phone"></i></a>'
+					phone = '<a href="tel:' + elem + '" title="' + elem + '"><i class="fa fa-phone"></i></a>'
 					trustcard_append_badge(phone, true);
 				});
 
 				
-				folder = '<a href="/business/' + xhr.business_id + '" target="_blank"><i class="fa fa-folder-open"></i></a>'
+				folder = '<a href="/business/' + xhr.business_id + '" target="_blank" title="Referrals for ' + xhr.business_name + '"><i class="fa fa-folder-open"></i></a>'
 				trustcard_append_badge(folder, true);
-
 
 				$('#pro-name').html(xhr.business_name);
 				$('#trusted').val(xhr.business_name);	// user may have updated name.
