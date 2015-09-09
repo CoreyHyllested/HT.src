@@ -128,8 +128,7 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 #			print type(e), e
 #			sc_server.database.session.rollback()
 
-	print 'send-welcome-email'
-	sc_email_welcome_message(email, name, account.sec_question)
+	email_welcome_message(email, name, account.sec_question)
 	return profile
 
 

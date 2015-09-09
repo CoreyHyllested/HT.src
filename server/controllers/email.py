@@ -57,7 +57,8 @@ def email_team_notification(event, details):
 	sc_send_mandrill_template(message)
 
 
-def sc_email_welcome_message(user_email, user_name, challenge_hash):
+
+def email_welcome_message(user_email, user_name, challenge_hash):
 	""" Emails the Welcome message, includes a 'verify your email' link."""
 	verify_link = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
 	url_verify  = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
