@@ -42,16 +42,6 @@ def bind_session(account, profile):
 
 
 
-@deprecated
-#use Account. authorize_signin(email, password):
-def sc_authenticate_user(user_email, password):
-	account = Account.get_by_email(user_email)
-	if (account and check_password_hash(account.pwhash, str(password))):
-		return account
-	return None
-
-
-
 def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 	""" Returns authenticated account. Iff account doesn't exist -- create it. """
 

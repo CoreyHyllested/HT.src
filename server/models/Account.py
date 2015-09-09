@@ -22,6 +22,7 @@ from factory.fuzzy	 import *
 from datetime import datetime as dt, timedelta
 from pytz import timezone
 import datetime, uuid, factory
+from werkzeug.security	import check_password_hash
 
 
 
