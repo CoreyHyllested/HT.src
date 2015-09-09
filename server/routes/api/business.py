@@ -38,6 +38,19 @@ def render_business_create_fragment():
 
 
 
+@public.route('/business/<string:bus_id>/', methods=['GET'])
+@public.route('/business/<string:bus_id>',  methods=['GET'])
+def render_business_info(bus_id):
+	business = Business.get_by_id(bus_id, check_json=True)
+	if (not business): raise NoBusinessFound(bus_id)
+
+	bp = Profile.get_by_uid(session.get('uid'))
+	location = Location.get_by_business_id(bus_id)
+	if (location): business.location = location
+	return make_response(render_template('business.html', bp=bp, business=business))
+
+
+
 
 #################################################################################
 ### API / DATA ROUTES ###########################################################
@@ -70,7 +83,6 @@ def api_business_create_post():
 
 
 
-@sc_server.csrf.exempt
 @api.route('/business/<string:bus_id>/', methods=['POST'])
 @api.route('/business/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
