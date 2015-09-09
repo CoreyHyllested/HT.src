@@ -159,7 +159,7 @@ def sc_email_operations(operation, data):
 		email = request.values.get('email')
 		print 'sc_email_operations: verify: data  = ', data, 'email =', email
 
-		account = Account.verify_account(email, challengeHash)
+		account = Account.authorize_with_hashcode(email, data)
 		if (not account):
 			session['messages'] = "Verification code and email address did not match what is on file."
 			return redirect('/signin')

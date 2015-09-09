@@ -70,51 +70,6 @@ class Account(database.Model):
 	def __str__  (self): return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
 
-	@staticmethod
-	def get_by_uid(uid):
-		account = None
-		try:
-			account = Account.query.filter_by(userid=uid).one()
-		except NoResultFound as nrf: pass
-		return account
-
-
-
-	@staticmethod
-	def get_by_email(email_address):
-		account = None
-		try:
-			account = Account.query.filter_by(email=email_address.lower()).one()
-		except NoResultFound as nrf: pass
-		return account
-
-
-	@staticmethod
-	def authorize_signin(email, password):
-		account = Account.get_by_email(email)
-		if (account and check_password_hash(account.pwhash, str(password))):
-			return account
-		return None
-
-
-
-	@staticmethod
-	def verify_email(email, hashcode):
-		account = None
-		try:
-			account = Account.query.filter_by(sec_question=hashcode).one()
-			if account.email != email: raise NoResultFound('huh')
-			account.set_sec_question("")
-			account.set_status(Account.USER_ACTIVE)
-
-			database.session.add(account)
-			database.session.commit()
-		except NoResultFound as nrf:
-			pass
-		except Exception as e:
-			database.session.rollback()
-			account = None
-		return account
 
 
 
@@ -165,6 +120,54 @@ class Account(database.Model):
 		self.__dict__.update(acct_dictionary)
 
 
+
+
+	@staticmethod
+	def get_by_uid(uid):
+		account = None
+		try:
+			account = Account.query.filter_by(userid=uid).one()
+		except NoResultFound as nrf: pass
+		return account
+
+
+
+	@staticmethod
+	def get_by_email(email_address):
+		account = None
+		try:
+			account = Account.query.filter_by(email=email_address.lower()).one()
+		except NoResultFound as nrf: pass
+		return account
+
+
+	@staticmethod
+	def authorize_with_password(email, password):
+		account = Account.get_by_email(email)
+		if (account and check_password_hash(account.pwhash, str(password))):
+			return account
+		return None
+
+
+
+	@staticmethod
+	def authorize_with_hashcode(email, hashcode):
+		account = None
+		try:
+			account = Account.get_by_email(email)
+			if account.sec_question != hashcode: raise NoResultFound('huh')
+
+			# success, save
+			account.set_sec_question("")
+			account.set_status(Account.USER_ACTIVE)
+			database.session.add(account)
+			database.session.commit()
+		except NoResultFound as nrf:
+			pass
+		except Exception as e:
+			database.session.rollback()
+			account = None
+		return account
 
 
 #################################################################################

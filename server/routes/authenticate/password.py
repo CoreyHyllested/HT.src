@@ -96,7 +96,7 @@ def authorize_password_signin():
 		if not sf.validate_on_submit():
 			raise InvalidInput(errors=sf.errors)
 
-		ba = Account.authorize_signin(sf.email.data.lower(), sf.passw.data)
+		ba = Account.authorize_with_password(sf.email.data.lower(), sf.passw.data)
 		if (not ba): raise PasswordError(sf.email.data)
 
 		# successful login, bind session.
