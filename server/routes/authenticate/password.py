@@ -117,12 +117,10 @@ def logout():
 
 
 
-@public.route("/password/recover/", methods=['GET', 'POST'])
-@public.route("/password/recover",  methods=['GET', 'POST'])
+@public.route('/password/recover/', methods=['GET', 'POST'])
+@public.route('/password/recover',  methods=['GET', 'POST'])
 def render_password_reset_request(sc_msg=None):
-	bp = None
-	if 'uid' in session:
-		bp = Profile.get_by_uid(session['uid'])
+	bp = Profile.get_by_uid(session.get('uid'))
 
 	form = RecoverPasswordForm(request.form)
 	if form.validate_on_submit():
@@ -130,7 +128,7 @@ def render_password_reset_request(sc_msg=None):
 		try:
 			sc_password_recovery(form.email.data)
 			session['messages'] = "Reset instructions were sent."
-			return make_response(redirect(url_for('public_routes.render_login')))
+			return make_response(redirect('/signin'))
 		except NoEmailFound as nef:
 			sc_msg = nef.sanitized_msg()
 		except AccountError as ae:
