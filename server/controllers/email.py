@@ -73,6 +73,7 @@ def sc_email_welcome_message(user_email, user_name, challenge_hash):
 	email_team_notification(event, details)
 
 
+
 def sc_send_password_recovery_link(account):
 	""" Emails the password recovery link to a user """
 	url_reset  = 'https://soulcrafting.co/password/reset/' + str(account.sec_question) + "?email=" + str(account.email)
@@ -86,12 +87,14 @@ def sc_send_password_recovery_link(account):
 	sc_send_mandrill_template(message)
 
 
+
 def sc_send_password_changed_confirmation(user_email):
 	""" email user 'password changed' confirmation notice. """
 	print 'sending password changed confirmation notice'
 	message = create_mandrill_message(template = 'password-change-confirmation')
 	message['to'].append({'email': user_email})
 	sc_send_mandrill_template(message)
+
 
 
 def sc_email_invite_friend(friend_email, friend_name, referral_id, gift_id=None):
