@@ -12,23 +12,25 @@
 #################################################################################
 
 
-import smtplib, urlparse, urllib, urllib2
+import smtplib, urlparse
 import oauth2 as oauth
 import uuid
 
-from pprint import pprint as pp
+from pprint	import pprint as pp
 from datetime import datetime as dt
-from flask.sessions import SessionInterface, SessionMixin
+from flask.sessions		import SessionInterface, SessionMixin
+from werkzeug.security	import generate_password_hash
+from sqlalchemy     import distinct, and_, or_
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from server import sc_server
 from server.infrastructure import errors
 from server.models import *
 from server.controllers.annotations import *
-from server.controllers.forms		import *
 from server.controllers.database	import *
-from sqlalchemy     import distinct, and_, or_
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-from werkzeug.security       import generate_password_hash, check_password_hash
+from server.controllers.email		import *
+from server.controllers.forms		import *
 
 
 
@@ -74,15 +76,12 @@ def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 
 def sc_password_recovery(email):
 	""" Password recovery """
-	trace("Entering password recovery")
-
 	account = Account.get_by_email(email)
-	if (account is None):
-		raise NoEmailFound(email)
+	if (account is None): raise NoAccountFound(email)
 
 	newquestion = account.reset_security_question()
 	if (not newquestion):
-		raise AccountError('No security question created', email, 'An error occurred')
+		raise AccountError(email, 'Security challenge not created.')
 	sc_send_password_recovery_link(account)
 
 
@@ -91,7 +90,7 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 	#geo_location = get_geolocation_from_ip()
 
 	account = Account.get_by_email(email)
-	if (account): raise AccountError(email, 'Email exists', user_msg='Email address already exists. Login instead?')
+	if (account): raise AccountError(email, 'Email address already exists. Sign in?')
 
 	try:
 		print 'create account and profile', str(email), str(phone), str(addr) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
@@ -103,11 +102,11 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 	except IntegrityError as ie:
 		print type(ie), ie
 		sc_server.database.session.rollback()
-		raise AccountError(email, str(ie), user_msg='An error occurred. Please try again.')
+		raise AccountError(email, 'An error occurred. Please try again.')
 	except Exception as e:
 		print type(e), e
 		sc_server.database.session.rollback()
-		raise AccountError(email, str(e), user_msg='An error occurred. Please try again.')
+		raise AccountError(email, 'An error occurred. Please try again.')
 
 	print 'bind-session'
 	bind_session(account, profile)
