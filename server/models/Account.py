@@ -65,8 +65,8 @@ class Account(database.Model):
 		self.sec_question = str(uuid.uuid4())
 
 
-	def __repr__ (self):
-		return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
+	def __repr__ (self): return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
+	def __str__  (self): return '<Account %r, %r, %r>'% (self.userid, self.name, self.email)
 
 
 	@staticmethod
@@ -78,6 +78,7 @@ class Account(database.Model):
 		return account
 
 
+
 	@staticmethod
 	def get_by_email(email_address):
 		account = None
@@ -87,10 +88,47 @@ class Account(database.Model):
 		return account
 
 
+	@staticmethod
+	def authorize_signin(email, password):
+		account = Account.get_by_email(email)
+		if (account and check_password_hash(account.pwhash, str(password))):
+			return account
+		return None
+
+
+
+	@staticmethod
+	def verify_email(email, hashcode):
+		account = None
+		try:
+			account = Account.query.filter_by(sec_question=hashcode).one()
+			if account.email != email: raise NoResultFound('huh')
+			account.set_sec_question("")
+			account.set_status(Account.USER_ACTIVE)
+
+			database.session.add(account)
+			database.session.commit()
+		except NoResultFound as nrf:
+			pass
+		except Exception as e:
+			database.session.rollback()
+			account = None
+		return account
+
+
+
 	def reset_security_question(self):
-		self.sec_question = str(uuid.uuid4())
-		self.updated = dt.utcnow()
+		try:
+			self.sec_question = str(uuid.uuid4())
+			self.updated = dt.utcnow()
+			database.session.add(self)
+			database.session.commit()
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
+			return None
 		return self.sec_question
+
 
 	def set_email(self, e):
 		self.email = e
