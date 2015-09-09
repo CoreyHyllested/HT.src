@@ -3,8 +3,8 @@
 {% set meta_desc	= 'Sign up for Soulcrafting.' %}
 
 {% block header_css %}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	{% assets 'master', 'scss_loginsys' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {% endassets %}
+	{{ super() }}
+	{%- assets 'master', 'scss_loginsys' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
 {% endblock %}
 
 
@@ -20,7 +20,7 @@
 	<hr class='thin'>
 
 	<div id='authorize-form'>
-		<form action="/signup" method="POST" id='signup-form' class="signup-form">
+		<form id='account-signup' action="/signup" method="POST" class="signup-form">
 			{{form.hidden_tag()}}
 			{{form.refid}}
 			<div class="form-group username">
@@ -39,6 +39,7 @@
 			<p>By signing up, I agree to Soulcrafting's <a href='/terms/service' target='terms'>Terms of Service</a> and <a href='/terms/privacy' target='terms'>Privacy Policy</a>.</p>
 
 			<button id='btn-signup' type='submit' class='btn btn-block blueButton'>Sign Up</button>
+			<div class='action-feedback'></div>
 		</form>
 		<br>
 		<form method='GET' action='/signin'><button class='whiteButton'>I have an account</button></form>
@@ -47,11 +48,45 @@
 </section>
 {% endblock %}
 
-<script src="/static/js/jquery.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
 {% block scripts %}
 	{{ super() }}
 
+	<script src="/static/js/jquery.js"></script>
+	<script src="/static/js/bootstrap.min.js"></script>
+	<script>
+		function signup_submit(event) {
+			event.preventDefault();	//prevent submit.
+			fd	= new FormData(this)
+
+			set_status('.action-feedback', 'Attempting sign up');
+
+			$.ajax({type		: 'POST',
+					url			: '/authorize/signup',
+					data		: fd,
+					processData	: false,
+					contentType	: false,
+					success 	: function(xhr) {
+									set_status('.action-feedback', 'Success');
+									window.location.href = xhr.next;
+								},
+					error		: function(xhr, status, error) {
+									if ((xhr.status === 400) || (xhr.status === 401)) {
+										show_errors('.action-feedback', xhr.responseJSON);
+									} else {
+										console.log("no action for ", status, xhr);
+										}
+									}
+				});
+				return false;
+			}
+
+
+		$('#account-signup').on('submit', signup_submit);
+	</script>
+{% endblock %}
+{#
+{%- if sc_alert %}<script>$(document).ready(function () { openAlertWindow('{{sc_alert}}') });</script>{%- endif %}
+#}
 {#	
 	{% if sc_alert %}<script>openAlertWindow('{{sc_alert}}')</script>{% endif %}
 <script>
@@ -62,4 +97,3 @@
 	});
 </script>
 #}
-{% endblock %}

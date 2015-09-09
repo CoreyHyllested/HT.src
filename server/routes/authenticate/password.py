@@ -13,30 +13,34 @@
 
 from server.models import *
 from server.routes import public_routes as public
-from server.infrastructure.errors import *
 from server.controllers	import *
 
 
 
-@public.route('/signup/', methods=['GET', 'POST'])
-@public.route('/signup',  methods=['GET', 'POST'])
-def render_signup_page(sc_msg=None):
-	if ('uid' in session):
-		# if logged in, take 'em home
-		return redirect('/profile')
+@public.route('/signup/', methods=['GET'])
+@public.route('/signup',  methods=['GET'])
+def render_signup_page():
+	# if user is logged in, take them to their profile
+	if ('uid' in session): return redirect('/profile')
+	return make_response(render_template('authorize/signup.html', form=SignupForm(request.values)))
 
-	form = SignupForm(request.values)
-	if form.validate_on_submit(): # and form.terms.data == True:
-		try:
-			profile  = sc_create_account(form.uname.data, form.email.data.lower(), form.passw.data, ref_id=form.refid.data)
-			return redirect_back('/profile')
-		except AccountError as ae:
-			print 'render_signup: error', ae
-			sc_msg = ae.sanitized_msg()
-	elif request.method == 'POST':
-		print 'render_signup: form invalid ' + str(form.errors)
-	return make_response(render_template('authorize/signup.html', form=form, sc_alert=sc_msg))
 
+
+@public.route('/signin/', methods=['GET'])
+@public.route('/signin',  methods=['GET'])
+def render_signin_page():
+	# if user is logged in, take them to their profile
+	if ('uid' in session): return redirect('/profile')
+	return make_response(render_template('authorize/signin.html', form=SignupForm(request.form)))
+
+
+
+@public.route('/modal/signin/',	methods=['GET'])
+@public.route('/modal/signin',	methods=['GET'])
+@public.route('/modal/login',	methods=['GET'])
+def render_signin_modal():
+	html_signin	= render_template('authorize/modal-signin.html', form=SignupForm(request.form))
+	return make_response(jsonify(embed=html_signin), 200)
 
 
 
@@ -51,6 +55,7 @@ def render_pro_signup_page(sc_msg=None):
 	if form.validate_on_submit(): # and form.terms.data == True:
 		try:
 			profile = sc_create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
+			return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
 			return redirect_back('/profile')
 		except AccountError as ae:
 			print 'render_pro_signup: error', ae
@@ -62,24 +67,19 @@ def render_pro_signup_page(sc_msg=None):
 
 
 
+@public.route('/authorize/signup/', methods=['POST'])
+@public.route('/authorize/signup',  methods=['POST'])
+def authorize_password_signup():
+	try:
+		sf = SignupForm(request.values)
+		if sf.validate_on_submit(): # and form.terms.data == True:
+			raise InvalidInput(errors=sf.errors)
 
-@public.route('/signin/', methods=['GET'])
-@public.route('/signin',  methods=['GET'])
-def render_signin():
-	# user has already logged in; take them home.
-	if ('uid' in session): return redirect('/profile')
-
-	return make_response(render_template('authorize/signin.html', form=SignupForm(request.form)))
-
-
-
-@public.route('/modal/signin/',	methods=['GET'])
-@public.route('/modal/signin',	methods=['GET'])
-@public.route('/modal/login',	methods=['GET'])
-def render_signin_modal():
-	form_signin	= SignupForm(request.form)
-	html_signin	= render_template('authorize/modal-signin.html', form=form_signin)
-	return make_response(jsonify(embed=html_signin), 200)
+		profile  = sc_create_account(sf.uname.data, sf.email.data.lower(), sf.passw.data, ref_id=sf.refid.data)
+		return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
+	except SanitizedException as e:
+		print type(e), e
+		return e.make_response()
 
 
 
@@ -87,12 +87,8 @@ def render_signin_modal():
 @public.route('/authorize/signin',	methods=['POST'])
 @sc_server.csrf.exempt
 def authorize_password_signin():
-	# user has already logged in, take 'em home.
-	if ('uid' in session): return redirect('/profile')
-
-	sf = SignupForm(request.form)
-
 	try:
+		sf = SignupForm(request.form)
 		if not sf.validate_on_submit():
 			raise InvalidInput(errors=sf.errors)
 
@@ -106,7 +102,8 @@ def authorize_password_signin():
 
 	except SanitizedException as e:
 		database.session.rollback()
-		return e.response()
+		return e.make_response()
+
 
 
 @public.route('/logout/', methods=['GET', 'POST'])
@@ -175,4 +172,6 @@ def render_password_reset_page(challengeHash):
 
 
 def redirect_back(next_url):
-	return redirect(session.pop('redirect', next_url))
+	url302 = session.pop('redirect', next_url)
+	return redirect(url302)
+
