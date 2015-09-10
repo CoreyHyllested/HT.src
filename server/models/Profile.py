@@ -64,7 +64,7 @@ class Profile(database.Model):
 	updated = Column(DateTime(), nullable=False, default = "")
 	created = Column(DateTime(), nullable=False, default = "")
 
-	def __init__(self, name, userid, email=None, phone=None,  area=None):
+	def __init__(self, name, userid, email=None, phone=None, area=None):
 		#if area and (area.get('country_name') == 'Reserved' or area.get('country_name') == ''):
 		#	area = None
 		#else:
@@ -105,6 +105,11 @@ class Profile(database.Model):
 			profile = Profile.query.filter_by(account=uid).one()
 		except NoResultFound as nrf: pass
 		return profile
+
+
+	@staticmethod
+	def create_profile(account):
+		return Profile(account.name, account.userid, account.email, account.phone) # geo_location)
 
 
 	@property

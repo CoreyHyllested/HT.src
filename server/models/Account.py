@@ -143,6 +143,14 @@ class Account(database.Model):
 
 
 	@staticmethod
+	def create_account(name, email, passwd, phone=None, addr=None, ref_id=None, role=AccountRole.CUSTOMER):
+		account = Account.get_by_email(email)
+		if (account): raise AccountError(email, 'Email address already exists. Sign in?')
+		return Account(name, email, generate_password_hash(passwd), phone=phone, ref=ref_id, role=role)
+
+
+
+	@staticmethod
 	def authorize_with_password(email, password):
 		account = Account.get_by_email(email)
 		if (account and check_password_hash(account.pwhash, str(password))):
