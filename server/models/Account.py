@@ -12,18 +12,17 @@
 #################################################################################
 
 
+from sqlalchemy 	import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm	import relationship, backref
+from factory.alchemy	import SQLAlchemyModelFactory
+from factory.fuzzy		import *
+from werkzeug.security	import generate_password_hash, check_password_hash
+from datetime import datetime as dt, timedelta
+import datetime, uuid, factory
+
 from server import database
 from server.infrastructure.errors	import *
 from server.models.shared	import *
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm	 import relationship, backref
-from factory.alchemy import SQLAlchemyModelFactory
-from factory.fuzzy	 import *
-from datetime import datetime as dt, timedelta
-from pytz import timezone
-import datetime, uuid, factory
-from werkzeug.security	import check_password_hash
-
 
 
 

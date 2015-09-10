@@ -19,7 +19,6 @@ import uuid
 from pprint	import pprint as pp
 from datetime import datetime as dt
 from flask.sessions		import SessionInterface, SessionMixin
-from werkzeug.security	import generate_password_hash
 from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
