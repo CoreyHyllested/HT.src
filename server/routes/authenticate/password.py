@@ -11,6 +11,8 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
+from werkzeug.security	import generate_password_hash
+
 from server.models import *
 from server.routes import public_routes as public
 from server.controllers	import *
@@ -47,9 +49,7 @@ def render_signin_modal():
 #@public.route('/signup/professional/', methods=['GET', 'POST'])
 #@public.route('/signup/professional',  methods=['GET', 'POST'])
 def render_pro_signup_page(sc_msg=None):
-	if ('uid' in session):
-		# if logged in, take 'em home
-		return redirect('/profile')
+	if ('uid' in session): return redirect('/profile')
 
 	form = ProSignupForm(request.form)
 	if form.validate_on_submit(): # and form.terms.data == True:
@@ -57,12 +57,8 @@ def render_pro_signup_page(sc_msg=None):
 			account = Account.create_account(form.uname.data, form.pro_email.data.lower(), form.passw.data, phone=form.pro_phone.data, role=AccountRole.CRAFTSPERSON)
 			return make_response(jsonify(next=session.pop('redirect', '/profile')), 200)
 		except AccountError as ae:
-			print 'render_pro_signup: error', ae
-			sc_msg = ae.sanitized_msg()
-	elif request.method == 'POST':
-		print 'render_signup: form invalid ' + str(form.errors)
-		sc_msg = 'Oops. Fill out all fields.'
-	return make_response(render_template('authorize/signup-professional.html', form=form, sc_alert=sc_msg))
+			pass
+	return make_response(render_template('authorize/signup-professional.html', form=form))
 
 
 
@@ -71,7 +67,7 @@ def render_pro_signup_page(sc_msg=None):
 def authorize_password_signup():
 	try:
 		sf = SignupForm(request.values)
-		if sf.validate_on_submit(): # and form.terms.data == True:
+		if not sf.validate_on_submit(): # and form.terms.data == True:
 			raise InvalidInput(errors=sf.errors)
 
 		#geo_location = get_geolocation_from_ip()
