@@ -60,13 +60,15 @@ def email_team_notification(event, details):
 
 def email_welcome_message(user_email, user_name, challenge_hash):
 	""" Emails the Welcome message, includes a 'verify your email' link."""
-	verify_link = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
-	url_verify  = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	sc_verify  = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	lh_verify  = 'https://soulcrafting.co/email/verify/' + str(challenge_hash) + "?email="+ urllib.quote_plus(user_email)
+	print sc_verify
+	print lh_verify
 
 	message = create_mandrill_message(template = 'confirm-email')
 	message['to'].append({'email': user_email})
 	message['global_merge_vars'].append({ 'name': 'FNAME',			'content': user_name})
-	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': url_verify})
+	message['global_merge_vars'].append({ 'name': 'VERIFY_EMAIL',	'content': sc_verify})
 	sc_send_mandrill_template(message)
 
 	event	= 'New account'
