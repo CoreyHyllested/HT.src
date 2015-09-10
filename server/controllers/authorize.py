@@ -86,33 +86,8 @@ def sc_password_recovery(email):
 
 
 
-def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, role=AccountRole.CUSTOMER):
-	#geo_location = get_geolocation_from_ip()
 
-	account = Account.get_by_email(email)
-	if (account): raise AccountError(email, 'Email address already exists. Sign in?')
-
-	try:
-		print 'create account and profile', str(email), str(phone), str(addr) # str(geo_location.get('region_name')), str(geo_location.get('country_code'))
-		account = Account(name, email, generate_password_hash(passwd), phone=phone, ref=ref_id, role=role)
-		profile = Profile(name, account.userid, email, phone=phone) # geo_location)
-		sc_server.database.session.add(account)
-		sc_server.database.session.add(profile)
-		sc_server.database.session.commit()
-	except IntegrityError as ie:
-		print type(ie), ie
-		sc_server.database.session.rollback()
-		raise AccountError(email, 'An error occurred. Please try again.')
-	except Exception as e:
-		print type(e), e
-		sc_server.database.session.rollback()
-		raise AccountError(email, 'An error occurred. Please try again.')
-
-	print 'bind-session'
-	bind_session(account, profile)
-
-	session.pop('ref_id', None)
-	session.pop('ref_prof', None)
+# orig from sc_create_account
 #	gift_id = session.pop('gift_id', None)
 #	if (gift_id):
 #		try:
@@ -128,8 +103,6 @@ def sc_create_account(name, email, passwd, phone=None, addr=None, ref_id=None, r
 #			print type(e), e
 #			sc_server.database.session.rollback()
 
-	email_welcome_message(email, name, account.sec_question)
-	return profile
 
 
 
