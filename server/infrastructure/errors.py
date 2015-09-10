@@ -38,6 +38,9 @@ class ApiError(object):
 	def serialize(self):
 		return jsonify ({ 'status': self.status, 'errors': self.errors })
 
+	def make_response(self):
+		return make_response(self.serialize(), 400)
+
 
 
 
