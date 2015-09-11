@@ -109,6 +109,8 @@ def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
 	except AccountError as ae:
 		print type(ae), ae
 		account = ae.account
+		if (account):
+			print 'account exists, will be merging'
 	except Exception as e:
 		print type(e), e
 
@@ -117,7 +119,6 @@ def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
 		return None
 
 	try:
-		print 'create oauth account'	# account must exist in DB (foreign key constraint)
 		oauthusr = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
 		database.session.add(oauthusr)
 		database.session.commit()
@@ -178,9 +179,11 @@ def normalize_oa_account_data(provider, oa_data):
 	if provider == OauthProvider.LINKED:
 		data['oa_service']	= provider
 		data['oa_account']	= oa_data.get('id')
-		data['oa_email']	= oa_data.get('CAH_email', None)
-		data['oa_token']	= oa_data.get('CAH_token', None)
-		data['oa_secret']	= oa_data.get('CAH_sec', None)
+		data['oa_name']		= oa_data.get('formattedName', None)
+		data['oa_email']	= oa_data.get('email', None)
+		data['oa_token']	= oa_data.get('token', None)
+		data['oa_secret']	= oa_data.get('sec', None)
+		data['oa_timezone'] = oa_data.get('timezone', None)
 	elif provider == OauthProvider.FACEBK:
 		facebook = oa_data
 		print 'normalize facebook data'
