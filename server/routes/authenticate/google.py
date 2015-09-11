@@ -70,7 +70,7 @@ def google_authorized(resp):
 	bind_session(account, profile)
 
 	#import_profile(profile, OauthProvide.GOOGLE, oauth_data=userinfo.data)
-	return redirect('/profile')
+	return redirect('/profile')	#use redirect_back thing
 
 
 

@@ -54,23 +54,20 @@ def facebook_authorized(resp):
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
 
-	print 'facebook user is creating an account.'
-	print 'session access_token', resp.get('access_token', 'CAH')
+	#print 'facebook user is creating an account.'
+	#print 'session access_token', resp.get('access_token', 'CAH')
 	# grab signup/login info
 	me = oauth_facebook.get('/me')
 	me.data['token']=session['oauth_token']
 
-	ba = sc_authenticate_user_with_oa(OauthProvider.FACEBK, me.data)
-	if (ba):
-		print ("created_account, uid = " , str(ba.userid), ', get profile')
-		bp = Profile.get_by_uid(ba.userid)
-		bind_session(ba, bp)
-		#import_profile(bp, OauthProvide.FACEBK, oauth_data=me.data)
-		resp = redirect('/profile')
-	else:
-		session['messages'] = 'Account creation failed.'
-		resp = redirect('/signin')
-	return resp
+	account = sc_authenticate_user_with_oa(OauthProvider.FACEBK, me.data)
+	if not account: resp = redirect(request.referrer)
+
+	bp = Profile.get_by_uid(ba.userid)
+	#import_profile(bp, OauthProvide.FACEBK, oauth_data=me.data)
+	bind_session(ba, bp)
+
+	return redirect('/profile')	#use redirect_back thing
 
 
 
