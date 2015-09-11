@@ -19,7 +19,7 @@ from server.controllers	import *
 from flask_oauthlib.client	import OAuth, OAuthException
 
 
-facebook = sc_server.oauth.remote_app( 'facebook',
+oauth_facebook = sc_server.oauth.remote_app( 'facebook',
 		base_url='https://graph.facebook.com',
 		access_token_url='/oauth/access_token',
 		access_token_method='POST',
@@ -34,21 +34,14 @@ facebook = sc_server.oauth.remote_app( 'facebook',
 
 # sends to facebook, which gets token, and user is redirected to 'facebook_authorized'
 @public.route('/signup/facebook', methods=['GET', 'POST'])
-def oauth_signup_facebook():
-	session['oauth_facebook_signup'] = True
-	return facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
-
-
-
-@public.route('/login/facebook', methods=['GET', 'POST'])
-def oauth_login_facebook():
-	session['oauth_facebook_signup'] = False
-	return facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
+@public.route('/signin/facebook', methods=['GET', 'POST'])
+def oauth_facebook_signup_and_signin():
+	return oauth_facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 
 
 
 @public.route('/authorized/facebook')
-@facebook.authorized_handler
+@oauth_facebook.authorized_handler
 def facebook_authorized(resp):
 	if not resp:
 		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
@@ -64,7 +57,7 @@ def facebook_authorized(resp):
 	print 'facebook user is creating an account.'
 	print 'session access_token', resp.get('access_token', 'CAH')
 	# grab signup/login info
-	me = facebook.get('/me')
+	me = oauth_facebook.get('/me')
 	me.data['token']=session['oauth_token']
 
 	ba = sc_authenticate_user_with_oa(OauthProvider.FACEBK, me.data)
@@ -81,7 +74,7 @@ def facebook_authorized(resp):
 
 
 
-@facebook.tokengetter
+@oauth_facebook.tokengetter
 def get_facebook_oauth_token():
 	return session.get('oauth_token')
 
@@ -90,7 +83,7 @@ def get_facebook_oauth_token():
 # Pop the referred_by / reference values when account creations succeeds.
 @testing.route('/facebook')
 def TESTING_render_facebook_info():
-	me = facebook.get('/me')
+	me = oauth_facebook.get('/me')
 	return 'Logged in id=%s name=%s f=%s l=%s email=%s redirect=%s' % (me.data['id'], me.data['name'], me.data['first_name'], me.data['last_name'], me.data['email'], request.args.get('next'))
 
 
