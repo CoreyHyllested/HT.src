@@ -15,87 +15,67 @@ from server.models import *
 from server.routes import public_routes as public
 from server.infrastructure.errors import *
 from server.controllers	import *
+from flask_oauthlib.client	import OAuth, OAuthException
 
 
-linkedin = sc_server.oauth.remote_app(  'linkedin',
+oauth_linkedin = sc_server.oauth.remote_app(  'linkedin',
 		consumer_key=sc_server.config['LINKEDIN_KEY'],
 		consumer_secret=sc_server.config['LINKEDIN_SEC'],
-		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
+		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'RandomString', },
 		base_url='https://api.linkedin.com/v1/',
 		request_token_url=None,
 		access_token_method='POST',
 		access_token_url='https://www.linkedin.com/uas/oauth2/accessToken',
-		authorize_url='https://www.linkedin.com/uas/oauth2/authorization',
+		authorize_url   ='https://www.linkedin.com/uas/oauth2/authorization',
 )
 
 
 
+@public.route('/signin/linkedin', methods=['GET'])
 @public.route('/signup/linkedin', methods=['GET'])
-def oauth_signup_linkedin():
-	print 'signup_linkedin'
-	session['oauth_linkedin_signup'] = True
-	# redirects user to LinkedIn; gets login token and user comes home to linkedin_authorized
-	return linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
-
-
-@public.route('/login/linkedin', methods=['GET'])
-def oauth_login_linkedin():
-	print 'login_linkedin()'
-	session['oauth_linkedin_signup'] = False
-	# redirects user to LinkedIn; gets login token and user comes home to linkedin_authorized
-	return linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
+def oauth_linkedin_signup_and_signin():
+	session['next'] = request.args.get('next') or request.referrer or None
+	print 'session.next=',session['next']
+	return oauth_linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
 
 
 
 @public.route('/authorized/linkedin')
-@linkedin.authorized_handler
+@oauth_linkedin.authorized_handler
 def linkedin_authorized(resp):
-	print 'login() linkedin_authorized'
-
 	if resp is None:
 		# Needs a better error page 
-		print 'resp is none'
-		return 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
+		return redirect(request.referrer)
 
-	#get Oauth Info.
-	signup = bool(session.pop('oauth_linkedin_signup'))
-	print('li_auth - signup', str(signup))
-	print('li_auth - login ', str(not signup))
+	if isinstance(resp, OAuthException):
+		print 'Access denied: %s' % resp.message
+		return redirect(request.referrer)
+
 
 	session['linkedin_token'] = (resp['access_token'], '')
-	ref_id = session.get('ref_id', None)	# Never tested.  Value might not be set.
 
-	me    = linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
-	email = linkedin.get('people/~/email-address')
+	userinfo = oauth_linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
+	email	 = oauth_linkedin.get('people/~/email-address')
 
-	# format collected info... prep for init.
-	print('li_auth - collect data ')
-	user_name = me.data.get('formattedName')
-
-	#(bh, bp) = sc_authenticate_user_with_oa(me.data['name'], me.data['email'], OauthProvider.FACEBK, me.data)
-
+	account = sc_authenticate_user_with_oa(OauthProvider.LINKED, userinfo.data)
 
 	# also look for linkedin-account/id number (doesn't exist today).
-	possible_accts = Account.query.filter_by(email=email.data).all()
-	if (len(possible_accts) == 1):
-		# suggest they create a password if that's not done.
-		session['uid'] = possible_accts[0].userid
-		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
-		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
-		return redirect('/dashboard')
+#	possible_accts = Account.query.filter_by(email=email.data).all()
+#	if (len(possible_accts) == 1):
+#		# suggest they create a password if that's not done.
+#		session['uid'] = possible_accts[0].userid
+#		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
+#		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
+#		return redirect('/dashboard')
 
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
+	user_name = userinfo.data.get('formattedName')
 	print ("attempting create_account(" , user_name , ")")
-	try:
-		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
-		import_profile(profile, OauthProvider.LINKED, oauth_data=me.data)
-
-		#send_welcome_email(email.data)
+	return jsonify(userinfo.data)
+#		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
+#		import_profile(profile, OauthProvider.LINKED, oauth_data=me.data)
 		resp = redirect('/dashboard')
-	except AccountError as ae:
-		print 'something failed.', ae
-		print ('create account failed, using', str(email.data))
-		resp = redirect('/dbFailure')
 	return resp
 
 
@@ -111,11 +91,11 @@ def change_linkedin_query(uri, headers, body):
 			uri += '?oauth2_access_token=' + auth
 	return uri, headers, body
 
-linkedin.pre_request = change_linkedin_query
+oauth_linkedin.pre_request = change_linkedin_query
 
 
 
-@linkedin.tokengetter
+@oauth_linkedin.tokengetter
 def get_linkedin_oauth_token():
 	return session.get('linkedin_token')
 
