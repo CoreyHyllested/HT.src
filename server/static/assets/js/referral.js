@@ -41,28 +41,30 @@ function business_submit(event) {
 	// runs when form is valid (on Chrome).
 	event.preventDefault();	//prevent submit.
 
-	if (!$(event.target).hasClass('update')) {
+/*	if (!$(event.target).hasClass('update')) {
 		business_update(event);
 		return false;
 	}
 
 	p = geocode_address( $('#address-search').val() );
 	p.always(business_create);
+*/
+	business_create(event);
 	return false;
 }
 
 
 function business_update(event) {
 	$(event.target).toggleClass('update');
-	$('#modal-business-info').toggleClass('block');
-	$('#modal-business-addr').toggleClass('block');
+//	$('#modal-business-info').toggleClass('block');
+//	$('#modal-business-addr').toggleClass('block');
 	$('#modal-message button[type="submit"]').html('Submit');
 	initialize_map('modal-map', 'address-search');
 }
 
 
 
-function business_create() {
+function business_create(event) {
 	fd	= new FormData($('#create-business-form')[0])
 	$.ajax({ url	: '/api/business/create',
 			type	: "POST",
@@ -189,6 +191,12 @@ function busapi_get_emails(email) {
 	return '<a href="mailto:' + email + '" target="_blank" title="' + email + '"><i class="fa fa-envelope-o"></i></a>';
 }
 
+function busapi_get_phones(phone) {
+	//xhr.business_phones.forEach(function (elem, idx) { });
+	if (!phone) return '';
+	return '<a href="tel:' + phone + '" title="' + phone + '"><i class="fa fa-phone"></i></a>'
+}
+
 
 function trustcard_append_badge(embed_html, inline) {
 	if (embed_html === '') return;
@@ -217,26 +225,23 @@ function get_profile(fd) {
 				categories = busapi_get_breadcrumbs(xhr.business_category[0]);
 				trustcard_append_badge(categories, false);
 
-				if (xhr.business_website) {
-					busname = '<a href="' + xhr.business_website + '" target="_blank">' + xhr.business_name + '</a>'
-					website = '<a href="' + xhr.business_website + '" target="_blank" title="Website"><i class="fa fa-link"></i></a>';
-					trustcard_append_badge(website, true);
-				}
-
 				if (xhr.address) {
 					addrurl = 'https://www.google.com/maps/place/' + xhr.address;
 					address = '<a href="' + addrurl + '" target="_blank" title="' + xhr.address + '"><i class="fa fa-map-marker"></i></a>'
 					trustcard_append_badge(address, true);
 				};
 
+				if (xhr.business_website) {
+					busname = '<a href="' + xhr.business_website + '" target="_blank">' + xhr.business_name + '</a>'
+					website = '<a href="' + xhr.business_website + '" target="_blank" title="Website"><i class="fa fa-link"></i></a>';
+					trustcard_append_badge(website, true);
+				}
+
 				email = busapi_get_emails(xhr.business_emails[0]);
 				trustcard_append_badge(email, true);
 
-				xhr.business_phones.forEach(function (elem, idx) {
-					phone = '<a href="tel:' + elem + '" title="' + elem + '"><i class="fa fa-phone"></i></a>'
-					trustcard_append_badge(phone, true);
-				});
-
+				phone = busapi_get_phones(xhr.business_phones[0]);
+				trustcard_append_badge(phone, true);
 				
 				folder = '<a href="/business/' + xhr.business_id + '" target="_blank" title="Referrals for ' + xhr.business_name + '"><i class="fa fa-folder-open"></i></a>'
 				trustcard_append_badge(folder, true);
