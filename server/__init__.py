@@ -49,6 +49,7 @@ def initialize_server(config_name):
 
 
 def	server_init_environment(server, configuration):
+	server.ROOT_DIR	= os.getcwd()
 	server.secret_key = '\xfai\x17^\xc1\x84U\x13\x1c\xaeU\xb1\xd5d\xe8:\x08\xf91\x19w\x843\xee'
 	server.config.from_object(server_configuration[configuration])
 	if (configuration == 'production' or configuration == 'devel_money'):

@@ -191,7 +191,7 @@ class Business(database.Model):
 		trusted_idx = {}
 
 		try:
-			fp = open(os.getcwd() + '/server/static/root/companies.json')
+			fp = open(sc_server.ROOT_DIR + '/server/static/root/companies.json')
 			trusted_list = json.loads(fp.read())
 			for account in trusted_list:
 				if account.get('_status'):
