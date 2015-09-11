@@ -42,7 +42,8 @@ function business_submit(event) {
 	event.preventDefault();	//prevent submit.
 
 	if (!$(event.target).hasClass('update')) {
-		return business_update(event);
+		business_update(event);
+		return false;
 	}
 
 	p = geocode_address( $('#address-search').val() );
@@ -57,7 +58,6 @@ function business_update(event) {
 	$('#modal-business-addr').toggleClass('block');
 	$('#modal-message button[type="submit"]').html('Submit');
 	initialize_map('modal-map', 'address-search');
-	return false;
 }
 
 
