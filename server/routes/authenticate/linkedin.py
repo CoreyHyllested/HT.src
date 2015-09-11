@@ -11,17 +11,19 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
+from pprint import pprint as pp
+from flask_oauthlib.client	import OAuth, OAuthException
+
 from server.models import *
 from server.routes import public_routes as public
 from server.infrastructure.errors import *
 from server.controllers	import *
-from flask_oauthlib.client	import OAuth, OAuthException
 
 
 oauth_linkedin = sc_server.oauth.remote_app(  'linkedin',
 		consumer_key=sc_server.config['LINKEDIN_KEY'],
 		consumer_secret=sc_server.config['LINKEDIN_SEC'],
-		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'RandomString', },
+		request_token_params={ 'scope': 'r_basicprofile r_emailaddress', 'state': 'deadbeefcafe', },
 		base_url='https://api.linkedin.com/v1/',
 		request_token_url=None,
 		access_token_method='POST',
@@ -36,7 +38,7 @@ oauth_linkedin = sc_server.oauth.remote_app(  'linkedin',
 def oauth_linkedin_signup_and_signin():
 	session['next'] = request.args.get('next') or request.referrer or None
 	print 'session.next=',session['next']
-	return oauth_linkedin.authorize(callback=url_for('public.linkedin_authorized', _external=True))
+	return oauth_linkedin.authorize(callback=url_for('public_routes.linkedin_authorized', _external=True))
 
 
 
@@ -56,26 +58,16 @@ def linkedin_authorized(resp):
 	session['linkedin_token'] = (resp['access_token'], '')
 
 	userinfo = oauth_linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
-	email	 = oauth_linkedin.get('people/~/email-address')
+	userinfo.data['email'] = oauth_linkedin.get('people/~/email-address').data
 
+	pp (userinfo.data)
 	account = sc_authenticate_user_with_oa(OauthProvider.LINKED, userinfo.data)
 
-	# also look for linkedin-account/id number (doesn't exist today).
-#	possible_accts = Account.query.filter_by(email=email.data).all()
-#	if (len(possible_accts) == 1):
-#		# suggest they create a password if that's not done.
-#		session['uid'] = possible_accts[0].userid
-#		#return render_dashboard(usrmsg='You haven\'t set a password yet.  We highly recommend you do')
-#		#save msg elsewhere -- in flags, create table, either check for it in session or dashboard
-#		return redirect('/dashboard')
-
  	# try creating new account.  We don't have known password; set to random string and sent it to user.
-	user_name = userinfo.data.get('formattedName')
-	print ("attempting create_account(" , user_name , ")")
 	return jsonify(userinfo.data)
 #		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
 #		import_profile(profile, OauthProvider.LINKED, oauth_data=me.data)
-		resp = redirect('/dashboard')
+	resp = redirect('/profile')
 	return resp
 
 

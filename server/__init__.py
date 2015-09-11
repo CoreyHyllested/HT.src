@@ -186,7 +186,7 @@ def server_init_routes(server):
 
 	from routes.api import list, project, referral
 	from routes.authenticate import password
-	from routes.authenticate import facebook, google
+	from routes.authenticate import facebook, google, linkedin
 	from routes import everyone, users, meta, errors
 	from routes import public_routes
 	from routes import auth_routes
