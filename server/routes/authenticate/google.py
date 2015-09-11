@@ -50,29 +50,27 @@ def google_authorized(resp):
 #	resp = oauth_google.authorized_response()
 	if not resp:
 		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect('/signup')
+		return redirect(request.referrer)
 
 	if isinstance(resp, OAuthException):
 		print 'Access denied: %s' % resp.message
-		return redirect('/signup')
+		return redirect(request.referrer)
 
 	# User has successfully authenticated with Google.
 	session['google_token'] = (resp['access_token'], '')
+	#print 'session access_token', resp.get('access_token', 'CAH')
 
-	print 'google user is creating an account.'
-	print 'session access_token', resp.get('access_token', 'CAH')
-	# grab signup/login info
-	me = oauth_google.get('userinfo')
-	pp (me.data)
+	userinfo = oauth_google.get('userinfo')
+	#pp (me.data)
 
-	account = sc_authenticate_user_with_oa(OauthProvider.GOOGLE, me.data)
+	account = sc_authenticate_user_with_oa(OauthProvider.GOOGLE, userinfo.data)
 	if not account: return redirect(request.referrer)
 
-	print "created_account, uid =", str(account.userid), 'get profile'
-	profile = Profile.get_by_uid(ba.userid)
+	print "account id =", str(account.userid)
+	profile = Profile.get_by_uid(account.userid)
 	bind_session(account, profile)
 
-	#import_profile(profile, OauthProvide.GOOGLE, oauth_data=me.data)
+	#import_profile(profile, OauthProvide.GOOGLE, oauth_data=userinfo.data)
 	return redirect('/profile')
 
 

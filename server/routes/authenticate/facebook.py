@@ -45,11 +45,11 @@ def oauth_facebook_signup_and_signin():
 def facebook_authorized(resp):
 	if not resp:
 		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(url_for('public_routes.render_signin'))
+		return redirect(request.referrer)
 
 	if isinstance(resp, OAuthException):
 		print 'Access denied: %s' % resp.message
-		return redirect(url_for('public_routes.render_signin'))
+		return redirect(request.referrer)
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
