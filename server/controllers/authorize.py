@@ -49,27 +49,23 @@ def sc_authenticate_user_with_oa(oa_srvc, oa_data_raw):
 	print 'normalize oauth account data', oa_srvc
 	oa_data = normalize_oa_account_data(oa_srvc, oa_data_raw)
 
-	hero = None
-	oauth_account = []
+	account = None
 
 	try:
 		print 'search Oauth for', oa_srvc, oa_data['oa_account']
-		oauth_accounts = sc_server.database.session.query(Oauth)																		\
-								   .filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account']))	\
-								   .all()
+		oauth	= database.session.query(Oauth).filter((Oauth.oa_service == oa_srvc) & (Oauth.oa_account == oa_data['oa_account'])).one()
+		account = Account.get_by_uid(oauth.ht_account)
+	except NoResultFound as nrf:
+		pass
 	except Exception as e:
 		print type(e), e
-		sc_server.database.session.rollback()
+		database.session.rollback()
 
-	if len(oauth_accounts) == 1:
-		print 'found oauth account for individual'
-		oa_account = oauth_accounts[0]
-		hero = Account.get_by_uid(oa_account.ht_account)
-	else:
-		print 'found ', len(oauth_accounts), 'so sign up user with this oauth account.'
-		(hero, prof) = sc_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)
+	if not account:
+		print 'No oauth found, so sign up user with this oauth account.'
+		account = sc_create_account_with_oauth(oa_data['oa_name'], oa_data['oa_email'], oa_srvc, oa_data)
 		#import_profile(prof, oa_srvc, oa_data)
-	return hero
+	return account
 
 
 
@@ -96,45 +92,45 @@ def sc_password_recovery(email):
 #			gift.gift_recipient_name = profile.prof_name
 #			gift.gift_recipient_prof = profile.prof_id
 #			gift.gift_dt_updated = dt.utcnow();
-#			sc_server.database.session.add(gift)
-#			sc_server.database.session.commit()
+#			database.session.add(gift)
+#			database.session.commit()
 #		except Exception as e:
 #			print type(e), e
-#			sc_server.database.session.rollback()
+#			database.session.rollback()
 
 
 
 
 
 def sc_create_account_with_oauth(name, email, oa_provider, oa_data):
-	print 'sc_create_account_with_oauth: ', name, email, oa_provider
+	account = None
 	try:
-		profile = sc_create_account(name, email, str(uuid.uuid4()))
+		entropy	= str(uuid.uuid4())	#used as random password
+		account	= Account.create_account(name, email, entropy)
+		profile	= Profile.create_profile(account)
+
+		database.session.add(account)
+		database.session.add(profile)
+		database.session.commit()
 	except AccountError as ae:
-		print ae
-
-	if (profile is None):
-		print 'create_account failed. happens when same email address is used'
-		print 'Right, now mention an account uses this email address.'
-		print 'Eventually.. save oa variables; put session variable.  Redirect them to login again.  If they can.  Merge account.'
-		return None, None
-
-	try:
-		print 'create oauth account'
-		#get account from profile.... 
-		oa_user = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
-		sc_server.database.session.add(oa_user)
-		sc_server.database.session.commit()
-	except IntegrityError as ie:
-		print type(ie), ie
-		sc_server.database.session.rollback()
-		return None, None 
+		print type(ae), ae
+		account = ae.account
 	except Exception as e:
 		print type(e), e
-		sc_server.database.session.rollback()
-		return None, None
-	return (account , profile)
 
+	if not account:
+		print 'create_account failed, before oauth creation dunno why'
+		return None
+
+	try:
+		print 'create oauth account'	# account must exist in DB (foreign key constraint)
+		oauthusr = Oauth(str(account.userid), oa_provider, oa_data['oa_account'], token=oa_data['oa_token'], secret=oa_data['oa_secret'], email=oa_data['oa_email'])
+		database.session.add(oauthusr)
+		database.session.commit()
+	except Exception as e:
+		print type(ie), ie
+		database.session.rollback()
+	return account
 
 
 
