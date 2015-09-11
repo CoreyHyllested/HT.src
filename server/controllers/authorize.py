@@ -11,15 +11,9 @@
 # consent has been obtained from Soulcrafting.
 #################################################################################
 
-
-import smtplib, urlparse
-import oauth2 as oauth
-import uuid
-
+import smtplib, urlparse, uuid
 from pprint	import pprint as pp
 from datetime import datetime as dt
-from flask.sessions		import SessionInterface, SessionMixin
-from sqlalchemy     import distinct, and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -189,7 +183,6 @@ def normalize_oa_account_data(provider, oa_data):
 		data['oa_secret']	= oa_data.get('CAH_sec', None)
 	elif provider == OauthProvider.FACEBK:
 		facebook = oa_data
-
 		print 'normalize facebook data'
 		data['oa_service']	= provider
 		data['oa_account']	= facebook['id']
@@ -199,6 +192,17 @@ def normalize_oa_account_data(provider, oa_data):
 		data['oa_secret']	= None
 		data['oa_timezone'] = facebook.get('timezone', None)
 		pp(data)
-
+	elif provider == OauthProvider.GOOGLE:
+		google = oa_data
+		data['oa_service']	= provider
+		data['oa_account']	= google['id']
+		data['oa_name']		= google['name']
+		data['oa_email']	= google['email']
+		data['oa_token']	= google.get('token', None)
+		data['oa_secret']	= None
+		data['oa_timezone'] = google.get('timezone', None)
+		pp(data)
+	else:
+		print 'WHERE IS THIS DATA FROM?', provider
 	return data
 
