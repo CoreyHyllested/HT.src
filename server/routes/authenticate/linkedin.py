@@ -59,16 +59,16 @@ def linkedin_authorized(resp):
 
 	userinfo = oauth_linkedin.get('people/~:(id,formatted-name,headline,picture-url,industry,summary,skills,recommendations-received,location:(name))')
 	userinfo.data['email'] = oauth_linkedin.get('people/~/email-address').data
+	#pp (userinfo.data)
 
-	pp (userinfo.data)
 	account = sc_authenticate_user_with_oa(OauthProvider.LINKED, userinfo.data)
+	if not account: return redirect(request.referrer)
 
- 	# try creating new account.  We don't have known password; set to random string and sent it to user.
-	return jsonify(userinfo.data)
-#		profile = sc_create_account(user_name, email.data, 'linkedin_oauth', ref_id)
-#		import_profile(profile, OauthProvider.LINKED, oauth_data=me.data)
-	resp = redirect('/profile')
-	return resp
+	profile = Profile.get_by_uid(account.userid)
+	#import profile
+	bind_session(account, profile)
+
+	return redirect('/profile')	#use redirect_back thing
 
 
 
