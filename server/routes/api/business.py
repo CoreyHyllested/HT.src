@@ -67,25 +67,22 @@ def api_business_create_post():
 		#pp(request.form)
 		business = Business(form.name.data, phone=form.phone.data, email=form.email.data, website=form.site.data)
 		business.bus_state = BusinessSource.set(business.bus_state, BusinessSource.USER_ADDED)
-		location = Location.from_google(form)
-		location.business = business.bus_id
 
 		try:
 			database.session.add(business)
-			database.session.commit()
-			database.session.add(location)
 			database.session.commit()
 		except Exception as e:
 			database.session.rollback()
 			print type(e), e
 			return make_response(jsonify(errors=str(e)), 500)
+		location = Location.from_google(form, business.bus_id)
 
 		return make_response(jsonify(success=True, business=business.serialize), 200)
 	return make_response(jsonify(errors=form.errors), 400)
 
 
 
-@api.route('/business/<string:bus_id>/', methods=['POST'])
+@api.route('/business/<string:bus_id>/', methods=['GET', 'POST'])
 @api.route('/business/<string:bus_id>',  methods=['POST'])
 def api_business_read(bus_id):
 	business = Business.get_by_id(bus_id, check_json=True)

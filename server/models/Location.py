@@ -59,6 +59,10 @@ class Location(database.Model):
 
 
 	def __init__(self, street=None, suite=None, city=None, state=None, zipcode=None, lat=None, lng=None, business_id=None):
+
+		if ((not city) and (not state)):
+			raise Exception('Not a valid location')
+
 		self.location_id	= str(uuid.uuid4())
 		self.location_street = street
 		self.location_suite	= suite
@@ -72,6 +76,7 @@ class Location(database.Model):
 		self.business	= business_id
 		self.created	= dt.utcnow()
 		self.updated	= dt.utcnow()
+
 
 
 	def __repr__ (self):
@@ -146,10 +151,11 @@ class Location(database.Model):
 
 
 	@staticmethod
-	def from_google(form):
+	def from_google(form, business_id):
 		# //developers.google.com/maps/documentation/geocoding/intro#Types
-		address = {	'meta' : {} }
-		print 'Location.from_google'
+		location = None
+		address	 = { 'meta' : {} }
+
 		if (form.addr_street.data):
 			address['street'] = form.addr_street.data
 		elif (form.addr_part_number.data):
@@ -174,14 +180,21 @@ class Location(database.Model):
 		if (form.addr_aal0.data):	address['country']	= form.addr_aal0.data
 		if (form.addr_asst_postcode.data):	address['post'] = form.addr_asst_postcode.data
 
-		location = Location(address.get('street'),
-							address.get('suite'),
-							address.get('city'),
-							address.get('state'),
-							address.get('post'),
-							address['meta'].get('lat'),
-							address['meta'].get('lng'),
-							)
+		try:
+			location = Location(address.get('street'),
+								address.get('suite'),
+								address.get('city'),
+								address.get('state'),
+								address.get('post'),
+								address['meta'].get('lat'),
+								address['meta'].get('lng'),
+								business_id
+								)
+			database.session.add(location)
+			database.session.commit()
+		except Exception as e:
+			database.session.rollback()
+			print type(e), e
 		return location
 
 #			print 'addr (area)', form.addr_aal1.data, form.addr_aal0.data
