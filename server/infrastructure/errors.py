@@ -130,9 +130,10 @@ class InvalidInput(SanitizedException):
 
 
 class AccountError(SanitizedException):
-	def __init__(self, email, status='Account creation failed'):
+	def __init__(self, email, status='Account creation failed', account=None):
 		super(AccountError, self).__init__('Account Error', status)
 		self.email = email
+		self.account = account
 
 	def __repr__(self): return '<AccountError:%r:%r>' % (self.email, self.reason())
 	def __str__ (self): return '<AccountError:%r:%r>' % (self.email, self.reason())
