@@ -74,10 +74,12 @@ $version	:	0.01;
 
 .btn-soulcraft		{ @extend .btn-social;	background: $ht-blue;				}
 .btn-facebook		{ @extend .btn-social;	background: $color-facebk;			}
+.btn-linkedin		{ @extend .btn-social;	background: $color-linked;			}
 .btn-twitter		{ @extend .btn-social;	background: $color-twittr;			}
 .btn-google			{ @extend .btn-social;	background: $color-google;			}
 .btn-soulcraft:hover{ @extend .btn-social;	background: $ht-blue-hover;			}
 .btn-facebook:hover	{ color: white;			background: $color-facebk-hover;	}
+.btn-linkedin:hover	{ color: white;			background: $color-linked-hover;	}
 .btn-twitter:hover	{ color: white;			background: $color-twittr-hover;	}
 .btn-google:hover	{ color: white;			background: $color-google-hover;	}
 
