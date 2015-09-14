@@ -33,8 +33,10 @@ oauth_facebook = sc_server.oauth.remote_app( 'facebook',
 
 
 # sends to facebook, which gets token, and user is redirected to 'facebook_authorized'
-@public.route('/signup/facebook', methods=['GET', 'POST'])
-@public.route('/signin/facebook', methods=['GET', 'POST'])
+@public.route('/signup/facebook/', methods=['GET', 'POST'])
+@public.route('/signup/facebook',  methods=['GET', 'POST'])
+@public.route('/signin/facebook/', methods=['GET', 'POST'])
+@public.route('/signin/facebook',  methods=['GET', 'POST'])
 def oauth_facebook_signup_and_signin():
 	return oauth_facebook.authorize(callback=url_for('public_routes.facebook_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
 

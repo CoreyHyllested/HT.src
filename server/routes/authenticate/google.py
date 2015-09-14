@@ -34,10 +34,12 @@ oauth_google = sc_server.oauth.remote_app( 'google',
 
 
 
-# sends to google, which gets token, and user is redirected to 'google_authorized'
-@public.route('/signin/google', methods=['GET', 'POST'])
-@public.route('/signup/google', methods=['GET', 'POST'])
+@public.route('/signin/google/', methods=['GET', 'POST'])
+@public.route('/signin/google',  methods=['GET', 'POST'])
+@public.route('/signup/google/', methods=['GET', 'POST'])
+@public.route('/signup/google',  methods=['GET', 'POST'])
 def oauth_google_signup_and_signin():
+	# sends request to google, which gets token, and user is redirected to 'google_authorized'
 	session['next'] = request.args.get('next') or request.referrer or None
 	return oauth_google.authorize(callback=url_for('public_routes.google_authorized', _external=True))
 
