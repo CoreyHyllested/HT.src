@@ -47,11 +47,11 @@ def oauth_facebook_signup_and_signin():
 def facebook_authorized(resp):
 	if not resp:
 		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
-		return redirect(request.referrer)
+		return redirect('/signin')
 
 	if isinstance(resp, OAuthException):
 		print 'Access denied: %s' % resp.message
-		return redirect(request.referrer)
+		return redirect('/signin')
 
 	# User has successfully authenticated with Facebook.
 	session['oauth_token'] = (resp['access_token'], '')
@@ -65,9 +65,9 @@ def facebook_authorized(resp):
 	account = sc_authenticate_user_with_oa(OauthProvider.FACEBK, me.data)
 	if not account: resp = redirect(request.referrer)
 
-	bp = Profile.get_by_uid(ba.userid)
-	#import_profile(bp, OauthProvide.FACEBK, oauth_data=me.data)
-	bind_session(ba, bp)
+	profile= Profile.get_by_uid(account.userid)
+	#import_profile(profile, OauthProvide.FACEBK, oauth_data=me.data)
+	bind_session(account, profile)
 
 	return redirect('/profile')	#use redirect_back thing
 
