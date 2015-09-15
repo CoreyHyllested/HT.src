@@ -38,33 +38,30 @@ oauth_twitter = sc_server.oauth.remote_app( 'twitter',
 @public.route('/signup/twitter',  methods=['GET', 'POST'])
 def oauth_twitter_signup_and_signin():
 	session['next'] = request.args.get('next') or request.referrer or None
-	return oauth_twitter.authorize(callback=url_for('public_routes.twitter_authorized', _external=True))
+	print 'session.next=',session['next']
+	callback_url = url_for('public_routes.twitter_authorized', next=request.args.get('next'))
+	return oauth_twitter.authorize(callback=callback_url or request.referrer or None)
 
 
 
-@public.route('/authorized/twitter')
+
+@public.route('/authorized/twitter/')
+@public.route('/authorized/twitter' )
 @oauth_twitter.authorized_handler
 def twitter_authorized(resp):
-#	resp = oauth_twitter.authorized_response()
 	if not resp:
 		print 'Access denied: reason=%s error=%s' % (request.args['error_reason'], request.args['error_description'])
 		return redirect(request.referrer)
 
 	if isinstance(resp, OAuthException):
 		print 'Access denied: %s' % resp.message
-		return redirect(request.referrer)
+		return redirect('/signup')
 
 	# User has successfully authenticated with Twitter.
-	session['twitter_token'] = (resp['access_token'], '')
-	#print 'session access_token', resp.get('access_token', 'CAH')
-
-	userinfo = oauth_twitter.get('userinfo')
-	#pp (me.data)
-
-	account = sc_authenticate_user_with_oa(OauthProvider.TWITTR, userinfo.data)
+	session['twitter_oauth'] = resp 
+	account = sc_authenticate_user_with_oa(OauthProvider.TWITTR, session['twitter_oauth'])
 	if not account: return redirect(request.referrer)
 
-	print "account id =", str(account.userid)
 	profile = Profile.get_by_uid(account.userid)
 	bind_session(account, profile)
 
@@ -75,5 +72,14 @@ def twitter_authorized(resp):
 
 @oauth_twitter.tokengetter
 def get_twitter_oauth_token():
-	return session.get('twitter_token')
+	if 'twitter_oauth' in session:
+		resp = session.get('twitter_oauth')
+		return resp['oauth_token'], resp['oauth_token_secret']
+
+
+@sc_server.before_request
+def before_request():
+	g.user = None
+	if 'twitter_oauth' in session:
+		g.user = session['twitter_oauth']
 

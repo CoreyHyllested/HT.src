@@ -186,15 +186,14 @@ def normalize_oa_account_data(provider, oa_data):
 		data['oa_timezone'] = oa_data.get('timezone', None)
 	elif provider == OauthProvider.TWITTR:
 		twitter = oa_data
-		print 'normalize twitter data'
-		pp(twitter)
 		data['oa_service']	= provider
-		data['oa_account']	= twitter['id']
-		data['oa_name']		= twitter['name']
-		data['oa_email']	= twitter.get('email', None)
-		data['oa_token']	= twitter.get('token', None)
-		data['oa_secret']	= None
+		data['oa_account']	= twitter.get('user_id')
+		data['oa_name']		= twitter.get('screen_name')
+		data['oa_email']	= twitter.get('email', str(uuid.uuid4()) + '@t.co')
+		data['oa_token']	= twitter.get('oauth_token', None)
+		data['oa_secret']	= twitter.get('oauth_token_secret', None)
 		data['oa_timezone'] = twitter.get('timezone', None)
+		pp(data)
 	elif provider == OauthProvider.FACEBK:
 		facebook = oa_data
 		print 'normalize facebook data'

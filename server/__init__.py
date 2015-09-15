@@ -185,8 +185,8 @@ def server_init_routes(server):
 		return make_response(jsonify(csrf=reason), 400)
 
 	from routes.api import list, project, referral
-	from routes.authenticate import password
-	from routes.authenticate import facebook, google, linkedin
+	from routes.authenticate import password, twitter
+	from routes.authenticate import facebook, linkedin, google
 	from routes import everyone, users, meta, errors
 	from routes import public_routes
 	from routes import auth_routes
