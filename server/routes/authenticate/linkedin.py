@@ -73,8 +73,9 @@ def linkedin_authorized(resp):
 
 
 def change_linkedin_query(uri, headers, body):
-	auth = headers.pop('Authorization')
 	headers['x-li-format'] = 'json'
+
+	auth = headers.pop('Authorization')
 	if auth:
 		auth = auth.replace('Bearer', '').strip()
 		if '?' in uri:
