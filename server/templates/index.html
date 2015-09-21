@@ -23,8 +23,7 @@
 
 
 {% block header_css %}
-	{#{ super() }#}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
+	{{ super() }}
 	{%- assets 'master', 'scss_landpage' %} <link rel='stylesheet' href='{{ASSET_URL}}'> {%- endassets %}
 {% endblock %}
 
