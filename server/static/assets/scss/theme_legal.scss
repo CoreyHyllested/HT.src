@@ -8,8 +8,9 @@
 @import 'defines/styled/common';		//move to master eventually
 @import 'defines/tags/navigate';		//move to master eventually
 
-//override?
-section div	{	padding: 0 $section-padding;	}
+nav {
+	box-shadow: 0px 5px 5px rgba(0,0,0,.15);
+}
 
 #legal-nav	{
 	background-color: black;
