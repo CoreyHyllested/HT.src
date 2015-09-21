@@ -7,27 +7,32 @@
 @import 'defines/common';
 @import 'defines/tags/masthead';
 
+
 /* ELEMENTS */
 #masthead.lp {
 	position: relative;
 	background-image: $img-lpcover;
 	background-position-y: 60%;
-	font-size: 20px;	/* make this a default */
+	font-size: 15px;
 	height:	70vh;
 	min-height: 400px;
+	max-height: 600px;
 }
+
+body				{	padding-top: 0;		}
+
 #masthead-text.lp 	{	top: 25%;	}		//lp
 #masthead-btns.lp	{	letter-spacing: 2px;	}	/* lp- impact just the buttons */
-#masthead-title.lp	{	font-size: 1.5em;	font-weight: 600;	}	//lp
+#masthead-title.lp	{	font-size: 24px;	font-weight: 500;	}	//lp
 
 
 #referred			{ background-color: yellow; position: relative; text-align: center; padding: 10px; font-size: 1.2em; }
 #referred-close		{ position: absolute; top: 0px; right: 5px; cursor: pointer; font-size: 1.2em; }	/* top-right corner */
 #referred-close:before	{ content:"\00D7"; }															/* X to close. */
 
-#btn-fbook			{ background: $color-facebk;	&:hover { background: $color-facebk-hover; }		}
-#btn-email			{ background: $color-signup;	&:hover { background: $color-signup-hover; }		}
-#get-started .btn	{ position: relative; top: 50%;		&:hover	{ border: 2px solid white; }					}
+#btn-fbook			{ background: $color-facebk;	&:hover { background: $color-facebk-hover;	}		}
+#btn-email			{ background: $transparent;		&:hover { background: $color-frosted;		}		}
+#get-started .btn	{ position: relative; top: 50%;		&:hover	{ border: 2px solid white; }			}
 
 #values-section			{ background: whitesmoke; }
 #get-started			{ background: $img-wkitchen 50% 70%;	background-size: cover;  height: 350px;	text-align: center;	}
@@ -43,7 +48,9 @@
 .greyscale			{	filter: grayscale(1);	-webkit-filter: grayscale(1);	 filter: gray;	 height: 35px;	}
 //.greyscale:hover	{	filter: grayscale(1);	-webkit-filter: grayscale(1); 									}
 
-@media (min-width: 489px) {
+@media (min-width: 640px) {
+	#masthead.lp		{	font-size: 24px;	height: 100vh;		}
+	#masthead-title.lp	{	font-size: 38px;	}
 	#press	{ display: block; }
 }
 
@@ -51,9 +58,4 @@
 	.value			{ width: 33%;	}
 	.value-panel	{ height: 80px;	}
 	#press-row a:last-child {	display: inline-block; 	}
-}
-
-@media (min-width: 980px) {
-	#masthead-title {	font-size: 1.5em;	}
-	#masthead-text  {	font-size: 1.5em;	}
 }

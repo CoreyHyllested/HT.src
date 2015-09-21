@@ -36,15 +36,3 @@
 
 
 @media (max-height: 489px) { #masthead, #masthead-gap { height: $masthead-height-mobile; } }
-
-/* DROP THESE */
-@media (min-width: 489px) {
-	#masthead-title {	font-size: 1.30em;	}
-	#masthead-text  {	font-size: 1.25em;	}
-}
-
-@media (min-width: 768px) {
-	#masthead-title {	font-size: 1.5em;	}
-	#masthead-text  {	font-size: 1.5em;	}
-}
-
