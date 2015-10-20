@@ -8,9 +8,11 @@
 @import 'defines/colors';
 @import 'defines/common';
 
+$version: 0.2;
 
 #masthead {
 	position: fixed;
+	display: table;
 
 	height:	$masthead-height;
 	width:	100%;
@@ -30,8 +32,8 @@
 }
 
 
-#masthead-text	{	width: 100%;	position: relative;	display: block; top: 50%;		margin: 0 auto;		transition: opacity 1.5s ease 1.5s;	}
-#masthead-title {	width: 100%;	position: static;	display: block; 				margin: 0 auto;		text-transform: uppercase; 		}
+#masthead-text	{	width: 100%;	position: relative;	display: table-cell;	margin: 0 auto;		vertical-align: middle;		transition: opacity 1.5s ease 1.5s;	}
+#masthead-title {	width: 100%;	position: static;	display: block; 		margin: 0 auto;		text-transform: uppercase; 		}
 #masthead-gap 	{	height: $masthead-height; }
 
 
