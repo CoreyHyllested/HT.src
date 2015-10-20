@@ -62,7 +62,7 @@ $version	:	0.01;
 
 
 .btn-simple			{	display: inline-block;	text-transform: uppercase;	max-width: 120px;	}
-.btn-masthead		{	@extend .btn-simple;	border: 2px solid white;	max-width: none;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
+.btn-masthead		{	@extend .btn-simple;	border: 0px solid white;	max-width: none;	width: 240px;		color: white !important;	transition: background 80ms ease-out;	}
 .btn-signup			{	@extend .btn-simple;	border: 2px solid black;	background: white;		}
 .btn-modal			{	@extend .btn-simple;	}
 
