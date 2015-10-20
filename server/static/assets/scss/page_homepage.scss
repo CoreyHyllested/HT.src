@@ -7,21 +7,21 @@
 @import 'defines/common';
 @import 'defines/tags/masthead';
 
+$version: 0.1;
 
 /* ELEMENTS */
 #masthead.lp {
 	position: relative;
-	background-image: $img-lpcover;
+	background-image: $img-dining;
 	background-position-y: 60%;
 	font-size: 15px;
-	height:	70vh;
+	height:	84vh;
 	min-height: 400px;
-	max-height: 600px;
+	max-height: 900px;
 }
 
 body				{	padding-top: 0;		}
 
-#masthead-text.lp 	{	top: 25%;	}		//lp
 #masthead-btns.lp	{	letter-spacing: 2px;	}	/* lp- impact just the buttons */
 #masthead-title.lp	{	font-size: 24px;	font-weight: 500;	}	//lp
 

@@ -7,9 +7,11 @@
 @import 'defines/common';
 @import 'defines/tags/masthead';
 
+$verion: 0.2;
+
 //overrides
 #masthead			{	background-image: $img-medpatio;	z-index: -5;	}
-#masthead-text		{	top: 40%;	opacity: 0;				}
+#masthead-text		{	opacity: 0;			}
 h2					{	font-size: 30px;	}
 
 
