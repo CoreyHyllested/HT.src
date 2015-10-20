@@ -2,6 +2,7 @@
 
 @import 'defines/fonts';
 @import 'defines/colors';
+@import 'defines/mixins';
 
 
 #page-content {
@@ -13,6 +14,10 @@
 
 #navbar-menu	{	padding-right: 30px;	}
 
+nav { @include transition_type(background-color);	}
+nav.navbar-default.clear						{ background-color: transparent; border-color: transparent; }
+nav.navbar-default.clear .navbar-brand			{ color: white; }
+nav.navbar-default.clear .navbar-nav > li > a	{ color: white; }
 
 footer ul, footer li {	display: inline; }
 #footer-menu li:after				{	content: ' | ';			}
