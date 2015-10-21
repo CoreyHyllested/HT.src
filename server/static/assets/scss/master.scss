@@ -15,7 +15,7 @@
 // third-party includes
 @import 'Font-Awesome/font-awesome';
 
-$version:	'0.10';	//update masthead. +1, +8
+$version:	'0.10';	//update masthead. +1, +a
 
 
 html		{	height: 100%;	}
@@ -130,5 +130,3 @@ input.error						{	border-color: $input-border-invalid !important;	}
 ::-webkit-input-placeholder	{	color: $font-color-placeholder;	}	/* Webkit	*/
 
 
-
-#modal-window.sz-320	{ max-width: 320px;	} 
