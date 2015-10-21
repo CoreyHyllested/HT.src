@@ -43,14 +43,15 @@
 
 
 <body>
-	<div id='overlay'></div>
-	<div id='modal-wrap'>
-		<div id='modal-window'>
-			<div id='modal-content'>
-				<div id='modal-close'></div>	{# exit #}
-				<div id='modal-message'></div>	{# mesg #}
-				<div id='modal-buttons'>		{# btns #}
-					<div class='dismiss-modal'>OK</div>
+	<div id='overlay'>
+		<div id='modal-wrap'>
+			<div id='modal-window'>
+				<div id='modal-content'>
+					<div id='modal-close'></div>	{# exit #}
+					<div id='modal-message'></div>	{# mesg #}
+					<div id='modal-buttons'>		{# btns #}
+						<div class='dismiss-modal'>OK</div>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -84,6 +85,7 @@
 				<li><a href='/about'  class='navbar-hhl hhl'>About</a></li>
 				<li><a href='/about#soulcrafting-faq'  class='navbar-hhl hhl'>FAQ</a></li>
 				<li><a href='/signin' class='navbar-hhl hhl'>Sign In</a></li>
+				<li><a href='javascript:open_login();' class='navbar-hhl hhl'>Test In</a></li>
 				{% endif %}
 			</ul>
 		<!-- ENDING /.navbar-collapse -->

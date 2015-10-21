@@ -16,12 +16,14 @@
 			#modal-buttons { display: none;	}		/* container for buttons		*/
 
 #modal-wrap {
-	@include transition_type(top);	top: -99%;
-	position: fixed;
+	position: relative;
+	display: table-cell;
+	vertical-align: middle;
+
 	width: 100%;
 	text-align: center;		//cascasde down
 }
-#modal-wrap.active {	top: 20%;	z-index: $modal-depth;	}
+#modal-wrap.active {	z-index: $modal-depth;	}
 
 
 #modal-window {
@@ -78,16 +80,15 @@
 }
 
 
-.full-screen	{	display: block;	position: fixed; height: 100%; width: 100%; top: 0; left: 0; }
+.full-screen	{	display: table;	position: fixed; height: 100%; width: 100%; top: 0; left: 0; }
 .overlay-dark	{	@extend .full-screen; z-index: $overlay-depth;	background-color: darkgray;	background-color: rgba(0,0,0,.8);	}
 .overlay-light	{	@extend .full-screen; z-index: $overlay-depth;	background-color: white;	background-color: rgba(255,255,255,.8);	}
 .black-border	{	border:	1px solid black;	}
 
 
 @media (min-width: 600px)	{
-	#modal-wrap.active	{ /* drop-in from top */ top: 30% !important; }
-	#modal-window		{ @include border-rad(8px); }
-	#modal-content { height: 100%;	}
+	#modal-window	{ @include border-rad(8px); }
+	#modal-content	{ height: 100%;	}
 }
 
 @media (max-width: $modal-max-width)	{
