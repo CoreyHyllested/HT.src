@@ -31,10 +31,11 @@
 
 	/* describe window */
 	background-color: white;
-	padding: 25px 10px 15px;
+	padding: 15px 10px;
 	margin: 0 auto;
 	max-width: $modal-max-width;
 }
+
 
 #modal-content {
 	/* required to position modal-close */
