@@ -3,23 +3,24 @@
 {% set meta_desc	= 'Soulcrafting\'s Terms of Service' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	{% assets 'master', 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{{ super() }}
+	{% assets 'master', 'scss_legaltos' %}<link rel='stylesheet' type='text/css' href='{{ASSET_URL}}' />{% endassets %}
 {% endblock %}
 
 
 {% block content %}
-<div id='legal-nav'>
-	<div class='terms-menu'><a href='#' class='active'>Terms of Service</a></div>
-	<div class='terms-menu' style='font-weight: 600;'>Legal</div>
-	<div class='terms-menu'><a href='/terms/privacy'>Privacy</a></div>
-</div>
-
-<section id='tos'>
-	<h2>Terms of Service</h2>
-	<h4>Last updated: April 30, 2015</h4>
-
+<section id='tos' class='nopad'>
+	<div id='legal-nav'>
+		<div class='terms-menu'>Soulcrafting Legal</div>
+		<div class='terms-menu'></div>
+		<div class='terms-menu'><a href='/terms/service'>Service</a></div>
+		<div class='terms-menu'><a href='/terms/privacy'>Privacy</a></div>
+	</div>
+	<div>
+		<h2>Terms of Service</h2>
+		<h4>Last updated: April 30, 2015</h4>
+	</div>
+	<div class='legal-divider'></div>
 	<div>
 		<p>
 			These Terms of Service govern the use of the services offered by Soulcrafting, Inc. (the “Company”) at the Company’s website

@@ -3,23 +3,26 @@
 {% set meta_desc	= 'Soulcrafting\'s Privacy Policy' %}
 
 {% block header_css %}
-	{# super() #}
-	<link rel='stylesheet' href='/static/css/bootstrap.css'>
-	{% assets 'master', 'scss_legaltos' %}<link rel='stylesheet' href='{{ASSET_URL}}'>{% endassets %}
+	{{ super() }}
+	{% assets 'master', 'scss_legaltos' %}<link rel='stylesheet' type='text/css' href='{{ASSET_URL}}' />{% endassets %}
 {% endblock %}
 
 
 {% block content %}
-<div id='legal-nav'>
-	<div class='terms-menu'><a href='/terms/service'>Terms of Service</a></div>
-	<div class='terms-menu' style='font-weight: 600;'>Legal</div>
-	<div class='terms-menu'><a href='#' class='active'>Privacy</a></div>
-</div>
+<section id='privacy' class='nopad'>
+	<div id='legal-nav'>
+		<div class='terms-menu'>Soulcrafting Legal</div>
+		<div class='terms-menu'></div>
+		<div class='terms-menu'><a href='/terms/service'>Service</a></div>
+		<div class='terms-menu'><a href='/terms/privacy'>Privacy</a></div>
+	</div>
 
-<section id='privacy'>
-	<h2>Privacy Policy</h2>
-	<h4>Last updated: April 30, 2015</h4>
+	<div>
+		<h2>Privacy Policy</h2>
+		<h4>Last updated: April 30, 2015</h4>
+	</div>
 
+	<div class='legal-divider'></div>
 	<div id='preamble'>
 		<p>
 			Soulcrafting, Inc. (“Soulcrafting”) has created this privacy policy in order explain our privacy practices.
