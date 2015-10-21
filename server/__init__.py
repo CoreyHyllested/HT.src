@@ -127,7 +127,7 @@ def server_init_assets_css(assets):
 	page_about_sc =	Bundle('page_about_sc.scss', filters='pyscss', output='css/about-sc.css')
 	page_products =	Bundle('page_products.scss', filters='pyscss', output='css/products.css')
 	page_settings =	Bundle('page_settings.scss', filters='pyscss', output='css/settings.css')
-	theme_legal =	Bundle('theme_legal.scss',	filters='pyscss', output='css/legaltos.css')
+	theme_legal =	Bundle('theme_legal.scss', 'fixedsticky/fixedsticky.css',	filters='pyscss', output='css/legaltos.css')
 	theme_error	=	Bundle('theme_error.scss',	filters='pyscss', output='css/errors.css')
 	theme_login = Bundle('theme_authorize.scss', filters='pyscss', output='css/authorize.css')
 	theme_dashboard = Bundle('theme_dashboard.scss', filters='pyscss', output='css/dashboards.css')
@@ -160,6 +160,7 @@ def server_init_assets_js(server, assets):
 
 	# Bundle looks for input files (e.g. 'js/format.js') and saves output files dir relative to /static/
 	js_common	= Bundle('modals.js', 'feedback.js', filters=jsfilter, output='js/common.js')
+	js_legal	= Bundle('fixedsticky/fixedsticky.js', filters=jsfilter, output='js/legal.js')
 	js_projects = Bundle('projects.js', 'maps.js', filters=jsfilter, output='js/projects.js')
 	js_referral	= Bundle('referral.js', 'maps.js', filters=jsfilter, output='js/referral.js')
 	js_profiles	= Bundle('profiles.js', 'plugins/scrollto.jq', filters=jsfilter, output='js/profiles.js')
@@ -168,6 +169,7 @@ def server_init_assets_js(server, assets):
 
 	assets.register('js_dashboard', js_dashboard)
 	assets.register('js_common',	js_common)
+	assets.register('js_legal',		js_legal)
 	assets.register('js_profiles',	js_profiles)
 	assets.register('js_projects',	js_projects)
 	assets.register('js_referral',	js_referral)

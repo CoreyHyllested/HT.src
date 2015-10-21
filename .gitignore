@@ -26,6 +26,7 @@ server/static/css/errors.css
 
 # Built from javascript assets.
 server/static/js/common.js
+server/static/js/legal.js
 server/static/js/dashboard.js
 server/static/js/projects.js
 server/static/js/referral.js
