@@ -55,15 +55,25 @@ function __get_signin(status, set_active) {
 
 
 function __login_with_email() {
+	$('#account-reset').addClass('no-display');
 	$('#account-social').addClass('no-display');
 	$('#account-signin').removeClass('no-display');
+	$('#modal-title').html('Sign in to Soulcrafting');
 }
 
 function __login_with_social() {
-	$('#account-social').removeClass('no-display');
+	$('#account-reset').addClass('no-display');
 	$('#account-signin').addClass('no-display');
+	$('#account-social').removeClass('no-display');
+	$('#modal-title').html('Sign in to Soulcrafting');
 }
 
+function __login_reset() {
+	$('#account-social').addClass('no-display');
+	$('#account-signin').addClass('no-display');
+	$('#account-reset').removeClass('no-display');
+	$('#modal-title').html('Reset Password');
+}
 
 
 function signin_submit(event) {
@@ -92,6 +102,33 @@ function signin_submit(event) {
 	return false;
 }
 
+
+
+function password_reset(event) {
+	event.preventDefault();	//prevent submit.
+	fd	= new FormData(this)
+
+	set_status('.action-feedback', 'Attempting Password Reset');
+
+	$.ajax({type		: 'POST',
+			url			: '/api/password/reset',
+			data		: fd,
+			processData	: false,
+			contentType	: false,
+			success 	: function(xhr) {
+							set_status('.action-feedback', 'Success');
+//							window.location.href = xhr.next;
+						},
+			error		: function(xhr, status, error) {
+							if ((xhr.status === 400) || (xhr.status === 401)) {
+								show_errors('.action-feedback', xhr.responseJSON);
+							} else {
+								console.log("no action for ", status, xhr);
+							}
+						}
+	});
+	return false;
+}
 
 
 
@@ -129,6 +166,7 @@ $(document).ready(function () {
 	$('#modal-close').on('click',					shut_modal_window);
 	$('#modal-wrap').on('click',  '.dismiss-modal',	shut_modal_window);
 	$('#modal-message').on('submit', '#account-signin', signin_submit);
+	$('#modal-message').on('submit', '#account-reset', password_reset);
 
 	$(document).keyup(function(e) {
 		/* close overlay when ESC is hit */
