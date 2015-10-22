@@ -12,11 +12,8 @@
 #################################################################################
 
 
-import os, re, json, pickle, requests, uuid
-import smtplib, urlparse, urllib, urllib2
-import time, pytz
-import oauth2 as oauth
-import OpenSSL, hashlib, base64
+import re, json
+import urllib, urllib2
 
 from pprint import pprint as pp
 from datetime import timedelta, datetime as dt

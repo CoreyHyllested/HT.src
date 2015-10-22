@@ -13,7 +13,7 @@
 
 import pickle
 import time, uuid
-import OpenSSL, hashlib, base64
+import hashlib
 from datetime import timedelta
 from flask.ext.mail import Message
 from flask.sessions import SessionInterface, SessionMixin
