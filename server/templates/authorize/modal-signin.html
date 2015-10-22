@@ -1,18 +1,20 @@
 <div>
-	<h3>Sign in to Soulcrafting</h3>
+	<h3 id='modal-title'>Sign in to Soulcrafting</h3>
 	<p id='401' class='no-display'>That task requires you to be signed in.</p>
+
 		<form id='account-signin' class='no-display'>
 			{{form.hidden_tag()}}
-			<div class="form-group email">
-				<label class="sr-only" for="login-email">Your email</label>
-				{{form.email(type="email", class="form-control login-email", required=true, placeholder="Your email (required)")}}
+			<div class='form-group email'>
+				<label class='sr-only' for='login-email'>Your email</label>
+				{{form.email(type='email', class='form-control login-email', required=true, placeholder="Your email (required)")}}
 			</div>
 
-			<div class="form-group password">
-				<label class="sr-only" for="login-password">Your password</label>
-				{{form.passw(type="password", class="form-control login-password", required=true, placeholder="Your password (required)")}}
+			<div class='form-group password'>
+				<label class='sr-only' for='login-password'>Your password</label>
+				{{form.passw(type='password', class='form-control login-password', required=true, placeholder="Your password (required)")}}
+				<a href='#' onclick='__login_reset();'><div class='btn-inset'>RESET</div></a>
 			</div>
-			<button type='submit' class="blueButton">Sign in</button>
+			<button type='submit' class='blueButton'>Sign in</button>
 			<div class='action-feedback' />
 
 			<p>Use a <a href='#'><span onclick='__login_with_social();'>social network<span></a> to login.</p>
@@ -28,4 +30,16 @@
 			<li><button class="btn btn-soulcraft" onclick='__login_with_email();'><i class="fa fa-envelope-o"></i>Sign in with Email</button></li>
 		</ul>
 	</div>
+
+		<form id='account-reset' class='no-display'>
+			{{form.hidden_tag()}}
+			<div class='form-group email'>
+				<label class='sr-only' for='login-email'>Your email</label>
+				{{form.email(type='email', class='form-control login-email', required=true, placeholder='Your email (required)')}}
+			</div>
+
+			<button type='submit' class='blueButton'>Reset password</button>
+			<div class='action-feedback' />
+			<p><a href='#'><span onclick='__login_with_email();'><i class='fa fa-reply'></i>Back<span></a></p>
+		</form>
 </div>
