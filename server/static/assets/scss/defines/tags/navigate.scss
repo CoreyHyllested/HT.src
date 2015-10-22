@@ -17,8 +17,8 @@
 nav { @include transition_type(background-color);	}
 nav.navbar-default.clear														{ background-color: rgba(0,0,0,0);	border-color: transparent; }
 nav.navbar-default.clear #navbar-collapse.collapse.in 							{ background-color: rgba(0,0,0,.4);	}
-nav.navbar-default.clear 								.navbar-brand			{ color: white; }
-nav.navbar-default.clear 								.navbar-nav > li > a	{ color: white; }
+nav.navbar-default.clear 								.navbar-brand			{ color: white; text-shadow: 0 0 5px rgba(0,0,0,.25); }
+nav.navbar-default.clear 								.navbar-nav > li > a	{ color: white; text-shadow: 0 0 5px rgba(0,0,0,.25); }
 
 footer ul, footer li {	display: inline; }
 #footer-menu li:after				{	content: ' | ';			}
