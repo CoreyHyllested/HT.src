@@ -83,6 +83,18 @@ $version	:	0.01;
 .btn-twitter:hover	{ color: white;			background: $color-twittr-hover;	}
 .btn-google:hover	{ color: white;			background: $color-google-hover;	}
 
+/* other button classes */
+.btn-inset			{
+	position: absolute; top: 0px; right: 0px; z-index: 5;
+	background-color: rgba(0,0,0,.15); color: black;
+	margin: 3px;
+	border: 0; @include border-rad(3px);
+	font-size: 10px;
+	height: 34px;
+	padding: 6px 9px;
+	line-height: 22px;
+}
+
 
 .checkbox-label		{	background-image:url('../img/checkbox.svg');		}
 .map-canvas			{	display: block;	height: 165px;	}
