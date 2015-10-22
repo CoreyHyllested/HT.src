@@ -1,4 +1,4 @@
-var feedback_version = 0.18;
+var feedback_version = 0.19;
 
 function __get_json(string) {
 //	response = __get_json(responseText);
@@ -36,10 +36,11 @@ function highlight_disable(elem)	{ $(elem).removeClass('highlight');	}
 
 
 
-function set_status(elem, content) {
+function set_status(elem, content, time) {
+	time = (typeof time !== 'undefined') ? time : 2500;
 	$(elem).empty();
 	$(elem).html(content).fadeIn();
-	setTimeout(feedback_fadeout, 2500, elem);
+	setTimeout(feedback_fadeout, time, elem);
 }
 
 function positive_feedback(content)	{

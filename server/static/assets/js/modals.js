@@ -1,4 +1,4 @@
-version = 1.12;
+version = 1.13;
 
 
 function open_modal_window(embed, win_sz) {
@@ -72,6 +72,7 @@ function __login_reset() {
 	$('#account-social').addClass('no-display');
 	$('#account-signin').addClass('no-display');
 	$('#account-reset').removeClass('no-display');
+	$('#account-reset #email').val( $('#account-signin #email').val() );
 	$('#modal-title').html('Reset Password');
 }
 
@@ -116,8 +117,8 @@ function password_reset(event) {
 			processData	: false,
 			contentType	: false,
 			success 	: function(xhr) {
-							set_status('.action-feedback', 'Success');
-//							window.location.href = xhr.next;
+							set_status('.action-feedback', 'Password sent.', 4000);
+							__login_with_email();	// change modal view.
 						},
 			error		: function(xhr, status, error) {
 							if ((xhr.status === 400) || (xhr.status === 401)) {

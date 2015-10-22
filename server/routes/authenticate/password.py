@@ -150,16 +150,14 @@ def render_password_reset_request(sc_msg=None):
 
 @api.route('/password/reset', methods=['POST'])
 def api_password_reset_request():
-	print 'enter api password reset'
 	form = RecoverPasswordForm(request.form)
 
 	try:
 		if not form.validate_on_submit():
 			raise InvalidInput(errors=form.errors)
 
-		print 'password_reset_request() -', form.email.data
 		sc_password_recovery(form.email.data)
-		return make_response(jsonify(resp='Email sent'), 200)
+		return make_response(jsonify(resp='Email sent!'), 200)
 	except SanitizedException as se:
 		#except AccountError
 		#except NoEmailFound
