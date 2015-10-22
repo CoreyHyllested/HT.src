@@ -15,6 +15,7 @@ from werkzeug.security	import generate_password_hash
 
 from server.models import *
 from server.routes import public_routes as public
+from server.routes import api_routing as api
 from server.controllers	import *
 
 
@@ -136,7 +137,7 @@ def render_password_reset_request(sc_msg=None):
 		print 'password_reset_request() -', form.email.data
 		try:
 			sc_password_recovery(form.email.data)
-			session['messages'] = "Reset instructions were sent."
+			#session['messages'] = "Reset instructions were sent."
 			return make_response(redirect('/signin'))
 		except NoEmailFound as nef:
 			sc_msg = nef.sanitized_msg()
@@ -144,6 +145,30 @@ def render_password_reset_request(sc_msg=None):
 			sc_msg = ae.sanitized_msg()
 			print ae
 	return render_template('authorize/password-recover.html', bp=bp, form=form, sc_alert=sc_msg)
+
+
+
+@api.route('/password/reset', methods=['POST'])
+def api_password_reset_request():
+	print 'enter api password reset'
+	form = RecoverPasswordForm(request.form)
+
+	try:
+		if not form.validate_on_submit():
+			raise InvalidInput(errors=form.errors)
+
+		print 'password_reset_request() -', form.email.data
+		sc_password_recovery(form.email.data)
+		return make_response(jsonify(resp='Email sent'), 200)
+	except SanitizedException as se:
+		#except AccountError
+		#except NoEmailFound
+		return se.response()
+	except Exception as e:
+		print type(e), e
+		se = SanitizedException(e, status='Oops. An error occurred', code=500)
+		return se.response()
+		
 
 
 
